@@ -2,6 +2,7 @@ package lib
 
 import models.WorkflowContent
 import akka.agent.Agent
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 object Database {
