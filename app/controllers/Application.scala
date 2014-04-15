@@ -15,14 +15,6 @@ object Application extends Controller {
   }
 
   def consumeFeed = Action.async {
-    val messages = AWSWorkflowQueue.getMessages(10)
-
-    val workflowItems = messages.map(AWSWorkflowQueue.toWorkflowContent(_))
-
-    Future.traverse(workflowItems) { item =>
-      Database.store.alter(_.updated(item.path, item))
-    }
-
     Database.store.future.map(items => Ok(items.toString))
   }
 
