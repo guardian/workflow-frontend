@@ -11,7 +11,7 @@ object Application extends Controller {
     Ok(views.html.index("Hello wor... kflow :)"))
   }
 
-  def consumeFeed = Action.async {
+  def content = Action.async {
     Database.store.future.map(items => Ok(views.html.contentDashboard(items)))
   }
 
