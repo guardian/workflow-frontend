@@ -21,9 +21,18 @@ case class WorkflowContent(
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+
 object WorkflowContent {
+
+  val readContributors = new Reads[List[Contributor]] {
+    def reads(json: JsValue) =
+      (json \ "content" \ "taxonomy" \ "contributors")
+        .validate[Option[List[Contributor]]]
+        .map(_.toList.flatten)
+  }
+
   implicit val workflowContentReads: Reads[WorkflowContent] =
-    ((__ \ "content" \ "taxonomy" \ "contributors").read[List[Contributor]] ~
+    ( readContributors ~
       (__ \ "content" \ "identifiers" \ "path").read[String] ~
       (__ \ "published").read[Boolean] ~
       (__ \ "whatChanged").read[String] ~
