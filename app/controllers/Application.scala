@@ -15,7 +15,7 @@ object Application extends Controller {
   }
 
   def consumeFeed = Action.async {
-    Database.store.future.map(items => Ok(items.toString))
+    Database.store.future.map(items => Ok(views.html.contentDashboard(items)))
   }
 
 }
