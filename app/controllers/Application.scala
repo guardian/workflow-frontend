@@ -23,7 +23,7 @@ object Application extends Controller {
       Database.store.alter(_.updated(item.path, item))
     }
 
-    Database.store.future.map(items => Ok(items.toString))
+    Database.store.future.map(items => Ok(views.html.contentDashboard(items)))
   }
 
 }
