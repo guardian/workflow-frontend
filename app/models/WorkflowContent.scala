@@ -11,11 +11,13 @@ object Contributor {
   }
 }
 
+
 case class WorkflowContent(
   contributors: List[Contributor],
   path: String,
   published: Boolean,
   whatChanged: String,
+  user: Option[String],
   lastModified: DateTime,
   status: WorkflowStatus)
 
@@ -25,10 +27,15 @@ import play.api.libs.functional.syntax._
 object WorkflowContent {
 
   val readContributors = new Reads[List[Contributor]] {
-    def reads(json: JsValue) =
+    def reads(json: JsValue): JsResult[List[Contributor]] =
       (json \ "content" \ "taxonomy" \ "contributors")
         .validate[Option[List[Contributor]]]
         .map(_.toList.flatten)
+  }
+
+  def readUser = new Reads[Option[String]] {
+    def reads(json: JsValue): JsResult[Option[String]] =
+      (json \ "content" \ "lastModifiedBy" \ "firstName").validate[Option[String]]
   }
 
   implicit val workflowContentReads: Reads[WorkflowContent] =
@@ -36,6 +43,7 @@ object WorkflowContent {
       (__ \ "content" \ "identifiers" \ "path").read[String] ~
       (__ \ "published").read[Boolean] ~
       (__ \ "whatChanged").read[String] ~
+      readUser ~
       (__ \ "content" \ "lastModified").read[Long].map(t => new DateTime(t)) ~
       (__ \ "published").read[Boolean].map(p => if (p) Published else Created)
       )(WorkflowContent.apply _)
