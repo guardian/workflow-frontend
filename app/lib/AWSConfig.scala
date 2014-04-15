@@ -3,7 +3,7 @@ package lib
 import scala.collection.JavaConverters._
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.sqs.AmazonSQSClient
-import com.amazonaws.services.sqs.model.{ReceiveMessageRequest, Message, GetQueueUrlRequest}
+import com.amazonaws.services.sqs.model.{DeleteMessageRequest, ReceiveMessageRequest, Message, GetQueueUrlRequest}
 import models.WorkflowContent
 import play.api.libs.json.Json
 
@@ -35,7 +35,13 @@ object AWSWorkflowQueue {
     response.getMessages.asScala.toList
   }
 
-  def parseMessage(awsMsg: Message): WorkflowContent = {
+  def deleteMessage(message: Message) {
+    sqsClient.deleteMessage(
+      new DeleteMessageRequest(queueUrl, message.getReceiptHandle)
+    )
+  }
+
+  def toWorkflowContent(awsMsg: Message): WorkflowContent = {
     val body = Json.parse(awsMsg.getBody)
     val msg = Json.parse((body \ "Message").as[String])
     msg.as[WorkflowContent]
