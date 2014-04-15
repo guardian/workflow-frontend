@@ -2,7 +2,7 @@ package lib
 
 import models.WorkflowContent
 import akka.agent.Agent
-
+import play.api.libs.concurrent.Execution.Implicits._
 
 object Database {
 

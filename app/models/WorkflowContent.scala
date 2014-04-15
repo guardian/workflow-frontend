@@ -23,7 +23,7 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 object WorkflowContent {
   implicit val workflowContentReads: Reads[WorkflowContent] =
-    ((__ \ "content" \ "taxonomy" \ "contributors").read[List[Contributor]] ~
+    ((__ \ "content" \ "taxonomy" \ "contributors").readNullable[List[Contributor]].map(_.toList.flatten) ~
       (__ \ "content" \ "identifiers" \ "path").read[String] ~
       (__ \ "published").read[Boolean] ~
       (__ \ "whatChanged").read[String] ~
