@@ -1,5 +1,24 @@
-@(content: Map[String, WorkflowContent])
+@(items: Map[String, WorkflowContent])
 
 @main("Content Dashboard") {
-  @content
+  <table class="table table-striped">
+      <tr>
+          <th>Path</th>
+          <th>Contributors</th>
+          <th>Published</th>
+          <th>Last Modified</th>
+          <th>What Changed</th>
+          <th>Status</th>
+      </tr>
+      @for((path, content) <- items) {
+        <tr>
+            <td>@path</td>
+            <td>@content.contributors</td>
+            <td>@content.published</td>
+            <td>@content.lastModified</td>
+            <td>@content.whatChanged</td>
+            <td>@content.status</td>
+        </tr>
+      }
+  </table>
 }
