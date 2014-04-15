@@ -13,7 +13,7 @@
       @for((path, content) <- items) {
         <tr>
             <td>@path</td>
-            <td>@content.contributors</td>
+            <td>@content.contributors.map(_.name).mkString(", ")</td>
             <td>@content.published</td>
             <td>@content.lastModified</td>
             <td>@content.whatChanged</td>
