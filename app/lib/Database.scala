@@ -1,6 +1,6 @@
 package lib
 
-import models.{WorkflowStatus, WorkflowContent}
+import models.WorkflowContent
 import akka.agent.Agent
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

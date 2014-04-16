@@ -1,13 +1,12 @@
 package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import play.api.mvc._
 import lib.Database
 import models._
-import scala.Some
-import play.mvc.Http.Response
-import scala.concurrent.Future
+
 
 object Application extends Controller {
 
@@ -17,13 +16,6 @@ object Application extends Controller {
 
   def content = Action.async {
     Database.store.future.map(items => Ok(views.html.contentDashboard(items)))
-  }
-
-
-  def success(item: WorkflowContent, workflowState: WorkflowStatus): SimpleResult = {
-    val newItem = item.copy(status=workflowState)
-    Database.store.alter(items => items.updated(newItem.path, newItem))
-    Ok("posted this")
   }
 
   def stateChange(status: String, contentId: String) = Action.async {
