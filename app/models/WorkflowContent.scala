@@ -35,7 +35,11 @@ object WorkflowContent {
 
   def readUser = new Reads[Option[String]] {
     def reads(json: JsValue): JsResult[Option[String]] =
-      (json \ "content" \ "lastModifiedBy" \ "firstName").validate[Option[String]]
+      for {
+        firstOpt <- (json \ "content" \ "lastModifiedBy" \ "firstName").validate[Option[String]]
+        lastOpt  <- (json \ "content" \ "lastModifiedBy" \ "lastName").validate[Option[String]]
+      }
+      yield firstOpt.flatMap(f => lastOpt.map(l => f + " " + l))
   }
 
   implicit val workflowContentReads: Reads[WorkflowContent] =

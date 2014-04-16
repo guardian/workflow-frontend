@@ -44,7 +44,6 @@ object AWSWorkflowQueue {
   def toWorkflowContent(awsMsg: Message): WorkflowContent = {
     val body = Json.parse(awsMsg.getBody)
     val msg = Json.parse((body \ "Message").as[String])
-    println(s"WHAT DOES THE MESSAGE LOOK LIKE? ${msg}" )
     msg.as[WorkflowContent]
   }
 }
