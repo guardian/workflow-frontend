@@ -23,7 +23,7 @@ object AWSWorkflowQueue {
 
   lazy val queueUrl = {
 
-    val queueNameLookupResponse = sqsClient.getQueueUrl(new GetQueueUrlRequest("workflow-DEV-LINDSEY"))
+    val queueNameLookupResponse = sqsClient.getQueueUrl(new GetQueueUrlRequest("workflow-PROD"))
 
     queueNameLookupResponse.getQueueUrl
   }

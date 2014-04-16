@@ -59,3 +59,16 @@ case object Created   extends WorkflowStatus
 case object Desk      extends WorkflowStatus
 case object Subbed    extends WorkflowStatus
 case object Published extends WorkflowStatus
+
+
+object WorkflowStatus {
+  def findWorkFlowStatus(status: String): Option[WorkflowStatus] = {
+    status match {
+      case "created" => Some(Created)
+      case "desk" => Some(Desk)
+      case "subbed" => Some(Subbed)
+      case "published" => Some(Published)
+      case _ => None
+    }
+  }
+}
