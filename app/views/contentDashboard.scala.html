@@ -9,6 +9,7 @@
           <th>By</th>
           <th>What Changed</th>
           <th>Status</th>
+          <th>Desk</th>
       </tr>
       @for((path, content) <- items) {
         <tr>
@@ -18,6 +19,7 @@
             <td>@content.user.getOrElse("unknown")</td>
             <td>@content.whatChanged</td>
             <td>@content.status</td>
+            <td>@content.desk</td>
         </tr>
       }
   </table>

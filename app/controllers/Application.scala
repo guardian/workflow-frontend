@@ -29,16 +29,21 @@ object Application extends Controller {
   def stateChange(status: String, contentId: String) = Action.async {
     WorkflowStatus.findWorkFlowStatus(status).map { workFlowStatus =>
       for {
-        altered <- Database.store.alter { items =>
-          val updatedItem = items.get(contentId).map(_.copy(status = workFlowStatus))
-          updatedItem.map(items.updated(contentId, _)).getOrElse(items)
-        }
+        altered <- Database.update(contentId, wf => wf.copy(status=workFlowStatus))
       }
       yield {
-        if (altered.contains(contentId)) Ok("Updated the state.")
-        else NotFound("Could not find that content.")
+        altered.map( _ => Ok("Updated the state")).getOrElse(NotFound("Could not find that content.") )
       }
     }.getOrElse(Future.successful(BadRequest(s"invalid status $status")))
   }
 
+
+  def assignDesk(desk: String, contentId: String) = Action.async {
+    for {
+      altered <- Database.update(contentId, wf => wf.copy(desk=Some(EditorDesk(desk))))
+    }
+    yield {
+      altered.map( _ => Ok("Updated the state")).getOrElse(NotFound("Could not find that content.") )
+    }
+  }
 }

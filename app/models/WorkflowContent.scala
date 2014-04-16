@@ -11,6 +11,15 @@ object Contributor {
   }
 }
 
+case class EditorDesk(name: String) {
+  override def toString = name
+}
+
+object EditorDesk {
+  implicit val deskReads: Reads[EditorDesk] = new Reads[EditorDesk] {
+    def reads(jsValue: JsValue) = (jsValue \ "tag" \ "section" \ "name").validate[String].map(EditorDesk(_))
+  }
+}
 
 case class WorkflowContent(
   contributors: List[Contributor],
@@ -19,6 +28,7 @@ case class WorkflowContent(
   whatChanged: String,
   user: Option[String],
   lastModified: DateTime,
+  desk: Option[EditorDesk],
   status: WorkflowStatus)
 
 import play.api.libs.json._
@@ -33,6 +43,11 @@ object WorkflowContent {
         .map(_.toList.flatten)
   }
 
+  val readTags = new Reads[Option[EditorDesk]] {
+    def reads(json: JsValue): JsResult[Option[EditorDesk]] =
+      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[EditorDesk]]]
+      .map(_.toList.flatten.headOption)
+  }
   def readUser = new Reads[Option[String]] {
     def reads(json: JsValue): JsResult[Option[String]] =
       for {
@@ -49,6 +64,7 @@ object WorkflowContent {
       (__ \ "whatChanged").read[String] ~
       readUser ~
       (__ \ "content" \ "lastModified").read[Long].map(t => new DateTime(t)) ~
+      readTags ~
       (__ \ "published").read[Boolean].map(p => if (p) Published else Created)
       )(WorkflowContent.apply _)
 }
