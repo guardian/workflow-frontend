@@ -3,7 +3,7 @@
 @main("Content Dashboard") {
   <table class="table table-striped">
       <tr>
-          <th>Path</th>
+          <th>Working Title / Path</th>
           <th>Contributors</th>
           <th>Last Modified</th>
           <th>By</th>
@@ -13,7 +13,17 @@
       </tr>
       @for((path, content) <- items) {
         <tr>
-            <td>@path</td>
+            <td>
+                @content.workingTitle match {
+                  case Some(title) => {
+                    <h3>@title</h3>
+                    <small>@path</small>
+                  }
+                  case None => {
+                    @path
+                  }
+                }
+            </td>
             <td>@content.contributors.map(_.name).mkString(", ")</td>
             <td>@content.lastModified</td>
             <td>@content.user.getOrElse("unknown")</td>

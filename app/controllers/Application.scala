@@ -38,4 +38,11 @@ object Application extends Controller {
       altered.map( _ => Ok("Updated the state")).getOrElse(NotFound("Could not find that content.") )
     }
   }
+
+  def putWorkingTitle(path: String, workingTitle: String) = Action.async {
+    for {
+      altered <- Database.update(path, _.copy(workingTitle = Some(workingTitle)))
+    }
+    yield altered.map(_ => Accepted("New working title accepted.")).getOrElse(NotFound("Could not find that content."))
+  }
 }

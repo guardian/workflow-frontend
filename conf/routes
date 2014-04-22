@@ -9,5 +9,7 @@ GET     /content                            controllers.Application.content
 POST    /stateChange/*contentId             controllers.Application.stateChange(state: String, contentId: String)
 POST    /assignDesk/*contentId              controllers.Application.assignDesk(desk: String, contentId: String)
 
+PUT     /content/*path/workingTitle        controllers.Application.putWorkingTitle(path: String, workingTitle: String)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

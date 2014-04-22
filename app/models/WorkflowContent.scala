@@ -22,6 +22,7 @@ object EditorDesk {
 }
 
 case class WorkflowContent(
+  workingTitle: Option[String],
   contributors: List[Contributor],
   path: String,
   published: Boolean,
@@ -66,7 +67,7 @@ object WorkflowContent {
       (__ \ "content" \ "lastModified").read[Long].map(t => new DateTime(t)) ~
       readTags ~
       (__ \ "published").read[Boolean].map(p => if (p) Published else Created)
-      )(WorkflowContent.apply _)
+      )(WorkflowContent.apply(None, _, _, _, _, _, _, _, _))
 }
 
 sealed trait WorkflowStatus
