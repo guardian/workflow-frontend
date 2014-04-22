@@ -25,9 +25,9 @@
                 }
             </td>
             <td>@content.contributors.map(_.name).mkString(", ")</td>
-            <td>@content.lastModified</td>
-            <td>@content.user.getOrElse("unknown")</td>
-            <td>@content.whatChanged</td>
+            <td>@content.lastModification.dateTime</td>
+            <td>@content.lastModification.user.getOrElse("unknown")</td>
+            <td>@content.lastModification.whatChanged</td>
             <td>@content.status</td>
             <td>@content.desk</td>
         </tr>

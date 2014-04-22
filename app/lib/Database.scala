@@ -1,9 +1,11 @@
 package lib
 
-import models.WorkflowContent
-import akka.agent.Agent
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
+import models.WorkflowContent
+import akka.agent.Agent
+
 
 object Database {
 

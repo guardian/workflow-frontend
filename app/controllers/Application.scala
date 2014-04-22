@@ -45,4 +45,5 @@ object Application extends Controller {
     }
     yield altered.map(_ => Accepted("New working title accepted.")).getOrElse(NotFound("Could not find that content."))
   }
+
 }

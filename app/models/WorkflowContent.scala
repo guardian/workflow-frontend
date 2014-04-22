@@ -21,21 +21,61 @@ object EditorDesk {
   }
 }
 
-case class WorkflowContent(
-  workingTitle: Option[String],
+case class WireStatus(
   contributors: List[Contributor],
   path: String,
   published: Boolean,
   whatChanged: String,
   user: Option[String],
   lastModified: DateTime,
-  desk: Option[EditorDesk],
+  tagSections: List[String],
   status: WorkflowStatus)
+
+case class WorkflowContent(
+  path: String,
+  workingTitle: Option[String],
+  contributors: List[Contributor],
+  desk: Option[EditorDesk],
+  status: WorkflowStatus,
+  lastModification: ContentModification) {
+
+  def updateWith(wireStatus: WireStatus): WorkflowContent =
+    copy(
+      contributors = wireStatus.contributors,
+      desk = wireStatus.tagSections.headOption.map(EditorDesk(_)),
+      status = if (wireStatus.published) Published else status,
+      lastModification = ContentModification(
+        whatChanged = wireStatus.whatChanged,
+        dateTime = wireStatus.lastModified,
+        user = wireStatus.user
+      )
+    )
+
+}
+
+object WorkflowContent {
+
+  def apply(wireStatus: WireStatus): WorkflowContent =
+    WorkflowContent(
+      wireStatus.path,
+      None,
+      wireStatus.contributors,
+      wireStatus.tagSections.headOption.map(EditorDesk(_)),
+      if (wireStatus.published) Published else Created,
+      ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user)
+    )
+}
+
+case class ContentModification(
+  whatChanged: String,
+  dateTime: DateTime,
+  user: Option[String])
+
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
-object WorkflowContent {
+object WireStatus {
 
   val readContributors = new Reads[List[Contributor]] {
     def reads(json: JsValue): JsResult[List[Contributor]] =
@@ -44,11 +84,11 @@ object WorkflowContent {
         .map(_.toList.flatten)
   }
 
-  val readTags = new Reads[Option[EditorDesk]] {
-    def reads(json: JsValue): JsResult[Option[EditorDesk]] =
-      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[EditorDesk]]]
-      .map(_.toList.flatten.headOption)
+  val readTagSections = new Reads[List[String]] {
+    def reads(json: JsValue): JsResult[List[String]] =
+      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[String]]].map(_.toList.flatten)
   }
+
   def readUser = new Reads[Option[String]] {
     def reads(json: JsValue): JsResult[Option[String]] =
       for {
@@ -58,16 +98,16 @@ object WorkflowContent {
       yield firstOpt.flatMap(f => lastOpt.map(l => f + " " + l))
   }
 
-  implicit val workflowContentReads: Reads[WorkflowContent] =
+  implicit val wireStatusReads: Reads[WireStatus] =
     ( readContributors ~
       (__ \ "content" \ "identifiers" \ "path").read[String] ~
       (__ \ "published").read[Boolean] ~
       (__ \ "whatChanged").read[String] ~
       readUser ~
       (__ \ "content" \ "lastModified").read[Long].map(t => new DateTime(t)) ~
-      readTags ~
+      readTagSections ~
       (__ \ "published").read[Boolean].map(p => if (p) Published else Created)
-      )(WorkflowContent.apply(None, _, _, _, _, _, _, _, _))
+      )(WireStatus.apply _)
 }
 
 sealed trait WorkflowStatus

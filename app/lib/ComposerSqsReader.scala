@@ -1,6 +1,7 @@
 package lib
 
 import akka.actor.Actor
+import models.WorkflowContent
 
 
 class ComposerSqsReader extends Actor {
@@ -11,9 +12,13 @@ class ComposerSqsReader extends Actor {
       val messages = AWSWorkflowQueue.getMessages(10)
 
       for(msg<-messages) {
-        val item = AWSWorkflowQueue.toWorkflowContent(msg)
+        val wireStatus = AWSWorkflowQueue.toWireStatus(msg)
 
-        Database.store.alter(s => s.updated(item.path,item))
+        Database.store.alter {
+          items =>
+            val existing = items.get(wireStatus.path)
+            items.updated(wireStatus.path, existing getOrElse WorkflowContent(wireStatus))
+        }
 
         AWSWorkflowQueue.deleteMessage(msg)
       }

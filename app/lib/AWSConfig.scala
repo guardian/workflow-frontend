@@ -4,7 +4,7 @@ import scala.collection.JavaConverters._
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.sqs.AmazonSQSClient
 import com.amazonaws.services.sqs.model.{DeleteMessageRequest, ReceiveMessageRequest, Message, GetQueueUrlRequest}
-import models.WorkflowContent
+import models.WireStatus
 import play.api.libs.json.Json
 
 object AWSWorkflowQueue {
@@ -41,9 +41,9 @@ object AWSWorkflowQueue {
     )
   }
 
-  def toWorkflowContent(awsMsg: Message): WorkflowContent = {
+  def toWireStatus(awsMsg: Message): WireStatus = {
     val body = Json.parse(awsMsg.getBody)
     val msg = Json.parse((body \ "Message").as[String])
-    msg.as[WorkflowContent]
+    msg.as[WireStatus]
   }
 }
