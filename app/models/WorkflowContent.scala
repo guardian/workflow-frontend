@@ -2,6 +2,8 @@ package models
 
 import play.api.libs.json.{JsValue, Reads}
 import org.joda.time.DateTime
+import java.util.UUID
+import WorkflowStatus._
 
 case class Contributor(name: String)
 
@@ -32,38 +34,41 @@ case class WireStatus(
   status: WorkflowStatus)
 
 case class WorkflowContent(
-  path: String,
+  id: UUID,
+  path: Option[String],
   workingTitle: Option[String],
   contributors: List[Contributor],
   desk: Option[EditorDesk],
   status: WorkflowStatus,
-  lastModification: ContentModification) {
+  lastModification: Option[ContentModification]) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
     copy(
       contributors = wireStatus.contributors,
       desk = wireStatus.tagSections.headOption.map(EditorDesk(_)),
       status = if (wireStatus.published) Published else status,
-      lastModification = ContentModification(
+      lastModification = Some(ContentModification(
         whatChanged = wireStatus.whatChanged,
         dateTime = wireStatus.lastModified,
         user = wireStatus.user
-      )
+      ))
     )
 
 }
 
 object WorkflowContent {
-
-  def apply(wireStatus: WireStatus): WorkflowContent =
+  import java.util.UUID
+  def fromWireStatus(wireStatus: WireStatus): WorkflowContent =
     WorkflowContent(
-      wireStatus.path,
+      UUID.randomUUID(),
+      Some(wireStatus.path),
       None,
       wireStatus.contributors,
       wireStatus.tagSections.headOption.map(EditorDesk(_)),
       if (wireStatus.published) Published else Created,
-      ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user)
+      Some(ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user))
     )
+
 }
 
 case class ContentModification(
@@ -98,6 +103,7 @@ object WireStatus {
       yield firstOpt.flatMap(f => lastOpt.map(l => f + " " + l))
   }
 
+  import WorkflowStatus._
   implicit val wireStatusReads: Reads[WireStatus] =
     ( readContributors ~
       (__ \ "content" \ "identifiers" \ "path").read[String] ~
@@ -112,10 +118,6 @@ object WireStatus {
 
 sealed trait WorkflowStatus
 
-case object Created   extends WorkflowStatus
-case object Desk      extends WorkflowStatus
-case object Subbed    extends WorkflowStatus
-case object Published extends WorkflowStatus
 
 
 object WorkflowStatus {
@@ -128,4 +130,9 @@ object WorkflowStatus {
       case _ => None
     }
   }
+
+  case object Created   extends WorkflowStatus
+  case object Desk      extends WorkflowStatus
+  case object Subbed    extends WorkflowStatus
+  case object Published extends WorkflowStatus
 }

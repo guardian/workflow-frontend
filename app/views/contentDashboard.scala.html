@@ -1,36 +1,49 @@
-@(items: Map[String, WorkflowContent])
-
+@(items: Map[String, WorkflowContent], workFlowForm: Form[WorkflowContent])
+@import helper._
 @main("Content Dashboard") {
-  <table class="table table-striped">
-      <tr>
-          <th>Working Title / Path</th>
-          <th>Contributors</th>
-          <th>Last Modified</th>
-          <th>By</th>
-          <th>What Changed</th>
-          <th>Status</th>
-          <th>Desk</th>
-      </tr>
-      @for((path, content) <- items) {
-        <tr>
-            <td>
-                @content.workingTitle match {
+  <div class="col-md-9">
+      <table class="table table-striped">
+          <tr>
+              <th>Working Title / Path</th>
+              <th>Contributors</th>
+              <th>Status</th>
+              <th>Desk</th>
+              <th>Last Modified</th>
+              <th>By</th>
+              <th>What Changed</th>
+          </tr>
+          @for((path, content) <- items) {
+          <tr>
+              <td>
+                  @content.workingTitle match {
                   case Some(title) => {
-                    <h3>@title</h3>
-                    <small>@path</small>
+                  <small>@title</small>
+                  <small>@path</small>
                   }
                   case None => {
-                    @path
+                  @path
                   }
-                }
-            </td>
-            <td>@content.contributors.map(_.name).mkString(", ")</td>
-            <td>@content.lastModification.dateTime</td>
-            <td>@content.lastModification.user.getOrElse("unknown")</td>
-            <td>@content.lastModification.whatChanged</td>
-            <td>@content.status</td>
-            <td>@content.desk</td>
-        </tr>
-      }
-  </table>
+                  }
+              </td>
+              <td>@content.contributors.map(_.name).mkString(", ")</td>
+              <td>@content.status</td>
+              <td>@content.desk</td>
+              @for(mod<-content.lastModification){
+              <td>@mod.dateTime</td>
+              <td>@mod.user.getOrElse("unknown")</td>
+              <td>@mod.whatChanged</td>
+              }
+          </tr>
+          }
+      </table>
+  </div>
+  <div class="col-md-3">
+    @form(action=routes.Application.newWorkFlow()){
+        @inputText(workFlowForm("title"))
+        @select(field = workFlowForm("desk"), options = options(List("technology","sport", "g2")))
+        @select(field = workFlowForm("status"), options = options(List("created","author","edited", "subbed","published")))
+      <input type="submit" value="Create">
+    }
+  </div>
+
 }
