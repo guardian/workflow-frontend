@@ -30,7 +30,7 @@ case class WireStatus(
   whatChanged: String,
   user: Option[String],
   lastModified: DateTime,
-  tagSections: List[String],
+  tagSections: List[EditorDesk],
   status: WorkflowStatus)
 
 case class WorkflowContent(
@@ -40,12 +40,15 @@ case class WorkflowContent(
   contributors: List[Contributor],
   desk: Option[EditorDesk],
   status: WorkflowStatus,
-  lastModification: Option[ContentModification]) {
+  lastModification: Option[ContentModification],
+  scheduledLaunch: Option[DateTime],
+  stateHistory: Map[WorkflowStatus, String] = Map.empty,
+  fromFeed: Boolean) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
     copy(
       contributors = wireStatus.contributors,
-      desk = wireStatus.tagSections.headOption.map(EditorDesk(_)),
+      desk = wireStatus.tagSections.headOption,
       status = if (wireStatus.published) Published else status,
       lastModification = Some(ContentModification(
         whatChanged = wireStatus.whatChanged,
@@ -58,16 +61,22 @@ case class WorkflowContent(
 
 object WorkflowContent {
   import java.util.UUID
-  def fromWireStatus(wireStatus: WireStatus): WorkflowContent =
+
+  def fromWireStatus(wireStatus: WireStatus): WorkflowContent = {
     WorkflowContent(
       UUID.randomUUID(),
       Some(wireStatus.path),
       None,
       wireStatus.contributors,
-      wireStatus.tagSections.headOption.map(EditorDesk(_)),
+      wireStatus.tagSections.headOption,
       if (wireStatus.published) Published else Created,
-      Some(ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user))
+      Some(ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user)),
+      scheduledLaunch=None,
+      fromFeed=true
     )
+  }
+
+
 
 }
 
@@ -89,9 +98,11 @@ object WireStatus {
         .map(_.toList.flatten)
   }
 
-  val readTagSections = new Reads[List[String]] {
-    def reads(json: JsValue): JsResult[List[String]] =
-      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[String]]].map(_.toList.flatten)
+  val readTagSections = new Reads[List[EditorDesk]] {
+    def reads(json: JsValue): JsResult[List[EditorDesk]] = {
+      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[EditorDesk]]].map(_.toList.flatten)
+    }
+
   }
 
   def readUser = new Reads[Option[String]] {
@@ -124,6 +135,8 @@ object WorkflowStatus {
   def findWorkFlowStatus(status: String): Option[WorkflowStatus] = {
     status match {
       case "created" => Some(Created)
+      case "author" => Some(Author)
+      case "edited" => Some(Edited)
       case "desk" => Some(Desk)
       case "subbed" => Some(Subbed)
       case "published" => Some(Published)
@@ -132,7 +145,9 @@ object WorkflowStatus {
   }
 
   case object Created   extends WorkflowStatus
+  case object Author    extends WorkflowStatus
   case object Desk      extends WorkflowStatus
   case object Subbed    extends WorkflowStatus
+  case object Edited    extends WorkflowStatus
   case object Published extends WorkflowStatus
 }

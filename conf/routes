@@ -7,7 +7,7 @@ GET     /                                   controllers.Application.index
 GET     /content                            controllers.Application.content
 
 POST    /newWorkFlow                        controllers.Application.newWorkFlow()
-POST    /stateChange/*contentId             controllers.Application.stateChange(state: String, contentId: String)
+POST    /stateChange/*contentId             controllers.Application.stateChange(state: String, contentId: String, user: String)
 POST    /assignDesk/*contentId              controllers.Application.assignDesk(desk: String, contentId: String)
 
 PUT     /content/*path/workingTitle        controllers.Application.putWorkingTitle(path: String, workingTitle: String)

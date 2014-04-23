@@ -26,8 +26,11 @@ object Application extends Controller {
         contributors=Nil,
         desk=Some(EditorDesk(desk)),
         status=WorkflowStatus.findWorkFlowStatus(status).getOrElse(WorkflowStatus.Created),
-        lastModification=None
-     ))((w: WorkflowContent) => Some(w.workingTitle.getOrElse("tmp"),"tmp", "tmp"))
+        lastModification=None,
+        scheduledLaunch=None,
+        stateHistory=Map.empty,
+        fromFeed=false
+     ))((w: WorkflowContent) => Some("tmp","tmp", "tmp"))
   )
 
   def index = Action {
@@ -36,7 +39,8 @@ object Application extends Controller {
 
   def content = Action.async {
     Database.store.future.map(items => {
-      Ok(views.html.contentDashboard(items, workFlowForm))
+      val workFlowContent = items.values.toList
+      Ok(views.html.contentDashboard(workFlowContent, workFlowForm))
     })
   }
 
@@ -54,10 +58,11 @@ object Application extends Controller {
   }
 
 
-  def stateChange(status: String, contentId: String) = Action.async {
+  def stateChange(status: String, contentId: String, user: String) = Action.async {
     WorkflowStatus.findWorkFlowStatus(status).map { workFlowStatus =>
       for {
-        altered <- Database.update(contentId, wf => wf.copy(status=workFlowStatus))
+        altered <- Database.update(contentId, wf => wf.copy(status=workFlowStatus,
+                                                            stateHistory=wf.stateHistory.updated(workFlowStatus, user)))
       }
       yield {
         altered.map( _ => Ok("Updated the state")).getOrElse(NotFound("Could not find that content.") )
