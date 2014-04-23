@@ -15,14 +15,11 @@
           @for((path, content) <- items) {
           <tr>
               <td>
-                  @content.workingTitle match {
-                  case Some(title) => {
-                  <small>@title</small>
-                  <small>@path</small>
+                  @for(title <- content.workingTitle) {
+                    <small>@title</small>
                   }
-                  case None => {
-                  @path
-                  }
+                  @for(path <- content.path) {
+                    <small>@path</small>
                   }
               </td>
               <td>@content.contributors.map(_.name).mkString(", ")</td>

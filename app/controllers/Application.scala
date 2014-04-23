@@ -35,11 +35,12 @@ object Application extends Controller {
   }
 
   def content = Action.async {
-    Database.store.future.map(items => Ok(views.html.contentDashboard(items, workFlowForm)))
+    Database.store.future.map(items => {
+      Ok(views.html.contentDashboard(items, workFlowForm))
+    })
   }
 
   def newWorkFlow = Action.async { implicit request =>
-
     workFlowForm.bindFromRequest.fold(
       formWithErrors => {
         Future.successful(BadRequest("that failed"))
