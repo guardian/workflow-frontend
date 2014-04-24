@@ -37,10 +37,13 @@ object Application extends Controller {
     Ok(views.html.index("Hello wor... kflow :)"))
   }
 
-  def content = Action.async {
+  def content(filterDesk: Option[String]) = Action.async {
     Database.store.future.map(items => {
       val workFlowContent = items.values.toList
-      Ok(views.html.contentDashboard(workFlowContent, workFlowForm))
+      val content = (for {
+        f <- filterDesk
+      } yield workFlowContent.filter(_.desk==Some(EditorDesk(f)))).getOrElse(workFlowContent)
+      Ok(views.html.contentDashboard(content, workFlowForm))
     })
   }
 
@@ -51,7 +54,7 @@ object Application extends Controller {
       },
       contentItem => {
         Database.store.alter(items => items.updated(contentItem.id, contentItem)).map { _ =>
-          Redirect(routes.Application.content)
+          Redirect(routes.Application.content(None))
         }
       }
     )
