@@ -57,7 +57,6 @@ object Application extends Controller {
     )
   }
 
-  type AsyncResult = Future[SimpleResult]
 
   def fieldChange(field: String, value: String, contentId: String, user: Option[String]) = Action.async {
     val updateFunction: Either[SimpleResult, WorkflowContent => WorkflowContent] = field match {
@@ -65,17 +64,23 @@ object Application extends Controller {
       case "workingTitle" => Right(_.copy(workingTitle = Some(value)))
       case "status" => WorkflowStatus.findWorkFlowStatus(value)
         .map(s => (wc: WorkflowContent) => wc.copy(status = s))
-        .toRight(BadRequest("bad"))
+        .toRight(BadRequest(s"not a valid status $value"))
       case f => Left(BadRequest(s"field '$f' doesn't exist"))
     }
-    updateFunction
-      .right.map(f =>
-        for (altered <- Database.update(UUID.fromString(contentId), f))
+    val id: Either[SimpleResult,UUID] = try { Right(UUID.fromString(contentId)) } catch {
+      case e: IllegalArgumentException => Left(BadRequest(s"invalid UUID $contentId"))
+    }
+
+    id.right.map{ i =>
+      updateFunction
+        .right.map(f =>
+        for (altered <- Database.update(i, f))
         yield altered.map(_ => Ok(s"Updated field $field")).getOrElse(NotFound("Could not find that content.") )
-      )
-      .left.map(r=> Future.successful(r))
+        )
+        .left.map(r=> Future.successful(r))
+        .merge
+      }
+      .left.map(r=>Future.successful(r))
       .merge
-
   }
-
 }

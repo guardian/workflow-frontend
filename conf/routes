@@ -6,9 +6,8 @@
 GET     /                                   controllers.Application.index
 GET     /content                            controllers.Application.content
 
+POST    /newWorkFlow                        controllers.Application.newWorkFlow()
 POST    /fieldChange/*contentId             controllers.Application.fieldChange(field: String, value: String, contentId: String, user: Option[String])
-
-PUT     /content/*path/workingTitle        controllers.Application.putWorkingTitle(path: String, workingTitle: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
