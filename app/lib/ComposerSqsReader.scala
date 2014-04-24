@@ -16,9 +16,8 @@ class ComposerSqsReader extends Actor {
         val workflowContent = WorkflowContent.fromWireStatus(wireStatus)
         Database.store.alter {
           items =>
-            items.updated(workflowContent.id.toString, workflowContent)
+            items.updated(workflowContent.id, workflowContent)
         }
-
         AWSWorkflowQueue.deleteMessage(msg)
       }
     }

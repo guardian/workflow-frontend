@@ -50,41 +50,32 @@ object Application extends Controller {
         Future.successful(BadRequest("that failed"))
       },
       contentItem => {
-        Database.store.alter(items => items.updated(contentItem.id.toString, contentItem)).map { _ =>
+        Database.store.alter(items => items.updated(contentItem.id, contentItem)).map { _ =>
           Redirect(routes.Application.content)
         }
       }
     )
   }
 
+  type AsyncResult = Future[SimpleResult]
 
-  def stateChange(status: String, contentId: String, user: String) = Action.async {
-    WorkflowStatus.findWorkFlowStatus(status).map { workFlowStatus =>
-      for {
-        altered <- Database.update(contentId, wf => wf.copy(status=workFlowStatus,
-                                                            stateHistory=wf.stateHistory.updated(workFlowStatus, user)))
-      }
-      yield {
-        altered.map( _ => Ok("Updated the state")).getOrElse(NotFound("Could not find that content.") )
-      }
-    }.getOrElse(Future.successful(BadRequest(s"invalid status $status")))
-  }
-
-
-  def assignDesk(desk: String, contentId: String) = Action.async {
-    for {
-      altered <- Database.update(contentId, wf => wf.copy(desk=Some(EditorDesk(desk))))
+  def fieldChange(field: String, value: String, contentId: String, user: Option[String]) = Action.async {
+    val updateFunction: Either[SimpleResult, WorkflowContent => WorkflowContent] = field match {
+      case "desk" => Right(_.copy(desk=Some(EditorDesk(value))))
+      case "workingTitle" => Right(_.copy(workingTitle = Some(value)))
+      case "status" => WorkflowStatus.findWorkFlowStatus(value)
+        .map(s => (wc: WorkflowContent) => wc.copy(status = s))
+        .toRight(BadRequest("bad"))
+      case f => Left(BadRequest(s"field '$f' doesn't exist"))
     }
-    yield {
-      altered.map( _ => Ok("Updated the state")).getOrElse(NotFound("Could not find that content.") )
-    }
-  }
+    updateFunction
+      .right.map(f =>
+        for (altered <- Database.update(UUID.fromString(contentId), f))
+        yield altered.map(_ => Ok(s"Updated field $field")).getOrElse(NotFound("Could not find that content.") )
+      )
+      .left.map(r=> Future.successful(r))
+      .merge
 
-  def putWorkingTitle(path: String, workingTitle: String) = Action.async {
-    for {
-      altered <- Database.update(path, _.copy(workingTitle = Some(workingTitle)))
-    }
-    yield altered.map(_ => Accepted("New working title accepted.")).getOrElse(NotFound("Could not find that content."))
   }
 
 }
