@@ -42,7 +42,7 @@ case class WorkflowContent(
   status: WorkflowStatus,
   lastModification: Option[ContentModification],
   scheduledLaunch: Option[DateTime],
-  stateHistory: Map[WorkflowStatus, String] = Map.empty,
+  stateHistory: Map[WorkflowStatus,String] = Map.empty,
   fromFeed: Boolean) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =

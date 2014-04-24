@@ -1,5 +1,6 @@
 @(items: List[WorkflowContent], workFlowForm: Form[WorkflowContent])
 @import helper._
+@import Formatting._
 @import models.WorkflowStatus
 @main("Content Dashboard") {
    <div class="table">
@@ -30,30 +31,32 @@
                </td>
                <td>@content.contributors.map(_.name).mkString(", ")</td>
                <td>@content.status</td>
-               <td>@content.desk</td>
-               <td>@content.scheduledLaunch</td>
-               <td data-field="author">
+               <td data-field="desk">@content.desk</td>
+               <td data-field="launch">
+                   <div contenteditable="true">@content.scheduledLaunch.map(displayDate(_))</div>
+               </td>
+               <td data-value="author" data-field="status">
                    <div contenteditable="true">
                        @for(user <- content.stateHistory.get(WorkflowStatus.Author)) {
                             @user
                        }
                    </div>
                </td>
-               <td data-field="edited">
+               <td data-value="edited" data-field="status">
                    <div contenteditable="true">
                        @for(user <- content.stateHistory.get(WorkflowStatus.Edited)) {
                             @user
                        }
                    </div>
                </td>
-               <td data-field="subbed">
+               <td data-value="subbed" data-field="status">
                    <div contenteditable="true">
                        @for(user <- content.stateHistory.get(WorkflowStatus.Subbed)) {
                             @user
                        }
                    </div>
                </td>
-               <td data-field="published">
+               <td data-value="published" data-field="status">
                    <div contenteditable="true">
                        @for(user <- content.stateHistory.get(WorkflowStatus.Published)) {
                             @user
@@ -62,7 +65,7 @@
                </td>
                @if(content.lastModification.isDefined) {
                    @for(mod<-content.lastModification){
-                   <td>@mod.dateTime</td>
+                   <td>@displayDate(mod.dateTime)</td>
                    <td>@mod.user.getOrElse("unknown")</td>
                    <td>@mod.whatChanged</td>
                    }
@@ -90,8 +93,14 @@
         var trElement = $(this).parents('tr');
         var content = trElement.attr('data-content');
         var field = tdElement.attr('data-field');
-        var user = $(this).text()
-        $.post('/stateChange/' + content + '?state=' + field + '&user=' + user).done(function () {
+        if(field==='status') {
+            var value = tdElement.attr('data-value');
+            var user = $(this).text()
+        }
+        else {
+            var value = $(this).text()
+        }
+        $.post('/fieldChange/' + content + '?field=' + field + '&value=' + value + '&user=' + user).done(function () {
             console.log('done');
         });
     });

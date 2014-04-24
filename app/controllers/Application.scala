@@ -60,17 +60,25 @@ object Application extends Controller {
   def fieldChange(field: String, value: String, contentId: String, user: Option[String]) = Action.async {
 
     val updateFunction: Either[SimpleResult, WorkflowContent => WorkflowContent] = field match {
+
       case "desk" => Right(_.copy(desk=Some(EditorDesk(value))))
+
       case "workingTitle" => Right(_.copy(workingTitle = Some(value)))
-      case "status" => WorkflowStatus.findWorkFlowStatus(value)
-                         .map(s => (wc: WorkflowContent) => wc.copy(status = s))
-                         .toRight(BadRequest(s"not a valid status $value"))
+
+      case "status" => for { u<-user.toRight(BadRequest("user name not supplied")).right
+                             s <- WorkflowStatus.findWorkFlowStatus(value).toRight(BadRequest(s"not a valid status $value")).right
+                           } yield (wc: WorkflowContent) => wc.copy(status=s, stateHistory = wc.stateHistory.updated(s,u))
+
+
+      case "launch" => Formatting.parseDate(value)
+                       .map(d => (wc: WorkflowContent) => wc.copy(scheduledLaunch = Some(d)))
+                       .toRight(BadRequest(s"not a valid date $value"))
+
       case f => Left(BadRequest(s"field '$f' doesn't exist"))
     }
     val id: Either[SimpleResult, UUID] = try { Right(UUID.fromString(contentId)) } catch {
       case e: IllegalArgumentException => Left(BadRequest(s"invalid UUID $contentId"))
     }
-
     (for {
       contentId <- id.right
       fun       <- updateFunction.right
