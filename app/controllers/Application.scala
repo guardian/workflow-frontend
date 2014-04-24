@@ -57,30 +57,29 @@ object Application extends Controller {
     )
   }
 
-
   def fieldChange(field: String, value: String, contentId: String, user: Option[String]) = Action.async {
+
     val updateFunction: Either[SimpleResult, WorkflowContent => WorkflowContent] = field match {
       case "desk" => Right(_.copy(desk=Some(EditorDesk(value))))
       case "workingTitle" => Right(_.copy(workingTitle = Some(value)))
       case "status" => WorkflowStatus.findWorkFlowStatus(value)
-        .map(s => (wc: WorkflowContent) => wc.copy(status = s))
-        .toRight(BadRequest(s"not a valid status $value"))
+                         .map(s => (wc: WorkflowContent) => wc.copy(status = s))
+                         .toRight(BadRequest(s"not a valid status $value"))
       case f => Left(BadRequest(s"field '$f' doesn't exist"))
     }
-    val id: Either[SimpleResult,UUID] = try { Right(UUID.fromString(contentId)) } catch {
+    val id: Either[SimpleResult, UUID] = try { Right(UUID.fromString(contentId)) } catch {
       case e: IllegalArgumentException => Left(BadRequest(s"invalid UUID $contentId"))
     }
 
-    id.right.map{ i =>
-      updateFunction
-        .right.map(f =>
-        for (altered <- Database.update(i, f))
-        yield altered.map(_ => Ok(s"Updated field $field")).getOrElse(NotFound("Could not find that content.") )
-        )
-        .left.map(r=> Future.successful(r))
-        .merge
-      }
-      .left.map(r=>Future.successful(r))
-      .merge
+    (for {
+      contentId <- id.right
+      fun       <- updateFunction.right
+    }
+    yield alterContent(contentId, field, fun)).left.map(Future.successful).merge
   }
+
+  def alterContent(contentId: UUID, field: String, fun: WorkflowContent => WorkflowContent): Future[SimpleResult] =
+    for (altered <- Database.update(contentId, fun))
+    yield altered.map(_ => Ok(s"Updated field $field")).getOrElse(NotFound("Could not find that content.") )
+
 }
