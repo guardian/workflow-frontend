@@ -53,9 +53,10 @@ object Application extends Controller {
     })
   }
 
-  def renderJsonResponse(content: List[WorkflowContent]): JsValue =
-    Json.obj("content" -> Json.arr(/* TODO */))
+  def renderJsonResponse(content: List[WorkflowContent]): JsValue = {
+    Json.obj("content" -> Json.arr(content.map(c => Json.toJson(c))))
 
+  }
   def newWorkFlow = Action.async { implicit request =>
     workFlowForm.bindFromRequest.fold(
       formWithErrors => {
