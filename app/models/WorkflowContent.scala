@@ -112,7 +112,6 @@ object WorkflowContent {
     override def writes(id: UUID): JsValue = JsString(id.toString)
   }
   implicit val stateHistory = new Writes[Map[WorkflowStatus, String]] {
-    //simplified the map to just return key so far
     override def writes(hist: Map[WorkflowStatus, String]): JsValue = {
       JsObject(
         (for((k,v)<-hist) yield (k.toString, JsString(v))).toSeq
