@@ -30,8 +30,12 @@
                    }
                </td>
                <td>@content.contributors.map(_.name).mkString(", ")</td>
-               <td>@content.status</td>
-               <td data-field="desk"><a href="/content?filterValue=@content.desk">@content.desk</a></td>
+               <td>
+                   <a href="/content?filterBy=status&filterValue=@content.status">@content.status</a>
+               </td>
+               <td data-field="desk">
+                   <a href="/content?filterBy=desk&filterValue=@content.desk">@content.desk</a>
+               </td>
                <td data-field="launch">
                    <div contenteditable="true">@content.scheduledLaunch.map(displayDate(_))</div>
                </td>

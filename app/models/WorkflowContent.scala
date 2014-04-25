@@ -1,6 +1,6 @@
 package models
 
-import play.api.libs.json.{JsValue, Reads}
+import play.api.libs.json.{Writes, Json, JsValue, Reads}
 import org.joda.time.DateTime
 import java.util.UUID
 import WorkflowStatus._
@@ -128,8 +128,6 @@ object WireStatus {
 }
 
 sealed trait WorkflowStatus
-
-
 
 object WorkflowStatus {
   def findWorkFlowStatus(status: String): Option[WorkflowStatus] = {

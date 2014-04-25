@@ -4,7 +4,7 @@
 
 # Home page
 GET     /                                   controllers.Application.index
-GET     /content                            controllers.Application.content(filterDesk: Option[String])
+GET     /content                            controllers.Application.content(filterBy: Option[String], filterValue: Option[String])
 
 POST    /newWorkFlow                        controllers.Application.newWorkFlow()
 POST    /fieldChange/*contentId             controllers.Application.fieldChange(field: String, value: String, contentId: String, user: Option[String])
