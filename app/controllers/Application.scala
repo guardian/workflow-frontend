@@ -38,19 +38,26 @@ object Application extends Controller {
     Ok(views.html.index("Hello wor... kflow :)"))
   }
 
-  def content(filterDesk: Option[String]) = Action.async { req =>
-    Database.store.future.map(items => {
-      val workFlowContent = items.values.toList
-      val content = (for {
-        f <- filterDesk
-      } yield workFlowContent.filter(_.desk==Some(EditorDesk(f)))).getOrElse(workFlowContent)
+  def content(filterBy: Option[String], filterValue: Option[String]) = Action.async { req =>
+    Database.store.future.map { items =>
+
+      def filterPredicate(wc: WorkflowContent): Boolean =
+        (for (f <- filterBy; v <- filterValue) yield {
+          f match {
+            case "desk"   => wc.desk.exists(_.name == v)
+            case "status" => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
+            case _        => false // TODO input validation
+          }
+        }) getOrElse true
+
+      val content = items.values.toList.filter(filterPredicate)
 
       if (req.headers.get(ACCEPT) == Some("application/json"))
         Ok(renderJsonResponse(content))
       else
         Ok(views.html.contentDashboard(content, workFlowForm))
 
-    })
+      }
   }
 
   def renderJsonResponse(content: List[WorkflowContent]): JsValue = {
@@ -64,7 +71,7 @@ object Application extends Controller {
       },
       contentItem => {
         Database.store.alter(items => items.updated(contentItem.id, contentItem)).map { _ =>
-          Redirect(routes.Application.content(None))
+          Redirect(routes.Application.content(None, None))
         }
       }
     )

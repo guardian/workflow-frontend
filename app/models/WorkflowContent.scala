@@ -171,5 +171,4 @@ object WireStatus {
       (__ \ "published").read[Boolean].map(p => if (p) Published else Created)
       )(WireStatus.apply _)
 
-
 }
