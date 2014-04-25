@@ -18,8 +18,13 @@ object Database {
     val updatedStore = store.alter { items =>
       val updatedItem = items.get(contentId).map(f)
       updatedItem.map(items.updated(contentId, _)).getOrElse(items)
-
     }
     updatedStore.map(_.get(contentId))
+  }
+
+  def doesNotContainPath(path: String): Future[Boolean] = {
+    store.future().map { items =>
+      items.values.toList.filter(_.path==Some(path)).isEmpty
+    }
   }
 }
