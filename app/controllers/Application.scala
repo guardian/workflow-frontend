@@ -8,6 +8,7 @@ import lib.Database
 import models._
 import play.api.data.Form
 import java.util.UUID
+import play.api.libs.json.{Json, JsValue}
 
 
 object Application extends Controller {
@@ -37,15 +38,23 @@ object Application extends Controller {
     Ok(views.html.index("Hello wor... kflow :)"))
   }
 
-  def content(filterDesk: Option[String]) = Action.async {
+  def content(filterDesk: Option[String]) = Action.async { req =>
     Database.store.future.map(items => {
       val workFlowContent = items.values.toList
       val content = (for {
         f <- filterDesk
       } yield workFlowContent.filter(_.desk==Some(EditorDesk(f)))).getOrElse(workFlowContent)
-      Ok(views.html.contentDashboard(content, workFlowForm))
+
+      if (req.headers.get(ACCEPT) == Some("application/json"))
+        Ok(renderJsonResponse(content))
+      else
+        Ok(views.html.contentDashboard(content, workFlowForm))
+
     })
   }
+
+  def renderJsonResponse(content: List[WorkflowContent]): JsValue =
+    Json.obj("content" -> Json.arr(/* TODO */))
 
   def newWorkFlow = Action.async { implicit request =>
     workFlowForm.bindFromRequest.fold(
