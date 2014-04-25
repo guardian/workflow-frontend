@@ -9,6 +9,7 @@ import models._
 import play.api.data.Form
 import java.util.UUID
 import play.api.libs.json.{Json, JsValue}
+import play.api.libs.openid.OpenID
 
 
 object Application extends Controller {
@@ -38,26 +39,61 @@ object Application extends Controller {
     Ok(views.html.index("Hello wor... kflow :)"))
   }
 
+  def login = Action {
+    Ok(views.html.login())
+  }
+
+  case class User(id: String, email: String, firstName: String, lastName: String)
+
+  def loginPost = Action.async { implicit req =>
+    val openIdAttributes = Seq(
+      ("email", "http://axschema.org/contact/email"),
+      ("firstname", "http://axschema.org/namePerson/first"),
+      ("lastname", "http://axschema.org/namePerson/last")
+    )
+    val googleOpenIdUrl = "https://www.google.com/accounts/o8/id"
+    OpenID.redirectURL(googleOpenIdUrl, routes.Application.openIdRedirect().absoluteURL(), openIdAttributes)
+    .map(Redirect(_))
+  }
+
+  def openIdRedirect = Action.async { implicit req =>
+    OpenID.verifiedId.map { userInfo =>
+      val attr = userInfo.attributes
+      val user = for { email <- attr.get("email")
+                      if(email.contains("guardian.co.uk"))
+                      firstName <- attr.get("firstname")
+                      lastName <- attr.get("lastname")
+                     } yield User(userInfo.id, email, firstName, lastName)
+
+      user.map {
+        u => Redirect(routes.Application.content(None, None)).withSession("user" -> u.toString)
+      }.getOrElse(Redirect(routes.Application.login()))
+    }
+  }
+
   def content(filterBy: Option[String], filterValue: Option[String]) = Action.async { req =>
-    Database.store.future.map { items =>
+    if(req.session.get("user").isDefined) {
+      Database.store.future.map { items =>
+        def filterPredicate(wc: WorkflowContent): Boolean =
+          (for (f <- filterBy; v <- filterValue) yield {
+            f match {
+              case "desk"   => wc.desk.exists(_.name == v)
+              case "status" => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
+              case _        => false // TODO input validation
+            }
+          }) getOrElse true
 
-      def filterPredicate(wc: WorkflowContent): Boolean =
-        (for (f <- filterBy; v <- filterValue) yield {
-          f match {
-            case "desk"   => wc.desk.exists(_.name == v)
-            case "status" => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
-            case _        => false // TODO input validation
-          }
-        }) getOrElse true
+        val content = items.values.toList.filter(filterPredicate)
 
-      val content = items.values.toList.filter(filterPredicate)
-
-      if (req.headers.get(ACCEPT) == Some("application/json"))
-        Ok(renderJsonResponse(content))
-      else
-        Ok(views.html.contentDashboard(content, workFlowForm))
-
+        if (req.headers.get(ACCEPT) == Some("application/json"))
+          Ok(renderJsonResponse(content))
+        else
+          Ok(views.html.contentDashboard(content, workFlowForm))
       }
+    }
+    else {
+      Future.successful(Redirect(routes.Application.login()))
+    }
   }
 
   def renderJsonResponse(content: List[WorkflowContent]): JsValue = {
