@@ -22,6 +22,6 @@ object Admin extends Controller {
   }
 
   def desks = Action {
-    Ok("admin goes here")
+    Ok(views.html.desks("go away!"))
   }
 }
