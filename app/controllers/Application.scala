@@ -4,7 +4,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.ContentDatabase
+import lib.{DeskDatabase, ContentDatabase}
 import models._
 import play.api.data.Form
 import java.util.UUID
@@ -39,7 +39,10 @@ object Application extends Controller {
   }
 
   def content(filterBy: Option[String], filterValue: Option[String]) = Action.async { req =>
-    ContentDatabase.store.future.map { items =>
+    for(
+      items <- ContentDatabase.store.future;
+      desks <- DeskDatabase.deskList
+    ) yield {
 
       def filterPredicate(wc: WorkflowContent): Boolean =
         (for (f <- filterBy; v <- filterValue) yield {
@@ -55,9 +58,9 @@ object Application extends Controller {
       if (req.headers.get(ACCEPT) == Some("application/json"))
         Ok(renderJsonResponse(content))
       else
-        Ok(views.html.contentDashboard(content, workFlowForm))
+        Ok(views.html.contentDashboard(content, desks, workFlowForm))
 
-      }
+    }
   }
 
   def renderJsonResponse(content: List[WorkflowContent]): JsValue =

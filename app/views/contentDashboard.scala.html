@@ -1,4 +1,4 @@
-@(items: List[WorkflowContent], workFlowForm: Form[WorkflowContent])
+@(items: List[WorkflowContent], desks: List[Desk], workFlowForm: Form[WorkflowContent])
 @import helper._
 @import Formatting._
 @import models.WorkflowStatus
@@ -86,7 +86,7 @@
   <div class="form">
     @form(action=routes.Application.newWorkFlow()){
         @inputText(workFlowForm("title"))
-        @select(field = workFlowForm("desk"), options = options(List("Technology","Sport", "Global", "Books")))
+        @select(field = workFlowForm("desk"), options = options(desks.map(_.name)))
         @select(field = workFlowForm("status"), options = options(List("created","author","edited", "subbed","published")))
       <input type="submit" value="Create">
     }
