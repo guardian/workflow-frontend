@@ -41,4 +41,17 @@ object Admin extends Controller {
       }
     )
   }
+
+  def removeDesk = Action.async { implicit request =>
+    addDeskForm.bindFromRequest.fold(
+      formWithErrors => {
+        Future.successful(BadRequest("failed to add desk"))
+      },
+      desk => {
+        DeskDatabase.remove(desk).map{ _ =>
+          NoContent
+        }
+      }
+    )
+  }
 }
