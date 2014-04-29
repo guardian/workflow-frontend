@@ -16,17 +16,7 @@ object Contributor {
   implicit val contributorWrites: Writes[Contributor] = Json.writes[Contributor]
 }
 
-case class EditorDesk(name: String) {
-  override def toString = name
-}
 
-object EditorDesk {
-  implicit val deskReads: Reads[EditorDesk] = new Reads[EditorDesk] {
-    def reads(jsValue: JsValue) = (jsValue \ "tag" \ "section" \ "name").validate[String].map(EditorDesk(_))
-  }
-
-  implicit val editorDesk: Writes[EditorDesk] = Json.writes[EditorDesk]
-}
 
 case class WireStatus(
   contributors: List[Contributor],
@@ -35,7 +25,7 @@ case class WireStatus(
   whatChanged: String,
   user: Option[String],
   lastModified: DateTime,
-  tagSections: List[EditorDesk],
+  tagSections: List[Desk],
   status: WorkflowStatus)
 
 case class WorkflowContent(
@@ -43,7 +33,7 @@ case class WorkflowContent(
   path: Option[String],
   workingTitle: Option[String],
   contributors: List[Contributor],
-  desk: Option[EditorDesk],
+  desk: Option[Desk],
   status: WorkflowStatus,
   lastModification: Option[ContentModification],
   scheduledLaunch: Option[DateTime],
@@ -143,9 +133,9 @@ object WireStatus {
         .map(_.toList.flatten)
   }
 
-  val readTagSections = new Reads[List[EditorDesk]] {
-    def reads(json: JsValue): JsResult[List[EditorDesk]] = {
-      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[EditorDesk]]].map(_.toList.flatten)
+  val readTagSections = new Reads[List[Desk]] {
+    def reads(json: JsValue): JsResult[List[Desk]] = {
+      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[Desk]]].map(_.toList.flatten)
     }
 
   }

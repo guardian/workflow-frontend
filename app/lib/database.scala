@@ -3,12 +3,12 @@ package lib
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import models.WorkflowContent
+import models.{Desk, WorkflowContent}
 import akka.agent.Agent
 import java.util.UUID
 
 
-object Database {
+object ContentDatabase {
 
   type Store = Map[UUID, WorkflowContent]
 
@@ -27,4 +27,14 @@ object Database {
       items.values.toList.filter(_.path==Some(path)).isEmpty
     }
   }
+}
+
+object DeskDatabase {
+
+  val store: Agent[Set[Desk]] = Agent(Set.empty)
+
+  def upsert(desk: Desk): Future[Set[Desk]] = store.alter(_ + desk)
+
+  def deskList: Future[List[Desk]] = Future { store.get().toList.sortBy(_.name) }
+
 }
