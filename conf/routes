@@ -8,6 +8,7 @@ GET     /content                            controllers.Application.content(filt
 
 GET     /admin/                             controllers.Admin.index
 GET     /admin/desks                        controllers.Admin.desks
+POST    /admin/desks/add                    controllers.Admin.addDesk
 
 
 POST    /newWorkFlow                        controllers.Application.newWorkFlow()

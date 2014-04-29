@@ -4,12 +4,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.ContentDatabase
+import lib.DeskDatabase
 import models._
 import play.api.data.Form
-import java.util.UUID
 import play.api.libs.json.{Json, JsValue}
-import play.api.Routes
 
 
 object Admin extends Controller {
@@ -21,7 +19,26 @@ object Admin extends Controller {
     Redirect(routes.Admin.desks)
   }
 
-  def desks = Action {
-    Ok(views.html.desks("go away!"))
+  val addDeskForm = Form(
+    mapping(
+      "name" -> nonEmptyText
+    )(Desk.apply)(Desk.unapply)
+  )
+
+  def desks = Action.async {
+    for (desks <- DeskDatabase.deskList) yield Ok(views.html.desks(desks, addDeskForm))
+  }
+
+  def addDesk = Action.async { implicit request =>
+    addDeskForm.bindFromRequest.fold(
+      formWithErrors => {
+        Future.successful(BadRequest("failed to add desk"))
+      },
+      desk => {
+        DeskDatabase.upsert(desk).map{ _ =>
+          Redirect(routes.Admin.desks)
+        }
+      }
+    )
   }
 }

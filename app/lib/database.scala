@@ -31,9 +31,15 @@ object ContentDatabase {
 
 object DeskDatabase {
 
-  val store: Agent[Set[Desk]] = Agent(Set.empty)
+  val store: Agent[Set[Desk]] = Agent(Set(
+    Desk("Technology"),
+    Desk("Sport"),
+    Desk("Global"),
+    Desk("Books")
+  ))
 
   def upsert(desk: Desk): Future[Set[Desk]] = store.alter(_ + desk)
+  def remove(desk: Desk): Future[Set[Desk]] = store.alter(_ - desk)
 
   def deskList: Future[List[Desk]] = Future { store.get().toList.sortBy(_.name) }
 
