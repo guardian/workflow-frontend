@@ -8,8 +8,9 @@ import lib.Database
 import models._
 import play.api.data.Form
 import java.util.UUID
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{Reads, Writes, Json, JsValue}
 import play.api.libs.openid.OpenID
+import play.api.mvc.Security.AuthenticatedBuilder
 
 
 object Application extends Controller {
@@ -35,7 +36,10 @@ object Application extends Controller {
      ))((w: WorkflowContent) => Some("tmp","tmp", "tmp"))
   )
 
-  def index = Action {
+  object Authenticated extends AuthenticatedBuilder(req => req.session.get("user").flatMap(u => User.find(u)),
+                                                    req => Redirect(routes.Application.login()))
+
+  def index = Authenticated {
     Ok(views.html.index("Hello wor... kflow :)"))
   }
 
@@ -44,6 +48,14 @@ object Application extends Controller {
   }
 
   case class User(id: String, email: String, firstName: String, lastName: String)
+
+  object User {
+    implicit val userWrites: Writes[User] = Json.writes[User]
+    implicit val userReads: Reads[User] = Json.reads[User]
+
+    def find(u: String): Option[User] = Json.parse(u).validate[User].asOpt
+
+  }
 
   def loginPost = Action.async { implicit req =>
     val openIdAttributes = Seq(
@@ -66,33 +78,28 @@ object Application extends Controller {
                      } yield User(userInfo.id, email, firstName, lastName)
 
       user.map {
-        u => Redirect(routes.Application.content(None, None)).withSession("user" -> u.toString)
+        u => Redirect(routes.Application.content(None, None)).withSession("user" -> Json.toJson(u).toString)
       }.getOrElse(Redirect(routes.Application.login()))
     }
   }
 
-  def content(filterBy: Option[String], filterValue: Option[String]) = Action.async { req =>
-    if(req.session.get("user").isDefined) {
-      Database.store.future.map { items =>
-        def filterPredicate(wc: WorkflowContent): Boolean =
-          (for (f <- filterBy; v <- filterValue) yield {
-            f match {
-              case "desk"   => wc.desk.exists(_.name == v)
-              case "status" => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
-              case _        => false // TODO input validation
-            }
-          }) getOrElse true
+  def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
+    Database.store.future.map { items =>
+      def filterPredicate(wc: WorkflowContent): Boolean =
+        (for (f <- filterBy; v <- filterValue) yield {
+          f match {
+            case "desk"   => wc.desk.exists(_.name == v)
+            case "status" => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
+            case _        => false // TODO input validation
+          }
+        }) getOrElse true
 
-        val content = items.values.toList.filter(filterPredicate)
+      val content = items.values.toList.filter(filterPredicate)
 
-        if (req.headers.get(ACCEPT) == Some("application/json"))
-          Ok(renderJsonResponse(content))
-        else
-          Ok(views.html.contentDashboard(content, workFlowForm))
-      }
-    }
-    else {
-      Future.successful(Redirect(routes.Application.login()))
+      if (req.headers.get(ACCEPT) == Some("application/json"))
+        Ok(renderJsonResponse(content))
+      else
+        Ok(views.html.contentDashboard(content, workFlowForm))
     }
   }
 
