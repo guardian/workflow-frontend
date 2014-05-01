@@ -7,6 +7,12 @@
             "Type": "String",
             "Default": "workflow-developers"
         },
+        "Stage": {
+            "Description": "Environment name",
+            "Type": "String",
+            "AllowedValues": ["CODE", "TEST", "PROD"],
+            "Default": "PROD"
+        },
         "ImageIdInstanceStorage": {
             "Description": "AMI id for instances with instance storage.",
             "Type": "String",
@@ -142,6 +148,11 @@
                 ],
                 "Tags": [
                     {
+                        "Key": "Stage",
+                        "Value": { "Ref": "Stage" },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
                         "Key": "Stack",
                         "Value": "workflow",
                         "PropagateAtLaunch": "true"
@@ -172,9 +183,19 @@
                     }
                   },
                   "files": {
-                    "/home/workflow/dist/prototype.zip": {
+                    "/etc/init/prototype.conf": {
                       "source": { "Fn::Join" : ["", [
-                        "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow-1.0-SNAPSHOT.zip"
+                        "https://s3-eu-west-1.amazonaws.com/workflow-dist/",
+                        { "Ref": "Stage" },
+                        "/media-service-prototype/prototype.conf"
+                      ]]},
+                      "authentication": "distributionAuthentication"
+                    },
+                    "/home/workflow/app.jar": {
+                      "source": { "Fn::Join" : ["", [
+                        "https://s3-eu-west-1.amazonaws.com/workflow-dist/,
+                        { "Ref": "Stage" },
+                        "/workflow-prototype/app.jar"
                       ]]},
                       "authentication": "distributionAuthentication"
                     }
