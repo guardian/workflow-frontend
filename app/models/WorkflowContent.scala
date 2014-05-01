@@ -25,7 +25,7 @@ case class WireStatus(
   whatChanged: String,
   user: Option[String],
   lastModified: DateTime,
-  tagSections: List[Desk],
+  tagSections: List[Section],
   status: WorkflowStatus)
 
 case class WorkflowContent(
@@ -33,7 +33,7 @@ case class WorkflowContent(
   path: Option[String],
   workingTitle: Option[String],
   contributors: List[Contributor],
-  desk: Option[Desk],
+  section: Option[Section],
   status: WorkflowStatus,
   lastModification: Option[ContentModification],
   scheduledLaunch: Option[DateTime],
@@ -43,7 +43,7 @@ case class WorkflowContent(
   def updateWith(wireStatus: WireStatus): WorkflowContent =
     copy(
       contributors = wireStatus.contributors,
-      desk = wireStatus.tagSections.headOption,
+      section = wireStatus.tagSections.headOption,
       status = if (wireStatus.published) Published else status,
       lastModification = Some(ContentModification(
         whatChanged = wireStatus.whatChanged,
@@ -133,9 +133,9 @@ object WireStatus {
         .map(_.toList.flatten)
   }
 
-  val readTagSections = new Reads[List[Desk]] {
-    def reads(json: JsValue): JsResult[List[Desk]] = {
-      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[Desk]]].map(_.toList.flatten)
+  val readTagSections = new Reads[List[Section]] {
+    def reads(json: JsValue): JsResult[List[Section]] = {
+      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[Section]]].map(_.toList.flatten)
     }
 
   }

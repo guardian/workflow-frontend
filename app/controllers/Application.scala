@@ -4,7 +4,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.{DeskDatabase, ContentDatabase}
+import lib.{SectionDatabase, ContentDatabase}
 import models._
 import play.api.data.Form
 import java.util.UUID
@@ -17,15 +17,15 @@ object Application extends Controller {
 
   val workFlowForm = Form(
   mapping(
-    "title" -> text,
-    "desk" -> text,
-    "status" -> text
-  )((title, desk, status)=>
+    "title"   -> text,
+    "section" -> text,
+    "status"  -> text
+  )((title, section, status)=>
         WorkflowContent(UUID.randomUUID(),
         path=None,
         workingTitle=Some(title),
         contributors=Nil,
-        desk=Some(Desk(desk)),
+        section=Some(Section(section)),
         status=WorkflowStatus.findWorkFlowStatus(status).getOrElse(WorkflowStatus.Created),
         lastModification=None,
         scheduledLaunch=None,
@@ -41,15 +41,15 @@ object Application extends Controller {
   def content(filterBy: Option[String], filterValue: Option[String]) = Action.async { req =>
     for(
       items <- ContentDatabase.store.future;
-      desks <- DeskDatabase.deskList
+      sections <- SectionDatabase.sectionList
     ) yield {
 
       def filterPredicate(wc: WorkflowContent): Boolean =
         (for (f <- filterBy; v <- filterValue) yield {
           f match {
-            case "desk"   => wc.desk.exists(_.name == v)
-            case "status" => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
-            case _        => false // TODO input validation
+            case "section" => wc.section.exists(_.name == v)
+            case "status"  => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
+            case _         => false // TODO input validation
           }
         }) getOrElse true
 
@@ -58,7 +58,7 @@ object Application extends Controller {
       if (req.headers.get(ACCEPT) == Some("application/json"))
         Ok(renderJsonResponse(content))
       else
-        Ok(views.html.contentDashboard(content, desks, workFlowForm))
+        Ok(views.html.contentDashboard(content, sections, workFlowForm))
 
     }
   }
@@ -83,7 +83,7 @@ object Application extends Controller {
 
     val updateFunction: Either[SimpleResult, WorkflowContent => WorkflowContent] = field match {
 
-      case "desk" => Right(_.copy(desk=Some(Desk(value))))
+      case "section" => Right(_.copy(section = Some(Section(value))))
 
       case "workingTitle" => Right(_.copy(workingTitle = Some(value)))
 

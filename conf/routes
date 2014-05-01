@@ -7,9 +7,9 @@ GET     /                                   controllers.Application.index
 GET     /content                            controllers.Application.content(filterBy: Option[String], filterValue: Option[String])
 
 GET     /admin/                             controllers.Admin.index
-GET     /admin/desks                        controllers.Admin.desks
-POST    /admin/desks/add                    controllers.Admin.addDesk
-POST    /admin/desks/remove                 controllers.Admin.removeDesk
+GET     /admin/sections                     controllers.Admin.sections
+POST    /admin/sections/add                 controllers.Admin.addSection
+POST    /admin/sections/remove              controllers.Admin.removeSection
 
 
 POST    /newWorkFlow                        controllers.Application.newWorkFlow()

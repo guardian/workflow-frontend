@@ -3,7 +3,7 @@ package lib
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import models.{Desk, WorkflowContent}
+import models.{Section, WorkflowContent}
 import akka.agent.Agent
 import java.util.UUID
 
@@ -29,18 +29,18 @@ object ContentDatabase {
   }
 }
 
-object DeskDatabase {
+object SectionDatabase {
 
-  val store: Agent[Set[Desk]] = Agent(Set(
-    Desk("Technology"),
-    Desk("Sport"),
-    Desk("Global"),
-    Desk("Books")
+  val store: Agent[Set[Section]] = Agent(Set(
+    Section("Technology"),
+    Section("Sport"),
+    Section("Global"),
+    Section("Books")
   ))
 
-  def upsert(desk: Desk): Future[Set[Desk]] = store.alter(_ + desk)
-  def remove(desk: Desk): Future[Set[Desk]] = store.alter(_ - desk)
+  def upsert(section: Section): Future[Set[Section]] = store.alter(_ + section)
+  def remove(section: Section): Future[Set[Section]] = store.alter(_ - section)
 
-  def deskList: Future[List[Desk]] = Future { store.get().toList.sortBy(_.name) }
+  def sectionList: Future[List[Section]] = Future { store.get().toList.sortBy(_.name) }
 
 }

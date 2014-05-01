@@ -4,7 +4,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.DeskDatabase
+import lib.SectionDatabase
 import models._
 import play.api.data.Form
 import play.api.libs.json.{Json, JsValue}
@@ -16,39 +16,39 @@ object Admin extends Controller {
 
 
   def index = Action {
-    Redirect(routes.Admin.desks)
+    Redirect(routes.Admin.sections)
   }
 
-  val addDeskForm = Form(
+  val addSectionForm = Form(
     mapping(
       "name" -> nonEmptyText
-    )(Desk.apply)(Desk.unapply)
+    )(Section.apply)(Section.unapply)
   )
 
-  def desks = Action.async {
-    for (desks <- DeskDatabase.deskList) yield Ok(views.html.desks(desks, addDeskForm))
+  def sections = Action.async {
+    for (sections <- SectionDatabase.sectionList) yield Ok(views.html.sections(sections, addSectionForm))
   }
 
-  def addDesk = Action.async { implicit request =>
-    addDeskForm.bindFromRequest.fold(
+  def addSection = Action.async { implicit request =>
+    addSectionForm.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(BadRequest("failed to add desk"))
+        Future.successful(BadRequest("failed to add section"))
       },
-      desk => {
-        DeskDatabase.upsert(desk).map{ _ =>
-          Redirect(routes.Admin.desks)
+      section => {
+        SectionDatabase.upsert(section).map{ _ =>
+          Redirect(routes.Admin.sections)
         }
       }
     )
   }
 
-  def removeDesk = Action.async { implicit request =>
-    addDeskForm.bindFromRequest.fold(
+  def removeSection = Action.async { implicit request =>
+    addSectionForm.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(BadRequest("failed to add desk"))
+        Future.successful(BadRequest("failed to remove section"))
       },
-      desk => {
-        DeskDatabase.remove(desk).map{ _ =>
+      section => {
+        SectionDatabase.remove(section).map{ _ =>
           NoContent
         }
       }
