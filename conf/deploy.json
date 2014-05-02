@@ -1,0 +1,23 @@
+{
+    "packages": {
+        "workflow-prototype": {
+            "type": "autoscaling",
+            "data": {
+                "port": 9000,
+                "bucket": "workflow-dist",
+                "publicReadAcl": false
+            }
+        }
+    },
+    "recipes": {
+        "default": {
+            "depends": ["uploadArtifacts", "deploy"]
+        },
+        "deploy": {
+            "actionsBeforeApp": ["workflow-prototype.deploy"]
+        },
+        "uploadArtifacts": {
+            "actionsBeforeApp": ["workflow-prototype.uploadArtifacts"]
+        }
+    }
+}
