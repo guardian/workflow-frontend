@@ -1,6 +1,7 @@
 {
+    "defaultStacks": ["workflow"],
     "packages": {
-        "workflow-prototype": {
+        "prototype": {
             "type": "autoscaling",
             "data": {
                 "port": 9000,
@@ -14,10 +15,10 @@
             "depends": ["uploadArtifacts", "deploy"]
         },
         "deploy": {
-            "actionsBeforeApp": ["workflow-prototype.deploy"]
+            "actionsBeforeApp": ["prototype.deploy"]
         },
         "uploadArtifacts": {
-            "actionsBeforeApp": ["workflow-prototype.uploadArtifacts"]
+            "actionsBeforeApp": ["prototype.uploadArtifacts"]
         }
     }
 }
