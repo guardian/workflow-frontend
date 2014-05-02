@@ -25,7 +25,7 @@ object WorkflowBuild extends Build {
   def playProject(name: String, path: String): Project =
     play.Project(name, path = file(path))
       .settings(commonSettings ++ playArtifactDistSettings ++ playArtifactSettings: _*)
-      .settings(magentaPackageName := "workflow-" + name)
+      .settings(magentaPackageName := name)
 
   def playArtifactSettings = Seq(
     ivyXML :=
