@@ -4,6 +4,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import models.WorkflowContent
+import models.Stub
 import akka.agent.Agent
 import java.util.UUID
 
@@ -28,3 +29,4 @@ object Database {
     }
   }
 }
+

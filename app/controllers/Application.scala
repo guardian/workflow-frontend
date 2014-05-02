@@ -4,38 +4,38 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.Database
+import lib.{AWSWorkflowBucket, Database}
 import models._
 import play.api.data.Form
 import java.util.UUID
 import play.api.libs.json.{Json, JsValue}
+import com.amazonaws.services.s3.model.{ObjectMetadata, PutObjectRequest, GetObjectRequest}
+import java.io.{File, ByteArrayInputStream, InputStreamReader, BufferedReader}
 
 
 object Application extends Controller {
 
   import play.api.data.Forms._
 
-  val workFlowForm = Form(
+  val stubForm = Form(
   mapping(
     "title" -> text,
-    "desk" -> text,
-    "status" -> text
-  )((title, desk, status)=>
-        WorkflowContent(UUID.randomUUID(),
-        path=None,
-        workingTitle=Some(title),
-        contributors=Nil,
-        desk=Some(EditorDesk(desk)),
-        status=WorkflowStatus.findWorkFlowStatus(status).getOrElse(WorkflowStatus.Created),
-        lastModification=None,
-        scheduledLaunch=None,
-        stateHistory=Map.empty,
-        fromFeed=false
-     ))((w: WorkflowContent) => Some("tmp","tmp", "tmp"))
-  )
+    "section" -> text,
+    "due" -> optional(jodaDate),
+    "assignee" -> optional(text)
+  )((title, section, due, assignee) =>
+       Stub((UUID.randomUUID()).toString, title, section, due, assignee)
+  )(s => Some((s.title, s.section, s.due, s.assignee))))
 
   def index = Action {
     Ok(views.html.index("Hello wor... kflow :)"))
+  }
+
+  def stubs = Action.async {
+    AWSWorkflowBucket.readStubsFile.map { stubsContent =>
+      val stubs = Json.parse(stubsContent).validate[List[Stub]].getOrElse(Nil)
+      Ok(views.html.stubs(stubForm, stubs))
+    }
   }
 
   def content(filterBy: Option[String], filterValue: Option[String]) = Action.async { req =>
@@ -55,7 +55,7 @@ object Application extends Controller {
       if (req.headers.get(ACCEPT) == Some("application/json"))
         Ok(renderJsonResponse(content))
       else
-        Ok(views.html.contentDashboard(content, workFlowForm))
+        Ok(views.html.contentDashboard(content))
 
       }
   }
@@ -63,17 +63,17 @@ object Application extends Controller {
   def renderJsonResponse(content: List[WorkflowContent]): JsValue =
     Json.obj("content" -> content)
 
-  def newWorkFlow = Action.async { implicit request =>
-    workFlowForm.bindFromRequest.fold(
+  def newStub = Action { implicit request =>
+    stubForm.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(BadRequest("that failed"))
+        BadRequest(s"that failed $formWithErrors")
       },
-      contentItem => {
-        Database.store.alter(items => items.updated(contentItem.id, contentItem)).map { _ =>
-          Redirect(routes.Application.content(None, None))
-        }
+      stub => {
+          AWSWorkflowBucket.add(stub)
+          Redirect(routes.Application.stubs())
       }
     )
+
   }
 
   def fieldChange(field: String, value: String, contentId: String, user: Option[String]) = Action.async {

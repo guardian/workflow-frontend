@@ -5,8 +5,9 @@
 # Home page
 GET     /                                   controllers.Application.index
 GET     /content                            controllers.Application.content(filterBy: Option[String], filterValue: Option[String])
+GET     /stubs                              controllers.Application.stubs()
 
-POST    /newWorkFlow                        controllers.Application.newWorkFlow()
+POST    /newStub                            controllers.Application.newStub()
 POST    /fieldChange/*contentId             controllers.Application.fieldChange(field: String, value: String, contentId: String, user: Option[String])
 
 # Management

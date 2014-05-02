@@ -1,0 +1,32 @@
+@(stubForm: Form[Stub], stubs: List[Stub])
+@import helper._
+@main("Stubs") {
+
+<div class="table">
+    <table class="table table-striped">
+        <tr>
+            <th>Working Title</th>
+            <th>Section</th>
+            <th>Due date</th>
+            <th>Assigned to</th>
+        </tr>
+            @for(stub <- stubs) {
+        <tr>
+                <td>@stub.title</td>
+                <td>@stub.section</td>
+                <td>@for(date <- stub.due) { @date }</td>
+                <td>@for(assignee <- stub.assignee) { @assignee }</td>
+        </tr>
+            }
+    </table>
+</div>
+
+@helper.form(action = routes.Application.newStub) {
+    @helper.inputText(stubForm("title"))
+    @helper.select(field=stubForm("section"), options=options(List("technology")))
+    @helper.inputText(stubForm("due"))
+    @helper.inputText(stubForm("assign"))
+    <button class="btn btn-primary" type="submit">Create</button>
+  }
+
+}
