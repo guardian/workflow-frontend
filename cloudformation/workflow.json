@@ -185,7 +185,7 @@
                   "files": {
                     "/etc/init/prototype.conf": {
                       "source": { "Fn::Join" : ["", [
-                        "https://s3-eu-west-1.amazonaws.com/workflow-dist/",
+                        "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
                         { "Ref": "Stage" },
                         "/prototype/prototype.conf"
                       ]]},
@@ -193,7 +193,7 @@
                     },
                     "/home/workflow/app.jar": {
                       "source": { "Fn::Join" : ["", [
-                        "https://s3-eu-west-1.amazonaws.com/workflow-dist/",
+                        "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
                         { "Ref": "Stage" },
                         "/prototype/app.jar"
                       ]]},
