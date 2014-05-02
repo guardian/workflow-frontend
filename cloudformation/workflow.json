@@ -195,7 +195,7 @@
                       "source": { "Fn::Join" : ["", [
                         "https://s3-eu-west-1.amazonaws.com/workflow-dist/",
                         { "Ref": "Stage" },
-                        "/workflow-prototype/app.jar"
+                        "/prototype/app.jar"
                       ]]},
                       "authentication": "distributionAuthentication"
                     }
