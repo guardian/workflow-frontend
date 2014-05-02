@@ -1,4 +1,4 @@
-@(items: List[WorkflowContent], workFlowForm: Form[WorkflowContent])
+@(items: List[WorkflowContent], sections: List[Section], workFlowForm: Form[WorkflowContent])
 @import helper._
 @import Formatting._
 @import models.WorkflowStatus
@@ -9,7 +9,7 @@
                <th>Working Title / Path</th>
                <th>Contributors</th>
                <th>Status</th>
-               <th><a href="/content">Desk</a></th>
+               <th><a href="/content">Section</a></th>
                <th>Scheduled Launch</th>
                <th>Author</th>
                <th>Edited</th>
@@ -33,8 +33,8 @@
                <td>
                    <a href="/content?filterBy=status&filterValue=@content.status">@content.status</a>
                </td>
-               <td data-field="desk">
-                   <a href="/content?filterBy=desk&filterValue=@content.desk">@content.desk</a>
+               <td data-field="section">
+                   <a href="/content?filterBy=section&filterValue=@content.section">@content.section</a>
                </td>
                <td data-field="launch">
                    <div contenteditable="true">@content.scheduledLaunch.map(displayDate(_))</div>
@@ -86,7 +86,7 @@
   <div class="form">
     @form(action=routes.Application.newWorkFlow()){
         @inputText(workFlowForm("title"))
-        @select(field = workFlowForm("desk"), options = options(List("Technology","Sport", "Global", "Books")))
+        @select(field = workFlowForm("section"), options = options(sections.map(_.name)))
         @select(field = workFlowForm("status"), options = options(List("created","author","edited", "subbed","published")))
       <input type="submit" value="Create">
     }

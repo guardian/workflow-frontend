@@ -4,7 +4,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.Database
+import lib.{SectionDatabase, ContentDatabase}
 import models._
 import play.api.data.Form
 import java.util.UUID
@@ -17,15 +17,15 @@ object Application extends Controller {
 
   val workFlowForm = Form(
   mapping(
-    "title" -> text,
-    "desk" -> text,
-    "status" -> text
-  )((title, desk, status)=>
+    "title"   -> text,
+    "section" -> text,
+    "status"  -> text
+  )((title, section, status)=>
         WorkflowContent(UUID.randomUUID(),
         path=None,
         workingTitle=Some(title),
         contributors=Nil,
-        desk=Some(EditorDesk(desk)),
+        section=Some(Section(section)),
         status=WorkflowStatus.findWorkFlowStatus(status).getOrElse(WorkflowStatus.Created),
         lastModification=None,
         scheduledLaunch=None,
@@ -39,14 +39,17 @@ object Application extends Controller {
   }
 
   def content(filterBy: Option[String], filterValue: Option[String]) = Action.async { req =>
-    Database.store.future.map { items =>
+    for(
+      items <- ContentDatabase.store.future;
+      sections <- SectionDatabase.sectionList
+    ) yield {
 
       def filterPredicate(wc: WorkflowContent): Boolean =
         (for (f <- filterBy; v <- filterValue) yield {
           f match {
-            case "desk"   => wc.desk.exists(_.name == v)
-            case "status" => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
-            case _        => false // TODO input validation
+            case "section" => wc.section.exists(_.name == v)
+            case "status"  => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
+            case _         => false // TODO input validation
           }
         }) getOrElse true
 
@@ -55,9 +58,9 @@ object Application extends Controller {
       if (req.headers.get(ACCEPT) == Some("application/json"))
         Ok(renderJsonResponse(content))
       else
-        Ok(views.html.contentDashboard(content, workFlowForm))
+        Ok(views.html.contentDashboard(content, sections, workFlowForm))
 
-      }
+    }
   }
 
   def renderJsonResponse(content: List[WorkflowContent]): JsValue =
@@ -69,7 +72,7 @@ object Application extends Controller {
         Future.successful(BadRequest("that failed"))
       },
       contentItem => {
-        Database.store.alter(items => items.updated(contentItem.id, contentItem)).map { _ =>
+        ContentDatabase.store.alter(items => items.updated(contentItem.id, contentItem)).map { _ =>
           Redirect(routes.Application.content(None, None))
         }
       }
@@ -80,7 +83,7 @@ object Application extends Controller {
 
     val updateFunction: Either[SimpleResult, WorkflowContent => WorkflowContent] = field match {
 
-      case "desk" => Right(_.copy(desk=Some(EditorDesk(value))))
+      case "section" => Right(_.copy(section = Some(Section(value))))
 
       case "workingTitle" => Right(_.copy(workingTitle = Some(value)))
 
@@ -106,7 +109,7 @@ object Application extends Controller {
   }
 
   def alterContent(contentId: UUID, field: String, fun: WorkflowContent => WorkflowContent): Future[SimpleResult] =
-    for (altered <- Database.update(contentId, fun))
+    for (altered <- ContentDatabase.update(contentId, fun))
     yield altered.map(_ => Ok(s"Updated field $field")).getOrElse(NotFound("Could not find that content.") )
 
 }
