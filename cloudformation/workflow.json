@@ -234,8 +234,8 @@
                         "chgrp -R workflow /home/workflow\n",
 
                         "sed -i \\\n",
-                        "    -e 's,@@AWS_ACCESS_KEY,", { "Ref": "PrototypeKey" }, ",g' \\\n",
-                        "    -e 's,@@AWS_SECRET,", { "Fn::GetAtt": [ "PrototypeKey", "SecretAccessKey" ] }, ",g' \\\n",
+                        "    -e 's,@AWS_ACCESS_KEY@,", { "Ref": "PrototypeKey" }, ",g' \\\n",
+                        "    -e 's,@AWS_SECRET@,", { "Fn::GetAtt": [ "PrototypeKey", "SecretAccessKey" ] }, ",g' \\\n",
                         "    /etc/init/prototype.conf\n",
 
                         "start prototype\n"
