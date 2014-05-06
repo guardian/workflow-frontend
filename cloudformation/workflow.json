@@ -233,11 +233,48 @@
                         "chown -R workflow /home/workflow\n",
                         "chgrp -R workflow /home/workflow\n",
 
+                        "sed -i \\\n",
+                        "    -e 's,@@AWS_ACCESS_KEY,", { "Ref": "PrototypeKey" }, ",g' \\\n",
+                        "    -e 's,@@AWS_SECRET,", { "Fn::GetAtt": [ "PrototypeKey", "SecretAccessKey" ] }, ",g' \\\n",
+                        "    /etc/init/prototype.conf\n",
+
                         "start prototype\n"
                     ]]
 
                 }}
 
+            }
+        },
+
+        "PrototypeGroup": {
+            "Type": "AWS::IAM::Group",
+            "Properties": {
+                "Policies": [{
+                    "PolicyName": "PrototypeGroup-Policy",
+                    "PolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Action": ["sqs:DeleteMessage", "sqs:ReceiveMessage"],
+                                "Resource": "*"
+                            }
+                        ]
+                    }
+                }]
+            }
+        },
+        "PrototypeUser": {
+            "Type": "AWS::IAM::User",
+            "Properties": {
+                "Path": "/",
+                "Groups": [ { "Ref": "PrototypeGroup" } ]
+            }
+        },
+        "PrototypeKey": {
+            "Type": "AWS::IAM::AccessKey",
+            "Properties": {
+                "UserName": { "Ref": "PrototypeUser" }
             }
         }
 
