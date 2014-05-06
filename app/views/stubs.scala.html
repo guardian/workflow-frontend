@@ -11,13 +11,8 @@
         <select id="section" name="section">
             <option value="technology">technology</option>
         </select>
-        <div id="datetimepicker" class="input-append date">
-            <label for="due">due</label>
-            <input type="text" id="due" name="due"></input>
-                  <span class="add-on">
-                    <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                  </span>
-        </div>
+        <label for="due">due</label>
+        <input type="text" id="due" name="due">
         <label for="assignee">assign to</label>
         <input type="text" id="assignee" name="assignee" value="" >
     <br>
@@ -27,7 +22,6 @@
 
 
 </div>
-
 
 <div class="stubs-table table">
     <button class="btn btn-primary" onClick="showForm()" style="float: right; margin-bottom: 10px;">New</button>
@@ -49,13 +43,9 @@
     </table>
 </div>
 
-
-
-
 <script type="text/javascript">
-    $('#datetimepicker').datetimepicker({
-        format: 'dd/MM/yyyy hh:mm',
-        language: 'en'
+    $(function(){
+        $('*[name=due]').appendDtpicker({"dateFormat": "DD/MM/yyyy hh:mm"});
     });
     function showForm(){
         $('.stub-form').removeClass('s-hidden');
