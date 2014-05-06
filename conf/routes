@@ -6,6 +6,10 @@
 GET     /                                   controllers.Application.index
 GET     /content                            controllers.Application.content(filterBy: Option[String], filterValue: Option[String])
 
+POST    /login                              controllers.Application.loginPost()
+GET     /login                              controllers.Application.login()
+GET     /redirect                           controllers.Application.openIdRedirect()
+
 GET     /admin/                             controllers.Admin.index
 GET     /admin/sections                     controllers.Admin.sections
 POST    /admin/sections/add                 controllers.Admin.addSection

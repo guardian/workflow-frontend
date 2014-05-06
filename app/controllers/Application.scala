@@ -8,7 +8,9 @@ import lib.{SectionDatabase, ContentDatabase}
 import models._
 import play.api.data.Form
 import java.util.UUID
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{Reads, Writes, Json, JsValue}
+import play.api.libs.openid.OpenID
+import play.api.mvc.Security.AuthenticatedBuilder
 
 
 object Application extends Controller {
@@ -34,16 +36,59 @@ object Application extends Controller {
      ))((w: WorkflowContent) => Some("tmp","tmp", "tmp"))
   )
 
-  def index = Action {
+  object Authenticated extends AuthenticatedBuilder(req => req.session.get("user").flatMap(u => User.find(u)),
+                                                    req => Redirect(routes.Application.login()))
+
+  def index = Authenticated {
     Ok(views.html.index("Hello wor... kflow :)"))
   }
 
-  def content(filterBy: Option[String], filterValue: Option[String]) = Action.async { req =>
+  def login = Action {
+    Ok(views.html.login())
+  }
+
+  case class User(id: String, email: String, firstName: String, lastName: String)
+
+  object User {
+    implicit val userWrites: Writes[User] = Json.writes[User]
+    implicit val userReads: Reads[User] = Json.reads[User]
+
+    def find(u: String): Option[User] = Json.parse(u).validate[User].asOpt
+
+  }
+
+  def loginPost = Action.async { implicit req =>
+    val openIdAttributes = Seq(
+      ("email", "http://axschema.org/contact/email"),
+      ("firstname", "http://axschema.org/namePerson/first"),
+      ("lastname", "http://axschema.org/namePerson/last")
+    )
+    val googleOpenIdUrl = "https://www.google.com/accounts/o8/id"
+    OpenID.redirectURL(googleOpenIdUrl, routes.Application.openIdRedirect().absoluteURL(), openIdAttributes)
+    .map(Redirect(_))
+  }
+
+  def openIdRedirect = Action.async { implicit req =>
+    OpenID.verifiedId.map { userInfo =>
+      val attr = userInfo.attributes
+      val user = for { email <- attr.get("email")
+                      if(email.endsWith("@guardian.co.uk") || email.endsWith("@theguardian.com"))
+                      firstName <- attr.get("firstname")
+                      lastName <- attr.get("lastname")
+                     } yield User(userInfo.id, email, firstName, lastName)
+
+      user.map {
+        u => Redirect(routes.Application.content(None, None)).withSession("user" -> Json.toJson(u).toString)
+      }.getOrElse(Redirect(routes.Application.login()))
+    }
+  }
+
+
+  def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
     for(
       items <- ContentDatabase.store.future;
       sections <- SectionDatabase.sectionList
     ) yield {
-
       def filterPredicate(wc: WorkflowContent): Boolean =
         (for (f <- filterBy; v <- filterValue) yield {
           f match {
@@ -59,7 +104,6 @@ object Application extends Controller {
         Ok(renderJsonResponse(content))
       else
         Ok(views.html.contentDashboard(content, sections, workFlowForm))
-
     }
   }
 
