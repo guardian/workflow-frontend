@@ -1,27 +1,36 @@
 @(stubForm: Form[Stub], stubs: List[Stub])
 @import helper._
+@import Formatting._
 @main("Stubs") {
 
+<div class="stub-form s-hidden">
+    @helper.form(action = routes.Application.newStub) {
+        <label for="title">title</label>
+        <input type="text" id="title" name="title" required>
+        <label for="section">section</label>
+        <select id="section" name="section">
+            <option value="technology">technology</option>
+        </select>
+        <div id="datetimepicker" class="input-append date">
+            <label for="due">due</label>
+            <input type="text" id="due" name="due"></input>
+                  <span class="add-on">
+                    <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                  </span>
+        </div>
+        <label for="assignee">assign to</label>
+        <input type="text" id="assignee" name="assignee" value="" >
+    <br>
+    <button class="btn btn-primary" type="submit">Create</button>
+    <a href="/stubs" class="btn btn-primary">Cancel</a>
+    }
 
-@helper.form(action = routes.Application.newStub) {
-<label for="title">title</label>
-<input type="text" id="title" name="title" required>
-<label for="section">section</label>
-<select id="section" name="section">
-    <option value="technology">technology</option>
-</select>
-<div id="datetimepicker" class="input-append date">
-    <label for="due">due</label>
-    <input type="text" id="due" name="due"></input>
-          <span class="add-on">
-            <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-          </span>
+
 </div>
-<label for="assignee">assign to</label>
-<input type="text" id="assignee" name="assignee" value="" >
-<button class="btn btn-primary" type="submit">Create</button>
-}
-<div class="table">
+
+
+<div class="stubs-table table">
+    <button class="btn btn-primary" onClick="showForm()" style="float: right; margin-bottom: 10px;">New</button>
     <table class="table table-striped">
         <tr>
             <th>Working Title</th>
@@ -33,7 +42,7 @@
         <tr>
                 <td>@stub.title</td>
                 <td>@stub.section</td>
-                <td>@for(date <- stub.due) { @date }</td>
+                <td>@for(date <- stub.due) { @displayDate(date) }</td>
                 <td>@for(assignee <- stub.assignee) { @assignee }</td>
         </tr>
             }
@@ -42,23 +51,16 @@
 
 
 
-<script type="text/javascript"
-        src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js">
-</script>
-<script type="text/javascript"
-        src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js">
-</script>
-<script type="text/javascript"
-        src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.min.js">
-</script>
-<script type="text/javascript"
-        src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.pt-BR.js">
-</script>
+
 <script type="text/javascript">
     $('#datetimepicker').datetimepicker({
         format: 'dd/MM/yyyy hh:mm',
         language: 'en'
     });
+    function showForm(){
+        $('.stub-form').removeClass('s-hidden');
+        $('.stubs-table').addClass('s-hidden');
+    }
 </script>
 
 }
