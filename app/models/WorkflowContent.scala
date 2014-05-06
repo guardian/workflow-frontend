@@ -6,7 +6,11 @@ import java.util.UUID
 import WorkflowStatus._
 import scala.Some
 
-case class Stub(id: String, title: String, section: String, due: Option[DateTime], assignee: Option[String])
+case class Stub(id: String,
+                title: String,
+                section: String,
+                due: Option[DateTime],
+                assignee: Option[String])
 
 object Stub {
 

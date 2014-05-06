@@ -24,7 +24,7 @@
 @helper.form(action = routes.Application.newStub) {
     @helper.inputText(stubForm("title"))
     @helper.select(field=stubForm("section"), options=options(List("technology")))
-    @helper.inputText(stubForm("due"))
+    @helper.inputDate(stubForm("due"))
     @helper.inputText(stubForm("assign"))
     <button class="btn btn-primary" type="submit">Create</button>
   }
