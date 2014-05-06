@@ -1,0 +1,251 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Workflow",
+    "Parameters": {
+        "KeyName": {
+            "Description": "The EC2 Key Pair to allow SSH access to the instance",
+            "Type": "String",
+            "Default": "workflow-developers"
+        },
+        "Stage": {
+            "Description": "Environment name",
+            "Type": "String",
+            "AllowedValues": ["CODE", "TEST", "PROD"],
+            "Default": "PROD"
+        },
+        "ImageIdInstanceStorage": {
+            "Description": "AMI id for instances with instance storage.",
+            "Type": "String",
+            "Default": "ami-14907e63"
+        }
+    },
+    "Resources": {
+
+        "DistributionInstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [ {"Ref": "DistributionRole"} ]
+            }
+        },
+
+        "DistributionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [ {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": [ "ec2.amazonaws.com" ]
+                        },
+                        "Action": [ "sts:AssumeRole" ]
+                    } ]
+                },
+                "Path": "/",
+                "Policies": [ {
+                    "PolicyName": "root",
+                    "PolicyDocument": {
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Action": [ "s3:GetObject" ],
+                                "Resource": [ "arn:aws:s3:::workflow-dist/*" ]
+                            }
+                        ]
+                    }
+                } ]
+            }
+        },
+
+        "SSHSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Allow SSH access from the office",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": "77.91.248.0/21"
+                    }
+                ]
+            }
+        },
+
+        "AppServerSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Application servers",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 9000,
+                        "ToPort": 9000,
+                        "CidrIp": "77.91.248.0/21"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 9000,
+                        "ToPort": 9000,
+                        "SourceSecurityGroupName": { "Fn::GetAtt": ["PrototypeLoadBalancer", "SourceSecurityGroup.GroupName"]}
+                    }
+                ]
+            }
+        },
+
+        "PrototypeLoadBalancerSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Prototype application load balancer",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "80",
+                        "ToPort": "80",
+                        "CidrIp": "0.0.0.0/0"
+
+                    }
+                ]
+            }
+        },
+
+        "PrototypeLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "AvailabilityZones": { "Fn::GetAZs": "" },
+                "SecurityGroups": [{ "Fn::GetAtt": ["PrototypeLoadBalancerSecurityGroup", "GroupId"] }],
+                "Listeners": [
+                    {
+                        "LoadBalancerPort": "80",
+                        "InstancePort": "9000",
+                        "Protocol": "HTTP"
+                    }
+                ],
+                "HealthCheck": {
+                    "Target": "HTTP:9000/management/healthcheck",
+                    "HealthyThreshold": "2",
+                    "UnhealthyThreshold": "2",
+                    "Interval": "10",
+                    "Timeout": "5"
+                }
+            }
+        },
+        "PrototypeAutoscalingGroup": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                },
+                "LaunchConfigurationName": { "Ref": "PrototypeLaunchConfig" },
+                "MinSize": "1",
+                "MaxSize": "2",
+                "DesiredCapacity": "1",
+                "Cooldown": "180",
+                "HealthCheckType": "ELB",
+                "HealthCheckGracePeriod": 300,
+                "LoadBalancerNames": [
+                    { "Ref": "PrototypeLoadBalancer" }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Stage",
+                        "Value": { "Ref": "Stage" },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Stack",
+                        "Value": "workflow",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "App",
+                        "Value": "prototype",
+                        "PropagateAtLaunch": "true"
+                    }
+                ]
+            }
+        },
+        "PrototypeLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata": {
+              "AWS::CloudFormation::Authentication": {
+                "distributionAuthentication": {
+                  "type": "S3",
+                  "roleName": { "Ref": "DistributionRole" },
+                  "buckets": [ "workflow-dist" ]
+                }
+              },
+              "AWS::CloudFormation::Init": {
+                "config": {
+                  "users": {
+                    "workflow": {
+                      "homeDir": "/home/workflow"
+                    }
+                  },
+                  "files": {
+                    "/etc/init/prototype.conf": {
+                      "source": { "Fn::Join" : ["", [
+                        "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
+                        { "Ref": "Stage" },
+                        "/prototype/prototype.conf"
+                      ]]},
+                      "authentication": "distributionAuthentication"
+                    },
+                    "/home/workflow/app.jar": {
+                      "source": { "Fn::Join" : ["", [
+                        "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
+                        { "Ref": "Stage" },
+                        "/prototype/app.jar"
+                      ]]},
+                      "authentication": "distributionAuthentication"
+                    }
+                  }
+                }
+              }
+            },
+            "Properties": {
+                "KeyName": { "Ref": "KeyName" },
+                "ImageId": {"Ref": "ImageIdInstanceStorage"},
+                "SecurityGroups": [
+                    { "Ref": "AppServerSecurityGroup" },
+                    { "Ref": "SSHSecurityGroup" }
+                ],
+                "InstanceType": "m1.small",
+                "IamInstanceProfile": {"Ref": "DistributionInstanceProfile"},
+                "UserData": { "Fn::Base64": {
+                    "Fn::Join":["", [
+                        "#!/bin/bash -ev\n",
+
+                        "apt-get -y update\n",
+                        "apt-get -y install language-pack-en openjdk-7-jre-headless\n",
+                        "apt-get -y install python-setuptools\n",
+                        "apt-get -y install unzip\n",
+                        "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz","\n",
+                        "mkdir -p /root/aws-cfn-bootstrap-latest","\n",
+                        "tar xvfz /root/aws-cfn-bootstrap-latest.tar.gz --strip-components=1 -C /root/aws-cfn-bootstrap-latest","\n",
+                        "easy_install /root/aws-cfn-bootstrap-latest/","\n",
+
+                        "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r PrototypeLaunchConfig ",
+                        "  --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+
+                        "mkdir /home/workflow/logs\n",
+
+                        "chown -R workflow /home/workflow\n",
+                        "chgrp -R workflow /home/workflow\n",
+
+                        "start prototype\n"
+                    ]]
+
+                }}
+
+            }
+        }
+
+    },
+    "Outputs": {
+        "PrototypeLoadBalancerDNS": {
+          "Description": "Load balancer DNS",
+          "Value": { "Fn::GetAtt": ["PrototypeLoadBalancer", "DNSName"] }
+        }
+    }
+}

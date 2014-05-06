@@ -31,17 +31,7 @@ object Contributor {
   implicit val contributorWrites: Writes[Contributor] = Json.writes[Contributor]
 }
 
-case class EditorDesk(name: String) {
-  override def toString = name
-}
 
-object EditorDesk {
-  implicit val deskReads: Reads[EditorDesk] = new Reads[EditorDesk] {
-    def reads(jsValue: JsValue) = (jsValue \ "tag" \ "section" \ "name").validate[String].map(EditorDesk(_))
-  }
-
-  implicit val editorDesk: Writes[EditorDesk] = Json.writes[EditorDesk]
-}
 
 case class WireStatus(
   contributors: List[Contributor],
@@ -50,7 +40,7 @@ case class WireStatus(
   whatChanged: String,
   user: Option[String],
   lastModified: DateTime,
-  tagSections: List[EditorDesk],
+  tagSections: List[Section],
   status: WorkflowStatus)
 
 case class WorkflowContent(
@@ -58,7 +48,7 @@ case class WorkflowContent(
   path: Option[String],
   workingTitle: Option[String],
   contributors: List[Contributor],
-  desk: Option[EditorDesk],
+  section: Option[Section],
   status: WorkflowStatus,
   lastModification: Option[ContentModification],
   scheduledLaunch: Option[DateTime],
@@ -68,7 +58,7 @@ case class WorkflowContent(
   def updateWith(wireStatus: WireStatus): WorkflowContent =
     copy(
       contributors = wireStatus.contributors,
-      desk = wireStatus.tagSections.headOption,
+      section = wireStatus.tagSections.headOption,
       status = if (wireStatus.published) Published else status,
       lastModification = Some(ContentModification(
         whatChanged = wireStatus.whatChanged,
@@ -158,9 +148,9 @@ object WireStatus {
         .map(_.toList.flatten)
   }
 
-  val readTagSections = new Reads[List[EditorDesk]] {
-    def reads(json: JsValue): JsResult[List[EditorDesk]] = {
-      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[EditorDesk]]].map(_.toList.flatten)
+  val readTagSections = new Reads[List[Section]] {
+    def reads(json: JsValue): JsResult[List[Section]] = {
+      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[Section]]].map(_.toList.flatten)
     }
 
   }

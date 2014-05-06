@@ -1,0 +1,16 @@
+@(tab: String)(content: Html)
+
+@main("Admin") {
+
+<div class="row">
+    <ul class="nav nav-tabs">
+        <li @if(tab == "sections"){class="active"} ><a href="@routes.Admin.sections">Sections</a></li>
+        <li @if(tab == "other"){class="active"} ><a href="#">States</a></li>
+        <li @if(tab == "more"){class="active"} ><a href="#">More...</a></li>
+    </ul>
+</div>
+
+@content
+
+
+}

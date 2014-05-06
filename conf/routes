@@ -8,6 +8,15 @@ GET     /content                            controllers.Application.content(filt
 GET     /stubs                              controllers.Application.stubs()
 
 POST    /newStub                            controllers.Application.newStub()
+POST    /login                              controllers.Application.loginPost()
+GET     /login                              controllers.Application.login()
+GET     /redirect                           controllers.Application.openIdRedirect()
+
+GET     /admin/                             controllers.Admin.index
+GET     /admin/sections                     controllers.Admin.sections
+POST    /admin/sections/add                 controllers.Admin.addSection
+POST    /admin/sections/remove              controllers.Admin.removeSection
+
 POST    /fieldChange/*contentId             controllers.Application.fieldChange(field: String, value: String, contentId: String, user: Option[String])
 
 # Management

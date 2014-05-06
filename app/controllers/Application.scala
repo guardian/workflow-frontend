@@ -4,14 +4,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.{AWSWorkflowBucket, Database}
+import lib.{AWSWorkflowBucket, SectionDatabase, ContentDatabase}
 import models._
 import play.api.data.Form
 import java.util.UUID
-import play.api.libs.json.{Json, JsValue}
-import com.amazonaws.services.s3.model.{ObjectMetadata, PutObjectRequest, GetObjectRequest}
-import java.io.{File, ByteArrayInputStream, InputStreamReader, BufferedReader}
-
+import play.api.libs.json.{Reads, Writes, Json, JsValue}
+import play.api.libs.openid.OpenID
+import play.api.mvc.Security.AuthenticatedBuilder
 
 object Application extends Controller {
 
@@ -27,7 +26,11 @@ object Application extends Controller {
        Stub((UUID.randomUUID()).toString, title, section, due, assignee)
   )(s => Some((s.title, s.section, s.due, s.assignee))))
 
-  def index = Action {
+
+  object Authenticated extends AuthenticatedBuilder(req => req.session.get("user").flatMap(u => User.find(u)),
+                                                    req => Redirect(routes.Application.login()))
+
+  def index = Authenticated {
     Ok(views.html.index("Hello wor... kflow :)"))
   }
 
@@ -38,15 +41,58 @@ object Application extends Controller {
     }
   }
 
-  def content(filterBy: Option[String], filterValue: Option[String]) = Action.async { req =>
-    Database.store.future.map { items =>
+  def login = Action {
+    Ok(views.html.login())
+  }
 
+  case class User(id: String, email: String, firstName: String, lastName: String)
+
+  object User {
+    implicit val userWrites: Writes[User] = Json.writes[User]
+    implicit val userReads: Reads[User] = Json.reads[User]
+
+    def find(u: String): Option[User] = Json.parse(u).validate[User].asOpt
+
+  }
+
+  def loginPost = Action.async { implicit req =>
+    val openIdAttributes = Seq(
+      ("email", "http://axschema.org/contact/email"),
+      ("firstname", "http://axschema.org/namePerson/first"),
+      ("lastname", "http://axschema.org/namePerson/last")
+    )
+    val googleOpenIdUrl = "https://www.google.com/accounts/o8/id"
+    OpenID.redirectURL(googleOpenIdUrl, routes.Application.openIdRedirect().absoluteURL(), openIdAttributes)
+    .map(Redirect(_))
+  }
+
+  def openIdRedirect = Action.async { implicit req =>
+    OpenID.verifiedId.map { userInfo =>
+      val attr = userInfo.attributes
+      val user = for { email <- attr.get("email")
+                      if(email.endsWith("@guardian.co.uk") || email.endsWith("@theguardian.com"))
+                      firstName <- attr.get("firstname")
+                      lastName <- attr.get("lastname")
+                     } yield User(userInfo.id, email, firstName, lastName)
+
+      user.map {
+        u => Redirect(routes.Application.content(None, None)).withSession("user" -> Json.toJson(u).toString)
+      }.getOrElse(Redirect(routes.Application.login()))
+    }
+  }
+
+
+  def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
+    for(
+      items <- ContentDatabase.store.future;
+      sections <- SectionDatabase.sectionList
+    ) yield {
       def filterPredicate(wc: WorkflowContent): Boolean =
         (for (f <- filterBy; v <- filterValue) yield {
           f match {
-            case "desk"   => wc.desk.exists(_.name == v)
-            case "status" => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
-            case _        => false // TODO input validation
+            case "section" => wc.section.exists(_.name == v)
+            case "status"  => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
+            case _         => false // TODO input validation
           }
         }) getOrElse true
 
@@ -55,9 +101,8 @@ object Application extends Controller {
       if (req.headers.get(ACCEPT) == Some("application/json"))
         Ok(renderJsonResponse(content))
       else
-        Ok(views.html.contentDashboard(content))
-
-      }
+        Ok(views.html.contentDashboard(content, sections))
+    }
   }
 
   def renderJsonResponse(content: List[WorkflowContent]): JsValue =
@@ -80,7 +125,7 @@ object Application extends Controller {
 
     val updateFunction: Either[SimpleResult, WorkflowContent => WorkflowContent] = field match {
 
-      case "desk" => Right(_.copy(desk=Some(EditorDesk(value))))
+      case "section" => Right(_.copy(section = Some(Section(value))))
 
       case "workingTitle" => Right(_.copy(workingTitle = Some(value)))
 
@@ -106,7 +151,7 @@ object Application extends Controller {
   }
 
   def alterContent(contentId: UUID, field: String, fun: WorkflowContent => WorkflowContent): Future[SimpleResult] =
-    for (altered <- Database.update(contentId, fun))
+    for (altered <- ContentDatabase.update(contentId, fun))
     yield altered.map(_ => Ok(s"Updated field $field")).getOrElse(NotFound("Could not find that content.") )
 
 }
