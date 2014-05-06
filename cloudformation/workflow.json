@@ -228,10 +228,6 @@
                         "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r PrototypeLaunchConfig ",
                         "  --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
 
-                        "unzip /home/workflow/dist/prototype.zip -d /home/workflow/\n",
-
-                        "mv /home/workflow/workflow-1.0-SNAPSHOT/conf/prototype.conf /etc/init/prototype.conf\n",
-
                         "mkdir /home/workflow/logs\n",
 
                         "chown -R workflow /home/workflow\n",
