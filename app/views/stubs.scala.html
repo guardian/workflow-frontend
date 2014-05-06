@@ -2,6 +2,25 @@
 @import helper._
 @main("Stubs") {
 
+
+@helper.form(action = routes.Application.newStub) {
+<label for="title">title</label>
+<input type="text" id="title" name="title" required>
+<label for="section">section</label>
+<select id="section" name="section">
+    <option value="technology">technology</option>
+</select>
+<div id="datetimepicker" class="input-append date">
+    <label for="due">due</label>
+    <input type="text" id="due" name="due"></input>
+          <span class="add-on">
+            <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+          </span>
+</div>
+<label for="assignee">assign to</label>
+<input type="text" id="assignee" name="assignee" value="" >
+<button class="btn btn-primary" type="submit">Create</button>
+}
 <div class="table">
     <table class="table table-striped">
         <tr>
@@ -21,12 +40,25 @@
     </table>
 </div>
 
-@helper.form(action = routes.Application.newStub) {
-    @helper.inputText(stubForm("title"))
-    @helper.select(field=stubForm("section"), options=options(List("technology")))
-    @helper.inputDate(stubForm("due"))
-    @helper.inputText(stubForm("assign"))
-    <button class="btn btn-primary" type="submit">Create</button>
-  }
+
+
+<script type="text/javascript"
+        src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js">
+</script>
+<script type="text/javascript"
+        src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js">
+</script>
+<script type="text/javascript"
+        src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.min.js">
+</script>
+<script type="text/javascript"
+        src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.pt-BR.js">
+</script>
+<script type="text/javascript">
+    $('#datetimepicker').datetimepicker({
+        format: 'dd/MM/yyyy hh:mm',
+        language: 'en'
+    });
+</script>
 
 }

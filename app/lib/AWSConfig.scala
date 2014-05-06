@@ -12,6 +12,7 @@ import java.io.{ByteArrayInputStream, InputStreamReader, BufferedReader}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
 import ExecutionContext.Implicits.global
+import scala.util.control.NonFatal
 
 
 object AWSCreds {
@@ -30,8 +31,9 @@ object AWSWorkflowBucket {
 
   lazy val name = "workflow-stubs"
 
-  lazy val key = "tmp/test1.txt"
+  lazy val key = "tmp/stubs.txt"
 
+  //reads stubs file
   def readStubsFile: Future[String] = {
     for {
       stubsFile <- Future(AWSWorkflowBucket.s3Client.getObject(new GetObjectRequest(name, key)))
@@ -42,12 +44,22 @@ object AWSWorkflowBucket {
     }
   }
 
-  def parseJson(s: String): JsValue = {
-    Json.parse(s)
+  def parseStubsJson(s: String): List[Stub] = {
+    try {
+      Json.parse(s).validate[List[Stub]].asOpt match {
+        case Some(stubs) => stubs
+        case None => Nil
+      }
+    }
+    catch {
+      case NonFatal(e) => Nil
+    }
   }
+
+
   def add(newStub: Stub) = {
     AWSWorkflowBucket.readStubsFile.map { str =>
-      val existingStubs = parseJson(str).validate[List[Stub]].getOrElse(Nil)
+      val existingStubs = parseStubsJson(str)
       val stubsJson = Json.toJson(newStub :: existingStubs)
       val stream = new ByteArrayInputStream(stubsJson.toString.getBytes("UTF-8"));
       val putObjRequest = new PutObjectRequest(name, key, stream, new ObjectMetadata())

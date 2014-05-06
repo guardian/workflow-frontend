@@ -18,9 +18,9 @@ object Application extends Controller {
 
   val stubForm = Form(
   mapping(
-    "title" -> text,
+    "title" -> nonEmptyText,
     "section" -> text,
-    "due" -> optional(jodaDate),
+    "due" -> optional(jodaDate("dd/MM/yyyy HH:mm")),
     "assignee" -> optional(text)
   )((title, section, due, assignee) =>
        Stub((UUID.randomUUID()).toString, title, section, due, assignee)
@@ -36,7 +36,7 @@ object Application extends Controller {
 
   def stubs = Action.async {
     AWSWorkflowBucket.readStubsFile.map { stubsContent =>
-      val stubs = Json.parse(stubsContent).validate[List[Stub]].getOrElse(Nil)
+      val stubs = AWSWorkflowBucket.parseStubsJson(stubsContent)
       Ok(views.html.stubs(stubForm, stubs))
     }
   }
@@ -108,14 +108,13 @@ object Application extends Controller {
   def renderJsonResponse(content: List[WorkflowContent]): JsValue =
     Json.obj("content" -> content)
 
-  def newStub = Action { implicit request =>
+  def newStub = Action.async { implicit request =>
     stubForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(s"that failed $formWithErrors")
+        Future.successful(BadRequest(s"that failed ${formWithErrors}"))
       },
       stub => {
-          AWSWorkflowBucket.add(stub)
-          Redirect(routes.Application.stubs())
+          AWSWorkflowBucket.add(stub).map {_ => Redirect(routes.Application.stubs())}
       }
     )
 
