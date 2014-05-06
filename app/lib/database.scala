@@ -67,6 +67,10 @@ object StatusDatabase {
     Status("Final")
   ))
 
+  def statuses = store.future()
+  def find(name: String) = store.get().find(_.name == name)
+  def get(name: String) = find(name).get
+
   def remove(status: Status): Future[List[Status]] = store.alter(_.filterNot(_ == status))
   def add(status: Status): Future[List[Status]] = store.alter(_ :+ status)
   def moveUp(status: Status): Future[List[Status]] = store.alter(moveUp(status, _))

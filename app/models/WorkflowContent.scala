@@ -3,8 +3,7 @@ package models
 import play.api.libs.json._
 import org.joda.time.DateTime
 import java.util.UUID
-import WorkflowStatus._
-import scala.Some
+import models.Status._
 
 case class Contributor(name: String)
 
@@ -26,7 +25,7 @@ case class WireStatus(
   user: Option[String],
   lastModified: DateTime,
   tagSections: List[Section],
-  status: WorkflowStatus)
+  status: Status)
 
 case class WorkflowContent(
   id: UUID,
@@ -34,17 +33,17 @@ case class WorkflowContent(
   workingTitle: Option[String],
   contributors: List[Contributor],
   section: Option[Section],
-  status: WorkflowStatus,
+  status: Status,
   lastModification: Option[ContentModification],
   scheduledLaunch: Option[DateTime],
-  stateHistory: Map[WorkflowStatus,String] = Map.empty,
+  stateHistory: Map[Status, String] = Map.empty,
   fromFeed: Boolean) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
     copy(
       contributors = wireStatus.contributors,
       section = wireStatus.tagSections.headOption,
-      status = if (wireStatus.published) Published else status,
+      status = if (wireStatus.published) Final else status,
       lastModification = Some(ContentModification(
         whatChanged = wireStatus.whatChanged,
         dateTime = wireStatus.lastModified,
@@ -52,34 +51,6 @@ case class WorkflowContent(
       ))
     )
 }
-
-sealed trait WorkflowStatus
-
-object WorkflowStatus {
-  def findWorkFlowStatus(status: String): Option[WorkflowStatus] = {
-    status match {
-      case "created" => Some(Created)
-      case "author" => Some(Author)
-      case "edited" => Some(Edited)
-      case "desk" => Some(Desk)
-      case "subbed" => Some(Subbed)
-      case "published" => Some(Published)
-      case _ => None
-    }
-  }
-
-  case object Created   extends WorkflowStatus
-  case object Author    extends WorkflowStatus
-  case object Desk      extends WorkflowStatus
-  case object Subbed    extends WorkflowStatus
-  case object Edited    extends WorkflowStatus
-  case object Published extends WorkflowStatus
-
-  implicit val workFlowStatus = new Writes[WorkflowStatus] {
-    override def writes(status: WorkflowStatus) = JsString(status.toString)
-  }
-}
-
 
 object WorkflowContent {
   import java.util.UUID
@@ -91,7 +62,7 @@ object WorkflowContent {
       None,
       wireStatus.contributors,
       wireStatus.tagSections.headOption,
-      if (wireStatus.published) Published else Created,
+      if (wireStatus.published) Final else Writers,
       Some(ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user)),
       scheduledLaunch=None,
       fromFeed=true
@@ -101,8 +72,8 @@ object WorkflowContent {
   implicit val uuidWrites = new Writes[UUID] {
     override def writes(id: UUID): JsValue = JsString(id.toString)
   }
-  implicit val stateHistory = new Writes[Map[WorkflowStatus, String]] {
-    override def writes(hist: Map[WorkflowStatus, String]): JsValue = {
+  implicit val stateHistory = new Writes[Map[Status, String]] {
+    override def writes(hist: Map[Status, String]): JsValue = {
       JsObject(
         (for((k,v)<-hist) yield (k.toString, JsString(v))).toSeq
       )
@@ -149,7 +120,7 @@ object WireStatus {
       yield firstOpt.flatMap(f => lastOpt.map(l => f + " " + l))
   }
 
-  import WorkflowStatus._
+  import Status._
   implicit val wireStatusReads: Reads[WireStatus] =
     ( readContributors ~
       (__ \ "content" \ "identifiers" \ "path").read[String] ~
@@ -158,7 +129,7 @@ object WireStatus {
       readUser ~
       (__ \ "content" \ "lastModified").read[Long].map(t => new DateTime(t)) ~
       readTagSections ~
-      (__ \ "published").read[Boolean].map(p => if (p) Published else Created)
+      (__ \ "published").read[Boolean].map(p => if (p) Final else Writers)
       )(WireStatus.apply _)
 
 }
