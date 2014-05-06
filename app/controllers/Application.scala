@@ -72,7 +72,7 @@ object Application extends Controller {
     OpenID.verifiedId.map { userInfo =>
       val attr = userInfo.attributes
       val user = for { email <- attr.get("email")
-                      if(email.contains("guardian.co.uk"))
+                      if(email.endsWith("@guardian.co.uk") || email.endsWith("@theguardian.com"))
                       firstName <- attr.get("firstname")
                       lastName <- attr.get("lastname")
                      } yield User(userInfo.id, email, firstName, lastName)
