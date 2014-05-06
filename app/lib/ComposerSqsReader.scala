@@ -15,10 +15,10 @@ class ComposerSqsReader extends Actor {
 
       for(msg<-messages) {
         val wireStatus = AWSWorkflowQueue.toWireStatus(msg)
-        Database.doesNotContainPath(wireStatus.path).map { newPath =>
+        ContentDatabase.doesNotContainPath(wireStatus.path).map { newPath =>
           if(newPath) {
             val workflowContent = WorkflowContent.fromWireStatus(wireStatus)
-            Database.store.alter {
+            ContentDatabase.store.alter {
               items =>
                 items.updated(workflowContent.id, workflowContent)
             }

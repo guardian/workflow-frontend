@@ -1,0 +1,46 @@
+@(sections: List[Section], addSectionForm: Form[Section])
+
+@import helper._
+
+@admin("sections") {
+
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">Current Sections</div>
+        <div class="panel-body">
+            <ul class="list-unstyled" >
+                @for(section <- sections) {
+                <li>
+                    <span class="label label-danger remove" data-section="@{section.name}">x</span>
+                    <a href="@routes.Application.content(Some("section"), Some(section.name))">@{section.name}</a>
+                </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="form">
+    <h3>Add a new section</h3>
+    @form(action=routes.Admin.addSection){
+        @inputText(addSectionForm("name"))
+        <input type="submit" value="Add">
+    }
+</div>
+
+<script>
+    $('.remove').on('click', function (event) {
+        var section = $(event.target).data('section');
+        $.ajax({
+            type: "POST",
+            url: "@routes.Admin.removeSection",
+            data: {name: section},
+            success: function() {
+                $(event.target).parent().remove();
+            }
+        });
+    });
+
+</script>
+
+}
