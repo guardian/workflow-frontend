@@ -3,16 +3,15 @@ package lib
 import scala.collection.JavaConverters._
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.sqs.AmazonSQSClient
-import com.amazonaws.services.sqs.model.{DeleteMessageRequest, ReceiveMessageRequest, Message, GetQueueUrlRequest}
+import com.amazonaws.services.sqs.model.{DeleteMessageRequest, ReceiveMessageRequest, Message}
 import models.{Stub, WireStatus}
-import play.api.libs.json.{JsValue, Json}
-import com.amazonaws.services.s3.{AmazonS3Client, AmazonS3}
+import play.api.libs.json.Json
+import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.{ObjectMetadata, PutObjectRequest, GetObjectRequest, Bucket}
-import java.io.{ByteArrayInputStream, InputStreamReader, BufferedReader}
+import java.io.ByteArrayInputStream
 import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
 import ExecutionContext.Implicits.global
-import scala.util.control.NonFatal
 import scala.util.Try
 
 
@@ -30,7 +29,7 @@ object AWSWorkflowBucket {
 
   lazy val s3Client = new AmazonS3Client(AWSCreds.basic)
 
-  lazy val name = "workflow-stubs"
+  lazy val name = AWSCreds.config.getString("aws.stub.bucket").getOrElse(sys.error("Required: aws.stub.bucket"))
 
   lazy val key = "tmp/stubs.txt"
 
@@ -71,7 +70,7 @@ object AWSWorkflowQueue {
     client
   }
 
-  lazy val queueUrl = config.getString("aws.flex.notifications.queue")
+  lazy val queueUrl = AWSCreds.config.getString("aws.flex.notifications.queue")
     .getOrElse(sys.error("Required: aws.flex.notifications.queue"))
 
   def getMessages(messageCount: Int): scala.collection.immutable.List[Message] = {
