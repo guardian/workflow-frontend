@@ -13,6 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
 import ExecutionContext.Implicits.global
 import scala.util.control.NonFatal
+import scala.util.Try
 
 
 object AWSCreds {
@@ -45,15 +46,9 @@ object AWSWorkflowBucket {
   }
 
   def parseStubsJson(s: String): List[Stub] = {
-    try {
-      Json.parse(s).validate[List[Stub]].asOpt match {
-        case Some(stubs) => stubs
-        case None => Nil
-      }
-    }
-    catch {
-      case NonFatal(e) => Nil
-    }
+    Try(Json.parse(s)).toOption
+      .flatMap(_.validate[List[Stub]].asOpt)
+      .getOrElse(Nil)
   }
 
 
