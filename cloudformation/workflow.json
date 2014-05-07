@@ -247,6 +247,7 @@
                         "    -e 's,@AWS_ACCESS_KEY@,", { "Ref": "PrototypeKey" }, ",g' \\\n",
                         "    -e 's,@AWS_SECRET@,", { "Fn::GetAtt": [ "PrototypeKey", "SecretAccessKey" ] }, ",g' \\\n",
                         "    -e 's,@AWS_FLEX_NOTIFICATIONS_QUEUE@,", { "Ref": "FCNotificationsQueue" }, ",g' \\\n",
+                        "    -e 's,@AWS_STUB_BUCKET@,", { "Ref": "StubBucket" }, ",g' \\\n",
                         "    /etc/init/prototype.conf\n",
 
                         "start prototype\n"
@@ -315,6 +316,28 @@
                     ]
                 },
                 "Queues": [ { "Ref": "FCNotificationsQueue" } ]
+            }
+        },
+
+        "StubBucket": {
+            "Type": "AWS::S3::Bucket"
+        },
+        "StubBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "StubBucketPolicy",
+                    "Statement": [ {
+                        "Sid": "StubBucketWriteAccess",
+                        "Action": [ "s3:PutObject", "s3:GetObject", "s3:DeleteObject" ],
+                        "Effect": "Allow",
+                        "Resource": { "Fn::Join": [ "",
+                            [ "arn:aws:s3:::", { "Ref": "StubBucket" } , "/*" ] ]
+                        },
+                        "Principal": { "AWS": { "Fn::GetAtt": [ "PrototypeUser", "Arn" ] } }
+                    } ]
+                },
+                "Bucket": { "Ref": "StubBucket" }
             }
         }
 

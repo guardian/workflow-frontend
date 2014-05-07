@@ -6,6 +6,25 @@ import java.util.UUID
 import WorkflowStatus._
 import scala.Some
 
+case class Stub(id: String,
+                title: String,
+                section: String,
+                due: Option[DateTime],
+                assignee: Option[String])
+
+object Stub {
+
+  implicit val uuidWrites = new Writes[UUID] {
+    override def writes(id: UUID): JsValue = JsString(id.toString)
+  }
+  implicit val uuidReads = new Reads[UUID] {
+    override def reads(jsValue: JsValue) = (jsValue \ "id").validate[String].map(UUID.fromString(_))
+  }
+
+  implicit val stubReads: Reads[Stub] = Json.reads[Stub]
+  implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
+}
+
 case class Contributor(name: String)
 
 object Contributor {
@@ -121,8 +140,8 @@ object ContentModification {
   implicit val contentModWrites: Writes[ContentModification] = Json.writes[ContentModification]
 }
 
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
+  import play.api.libs.json._
+  import play.api.libs.functional.syntax._
 
 object WireStatus {
 
