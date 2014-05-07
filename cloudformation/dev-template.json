@@ -1,0 +1,88 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Workflow DEV",
+    "Parameters": {
+        "FCMetadataTopic": {
+            "Description": "ARN of the topic for Flexible Content metadata events",
+            "Type": "String",
+            "Default": "arn:aws:sns:eu-west-1:308506855511:prod-fc-metadata-events"
+        },
+        "FCLifecycleTopic": {
+            "Description": "ARN of the topic for Flexible Content lifecycle events",
+            "Type": "String",
+            "Default": "arn:aws:sns:eu-west-1:308506855511:prod-fc-lifecycle-events"
+        }
+    },
+    "Resources": {
+        "Group": {
+            "Type": "AWS::IAM::Group",
+            "Properties": {
+                "Policies": [{
+                    "PolicyName": "Group-Policy",
+                    "PolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Action": ["sqs:DeleteMessage", "sqs:ReceiveMessage"],
+                                "Resource": [ { "Fn::GetAtt": ["FCNotificationsQueue", "Arn"] } ]
+                            }
+                        ]
+                    }
+                }]
+            }
+        },
+        "User": {
+            "Type": "AWS::IAM::User",
+            "Properties": {
+                "Path": "/",
+                "Groups": [ { "Ref": "Group" } ]
+            }
+        },
+        "HostKeys": {
+            "Type": "AWS::IAM::AccessKey",
+            "Properties": {
+                "UserName": { "Ref": "User" }
+            }
+        },
+        "FCNotificationsQueue": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {
+            }
+        },
+        "FCNotificationsQueuePolicy": {
+            "Type": "AWS::SQS::QueuePolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "FCNotificationsQueuePolicy",
+                    "Statement": [
+                        {
+                            "Sid": "Allow-SendMessage-To-Queue-From-Topic",
+                            "Effect": "Allow",
+                            "Principal": { "AWS": "*" },
+                            "Action": ["sqs:SendMessage"],
+                            "Resource": "*",
+                            "Condition": {
+                                "ArnEquals": {
+                                    "aws:SourceArn": [{ "Ref": "FCMetadataTopic" }, { "Ref": "FCLifecycleTopic" }]
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Queues": [ { "Ref": "FCNotificationsQueue" } ]
+            }
+        }
+    },
+    "Outputs": {
+        "AwsId": {
+            "Value": { "Ref": "HostKeys" }
+        },
+        "AwsSecret": {
+            "Value": { "Fn::GetAtt": [ "HostKeys", "SecretAccessKey" ] }
+        },
+        "SqsQueueUrl": {
+            "Value": { "Ref" : "FCNotificationsQueue" }
+        }
+    }
+}
