@@ -21,3 +21,12 @@ This is a Play! application, so you can run it thus:
     $ run [optional port number - default 9000]
 
 This will run the application in development mode, so it automatically recompiles any changes when you make a request.
+
+Debugging in the cloud
+----------------------
+
+If you want to SSH to one of the EC2 instances:
+
+  * Obtain a copy of the `workflow-developers` private key
+  * Add it to your ssh agent using `ssh-add workflow-developers.pem`
+  * Use the username `ubuntu` to log into the EC2 instance
