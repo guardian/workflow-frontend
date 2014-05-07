@@ -71,12 +71,8 @@ object AWSWorkflowQueue {
     client
   }
 
-  lazy val queueUrl = {
-
-    val queueNameLookupResponse = sqsClient.getQueueUrl(new GetQueueUrlRequest("workflow-PROD"))
-
-    queueNameLookupResponse.getQueueUrl
-  }
+  lazy val queueUrl = config.getString("aws.flex.notifications.queue")
+    .getOrElse(sys.error("Required: aws.flex.notifications.queue"))
 
   def getMessages(messageCount: Int): scala.collection.immutable.List[Message] = {
     val response = sqsClient.receiveMessage(

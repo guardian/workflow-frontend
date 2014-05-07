@@ -17,6 +17,16 @@
             "Description": "AMI id for instances with instance storage.",
             "Type": "String",
             "Default": "ami-14907e63"
+        },
+        "FCMetadataTopic": {
+            "Description": "ARN of the topic for Flexible Content metadata events",
+            "Type": "String",
+            "Default": "arn:aws:sns:eu-west-1:308506855511:prod-fc-metadata-events"
+        },
+        "FCLifecycleTopic": {
+            "Description": "ARN of the topic for Flexible Content lifecycle events",
+            "Type": "String",
+            "Default": "arn:aws:sns:eu-west-1:308506855511:prod-fc-lifecycle-events"
         }
     },
     "Resources": {
@@ -233,11 +243,78 @@
                         "chown -R workflow /home/workflow\n",
                         "chgrp -R workflow /home/workflow\n",
 
+                        "sed -i \\\n",
+                        "    -e 's,@AWS_ACCESS_KEY@,", { "Ref": "PrototypeKey" }, ",g' \\\n",
+                        "    -e 's,@AWS_SECRET@,", { "Fn::GetAtt": [ "PrototypeKey", "SecretAccessKey" ] }, ",g' \\\n",
+                        "    -e 's,@AWS_FLEX_NOTIFICATIONS_QUEUE@,", { "Ref": "FCNotificationsQueue" }, ",g' \\\n",
+                        "    /etc/init/prototype.conf\n",
+
                         "start prototype\n"
                     ]]
 
                 }}
 
+            }
+        },
+
+        "PrototypeGroup": {
+            "Type": "AWS::IAM::Group",
+            "Properties": {
+                "Policies": [{
+                    "PolicyName": "PrototypeGroup-Policy",
+                    "PolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Action": ["sqs:DeleteMessage", "sqs:ReceiveMessage"],
+                                "Resource": "*"
+                            }
+                        ]
+                    }
+                }]
+            }
+        },
+        "PrototypeUser": {
+            "Type": "AWS::IAM::User",
+            "Properties": {
+                "Path": "/",
+                "Groups": [ { "Ref": "PrototypeGroup" } ]
+            }
+        },
+        "PrototypeKey": {
+            "Type": "AWS::IAM::AccessKey",
+            "Properties": {
+                "UserName": { "Ref": "PrototypeUser" }
+            }
+        },
+
+        "FCNotificationsQueue": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {
+            }
+        },
+        "FCNotificationsQueuePolicy": {
+            "Type": "AWS::SQS::QueuePolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "FCNotificationsQueuePolicy",
+                    "Statement": [
+                        {
+                            "Sid": "Allow-SendMessage-To-Queue-From-Topic",
+                            "Effect": "Allow",
+                            "Principal": { "AWS": "*" },
+                            "Action": ["sqs:SendMessage"],
+                            "Resource": "*",
+                            "Condition": {
+                                "ArnEquals": {
+                                    "aws:SourceArn": [{ "Ref": "FCMetadataTopic" }, { "Ref": "FCLifecycleTopic" }]
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Queues": [ { "Ref": "FCNotificationsQueue" } ]
             }
         }
 
