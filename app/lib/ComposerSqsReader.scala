@@ -9,24 +9,23 @@ import ExecutionContext.Implicits.global
 class ComposerSqsReader extends Actor {
   def receive = {
 
-    case SqsReader => {
+    case SqsReader =>
 
-      val messages = AWSWorkflowQueue.getMessages(10)
-
-      for(msg<-messages) {
-        val wireStatus = AWSWorkflowQueue.toWireStatus(msg)
-        ContentDatabase.doesNotContainPath(wireStatus.path).map { newPath =>
-          if(newPath) {
-            val workflowContent = WorkflowContent.fromWireStatus(wireStatus)
-            ContentDatabase.store.alter {
-              items =>
-                items.updated(workflowContent.id, workflowContent)
+      for (messages <- AWSWorkflowQueue.getMessages(10)) {
+        for(msg<-messages) {
+          val wireStatus = AWSWorkflowQueue.toWireStatus(msg)
+          ContentDatabase.doesNotContainPath(wireStatus.path).map { newPath =>
+            if(newPath) {
+              val workflowContent = WorkflowContent.fromWireStatus(wireStatus)
+              ContentDatabase.store.alter {
+                items =>
+                  items.updated(workflowContent.id, workflowContent)
+              }
             }
           }
+          AWSWorkflowQueue.deleteMessage(msg)
         }
-        AWSWorkflowQueue.deleteMessage(msg)
       }
-    }
   }
 
 }
