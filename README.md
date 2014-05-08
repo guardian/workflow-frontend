@@ -10,7 +10,15 @@ Development prerequisites
   * Get an account in the [aws-cms-workflow](https://aws-cms-workflow.signin.aws.amazon.com/console) AWS account
   * Create your own CloudFormation stack, using the developer template in `cloudformation/dev-template.json`
   * Query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values
-    into `conf/local.conf` [TODO: make a template for local.conf with placeholders]
+    into `conf/local.conf` using the following template:
+
+    aws {
+        key = "{AwsId}"
+        secret = "{AwsSecret}"
+        flex.notifications.queue = "{SqsQueueUrl}"
+        stub.bucket = "{S3Bucket}"
+    }
+
 
 Running the application
 -----------------------
