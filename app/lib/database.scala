@@ -9,6 +9,7 @@ import play.api.libs.ws._
 import java.util.UUID
 import play.api.libs.json.JsArray
 import play.api.mvc.Action
+import scala.util.Try
 
 
 object ContentDatabase {
@@ -62,7 +63,7 @@ object StubDatabase {
   import play.api.libs.json.Json
 
   def getAll: Future[List[Stub]] =
-    AWSWorkflowBucket.readStubsFile.map(AWSWorkflowBucket.parseStubsJson)
+    AWSWorkflowBucket.readStubsFile.map(parseStubsJson)
 
   def create(stub: Stub): Future[Unit] = for {
     stubs <- getAll
@@ -70,5 +71,11 @@ object StubDatabase {
     json = Json.toJson(newStubs)
     _ <- AWSWorkflowBucket.putJson(json)
   } yield ()
+
+  def parseStubsJson(s: String): List[Stub] = {
+    Try(Json.parse(s)).toOption
+      .flatMap(_.validate[List[Stub]].asOpt)
+      .getOrElse(Nil)
+  }
 
 }

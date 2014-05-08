@@ -4,7 +4,7 @@ import scala.collection.JavaConverters._
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.sqs.AmazonSQSClient
 import com.amazonaws.services.sqs.model.{DeleteMessageRequest, ReceiveMessageRequest, Message}
-import models.{Stub, WireStatus}
+import models.WireStatus
 import play.api.libs.json.{JsValue, Json}
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model._
@@ -12,7 +12,6 @@ import java.io.ByteArrayInputStream
 import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
 import ExecutionContext.Implicits.global
-import scala.util.Try
 
 
 object AWSCreds {
@@ -48,12 +47,6 @@ object AWSWorkflowBucket {
       val is = Source.fromInputStream(stream)
       is.getLines.mkString
     }
-  }
-
-  def parseStubsJson(s: String): List[Stub] = {
-    Try(Json.parse(s)).toOption
-      .flatMap(_.validate[List[Stub]].asOpt)
-      .getOrElse(Nil)
   }
 
 }
