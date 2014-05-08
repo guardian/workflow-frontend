@@ -10,7 +10,8 @@ case class Stub(id: String,
                 title: String,
                 section: String,
                 due: Option[DateTime],
-                assignee: Option[String])
+                assignee: Option[String],
+                composerId: Option[String])
 
 object Stub {
 
