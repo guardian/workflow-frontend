@@ -38,6 +38,7 @@ object Contributor {
 
 
 case class WireStatus(
+  composerId: String,
   contributors: List[Contributor],
   path: String,
   published: Boolean,
@@ -49,6 +50,7 @@ case class WireStatus(
 
 case class WorkflowContent(
   id: UUID,
+  composerId: String,
   path: Option[String],
   workingTitle: Option[String],
   contributors: List[Contributor],
@@ -78,6 +80,7 @@ object WorkflowContent {
   def fromWireStatus(wireStatus: WireStatus): WorkflowContent = {
     WorkflowContent(
       UUID.randomUUID(),
+      wireStatus.composerId,
       Some(wireStatus.path),
       None,
       wireStatus.contributors,
@@ -142,7 +145,8 @@ object WireStatus {
 
   import Status._
   implicit val wireStatusReads: Reads[WireStatus] =
-    ( readContributors ~
+    ((__ \ "content" \ "identifiers" \ "composerId").read[String] ~
+      readContributors ~
       (__ \ "content" \ "identifiers" \ "path").read[String] ~
       (__ \ "published").read[Boolean] ~
       (__ \ "whatChanged").read[String] ~

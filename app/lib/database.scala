@@ -25,11 +25,19 @@ object ContentDatabase {
     updatedStore.map(_.get(contentId))
   }
 
-  def doesNotContainPath(path: String): Future[Boolean] = {
-    store.future().map { items =>
-      items.values.toList.filter(_.path==Some(path)).isEmpty
+  def createOrModify(composerId: String, create: => WorkflowContent, modify: WorkflowContent => WorkflowContent): Future[Unit] =
+    for {
+      updatedStore <- store.alter { items =>
+        items.find { case (key, content) => content.composerId == composerId } match {
+          case Some((key, existing)) =>
+            items.updated(key, modify(existing))
+          case None =>
+            val newItem = create
+            items.updated(newItem.id, newItem)
+        }
+      }
     }
-  }
+    yield ()
 }
 
 object SectionDatabase {
@@ -108,14 +116,26 @@ object StubDatabase {
   def getAll: Future[List[Stub]] =
     AWSWorkflowBucket.readStubsFile.map(parseStubsJson)
 
-  def create(stub: Stub): Future[Unit] = for {
-    stubs <- getAll
-    newStubs = stub :: stubs
-    json = Json.toJson(newStubs)
-    _ <- AWSWorkflowBucket.putJson(json)
-  } yield ()
+  def create(stub: Stub): Future[Unit] =
+    for {
+      stubs <- getAll
+      newStubs = stub :: stubs
+      _ <- writeAll(newStubs)
+    } yield ()
 
-  def parseStubsJson(s: String): List[Stub] = {
+  def upsert(stub: Stub): Future[Unit] =
+    for {
+      stubs <- getAll
+      rest = stubs.filterNot(_.id == stub.id)
+      _ <- writeAll(stub :: rest)
+    } yield ()
+
+  private def writeAll(stubs: List[Stub]): Future[Unit] =
+    for {
+      _ <- AWSWorkflowBucket.putJson(Json.toJson(stubs))
+    } yield ()
+
+  private def parseStubsJson(s: String): List[Stub] = {
     Try(Json.parse(s)).toOption
       .flatMap(_.validate[List[Stub]].asOpt)
       .getOrElse(Nil)

@@ -62,14 +62,13 @@ object AWSWorkflowQueue {
   lazy val queueUrl = AWSCreds.config.getString("aws.flex.notifications.queue")
     .getOrElse(sys.error("Required: aws.flex.notifications.queue"))
 
-  def getMessages(messageCount: Int): scala.collection.immutable.List[Message] = {
-    val response = sqsClient.receiveMessage(
+  def getMessages(messageCount: Int): Future[List[Message]] = Future {
+    sqsClient.receiveMessage(
       new ReceiveMessageRequest(queueUrl).withMaxNumberOfMessages(messageCount)
-    )
-    response.getMessages.asScala.toList
+    ).getMessages.asScala.toList
   }
 
-  def deleteMessage(message: Message) {
+  def deleteMessage(message: Message): Future[Unit] = Future {
     sqsClient.deleteMessage(
       new DeleteMessageRequest(queueUrl, message.getReceiptHandle)
     )
