@@ -8,7 +8,7 @@ package object Formatting {
   catch {
     case e: IllegalArgumentException => None
   }
-  val displayPattern:  String = "HH:mm d MMM"
+  val displayPattern:  String = "d MMM HH:mm"
 
   def displayDate(date: DateTime) = DateTimeFormat.forPattern(displayPattern).print(date)
 

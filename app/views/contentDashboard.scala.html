@@ -1,4 +1,4 @@
-@(items: List[WorkflowContent], sections: List[Section], states: List[Status], workFlowForm: Form[WorkflowContent])
+@(items: List[WorkflowContent], sections: List[Section], states: List[Status])
 @import helper._
 @import Formatting._
 @import models.Status
@@ -83,14 +83,6 @@
            }
        </table>
    </div>
-  <div class="form">
-    @form(action=routes.Application.newWorkFlow()){
-        @inputText(workFlowForm("title"))
-        @select(field = workFlowForm("section"), options = options(sections.map(_.name)))
-        @select(field = workFlowForm("status"), options = options(states.map(_.name)))
-      <input type="submit" value="Create">
-    }
-  </div>
 <script>
     $('[contenteditable]').on('keyup', function (evt) {
         var tdElement = $(this).parents('td');
