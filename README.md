@@ -12,12 +12,12 @@ Development prerequisites
   * Query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values
     into `conf/local.conf` using the following template:
 
-    aws {
-        key = "{AwsId}"
-        secret = "{AwsSecret}"
-        flex.notifications.queue = "{SqsQueueUrl}"
-        stub.bucket = "{S3Bucket}"
-    }
+        aws {
+          key = "{AwsId}"
+          secret = "{AwsSecret}"
+          flex.notifications.queue = "{SqsQueueUrl}"
+          stub.bucket = "{S3Bucket}"
+        }
 
 
 Running the application
