@@ -3,11 +3,12 @@ package lib
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import models.{Section, WorkflowContent}
+import models.{Stub, Section, WorkflowContent}
 import akka.agent.Agent
 import play.api.libs.ws._
 import java.util.UUID
 import play.api.libs.json.JsArray
+import play.api.mvc.Action
 
 
 object ContentDatabase {
@@ -53,5 +54,21 @@ object SectionDatabase {
     }
 
   }
+
+}
+
+object StubDatabase {
+
+  import play.api.libs.json.Json
+
+  def getAll: Future[List[Stub]] =
+    AWSWorkflowBucket.readStubsFile.map(AWSWorkflowBucket.parseStubsJson)
+
+  def create(stub: Stub): Future[Unit] = for {
+    stubs <- getAll
+    newStubs = stub :: stubs
+    json = Json.toJson(newStubs)
+    _ <- AWSWorkflowBucket.putJson(json)
+  } yield ()
 
 }

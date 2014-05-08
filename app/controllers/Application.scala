@@ -4,7 +4,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.{AWSWorkflowBucket, SectionDatabase, ContentDatabase}
+import lib.{StubDatabase, SectionDatabase, ContentDatabase}
 import models._
 import play.api.data.Form
 import java.util.UUID
@@ -35,10 +35,8 @@ object Application extends Controller {
   }
 
   def stubs = Action.async {
-    AWSWorkflowBucket.readStubsFile.map { stubsContent =>
-      val stubs = AWSWorkflowBucket.parseStubsJson(stubsContent)
-      Ok(views.html.stubs(stubForm, stubs))
-    }
+    for (stubs <- StubDatabase.getAll)
+    yield Ok(views.html.stubs(stubForm, stubs))
   }
 
   def login = Action {
@@ -110,12 +108,8 @@ object Application extends Controller {
 
   def newStub = Action.async { implicit request =>
     stubForm.bindFromRequest.fold(
-      formWithErrors => {
-        Future.successful(BadRequest(s"that failed ${formWithErrors}"))
-      },
-      stub => {
-          AWSWorkflowBucket.add(stub).map {_ => Redirect(routes.Application.stubs())}
-      }
+      formWithErrors => Future.successful(BadRequest(s"that failed ${formWithErrors}")),
+      stub => StubDatabase.create(stub).map {_ => Redirect(routes.Application.stubs())}
     )
 
   }
