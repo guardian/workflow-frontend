@@ -26,11 +26,19 @@ object ContentDatabase {
     updatedStore.map(_.get(contentId))
   }
 
-  def doesNotContainPath(path: String): Future[Boolean] = {
-    store.future().map { items =>
-      items.values.toList.filter(_.path==Some(path)).isEmpty
+  def createOrModify(composerId: String, create: => WorkflowContent, modify: WorkflowContent => WorkflowContent): Future[Unit] =
+    for {
+      updatedStore <- store.alter { items =>
+        items.find { case (key, content) => content.composerId == composerId } match {
+          case Some((key, existing)) =>
+            items.updated(key, modify(existing))
+          case None =>
+            val newItem = create
+            items.updated(newItem.id, newItem)
+        }
+      }
     }
-  }
+    yield ()
 }
 
 object SectionDatabase {

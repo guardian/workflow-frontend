@@ -11,7 +11,7 @@ object Global extends GlobalSettings {
     import scala.concurrent.duration._
     Akka.system.scheduler.schedule(
       initialDelay = 0.seconds,
-      interval = 1.minutes,
+      interval = 3.seconds,
       receiver = Akka.system.actorOf(Props[ComposerSqsReader]),
       message = SqsReader
     )

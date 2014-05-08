@@ -68,7 +68,7 @@ object AWSWorkflowQueue {
     ).getMessages.asScala.toList
   }
 
-  def deleteMessage(message: Message) {
+  def deleteMessage(message: Message): Future[Unit] = Future {
     sqsClient.deleteMessage(
       new DeleteMessageRequest(queueUrl, message.getReceiptHandle)
     )
