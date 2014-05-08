@@ -4,15 +4,14 @@ import scala.collection.JavaConverters._
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.sqs.AmazonSQSClient
 import com.amazonaws.services.sqs.model.{DeleteMessageRequest, ReceiveMessageRequest, Message}
-import models.{Stub, WireStatus}
-import play.api.libs.json.Json
+import models.WireStatus
+import play.api.libs.json.{JsValue, Json}
 import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.model.{ObjectMetadata, PutObjectRequest, GetObjectRequest, Bucket}
+import com.amazonaws.services.s3.model._
 import java.io.ByteArrayInputStream
 import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
 import ExecutionContext.Implicits.global
-import scala.util.Try
 
 
 object AWSCreds {
@@ -33,6 +32,12 @@ object AWSWorkflowBucket {
 
   lazy val key = "tmp/stubs.txt"
 
+  def putJson(json: JsValue): Future[PutObjectResult] = {
+    val stream = new ByteArrayInputStream(json.toString.getBytes("UTF-8"))
+    val request = new PutObjectRequest(name, key, stream, new ObjectMetadata())
+    Future(s3Client.putObject(request))
+  }
+
   //reads stubs file
   def readStubsFile: Future[String] = {
     for {
@@ -44,22 +49,6 @@ object AWSWorkflowBucket {
     }
   }
 
-  def parseStubsJson(s: String): List[Stub] = {
-    Try(Json.parse(s)).toOption
-      .flatMap(_.validate[List[Stub]].asOpt)
-      .getOrElse(Nil)
-  }
-
-
-  def add(newStub: Stub) = {
-    AWSWorkflowBucket.readStubsFile.map { str =>
-      val existingStubs = parseStubsJson(str)
-      val stubsJson = Json.toJson(newStub :: existingStubs)
-      val stream = new ByteArrayInputStream(stubsJson.toString.getBytes("UTF-8"));
-      val putObjRequest = new PutObjectRequest(name, key, stream, new ObjectMetadata())
-      AWSWorkflowBucket.s3Client.putObject(putObjRequest)
-    }
-  }
 }
 
 object AWSWorkflowQueue {

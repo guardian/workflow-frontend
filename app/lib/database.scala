@@ -2,12 +2,13 @@ package lib
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
-import models.{Status, Section, WorkflowContent}
+import models.{Status, Stub, Section, WorkflowContent}
 import akka.agent.Agent
 import play.api.libs.ws._
 import java.util.UUID
 import play.api.libs.json.JsArray
+import play.api.mvc.Action
+import scala.util.Try
 
 
 object ContentDatabase {
@@ -68,18 +69,23 @@ object StatusDatabase {
   ))
 
   def statuses = store.future()
+
   def find(name: String) = store.get().find(_.name == name)
+
   def get(name: String) = find(name).get
 
   def remove(status: Status): Future[List[Status]] = store.alter(_.filterNot(_ == status))
+
   def add(status: Status): Future[List[Status]] = store.alter(_ :+ status)
+
   def moveUp(status: Status): Future[List[Status]] = store.alter(moveUp(status, _))
+
   def moveDown(status: Status): Future[List[Status]] = store.alter(moveDown(status, _))
 
   private def moveUp(s: Status, ss: List[Status]): List[Status] = {
     val index = ss.indexOf(s)
     if (index > 0) {
-      ss.patch(index -1, List(s, ss(index -1)), 2)
+      ss.patch(index - 1, List(s, ss(index - 1)), 2)
     } else {
       ss
     }
@@ -93,4 +99,26 @@ object StatusDatabase {
       ss
     }
   }
+}
+
+object StubDatabase {
+
+  import play.api.libs.json.Json
+
+  def getAll: Future[List[Stub]] =
+    AWSWorkflowBucket.readStubsFile.map(parseStubsJson)
+
+  def create(stub: Stub): Future[Unit] = for {
+    stubs <- getAll
+    newStubs = stub :: stubs
+    json = Json.toJson(newStubs)
+    _ <- AWSWorkflowBucket.putJson(json)
+  } yield ()
+
+  def parseStubsJson(s: String): List[Stub] = {
+    Try(Json.parse(s)).toOption
+      .flatMap(_.validate[List[Stub]].asOpt)
+      .getOrElse(Nil)
+  }
+
 }
