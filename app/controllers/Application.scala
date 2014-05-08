@@ -4,8 +4,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.{StubDatabase, SectionDatabase, ContentDatabase}
+import lib.{StubDatabase, StatusDatabase, SectionDatabase, ContentDatabase}
 import models._
+import models.{Status => WorkflowStatus} // Status in controller is Http status
 import play.api.data.Form
 import java.util.UUID
 import play.api.libs.json.{Reads, Writes, Json, JsValue}
@@ -83,13 +84,14 @@ object Application extends Controller {
   def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
     for(
       items <- ContentDatabase.store.future;
-      sections <- SectionDatabase.sectionList
+      sections <- SectionDatabase.sectionList;
+      statuses <- StatusDatabase.statuses
     ) yield {
       def filterPredicate(wc: WorkflowContent): Boolean =
         (for (f <- filterBy; v <- filterValue) yield {
           f match {
             case "section" => wc.section.exists(_.name == v)
-            case "status"  => WorkflowStatus.findWorkFlowStatus(v.toLowerCase) == Some(wc.status)
+            case "status"  => StatusDatabase.find(v) == Some(wc.status)
             case _         => false // TODO input validation
           }
         }) getOrElse true
@@ -99,7 +101,7 @@ object Application extends Controller {
       if (req.headers.get(ACCEPT) == Some("application/json"))
         Ok(renderJsonResponse(content))
       else
-        Ok(views.html.contentDashboard(content, sections))
+        Ok(views.html.contentDashboard(content, sections, statuses))
     }
   }
 
@@ -123,7 +125,7 @@ object Application extends Controller {
       case "workingTitle" => Right(_.copy(workingTitle = Some(value)))
 
       case "status" => for { u<-user.toRight(BadRequest("user name not supplied")).right
-                             s <- WorkflowStatus.findWorkFlowStatus(value).toRight(BadRequest(s"not a valid status $value")).right
+                             s <- StatusDatabase.find(value).toRight(BadRequest(s"not a valid status $value")).right
                            } yield (wc: WorkflowContent) => wc.copy(status=s, stateHistory = wc.stateHistory.updated(s,u))
 
 
