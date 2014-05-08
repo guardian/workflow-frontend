@@ -24,7 +24,7 @@ object Application extends Controller {
     "due" -> optional(jodaDate("dd/MM/yyyy HH:mm")),
     "assignee" -> optional(text)
   )((title, section, due, assignee) =>
-       Stub((UUID.randomUUID()).toString, title, section, due, assignee)
+       Stub((UUID.randomUUID()).toString, title, section, due, assignee, None)
   )(s => Some((s.title, s.section, s.due, s.assignee))))
 
 
