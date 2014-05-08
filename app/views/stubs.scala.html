@@ -4,28 +4,10 @@
 @import lib.Composer._
 @main("Stubs") {
 
-<div class="stub-form s-hidden">
-    @helper.form(action = routes.Application.newStub) {
-        <label for="title">title</label>
-        <input type="text" id="title" name="title" required>
-        <label for="section">section</label>
-        <select id="section" name="section">
-            <option value="technology">technology</option>
-        </select>
-        <label for="due">due</label>
-        <input type="text" id="due" name="due">
-        <label for="assignee">assign to</label>
-        <input type="text" id="assignee" name="assignee" value="" >
-    <br>
-    <button class="btn btn-primary" type="submit">Create</button>
-    <a href="/stubs" class="btn btn-primary">Cancel</a>
-    }
 
-
-</div>
 
 <div class="stubs-table table">
-    <button class="btn btn-primary" onClick="showForm()" style="float: right; margin-bottom: 10px;">New</button>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#stubModal" style="float: right; margin-bottom: 10px;">New</button>
     <table class="table table-striped">
         <tr>
             <th>Working Title</th>
@@ -79,6 +61,44 @@
         </div><
     </div>
 
+    <div class="modal fade" aria-hidden="true" id="stubModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Create new stub</h4>
+                </div>
+
+                    @helper.form(action = routes.Application.newStub) {
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="title">title</label>
+                                <input type="text" id="title" name="title" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="section">section</label>
+                                <select id="section" name="section">
+                                    <option value="technology">technology</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="due">due</label>
+                                <input type="text" id="due" name="due" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="assignee">assign to</label>
+                                <input type="text" id="assignee" name="assignee" value="" class="form-control">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    }
+            </div>
+        </div><
+    </div>
+
     <script>
         $(document).on("click", ".open-composerModal", function () {
             var stubId = $(this).data('id');
@@ -91,10 +111,6 @@
     $(function(){
         $('*[name=due]').appendDtpicker({"dateFormat": "DD/MM/yyyy hh:mm"});
     });
-    function showForm(){
-        $('.stub-form').removeClass('s-hidden');
-        $('.stubs-table').addClass('s-hidden');
-    }
 </script>
 
 }
