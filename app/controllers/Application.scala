@@ -21,10 +21,11 @@ object Application extends Controller {
     "title" -> nonEmptyText,
     "section" -> text,
     "due" -> optional(jodaDate("dd/MM/yyyy HH:mm")),
-    "assignee" -> optional(text)
-  )((title, section, due, assignee) =>
-       Stub((UUID.randomUUID()).toString, title, section, due, assignee, None)
-  )(s => Some((s.title, s.section, s.due, s.assignee))))
+    "assignee" -> optional(text),
+    "composerId" -> optional(text)
+  )((title, section, due, assignee, composerId) =>
+       Stub(UUID.randomUUID.toString, title, section, due, assignee, composerId)
+  )(s => Some((s.title, s.section, s.due, s.assignee, s.composerId))))
 
 
   object Authenticated extends AuthenticatedBuilder(req => req.session.get("user").flatMap(u => User.find(u)),
