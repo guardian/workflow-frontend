@@ -4,13 +4,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.{StubDatabase, SectionDatabase, ContentDatabase}
+import lib.{Composer, StubDatabase, SectionDatabase, ContentDatabase}
 import models._
 import play.api.data.Form
 import java.util.UUID
 import play.api.libs.json.{Reads, Writes, Json, JsValue}
 import play.api.libs.openid.OpenID
 import play.api.mvc.Security.AuthenticatedBuilder
+import play.api.libs.ws.WS
 
 object Application extends Controller {
 
@@ -79,6 +80,15 @@ object Application extends Controller {
     }
   }
 
+
+  def createInComposer(stubId: String) = Action { req =>
+   WS.url("http://localhost:9081/api/content?type=article").post("").map(res =>
+     Composer.parseId(res.json).map(composerId =>
+       StubDatabase.update(stubId, composerId)
+     )
+   )
+    Redirect(routes.Application.stubs())
+  }
 
   def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
     for(

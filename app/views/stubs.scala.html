@@ -28,16 +28,23 @@
     <table class="table table-striped">
         <tr>
             <th>Working Title</th>
+            <th>Compooser Url</th>
             <th>Section</th>
             <th>Due date</th>
             <th>Assigned to</th>
+            <th></th>
         </tr>
             @for(stub <- stubs) {
         <tr>
                 <td>@stub.title</td>
+                <td>@for(cId <- stub.composerId) { @cId }</td>
                 <td>@stub.section</td>
                 <td>@for(date <- stub.due) { @displayDate(date) }</td>
                 <td>@for(assignee <- stub.assignee) { @assignee }</td>
+                <td><form action="/createInComposer?stubId=@stub.id" method="post">
+                    <button class="btn btn-primary" type="submit">Composer</button>
+                </form>
+                </td>
         </tr>
             }
     </table>

@@ -71,4 +71,10 @@ object StubDatabase {
     _ <- AWSWorkflowBucket.putJson(json)
   } yield ()
 
+  def update(stubId: String, composerId: String): Future[Unit] = for {
+      stubs <- getAll
+      updatedStubs = stubs.map( s => if(s.id==stubId) s.copy(composerId=Some(composerId)) else s)
+      json = Json.toJson(updatedStubs)
+      _ <- AWSWorkflowBucket.putJson(json)
+  } yield ()
 }
