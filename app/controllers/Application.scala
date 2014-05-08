@@ -81,13 +81,26 @@ object Application extends Controller {
   }
 
 
-  def createInComposer(stubId: String) = Action { req =>
-   WS.url("http://localhost:9081/api/content?type=article").post("").map(res =>
-     Composer.parseId(res.json).map(composerId =>
-       StubDatabase.update(stubId, composerId)
-     )
-   )
-    Redirect(routes.Application.stubs())
+  def createInComposer() = Action.async { req =>
+  (for {
+      formFields <- req.body.asFormUrlEncoded
+      stubIdSeq <- formFields.get("stubId")
+      contentTypeSeq <- formFields.get("contentType")
+      stubId <- stubIdSeq.headOption
+      contentType <- contentTypeSeq.headOption
+    }
+    yield {
+      for {
+        res <- WS.url(Composer.newContentUrl).withQueryString(("type", contentType)).post("")
+        composerId = Composer.parseId(res.json)
+        response <- composerId match {
+          case Some(id) => StubDatabase.update(stubId, id).map(_ => Redirect(routes.Application.stubs()))
+          case None     => Future.successful(BadRequest("Could not parse ID"))
+        }
+      }
+      yield response
+
+    }).getOrElse(Future.successful(BadRequest("could not validate the form")))
   }
 
   def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>

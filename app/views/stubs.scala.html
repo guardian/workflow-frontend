@@ -1,6 +1,7 @@
 @(stubForm: Form[Stub], stubs: List[Stub])
 @import helper._
 @import Formatting._
+@import lib.Composer._
 @main("Stubs") {
 
 <div class="stub-form s-hidden">
@@ -28,7 +29,6 @@
     <table class="table table-striped">
         <tr>
             <th>Working Title</th>
-            <th>Compooser Url</th>
             <th>Section</th>
             <th>Due date</th>
             <th>Assigned to</th>
@@ -36,18 +36,55 @@
         </tr>
             @for(stub <- stubs) {
         <tr>
-                <td>@stub.title</td>
-                <td>@for(cId <- stub.composerId) { @cId }</td>
+                <td>@if(stub.composerId.isDefined){
+                    <a href="@adminUrl/@stub.composerId"> @stub.title </a>
+                    }
+                    @if(!stub.composerId.isDefined) { @stub.title }
+                </td>
                 <td>@stub.section</td>
                 <td>@for(date <- stub.due) { @displayDate(date) }</td>
                 <td>@for(assignee <- stub.assignee) { @assignee }</td>
-                <td><form action="/createInComposer?stubId=@stub.id" method="post">
-                    <button class="btn btn-primary" type="submit">Composer</button>
-                </form>
+                <td>
+                    <button class="btn btn-primary open-composerModal" data-toggle="modal" data-id="@stub.id" data-target="#composerModal">
+                        Composer
+                    </button>
                 </td>
         </tr>
             }
     </table>
+
+    <div class="modal fade" aria-hidden="true" id="composerModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add to composer</h4>
+                </div>
+                <form action="/createInComposer" method="post">
+                    <div class="modal-body">
+                        <p>Select content type</p>
+                            <select id="select" name="contentType">
+                                <optgroup label="Option Group">
+                                    <option value="article">article</option>
+                                </optgroup>
+                            </select>
+                            <input type="hidden" name="stubId" id="stubId" value="">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div><
+    </div>
+
+    <script>
+        $(document).on("click", ".open-composerModal", function () {
+            var stubId = $(this).data('id');
+            $(".modal-body #stubId").val(stubId);
+        });
+    </script>
 </div>
 
 <script type="text/javascript">
