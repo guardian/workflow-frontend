@@ -4,20 +4,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.{StubDatabase, StatusDatabase, SectionDatabase, ContentDatabase}
+import lib._
 import models._
-import models.{Status => WorkflowStatus} // Status in controller is Http status
 import play.api.data.Form
 import java.util.UUID
 import play.api.libs.json.{Reads, Writes, Json, JsValue}
 import play.api.libs.openid.OpenID
 import play.api.mvc.Security.AuthenticatedBuilder
+import play.api.libs.ws.WS
 
 object Application extends Controller {
 
   import play.api.data.Forms._
 
-  val stubForm = Form(
+  val stubForm: Form[Stub] = Form(
   mapping(
     "title" -> nonEmptyText,
     "section" -> text,
@@ -81,6 +81,31 @@ object Application extends Controller {
     }
   }
 
+
+  val createInComposerForm = Form(
+  tuple(
+    "stubId"      -> nonEmptyText,
+    "contentType" -> nonEmptyText
+  ))
+
+  def createInComposer() = Action.async { implicit req =>
+
+    createInComposerForm.bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest("Form errors: " + formWithErrors.errors.mkString(", "))),
+
+      { case (stubId, contentType) =>
+        for {
+          res <- WS.url(Composer.newContentUrl).withQueryString(("type", contentType)).post("")
+          composerId = Composer.parseId(res.json)
+          response <- composerId match {
+            case Some(id) => StubDatabase.update(stubId, id).map(_ => Redirect(routes.Application.stubs()))
+            case None     => Future.successful(BadRequest("Could not parse ID"))
+          }
+        }
+        yield response
+      }
+    )
+  }
 
   def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
     for(
