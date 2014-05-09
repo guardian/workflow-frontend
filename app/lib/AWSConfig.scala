@@ -4,7 +4,7 @@ import scala.collection.JavaConverters._
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.sqs.AmazonSQSClient
 import com.amazonaws.services.sqs.model.{DeleteMessageRequest, ReceiveMessageRequest, Message}
-import models.{Stub, WireStatus}
+import models.WireStatus
 import play.api.libs.json.{JsValue, Json}
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model._
@@ -12,7 +12,6 @@ import java.io.ByteArrayInputStream
 import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
 import ExecutionContext.Implicits.global
-import scala.util.Try
 
 
 object AWSCreds {
@@ -50,12 +49,6 @@ object AWSWorkflowBucket {
     }
   }
 
-  def parseStubsJson(s: String): List[Stub] = {
-    Try(Json.parse(s)).toOption
-      .flatMap(_.validate[List[Stub]].asOpt)
-      .getOrElse(Nil)
-  }
-
 }
 
 object AWSWorkflowQueue {
@@ -69,14 +62,13 @@ object AWSWorkflowQueue {
   lazy val queueUrl = AWSCreds.config.getString("aws.flex.notifications.queue")
     .getOrElse(sys.error("Required: aws.flex.notifications.queue"))
 
-  def getMessages(messageCount: Int): scala.collection.immutable.List[Message] = {
-    val response = sqsClient.receiveMessage(
+  def getMessages(messageCount: Int): Future[List[Message]] = Future {
+    sqsClient.receiveMessage(
       new ReceiveMessageRequest(queueUrl).withMaxNumberOfMessages(messageCount)
-    )
-    response.getMessages.asScala.toList
+    ).getMessages.asScala.toList
   }
 
-  def deleteMessage(message: Message) {
+  def deleteMessage(message: Message): Future[Unit] = Future {
     sqsClient.deleteMessage(
       new DeleteMessageRequest(queueUrl, message.getReceiptHandle)
     )

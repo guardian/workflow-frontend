@@ -1,7 +1,7 @@
-@(items: List[WorkflowContent], sections: List[Section])
+@(items: List[WorkflowContent], sections: List[Section], states: List[Status])
 @import helper._
 @import Formatting._
-@import models.WorkflowStatus
+@import models.Status
 @main("Content Dashboard") {
    <div class="table">
        <table class="table table-striped">
@@ -11,10 +11,10 @@
                <th>Status</th>
                <th><a href="/content">Section</a></th>
                <th>Scheduled Launch</th>
-               <th>Author</th>
-               <th>Edited</th>
-               <th>Subbed</th>
-               <th>Published</th>
+               <th>Writers</th>
+               <th>Subs</th>
+               <th>Revise</th>
+               <th>Final</th>
                <th>Last Modified</th>
                <th>By</th>
                <th>What Changed</th>
@@ -39,30 +39,30 @@
                <td data-field="launch">
                    <div contenteditable="true">@content.scheduledLaunch.map(displayDate(_))</div>
                </td>
-               <td data-value="author" data-field="status">
+               <td data-value="Writers" data-field="status">
                    <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(WorkflowStatus.Author)) {
+                       @for(user <- content.stateHistory.get(Status.Writers)) {
                             @user
                        }
                    </div>
                </td>
-               <td data-value="edited" data-field="status">
+               <td data-value="Subs" data-field="status">
                    <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(WorkflowStatus.Edited)) {
+                       @for(user <- content.stateHistory.get(Status.Subs)) {
                             @user
                        }
                    </div>
                </td>
-               <td data-value="subbed" data-field="status">
+               <td data-value="Revise" data-field="status">
                    <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(WorkflowStatus.Subbed)) {
+                       @for(user <- content.stateHistory.get(Status.Revise)) {
                             @user
                        }
                    </div>
                </td>
-               <td data-value="published" data-field="status">
+               <td data-value="Final" data-field="status">
                    <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(WorkflowStatus.Published)) {
+                       @for(user <- content.stateHistory.get(Status.Final)) {
                             @user
                        }
                    </div>
