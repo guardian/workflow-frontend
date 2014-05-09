@@ -4,9 +4,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.{StubDatabase, StatusDatabase, SectionDatabase, ContentDatabase}
+import lib._
 import models._
-import models.{Status => WorkflowStatus} // Status in controller is Http status
 import play.api.data.Form
 import java.util.UUID
 import play.api.libs.json.{Reads, Writes, Json, JsValue}
