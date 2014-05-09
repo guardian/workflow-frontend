@@ -13,6 +13,11 @@
             "AllowedValues": ["CODE", "TEST", "PROD"],
             "Default": "PROD"
         },
+        "SSLCertificateId": {
+            "Description": "ARN of the SSL certificate for workflow.gutools.co.uk",
+            "Type": "String",
+            "Default": "arn:aws:iam::753338109777:server-certificate/workflow.gutools.co.uk"
+        },
         "ImageIdInstanceStorage": {
             "Description": "AMI id for instances with instance storage.",
             "Type": "String",
@@ -113,7 +118,12 @@
                         "FromPort": "80",
                         "ToPort": "80",
                         "CidrIp": "0.0.0.0/0"
-
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "443",
+                        "ToPort": "443",
+                        "CidrIp": "0.0.0.0/0"
                     }
                 ]
             }
@@ -129,7 +139,13 @@
                         "LoadBalancerPort": "80",
                         "InstancePort": "9000",
                         "Protocol": "HTTP"
-                    }
+                    },
+                    {
+                        "LoadBalancerPort": "443",
+                        "InstancePort": "9000",
+                        "Protocol": "HTTPS",
+                        "SSLCertificateId": { "Ref": "SSLCertificateId" }
+                     }
                 ],
                 "HealthCheck": {
                     "Target": "HTTP:9000/management/healthcheck",
