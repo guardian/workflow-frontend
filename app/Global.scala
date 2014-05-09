@@ -1,9 +1,11 @@
 import akka.actor.Props
 import play.api.libs.concurrent.Akka
+import play.api.mvc.WithFilters
 import play.api.{GlobalSettings, Application}
-import lib.{SqsReader, ComposerSqsReader}
+import lib.{RedirectToHTTPSFilter, SqsReader, ComposerSqsReader}
 
-object Global extends GlobalSettings {
+
+object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
   override def onStart(app: Application) {
 
     import play.api.Play.current
