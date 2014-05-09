@@ -62,7 +62,8 @@ object Application extends Controller {
       ("lastname", "http://axschema.org/namePerson/last")
     )
     val googleOpenIdUrl = "https://www.google.com/accounts/o8/id"
-    OpenID.redirectURL(googleOpenIdUrl, routes.Application.openIdRedirect().absoluteURL(), openIdAttributes)
+    val redirectTo = routes.Application.openIdRedirect.absoluteURL(secure=true)
+    OpenID.redirectURL(googleOpenIdUrl, redirectTo, openIdAttributes)
     .map(Redirect(_))
   }
 
