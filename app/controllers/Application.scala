@@ -17,7 +17,7 @@ object Application extends Controller {
 
   import play.api.data.Forms._
 
-  val stubForm = Form(
+  val stubForm: Form[Stub] = Form(
   mapping(
     "title" -> nonEmptyText,
     "section" -> text,
@@ -81,26 +81,29 @@ object Application extends Controller {
   }
 
 
-  def createInComposer() = Action.async { req =>
-  (for {
-      formFields <- req.body.asFormUrlEncoded
-      stubIdSeq <- formFields.get("stubId")
-      contentTypeSeq <- formFields.get("contentType")
-      stubId <- stubIdSeq.headOption
-      contentType <- contentTypeSeq.headOption
-    }
-    yield {
-      for {
-        res <- WS.url(Composer.newContentUrl).withQueryString(("type", contentType)).post("")
-        composerId = Composer.parseId(res.json)
-        response <- composerId match {
-          case Some(id) => StubDatabase.update(stubId, id).map(_ => Redirect(routes.Application.stubs()))
-          case None     => Future.successful(BadRequest("Could not parse ID"))
-        }
-      }
-      yield response
+  val createInComposerForm = Form(
+  tuple(
+    "stubId"      -> nonEmptyText,
+    "contentType" -> nonEmptyText
+  ))
 
-    }).getOrElse(Future.successful(BadRequest("could not validate the form")))
+  def createInComposer() = Action.async { implicit req =>
+
+    createInComposerForm.bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest("Form errors: " + formWithErrors.errors.mkString(", "))),
+
+      { case (stubId, contentType) =>
+        for {
+          res <- WS.url(Composer.newContentUrl).withQueryString(("type", contentType)).post("")
+          composerId = Composer.parseId(res.json)
+          response <- composerId match {
+            case Some(id) => StubDatabase.update(stubId, id).map(_ => Redirect(routes.Application.stubs()))
+            case None     => Future.successful(BadRequest("Could not parse ID"))
+          }
+        }
+        yield response
+      }
+    )
   }
 
   def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
