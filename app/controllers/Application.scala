@@ -107,6 +107,12 @@ object Application extends Controller {
     )
   }
 
+  def updateStub(stubId: String, composerId: String) = Action.async { req =>
+    StubDatabase.update(stubId, composerId).map(_ =>
+      Redirect(routes.Application.stubs())
+    )
+  }
+
   def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
     for(
       items <- ContentDatabase.store.future;
