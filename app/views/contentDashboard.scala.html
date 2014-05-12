@@ -39,18 +39,16 @@
                    @content.section
                </td>
                <td>
-                   date created?
+                   (coming soon?)
                </td>
                <td>
-                   due by?
+                   @content.due
                </td>
                <td>
-               @if(content.lastModification.isDefined) {
-                   @for(mod<-content.lastModification){
+                 @for(mod<-content.lastModification){
                    @displayDate(mod.dateTime)
                    by @mod.user.getOrElse("unknown")
-                   }
-               }
+                 }
                </td>
                <td>
                    @content.status

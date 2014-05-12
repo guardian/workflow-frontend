@@ -125,8 +125,11 @@ object Application extends Controller {
       sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
       stubs    <- StubDatabase.getAll
-      content = items.values.toList.filter(filterPredicate)
-        .map(c => c.copy(workingTitle = stubs.collectFirst { case s if s.composerId == Some(c.composerId) => s.title }))
+      enrichFromStub = (c: WorkflowContent) => {
+        val stub = stubs.find(_.composerId == Some(c.composerId))
+        c.copy(workingTitle = stub.map(_.title), due = stub.flatMap(_.due))
+      }
+      content = items.values.toList.filter(filterPredicate).map(enrichFromStub)
     }
     yield {
       if (req.headers.get(ACCEPT) == Some("application/json"))
