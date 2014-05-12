@@ -21,13 +21,11 @@
            @for(content <- items) {
            <tr data-content=@content.id>
                <td>
-                   @for(title <- content.workingTitle) {
-                    @title
-                   }
+                   @content.workingTitle
                </td>
-               <td>@for(path <- content.path) {
-                       @path
-                   }</td>
+               <td>
+                   @content.path
+               </td>
                <td>
                    @content.headline
                </td>
@@ -38,7 +36,7 @@
                    @content.`type`
                </td>
                <td>
-                   section?
+                   @content.section
                </td>
                <td>
                    date created?

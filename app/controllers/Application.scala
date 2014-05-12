@@ -110,21 +110,25 @@ object Application extends Controller {
   }
 
   def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
-    for(
-      items <- ContentDatabase.store.future;
-      sections <- SectionDatabase.sectionList;
-      statuses <- StatusDatabase.statuses
-    ) yield {
-      def filterPredicate(wc: WorkflowContent): Boolean =
-        (for (f <- filterBy; v <- filterValue) yield {
-          f match {
-            case "section" => wc.section.exists(_.name == v)
-            case "status"  => StatusDatabase.find(v) == Some(wc.status)
-            case _         => false // TODO input validation
-          }
-        }) getOrElse true
 
-      val content = items.values.toList.filter(filterPredicate)
+    def filterPredicate(wc: WorkflowContent): Boolean =
+      (for (f <- filterBy; v <- filterValue) yield {
+        f match {
+          case "section" => wc.section.exists(_.name == v)
+          case "status"  => StatusDatabase.find(v) == Some(wc.status)
+          case _         => false // TODO input validation
+        }
+      }) getOrElse true
+
+    for {
+      items    <- ContentDatabase.store.future
+      sections <- SectionDatabase.sectionList
+      statuses <- StatusDatabase.statuses
+      stubs    <- StubDatabase.getAll
+      content = items.values.toList.filter(filterPredicate)
+        .map(c => c.copy(workingTitle = stubs.collectFirst { case s if s.composerId == Some(c.composerId) => s.title }))
+    }
+    yield {
       if (req.headers.get(ACCEPT) == Some("application/json"))
         Ok(renderJsonResponse(content))
       else
