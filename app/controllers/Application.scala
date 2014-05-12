@@ -5,6 +5,7 @@ import scala.concurrent.Future
 
 import play.api.mvc._
 import lib._
+import lib.RequestSyntax._
 import models._
 import play.api.data.Form
 import java.util.UUID
@@ -62,7 +63,7 @@ object Application extends Controller {
       ("lastname", "http://axschema.org/namePerson/last")
     )
     val googleOpenIdUrl = "https://www.google.com/accounts/o8/id"
-    val redirectTo = routes.Application.openIdRedirect.absoluteURL(secure=true)
+    val redirectTo = routes.Application.openIdRedirect.absoluteURL(secure = req.isSecure)
     OpenID.redirectURL(googleOpenIdUrl, redirectTo, openIdAttributes)
     .map(Redirect(_))
   }
@@ -71,7 +72,7 @@ object Application extends Controller {
     OpenID.verifiedId.map { userInfo =>
       val attr = userInfo.attributes
       val user = for { email <- attr.get("email")
-                      if(email.endsWith("@guardian.co.uk") || email.endsWith("@theguardian.com"))
+                      if email.endsWith("@guardian.co.uk") || email.endsWith("@theguardian.com")
                       firstName <- attr.get("firstname")
                       lastName <- attr.get("lastname")
                      } yield User(userInfo.id, email, firstName, lastName)
