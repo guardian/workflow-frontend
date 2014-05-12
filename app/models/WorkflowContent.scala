@@ -35,12 +35,13 @@ object Contributor {
   implicit val contributorWrites: Writes[Contributor] = Json.writes[Contributor]
 }
 
-
-
 case class WireStatus(
   composerId: String,
   contributors: List[Contributor],
   path: String,
+  headline: Option[String],
+  slug: Option[String],
+  `type`: String,
   published: Boolean,
   whatChanged: String,
   user: Option[String],
@@ -53,6 +54,9 @@ case class WorkflowContent(
   composerId: String,
   path: Option[String],
   workingTitle: Option[String],
+  headline: Option[String],
+  slug: Option[String],
+  `type`: String,
   contributors: List[Contributor],
   section: Option[Section],
   status: Status,
@@ -83,6 +87,9 @@ object WorkflowContent {
       wireStatus.composerId,
       Some(wireStatus.path),
       None,
+      wireStatus.headline,
+      wireStatus.slug,
+      wireStatus.`type`,
       wireStatus.contributors,
       wireStatus.tagSections.headOption,
       if (wireStatus.published) Final else Writers,
@@ -143,11 +150,15 @@ object WireStatus {
       yield firstOpt.flatMap(f => lastOpt.map(l => f + " " + l))
   }
 
+
   import Status._
   implicit val wireStatusReads: Reads[WireStatus] =
     ((__ \ "content" \ "identifiers" \ "composerId").read[String] ~
       readContributors ~
       (__ \ "content" \ "identifiers" \ "path").read[String] ~
+      (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
+      (__ \ "content" \ "fields" \ "slug").readNullable[String] ~
+      (__ \ "content" \ "type").read[String] ~
       (__ \ "published").read[Boolean] ~
       (__ \ "whatChanged").read[String] ~
       readUser ~

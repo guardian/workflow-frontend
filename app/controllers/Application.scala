@@ -125,7 +125,6 @@ object Application extends Controller {
         }) getOrElse true
 
       val content = items.values.toList.filter(filterPredicate)
-
       if (req.headers.get(ACCEPT) == Some("application/json"))
         Ok(renderJsonResponse(content))
       else

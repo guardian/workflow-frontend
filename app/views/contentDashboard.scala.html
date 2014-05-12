@@ -6,104 +6,63 @@
    <div class="table">
        <table class="table table-striped">
            <tr>
-               <th>Working Title / Path</th>
-               <th>Contributors</th>
-               <th>Status</th>
-               <th><a href="/content">Section</a></th>
-               <th>Scheduled Launch</th>
-               <th>Writers</th>
-               <th>Subs</th>
-               <th>Revise</th>
-               <th>Final</th>
+               <th>Working Title</th>
+               <th>Path</th>
+               <th>Headline</th>
+               <th>Slug</th>
+               <th>Content Type</th>
+               <th>Section</th>
+               <th>Date created</th>
+               <th>Due by</th>
                <th>Last Modified</th>
-               <th>By</th>
-               <th>What Changed</th>
+               <th>State</th>
+               <th>Status</th>
            </tr>
            @for(content <- items) {
            <tr data-content=@content.id>
                <td>
                    @for(title <- content.workingTitle) {
-                   @title
-                   }
-                   @for(path <- content.path) {
-                   @path
+                    @title
                    }
                </td>
-               <td>@content.contributors.map(_.name).mkString(", ")</td>
+               <td>@for(path <- content.path) {
+                       @path
+                   }</td>
                <td>
-                   <a href="/content?filterBy=status&filterValue=@content.status">@content.status</a>
+                   @content.headline
                </td>
-               <td data-field="section">
-                   <a href="/content?filterBy=section&filterValue=@content.section">@content.section</a>
+               <td>
+                   @content.slug
                </td>
-               <td data-field="launch">
-                   <div contenteditable="true">@content.scheduledLaunch.map(displayDate(_))</div>
+               <td>
+                   @content.`type`
                </td>
-               <td data-value="Writers" data-field="status">
-                   <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(Status.Writers)) {
-                            @user
-                       }
-                   </div>
+               <td>
+                   section?
                </td>
-               <td data-value="Subs" data-field="status">
-                   <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(Status.Subs)) {
-                            @user
-                       }
-                   </div>
+               <td>
+                   date created?
                </td>
-               <td data-value="Revise" data-field="status">
-                   <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(Status.Revise)) {
-                            @user
-                       }
-                   </div>
+               <td>
+                   due by?
                </td>
-               <td data-value="Final" data-field="status">
-                   <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(Status.Final)) {
-                            @user
-                       }
-                   </div>
-               </td>
+               <td>
                @if(content.lastModification.isDefined) {
                    @for(mod<-content.lastModification){
-                   <td>@displayDate(mod.dateTime)</td>
-                   <td>@mod.user.getOrElse("unknown")</td>
-                   <td>@mod.whatChanged</td>
+                   @displayDate(mod.dateTime)
+                   by @mod.user.getOrElse("unknown")
                    }
                }
-               @if(!content.lastModification.isDefined) {
-                    <td></td>
-                    <td></td>
-                    <td></td>
-               }
+               </td>
+               <td>
+                   @content.status
+               </td>
+               <td>
+                   status
+               </td>
            </tr>
            }
        </table>
    </div>
-<script>
-    $('[contenteditable]').on('keyup', function (evt) {
-        var tdElement = $(this).parents('td');
-        var trElement = $(this).parents('tr');
-        var content = trElement.attr('data-content');
-        var field = tdElement.attr('data-field');
-        if(field==='status') {
-            var value = tdElement.attr('data-value');
-            var user = $(this).text()
-        }
-        else {
-            var value = $(this).text()
-        }
-        $.post('/fieldChange/' + content + '?field=' + field + '&value=' + value + '&user=' + user).done(function () {
-            console.log('done');
-        });
-        if(evt.keyCode==9) {
-            location.reload();
-        }
-    });
-
-</script>
 
 }
