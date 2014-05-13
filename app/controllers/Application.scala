@@ -39,8 +39,8 @@ object Application extends Controller {
   }
 
   def stubs = Action.async {
-    for (stubs <- StubDatabase.getAll)
-    yield Ok(views.html.stubs(stubForm, stubs))
+    for (stubs <- StubDatabase.getAll; sections <- SectionDatabase.sectionList)
+    yield Ok(views.html.stubs(stubForm, stubs, sections))
   }
 
   def login = Action {

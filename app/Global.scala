@@ -2,7 +2,7 @@ import akka.actor.Props
 import play.api.libs.concurrent.Akka
 import play.api.mvc.WithFilters
 import play.api.{GlobalSettings, Application}
-import lib.{RedirectToHTTPSFilter, SqsReader, ComposerSqsReader}
+import lib.{SectionDatabase, RedirectToHTTPSFilter, SqsReader, ComposerSqsReader}
 
 
 object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
@@ -17,6 +17,9 @@ object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
       receiver = Akka.system.actorOf(Props[ComposerSqsReader]),
       message = SqsReader
     )
+
+    // prod this to make it load initial state.
+    SectionDatabase.sectionList
   }
 
 }
