@@ -79,7 +79,7 @@ object Application extends Controller {
                      } yield User(userInfo.id, email, firstName, lastName)
 
       user.map {
-        u => Redirect(routes.Application.content(None, None)).withSession("user" -> Json.toJson(u).toString)
+        u => Redirect(routes.Application.content).withSession("user" -> Json.toJson(u).toString)
       }.getOrElse(Redirect(routes.Application.login()))
     }
   }
@@ -112,29 +112,38 @@ object Application extends Controller {
 
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
-  def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
+  def filterPredicate(filterKey: String, value: String)(wc: WorkflowContent): Boolean = {
 
-    def filterPredicate(wc: WorkflowContent): Boolean =
-      (for (f <- filterBy; v <- filterValue) yield {
-        f match {
-          case "section" => wc.section.exists(_.name == v)
-          case "status"  => StatusDatabase.find(v) == Some(wc.status)
-          case _         => false // TODO input validation
-        }
-      }) getOrElse true
+    // Use of `forall` ensures content with no due date set is always shown
+    def filterDue(cmp: (DateTime, DateTime) => Boolean): Boolean =
+      wc.due.forall(due => Formatting.parseDate(value).forall(v => cmp(due, v)))
 
+    filterKey match {
+      case "section"   => wc.section.exists(_.name == value)
+      case "status"    => StatusDatabase.find(value) == Some(wc.status)
+      case "due.from"  => filterDue((due, v) => due.isEqual(v) || due.isAfter(v))
+      case "due.until" => filterDue((due, v) => due.isBefore(v))
+      case _ => true
+    }
+  }
+
+  def content = Authenticated.async { req =>
     for {
       items    <- ContentDatabase.store.future
       sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
       stubs    <- StubDatabase.getAll
+
       enrichFromStub = (c: WorkflowContent) => {
         val stub = stubs.find(_.composerId == Some(c.composerId))
         c.copy(workingTitle = stub.map(_.title), due = stub.flatMap(_.due))
       }
+      predicate = (wc: WorkflowContent) => req.queryString.forall { case (k, vs) =>
+        vs.exists(v => filterPredicate(k, v)(wc))
+      }
       content = items.values.toList
-        .filter(filterPredicate)
         .map(enrichFromStub)
+        .filter(predicate)
         .sortBy(_.due)
     }
     yield {
