@@ -34,7 +34,7 @@
             "Default": "arn:aws:sns:eu-west-1:308506855511:prod-fc-lifecycle-events"
         },
         "ComposerUrl": {
-            "Descrption": "The url for composer",
+            "Description": "The url for composer",
             "Type": "String",
             "Default": "https://composer.gutools.co.uk"
         }
