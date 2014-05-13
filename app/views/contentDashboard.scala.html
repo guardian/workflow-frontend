@@ -86,7 +86,7 @@
   $('#filter_form').on('submit', function(event) {
 
     var today = moment().startOf('day');
-    var tomorrow = moment().add('days', 1).startOf('day');
+    var tomorrow = today.clone().add('days', 1)
 
     var due_from = [];
     var due_until = [];
@@ -98,7 +98,7 @@
 
     if ($('#filter_form_due_tomorrow').is(':checked')) {
       due_from.push(tomorrow);
-      var until = moment().add('days', 2).startOf('day');
+      var until = tomorrow.clone().add('days', 1);
       due_until.push(until);
     }
 
