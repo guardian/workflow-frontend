@@ -4,7 +4,7 @@
 
 # Home page
 GET     /                                   controllers.Application.index
-GET     /content                            controllers.Application.content(filterBy: Option[String], filterValue: Option[String])
+GET     /content                            controllers.Application.content
 GET     /stubs                              controllers.Application.stubs()
 
 POST    /newStub                            controllers.Application.newStub()

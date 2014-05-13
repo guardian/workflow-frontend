@@ -1,109 +1,56 @@
 @(items: List[WorkflowContent], sections: List[Section], states: List[Status])
 @import helper._
-@import Formatting._
+@import lib.Formatting._
 @import models.Status
 @main("Content Dashboard") {
    <div class="table">
        <table class="table table-striped">
            <tr>
-               <th>Working Title / Path</th>
-               <th>Contributors</th>
-               <th>Status</th>
-               <th><a href="/content">Section</a></th>
-               <th>Scheduled Launch</th>
-               <th>Writers</th>
-               <th>Subs</th>
-               <th>Revise</th>
-               <th>Final</th>
+               <th>Working Title</th>
+               <th>Path</th>
+               <th>Headline</th>
+               <th>Slug</th>
+               <th>Content Type</th>
+               <th>Section</th>
+               <th>Due by</th>
                <th>Last Modified</th>
-               <th>By</th>
-               <th>What Changed</th>
+               <th>Status</th>
            </tr>
            @for(content <- items) {
            <tr data-content=@content.id>
                <td>
-                   @for(title <- content.workingTitle) {
-                   @title
-                   }
-                   @for(path <- content.path) {
-                   @path
-                   }
+                   @content.workingTitle
                </td>
-               <td>@content.contributors.map(_.name).mkString(", ")</td>
                <td>
-                   <a href="/content?filterBy=status&filterValue=@content.status">@content.status</a>
+                   @content.path
                </td>
-               <td data-field="section">
-                   <a href="/content?filterBy=section&filterValue=@content.section">@content.section</a>
+               <td>
+                   @content.headline
                </td>
-               <td data-field="launch">
-                   <div contenteditable="true">@content.scheduledLaunch.map(displayDate(_))</div>
+               <td>
+                   @content.slug
                </td>
-               <td data-value="Writers" data-field="status">
-                   <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(Status.Writers)) {
-                            @user
-                       }
-                   </div>
+               <td>
+                   @{content.`type`}
                </td>
-               <td data-value="Subs" data-field="status">
-                   <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(Status.Subs)) {
-                            @user
-                       }
-                   </div>
+               <td>
+                   @content.section
                </td>
-               <td data-value="Revise" data-field="status">
-                   <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(Status.Revise)) {
-                            @user
-                       }
-                   </div>
+               <td>
+                   @content.due.map(displayDate)
                </td>
-               <td data-value="Final" data-field="status">
-                   <div contenteditable="true">
-                       @for(user <- content.stateHistory.get(Status.Final)) {
-                            @user
-                       }
-                   </div>
+               <td>
+                 @for(mod<-content.lastModification){
+                   @displayDate(mod.dateTime)
+                   @for(user <- mod.user){ by @user }
+                 }
                </td>
-               @if(content.lastModification.isDefined) {
-                   @for(mod<-content.lastModification){
-                   <td>@displayDate(mod.dateTime)</td>
-                   <td>@mod.user.getOrElse("unknown")</td>
-                   <td>@mod.whatChanged</td>
-                   }
-               }
-               @if(!content.lastModification.isDefined) {
-                    <td></td>
-                    <td></td>
-                    <td></td>
-               }
+               <td>
+                   @content.status
+               </td>
            </tr>
            }
        </table>
    </div>
-<script>
-    $('[contenteditable]').on('keyup', function (evt) {
-        var tdElement = $(this).parents('td');
-        var trElement = $(this).parents('tr');
-        var content = trElement.attr('data-content');
-        var field = tdElement.attr('data-field');
-        if(field==='status') {
-            var value = tdElement.attr('data-value');
-            var user = $(this).text()
-        }
-        else {
-            var value = $(this).text()
-        }
-        $.post('/fieldChange/' + content + '?field=' + field + '&value=' + value + '&user=' + user).done(function () {
-            console.log('done');
-        });
-        if(evt.keyCode==9) {
-            location.reload();
-        }
-    });
-
-</script>
 
 }

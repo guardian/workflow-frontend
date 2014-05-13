@@ -5,6 +5,7 @@ import scala.concurrent.Future
 
 import play.api.mvc._
 import lib._
+import lib.RequestSyntax._
 import models._
 import play.api.data.Form
 import java.util.UUID
@@ -12,6 +13,7 @@ import play.api.libs.json.{Reads, Writes, Json, JsValue}
 import play.api.libs.openid.OpenID
 import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.libs.ws.WS
+import org.joda.time.DateTime
 
 object Application extends Controller {
 
@@ -62,7 +64,8 @@ object Application extends Controller {
       ("lastname", "http://axschema.org/namePerson/last")
     )
     val googleOpenIdUrl = "https://www.google.com/accounts/o8/id"
-    OpenID.redirectURL(googleOpenIdUrl, routes.Application.openIdRedirect().absoluteURL(), openIdAttributes)
+    val redirectTo = routes.Application.openIdRedirect.absoluteURL(secure = req.isSecure)
+    OpenID.redirectURL(googleOpenIdUrl, redirectTo, openIdAttributes)
     .map(Redirect(_))
   }
 
@@ -70,13 +73,13 @@ object Application extends Controller {
     OpenID.verifiedId.map { userInfo =>
       val attr = userInfo.attributes
       val user = for { email <- attr.get("email")
-                      if(email.endsWith("@guardian.co.uk") || email.endsWith("@theguardian.com"))
+                      if email.endsWith("@guardian.co.uk") || email.endsWith("@theguardian.com")
                       firstName <- attr.get("firstname")
                       lastName <- attr.get("lastname")
                      } yield User(userInfo.id, email, firstName, lastName)
 
       user.map {
-        u => Redirect(routes.Application.content(None, None)).withSession("user" -> Json.toJson(u).toString)
+        u => Redirect(routes.Application.content).withSession("user" -> Json.toJson(u).toString)
       }.getOrElse(Redirect(routes.Application.login()))
     }
   }
@@ -113,23 +116,42 @@ object Application extends Controller {
     )
   }
 
-  def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
-    for(
-      items <- ContentDatabase.store.future;
-      sections <- SectionDatabase.sectionList;
+  implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
+
+  def filterPredicate(filterKey: String, value: String)(wc: WorkflowContent): Boolean = {
+    // Use of `forall` ensures content with no due date set is always shown
+    def filterDue(cmp: (DateTime, DateTime) => Boolean): Boolean =
+      wc.due.forall(due => Formatting.parseDate(value).forall(v => cmp(due, v)))
+
+    filterKey match {
+      case "section"   => wc.section.exists(_.name == value)
+      case "status"    => StatusDatabase.find(value) == Some(wc.status)
+      case "due.from"  => filterDue((due, v) => due.isEqual(v) || due.isAfter(v))
+      case "due.until" => filterDue((due, v) => due.isBefore(v))
+      case _ => true
+    }
+  }
+
+  def content = Authenticated.async { req =>
+    for {
+      items    <- ContentDatabase.store.future
+      sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
-    ) yield {
-      def filterPredicate(wc: WorkflowContent): Boolean =
-        (for (f <- filterBy; v <- filterValue) yield {
-          f match {
-            case "section" => wc.section.exists(_.name == v)
-            case "status"  => StatusDatabase.find(v) == Some(wc.status)
-            case _         => false // TODO input validation
-          }
-        }) getOrElse true
+      stubs    <- StubDatabase.getAll
 
-      val content = items.values.toList.filter(filterPredicate)
-
+      enrichFromStub = (c: WorkflowContent) => {
+        val stub = stubs.find(_.composerId == Some(c.composerId))
+        c.copy(workingTitle = stub.map(_.title), due = stub.flatMap(_.due))
+      }
+      predicate = (wc: WorkflowContent) => req.queryString.forall { case (k, vs) =>
+        vs.exists(v => filterPredicate(k, v)(wc))
+      }
+      content = items.values.toList
+        .map(enrichFromStub)
+        .filter(predicate)
+        .sortBy(_.due)
+    }
+    yield {
       if (req.headers.get(ACCEPT) == Some("application/json"))
         Ok(renderJsonResponse(content))
       else
