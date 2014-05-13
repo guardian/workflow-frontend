@@ -1,4 +1,4 @@
-@(stubForm: Form[Stub], stubs: List[Stub])
+@(stubForm: Form[Stub], stubs: List[Stub], sectionList: List[Section])
 @import helper._
 @import lib.Formatting._
 @import lib.Composer._
@@ -84,7 +84,14 @@
                             <div class="form-group">
                                 <label for="section">section</label>
                                 <select id="section" name="section">
-                                    <option value="technology">technology</option>
+                                    <!-- TODO SW this is a complete cludge to make things easy for the technology desk, ideally this will be
+                                    replaced by a set of useful sections based on who's logged in and their section permissions -->
+                                    <option value="Technology">Technology</option>
+                                    <option value="">----------</option>
+                                    @for(s <- sectionList){
+                                        <option value="@s.name">@s.name</option>
+                                    }
+
                                 </select>
                             </div>
                             <div class="form-group">
