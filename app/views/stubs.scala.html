@@ -25,13 +25,17 @@
                 <td>@for(date <- stub.due) { @displayDate(date) }</td>
                 <td>@for(assignee <- stub.assignee) { @assignee }</td>
                 <td>
+                    @if(!stub.composerId.isDefined){
                     <button class="btn btn-primary open-composerModal" data-toggle="modal" data-id="@stub.id" data-target="#composerModal">
                         Composer
                     </button>
+                    }
                 </td>
         </tr>
             }
     </table>
+
+
 
     <div class="modal fade" aria-hidden="true" id="composerModal">
         <div class="modal-dialog">
@@ -40,19 +44,23 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Add to composer</h4>
                 </div>
-                <form action="/createInComposer" method="post">
+                <form action="/stubs">
                     <div class="modal-body">
                         <p>Select content type</p>
-                            <select id="select" name="contentType">
+                            <select id="contentType" name="contentType">
                                 <optgroup label="Option Group">
-                                    <option value="article">article</option>
+                                    <option value="article">Article</option>
+                                    <option value="live blog">Live Blog</option>
+                                    <option value="gallery">Gallery</option>
+                                    <option value="interactive">Interactive</option>
                                 </optgroup>
                             </select>
                             <input type="hidden" name="stubId" id="stubId" value="">
+                            <input type="hidden" name="composerUrl" id="composerUrl" value="@newContentUrl">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button  type="submit" class="btn btn-primary" id="submit">Create</button>
                     </div>
                 </form>
             </div>
@@ -97,18 +105,40 @@
         </div><
     </div>
 
-    <script>
-        $(document).on("click", ".open-composerModal", function () {
-            var stubId = $(this).data('id');
-            $(".modal-body #stubId").val(stubId);
-        });
-    </script>
 </div>
 
-<script type="text/javascript">
+<script>
+    $(document).on("click", ".open-composerModal", function () {
+        var stubId = $(this).data('id');
+        $(".modal-body #stubId").val(stubId);
+    });
+
     $(function(){
         $('*[name=due]').appendDtpicker({"dateFormat": "DD/MM/yyyy hh:mm"});
     });
-</script>
 
+    $('#submit').click(function (event) {
+        event.preventDefault();
+        var type = $('select#contentType').val();
+        var stubId = $('input#stubId').val();
+        var baseUrl = $('input#composerUrl').val();
+        $.ajax({
+            url: baseUrl,
+            data: {'type': type},
+            xhrFields: {
+                withCredentials: true
+            },
+            type: "POST"
+        }).success(function(data) {
+            var composerId = data.data.id
+            $.ajax({
+                url: "/updateStub/"+stubId+"?composerId="+composerId,
+                type: "POST"
+            }).success(function() {
+                location.reload();
+            });
+        });
+
+    });
+</script>
 }

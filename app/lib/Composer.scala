@@ -9,7 +9,7 @@ object Composer {
   val config = play.api.Play.configuration
   //default to localhost for now
   lazy val baseUrl = config.getString("composer.url").getOrElse("http://localhost:9081")
-  lazy val newContentUrl = baseUrl + "/api/content"
+  lazy val newContentUrl = baseUrl + "/admin/api/content"
   lazy val adminUrl = baseUrl + "/admin/content"
 
   def parseId(json: JsValue): Option[String] = {

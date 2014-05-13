@@ -110,10 +110,15 @@ object Application extends Controller {
     )
   }
 
+  def updateStub(stubId: String, composerId: String) = Action.async { req =>
+    StubDatabase.update(stubId, composerId).map(_ =>
+      Redirect(routes.Application.stubs())
+    )
+  }
+
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
   def filterPredicate(filterKey: String, value: String)(wc: WorkflowContent): Boolean = {
-
     // Use of `forall` ensures content with no due date set is always shown
     def filterDue(cmp: (DateTime, DateTime) => Boolean): Boolean =
       wc.due.forall(due => Formatting.parseDate(value).forall(v => cmp(due, v)))
