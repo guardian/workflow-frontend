@@ -122,6 +122,9 @@
         $.ajax({
             url: baseUrl,
             data: {'type': type},
+            xhrFields: {
+                withCredentials: true
+            },
             type: "POST"
         }).success(function(data) {
             var composerId = data.data.id
