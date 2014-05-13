@@ -3,7 +3,29 @@
 @import lib.Formatting._
 @import models.Status
 @main("Content Dashboard") {
-   <div class="table">
+
+ <div class="row">
+   <div class="col-md-2">
+       <h3>Filters</h3>
+     <form id="filter_form">
+       <div>
+           <h4>Due date</h4>
+           <ul>
+               <li>
+                   <input type="checkbox" id="filter_form_due_today">
+                   <label for="filter_form_due_today">today</label>
+               </li>
+               <li>
+                   <input type="checkbox" id="filter_form_due_tomorrow">
+                   <label for="filter_form_due_tomorrow">tomorrow</label>
+               </li>
+           </ul>
+           <input type="submit" value="Apply" />
+       </div>
+     </form>
+   </div>
+   <div class="col-md-10">
+     <div class="table">
        <table class="table table-striped">
            <tr>
                <th>Working Title</th>
@@ -51,6 +73,43 @@
            </tr>
            }
        </table>
+     </div>
    </div>
+ </div>
 
+<script>
+
+  function formatDateForUri(date) {
+    return encodeURIComponent(moment(date).format("YYYY-MM-DDTHH:mm:ssZ"));
+  }
+
+  $('#filter_form').on('submit', function(event) {
+
+    var today = moment().startOf('day');
+    var tomorrow = moment().add('days', 1).startOf('day');
+
+    var due_from = [];
+    var due_until = [];
+
+    if ($('#filter_form_due_today').is(':checked')) {
+      due_from.push(today);
+      due_until.push(tomorrow);
+    }
+
+    if ($('#filter_form_due_tomorrow').is(':checked')) {
+      due_from.push(tomorrow);
+      var until = moment().add('days', 2).startOf('day');
+      due_until.push(until);
+    }
+
+    var uri =
+      "/content?due.from=" + formatDateForUri(due_from.shift()) +
+      "&due.until=" + formatDateForUri(due_until.pop());
+
+    window.location = uri;
+
+    return false;
+  });
+
+</script>
 }
