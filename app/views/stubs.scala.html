@@ -26,9 +26,12 @@
                 <td>@for(assignee <- stub.assignee) { @assignee }</td>
                 <td>
                     @if(!stub.composerId.isDefined){
-                    <button class="btn btn-primary open-composerModal" data-toggle="modal" data-id="@stub.id" data-target="#composerModal">
+                    <button class="btn btn-default btn-sm open-composerModal" data-toggle="modal" data-id="@stub.id" data-target="#composerModal">
                         Composer
                     </button>
+                    }
+                    @if(stub.composerId.isDefined) {
+                        <a href=@adminUrl/@stub.composerId class="btn btn-default btn-sm" target="_blank">Edit</a>
                     }
                 </td>
         </tr>
@@ -126,7 +129,7 @@
 
     $('#submit').click(function (event) {
         event.preventDefault();
-        var type = $('select#contentType').val();
+        var type = $('#contentType').val();
         var stubId = $('input#stubId').val();
         var baseUrl = $('input#composerUrl').val();
         $.ajax({
