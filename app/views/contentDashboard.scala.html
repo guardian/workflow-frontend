@@ -38,7 +38,7 @@
                    @content.section
                </td>
                <td>
-                   @content.due
+                   @content.due.map(displayDate)
                </td>
                <td>
                  @for(mod<-content.lastModification){
