@@ -22,7 +22,7 @@
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </button>
                     </div>
-                    <a href="@routes.Application.content(Some("status"), Some(status.name))">@{status.name}</a>
+                    <a href="@{routes.Application.content}?status=@{status.name}">@{status.name}</a>
                 </li>
                 }
             </ul>

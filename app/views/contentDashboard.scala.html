@@ -1,6 +1,6 @@
 @(items: List[WorkflowContent], sections: List[Section], states: List[Status])
 @import helper._
-@import Formatting._
+@import lib.Formatting._
 @import models.Status
 @main("Content Dashboard") {
    <div class="table">
@@ -14,7 +14,6 @@
                <th>Section</th>
                <th>Due by</th>
                <th>Last Modified</th>
-               <th>State</th>
                <th>Status</th>
            </tr>
            @for(content <- items) {
@@ -38,19 +37,16 @@
                    @content.section
                </td>
                <td>
-                   @content.due
+                   @content.due.map(displayDate)
                </td>
                <td>
                  @for(mod<-content.lastModification){
                    @displayDate(mod.dateTime)
-                   by @mod.user.getOrElse("unknown")
+                   @for(user <- mod.user){ by @user }
                  }
                </td>
                <td>
                    @content.status
-               </td>
-               <td>
-                   status
                </td>
            </tr>
            }
