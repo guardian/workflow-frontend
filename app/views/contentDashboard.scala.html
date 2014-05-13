@@ -43,7 +43,7 @@
                <td>
                  @for(mod<-content.lastModification){
                    @displayDate(mod.dateTime)
-                   by @mod.user.getOrElse("unknown")
+                   @for(user <- mod.user){ by @user }
                  }
                </td>
                <td>
