@@ -13,6 +13,7 @@ import play.api.libs.json.{Reads, Writes, Json, JsValue}
 import play.api.libs.openid.OpenID
 import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.libs.ws.WS
+import org.joda.time.DateTime
 
 object Application extends Controller {
 
@@ -109,6 +110,8 @@ object Application extends Controller {
     )
   }
 
+  implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
+
   def content(filterBy: Option[String], filterValue: Option[String]) = Authenticated.async { req =>
 
     def filterPredicate(wc: WorkflowContent): Boolean =
@@ -129,7 +132,10 @@ object Application extends Controller {
         val stub = stubs.find(_.composerId == Some(c.composerId))
         c.copy(workingTitle = stub.map(_.title), due = stub.flatMap(_.due))
       }
-      content = items.values.toList.filter(filterPredicate).map(enrichFromStub)
+      content = items.values.toList
+        .filter(filterPredicate)
+        .map(enrichFromStub)
+        .sortBy(_.due)
     }
     yield {
       if (req.headers.get(ACCEPT) == Some("application/json"))
