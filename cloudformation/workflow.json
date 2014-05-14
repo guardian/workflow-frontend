@@ -37,6 +37,11 @@
             "Description": "The url for composer",
             "Type": "String",
             "Default": "https://composer.gutools.co.uk"
+        },
+        "DBPort": {
+            "Description": "Port number for the database instance",
+            "Type": "String",
+            "Default": "5432"
         }
     },
     "Resources": {
@@ -108,6 +113,27 @@
                         "FromPort": 9000,
                         "ToPort": 9000,
                         "SourceSecurityGroupName": { "Fn::GetAtt": ["PrototypeLoadBalancer", "SourceSecurityGroup.GroupName"]}
+                    }
+                ]
+            }
+        },
+
+        "DBSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Application servers",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": { "Ref": "DBPort" },
+                        "ToPort": { "Ref": "DBPort" },
+                        "CidrIp": "77.91.248.0/21"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": { "Ref": "DBPort" },
+                        "ToPort": { "Ref": "DBPort" },
+                        "SourceSecurityGroupName": { "Ref": "AppServerSecurityGroup" }
                     }
                 ]
             }
@@ -360,6 +386,35 @@
                     } ]
                 },
                 "Bucket": { "Ref": "StubBucket" }
+            }
+        },
+
+        "PostgresInstance": {
+            "Type" : "AWS::RDS::DBInstance",
+            "Properties": {
+                "AllocatedStorage": "5",
+                "AutoMinorVersionUpgrade": true,
+                "BackupRetentionPeriod": "1",
+                "DBInstanceClass": "db.t1.micro",
+                "DBInstanceIdentifier": { "Fn::Join": ["-", ["workflow", { "Ref" :"Stage" }]] },
+                "DBName": "workflow",
+                "Engine": "postgres",
+                "EngineVersion": "9.3.3",
+                "MasterUsername": "master",
+                "MasterUserPassword": "setup123",
+                "MultiAZ": true,
+                "Port": { "Ref": "DBPort" },
+                "Tags": [
+                    {
+                        "Key": "Stage",
+                        "Value": { "Ref": "Stage" }
+                    },
+                    {
+                        "Key": "Stack",
+                        "Value": "workflow"
+                    }
+                ],
+                "VPCSecurityGroups": [ { "Fn::GetAtt": ["DBSecurityGroup", "GroupId"] } ]
             }
         }
 
