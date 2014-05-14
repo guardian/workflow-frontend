@@ -59,6 +59,38 @@ object PostgresDB {
     }.toList
   }
 
+  def createStub(stub: Stub): Unit = DB.withConnection { implicit c =>
+    SQL(""" INSERT INTO Stub(working_title, section, due, assign_to, composer_id)
+            VALUES({working_title}, {section}, {due}, {assign_to}, {composer_id})
+         """).on(
+        'working_title -> stub.title,
+        'section -> stub.section,
+        'due -> stub.due,
+        'assign_to -> stub.assignee,
+        'composer_id -> stub.composerId
+      ).executeUpdate
+  }
+
+//  def updateStub(id: Int, stub: Stub) {
+//    DB.withConnection { implicit connection =>
+//      SQL("""
+//            UPDATE Stub SET
+//            working_title = {working_title},
+//            section = {section},
+//            due = {due},
+//            assign_to = {assign_to}
+//            composer_id = {composer_id}
+//            WHERE id = {id}
+//          """).on(
+//          'working_title -> stub.title,
+//          'section -> stub.section,
+//          'due -> stub.due,
+//          'assign_to -> stub.assignee,
+//          'composer_id -> stub.composerId
+//        ).executeUpdate
+//    }
+//  }
+
 }
 
 

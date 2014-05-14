@@ -111,12 +111,6 @@ object Application extends Controller {
     )
   }
 
-  def updateStub(stubId: String, composerId: String) = Action.async { req =>
-    StubDatabase.update(stubId, composerId).map(_ =>
-      Redirect(routes.Application.stubs())
-    )
-  }
-
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
   def filterPredicate(filterKey: String, value: String)(wc: WorkflowContent): Boolean = {
@@ -162,10 +156,13 @@ object Application extends Controller {
 
   def renderJsonResponse(content: List[WorkflowContent]): JsValue = Json.obj("content" -> content)
 
-  def newStub = Action.async { implicit request =>
+  def newStub = Action { implicit request =>
     stubForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(s"that failed ${formWithErrors}")),
-      stub => StubDatabase.create(stub).map {_ => Redirect(routes.Application.stubs())}
+      formWithErrors => BadRequest(s"that failed ${formWithErrors}"),
+      stub => {
+        PostgresDB.createStub(stub)
+        Redirect(routes.Application.stubs())
+      }
     )
 
   }
