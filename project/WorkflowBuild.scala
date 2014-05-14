@@ -3,6 +3,8 @@ import sbt.Keys._
 import plugins.PlayArtifact._
 import sbtassembly.Plugin.{AssemblyKeys, MergeStrategy}
 import AssemblyKeys._
+import play.Keys.jdbc
+import play.Keys.anorm
 
 object WorkflowBuild extends Build {
 
@@ -19,8 +21,11 @@ object WorkflowBuild extends Build {
   val root = playProject("prototype", ".")
     .settings(libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk" % "1.7.5",
-      "com.typesafe.akka" %% "akka-agent" % "2.2.0"
-    ))
+      "com.typesafe.akka" %% "akka-agent" % "2.2.0",
+      jdbc,
+      anorm,
+      "org.postgresql" % "postgresql" % "9.3-1100-jdbc4"
+  ))
 
   def playProject(name: String, path: String): Project =
     play.Project(name, path = file(path))
