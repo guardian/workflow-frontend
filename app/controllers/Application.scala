@@ -39,7 +39,8 @@ object Application extends Controller {
   }
 
   def stubs = Action.async {
-    for (stubs <- StubDatabase.getAll; sections <- SectionDatabase.sectionList)
+    val stubs = PostgresDB.getAllStubs
+    for (sections <- SectionDatabase.sectionList)
     yield Ok(views.html.stubs(stubForm, stubs, sections))
   }
 
@@ -159,8 +160,7 @@ object Application extends Controller {
     }
   }
 
-  def renderJsonResponse(content: List[WorkflowContent]): JsValue =
-    Json.obj("content" -> content)
+  def renderJsonResponse(content: List[WorkflowContent]): JsValue = Json.obj("content" -> content)
 
   def newStub = Action.async { implicit request =>
     stubForm.bindFromRequest.fold(

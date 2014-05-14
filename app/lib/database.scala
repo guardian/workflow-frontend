@@ -10,6 +10,58 @@ import play.api.libs.json.JsArray
 import play.api.mvc.Action
 import scala.util.Try
 
+import play.api.db._
+import anorm._
+
+import org.joda.time._
+import org.joda.time.format._
+import anorm._
+
+object AnormExtension {
+
+
+  val dateFormatGeneration: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmssSS");
+
+  implicit def rowToDateTime: Column[DateTime] = Column.nonNull { (value, meta) =>
+    val MetaDataItem(qualified, nullable, clazz) = meta
+    value match {
+      case ts: java.sql.Timestamp => Right(new DateTime(ts.getTime))
+      case d: java.sql.Date => Right(new DateTime(d.getTime))
+      case str: java.lang.String => Right(dateFormatGeneration.parseDateTime(str))
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass) )
+    }
+  }
+
+  implicit val dateTimeToStatement = new ToStatement[DateTime] {
+    def set(s: java.sql.PreparedStatement, index: Int, aValue: DateTime): Unit = {
+      s.setTimestamp(index, new java.sql.Timestamp(aValue.withMillisOfSecond(0).getMillis()) )
+    }
+  }
+
+}
+
+object PostgresDB {
+  import play.api.Play.current
+  import AnormExtension._
+
+  def rowToStub(row: SqlRow) = Stub(
+    id = row[Long]("pk").toString,
+    title = row[String]("working_title"),
+    section = row[String]("section"),
+    due = row[Option[DateTime]]("due"),
+    assignee = row[Option[String]]("assign_to"),
+    composerId = row[Option[String]]("composer_id")
+  )
+
+  def getAllStubs: List[Stub] = DB.withConnection { implicit c =>
+    SQL("Select * from stub")().map { row =>
+      rowToStub(row)
+    }.toList
+  }
+
+}
+
+
 
 object ContentDatabase {
 
