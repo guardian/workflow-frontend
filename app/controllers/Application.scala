@@ -86,32 +86,6 @@ object Application extends Controller {
     }
   }
 
-
-  val createInComposerForm = Form(
-  tuple(
-    "stubId"      -> nonEmptyText,
-    "contentType" -> nonEmptyText
-  ))
-
-  def createInComposer() = Action.async { implicit req =>
-
-    createInComposerForm.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest("Form errors: " + formWithErrors.errors.mkString(", "))),
-
-      { case (stubId, contentType) =>
-        for {
-          res <- WS.url(Composer.newContentUrl).withQueryString(("type", contentType)).post("")
-          composerId = Composer.parseId(res.json)
-          response <- composerId match {
-            case Some(id) => StubDatabase.update(stubId, id).map(_ => Redirect(routes.Application.stubs()))
-            case None     => Future.successful(BadRequest("Could not parse ID"))
-          }
-        }
-        yield response
-      }
-    )
-  }
-
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
   def filterPredicate(filterKey: String, value: String)(wc: WorkflowContent): Boolean = {
