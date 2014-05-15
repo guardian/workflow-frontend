@@ -107,7 +107,7 @@ object Application extends Controller {
       items    <- ContentDatabase.store.future
       sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
-      stubs    <- StubDatabase.getAll
+      stubs = PostgresDB.getAllStubs
 
       enrichFromStub = (c: WorkflowContent) => {
         val stub = stubs.find(_.composerId == Some(c.composerId))
