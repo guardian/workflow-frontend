@@ -13,5 +13,5 @@ CREATE TABLE stub (
   , section            varchar(128)    not null
   , due                timestamp
   , assign_to          varchar(128)
-  , composer_id        varchar(32)     references content
+  , composer_id        varchar(32)     unique
 );
