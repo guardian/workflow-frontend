@@ -1,12 +1,7 @@
-CREATE TABLE section (
-    pk                 serial          primary key
-  , name               varchar(128)    unique not null
-);
-
 CREATE TABLE stub (
     pk                 serial          primary key
   , working_title      varchar(128)    not null
-  , section            integer         not null         references section
+  , section            varchar(128)    not null
   , due                timestamp
   , assign_to          varchar(128)
 );
