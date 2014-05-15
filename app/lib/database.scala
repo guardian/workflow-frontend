@@ -53,6 +53,7 @@ object PostgresDB {
     composerId = row[Option[String]]("composer_id")
   )
 
+
   def getAllStubs: List[Stub] = DB.withConnection { implicit c =>
     SQL("select * from stub")().map { row =>
       rowToStub(row)
@@ -104,6 +105,67 @@ object PostgresDB {
         ).executeUpdate
     }
   }
+
+  def findStubByComposerId(composerId: String): Option[Stub] = {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+          SELECT * from stub WHERE
+          composer_id = {composer_id}
+        """
+      ).on(
+      'composer_id -> composerId
+     )().map{ rowToStub(_) }.headOption
+    }
+  }
+
+  def createOrModifyContent(wc: WorkflowContent): Unit = {
+    findStubByComposerId(wc.composerId) match {
+      case Some(stub) => updateContent(wc)
+      case None => createContent(wc)
+    }
+  }
+
+  def updateContent(wc: WorkflowContent): Unit = {
+    DB.withConnection { implicit c =>
+      SQL("""
+          Update content SET
+          path = {path},
+          last_modified = {last_modified},
+          last_modified_by = {last_modified_by},
+          status = {status},
+          content_type = {content_type}
+          WHERE
+          composer_id = {composer_id}
+          """).on(
+          'composer_id -> wc.composerId,
+          'path -> wc.path,
+          'last_modified -> wc.lastModification.map(_.dateTime),
+          'last_modified_by -> wc.lastModification.flatMap(_.user),
+          'status -> wc.status,
+          'content_type -> wc.`type`
+        ).executeUpdate()
+    }
+  }
+
+  def createContent(wc: WorkflowContent): Unit = {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+          INSERT INTO Content(composer_id, path, last_modified, last_modified_by, status, content_type)
+          VALUES ({composer_id, path, last_modified, last_modified_by, status, content_type})
+        """
+      ).on(
+          'composer_id -> wc.composerId,
+          'path -> wc.path,
+          'last_modified -> wc.lastModification.map(_.dateTime),
+          'last_modified_by -> wc.lastModification.flatMap(_.user),
+          'status -> wc.status,
+          'content_type -> wc.`type`
+      ).executeUpdate()
+    }
+  }
+
 }
 
 
