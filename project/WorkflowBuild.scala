@@ -1,5 +1,6 @@
 import sbt._
 import sbt.Keys._
+import play.Keys._
 import plugins.PlayArtifact._
 import sbtassembly.Plugin.{AssemblyKeys, MergeStrategy}
 import AssemblyKeys._
