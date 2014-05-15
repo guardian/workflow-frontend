@@ -14,6 +14,7 @@ import play.api.libs.openid.OpenID
 import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.libs.ws.WS
 import org.joda.time.DateTime
+import scala.util.Try
 
 object Application extends Controller {
 
@@ -167,9 +168,10 @@ object Application extends Controller {
   }
 
   def updateStub(stubId: String, composerId: String) = Action { req =>
-      println("does this get called?")
-      PostgresDB.updateStubWithComposerId(stubId.toInt, composerId)
-      Redirect(routes.Application.stubs())
+      Try { stubId.toLong }.toOption.map { id =>
+        PostgresDB.updateStubWithComposerId(id, composerId)
+        Redirect(routes.Application.stubs())
+      }.getOrElse(BadRequest("could not parse stub id"))
   }
 
   def fieldChange(field: String, value: String, contentId: String, user: Option[String]) = Action.async {

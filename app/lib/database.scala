@@ -45,16 +45,16 @@ object PostgresDB {
   import AnormExtension._
 
   def rowToStub(row: SqlRow) = Stub(
-    id = row[Long]("stub.pk").toString,
+    id = row[Long]("pk").toString,
     title = row[String]("working_title"),
-    section = row[String]("section.name"),
+    section = row[String]("section"),
     due = row[Option[DateTime]]("due"),
     assignee = row[Option[String]]("assign_to"),
-    composerId = None
+    composerId = row[Option[String]]("composer_id")
   )
 
   def getAllStubs: List[Stub] = DB.withConnection { implicit c =>
-    SQL("select * from stub, section where stub.section = section.pk")().map { row =>
+    SQL("select * from stub")().map { row =>
       rowToStub(row)
     }.toList
   }
@@ -91,16 +91,17 @@ object PostgresDB {
     }
   }
 
-  def updateStubWithComposerId(id: Int, composerId: String) {
+  def updateStubWithComposerId(id: Long, composerId: String) {
     DB.withConnection { implicit c =>
       SQL(
         """
           UPDATE Stub SET
           composer_id = {composer_id}
-          WHERE id = {id}
+          WHERE pk = {id}
         """).on(
-        'composer_id -> composerId
-        )
+        'composer_id -> composerId,
+        'id -> id
+        ).executeUpdate
     }
   }
 }
