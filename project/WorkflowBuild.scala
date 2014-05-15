@@ -1,5 +1,6 @@
 import sbt._
 import sbt.Keys._
+import play.Keys._
 import plugins.PlayArtifact._
 import sbtassembly.Plugin.{AssemblyKeys, MergeStrategy}
 import AssemblyKeys._
@@ -19,7 +20,9 @@ object WorkflowBuild extends Build {
   val root = playProject("prototype", ".")
     .settings(libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk" % "1.7.5",
-      "com.typesafe.akka" %% "akka-agent" % "2.2.0"
+      "com.typesafe.akka" %% "akka-agent" % "2.2.0",
+      jdbc,
+      anorm
     ))
 
   def playProject(name: String, path: String): Project =
