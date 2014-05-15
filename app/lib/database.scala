@@ -45,16 +45,16 @@ object PostgresDB {
   import AnormExtension._
 
   def rowToStub(row: SqlRow) = Stub(
-    id = row[Long]("pk").toString,
+    id = row[Long]("stub.pk").toString,
     title = row[String]("working_title"),
-    section = row[String]("section"),
+    section = row[String]("section.name"),
     due = row[Option[DateTime]]("due"),
     assignee = row[Option[String]]("assign_to"),
-    composerId = row[Option[String]]("composer_id")
+    composerId = None
   )
 
   def getAllStubs: List[Stub] = DB.withConnection { implicit c =>
-    SQL("Select * from stub")().map { row =>
+    SQL("select * from stub, section where stub.section = section.pk")().map { row =>
       rowToStub(row)
     }.toList
   }
@@ -71,26 +71,38 @@ object PostgresDB {
       ).executeUpdate
   }
 
-//  def updateStub(id: Int, stub: Stub) {
-//    DB.withConnection { implicit connection =>
-//      SQL("""
-//            UPDATE Stub SET
-//            working_title = {working_title},
-//            section = {section},
-//            due = {due},
-//            assign_to = {assign_to}
-//            composer_id = {composer_id}
-//            WHERE id = {id}
-//          """).on(
-//          'working_title -> stub.title,
-//          'section -> stub.section,
-//          'due -> stub.due,
-//          'assign_to -> stub.assignee,
-//          'composer_id -> stub.composerId
-//        ).executeUpdate
-//    }
-//  }
+  def updateStub(id: Int, stub: Stub) {
+    DB.withConnection { implicit c =>
+      SQL("""
+            UPDATE Stub SET
+            working_title = {working_title},
+            section = {section},
+            due = {due},
+            assign_to = {assign_to}
+            composer_id = {composer_id}
+            WHERE id = {id}
+          """).on(
+          'working_title -> stub.title,
+          'section -> stub.section,
+          'due -> stub.due,
+          'assign_to -> stub.assignee,
+          'composer_id -> stub.composerId
+        ).executeUpdate
+    }
+  }
 
+  def updateStubWithComposerId(id: Int, composerId: String) {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+          UPDATE Stub SET
+          composer_id = {composer_id}
+          WHERE id = {id}
+        """).on(
+        'composer_id -> composerId
+        )
+    }
+  }
 }
 
 

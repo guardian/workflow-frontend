@@ -164,7 +164,12 @@ object Application extends Controller {
         Redirect(routes.Application.stubs())
       }
     )
+  }
 
+  def updateStub(stubId: String, composerId: String) = Action { req =>
+      println("does this get called?")
+      PostgresDB.updateStubWithComposerId(stubId.toInt, composerId)
+      Redirect(routes.Application.stubs())
   }
 
   def fieldChange(field: String, value: String, contentId: String, user: Option[String]) = Action.async {
