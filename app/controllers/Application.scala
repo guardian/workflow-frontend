@@ -147,7 +147,7 @@ object Application extends Controller {
 
       case "section" => Right(_.copy(section = Some(Section(value))))
 
-      case "workingTitle" => Right(_.copy(workingTitle = Some(value)))
+      case "workingTitle" => Right(_.copy(workingTitle = value))
 
       case "status" => for { u<-user.toRight(BadRequest("user name not supplied")).right
                              s <- StatusDatabase.find(value).toRight(BadRequest(s"not a valid status $value")).right

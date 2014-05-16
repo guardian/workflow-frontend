@@ -42,8 +42,8 @@ case class WireStatus(
 
 case class WorkflowContent(
   composerId: String,
-  path: Option[String],
-  workingTitle: Option[String],
+  path: String,
+  workingTitle: String,
   due: Option[DateTime],
   headline: Option[String],
   slug: Option[String],
@@ -71,12 +71,12 @@ case class WorkflowContent(
 
 object WorkflowContent {
 
-  def fromWireStatus(wireStatus: WireStatus): WorkflowContent = {
+  def fromWireStatus(wireStatus: WireStatus, stub: Stub): WorkflowContent = {
     WorkflowContent(
       wireStatus.composerId,
-      Some(wireStatus.path),
-      None,
-      None,
+      wireStatus.path,
+      stub.title,
+      stub.due,
       wireStatus.headline,
       wireStatus.slug,
       wireStatus.`type`,
