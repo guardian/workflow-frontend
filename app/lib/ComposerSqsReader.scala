@@ -17,10 +17,9 @@ class ComposerSqsReader extends Actor {
         statuses = messages.map(AWSWorkflowQueue.toWireStatus)
         stubs    = PostgresDB.getAllStubs
         interestingStatuses = statuses.filter(s => stubs.exists(_.composerId == Some(s.composerId)))
-        s <- interestingStatuses
         _ <- Future.traverse(messages)(AWSWorkflowQueue.deleteMessage)
       }  {
-        PostgresDB.createOrModifyContent(WorkflowContent.fromWireStatus(s))
+        interestingStatuses.foreach(s => PostgresDB.createOrModifyContent(WorkflowContent.fromWireStatus(s)))
       }
 
   }

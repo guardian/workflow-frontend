@@ -120,16 +120,13 @@ object PostgresDB {
   }
 
   def createOrModifyContent(wc: WorkflowContent): Unit = {
-    findStubByComposerId(wc.composerId) match {
-      case Some(stub) => updateContent(wc)
-      case None => createContent(wc)
-    }
+    if (updateContent(wc) == 0) createContent(wc)
   }
 
-  def updateContent(wc: WorkflowContent): Unit = {
+  def updateContent(wc: WorkflowContent): Int = {
     DB.withConnection { implicit c =>
       SQL("""
-          Update content SET
+          UPDATE content SET
           path = {path},
           last_modified = {last_modified},
           last_modified_by = {last_modified_by},
@@ -142,7 +139,7 @@ object PostgresDB {
           'path -> wc.path,
           'last_modified -> wc.lastModification.map(_.dateTime),
           'last_modified_by -> wc.lastModification.flatMap(_.user),
-          'status -> wc.status,
+          'status -> wc.status.name,
           'content_type -> wc.`type`
         ).executeUpdate()
     }
@@ -152,15 +149,15 @@ object PostgresDB {
     DB.withConnection { implicit c =>
       SQL(
         """
-          INSERT INTO Content(composer_id, path, last_modified, last_modified_by, status, content_type)
-          VALUES ({composer_id, path, last_modified, last_modified_by, status, content_type})
+          INSERT INTO content (composer_id, path, last_modified, last_modified_by, status, content_type)
+          VALUES ( {composer_id}, {path}, {last_modified}, {last_modified_by}, {status}, {content_type} )
         """
       ).on(
           'composer_id -> wc.composerId,
           'path -> wc.path,
           'last_modified -> wc.lastModification.map(_.dateTime),
           'last_modified_by -> wc.lastModification.flatMap(_.user),
-          'status -> wc.status,
+          'status -> wc.status.name,
           'content_type -> wc.`type`
       ).executeUpdate()
     }
