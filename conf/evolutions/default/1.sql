@@ -1,4 +1,7 @@
-﻿CREATE TABLE CONTENT (
+﻿
+# --- !Ups
+
+CREATE TABLE content (
     composer_id        varchar(32)     primary key
   , path               varchar(128)    not null
   , last_modified      timestamp       not null
@@ -15,3 +18,8 @@ CREATE TABLE stub (
   , assign_to          varchar(128)
   , composer_id        varchar(32)     unique
 );
+
+# --- !Downs
+
+DROP TABLE content;
+DROP TABLE stub;
