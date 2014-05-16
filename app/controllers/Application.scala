@@ -104,22 +104,15 @@ object Application extends Controller {
 
   def content = Authenticated.async { req =>
     for {
-      items    <- ContentDatabase.store.future
       sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
       stubs = PostgresDB.getAllStubs
+      items = PostgresDB.allContent
 
-      enrichFromStub = (c: WorkflowContent) => {
-        val stub = stubs.find(_.composerId == Some(c.composerId))
-        c.copy(workingTitle = stub.map(_.title), due = stub.flatMap(_.due))
-      }
       predicate = (wc: WorkflowContent) => req.queryString.forall { case (k, vs) =>
         vs.exists(v => filterPredicate(k, v)(wc))
       }
-      content = items.values.toList
-        .map(enrichFromStub)
-        .filter(predicate)
-        .sortBy(_.due)
+      content = items.filter(predicate).sortBy(_.due)
     }
     yield {
       if (req.headers.get(ACCEPT) == Some("application/json"))
@@ -178,7 +171,6 @@ object Application extends Controller {
   }
 
   def alterContent(contentId: UUID, field: String, fun: WorkflowContent => WorkflowContent): Future[SimpleResult] =
-    for (altered <- ContentDatabase.update(contentId, fun))
-    yield altered.map(_ => Ok(s"Updated field $field")).getOrElse(NotFound("Could not find that content.") )
+    ??? // TODO
 
 }

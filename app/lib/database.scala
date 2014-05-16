@@ -2,20 +2,18 @@ package lib
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import models.{Status, Stub, Section, WorkflowContent}
+import models._
+
 import akka.agent.Agent
 import play.api.libs.ws._
-import java.util.UUID
 import play.api.libs.json.JsArray
-import play.api.mvc.Action
-import scala.util.Try
-
 import play.api.db._
 import anorm._
 
 import org.joda.time._
 import org.joda.time.format._
 import anorm._
+
 
 object AnormExtension {
 
@@ -53,11 +51,26 @@ object PostgresDB {
     composerId = row[Option[String]]("composer_id")
   )
 
+  def rowToContent(row: SqlRow): WorkflowContent =
+    WorkflowContent(
+      composerId = row[String]("composer_id"),
+      path = Some(row[String]("path")),
+      workingTitle = Some(row[String]("working_title")),
+      due = Some(row[DateTime]("due")),
+      headline = None,
+      slug = None,
+      `type` = row[String]("content_type"),
+      contributors = Nil,
+      section = Some(Section(row[String]("section"))),
+      status = Status(row[String]("status")),
+      lastModification = Some(ContentModification("", row[DateTime]("last_modified"), row[Option[String]]("last_modified_by"))),
+      scheduledLaunch = None,
+      stateHistory = Map.empty
+    )
+
 
   def getAllStubs: List[Stub] = DB.withConnection { implicit c =>
-    SQL("select * from stub")().map { row =>
-      rowToStub(row)
-    }.toList
+    SQL("select * from stub")().map(rowToStub).toList
   }
 
   def createStub(stub: Stub): Unit = DB.withConnection { implicit c =>
@@ -163,38 +176,11 @@ object PostgresDB {
     }
   }
 
-}
-
-
-
-object ContentDatabase {
-
-  type Store = Map[UUID, WorkflowContent]
-
-  val store: Agent[Store] = Agent(Map.empty)
-
-  def update(contentId: UUID, f: WorkflowContent => WorkflowContent): Future[Option[WorkflowContent]] = {
-    val updatedStore = store.alter { items =>
-      val updatedItem = items.get(contentId).map(f)
-      updatedItem.map(items.updated(contentId, _)).getOrElse(items)
-    }
-    updatedStore.map(_.get(contentId))
+  def allContent: List[WorkflowContent] = DB.withConnection { implicit conn =>
+    SQL("SELECT * FROM stub INNER JOIN content ON (stub.composer_id = content.composer_id)")().map(rowToContent).toList
   }
-
-  def createOrModify(composerId: String, create: => WorkflowContent, modify: WorkflowContent => WorkflowContent): Future[Unit] =
-    for {
-      updatedStore <- store.alter { items =>
-        items.find { case (key, content) => content.composerId == composerId } match {
-          case Some((key, existing)) =>
-            items.updated(key, modify(existing))
-          case None =>
-            val newItem = create
-            items.updated(newItem.id, newItem)
-        }
-      }
-    }
-    yield ()
 }
+
 
 object SectionDatabase {
   val store: Agent[Set[Section]] = Agent(Set())
