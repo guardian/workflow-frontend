@@ -305,6 +305,10 @@
                         "    -e 's,@AWS_FLEX_NOTIFICATIONS_QUEUE@,", { "Ref": "FCNotificationsQueue" }, ",g' \\\n",
                         "    -e 's,@AWS_STUB_BUCKET@,", { "Ref": "StubBucket" }, ",g' \\\n",
                         "    -e 's,@COMPOSER_URL@,", {"Ref": "ComposerUrl"}, ",g' \\\n",
+                        "    -e 's,@DB_HOST@,", { "Fn::GetAtt": [ "PostgresInstance", "Endpoint.Address" ] }, ",g' \\\n",
+                        "    -e 's,@DB_PORT@,", {"Ref": "DBPort"}, ",g' \\\n",
+                        "    -e 's,@DB_USER@,", {"Ref": "DBUser"}, ",g' \\\n",
+                        "    -e 's,@DB_PASSWORD@,", {"Ref": "DBPassword"}, ",g' \\\n",
                         "    /etc/init/prototype.conf\n",
 
                         "start prototype\n"

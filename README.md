@@ -18,6 +18,7 @@ Development prerequisites
           secret = "{AwsSecret}"
           flex.notifications.queue = "{SqsQueueUrl}"
           stub.bucket = "{S3Bucket}"
+          db.default.url="jdbc:postgresql://{DatabaseHost}:5432/workflow"
         }
 
 
