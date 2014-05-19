@@ -14,6 +14,7 @@ import play.api.libs.openid.OpenID
 import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.libs.ws.WS
 import org.joda.time.DateTime
+import scala.util.Try
 
 object Application extends Controller {
 
@@ -39,7 +40,8 @@ object Application extends Controller {
   }
 
   def stubs = Action.async {
-    for (stubs <- StubDatabase.getAll; sections <- SectionDatabase.sectionList)
+    val stubs = PostgresDB.getAllStubs
+    for (sections <- SectionDatabase.sectionList)
     yield Ok(views.html.stubs(stubForm, stubs, sections))
   }
 
@@ -84,38 +86,6 @@ object Application extends Controller {
     }
   }
 
-
-  val createInComposerForm = Form(
-  tuple(
-    "stubId"      -> nonEmptyText,
-    "contentType" -> nonEmptyText
-  ))
-
-  def createInComposer() = Action.async { implicit req =>
-
-    createInComposerForm.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest("Form errors: " + formWithErrors.errors.mkString(", "))),
-
-      { case (stubId, contentType) =>
-        for {
-          res <- WS.url(Composer.newContentUrl).withQueryString(("type", contentType)).post("")
-          composerId = Composer.parseId(res.json)
-          response <- composerId match {
-            case Some(id) => StubDatabase.update(stubId, id).map(_ => Redirect(routes.Application.stubs()))
-            case None     => Future.successful(BadRequest("Could not parse ID"))
-          }
-        }
-        yield response
-      }
-    )
-  }
-
-  def updateStub(stubId: String, composerId: String) = Action.async { req =>
-    StubDatabase.update(stubId, composerId).map(_ =>
-      Redirect(routes.Application.stubs())
-    )
-  }
-
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
   def filterPredicate(filterKey: String, value: String)(wc: WorkflowContent): Boolean = {
@@ -134,22 +104,15 @@ object Application extends Controller {
 
   def content = Authenticated.async { req =>
     for {
-      items    <- ContentDatabase.store.future
       sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
-      stubs    <- StubDatabase.getAll
+      stubs = PostgresDB.getAllStubs
+      items = PostgresDB.allContent
 
-      enrichFromStub = (c: WorkflowContent) => {
-        val stub = stubs.find(_.composerId == Some(c.composerId))
-        c.copy(workingTitle = stub.map(_.title), due = stub.flatMap(_.due))
-      }
       predicate = (wc: WorkflowContent) => req.queryString.forall { case (k, vs) =>
         vs.exists(v => filterPredicate(k, v)(wc))
       }
-      content = items.values.toList
-        .map(enrichFromStub)
-        .filter(predicate)
-        .sortBy(_.due)
+      content = items.filter(predicate).sortBy(_.due)
     }
     yield {
       if (req.headers.get(ACCEPT) == Some("application/json"))
@@ -159,15 +122,23 @@ object Application extends Controller {
     }
   }
 
-  def renderJsonResponse(content: List[WorkflowContent]): JsValue =
-    Json.obj("content" -> content)
+  def renderJsonResponse(content: List[WorkflowContent]): JsValue = Json.obj("content" -> content)
 
-  def newStub = Action.async { implicit request =>
+  def newStub = Action { implicit request =>
     stubForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(s"that failed ${formWithErrors}")),
-      stub => StubDatabase.create(stub).map {_ => Redirect(routes.Application.stubs())}
+      formWithErrors => BadRequest(s"that failed ${formWithErrors}"),
+      stub => {
+        PostgresDB.createStub(stub)
+        Redirect(routes.Application.stubs())
+      }
     )
+  }
 
+  def updateStub(stubId: String, composerId: String) = Action { req =>
+      Try { stubId.toLong }.toOption.map { id =>
+        PostgresDB.updateStubWithComposerId(id, composerId)
+        Redirect(routes.Application.stubs())
+      }.getOrElse(BadRequest("could not parse stub id"))
   }
 
   def fieldChange(field: String, value: String, contentId: String, user: Option[String]) = Action.async {
@@ -176,7 +147,7 @@ object Application extends Controller {
 
       case "section" => Right(_.copy(section = Some(Section(value))))
 
-      case "workingTitle" => Right(_.copy(workingTitle = Some(value)))
+      case "workingTitle" => Right(_.copy(workingTitle = value))
 
       case "status" => for { u<-user.toRight(BadRequest("user name not supplied")).right
                              s <- StatusDatabase.find(value).toRight(BadRequest(s"not a valid status $value")).right
@@ -200,7 +171,6 @@ object Application extends Controller {
   }
 
   def alterContent(contentId: UUID, field: String, fun: WorkflowContent => WorkflowContent): Future[SimpleResult] =
-    for (altered <- ContentDatabase.update(contentId, fun))
-    yield altered.map(_ => Ok(s"Updated field $field")).getOrElse(NotFound("Could not find that content.") )
+    ??? // TODO
 
 }

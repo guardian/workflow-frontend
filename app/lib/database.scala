@@ -2,43 +2,185 @@ package lib
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import models.{Status, Stub, Section, WorkflowContent}
+import models._
+
 import akka.agent.Agent
 import play.api.libs.ws._
-import java.util.UUID
 import play.api.libs.json.JsArray
-import play.api.mvc.Action
-import scala.util.Try
+import play.api.db._
+import anorm._
+
+import org.joda.time._
+import org.joda.time.format._
+import anorm._
 
 
-object ContentDatabase {
+object AnormExtension {
 
-  type Store = Map[UUID, WorkflowContent]
 
-  val store: Agent[Store] = Agent(Map.empty)
+  val dateFormatGeneration: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmssSS");
 
-  def update(contentId: UUID, f: WorkflowContent => WorkflowContent): Future[Option[WorkflowContent]] = {
-    val updatedStore = store.alter { items =>
-      val updatedItem = items.get(contentId).map(f)
-      updatedItem.map(items.updated(contentId, _)).getOrElse(items)
+  implicit def rowToDateTime: Column[DateTime] = Column.nonNull { (value, meta) =>
+    val MetaDataItem(qualified, nullable, clazz) = meta
+    value match {
+      case ts: java.sql.Timestamp => Right(new DateTime(ts.getTime))
+      case d: java.sql.Date => Right(new DateTime(d.getTime))
+      case str: java.lang.String => Right(dateFormatGeneration.parseDateTime(str))
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass) )
     }
-    updatedStore.map(_.get(contentId))
   }
 
-  def createOrModify(composerId: String, create: => WorkflowContent, modify: WorkflowContent => WorkflowContent): Future[Unit] =
-    for {
-      updatedStore <- store.alter { items =>
-        items.find { case (key, content) => content.composerId == composerId } match {
-          case Some((key, existing)) =>
-            items.updated(key, modify(existing))
-          case None =>
-            val newItem = create
-            items.updated(newItem.id, newItem)
-        }
-      }
+  implicit val dateTimeToStatement = new ToStatement[DateTime] {
+    def set(s: java.sql.PreparedStatement, index: Int, aValue: DateTime): Unit = {
+      s.setTimestamp(index, new java.sql.Timestamp(aValue.withMillisOfSecond(0).getMillis()) )
     }
-    yield ()
+  }
+
 }
+
+object PostgresDB {
+  import play.api.Play.current
+  import AnormExtension._
+
+  def rowToStub(row: SqlRow) = Stub(
+    id = row[Long]("pk").toString,
+    title = row[String]("working_title"),
+    section = row[String]("section"),
+    due = row[Option[DateTime]]("due"),
+    assignee = row[Option[String]]("assign_to"),
+    composerId = row[Option[String]]("composer_id")
+  )
+
+  def rowToContent(row: SqlRow): WorkflowContent =
+    WorkflowContent(
+      composerId = row[String]("composer_id"),
+      path = row[String]("path"),
+      workingTitle = row[String]("working_title"),
+      due = Some(row[DateTime]("due")),
+      headline = None,
+      slug = None,
+      `type` = row[String]("content_type"),
+      contributors = Nil,
+      section = Some(Section(row[String]("section"))),
+      status = Status(row[String]("status")),
+      lastModification = Some(ContentModification("", row[DateTime]("last_modified"), row[Option[String]]("last_modified_by"))),
+      scheduledLaunch = None,
+      stateHistory = Map.empty
+    )
+
+
+  def getAllStubs: List[Stub] = DB.withConnection { implicit c =>
+    SQL("select * from stub")().map(rowToStub).toList
+  }
+
+  def createStub(stub: Stub): Unit = DB.withConnection { implicit c =>
+    SQL(""" INSERT INTO Stub(working_title, section, due, assign_to, composer_id)
+            VALUES({working_title}, {section}, {due}, {assign_to}, {composer_id})
+         """).on(
+        'working_title -> stub.title,
+        'section -> stub.section,
+        'due -> stub.due,
+        'assign_to -> stub.assignee,
+        'composer_id -> stub.composerId
+      ).executeUpdate
+  }
+
+  def updateStub(id: Int, stub: Stub) {
+    DB.withConnection { implicit c =>
+      SQL("""
+            UPDATE Stub SET
+            working_title = {working_title},
+            section = {section},
+            due = {due},
+            assign_to = {assign_to}
+            composer_id = {composer_id}
+            WHERE id = {id}
+          """).on(
+          'working_title -> stub.title,
+          'section -> stub.section,
+          'due -> stub.due,
+          'assign_to -> stub.assignee,
+          'composer_id -> stub.composerId
+        ).executeUpdate
+    }
+  }
+
+  def updateStubWithComposerId(id: Long, composerId: String) {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+          UPDATE Stub SET
+          composer_id = {composer_id}
+          WHERE pk = {id}
+        """).on(
+        'composer_id -> composerId,
+        'id -> id
+        ).executeUpdate
+    }
+  }
+
+  def findStubByComposerId(composerId: String): Option[Stub] = {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+          SELECT * from stub WHERE
+          composer_id = {composer_id}
+        """
+      ).on(
+      'composer_id -> composerId
+     )().map{ rowToStub(_) }.headOption
+    }
+  }
+
+  def createOrModifyContent(wc: WorkflowContent): Unit = {
+    if (updateContent(wc) == 0) createContent(wc)
+  }
+
+  def updateContent(wc: WorkflowContent): Int = {
+    DB.withConnection { implicit c =>
+      SQL("""
+          UPDATE content SET
+          path = {path},
+          last_modified = {last_modified},
+          last_modified_by = {last_modified_by},
+          status = {status},
+          content_type = {content_type}
+          WHERE
+          composer_id = {composer_id}
+          """).on(
+          'composer_id -> wc.composerId,
+          'path -> wc.path,
+          'last_modified -> wc.lastModification.map(_.dateTime),
+          'last_modified_by -> wc.lastModification.flatMap(_.user),
+          'status -> wc.status.name,
+          'content_type -> wc.`type`
+        ).executeUpdate()
+    }
+  }
+
+  def createContent(wc: WorkflowContent): Unit = {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+          INSERT INTO content (composer_id, path, last_modified, last_modified_by, status, content_type)
+          VALUES ( {composer_id}, {path}, {last_modified}, {last_modified_by}, {status}, {content_type} )
+        """
+      ).on(
+          'composer_id -> wc.composerId,
+          'path -> wc.path,
+          'last_modified -> wc.lastModification.map(_.dateTime),
+          'last_modified_by -> wc.lastModification.flatMap(_.user),
+          'status -> wc.status.name,
+          'content_type -> wc.`type`
+      ).executeUpdate()
+    }
+  }
+
+  def allContent: List[WorkflowContent] = DB.withConnection { implicit conn =>
+    SQL("SELECT * FROM stub INNER JOIN content ON (stub.composer_id = content.composer_id)")().map(rowToContent).toList
+  }
+}
+
 
 object SectionDatabase {
   val store: Agent[Set[Section]] = Agent(Set())
@@ -109,42 +251,3 @@ object StatusDatabase {
   }
 }
 
-object StubDatabase {
-
-  import play.api.libs.json.Json
-
-  def getAll: Future[List[Stub]] =
-    AWSWorkflowBucket.readStubsFile.map(parseStubsJson)
-
-  def create(stub: Stub): Future[Unit] =
-    for {
-      stubs <- getAll
-      newStubs = stub :: stubs
-      _ <- writeAll(newStubs)
-    } yield ()
-
-  def upsert(stub: Stub): Future[Unit] =
-    for {
-      stubs <- getAll
-      rest = stubs.filterNot(_.id == stub.id)
-      _ <- writeAll(stub :: rest)
-    } yield ()
-
-  private def writeAll(stubs: List[Stub]): Future[Unit] =
-    for {
-      _ <- AWSWorkflowBucket.putJson(Json.toJson(stubs))
-    } yield ()
-
-  private def parseStubsJson(s: String): List[Stub] = {
-    Try(Json.parse(s)).toOption
-      .flatMap(_.validate[List[Stub]].asOpt)
-      .getOrElse(Nil)
-  }
-
-  def update(stubId: String, composerId: String): Future[Unit] = for {
-      stubs <- getAll
-      updatedStubs = stubs.map( s => if(s.id==stubId) s.copy(composerId=Some(composerId)) else s)
-      json = Json.toJson(updatedStubs)
-      _ <- AWSWorkflowBucket.putJson(json)
-  } yield ()
-}

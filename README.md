@@ -8,7 +8,8 @@ Development prerequisites
 
   * Install [SBT](http://www.scala-sbt.org/)
   * Get an account in the [aws-cms-workflow](https://aws-cms-workflow.signin.aws.amazon.com/console) AWS account
-  * Create your own CloudFormation stack, using the developer template in `cloudformation/dev-template.json`
+  * Create your own CloudFormation stack, using the developer template in `cloudformation/dev-template.json`. NB: Enter
+    a unique stack name in the "Stack" parameter, e.g. "DEV-{username}"
   * Query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values
     into `conf/local.conf` using the following template:
 
@@ -17,6 +18,7 @@ Development prerequisites
           secret = "{AwsSecret}"
           flex.notifications.queue = "{SqsQueueUrl}"
           stub.bucket = "{S3Bucket}"
+          db.default.url="jdbc:postgresql://{DatabaseHost}:5432/workflow"
         }
 
 

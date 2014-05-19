@@ -2,7 +2,6 @@ package models
 
 import play.api.libs.json._
 import org.joda.time.DateTime
-import java.util.UUID
 import models.Status._
 
 case class Stub(id: String,
@@ -13,14 +12,6 @@ case class Stub(id: String,
                 composerId: Option[String])
 
 object Stub {
-
-  implicit val uuidWrites = new Writes[UUID] {
-    override def writes(id: UUID): JsValue = JsString(id.toString)
-  }
-  implicit val uuidReads = new Reads[UUID] {
-    override def reads(jsValue: JsValue) = (jsValue \ "id").validate[String].map(UUID.fromString(_))
-  }
-
   implicit val stubReads: Reads[Stub] = Json.reads[Stub]
   implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
 }
@@ -50,10 +41,9 @@ case class WireStatus(
   status: Status)
 
 case class WorkflowContent(
-  id: UUID,
   composerId: String,
-  path: Option[String],
-  workingTitle: Option[String],
+  path: String,
+  workingTitle: String,
   due: Option[DateTime],
   headline: Option[String],
   slug: Option[String],
@@ -63,8 +53,8 @@ case class WorkflowContent(
   status: Status,
   lastModification: Option[ContentModification],
   scheduledLaunch: Option[DateTime],
-  stateHistory: Map[Status, String] = Map.empty,
-  fromFeed: Boolean) {
+  stateHistory: Map[Status, String] = Map.empty
+) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
     copy(
@@ -80,15 +70,13 @@ case class WorkflowContent(
 }
 
 object WorkflowContent {
-  import java.util.UUID
 
-  def fromWireStatus(wireStatus: WireStatus): WorkflowContent = {
+  def fromWireStatus(wireStatus: WireStatus, stub: Stub): WorkflowContent = {
     WorkflowContent(
-      UUID.randomUUID(),
       wireStatus.composerId,
-      Some(wireStatus.path),
-      None,
-      None,
+      wireStatus.path,
+      stub.title,
+      stub.due,
       wireStatus.headline,
       wireStatus.slug,
       wireStatus.`type`,
@@ -96,14 +84,10 @@ object WorkflowContent {
       wireStatus.tagSections.headOption,
       if (wireStatus.published) Final else Writers,
       Some(ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user)),
-      scheduledLaunch=None,
-      fromFeed=true
+      scheduledLaunch=None
     )
   }
 
-  implicit val uuidWrites = new Writes[UUID] {
-    override def writes(id: UUID): JsValue = JsString(id.toString)
-  }
   implicit val stateHistory = new Writes[Map[Status, String]] {
     override def writes(hist: Map[Status, String]): JsValue = {
       JsObject(

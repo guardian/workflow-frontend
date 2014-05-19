@@ -42,6 +42,15 @@
             "Description": "Port number for the database instance",
             "Type": "String",
             "Default": "5432"
+        },
+        "DBUser": {
+            "Description": "Master username for the database",
+            "Type": "String"
+        },
+        "DBPassword": {
+            "Description": "Master password for the database",
+            "Type": "String",
+            "NoEcho": true
         }
     },
     "Resources": {
@@ -296,6 +305,9 @@
                         "    -e 's,@AWS_FLEX_NOTIFICATIONS_QUEUE@,", { "Ref": "FCNotificationsQueue" }, ",g' \\\n",
                         "    -e 's,@AWS_STUB_BUCKET@,", { "Ref": "StubBucket" }, ",g' \\\n",
                         "    -e 's,@COMPOSER_URL@,", {"Ref": "ComposerUrl"}, ",g' \\\n",
+                        "    -e 's,@DB_URL@,jdbc:postgresql://", { "Fn::GetAtt": [ "PostgresInstance", "Endpoint.Address" ] }, ":", {"Ref":"DBPort"}, "/workflow,g' \\\n",
+                        "    -e 's,@DB_USER@,", {"Ref": "DBUser"}, ",g' \\\n",
+                        "    -e 's,@DB_PASSWORD@,", {"Ref": "DBPassword"}, ",g' \\\n",
                         "    /etc/init/prototype.conf\n",
 
                         "start prototype\n"
@@ -400,8 +412,8 @@
                 "DBName": "workflow",
                 "Engine": "postgres",
                 "EngineVersion": "9.3.3",
-                "MasterUsername": "master",
-                "MasterUserPassword": "setup123",
+                "MasterUsername": { "Ref" : "DBUser" },
+                "MasterUserPassword": { "Ref" : "DBPassword" },
                 "MultiAZ": true,
                 "Port": { "Ref": "DBPort" },
                 "Tags": [

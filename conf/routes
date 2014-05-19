@@ -8,7 +8,6 @@ GET     /content                            controllers.Application.content
 GET     /stubs                              controllers.Application.stubs()
 
 POST    /newStub                            controllers.Application.newStub()
-POST    /createInComposer                   controllers.Application.createInComposer()
 POST    /updateStub/:stubId                 controllers.Application.updateStub(stubId: String, composerId: String)
 
 POST    /login                              controllers.Application.loginPost()
