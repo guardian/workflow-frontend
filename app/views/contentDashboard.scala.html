@@ -30,7 +30,7 @@
        <table class="table table-striped">
            <tr>
                <th>Working Title</th>
-               <th>Path</th>
+               <th>Assigned to</th>
                <th>Headline</th>
                <th>Content Type</th>
                <th>Section</th>
@@ -41,10 +41,15 @@
            @for(content <- items) {
            <tr data-content=@content.composerId>
                <td>
-                   @content.workingTitle
+                   <strong>@content.workingTitle</strong>
+                   <!-- TODO this should be headline, not path, when we have the headline. -->
+                   @for(path <- content.path) {
+                       <br />
+                       <small>@path</small>
+                   }
                </td>
                <td>
-                   @content.path
+                   [TODO]
                </td>
                <td>
                    @content.headline
