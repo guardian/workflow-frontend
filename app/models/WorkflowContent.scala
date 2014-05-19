@@ -29,7 +29,7 @@ object Contributor {
 case class WireStatus(
   composerId: String,
   contributors: List[Contributor],
-  path: String,
+  path: Option[String],
   headline: Option[String],
   slug: Option[String],
   `type`: String,
@@ -42,7 +42,7 @@ case class WireStatus(
 
 case class WorkflowContent(
   composerId: String,
-  path: String,
+  path: Option[String],
   workingTitle: String,
   due: Option[DateTime],
   headline: Option[String],
@@ -141,7 +141,7 @@ object WireStatus {
   implicit val wireStatusReads: Reads[WireStatus] =
     ((__ \ "content" \ "identifiers" \ "composerId").read[String] ~
       readContributors ~
-      (__ \ "content" \ "identifiers" \ "path").read[String] ~
+      (__ \ "content" \ "identifiers" \ "path").readNullable[String] ~
       (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
       (__ \ "content" \ "fields" \ "slug").readNullable[String] ~
       (__ \ "content" \ "type").read[String] ~

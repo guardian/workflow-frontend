@@ -54,7 +54,7 @@ object PostgresDB {
   def rowToContent(row: SqlRow): WorkflowContent =
     WorkflowContent(
       composerId = row[String]("composer_id"),
-      path = row[String]("path"),
+      path = row[Option[String]]("path"),
       workingTitle = row[String]("working_title"),
       due = Some(row[DateTime]("due")),
       headline = None,
