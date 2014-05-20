@@ -190,13 +190,19 @@
                 @for(content <- items) {
 
                 <tr>
-                    <td><span class="glyphicon glyphicon glyphicon-file "></span>
+                    <td>
+                        <!-- <span class="glyphicon glyphicon glyphicon-file "></span> -->
                     </td>
-                    <td><span class="glyphicon glyphicon-exclamation-sign "></span>
+                    <td>
+                        <!-- <span class="glyphicon glyphicon-exclamation-sign "></span> -->
                     </td>
-                    <td><span class="glyphicon glyphicon-comment "></span>
+                    <td>
+                        @if(content.commentable) {
+                          <span class="glyphicon glyphicon-comment "></span>
+                        }
                     </td>
-                    <td><span class="glyphicon glyphicon-picture "></span>
+                    <td>
+                        <!-- <span class="glyphicon glyphicon-picture "></span> -->
                     </td>
                     <td colspan="2 "><strong>@content.workingTitle</strong>
                         <br />
