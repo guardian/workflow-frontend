@@ -122,16 +122,21 @@
 
                 <h5 class="query" data-toggle="collapse" data-target="#status">Status</h5>
                 <ul id="status" class="nav nav-sidebar">
-                    <li class="active"><a href="#">All</a>
+                    <li class="active">
+                        <a href="#">All</a>
                     </li>
-                    <li><a href="# ">Writers <span class="badge ">42</span></a>
-                    </li>
-                    <li><a href="# ">Subs</a>
-                    </li>
-                    <li><a href="# ">Desk</a>
-                    </li>
-                    <li><a href="# ">Live</a>
-                    </li>
+                    @for(status <- List("Writers", "Subs", "Desk", "Live")) {
+                        <li>
+                            <a href="# ">
+                                @status
+                                @defining(items.count(_.status.name == status)) { count =>
+                                    @if(count > 0) {
+                                        <span class="badge ">@count</span>
+                                    }
+                                }
+                            </a>
+                        </li>
+                    }
                 </ul>
 
                 <h5 class="query" data-toggle="collapse" data-target="#state">State</h5>
