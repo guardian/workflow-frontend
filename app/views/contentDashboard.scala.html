@@ -196,7 +196,14 @@
 
                 <tr>
                     <td>
-                        <!-- <span class="glyphicon glyphicon glyphicon-file "></span> -->
+                        <span class="glyphicon
+                        @if(content.`type` == "article") {
+                          glyphicon-file
+                        }
+                        @if(content.`type` == "gallery") {
+                          glyphicon-camera
+                        }
+                        "></span>
                     </td>
                     <td>
                         <!-- <span class="glyphicon glyphicon-exclamation-sign "></span> -->
