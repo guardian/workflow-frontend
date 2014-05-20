@@ -5,7 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.sqs.AmazonSQSClient
 import com.amazonaws.services.sqs.model.{DeleteMessageRequest, ReceiveMessageRequest, Message}
 import models.WireStatus
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsResult, JsValue, Json}
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model._
 import java.io.ByteArrayInputStream
@@ -75,10 +75,11 @@ object AWSWorkflowQueue {
   }
 
   //todo validate the json
-  def toWireStatus(awsMsg: Message): WireStatus = {
+  def toWireStatus(awsMsg: Message): JsResult[WireStatus] = {
     val body = Json.parse(awsMsg.getBody)
-    val msg = Json.parse((body \ "Message").as[String])
-    msg.as[WireStatus]
+    (body \ "Message").validate[String].flatMap { msg =>
+      Json.parse(msg).validate[WireStatus]
+    }
 
   }
 }

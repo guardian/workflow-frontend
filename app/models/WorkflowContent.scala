@@ -29,7 +29,7 @@ object Contributor {
 case class WireStatus(
   composerId: String,
   contributors: List[Contributor],
-  path: String,
+  path: Option[String],
   headline: Option[String],
   slug: Option[String],
   `type`: String,
@@ -38,13 +38,15 @@ case class WireStatus(
   user: Option[String],
   lastModified: DateTime,
   tagSections: List[Section],
-  status: Status)
+  status: Status,
+  commentable: Boolean)
 
 case class WorkflowContent(
   composerId: String,
-  path: String,
+  path: Option[String],
   workingTitle: String,
   due: Option[DateTime],
+  assignee: Option[String],
   headline: Option[String],
   slug: Option[String],
   `type`: String,
@@ -53,7 +55,8 @@ case class WorkflowContent(
   status: Status,
   lastModification: Option[ContentModification],
   scheduledLaunch: Option[DateTime],
-  stateHistory: Map[Status, String] = Map.empty
+  stateHistory: Map[Status, String] = Map.empty,
+  commentable: Boolean
 ) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
@@ -77,6 +80,7 @@ object WorkflowContent {
       wireStatus.path,
       stub.title,
       stub.due,
+      stub.assignee,
       wireStatus.headline,
       wireStatus.slug,
       wireStatus.`type`,
@@ -84,7 +88,8 @@ object WorkflowContent {
       wireStatus.tagSections.headOption,
       if (wireStatus.published) Final else Writers,
       Some(ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user)),
-      scheduledLaunch=None
+      scheduledLaunch=None,
+      commentable=wireStatus.commentable
     )
   }
 
@@ -141,7 +146,7 @@ object WireStatus {
   implicit val wireStatusReads: Reads[WireStatus] =
     ((__ \ "content" \ "identifiers" \ "composerId").read[String] ~
       readContributors ~
-      (__ \ "content" \ "identifiers" \ "path").read[String] ~
+      (__ \ "content" \ "identifiers" \ "path").readNullable[String] ~
       (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
       (__ \ "content" \ "fields" \ "slug").readNullable[String] ~
       (__ \ "content" \ "type").read[String] ~
@@ -150,7 +155,10 @@ object WireStatus {
       readUser ~
       (__ \ "content" \ "lastModified").read[Long].map(t => new DateTime(t)) ~
       readTagSections ~
-      (__ \ "published").read[Boolean].map(p => if (p) Final else Writers)
+      (__ \ "published").read[Boolean].map(p => if (p) Final else Writers) ~
+      (__ \ "content" \ "settings" \ "commentable").readNullable[String].map {
+        s => s.exists(_=="true")
+      }
       )(WireStatus.apply _)
 
 }
