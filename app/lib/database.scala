@@ -58,7 +58,7 @@ object PostgresDB {
       workingTitle = row[String]("working_title"),
       due = Some(row[DateTime]("due")),
       assignee = row[Option[String]]("assign_to"),
-      headline = None,
+      headline = row[Option[String]]("headline"),
       slug = None,
       `type` = row[String]("content_type"),
       contributors = Nil,
@@ -143,6 +143,7 @@ object PostgresDB {
       SQL("""
           UPDATE content SET
           path = {path},
+          headline = {headline},
           last_modified = {last_modified},
           last_modified_by = {last_modified_by},
           status = {status},
@@ -153,6 +154,7 @@ object PostgresDB {
           """).on(
           'composer_id -> wc.composerId,
           'path -> wc.path,
+          'headline -> wc.headline,
           'last_modified -> wc.lastModification.map(_.dateTime),
           'last_modified_by -> wc.lastModification.flatMap(_.user),
           'status -> wc.status.name,
@@ -168,6 +170,7 @@ object PostgresDB {
         """
           INSERT INTO content (composer_id,
                                path,
+                               headline,
                                last_modified,
                                last_modified_by,
                                status,
@@ -175,6 +178,7 @@ object PostgresDB {
                                commentable)
           VALUES ( {composer_id},
                    {path},
+                   {headline},
                    {last_modified},
                    {last_modified_by},
                    {status},
@@ -184,6 +188,7 @@ object PostgresDB {
       ).on(
           'composer_id -> wc.composerId,
           'path -> wc.path,
+          'headline -> wc.headline,
           'last_modified -> wc.lastModification.map(_.dateTime),
           'last_modified_by -> wc.lastModification.flatMap(_.user),
           'status -> wc.status.name,
