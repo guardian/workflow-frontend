@@ -57,6 +57,7 @@ object PostgresDB {
       path = row[Option[String]]("path"),
       workingTitle = row[String]("working_title"),
       due = Some(row[DateTime]("due")),
+      assignee = row[Option[String]]("assign_to"),
       headline = None,
       slug = None,
       `type` = row[String]("content_type"),
