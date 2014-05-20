@@ -65,7 +65,8 @@ object PostgresDB {
       status = Status(row[String]("status")),
       lastModification = Some(ContentModification("", row[DateTime]("last_modified"), row[Option[String]]("last_modified_by"))),
       scheduledLaunch = None,
-      stateHistory = Map.empty
+      stateHistory = Map.empty,
+      commentable = row[Boolean]("commentable")
     )
 
 
@@ -144,7 +145,8 @@ object PostgresDB {
           last_modified = {last_modified},
           last_modified_by = {last_modified_by},
           status = {status},
-          content_type = {content_type}
+          content_type = {content_type},
+          commentable = {commentable}
           WHERE
           composer_id = {composer_id}
           """).on(
@@ -153,7 +155,8 @@ object PostgresDB {
           'last_modified -> wc.lastModification.map(_.dateTime),
           'last_modified_by -> wc.lastModification.flatMap(_.user),
           'status -> wc.status.name,
-          'content_type -> wc.`type`
+          'content_type -> wc.`type`,
+          'commentable -> wc.commentable
         ).executeUpdate()
     }
   }
@@ -162,8 +165,20 @@ object PostgresDB {
     DB.withConnection { implicit c =>
       SQL(
         """
-          INSERT INTO content (composer_id, path, last_modified, last_modified_by, status, content_type)
-          VALUES ( {composer_id}, {path}, {last_modified}, {last_modified_by}, {status}, {content_type} )
+          INSERT INTO content (composer_id,
+                               path,
+                               last_modified,
+                               last_modified_by,
+                               status,
+                               content_type,
+                               commentable)
+          VALUES ( {composer_id},
+                   {path},
+                   {last_modified},
+                   {last_modified_by},
+                   {status},
+                   {content_type},
+                   {commentable})
         """
       ).on(
           'composer_id -> wc.composerId,
@@ -171,7 +186,8 @@ object PostgresDB {
           'last_modified -> wc.lastModification.map(_.dateTime),
           'last_modified_by -> wc.lastModification.flatMap(_.user),
           'status -> wc.status.name,
-          'content_type -> wc.`type`
+          'content_type -> wc.`type`,
+          'commentable -> wc.commentable
       ).executeUpdate()
     }
   }
