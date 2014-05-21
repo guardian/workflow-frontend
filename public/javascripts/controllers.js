@@ -8,17 +8,25 @@ angular.module('myApp.controllers', [])
       $scope.selectedState = 'published';
 
       $scope.stateIsSelected = function(state) {
-        return $scope.selectedState == state;
+          return $scope.selectedState == state;
       }
 
       $scope.selectState = function(state) {
-        $scope.selectedState = state;
+          $scope.selectedState = state;
+          getContent();
       }
 
-      $http.get('http://localhost:9000/content').success(function(response){
-          var content = response.content
-          $scope.content_items = content
-      });
+      function getContent() {
+          var uri = 'http://localhost:9000/content'
+          if ($scope.selectedState) {
+              uri = uri + '?state=' + $scope.selectedState;
+          }
+          $http.get(uri).success(function(response){
+              $scope.contentItems = response.content;
+          });
+      }
+
+      getContent();
   }])
   .controller('MyCtrl2', ['$scope', function($scope) {
 

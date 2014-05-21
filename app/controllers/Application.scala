@@ -100,6 +100,7 @@ object Application extends Controller {
       case "status"    => StatusDatabase.find(value) == Some(wc.status)
       case "due.from"  => filterDue((due, v) => due.isEqual(v) || due.isAfter(v))
       case "due.until" => filterDue((due, v) => due.isBefore(v))
+      case "state"     => ContentState.fromString(value).exists(_ == wc.state)
       case _ => true
     }
   }

@@ -170,6 +170,12 @@ object ContentState {
   case object Draft extends ContentState
   case object Published extends ContentState
 
+  def fromString(s: String): Option[ContentState] = s match {
+    case "draft" => Some(Draft)
+    case "published" => Some(Published)
+    case _ => None
+  }
+
   implicit val contentStateWrites: Writes[ContentState] = new Writes[ContentState] {
     def writes(o: ContentState): JsValue =
       JsString(o match {
