@@ -102,7 +102,7 @@
 </div>
 
 <div class="container-fluid">
-    <div id="content-container" class="">
+    <div id="content-container" class=""  ng-controller="ContentCtrl">
         <div id="sidebar-container" class="">
             <div class="sidebar">
 
@@ -140,13 +140,16 @@
 
                 <h5 class="query" data-toggle="collapse" data-target="#state">State</h5>
                 <ul id="state" class="nav nav-sidebar">
-                    <li class="active "><a href=" ">All</a>
+                    <li ng-class="{active: stateIsSelected()}" >
+                        <a href="" ng-click="selectState(null)">All</a>
                     </li>
-                    <li><a href=" ">Stub</a>
+                    <!--<li><a href=" ">Stub</a>-->
+                    <!--</li>-->
+                    <li ng-class="{active: stateIsSelected('draft')}">
+                        <a href="" ng-click="selectState('draft')" >Draft</a>
                     </li>
-                    <li><a href=" ">Draft</a>
-                    </li>
-                    <li><a href=" ">Published</a>
+                    <li ng-class="{active: stateIsSelected('published')}">
+                        <a href="" ng-click="selectState('published')">Published</a>
                     </li>
                 </ul>
 
@@ -162,7 +165,7 @@
             </div>
         </div>
 
-        <div id="content" class="" ng-controller="ContentCtrl">
+        <div id="content" class="">
 
 
             <table class="table ">
