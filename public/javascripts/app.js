@@ -10,6 +10,6 @@ angular.module('myApp', [
   'myApp.controllers'
 ]).
 config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/dashboard', {templateUrl: 'content', controller: 'ContentCtrl'});
+  $routeProvider.when('/dashboard', {templateUrl: 'dashboard', controller: 'ContentCtrl'});
   $routeProvider.otherwise({redirectTo: '/dashboard'});
 }]);

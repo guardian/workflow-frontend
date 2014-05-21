@@ -104,6 +104,24 @@ object Application extends Controller {
     }
   }
 
+  def dashboard = Authenticated.async { req =>
+    for {
+      sections <- SectionDatabase.sectionList
+      statuses <- StatusDatabase.statuses
+      stubs = PostgresDB.getAllStubs
+      items = PostgresDB.allContent
+
+      predicate = (wc: WorkflowContent) => req.queryString.forall { case (k, vs) =>
+        vs.exists(v => filterPredicate(k, v)(wc))
+      }
+      content = items.filter(predicate).sortBy(_.due)
+    }
+    yield {
+       Ok(views.html.contentDashboard(content, sections, statuses))
+    }
+  }
+
+
   def content = Authenticated.async { req =>
     for {
       sections <- SectionDatabase.sectionList
@@ -117,11 +135,7 @@ object Application extends Controller {
       content = items.filter(predicate).sortBy(_.due)
     }
     yield {
-      val accept = req.headers.get(ACCEPT).toList.flatMap(_.split(", "))
-//      if (accept.contains(MimeTypes.JSON))
-//        Ok(renderJsonResponse(content))
-//      else
-        Ok(views.html.contentDashboard(content, sections, statuses))
+      Ok(renderJsonResponse(content))
     }
   }
 

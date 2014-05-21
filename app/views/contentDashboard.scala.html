@@ -162,7 +162,8 @@
             </div>
         </div>
 
-        <div id="content" class="">
+        <div id="content" class="" ng-controller="ContentCtrl">
+
 
             <table class="table ">
                 <caption>Active stuff</caption>
@@ -191,46 +192,36 @@
                     <td class="wf-table-heading " colspan="12 ">WRITING</td>
                 </tr>
 
-                @for(content <- items) {
 
-                <tr>
+
+
+                <tr ng-repeat="content in content_items">
                     <td>
-                        <span class="glyphicon
-                        @if(content.`type` == "article") {
-                          glyphicon-file
-                        }
-                        @if(content.`type` == "gallery") {
-                          glyphicon-camera
-                        }
-                        "></span>
+                        <span class="glyphicon glyphicon-file" ng-show="content.type==='article'"></span>
+                        <span class="glyphicon glyphicon-camera" ng-show="content.type==='gallery'"></span>
                     </td>
                     <td>
                         <!-- <span class="glyphicon glyphicon-exclamation-sign "></span> -->
                     </td>
                     <td>
-                        @if(content.commentable) {
-                          <span class="glyphicon glyphicon-comment "></span>
-                        }
+                         <span class="glyphicon glyphicon-comment"  ng-show="content.commentable"></span>
                     </td>
                     <td>
                         <!-- <span class="glyphicon glyphicon-picture "></span> -->
                     </td>
-                    <td colspan="2 "><strong>@content.workingTitle</strong>
+                    <td colspan="2 "><strong>{{content.workingTitle}}</strong>
                         <br />
                         <span style="font-size: 90%; color: #666; line-height: 1em; ">
-                            @content.headline
+                            {{content.headline}}
                         </span>
                     </td>
                     <td>n/a</td>
                     <td></td>
-                    <td>@content.assignee</td>
-                    <td>@content.due.map(displayDate)</td>
+                    <td>{{content.assignee}}</td>
+                    <td>{{content.due}}</td>
                     <td></td>
                     <td></td>
                 </tr>
-
-                }
-
                 </tbody>
             </table>
 
