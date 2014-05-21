@@ -2,19 +2,21 @@ package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Try
+import java.util.UUID
+import org.joda.time.DateTime
 
-import play.api.mvc._
 import lib._
 import lib.RequestSyntax._
 import models._
+
+import play.api.mvc._
 import play.api.data.Form
-import java.util.UUID
 import play.api.libs.json.{Reads, Writes, Json, JsValue}
 import play.api.libs.openid.OpenID
 import play.api.mvc.Security.AuthenticatedBuilder
-import play.api.libs.ws.WS
-import org.joda.time.DateTime
-import scala.util.Try
+import play.api.http.MimeTypes
+
 
 object Application extends Controller {
 
@@ -115,9 +117,10 @@ object Application extends Controller {
       content = items.filter(predicate).sortBy(_.due)
     }
     yield {
-      if (req.headers.get(ACCEPT) == Some("application/json"))
-        Ok(renderJsonResponse(content))
-      else
+      val accept = req.headers.get(ACCEPT).toList.flatMap(_.split(", "))
+//      if (accept.contains(MimeTypes.JSON))
+//        Ok(renderJsonResponse(content))
+//      else
         Ok(views.html.contentDashboard(content, sections, statuses))
     }
   }
