@@ -2,116 +2,255 @@
 @import helper._
 @import lib.Formatting._
 @import models.Status
-@main("Content Dashboard") {
 
- <div class="row">
-   <div class="col-md-2">
-       <h3>Filters</h3>
-     <form id="filter_form">
-       <div class="well well-sm">
-           <h4>Due date</h4>
-           <ul class="list-unstyled">
-               <li>
-                   <input type="checkbox" id="filter_form_due_today">
-                   <label for="filter_form_due_today">today</label>
-               </li>
-               <li>
-                   <input type="checkbox" id="filter_form_due_tomorrow">
-                   <label for="filter_form_due_tomorrow">tomorrow</label>
-               </li>
-           </ul>
-       </div>
-       <p><input type="submit" value="Apply" /></p>
-       <p><a href="/content">Clear filters</a></p>
-     </form>
-   </div>
-   <div class="col-md-10">
-     <div class="table">
-       <table class="table table-striped">
-           <tr>
-               <th>Working Title</th>
-               <th>Assigned to</th>
-               <th>Headline</th>
-               <th>Content Type</th>
-               <th>Section</th>
-               <th>Due by</th>
-               <th>Last Modified</th>
-               <th>Status</th>
-           </tr>
-           @for(content <- items) {
-           <tr data-content=@content.composerId>
-               <td>
-                   <strong>@content.workingTitle</strong>
-                   <!-- TODO this should be headline, not path, when we have the headline. -->
-                   @for(path <- content.path) {
-                       <br />
-                       <small>@path</small>
-                   }
-               </td>
-               <td>
-                   @content.assignee
-               </td>
-               <td>
-                   @content.headline
-               </td>
-               <td>
-                   @{content.`type`}
-               </td>
-               <td>
-                   @content.section
-               </td>
-               <td>
-                   @content.due.map(displayDate)
-               </td>
-               <td>
-                 @for(mod<-content.lastModification){
-                   @displayDate(mod.dateTime)
-                   @for(user <- mod.user){ by @user }
-                 }
-               </td>
-               <td>
-                   @content.status
-               </td>
-           </tr>
-           }
-       </table>
-     </div>
-   </div>
- </div>
+<div class="container-fluid top-control">
+    <div class="row">
+        <div class="col-md-12 header-bar">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default">New stub</button>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Article</a>
+                    </li>
+                    <li><a href="#">Live blog</a>
+                    </li>
+                    <li><a href="#">Gallery</a>
+                    </li>
+                    <li><a href="#">Interactive</a>
+                    </li>
+                </ul>
+            </div>
 
-<script>
+            <div class="constrain-by-desk-section" data-toggle="buttons">
+                <!--						<div class="btn-group btn-default" data-toggle="buttons">
+                      <label class="btn btn-default">
+                        <input type="radio" name="options" id="option1"> Option 1
+                      </label>
+                      <label class="btn btn-default">
+                        <input type="radio" name="options" id="option2"> Option 2
+                      </label>
+                      <label class="btn btn-default">
+                        <input type="radio" name="options" id="option3"> Option 3
+                      </label>
+                    </div>-->
 
-  function formatDateForUri(date) {
-    return encodeURIComponent(moment(date).format("YYYY-MM-DDTHH:mm:ssZ"));
-  }
+                <!--<div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-default">Desk</button>
+                      <button type="button" class="btn btn-default">Section</button>
+                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                      </ul>
+                    </div>-->
 
-  $('#filter_form').on('submit', function(event) {
+                <div class="btn-group btn-group-sm" data-toggle="buttons">
+                    <button type="button" class="btn btn-primary">Desk</button>
+                    <button type="button" class="btn btn-default">Section</button>
+                </div>
 
-    var today = moment().startOf('day');
-    var tomorrow = today.clone().add('days', 1)
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        UK News <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Action</a>
+                        </li>
+                        <li><a href="#">Another action</a>
+                        </li>
+                        <li><a href="#">Something else here</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="#">Separated link</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
-    var due_from = [];
-    var due_until = [];
 
-    if ($('#filter_form_due_today').is(':checked')) {
-      due_from.push(today);
-      due_until.push(tomorrow);
-    }
+            <div class="constrain-by-date">
+                <h4>Due by</h4>
+                <div class="btn-group btn-group-sm" data-toggle="buttons">
+                    <button type="button" class="btn btn-primary">All</button>
+                    <button type="button" class="btn btn-default">Today</button>
+                    <button type="button" class="btn btn-default">Tomorrow</button>
+                    <button type="button" class="btn btn-default">This weekend</button>
+                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-calendar"></span>
+                        <select disabled>
+                            <option value="volvo">23 May 2014</option>
+                            <option value="saab">24 May 2014</option>
+                            <option value="opel">25 May 2014</option>
+                            <option value="audi">26 May 2014</option>
+                        </select>
+                    </button>
+                </div>
+            </div>
 
-    if ($('#filter_form_due_tomorrow').is(':checked')) {
-      due_from.push(tomorrow);
-      var until = tomorrow.clone().add('days', 1);
-      due_until.push(until);
-    }
 
-    var uri =
-      "/content?due.from=" + formatDateForUri(due_from.shift()) +
-      "&due.until=" + formatDateForUri(due_until.pop());
+        </div>
+    </div>
 
-    window.location = uri;
+</div>
 
-    return false;
-  });
+<div class="container-fluid">
+    <div id="content-container" class=""  ng-controller="ContentCtrl">
+        <div id="sidebar-container" class="">
+            <div class="sidebar">
 
-</script>
-}
+                <h5 class="query ">Content type</h5>
+                <div class="btn-group btn-group-xs " data-toggle="buttons ">
+                    <button type="button " class="btn btn-default active ">All</button>
+                    <button type="button " class="btn btn-default "><span class="glyphicon glyphicon-file "></span>
+                    </button>
+                    <button type="button " class="btn btn-default "><span class="glyphicon glyphicon-th-list "></span>
+                    </button>
+                    <button type="button " class="btn btn-default "><span class="glyphicon glyphicon-camera "></span>
+                    </button>
+                    <button type="button " class="btn btn-default "><span class="glyphicon glyphicon-hand-up "></span>
+                    </button>
+                </div>
+
+                <h5 class="query" data-toggle="collapse" data-target="#status">Status</h5>
+                <ul id="status" class="nav nav-sidebar">
+                    <li class="active">
+                        <a href="#">All</a>
+                    </li>
+                    @for(status <- List("Writers", "Subs", "Desk", "Live")) {
+                        <li>
+                            <a href="# ">
+                                @status
+                                @defining(items.count(_.status.name == status)) { count =>
+                                    @if(count > 0) {
+                                        <span class="badge ">@count</span>
+                                    }
+                                }
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <h5 class="query" data-toggle="collapse" data-target="#state">State</h5>
+                <ul id="state" class="nav nav-sidebar">
+                    <li ng-class="{active: stateIsSelected()}" >
+                        <a href="" ng-click="selectState(null)">All</a>
+                    </li>
+                    <!--<li><a href=" ">Stub</a>-->
+                    <!--</li>-->
+                    <li ng-class="{active: stateIsSelected('draft')}">
+                        <a href="" ng-click="selectState('draft')" >Draft</a>
+                    </li>
+                    <li ng-class="{active: stateIsSelected('published')}">
+                        <a href="" ng-click="selectState('published')">Published</a>
+                    </li>
+                </ul>
+
+                <h5 class="query" data-toggle="collapse" data-target="#other">Other stuffs</h5>
+                <ul id="other" class="nav nav-sidebar">
+                    <li><a href=" ">Nav item again</a>
+                    </li>
+                    <li><a href=" ">One more nav</a>
+                    </li>
+                    <li><a href=" ">Another nav item</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="content" class="">
+
+
+            <table class="table ">
+                <caption>Active stuff</caption>
+
+                <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>Working title <span style="font-size: 90%; color: #666; font-weight:normal; ">and headline</span>
+                    </th>
+                    <th></th>
+                    <th>Legal</th>
+                    <th>In use by</th>
+                    <th>Assigned to</th>
+                    <th>Due by</th>
+                    <th>Embargoed?</th>
+                    <th>Notes</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr class="wf-table-grouping ">
+                    <td class="wf-table-heading " colspan="12 ">WRITING</td>
+                </tr>
+
+                <tr ng-repeat="content in contentItems">
+                    <td>
+                        <span class="glyphicon glyphicon-file" ng-show="content.type==='article'"></span>
+                        <span class="glyphicon glyphicon-camera" ng-show="content.type==='gallery'"></span>
+                    </td>
+                    <td>
+                        <!-- <span class="glyphicon glyphicon-exclamation-sign "></span> -->
+                    </td>
+                    <td>
+                         <span class="glyphicon glyphicon-comment"  ng-show="content.commentable"></span>
+                    </td>
+                    <td>
+                        <!-- <span class="glyphicon glyphicon-picture "></span> -->
+                    </td>
+                    <td colspan="2 "><strong>{{content.workingTitle}}</strong>
+                        <br />
+                        <span style="font-size: 90%; color: #666; line-height: 1em; ">
+                            {{content.headline}}
+                        </span>
+                    </td>
+                    <td>n/a</td>
+                    <td></td>
+                    <td>{{content.assignee}}</td>
+                    <td>{{content.due}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <div id="detail" class="">
+            <div class="detail-panel">
+                <h4>Gmail overhaul being tested</h4>
+                <img class="picture" src="file://localhost/Users/ajardine/Development/workflow-prototype/detailpic.jpeg" alt="" />
+
+                <h5>Timing</h5>
+                <dl class="dl-horizontal">
+                    <dt>Embargoed until</dt> 		<dd>17:15</dd>
+                    <dt>Scheduled launch</dt> 		<dd>Tomorrow 18:00</dd>
+                    <dt>Production deadline</dt> 	<dd>16:00</dd>
+                    <dt>Last launched</dt> 			<dd>-</dd>
+                    <dt>Last modified</dt> 			<dd>-</dd>
+                </dl>
+                <hr />
+
+                <h5>People</h5>
+                <dl class="dl-horizontal">
+                    <dt>Original author</dt> 	<dd>Samuel Gibbs</dd>
+                    <dt>In use by</dt> 			<dd>-</dd>
+                    <dt>Last modified by</dt> 	<dd>Jemima Kiss</dd>
+                    <dt>Assigned to</dt>		<dd>Shiona Tregaskis</dd>
+                </dl>
+                <hr />
+            </div>
+        </div>
+    </div>
+</div>

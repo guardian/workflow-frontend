@@ -5,6 +5,7 @@
 # Home page
 GET     /                                   controllers.Application.index
 GET     /content                            controllers.Application.content
+GET     /dashboard                          controllers.Application.dashboard
 GET     /stubs                              controllers.Application.stubs()
 
 POST    /newStub                            controllers.Application.newStub()

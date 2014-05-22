@@ -2,19 +2,21 @@ package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Try
+import java.util.UUID
+import org.joda.time.DateTime
 
-import play.api.mvc._
 import lib._
 import lib.RequestSyntax._
 import models._
+
+import play.api.mvc._
 import play.api.data.Form
-import java.util.UUID
 import play.api.libs.json.{Reads, Writes, Json, JsValue}
 import play.api.libs.openid.OpenID
 import play.api.mvc.Security.AuthenticatedBuilder
-import play.api.libs.ws.WS
-import org.joda.time.DateTime
-import scala.util.Try
+import play.api.http.MimeTypes
+
 
 object Application extends Controller {
 
@@ -98,9 +100,28 @@ object Application extends Controller {
       case "status"    => StatusDatabase.find(value) == Some(wc.status)
       case "due.from"  => filterDue((due, v) => due.isEqual(v) || due.isAfter(v))
       case "due.until" => filterDue((due, v) => due.isBefore(v))
+      case "state"     => ContentState.fromString(value).exists(_ == wc.state)
       case _ => true
     }
   }
+
+  def dashboard = Authenticated.async { req =>
+    for {
+      sections <- SectionDatabase.sectionList
+      statuses <- StatusDatabase.statuses
+      stubs = PostgresDB.getAllStubs
+      items = PostgresDB.allContent
+
+      predicate = (wc: WorkflowContent) => req.queryString.forall { case (k, vs) =>
+        vs.exists(v => filterPredicate(k, v)(wc))
+      }
+      content = items.filter(predicate).sortBy(_.due)
+    }
+    yield {
+       Ok(views.html.contentDashboard(content, sections, statuses))
+    }
+  }
+
 
   def content = Authenticated.async { req =>
     for {
@@ -115,10 +136,7 @@ object Application extends Controller {
       content = items.filter(predicate).sortBy(_.due)
     }
     yield {
-      if (req.headers.get(ACCEPT) == Some("application/json"))
-        Ok(renderJsonResponse(content))
-      else
-        Ok(views.html.contentDashboard(content, sections, statuses))
+      Ok(renderJsonResponse(content))
     }
   }
 

@@ -56,7 +56,8 @@ case class WorkflowContent(
   lastModification: Option[ContentModification],
   scheduledLaunch: Option[DateTime],
   stateHistory: Map[Status, String] = Map.empty,
-  commentable: Boolean
+  commentable: Boolean,
+  state: ContentState
 ) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
@@ -68,7 +69,8 @@ case class WorkflowContent(
         whatChanged = wireStatus.whatChanged,
         dateTime = wireStatus.lastModified,
         user = wireStatus.user
-      ))
+      )),
+      state = if (wireStatus.published) ContentState.Published else state
     )
 }
 
@@ -89,7 +91,8 @@ object WorkflowContent {
       if (wireStatus.published) Final else Writers,
       Some(ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user)),
       scheduledLaunch=None,
-      commentable=wireStatus.commentable
+      commentable=wireStatus.commentable,
+      state = if (wireStatus.published) ContentState.Published else ContentState.Draft
     )
   }
 
@@ -161,4 +164,25 @@ object WireStatus {
       }
       )(WireStatus.apply _)
 
+}
+
+sealed trait ContentState
+
+object ContentState {
+  case object Draft extends ContentState
+  case object Published extends ContentState
+
+  def fromString(s: String): Option[ContentState] = s match {
+    case "draft" => Some(Draft)
+    case "published" => Some(Published)
+    case _ => None
+  }
+
+  implicit val contentStateWrites: Writes[ContentState] = new Writes[ContentState] {
+    def writes(o: ContentState): JsValue =
+      JsString(o match {
+        case Draft => "draft"
+        case Published => "published"
+      })
+  }
 }

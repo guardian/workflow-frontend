@@ -1,0 +1,241 @@
+body {
+/*	min-width: 800px;*/
+	padding-top: 50px;
+}
+
+
+td.wf-table-heading {
+	font-weight: bold;
+}
+
+thead {
+	color: white;	
+	background-color: #666;
+	font-size: 75%;
+	letter-spacing: 0.5px;
+}
+
+thead.th{
+	color: #666;	
+}
+
+tr.wf-table-grouping td {
+	color: black;	
+	background-color: #F5F5F5;
+	font-size: 75%;
+	letter-spacing: 0.5px;
+}
+
+tr td {
+	/*border-right: 1px solid white;*/
+	font-size: 90%;
+}
+
+/*Styles from dashboard*/
+
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+
+
+#content-container {
+	position: absolute;
+	top: 100px;
+	left: 0;
+	right: 0;
+	bottom: 0px;
+	
+}
+
+#sidebar-container {
+width: 200px;
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+overflow: auto;
+/*background-color: green;*/
+}
+
+#content {
+position: absolute;
+top: 0px;
+right: 305px;
+bottom: 0;
+left: 205px;
+overflow: auto;
+    /*background-color: yellow;*/
+}
+
+#detail {
+width: 300px;
+position: absolute;
+top: -10px;
+right: 0;
+bottom: 0;
+background-color: #f5f5f5;
+border-left: 1px solid #eee;
+/*border: 1px solid #333;*/
+} 
+
+.detail-panel .picture {
+	height: 180px;
+	background-color: pink;
+	width: 260px;
+}
+
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+
+
+  .sidebar {
+  	top: 90px;
+    bottom: 0;
+    left: 0;
+    /*z-index: 1000;*/
+    display: block;
+    padding: 20px;
+/*    margin: -20px;*/
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+    position: fixed;
+  	width: 200px;
+  }
+
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-bottom: 20px;
+  margin-left: -20px;
+}
+
+.nav-sidebar > li > a {
+  padding: 3px 20px 3px 30px;
+  
+}
+
+div.col-md-2.sidebar div.btn-group.btn-group-xs {
+	padding-left: 10px;	
+}
+
+div.col-md-2.sidebar div.btn-group.btn-group-xs button.btn.btn-default {
+	width: 34px;	
+}
+
+.nav-sidebar > .active > a {
+  color: #fff;
+  background-color: #428bca;
+}
+
+.detail-panel {
+	padding-left: 20px;
+	
+}
+
+h5.query {
+	font-weight: bold;
+}
+
+ 
+ /* Header bar */
+ 
+.header-bar {
+	height: 40px;
+	padding: 3px;
+	background-color: #adadad;
+	position: fixed;
+	/*z-index: 1000;*/
+}
+
+.header-bar h4 {
+	display: inline-block;
+	margin-top: 0px;
+}
+
+.constrain-by-date, .constrain-by-desk-section  {
+	display: inline-block;
+	margin-left: 100px;
+}
+
+.constrain-by-date h4 {
+	font-size: 1.6rem;
+}
+
+
+@media (min-width: 768px) {
+  .dl-horizontal dt {
+/*    float: left;*/
+    width: 130px;
+    overflow: hidden;
+    clear: left;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /*background-color: yellow;*/
+    font-size: 90%;
+  }
+  .dl-horizontal dd {
+    margin-left: 20px;
+    /*background-color: pink;*/
+    font-size: 90%;
+  	margin-right: 10px;
+  }
+}
+
+
+
+/*
+ * Main content
+ */
+
+/*.main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0;
+}*/
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+/*.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
+}*/
