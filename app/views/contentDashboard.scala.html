@@ -80,10 +80,10 @@
             <div class="constrain-by-date">
                 <h4>Due by</h4>
                 <div class="btn-group btn-group-sm" data-toggle="buttons">
-                    <button type="button" class="btn btn-primary">All</button>
-                    <button type="button" class="btn btn-default">Today</button>
-                    <button type="button" class="btn btn-default">Tomorrow</button>
-                    <button type="button" class="btn btn-default">This weekend</button>
+                    <button type="button" class="btn btn-primary" ng-click="selectDate()">All</button>
+                    <button type="button" class="btn btn-default" ng-click="selectDate('today')">Today</button>
+                    <button type="button" class="btn btn-default" ng-click="selectDate('tomorrow')">Tomorrow</button>
+                    <button type="button" class="btn btn-default" ng-click="selectDate('weekend')">This weekend</button>
                     <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-calendar"></span>
                         <select disabled>
                             <option value="volvo">23 May 2014</option>
@@ -102,7 +102,7 @@
 </div>
 
 <div class="container-fluid">
-    <div id="content-container" class=""  ng-controller="ContentCtrl">
+    <div id="content-container" class="" >
         <div id="sidebar-container" class="">
             <div class="sidebar">
 

@@ -4,6 +4,7 @@ define(['angular'], function (angular) {
     return angular.module('myApp.controllers', [])
          .controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
 
+
              $scope.stateIsSelected = function(state) {
                  return $scope.selectedState == state;
              }
@@ -12,6 +13,12 @@ define(['angular'], function (angular) {
                  $scope.selectedState = state;
                  getContent();
              }
+
+            $scope.selectDate = function(date) {
+              
+              $scope.selectedDate = date;
+                   getContent();
+              };
 
              function getContent() {
                  var uri = 'http://localhost:9000/content'
