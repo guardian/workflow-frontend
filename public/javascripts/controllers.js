@@ -5,8 +5,6 @@
 angular.module('myApp.controllers', [])
   .controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
 
-      $scope.selectedState = 'published';
-
       $scope.stateIsSelected = function(state) {
           return $scope.selectedState == state;
       }

@@ -57,7 +57,7 @@ case class WorkflowContent(
   scheduledLaunch: Option[DateTime],
   stateHistory: Map[Status, String] = Map.empty,
   commentable: Boolean,
-  state: ContentState = ContentState.Draft
+  state: ContentState
 ) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
@@ -69,7 +69,8 @@ case class WorkflowContent(
         whatChanged = wireStatus.whatChanged,
         dateTime = wireStatus.lastModified,
         user = wireStatus.user
-      ))
+      )),
+      state = if (wireStatus.published) ContentState.Published else state
     )
 }
 
@@ -90,7 +91,8 @@ object WorkflowContent {
       if (wireStatus.published) Final else Writers,
       Some(ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user)),
       scheduledLaunch=None,
-      commentable=wireStatus.commentable
+      commentable=wireStatus.commentable,
+      state = if (wireStatus.published) ContentState.Published else ContentState.Draft
     )
   }
 

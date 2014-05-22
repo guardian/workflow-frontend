@@ -67,7 +67,8 @@ object PostgresDB {
       lastModification = Some(ContentModification("", row[DateTime]("last_modified"), row[Option[String]]("last_modified_by"))),
       scheduledLaunch = None,
       stateHistory = Map.empty,
-      commentable = row[Boolean]("commentable")
+      commentable = row[Boolean]("commentable"),
+      state = if (row[Boolean]("published")) ContentState.Published else ContentState.Draft
     )
 
 
@@ -148,7 +149,8 @@ object PostgresDB {
           last_modified_by = {last_modified_by},
           status = {status},
           content_type = {content_type},
-          commentable = {commentable}
+          commentable = {commentable},
+          published = {published}
           WHERE
           composer_id = {composer_id}
           """).on(
@@ -159,7 +161,8 @@ object PostgresDB {
           'last_modified_by -> wc.lastModification.flatMap(_.user),
           'status -> wc.status.name,
           'content_type -> wc.`type`,
-          'commentable -> wc.commentable
+          'commentable -> wc.commentable,
+          'published -> (wc.state == ContentState.Published)
         ).executeUpdate()
     }
   }
@@ -183,7 +186,9 @@ object PostgresDB {
                    {last_modified_by},
                    {status},
                    {content_type},
-                   {commentable})
+                   {commentable},
+                   {published}
+                 )
         """
       ).on(
           'composer_id -> wc.composerId,
@@ -193,7 +198,8 @@ object PostgresDB {
           'last_modified_by -> wc.lastModification.flatMap(_.user),
           'status -> wc.status.name,
           'content_type -> wc.`type`,
-          'commentable -> wc.commentable
+          'commentable -> wc.commentable,
+          'published -> (wc.state == ContentState.Published)
       ).executeUpdate()
     }
   }
