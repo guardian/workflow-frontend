@@ -1,7 +1,16 @@
-define(['angular', 'moment'], function (angular, moment) {
+define(['angular', 'moment', 'uiBootstrap'], function (angular, moment) {
     'use strict';
+     var StubModalInstanceCtrl = function ($scope, $modalInstance) {
+        $scope.stubForm = {}
+        $scope.ok = function () {
+            $modalInstance.close($scope.stubForm);
+        };
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    };
 
-    return angular.module('myApp.controllers', [])
+    return angular.module('myApp.controllers', ['ui.bootstrap'])
          .controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
 
              function formatDateForUri(date) {
@@ -58,17 +67,31 @@ define(['angular', 'moment'], function (angular, moment) {
             }
             getStubs();
 
-            $scope.addStub = function() {
-                $http({
-                    method: 'POST',
-                    url: '/newStub',
-                    params: $scope.stubForm,
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                }).success(function(response) {
-                    //hide modal
-                    //
+        }])
+        .controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http, $log){
+
+            $scope.open = function () {
+
+                var modalInstance = $modal.open({
+                    templateUrl: 'stubModalContent.html',
+                    controller: StubModalInstanceCtrl
                 });
-            }
-        }]);
+
+                modalInstance.result.then(function (stub) {
+                    $http({
+                        method: 'POST',
+                        url: '/newStub',
+                        params: stub,
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).success(function(){
+                       //todo - add method for calling the getStubs method
+                    });
+
+                }, function () {
+                    $log.info('Modal dismissed at: ' + new Date());
+                });
+            };
+        }])
+        .controller('StubModalInstanceCtrl', ['$scope','$modalInstance','items', StubModalInstanceCtrl]);
 
 });
