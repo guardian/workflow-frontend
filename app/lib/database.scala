@@ -178,7 +178,8 @@ object PostgresDB {
                                last_modified_by,
                                status,
                                content_type,
-                               commentable)
+                               commentable,
+                               published)
           VALUES ( {composer_id},
                    {path},
                    {headline},
