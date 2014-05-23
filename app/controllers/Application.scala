@@ -47,6 +47,10 @@ object Application extends Controller {
     yield Ok(views.html.stubs(stubForm, stubs, sections))
   }
 
+  def stubsJson = Action {
+    val stubs = PostgresDB.getAllStubs
+    Ok(renderJsonResponse(stubs))
+  }
   def login = Action {
     Ok(views.html.login())
   }
@@ -140,11 +144,13 @@ object Application extends Controller {
     }
   }
 
-  def renderJsonResponse(content: List[WorkflowContent]): JsValue = Json.obj("content" -> content)
+  def renderJsonResponse[A : Writes](content: List[A]): JsValue = Json.obj("data" -> content)
 
   def newStub = Action { implicit request =>
     stubForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(s"that failed ${formWithErrors}"),
+      formWithErrors =>  {
+        BadRequest(s"that failed ${formWithErrors}")
+      },
       stub => {
         PostgresDB.createStub(stub)
         Redirect(routes.Application.stubs())

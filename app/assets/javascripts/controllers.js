@@ -44,13 +44,31 @@ define(['angular', 'moment'], function (angular, moment) {
                     params["due.until"] = formatDateForUri($scope.dueUntil);
                  }
                  $http.get(uri, {params: params}).success(function(response){
-                    $scope.contentItems = response.content;
+                    $scope.contentItems = response.data;
                  });
             }
              getContent();
          }])
-         .controller('MyCtrl2', ['$scope', function($scope) {
+         .controller('StubsCtrl', ['$scope','$http', function($scope, $http) {
+            function getStubs() {
+                var uri = '/stubsJson';
+                $http.get(uri).success(function(response) {
+                    $scope.stubItems = response.data;
+                });
+            }
+            getStubs();
 
-     }]);
+            $scope.addStub = function() {
+                $http({
+                    method: 'POST',
+                    url: '/newStub',
+                    params: $scope.stubForm,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function(response) {
+                    //hide modal
+                    //
+                });
+            }
+        }]);
 
 });
