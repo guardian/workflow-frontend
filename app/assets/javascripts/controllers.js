@@ -5,7 +5,7 @@ define(['angular', 'moment'], function (angular, moment) {
          .controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
 
              function formatDateForUri(date) {
-                 return encodeURIComponent(moment(date).format("YYYY-MM-DDTHH:mm:ssZ"))
+                 return moment(date).format("YYYY-MM-DDTHH:mm:ssZ");
              }
              $scope.stateIsSelected = function(state) {
                  return $scope.selectedState == state;
@@ -25,12 +25,16 @@ define(['angular', 'moment'], function (angular, moment) {
                       $scope.dueFrom = moment().startOf('day').add('days', 1);
                       $scope.dueUntil = moment().startOf('day').add('days', 2);
                   }
+                 if(date=='weekend') {
+                     $scope.dueFrom = moment().day(6);
+                     $scope.dueUntil = moment().day(7);
+                 }
                  $scope.selectedDate = date;
                   getContent();
              };
 
             function getContent() {
-                 var uri = 'http://localhost:9000/content';
+                 var uri = '/content';
                  var params = {};
                  if ($scope.selectedState) {
                     params.state = $scope.selectedState;
