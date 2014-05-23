@@ -26,8 +26,8 @@ define(['angular', 'moment'], function (angular, moment) {
                       $scope.dueUntil = moment().startOf('day').add('days', 2);
                   }
                  if(date=='weekend') {
-                     $scope.dueFrom = moment().day(6);
-                     $scope.dueUntil = moment().day(7);
+                     $scope.dueFrom = moment().day(6).startOf('day');
+                     $scope.dueUntil = moment().day(7).startOf('day').add('days', 1);
                  }
                  $scope.selectedDate = date;
                   getContent();
