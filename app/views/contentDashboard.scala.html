@@ -195,7 +195,7 @@
                     <td class="wf-table-heading " colspan="12 ">WRITING</td>
                 </tr>
 
-                <tr ng-repeat="content in contentItems">
+                <tr ng-repeat="content in contentItems" ng-click="showDetail(content)">
                     <td>
                         <span class="glyphicon glyphicon-file" ng-show="content.type==='article'"></span>
                         <span class="glyphicon glyphicon-camera" ng-show="content.type==='gallery'"></span>
@@ -228,26 +228,34 @@
         </div>
 
         <div id="detail" class="">
-            <div class="detail-panel">
-                <h4>Gmail overhaul being tested</h4>
-                <img class="picture" src="file://localhost/Users/ajardine/Development/workflow-prototype/detailpic.jpeg" alt="" />
+            <div class="detail-panel" ng-show="selectedContent">
+                <h4>{{ selectedContent.headline }}</h4>
 
                 <h5>Timing</h5>
                 <dl class="dl-horizontal">
-                    <dt>Embargoed until</dt> 		<dd>17:15</dd>
-                    <dt>Scheduled launch</dt> 		<dd>Tomorrow 18:00</dd>
-                    <dt>Production deadline</dt> 	<dd>16:00</dd>
-                    <dt>Last launched</dt> 			<dd>-</dd>
-                    <dt>Last modified</dt> 			<dd>-</dd>
+                    <dt>Embargoed until</dt>
+                        <dd>-</dd>
+                    <dt>Scheduled launch</dt>
+                        <dd>-</dd>
+                    <dt>Production deadline</dt>
+                        <dd>{{ selectedContent.due | formatDateTime }}</dd>
+                    <dt>Last launched</dt>
+                        <dd>-</dd>
+                    <dt>Last modified</dt>
+                        <dd>{{ (selectedContent.lastModification.dateTime | formatDateTime) || "-" }}</dd>
                 </dl>
                 <hr />
 
                 <h5>People</h5>
                 <dl class="dl-horizontal">
-                    <dt>Original author</dt> 	<dd>Samuel Gibbs</dd>
-                    <dt>In use by</dt> 			<dd>-</dd>
-                    <dt>Last modified by</dt> 	<dd>Jemima Kiss</dd>
-                    <dt>Assigned to</dt>		<dd>Shiona Tregaskis</dd>
+                    <dt>Original author</dt>
+                        <dd>-</dd>
+                    <dt>In use by</dt>
+                        <dd>-</dd>
+                    <dt>Last modified by</dt>
+                        <dd>{{ selectedContent.lastModification.user || "-" }}</dd>
+                    <dt>Assigned to</dt>
+                        <dd>{{ selectedContent.assignee || "-" }}</dd>
                 </dl>
                 <hr />
             </div>

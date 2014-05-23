@@ -9,12 +9,17 @@ define(['angular', 'moment'], function (angular, moment) {
              }
              $scope.stateIsSelected = function(state) {
                  return $scope.selectedState == state;
-             }
+             };
 
              $scope.selectState = function(state) {
                  $scope.selectedState = state;
                  getContent();
-             }
+             };
+
+             $scope.selectedContent = null;
+             $scope.showDetail = function(content) {
+                 $scope.selectedContent = content;
+             };
 
              $scope.selectDate = function(date) {
                   if(date=='today') {
