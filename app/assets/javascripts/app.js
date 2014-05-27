@@ -11,6 +11,7 @@ define([
     'controllers/stubs',
     'controllers/stubs/stubs',
     'controllers/stubs/modal',
+    'controllers/stubs/composerModal',
 
     'angularRoute'
     ], function (angular, filters, services, directives, controllers) {

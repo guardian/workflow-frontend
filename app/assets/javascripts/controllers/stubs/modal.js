@@ -8,7 +8,8 @@ define([
     'use strict';
 
     var StubModalInstanceCtrl = function ($scope, $modalInstance) {
-        $scope.stubForm = {}
+        //default to technology for first pass of testing
+        $scope.stubForm = {'section': 'Technology'};
         $scope.ok = function () {
             $modalInstance.close($scope.stubForm);
         };
@@ -19,7 +20,7 @@ define([
 
     stubsControllers.controller('StubModalInstanceCtrl', ['$scope','$modalInstance','items', StubModalInstanceCtrl]);
 
-    stubsControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http, $log){
+    stubsControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http){
         $scope.open = function () {
 
             var modalInstance = $modal.open({
@@ -36,9 +37,6 @@ define([
                 }).success(function(){
                     $scope.$emit('getStubs');
                 });
-
-            }, function () {
-                $log.info('Modal dismissed at: ' + new Date());
             });
         };
     }])
