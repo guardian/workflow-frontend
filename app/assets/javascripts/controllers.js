@@ -1,7 +1,16 @@
-define(['angular', 'moment'], function (angular, moment) {
+define(['angular', 'moment', 'uiBootstrap'], function (angular, moment) {
     'use strict';
+     var StubModalInstanceCtrl = function ($scope, $modalInstance) {
+        $scope.stubForm = {}
+        $scope.ok = function () {
+            $modalInstance.close($scope.stubForm);
+        };
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    };
 
-    return angular.module('myApp.controllers', [])
+    return angular.module('myApp.controllers', ['ui.bootstrap'])
          .controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
 
              function formatDateForUri(date) {
@@ -9,12 +18,17 @@ define(['angular', 'moment'], function (angular, moment) {
              }
              $scope.stateIsSelected = function(state) {
                  return $scope.selectedState == state;
-             }
+             };
 
              $scope.selectState = function(state) {
                  $scope.selectedState = state;
                  getContent();
-             }
+             };
+
+             $scope.selectedContent = null;
+             $scope.showDetail = function(content) {
+                 $scope.selectedContent = content;
+             };
 
              $scope.selectDate = function(date) {
                   if(date=='today') {
@@ -44,13 +58,47 @@ define(['angular', 'moment'], function (angular, moment) {
                     params["due.until"] = formatDateForUri($scope.dueUntil);
                  }
                  $http.get(uri, {params: params}).success(function(response){
-                    $scope.contentItems = response.content;
+                    $scope.contentItems = response.data;
                  });
             }
              getContent();
          }])
-         .controller('MyCtrl2', ['$scope', function($scope) {
+         .controller('StubsCtrl', ['$scope','$http', function($scope, $http) {
+            function getStubs() {
+                var uri = '/stubsJson';
+                $http.get(uri).success(function(response) {
+                    $scope.stubItems = response.data;
+                });
+            }
+            getStubs();
+            $scope.$on('getStubs', function(){
+                getStubs();
+            });
+        }])
+        .controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http, $log){
 
-     }]);
+            $scope.open = function () {
+
+                var modalInstance = $modal.open({
+                    templateUrl: 'stubModalContent.html',
+                    controller: StubModalInstanceCtrl
+                });
+
+                modalInstance.result.then(function (stub) {
+                    $http({
+                        method: 'POST',
+                        url: '/newStub',
+                        params: stub,
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).success(function(){
+                        $scope.$emit('getStubs');
+                    });
+
+                }, function () {
+                    $log.info('Modal dismissed at: ' + new Date());
+                });
+            };
+        }])
+        .controller('StubModalInstanceCtrl', ['$scope','$modalInstance','items', StubModalInstanceCtrl]);
 
 });
