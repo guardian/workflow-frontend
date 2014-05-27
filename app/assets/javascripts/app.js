@@ -11,13 +11,13 @@ define([
 
         'use strict';
 
-        return angular.module('myApp', [
-             'ngRoute',
-             'contentControllers',
-             'myApp.filters',
-             'myApp.services',
-             'myApp.directives',
-             'myApp.controllers'
-       ]);
+        return angular.module('workflow', [
+            'ngRoute',
+            'contentControllers',
+            'workflow.filters',
+            'workflow.services',
+            'workflow.directives',
+            'workflow.controllers'
+        ]);
 
 });

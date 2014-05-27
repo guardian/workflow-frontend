@@ -10,7 +10,7 @@ define(['angular', 'moment', 'uiBootstrap'], function (angular, moment) {
         };
     };
 
-    return angular.module('myApp.controllers', ['ui.bootstrap'])
+    return angular.module('workflow.controllers', ['ui.bootstrap'])
          .controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
 
              function formatDateForUri(date) {
