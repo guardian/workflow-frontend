@@ -87,7 +87,7 @@ object Application extends Controller {
                      } yield User(userInfo.id, email, firstName, lastName)
 
       user.map {
-        u => Redirect(routes.Application.content).withSession("user" -> Json.toJson(u).toString)
+        u => Redirect(routes.Application.index).withSession("user" -> Json.toJson(u).toString)
       }.getOrElse(Redirect(routes.Application.login()))
     }
   }
