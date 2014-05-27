@@ -25,33 +25,6 @@
             </div>
 
             <div class="constrain-by-desk-section" data-toggle="buttons">
-                <!--						<div class="btn-group btn-default" data-toggle="buttons">
-                      <label class="btn btn-default">
-                        <input type="radio" name="options" id="option1"> Option 1
-                      </label>
-                      <label class="btn btn-default">
-                        <input type="radio" name="options" id="option2"> Option 2
-                      </label>
-                      <label class="btn btn-default">
-                        <input type="radio" name="options" id="option3"> Option 3
-                      </label>
-                    </div>-->
-
-                <!--<div class="btn-group btn-group-sm">
-                      <button type="button" class="btn btn-default">Desk</button>
-                      <button type="button" class="btn btn-default">Section</button>
-                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                      </button>
-                      <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                      </ul>
-                    </div>-->
 
                 <div class="btn-group btn-group-sm" data-toggle="buttons">
                     <button type="button" class="btn btn-primary">Desk</button>
@@ -107,15 +80,29 @@
             <div class="sidebar">
 
                 <h5 class="query ">Content type</h5>
-                <div class="btn-group btn-group-xs " data-toggle="buttons ">
-                    <button type="button " class="btn btn-default active ">All</button>
-                    <button type="button " class="btn btn-default "><span class="glyphicon glyphicon-file "></span>
+                <div class="btn-group btn-group-xs " data-toggle="buttons">
+                    <button type="button " class="btn btn-default"
+                            ng-click="selectContentType()"
+                            ng-class="{active: contentTypeIsSelected()}">All</button>
+                    <button type="button " class="btn btn-default"
+                            ng-click="selectContentType('article')"
+                            ng-class="{active: contentTypeIsSelected('article')}">
+                        <span class="glyphicon glyphicon-file"></span>
                     </button>
-                    <button type="button " class="btn btn-default "><span class="glyphicon glyphicon-th-list "></span>
+                    <button type="button " class="btn btn-default"
+                            ng-click="selectContentType('liveblog')"
+                            g-class="{active: contentTypeIsSelected('liveblog')}">
+                        <span class="glyphicon glyphicon-th-list "></span>
                     </button>
-                    <button type="button " class="btn btn-default "><span class="glyphicon glyphicon-camera "></span>
+                    <button type="button" class="btn btn-default"
+                            ng-click="selectContentType('gallery')"
+                            g-class="{active: contentTypeIsSelected('gallery')}">
+                        <span class="glyphicon glyphicon-camera "></span>
                     </button>
-                    <button type="button " class="btn btn-default "><span class="glyphicon glyphicon-hand-up "></span>
+                    <button type="button " class="btn btn-default"
+                            ng-click="selectContentType('interactive')"
+                            g-class="{active: contentTypeIsSelected('interactive')}">
+                        <span class="glyphicon glyphicon-hand-up "></span>
                     </button>
                 </div>
 

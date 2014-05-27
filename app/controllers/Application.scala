@@ -105,6 +105,7 @@ object Application extends Controller {
       case "due.from"  => filterDue((due, v) => due.isEqual(v) || due.isAfter(v))
       case "due.until" => filterDue((due, v) => due.isBefore(v))
       case "state"     => ContentState.fromString(value).exists(_ == wc.state)
+      case "content-type" => wc.`type` == value
       case _ => true
     }
   }

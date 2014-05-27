@@ -6,22 +6,31 @@ define([
     angular,
     moment,
     dashboardControllers
-    ) {
+) {
     'use strict';
+
+    function formatDateForUri(date) {
+        return moment(date).format("YYYY-MM-DDTHH:mm:ssZ");
+    }
+
     dashboardControllers.controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
-        function formatDateForUri(date) {
-            return moment(date).format("YYYY-MM-DDTHH:mm:ssZ");
-        }
+
         $scope.stateIsSelected = function(state) {
             return $scope.selectedState == state;
         };
-
         $scope.selectState = function(state) {
             $scope.selectedState = state;
             getContent();
         };
 
-        $scope.selectedContent = null;
+        $scope.contentTypeIsSelected = function (contentType) {
+            return $scope.selectedContentType == contentType;
+        };
+        $scope.selectContentType = function(contentType) {
+            $scope.selectedContentType = contentType;
+            getContent();
+        };
+
         $scope.showDetail = function(content) {
             $scope.selectedContent = content;
         };
@@ -43,8 +52,7 @@ define([
             getContent();
         };
 
-        function getContent() {
-            var uri = '/content';
+        function buildContentParams() {
             var params = {};
             if ($scope.selectedState) {
                 params.state = $scope.selectedState;
@@ -53,7 +61,14 @@ define([
                 params["due.from"] = formatDateForUri($scope.dueFrom);
                 params["due.until"] = formatDateForUri($scope.dueUntil);
             }
-            $http.get(uri, {params: params}).success(function(response){
+            if ($scope.selectedContentType) {
+                params["content-type"] = $scope.selectedContentType;
+            }
+            return params;
+        }
+
+        function getContent() {
+            $http.get('/content', {params: buildContentParams()}).success(function(response){
                 $scope.contentItems = response.data;
             });
         }
