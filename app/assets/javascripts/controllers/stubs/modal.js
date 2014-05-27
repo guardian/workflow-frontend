@@ -19,7 +19,7 @@ define([
 
     stubsControllers.controller('StubModalInstanceCtrl', ['$scope','$modalInstance','items', StubModalInstanceCtrl]);
 
-    stubsControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http, $log){
+    stubsControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http){
         $scope.open = function () {
 
             var modalInstance = $modal.open({
@@ -36,9 +36,6 @@ define([
                 }).success(function(){
                     $scope.$emit('getStubs');
                 });
-
-            }, function () {
-                $log.info('Modal dismissed at: ' + new Date());
             });
         };
     }])
