@@ -4,8 +4,9 @@ define([
 ], function (
     angular,
     contentControllers
-    ) {
+) {
     'use strict';
+
     var StubModalInstanceCtrl = function ($scope, $modalInstance) {
         $scope.stubForm = {}
         $scope.ok = function () {
@@ -15,6 +16,7 @@ define([
             $modalInstance.dismiss('cancel');
         };
     };
+
     contentControllers.controller('StubModalInstanceCtrl', ['$scope','$modalInstance','items', StubModalInstanceCtrl]);
 
     contentControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http, $log){
