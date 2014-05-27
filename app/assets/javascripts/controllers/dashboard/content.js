@@ -1,14 +1,14 @@
 define([
     'angular',
     'moment',
-    'controllers/content'
+    'controllers/dashboard'
 ], function (
     angular,
     moment,
-    contentControllers
+    dashboardControllers
     ) {
     'use strict';
-    contentControllers.controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
+    dashboardControllers.controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
         function formatDateForUri(date) {
             return moment(date).format("YYYY-MM-DDTHH:mm:ssZ");
         }
@@ -60,5 +60,5 @@ define([
         getContent();
     }]);
 
-    return contentControllers;
+    return dashboardControllers;
 });

@@ -4,10 +4,10 @@ define([
     'services',
     'directives',
     'controllers',
-    'controllers/content',
-    'controllers/content/stubs',
-    'controllers/content/stubsmodal',
-    'controllers/content/content',
+    'controllers/dashboard',
+    'controllers/dashboard/stubs',
+    'controllers/dashboard/stubsmodal',
+    'controllers/dashboard/content',
     'angularRoute'
     ], function (angular, filters, services, directives, controllers) {
 
@@ -15,7 +15,7 @@ define([
 
         return angular.module('workflow', [
             'ngRoute',
-            'contentControllers',
+            'dashboardControllers',
             'workflow.filters',
             'workflow.services',
             'workflow.directives',

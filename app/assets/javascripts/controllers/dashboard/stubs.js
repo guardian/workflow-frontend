@@ -1,12 +1,12 @@
 define([
     'angular',
-    'controllers/content'
+    'controllers/dashboard'
 ], function (
     angular,
-    contentControllers
+    dashboardControllers
     ) {
     'use strict';
-    contentControllers.controller('StubsCtrl', ['$scope','$http', function($scope, $http) {
+    dashboardControllers.controller('StubsCtrl', ['$scope','$http', function($scope, $http) {
         function getStubs() {
             var uri = '/stubsJson';
             $http.get(uri).success(function(response) {
@@ -19,5 +19,5 @@ define([
         });
     }]);
 
-    return contentControllers;
+    return dashboardControllers;
 });

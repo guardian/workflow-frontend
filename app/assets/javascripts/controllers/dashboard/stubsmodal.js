@@ -1,9 +1,9 @@
 define([
     'angular',
-    'controllers/content'
+    'controllers/dashboard'
 ], function (
     angular,
-    contentControllers
+    dashboardControllers
 ) {
     'use strict';
 
@@ -17,9 +17,9 @@ define([
         };
     };
 
-    contentControllers.controller('StubModalInstanceCtrl', ['$scope','$modalInstance','items', StubModalInstanceCtrl]);
+    dashboardControllers.controller('StubModalInstanceCtrl', ['$scope','$modalInstance','items', StubModalInstanceCtrl]);
 
-    contentControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http, $log){
+    dashboardControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http, $log){
         $scope.open = function () {
 
             var modalInstance = $modal.open({
@@ -43,5 +43,5 @@ define([
         };
     }])
 
-    return contentControllers;
+    return dashboardControllers;
 });

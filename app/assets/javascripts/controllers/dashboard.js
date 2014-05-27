@@ -5,5 +5,5 @@ define([
     ) {
     'use strict';
 
-    return angular.module('contentControllers', []);
+    return angular.module('dashboardControllers', []);
 });
