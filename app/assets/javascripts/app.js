@@ -6,6 +6,8 @@ define([
     'controllers',
     'controllers/content',
     'controllers/content/stubs',
+    'controllers/content/stubsmodal',
+    'controllers/content/content',
     'angularRoute'
     ], function (angular, filters, services, directives, controllers) {
 
