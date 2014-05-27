@@ -63,18 +63,6 @@ define(['angular', 'moment', 'uiBootstrap'], function (angular, moment) {
             }
              getContent();
          }])
-         .controller('StubsCtrl', ['$scope','$http', function($scope, $http) {
-            function getStubs() {
-                var uri = '/stubsJson';
-                $http.get(uri).success(function(response) {
-                    $scope.stubItems = response.data;
-                });
-            }
-            getStubs();
-            $scope.$on('getStubs', function(){
-                getStubs();
-            });
-        }])
         .controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http, $log){
 
             $scope.open = function () {

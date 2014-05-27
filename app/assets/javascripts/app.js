@@ -4,6 +4,8 @@ define([
     'services',
     'directives',
     'controllers',
+    'controllers/content',
+    'controllers/content/stubs',
     'angularRoute'
     ], function (angular, filters, services, directives, controllers) {
 
@@ -11,6 +13,7 @@ define([
 
         return angular.module('myApp', [
              'ngRoute',
+             'contentControllers',
              'myApp.filters',
              'myApp.services',
              'myApp.directives',
