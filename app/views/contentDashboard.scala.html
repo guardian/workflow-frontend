@@ -53,16 +53,12 @@
             <div class="constrain-by-date">
                 <h4>Due by</h4>
                 <div class="btn-group btn-group-sm" data-toggle="buttons">
-                    <button type="button" class="btn btn-primary" ng-click="selectDate()">All</button>
+                    <button type="button" class="btn btn-default" ng-click="selectDate()">All</button>
                     <button type="button" class="btn btn-default" ng-click="selectDate('today')">Today</button>
                     <button type="button" class="btn btn-default" ng-click="selectDate('tomorrow')">Tomorrow</button>
                     <button type="button" class="btn btn-default" ng-click="selectDate('weekend')">This weekend</button>
                     <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-calendar"></span>
-                        <select disabled>
-                            <option value="volvo">23 May 2014</option>
-                            <option value="saab">24 May 2014</option>
-                            <option value="opel">25 May 2014</option>
-                            <option value="audi">26 May 2014</option>
+                        <select ng-model="selectedDate" ng-options="date as (date | formatDate) for date in dateOptions">
                         </select>
                     </button>
                 </div>

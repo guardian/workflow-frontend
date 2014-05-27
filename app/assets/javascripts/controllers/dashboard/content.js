@@ -13,6 +13,16 @@ define([
         return moment(date).format("YYYY-MM-DDTHH:mm:ssZ");
     }
 
+    function mkDateOptions() {
+        var choices = [];
+        var today = moment().startOf('day');
+        for (var i = 0; i < 6; i++) {
+            choices.push(today.clone().add('days', i));
+        }
+        return choices;
+    }
+
+
     dashboardControllers.controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
 
         $scope.stateIsSelected = function(state) {
@@ -36,21 +46,30 @@ define([
         };
 
         $scope.selectDate = function(date) {
-            if(date=='today') {
+            $scope.selectedDate = date;
+        };
+
+        $scope.dateOptions = mkDateOptions();
+
+        $scope.$watch('selectedDate', function(date) {
+            if (date == 'today') {
                 $scope.dueFrom = moment().startOf('day');
                 $scope.dueUntil = moment().startOf('day').add('days', 1);
             }
-            if(date=='tomorrow') {
+            else if (date == 'tomorrow') {
                 $scope.dueFrom = moment().startOf('day').add('days', 1);
                 $scope.dueUntil = moment().startOf('day').add('days', 2);
             }
-            if(date=='weekend') {
+            else if (date == 'weekend') {
                 $scope.dueFrom = moment().day(6).startOf('day');
                 $scope.dueUntil = moment().day(7).startOf('day').add('days', 1);
             }
-            $scope.selectedDate = date;
+            else if (typeof date == 'object') {
+                $scope.dueFrom = date;
+                $scope.dueUntil = date.clone().add('days', 1);
+            }
             getContent();
-        };
+        });
 
         function buildContentParams() {
             var params = {};
@@ -72,7 +91,7 @@ define([
                 $scope.contentItems = response.data;
             });
         }
-        getContent();
+
     }]);
 
     return dashboardControllers;
