@@ -4,121 +4,17 @@
 @import lib.Composer._
 
 <div class="container">
-
-<div class="stubs-table table">
-    <div ng-controller="StubModalCtrl">
-        <button class="btn btn-primary"
-                data-toggle="modal" data-target="#stubModal"
-                style="float: right; margin-bottom: 10px;" ng-click="open()">New</button>
-        <script type="text/ng-template" id="stubModalContent.html">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Create new stub</h4>
-            </div>
-            <form>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="title">title</label>
-                        <input type="text" ng-model="stubForm.title" id="title" name="title" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="section">section</label>
-                        <select id="section" name="section" ng-model="stubForm.section">
-                            <!-- TODO SW this is a complete cludge to make things easy for the technology desk, ideally this will be
-                            replaced by a set of useful sections based on who's logged in and their section permissions -->
-                            <option value="Technology">Technology</option>
-                            <option value="">----------</option>
-                            @for(s <- sectionList){
-                            <option value="@s.name">@s.name</option>
-                            }
-
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="due">due</label>
-                        <input type="text" ng-model="stubForm.due" id="due" name="due" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="assignee">assign to</label>
-                        <input type="text" ng-model="stubForm.assignee" id="assignee" name="assignee" value="" class="form-control">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Close</button>
-                    <button type="submit" class="btn btn-primary" ng-click="ok()"> Create</button>
-                </div>
-            </form>
-        </script>
-    </div>
-
-    <table class="table table-striped">
-        <tr>
-            <th>Working Title</th>
-            <th>Section</th>
-            <th>Due date</th>
-            <th>Assigned to</th>
-            <th></th>
-        </tr>
-        <tr ng-repeat="stub in stubItems">
-                <td>
-                    <a href="@adminUrl/{{stub.composerId}}" ng-show="stub.composerId"> {{ stub.title }}</a>
-                    <span ng-hide="stub.composerId">{{ stub.title }}</span>
-                </td>
-                <td>{{ stub.section }}</td>
-                <td>{{ stub.due | formatDateTime }}</td>
-                <td>{{ stub.assignee }}</td>
-                <td>
-                    <button class="btn btn-default btn-sm open-composerModal"
-                        data-toggle="modal"
-                        data-id="{{stub.id}}"
-                        data-target="#composerModal" ng-show="stub.composerId">
-                        Composer
-                    </button>
-                        <a href=@adminUrl class="btn btn-default btn-sm" target="_blank" ng-hide="stub.composerId">Edit</a>
-                </td>
-        </tr>
-    </table>
-
-
-
-    <div class="modal fade" aria-hidden="true" id="composerModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Create in Composer</h4>
-                </div>
-                <form action="/stubs">
-                    <div class="modal-body">
-                        <p>Select content type</p>
-                            <select id="contentType" name="contentType">
-                                <optgroup label="Option Group">
-                                    <option value="article">Article</option>
-                                    <option value="live blog">Live Blog</option>
-                                    <option value="gallery">Gallery</option>
-                                    <option value="interactive">Interactive</option>
-                                </optgroup>
-                            </select>
-                            <input type="hidden" name="stubId" id="stubId" value="">
-                            <input type="hidden" name="composerUrl" id="composerUrl" value="@newContentUrl">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button  type="submit" class="btn btn-primary" id="submit">Create</button>
-                    </div>
-                </form>
-            </div>
-        </div><
-    </div>
-
-    <div class="modal fade" aria-hidden="true" id="stubModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
+    <div class="stubs-table table">
+        <div ng-controller="StubModalCtrl">
+            <button class="btn btn-primary"
+                    data-toggle="modal" data-target="#stubModal"
+                    style="float: right; margin-bottom: 10px;" ng-click="open()">New</button>
+            <script type="text/ng-template" id="stubModalContent.html">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Create new stub</h4>
                 </div>
-                <form ng-submit="addStub()">
+                <form>
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="title">title</label>
@@ -127,14 +23,9 @@
                         <div class="form-group">
                             <label for="section">section</label>
                             <select id="section" name="section" ng-model="stubForm.section">
-                                <!-- TODO SW this is a complete cludge to make things easy for the technology desk, ideally this will be
-                                replaced by a set of useful sections based on who's logged in and their section permissions -->
-                                <option value="Technology">Technology</option>
-                                <option value="">----------</option>
                                 @for(s <- sectionList){
                                     <option value="@s.name">@s.name</option>
                                 }
-
                             </select>
                         </div>
                         <div class="form-group">
@@ -147,16 +38,62 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Close</button>
+                        <button type="submit" class="btn btn-primary" ng-click="ok()">Create</button>
                     </div>
                 </form>
-            </div>
-        </div><
+            </script>
+        </div>
+
+        <div ng-controller="ComposerModalCtrl">
+            <table class="table table-striped">
+                <tr>
+                    <th>Working Title</th>
+                    <th>Section</th>
+                    <th>Due date</th>
+                    <th>Assigned to</th>
+                    <th></th>
+                </tr>
+                <tr ng-repeat="stub in stubItems">
+                        <td>
+                            <a href="@adminUrl/{{stub.composerId}}" ng-show="stub.composerId"> {{ stub.title }}</a>
+                            <span ng-hide="stub.composerId">{{ stub.title }}</span>
+                        </td>
+                        <td>{{ stub.section }}</td>
+                        <td>{{ stub.due | formatDateTime }}</td>
+                        <td>{{ stub.assignee }}</td>
+                        <td>
+                            <button class="btn btn-default btn-sm"
+                                data-toggle="modal"
+                                data-id="{{stub.id}}"
+                                data-target="#composerModal" ng-click="open(stub, '@newContentUrl')">
+                                Composer
+                            </button>
+                                <a href=@adminUrl class="btn btn-default btn-sm" target="_blank" ng-hide="stub.composerId">Edit</a>
+                        </td>
+                </tr>
+            </table>
+
+            <script type="text/ng-template" id="composerModalContent.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Create in Composer</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Select content type</p>
+                    <select id="contentType" name="contentType" ng-model="type.contentType">
+                        <option value="article">Article</option>
+                        <option value="live blog">Live Blog</option>
+                        <option value="gallery">Gallery</option>
+                        <option value="interactive">Interactive</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-click="ok()">Create</button>
+                    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                </div>
+            </script>
+        </div>
     </div>
-
-</div>
-
 </div>
 
 
@@ -193,6 +130,5 @@
                 location.reload();
             });
         });
-
     });
 </script>

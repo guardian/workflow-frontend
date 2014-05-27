@@ -8,7 +8,8 @@ define([
     'use strict';
 
     var StubModalInstanceCtrl = function ($scope, $modalInstance) {
-        $scope.stubForm = {}
+        //default to technology for first pass of testing
+        $scope.stubForm = {'section': 'Technology'};
         $scope.ok = function () {
             $modalInstance.close($scope.stubForm);
         };
