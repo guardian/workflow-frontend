@@ -71,7 +71,9 @@ define(['angular', 'moment', 'uiBootstrap'], function (angular, moment) {
                 });
             }
             getStubs();
-
+            $scope.$on('getStubs', function(){
+                getStubs();
+            });
         }])
         .controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http, $log){
 
@@ -89,7 +91,7 @@ define(['angular', 'moment', 'uiBootstrap'], function (angular, moment) {
                         params: stub,
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).success(function(){
-                       //todo - add method for calling the getStubs method
+                        $scope.$emit('getStubs');
                     });
 
                 }, function () {
