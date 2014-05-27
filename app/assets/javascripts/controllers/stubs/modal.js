@@ -1,11 +1,17 @@
 define([
     'angular',
+    'sugar',
+    'moment',
     'controllers/stubs'
 ], function (
     angular,
+    sugar,
+    moment,
     stubsControllers
 ) {
     'use strict';
+
+
 
     var StubModalInstanceCtrl = function ($scope, $modalInstance) {
         //default to technology for first pass of testing
@@ -29,6 +35,8 @@ define([
             });
 
             modalInstance.result.then(function (stub) {
+                //todo-server side date validation
+                console.log(Date.create(stub.due))
                 $http({
                     method: 'POST',
                     url: '/newStub',

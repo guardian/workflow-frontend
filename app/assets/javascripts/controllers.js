@@ -1,4 +1,4 @@
-define(['angular', 'moment', 'uiBootstrap'], function (angular, moment) {
+define(['angular', 'moment', 'uiBootstrap', 'sugar'], function (angular, moment) {
     'use strict';
 
     return angular.module('workflow.controllers', ['ui.bootstrap'])
