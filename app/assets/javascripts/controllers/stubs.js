@@ -2,8 +2,8 @@ define([
     'angular'
 ], function(
     angular
-    ) {
+) {
     'use strict';
 
-    return angular.module('dashboardControllers', []);
+    return angular.module('stubsControllers', []);
 });
