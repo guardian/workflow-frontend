@@ -65,7 +65,7 @@
                         <td>
                             <button class="btn btn-default btn-sm"
                                 data-toggle="modal"
-                                data-id="{{stub.id}}"
+                                ng-show="stub.composerId"
                                 data-target="#composerModal" ng-click="open(stub, '@newContentUrl')">
                                 Composer
                             </button>
@@ -99,36 +99,4 @@
 
 
 
-<script>
-    $(document).on("click", ".open-composerModal", function () {
-        var stubId = $(this).data('id');
-        $(".modal-body #stubId").val(stubId);
-    });
 
-    $(function(){
-        $('*[name=due]').appendDtpicker({"dateFormat": "DD/MM/yyyy hh:mm"});
-    });
-
-    $('#submit').click(function (event) {
-        event.preventDefault();
-        var type = $('#contentType').val();
-        var stubId = $('input#stubId').val();
-        var baseUrl = $('input#composerUrl').val();
-        $.ajax({
-            url: baseUrl,
-            data: {'type': type},
-            xhrFields: {
-                withCredentials: true
-            },
-            type: "POST"
-        }).success(function(data) {
-            var composerId = data.data.id
-            $.ajax({
-                url: "/updateStub/"+stubId+"?composerId="+composerId,
-                type: "POST"
-            }).success(function() {
-                location.reload();
-            });
-        });
-    });
-</script>
