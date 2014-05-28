@@ -26,7 +26,7 @@ object Application extends Controller {
   mapping(
     "title" -> nonEmptyText,
     "section" -> text,
-    "due" -> optional(jodaDate("dd/MM/yyyy HH:mm")),
+    "due" -> optional(jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSS'Z")),
     "assignee" -> optional(text),
     "composerId" -> optional(text)
   )((title, section, due, assignee, composerId) =>

@@ -35,12 +35,12 @@ define([
             });
 
             modalInstance.result.then(function (stub) {
-                //todo-server side date validation
-                console.log(Date.create(stub.due))
+                var newStub = angular.copy(stub);
+                newStub.due = Date.create(stub.due).toISOString();
                 $http({
                     method: 'POST',
                     url: '/newStub',
-                    params: stub,
+                    params: newStub,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).success(function(){
                     $scope.$emit('getStubs');
