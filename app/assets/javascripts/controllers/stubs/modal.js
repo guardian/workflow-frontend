@@ -1,11 +1,17 @@
 define([
     'angular',
+    'sugar',
+    'moment',
     'controllers/stubs'
 ], function (
     angular,
+    sugar,
+    moment,
     stubsControllers
 ) {
     'use strict';
+
+
 
     var StubModalInstanceCtrl = function ($scope, $modalInstance) {
         //default to technology for first pass of testing
@@ -29,10 +35,12 @@ define([
             });
 
             modalInstance.result.then(function (stub) {
+                var newStub = angular.copy(stub);
+                newStub.due = Date.create(stub.due).toISOString();
                 $http({
                     method: 'POST',
                     url: '/newStub',
-                    params: stub,
+                    params: newStub,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).success(function(){
                     $scope.$emit('getStubs');

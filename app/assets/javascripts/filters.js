@@ -5,7 +5,7 @@ define(['angular', 'services', 'moment'], function (angular, services, moment) {
 
     mod.filter('formatDateTime', function() {
         return function(date) {
-            return moment(date).format("ddd D MMM, HH:MM");
+            return moment(date).format("ddd D MMM, HH:mm");
         };
     });
 
