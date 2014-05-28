@@ -23,6 +23,10 @@ define([
 
     stubsControllers.controller('ComposerModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http){
 
+        $scope.$on('addToComposer', function(event, stub, composerUrl){
+            $scope.open(stub, composerUrl);
+        });
+
         $scope.open = function (stub, composerUrl) {
             var modalInstance = $modal.open({
                 templateUrl: 'composerModalContent.html',

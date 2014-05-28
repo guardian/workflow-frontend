@@ -18,6 +18,9 @@ define([
         $scope.$on('getStubs', function(){
             getStubs();
         });
+        $scope.addToComposer = function(stub, composerUrl) {
+            $scope.$broadcast('addToComposer', stub, composerUrl)
+        }
     }]);
 
     return stubsControllers;

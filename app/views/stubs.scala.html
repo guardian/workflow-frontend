@@ -45,7 +45,7 @@
             </script>
         </div>
 
-        <div ng-controller="ComposerModalCtrl">
+
             <table class="table table-striped">
                 <tr>
                     <th>Working Title</th>
@@ -66,7 +66,7 @@
                             <button class="btn btn-default btn-sm"
                                 data-toggle="modal"
                                 ng-hide="stub.composerId"
-                                data-target="#composerModal" ng-click="open(stub, '@newContentUrl')">
+                                data-target="#composerModal" ng-click="addToComposer(stub, '@newContentUrl')">
                                 Composer
                             </button>
                                 <a href=@adminUrl/{{stub.composerId}} class="btn btn-default btn-sm" target="_blank" ng-show="stub.composerId">Edit</a>
@@ -74,6 +74,7 @@
                 </tr>
             </table>
 
+        <div ng-controller="ComposerModalCtrl">
             <script type="text/ng-template" id="composerModalContent.html">
                 <div class="modal-header">
                     <h3 class="modal-title">Create in Composer</h3>
