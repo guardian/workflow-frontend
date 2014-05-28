@@ -57,7 +57,8 @@
                     <button type="button" class="btn btn-default" ng-click="selectDate('today')">Today</button>
                     <button type="button" class="btn btn-default" ng-click="selectDate('tomorrow')">Tomorrow</button>
                     <button type="button" class="btn btn-default" ng-click="selectDate('weekend')">This weekend</button>
-                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-calendar"></span>
+                    <button type="button" class="btn btn-default" title="Select date">
+                        <span class="glyphicon glyphicon-calendar"></span>
                         <select ng-model="selectedDate" ng-options="date as (date | formatDate) for date in dateOptions">
                         </select>
                     </button>
@@ -77,25 +78,25 @@
 
                 <h5 class="query ">Content type</h5>
                 <div class="btn-group btn-group-xs " data-toggle="buttons">
-                    <button type="button " class="btn btn-default"
+                    <button type="button " class="btn btn-default" title="all"
                             ng-click="selectContentType()"
                             ng-class="{active: contentTypeIsSelected()}">All</button>
-                    <button type="button " class="btn btn-default"
+                    <button type="button " class="btn btn-default" title="article"
                             ng-click="selectContentType('article')"
                             ng-class="{active: contentTypeIsSelected('article')}">
                         <span class="glyphicon glyphicon-file"></span>
                     </button>
-                    <button type="button " class="btn btn-default"
+                    <button type="button " class="btn btn-default" title="liveblog"
                             ng-click="selectContentType('liveblog')"
                             g-class="{active: contentTypeIsSelected('liveblog')}">
                         <span class="glyphicon glyphicon-th-list "></span>
                     </button>
-                    <button type="button" class="btn btn-default"
+                    <button type="button" class="btn btn-default" title="gallery"
                             ng-click="selectContentType('gallery')"
                             g-class="{active: contentTypeIsSelected('gallery')}">
                         <span class="glyphicon glyphicon-camera "></span>
                     </button>
-                    <button type="button " class="btn btn-default"
+                    <button type="button " class="btn btn-default" title="interactive"
                             ng-click="selectContentType('interactive')"
                             g-class="{active: contentTypeIsSelected('interactive')}">
                         <span class="glyphicon glyphicon-hand-up "></span>
