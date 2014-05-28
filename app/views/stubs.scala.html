@@ -65,11 +65,11 @@
                         <td>
                             <button class="btn btn-default btn-sm"
                                 data-toggle="modal"
-                                ng-show="stub.composerId"
+                                ng-hide="stub.composerId"
                                 data-target="#composerModal" ng-click="open(stub, '@newContentUrl')">
                                 Composer
                             </button>
-                                <a href=@adminUrl class="btn btn-default btn-sm" target="_blank" ng-hide="stub.composerId">Edit</a>
+                                <a href=@adminUrl class="btn btn-default btn-sm" target="_blank" ng-show="stub.composerId">Edit</a>
                         </td>
                 </tr>
             </table>
@@ -82,7 +82,7 @@
                     <p>Select content type</p>
                     <select id="contentType" name="contentType" ng-model="type.contentType">
                         <option value="article">Article</option>
-                        <option value="live blog">Live Blog</option>
+                        <option value="liveblog">Live Blog</option>
                         <option value="gallery">Gallery</option>
                         <option value="interactive">Interactive</option>
                     </select>
