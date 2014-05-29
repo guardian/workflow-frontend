@@ -16,6 +16,7 @@ class ComposerSqsReader extends Actor {
 
       for {
         messages <- AWSWorkflowQueue.getMessages(10)
+        if messages.nonEmpty
         jsResult = messages.traverse(AWSWorkflowQueue.toWireStatus)
         statuses = jsResult match {
           case JsSuccess(statuses, _) =>  statuses
