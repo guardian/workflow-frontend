@@ -94,7 +94,7 @@ object Api extends Controller with Authenticated {
     )
   }
 
-  def updateStub(stubId: String, composerId: String) = Action { req =>
+  def linkStub(stubId: String, composerId: String) = Action { req =>
     Try { stubId.toLong }.toOption.map { id =>
       PostgresDB.updateStubWithComposerId(id, composerId)
       Redirect(routes.Application.stubs())

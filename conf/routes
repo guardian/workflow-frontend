@@ -16,7 +16,7 @@ GET     /api/content                        controllers.Api.content
 GET     /api/stubs                          controllers.Api.stubs
 POST    /api/stubs                          controllers.Api.newStub
 PUT     /api/stubs/:stubId                  controllers.Api.putStub(stubId: Int)
-POST    /api/stubs/:stubId                  controllers.Api.updateStub(stubId: String, composerId: String)
+POST    /api/stubs/:stubId                  controllers.Api.linkStub(stubId: String, composerId: String)
 
 # Admin
 GET     /admin/                             controllers.Admin.index
