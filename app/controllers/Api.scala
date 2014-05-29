@@ -69,7 +69,7 @@ object Api extends Controller {
       Stub(id, title, section, due, assignee, composerId)
       )(s => Some((s.id, s.title, s.section, s.due, s.assignee, s.composerId))))
 
-  def stubsJson = Authenticated {
+  def stubs = Authenticated {
     val stubs = PostgresDB.getAllStubs
     Ok(renderJsonResponse(stubs))
   }

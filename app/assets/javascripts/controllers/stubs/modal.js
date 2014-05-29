@@ -57,7 +57,7 @@ define([
                 if (stub.id === undefined) {
                     response = $http({
                        method: 'POST',
-                       url: '/newStub',
+                       url: '/api/stubs',
                        params: newStub,
                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                    });
@@ -65,7 +65,7 @@ define([
                 else {
                     response = $http({
                         method: 'PUT',
-                        url: '/stubs/' + stub.id,
+                        url: '/api/stubs/' + stub.id,
                         params: newStub,
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     });

@@ -87,7 +87,7 @@ define([
         }
 
         function getContent() {
-            $http.get('/content', {params: buildContentParams()}).success(function(response){
+            $http.get('/api/content', {params: buildContentParams()}).success(function(response){
                 $scope.contentItems = response.data;
             });
         }

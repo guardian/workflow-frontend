@@ -10,7 +10,7 @@ define([
     stubsControllers.controller('StubsCtrl', ['$scope','$http', function($scope, $http) {
 
         function getStubs() {
-            var uri = '/stubsJson';
+            var uri = '/api/stubs';
             $http.get(uri).success(function (response) {
                 $scope.stubItems = response.data;
             });

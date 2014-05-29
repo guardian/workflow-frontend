@@ -43,7 +43,7 @@ define([
                     var composerId = data.data.id;
                     $http({
                        method: 'POST',
-                       url: '/updateStub/' + stub.id,
+                       url: '/api/stubs/' + stub.id,
                        params: {'composerId': composerId}
                     }).success(function(){
                         $scope.$emit('getStubs');
