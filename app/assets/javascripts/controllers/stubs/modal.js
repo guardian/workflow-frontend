@@ -53,8 +53,6 @@ define([
                 var newStub = angular.copy(stub);
                 newStub.due = Date.create(stub.due).toISOString();
 
-                console.log(JSON.stringify(stub));
-
                 var response;
                 if (stub.id === undefined) {
                     response = $http({
