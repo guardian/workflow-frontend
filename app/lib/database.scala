@@ -135,6 +135,12 @@ object PostgresDB {
     }
   }
 
+  def deleteStub(id: Long) {
+    DB.withConnection { implicit conn =>
+      SQL("DELETE FROM Stub WHERE pk = {id}").on('id -> id).executeUpdate
+    }
+  }
+
   def createOrModifyContent(wc: WorkflowContent): Unit = {
     if (updateContent(wc) == 0) createContent(wc)
   }

@@ -70,7 +70,7 @@ object Api extends Controller with Authenticated {
     Ok(renderJsonResponse(stubs))
   }
 
-  def newStub = Action { implicit request =>
+  def newStub = Authenticated { implicit request =>
     stubForm.bindFromRequest.fold(
       formWithErrors =>  {
         BadRequest(s"that failed ${formWithErrors}")
@@ -82,19 +82,24 @@ object Api extends Controller with Authenticated {
     )
   }
 
-  def putStub(stubId: Int) = Action { implicit request =>
+  def putStub(stubId: Long) = Authenticated { implicit request =>
     stubForm.bindFromRequest.fold(
       formWithErrors =>  {
         BadRequest(s"that failed ${formWithErrors}")
       },
       stub => {
         PostgresDB.updateStub(stubId, stub)
-        Accepted("")
+        NoContent
       }
     )
   }
 
-  def linkStub(stubId: String, composerId: String) = Action { req =>
+  def deleteStub(stubId: Long) = Authenticated {
+    PostgresDB.deleteStub(stubId)
+    NoContent
+  }
+
+  def linkStub(stubId: Long, composerId: String) = Authenticated { req =>
     Try { stubId.toLong }.toOption.map { id =>
       PostgresDB.updateStubWithComposerId(id, composerId)
       Redirect(routes.Application.stubs())

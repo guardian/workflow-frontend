@@ -13,10 +13,12 @@ GET     /redirect                           controllers.Application.openIdRedire
 
 # API
 GET     /api/content                        controllers.Api.content
+
 GET     /api/stubs                          controllers.Api.stubs
 POST    /api/stubs                          controllers.Api.newStub
-PUT     /api/stubs/:stubId                  controllers.Api.putStub(stubId: Int)
-POST    /api/stubs/:stubId                  controllers.Api.linkStub(stubId: String, composerId: String)
+PUT     /api/stubs/:stubId                  controllers.Api.putStub(stubId: Long)
+DELETE  /api/stubs/:stubId                  controllers.Api.deleteStub(stubId: Long)
+POST    /api/stubs/:stubId                  controllers.Api.linkStub(stubId: Long, composerId: String)
 
 # Admin
 GET     /admin/                             controllers.Admin.index

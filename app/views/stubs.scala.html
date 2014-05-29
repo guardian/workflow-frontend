@@ -53,7 +53,7 @@
                     <th>Section</th>
                     <th>Due date</th>
                     <th>Assigned to</th>
-                    <th colspan="2"></th>
+                    <th colspan="3"></th>
                 </tr>
                 <tr ng-repeat="stub in stubItems">
                         <td>
@@ -73,6 +73,7 @@
                                 <a href=@adminUrl/{{stub.composerId}} class="btn btn-default btn-sm" target="_blank" ng-show="stub.composerId">Go to Composer</a>
                         </td>
                         <td><button class="btn btn-default btn-small" ng-click="editStub(stub)">Edit</button></td>
+                        <td><button class="btn btn-default btn-small" ng-click="deleteStub(stub)">Delete</button></td>
                 </tr>
             </table>
 
