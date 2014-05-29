@@ -39,7 +39,6 @@ object Api extends Controller with Authenticated {
     for {
       sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
-      stubs = PostgresDB.getAllStubs
       items = PostgresDB.allContent
 
       predicate = (wc: WorkflowContent) => req.queryString.forall { case (k, vs) =>
