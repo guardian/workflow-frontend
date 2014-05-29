@@ -6,19 +6,15 @@ import scala.util.Try
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc.{Action, Controller}
-import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.libs.json.{Reads, Json, Writes}
 
 import lib.Responses._
-import lib.{Formatting, StatusDatabase, SectionDatabase, PostgresDB}
+import lib._
 import models.{ContentState, WorkflowContent, Stub}
 import org.joda.time.DateTime
 
 
-object Api extends Controller {
-
-  object Authenticated extends AuthenticatedBuilder(req => req.session.get("user").flatMap(u => User.find(u)),
-    req => Redirect(routes.Application.login()))
+object Api extends Controller with Authenticated {
 
 
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)

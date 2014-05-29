@@ -11,13 +11,9 @@ import models._
 import play.api.mvc._
 import play.api.libs.json.Json
 import play.api.libs.openid.OpenID
-import play.api.mvc.Security.AuthenticatedBuilder
 
 
-object Application extends Controller {
-
-  object Authenticated extends AuthenticatedBuilder(req => req.session.get("user").flatMap(u => User.find(u)),
-                                                    req => Redirect(routes.Application.login()))
+object Application extends Controller with Authenticated {
 
   def index = Authenticated {
     Ok(views.html.index("Hello wor... kflow :)"))
