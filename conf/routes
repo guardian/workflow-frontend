@@ -2,21 +2,23 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
+# Application
 GET     /                                   controllers.Application.index
-GET     /content                            controllers.Application.content
 GET     /dashboard                          controllers.Application.dashboard
-GET     /stubs                              controllers.Application.stubs()
-GET     /stubsJson                          controllers.Application.stubsJson()
+GET     /stubs                              controllers.Application.stubs
 
-POST    /newStub                            controllers.Application.newStub()
-PUT     /stubs/:stubId                      controllers.Application.putStub(stubId: Int)
-POST    /updateStub/:stubId                 controllers.Application.updateStub(stubId: String, composerId: String)
+POST    /login                              controllers.Application.loginPost
+GET     /login                              controllers.Application.login
+GET     /redirect                           controllers.Application.openIdRedirect
 
-POST    /login                              controllers.Application.loginPost()
-GET     /login                              controllers.Application.login()
-GET     /redirect                           controllers.Application.openIdRedirect()
+# API
+GET     /content                            controllers.Api.content
+GET     /stubsJson                          controllers.Api.stubsJson
+POST    /newStub                            controllers.Api.newStub
+PUT     /stubs/:stubId                      controllers.Api.putStub(stubId: Int)
+POST    /updateStub/:stubId                 controllers.Api.updateStub(stubId: String, composerId: String)
 
+# Admin
 GET     /admin/                             controllers.Admin.index
 GET     /admin/sections                     controllers.Admin.sections
 POST    /admin/sections/add                 controllers.Admin.addSection

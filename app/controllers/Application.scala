@@ -2,37 +2,19 @@ package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Try
 import java.util.UUID
-import org.joda.time.DateTime
 
 import lib._
 import lib.RequestSyntax._
 import models._
 
 import play.api.mvc._
-import play.api.data.Form
-import play.api.libs.json.{Reads, Writes, Json, JsValue}
+import play.api.libs.json.Json
 import play.api.libs.openid.OpenID
 import play.api.mvc.Security.AuthenticatedBuilder
-import play.api.http.MimeTypes
 
 
 object Application extends Controller {
-
-  import play.api.data.Forms._
-
-  val stubForm: Form[Stub] = Form(
-    mapping(
-      "id"      -> optional(longNumber),
-      "title"   -> nonEmptyText,
-      "section" -> text,
-      "due"     -> optional(jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSS'Z")),
-      "assignee" -> optional(text),
-      "composerId" -> optional(text)
-    )((id, title, section, due, assignee, composerId) =>
-         Stub(id, title, section, due, assignee, composerId)
-    )(s => Some((s.id, s.title, s.section, s.due, s.assignee, s.composerId))))
 
   object Authenticated extends AuthenticatedBuilder(req => req.session.get("user").flatMap(u => User.find(u)),
                                                     req => Redirect(routes.Application.login()))
@@ -47,22 +29,8 @@ object Application extends Controller {
     yield Ok(views.html.stubs(stubs, sections))
   }
 
-  def stubsJson = Action {
-    val stubs = PostgresDB.getAllStubs
-    Ok(renderJsonResponse(stubs))
-  }
   def login = Action {
     Ok(views.html.login())
-  }
-
-  case class User(id: String, email: String, firstName: String, lastName: String)
-
-  object User {
-    implicit val userWrites: Writes[User] = Json.writes[User]
-    implicit val userReads: Reads[User] = Json.reads[User]
-
-    def find(u: String): Option[User] = Json.parse(u).validate[User].asOpt
-
   }
 
   def loginPost = Action.async { implicit req =>
@@ -92,91 +60,16 @@ object Application extends Controller {
     }
   }
 
-  implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
-
-  def filterPredicate(filterKey: String, value: String)(wc: WorkflowContent): Boolean = {
-    // Use of `forall` ensures content with no due date set is always shown
-    def filterDue(cmp: (DateTime, DateTime) => Boolean): Boolean =
-      wc.due.forall(due => Formatting.parseDate(value).forall(v => cmp(due, v)))
-
-    filterKey match {
-      case "section"   => wc.section.exists(_.name == value)
-      case "status"    => StatusDatabase.find(value) == Some(wc.status)
-      case "due.from"  => filterDue((due, v) => due.isEqual(v) || due.isAfter(v))
-      case "due.until" => filterDue((due, v) => due.isBefore(v))
-      case "state"     => ContentState.fromString(value).exists(_ == wc.state)
-      case "content-type" => wc.`type` == value
-      case _ => true
-    }
-  }
-
   def dashboard = Authenticated.async { req =>
     for {
       sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
-      stubs = PostgresDB.getAllStubs
-      items = PostgresDB.allContent
-
-      predicate = (wc: WorkflowContent) => req.queryString.forall { case (k, vs) =>
-        vs.exists(v => filterPredicate(k, v)(wc))
-      }
-      content = items.filter(predicate).sortBy(_.due)
     }
     yield {
-       Ok(views.html.contentDashboard(content, sections, statuses))
+       Ok(views.html.contentDashboard(sections, statuses))
     }
   }
 
-
-  def content = Authenticated.async { req =>
-    for {
-      sections <- SectionDatabase.sectionList
-      statuses <- StatusDatabase.statuses
-      stubs = PostgresDB.getAllStubs
-      items = PostgresDB.allContent
-
-      predicate = (wc: WorkflowContent) => req.queryString.forall { case (k, vs) =>
-        vs.exists(v => filterPredicate(k, v)(wc))
-      }
-      content = items.filter(predicate).sortBy(_.due)
-    }
-    yield {
-      Ok(renderJsonResponse(content))
-    }
-  }
-
-  def renderJsonResponse[A : Writes](content: List[A]): JsValue = Json.obj("data" -> content)
-
-  def newStub = Action { implicit request =>
-    stubForm.bindFromRequest.fold(
-      formWithErrors =>  {
-        BadRequest(s"that failed ${formWithErrors}")
-      },
-      stub => {
-        PostgresDB.createStub(stub)
-        Redirect(routes.Application.stubs())
-      }
-    )
-  }
-
-  def putStub(stubId: Int) = Action { implicit request =>
-    stubForm.bindFromRequest.fold(
-      formWithErrors =>  {
-        BadRequest(s"that failed ${formWithErrors}")
-      },
-      stub => {
-        PostgresDB.updateStub(stubId, stub)
-        Accepted("")
-      }
-    )
-  }
-
-  def updateStub(stubId: String, composerId: String) = Action { req =>
-      Try { stubId.toLong }.toOption.map { id =>
-        PostgresDB.updateStubWithComposerId(id, composerId)
-        Redirect(routes.Application.stubs())
-      }.getOrElse(BadRequest("could not parse stub id"))
-  }
 
   def fieldChange(field: String, value: String, contentId: String, user: Option[String]) = Action.async {
 

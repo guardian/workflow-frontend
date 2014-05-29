@@ -1,4 +1,4 @@
-@(items: List[WorkflowContent], sections: List[Section], states: List[Status])
+@(sections: List[Section], states: List[Status])
 @import helper._
 @import lib.Formatting._
 @import models.Status
@@ -112,11 +112,6 @@
                         <li>
                             <a href="# ">
                                 @status
-                                @defining(items.count(_.status.name == status)) { count =>
-                                    @if(count > 0) {
-                                        <span class="badge ">@count</span>
-                                    }
-                                }
                             </a>
                         </li>
                     }

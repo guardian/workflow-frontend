@@ -12,7 +12,7 @@
                 @for(section <- sections) {
                 <li>
                     <span class="label label-danger remove" data-section="@{section.name}">x</span>
-                    <a href="@{routes.Application.content}?section=@{section.name}">@{section.name}</a>
+                    <a href="@{routes.Api.content}?section=@{section.name}">@{section.name}</a>
                 </li>
                 }
             </ul>
