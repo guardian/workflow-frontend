@@ -1,4 +1,4 @@
-@(stubForm: Form[Stub], stubs: List[Stub], sectionList: List[Section])
+@(stubs: List[Stub], sectionList: List[Section])
 @import helper._
 @import lib.Formatting._
 @import lib.Composer._
@@ -15,6 +15,7 @@
                     <h4 class="modal-title">Create new stub</h4>
                 </div>
                 <form>
+                    <input type="hidden" ng-model="stubForm.id" />
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="title">title</label>
@@ -39,7 +40,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Close</button>
-                        <button type="submit" class="btn btn-primary" ng-click="ok()">Create</button>
+                        <button type="submit" class="btn btn-primary" ng-click="ok()">Save</button>
                     </div>
                 </form>
             </script>

@@ -42,7 +42,7 @@ object PostgresDB {
   import AnormExtension._
 
   def rowToStub(row: SqlRow) = Stub(
-    id = row[Long]("pk").toString,
+    id = Some(row[Long]("pk")),
     title = row[String]("working_title"),
     section = row[String]("section"),
     due = row[Option[DateTime]]("due"),
@@ -87,17 +87,18 @@ object PostgresDB {
       ).executeUpdate
   }
 
-  def updateStub(id: Int, stub: Stub) {
+  def updateStub(id: Long, stub: Stub) {
     DB.withConnection { implicit c =>
       SQL("""
             UPDATE Stub SET
             working_title = {working_title},
             section = {section},
             due = {due},
-            assign_to = {assign_to}
+            assign_to = {assign_to},
             composer_id = {composer_id}
-            WHERE id = {id}
+            WHERE pk = {pk}
           """).on(
+          'pk -> id,
           'working_title -> stub.title,
           'section -> stub.section,
           'due -> stub.due,

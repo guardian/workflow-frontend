@@ -52,12 +52,28 @@ define([
             modalInstance.result.then(function (stub) {
                 var newStub = angular.copy(stub);
                 newStub.due = Date.create(stub.due).toISOString();
-                $http({
-                    method: 'POST',
-                    url: '/newStub',
-                    params: newStub,
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                }).success(function(){
+
+                console.log(JSON.stringify(stub));
+
+                var response;
+                if (stub.id === undefined) {
+                    response = $http({
+                       method: 'POST',
+                       url: '/newStub',
+                       params: newStub,
+                       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                   });
+                }
+                else {
+                    response = $http({
+                        method: 'PUT',
+                        url: '/stubs/' + stub.id,
+                        params: newStub,
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    });
+                }
+
+                response.success(function(){
                     $scope.$emit('getStubs');
                 });
             });

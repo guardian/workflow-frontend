@@ -23,16 +23,16 @@ object Application extends Controller {
   import play.api.data.Forms._
 
   val stubForm: Form[Stub] = Form(
-  mapping(
-    "title" -> nonEmptyText,
-    "section" -> text,
-    "due" -> optional(jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSS'Z")),
-    "assignee" -> optional(text),
-    "composerId" -> optional(text)
-  )((title, section, due, assignee, composerId) =>
-       Stub(UUID.randomUUID.toString, title, section, due, assignee, composerId)
-  )(s => Some((s.title, s.section, s.due, s.assignee, s.composerId))))
-
+    mapping(
+      "id"      -> optional(longNumber),
+      "title"   -> nonEmptyText,
+      "section" -> text,
+      "due"     -> optional(jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSS'Z")),
+      "assignee" -> optional(text),
+      "composerId" -> optional(text)
+    )((id, title, section, due, assignee, composerId) =>
+         Stub(id, title, section, due, assignee, composerId)
+    )(s => Some((s.id, s.title, s.section, s.due, s.assignee, s.composerId))))
 
   object Authenticated extends AuthenticatedBuilder(req => req.session.get("user").flatMap(u => User.find(u)),
                                                     req => Redirect(routes.Application.login()))
@@ -44,7 +44,7 @@ object Application extends Controller {
   def stubs = Action.async {
     val stubs = PostgresDB.getAllStubs
     for (sections <- SectionDatabase.sectionList)
-    yield Ok(views.html.stubs(stubForm, stubs, sections))
+    yield Ok(views.html.stubs(stubs, sections))
   }
 
   def stubsJson = Action {
@@ -155,6 +155,18 @@ object Application extends Controller {
       stub => {
         PostgresDB.createStub(stub)
         Redirect(routes.Application.stubs())
+      }
+    )
+  }
+
+  def putStub(stubId: Int) = Action { implicit request =>
+    stubForm.bindFromRequest.fold(
+      formWithErrors =>  {
+        BadRequest(s"that failed ${formWithErrors}")
+      },
+      stub => {
+        PostgresDB.updateStub(stubId, stub)
+        Accepted("")
       }
     )
   }
