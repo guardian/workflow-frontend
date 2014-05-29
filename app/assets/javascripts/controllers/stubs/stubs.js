@@ -8,16 +8,24 @@ define([
     'use strict';
 
     stubsControllers.controller('StubsCtrl', ['$scope','$http', function($scope, $http) {
+
         function getStubs() {
             var uri = '/stubsJson';
-            $http.get(uri).success(function(response) {
+            $http.get(uri).success(function (response) {
                 $scope.stubItems = response.data;
             });
         }
+
         getStubs();
-        $scope.$on('getStubs', function(){
+
+        $scope.$on('getStubs', function () {
             getStubs();
         });
+
+        $scope.editStub = function (stub) {
+            $scope.$broadcast('editStub', angular.copy(stub));
+        };
+
         $scope.addToComposer = function(stub, composerUrl) {
             $scope.$broadcast('addToComposer', stub, composerUrl)
         }

@@ -13,9 +13,14 @@ define([
 
 
 
-    var StubModalInstanceCtrl = function ($scope, $modalInstance) {
+    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub) {
         //default to technology for first pass of testing
-        $scope.stubForm = {'section': 'Technology'};
+        if (stub === undefined) {
+            $scope.stubForm = {'section': 'Technology'};
+        }
+        else {
+            $scope.stubForm = stub;
+        }
         $scope.ok = function () {
             $modalInstance.close($scope.stubForm);
         };
@@ -27,11 +32,21 @@ define([
     stubsControllers.controller('StubModalInstanceCtrl', ['$scope','$modalInstance','items', StubModalInstanceCtrl]);
 
     stubsControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http){
-        $scope.open = function () {
+
+        $scope.$on('editStub', function(event, stub) {
+            $scope.open(stub);
+        });
+
+        $scope.open = function (stub) {
 
             var modalInstance = $modal.open({
                 templateUrl: 'stubModalContent.html',
-                controller: StubModalInstanceCtrl
+                controller: StubModalInstanceCtrl,
+                resolve: {
+                    stub: function () {
+                        return stub;
+                    }
+                }
             });
 
             modalInstance.result.then(function (stub) {

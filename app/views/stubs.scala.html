@@ -52,7 +52,7 @@
                     <th>Section</th>
                     <th>Due date</th>
                     <th>Assigned to</th>
-                    <th></th>
+                    <th colspan="2"></th>
                 </tr>
                 <tr ng-repeat="stub in stubItems">
                         <td>
@@ -67,10 +67,11 @@
                                 data-toggle="modal"
                                 ng-hide="stub.composerId"
                                 data-target="#composerModal" ng-click="addToComposer(stub, '@newContentUrl')">
-                                Composer
+                                Create in Composer
                             </button>
-                                <a href=@adminUrl/{{stub.composerId}} class="btn btn-default btn-sm" target="_blank" ng-show="stub.composerId">Edit</a>
+                                <a href=@adminUrl/{{stub.composerId}} class="btn btn-default btn-sm" target="_blank" ng-show="stub.composerId">Go to Composer</a>
                         </td>
+                        <td><button class="btn btn-default btn-small" ng-click="editStub(stub)">Edit</button></td>
                 </tr>
             </table>
 
