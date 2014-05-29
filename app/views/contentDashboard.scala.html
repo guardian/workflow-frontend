@@ -168,7 +168,9 @@
                 <tr ng-repeat="content in contentItems" ng-click="showDetail(content)">
                     <td>
                         <span class="glyphicon glyphicon-file" ng-show="content.type==='article'"></span>
+                        <span class="glyphicon glyphicon-th-list" ng-show="content.type==='liveblog'"></span>
                         <span class="glyphicon glyphicon-camera" ng-show="content.type==='gallery'"></span>
+                        <span class="glyphicon glyphicon-hand-up" ng-show="content.type==='interactive'"></span>
                     </td>
                     <td>
                         <!-- <span class="glyphicon glyphicon-exclamation-sign "></span> -->
