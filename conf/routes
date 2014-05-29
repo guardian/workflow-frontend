@@ -10,6 +10,7 @@ GET     /stubs                              controllers.Application.stubs()
 GET     /stubsJson                          controllers.Application.stubsJson()
 
 POST    /newStub                            controllers.Application.newStub()
+PUT     /stubs/:stubId                      controllers.Application.putStub(stubId: Int)
 POST    /updateStub/:stubId                 controllers.Application.updateStub(stubId: String, composerId: String)
 
 POST    /login                              controllers.Application.loginPost()

@@ -4,7 +4,7 @@ import play.api.libs.json._
 import org.joda.time.DateTime
 import models.Status._
 
-case class Stub(id: String,
+case class Stub(id: Option[Long],
                 title: String,
                 section: String,
                 due: Option[DateTime],

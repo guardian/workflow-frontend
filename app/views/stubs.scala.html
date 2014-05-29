@@ -1,4 +1,4 @@
-@(stubForm: Form[Stub], stubs: List[Stub], sectionList: List[Section])
+@(stubs: List[Stub], sectionList: List[Section])
 @import helper._
 @import lib.Formatting._
 @import lib.Composer._
@@ -15,6 +15,7 @@
                     <h4 class="modal-title">Create new stub</h4>
                 </div>
                 <form>
+                    <input type="hidden" ng-model="stubForm.id" />
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="title">title</label>
@@ -39,20 +40,20 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Close</button>
-                        <button type="submit" class="btn btn-primary" ng-click="ok()">Create</button>
+                        <button type="submit" class="btn btn-primary" ng-click="ok()">Save</button>
                     </div>
                 </form>
             </script>
         </div>
 
-        <div ng-controller="ComposerModalCtrl">
+
             <table class="table table-striped">
                 <tr>
                     <th>Working Title</th>
                     <th>Section</th>
                     <th>Due date</th>
                     <th>Assigned to</th>
-                    <th></th>
+                    <th colspan="2"></th>
                 </tr>
                 <tr ng-repeat="stub in stubItems">
                         <td>
@@ -66,14 +67,16 @@
                             <button class="btn btn-default btn-sm"
                                 data-toggle="modal"
                                 ng-hide="stub.composerId"
-                                data-target="#composerModal" ng-click="open(stub, '@newContentUrl')">
-                                Composer
+                                data-target="#composerModal" ng-click="addToComposer(stub, '@newContentUrl')">
+                                Create in Composer
                             </button>
-                                <a href=@adminUrl class="btn btn-default btn-sm" target="_blank" ng-show="stub.composerId">Edit</a>
+                                <a href=@adminUrl/{{stub.composerId}} class="btn btn-default btn-sm" target="_blank" ng-show="stub.composerId">Go to Composer</a>
                         </td>
+                        <td><button class="btn btn-default btn-small" ng-click="editStub(stub)">Edit</button></td>
                 </tr>
             </table>
 
+        <div ng-controller="ComposerModalCtrl">
             <script type="text/ng-template" id="composerModalContent.html">
                 <div class="modal-header">
                     <h3 class="modal-title">Create in Composer</h3>
