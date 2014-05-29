@@ -31,7 +31,7 @@ define([
         };
 
         $scope.deleteStub = function(stub) {
-            if (window.confirm("Are you sure? It looks like a nice stub to me.")) {
+            if (window.confirm("Are you sure? \"" + stub.title + "\" looks like a nice stub to me.")) {
                 $http({
                    method: 'DELETE',
                    url: '/api/stubs/' + stub.id

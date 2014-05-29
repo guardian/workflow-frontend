@@ -5,7 +5,7 @@ import scala.util.Try
 
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Controller
 import play.api.libs.json.{Reads, Json, Writes}
 
 import lib.Responses._
