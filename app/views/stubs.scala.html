@@ -3,8 +3,13 @@
 @import lib.Formatting._
 @import lib.Composer._
 
+<div class="container-fluid top-control">
+    <div class="row" common-filters></div>
+</div>
+
 <div class="container">
-    <div class="stubs-table table">
+    <div class="stubs-table table" style="padding-top: 50px">
+
         <div ng-controller="StubModalCtrl">
             <button class="btn btn-primary"
                     data-toggle="modal" data-target="#stubModal"

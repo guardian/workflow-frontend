@@ -7,20 +7,18 @@ define([
 ) {
     'use strict';
 
-    stubsControllers.controller('StubsCtrl', ['$scope','$http', function($scope, $http) {
+    stubsControllers.controller('StubsCtrl',
+        ['$scope', '$http', 'filterParams', function($scope, $http, filterParams) {
 
-        function getStubs() {
+        var getStubs = function () {
+            var params = filterParams.get();
             var uri = '/api/stubs';
-            $http.get(uri).success(function (response) {
+            $http.get(uri, {params: params}).success(function (response) {
                 $scope.stubItems = response.data;
             });
         }
-
-        getStubs();
-
-        $scope.$on('getStubs', function () {
-            getStubs();
-        });
+        $scope.$on('changedFilters', getStubs);
+        $scope.$on('getStubs', getStubs);
 
         $scope.editStub = function (stub) {
             $scope.$broadcast('editStub', angular.copy(stub));
