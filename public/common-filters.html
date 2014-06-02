@@ -1,0 +1,60 @@
+<div class="col-md-12 header-bar">
+    <div class="btn-group">
+        <button type="button" class="btn btn-default">New stub</button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Article</a>
+            </li>
+            <li><a href="#">Live blog</a>
+            </li>
+            <li><a href="#">Gallery</a>
+            </li>
+            <li><a href="#">Interactive</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="constrain-by-desk-section" data-toggle="buttons">
+
+        <div class="btn-group btn-group-sm" data-toggle="buttons">
+            <button type="button" class="btn btn-primary">Desk</button>
+            <button type="button" class="btn btn-default">Section</button>
+        </div>
+
+        <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                UK News <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Action</a>
+                </li>
+                <li><a href="#">Another action</a>
+                </li>
+                <li><a href="#">Something else here</a>
+                </li>
+                <li class="divider"></li>
+                <li><a href="#">Separated link</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="constrain-by-date" ng-controller="DateFilterCtrl">
+        <h4>Due by</h4>
+        <div class="btn-group btn-group-sm" data-toggle="buttons">
+            <button type="button" class="btn btn-default" ng-click="selectDate()">All</button>
+            <button type="button" class="btn btn-default" ng-click="selectDate('today')">Today</button>
+            <button type="button" class="btn btn-default" ng-click="selectDate('tomorrow')">Tomorrow</button>
+            <button type="button" class="btn btn-default" ng-click="selectDate('weekend')">This weekend</button>
+            <button type="button" class="btn btn-default" title="Select date">
+                <span class="glyphicon glyphicon-calendar"></span>
+                <select ng-model="selectedDate" ng-options="date as (date | formatDate) for date in dateOptions">
+                </select>
+            </button>
+        </div>
+    </div>
+
+</div>

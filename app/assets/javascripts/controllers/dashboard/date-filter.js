@@ -57,7 +57,7 @@ define([
                 'due.from': $scope.dueFrom && formatDateForUri($scope.dueFrom),
                 'due.until': $scope.dueUntil && formatDateForUri($scope.dueUntil)}
             );
-            $scope.$emit('getContent');
+            $scope.$emit('changedFilters');
         });
 
     }]);

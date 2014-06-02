@@ -18,6 +18,7 @@ define([
             });
         };
         $scope.$on('getContent', getContent);
+        $scope.$on('changedFilters', getContent);
 
         $scope.stateIsSelected = function(state) {
             return $scope.selectedState == state;

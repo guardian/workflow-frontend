@@ -75,6 +75,18 @@ object PostgresDB {
     SQL("select * from stub")().map(rowToStub).toList
   }
 
+  def getStubs(dueFrom: DateTime, dueUntil: DateTime): List[Stub] =
+    DB.withConnection { implicit conn =>
+      SQL("""
+        SELECT * FROM stub
+        WHERE due >= {due_from}
+        AND due < {due_until}
+        """).on(
+          'due_from -> dueFrom,
+          'due_until -> dueUntil
+        )().map(rowToStub).toList
+    }
+
   def createStub(stub: Stub): Unit = DB.withConnection { implicit c =>
     SQL(""" INSERT INTO Stub(working_title, section, due, assign_to, composer_id)
             VALUES({working_title}, {section}, {due}, {assign_to}, {composer_id})
