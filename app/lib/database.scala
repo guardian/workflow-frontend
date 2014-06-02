@@ -42,33 +42,56 @@ object AnormExtension {
 
 object PostgresDB {
   import play.api.Play.current
+  import play.api.db.slick.{DB => SlickDB}
   import AnormExtension._
   import anorm.{SQL, SqlRow}
 
-  def rowToContent(row: SqlRow): WorkflowContent =
-    WorkflowContent(
-      composerId = row[String]("composer_id"),
-      path = row[Option[String]]("path"),
-      workingTitle = row[String]("working_title"),
-      due = Some(row[DateTime]("due")),
-      assignee = row[Option[String]]("assign_to"),
-      headline = row[Option[String]]("headline"),
-      slug = None,
-      `type` = row[String]("content_type"),
-      contributors = Nil,
-      section = Some(Section(row[String]("section"))),
-      status = Status(row[String]("status")),
-      lastModification = ContentModification("", row[DateTime]("last_modified"), row[Option[String]]("last_modified_by")),
-      scheduledLaunch = None,
-      stateHistory = Map.empty,
-      commentable = row[Boolean]("commentable"),
-      state = if (row[Boolean]("published")) ContentState.Published else ContentState.Draft
-    )
+  type StubRow = (
+    Long,             // pk
+    String,           // working_title
+    String,           // section
+    Option[DateTime], // due
+    Option[String],   // assign_to
+    Option[String]    // composer_id
+  )
 
-  import play.api.db.slick.{DB => SlickDB}
+  case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
+    def pk           = column [Long]             ("pk", O.PrimaryKey)
+    def workingTitle = column [String]           ("working_title")
+    def section      = column [String]           ("section")
+    def due          = column [Option[DateTime]] ("due")
+    def assignee     = column [Option[String]]   ("assign_to")
+    def composerId   = column [Option[String]]   ("composer_id")
+    def * = (pk, workingTitle, section, due, assignee, composerId)
+  }
 
-  type StubQuery = Query[DBStub, (Long, String, String, Option[DateTime], Option[String], Option[String])]
-  type ContentQuery = Query[DBContent, (String, Option[String], DateTime, Option[String], String, String, Boolean, Option[String], Boolean)]
+  type ContentRow = (
+    String,         // composer_id
+    Option[String], // path
+    DateTime,       // last_modified
+    Option[String], // last_modified_by
+    String,         // status
+    String,         // content_type
+    Boolean,        // commentable
+    Option[String], // headline
+    Boolean         // published
+  )
+
+  case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
+    def composerId     = column [String]         ("composer_id", O.PrimaryKey)
+    def path           = column [Option[String]] ("path")
+    def lastModified   = column [DateTime]       ("last_modified")
+    def lastModifiedBy = column [Option[String]] ("last_modified_by")
+    def status         = column [String]         ("status")
+    def contentType    = column [String]         ("content_type")
+    def commentable    = column [Boolean]        ("commentable")
+    def headline       = column [Option[String]] ("headline")
+    def published      = column [Boolean]        ("published")
+    def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published)
+  }
+
+  type StubQuery = Query[DBStub, StubRow]
+  type ContentQuery = Query[DBContent, ContentRow]
 
   val stubs: StubQuery = TableQuery(DBStub).map(identity)
   val content: ContentQuery = TableQuery(DBContent).map(identity)
@@ -344,48 +367,4 @@ object StatusDatabase {
       ss
     }
   }
-}
-
-case class DBStub(tag: Tag) extends Table[(
-    Long,             // pk
-    String,           // working_title
-    String,           // section
-    Option[DateTime], // due
-    Option[String],   // assign_to
-    Option[String]    // composer_id
-  )](tag, "stub") {
-
-  def pk           = column [Long]             ("pk", O.PrimaryKey)
-  def workingTitle = column [String]           ("working_title")
-  def section      = column [String]           ("section")
-  def due          = column [Option[DateTime]] ("due")
-  def assignee     = column [Option[String]]   ("assign_to")
-  def composerId   = column [Option[String]]   ("composer_id")
-
-  def * = (pk, workingTitle, section, due, assignee, composerId)
-}
-
-case class DBContent(tag: Tag) extends Table[(
-    String,         // composer_id
-    Option[String], // path
-    DateTime,       // last_modified
-    Option[String], // last_modified_by
-    String,         // status
-    String,         // content_type
-    Boolean,        // commentable
-    Option[String], // headline
-    Boolean         // published
-  )](tag, "content") {
-
-  def composerId     = column [String]         ("composer_id", O.PrimaryKey)
-  def path           = column [Option[String]] ("path")
-  def lastModified   = column [DateTime]       ("last_modified")
-  def lastModifiedBy = column [Option[String]] ("last_modified_by")
-  def status         = column [String]         ("status")
-  def contentType    = column [String]         ("content_type")
-  def commentable    = column [Boolean]        ("commentable")
-  def headline       = column [Option[String]] ("headline")
-  def published      = column [Boolean]        ("published")
-
-  def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published)
 }
