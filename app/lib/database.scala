@@ -45,15 +45,6 @@ object PostgresDB {
   import AnormExtension._
   import anorm.{SQL, SqlRow}
 
-  def rowToStub(row: SqlRow) = Stub(
-    id = Some(row[Long]("pk")),
-    title = row[String]("working_title"),
-    section = row[String]("section"),
-    due = row[Option[DateTime]]("due"),
-    assignee = row[Option[String]]("assign_to"),
-    composerId = row[Option[String]]("composer_id")
-  )
-
   def rowToContent(row: SqlRow): WorkflowContent =
     WorkflowContent(
       composerId = row[String]("composer_id"),
@@ -67,7 +58,7 @@ object PostgresDB {
       contributors = Nil,
       section = Some(Section(row[String]("section"))),
       status = Status(row[String]("status")),
-      lastModification = Some(ContentModification("", row[DateTime]("last_modified"), row[Option[String]]("last_modified_by"))),
+      lastModification = ContentModification("", row[DateTime]("last_modified"), row[Option[String]]("last_modified_by")),
       scheduledLaunch = None,
       stateHistory = Map.empty,
       commentable = row[Boolean]("commentable"),
@@ -77,8 +68,10 @@ object PostgresDB {
   import play.api.db.slick.{DB => SlickDB}
 
   type StubQuery = Query[DBStub, (Long, String, String, Option[DateTime], Option[String], Option[String])]
+  type ContentQuery = Query[DBContent, (String, Option[String], DateTime, Option[String], String, String, Boolean, Option[String], Boolean)]
 
   val stubs: StubQuery = TableQuery(DBStub).map(identity)
+  val content: ContentQuery = TableQuery(DBContent).map(identity)
 
   implicit class OptionSyntax[A](self: Option[A]) {
     /** flipped foldLeft */
@@ -154,19 +147,6 @@ object PostgresDB {
     }
   }
 
-  def findStubByComposerId(composerId: String): Option[Stub] = {
-    DB.withConnection { implicit c =>
-      SQL(
-        """
-          SELECT * from stub WHERE
-          composer_id = {composer_id}
-        """
-      ).on(
-      'composer_id -> composerId
-     )().map{ rowToStub(_) }.headOption
-    }
-  }
-
   def deleteStub(id: Long) {
     DB.withConnection { implicit conn =>
       SQL("DELETE FROM Stub WHERE pk = {id}").on('id -> id).executeUpdate
@@ -195,8 +175,8 @@ object PostgresDB {
           'composer_id -> wc.composerId,
           'path -> wc.path,
           'headline -> wc.headline,
-          'last_modified -> wc.lastModification.map(_.dateTime),
-          'last_modified_by -> wc.lastModification.flatMap(_.user),
+          'last_modified -> wc.lastModification.dateTime,
+          'last_modified_by -> wc.lastModification.user,
           'status -> wc.status.name,
           'content_type -> wc.`type`,
           'commentable -> wc.commentable,
@@ -233,8 +213,8 @@ object PostgresDB {
           'composer_id -> wc.composerId,
           'path -> wc.path,
           'headline -> wc.headline,
-          'last_modified -> wc.lastModification.map(_.dateTime),
-          'last_modified_by -> wc.lastModification.flatMap(_.user),
+          'last_modified -> wc.lastModification.dateTime,
+          'last_modified_by -> wc.lastModification.user,
           'status -> wc.status.name,
           'content_type -> wc.`type`,
           'commentable -> wc.commentable,
@@ -243,9 +223,57 @@ object PostgresDB {
     }
   }
 
-  def allContent: List[WorkflowContent] = DB.withConnection { implicit conn =>
-    SQL("SELECT * FROM stub INNER JOIN content ON (stub.composer_id = content.composer_id)")().map(rowToContent).toList
-  }
+  def getContent(
+    section:  Option[Section] = None,
+    dueFrom:  Option[DateTime] = None,
+    dueUntil: Option[DateTime] = None,
+    status:   Option[Status] = None,
+    contentType: Option[String] = None,
+    published: Option[Boolean] = None
+  ): List[WorkflowContent] =
+    SlickDB.withTransaction { implicit session =>
+
+      val stubsQuery =
+        stubs |>
+          dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
+          dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+          section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) }
+
+      val contentQuery =
+        content |>
+          status.foldl[ContentQuery] { case (q, Status(s)) => q.filter(_.status === s) } |>
+          contentType.foldl[ContentQuery] ((q, contentType) => q.filter(_.contentType === contentType)) |>
+          published.foldl[ContentQuery] ((q, published) => q.filter(_.published === published))
+
+      val query = for {
+        s <- stubsQuery
+        c <- contentQuery if s.composerId === c.composerId
+      } yield (s, c)
+
+      query.list.map {
+        case ((pk, title, section, due, assignee, _),
+              (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published)) =>
+          WorkflowContent(
+            composerId,
+            path,
+            title,
+            due,
+            assignee,
+            headline,
+            None,
+            contentType,
+            Nil,
+            Some(Section(section)),
+            Status(status),
+            ContentModification("", lastMod, lastModBy),
+            None,
+            Map.empty,
+            commentable,
+            if (published) ContentState.Published else ContentState.Draft
+          )
+      }
+
+    }
 }
 
 
@@ -343,7 +371,7 @@ case class DBContent(tag: Tag) extends Table[(
     DateTime,       // last_modified
     Option[String], // last_modified_by
     String,         // status
-    Option[String], // content_type
+    String,         // content_type
     Boolean,        // commentable
     Option[String], // headline
     Boolean         // published
@@ -354,7 +382,7 @@ case class DBContent(tag: Tag) extends Table[(
   def lastModified   = column [DateTime]       ("last_modified")
   def lastModifiedBy = column [Option[String]] ("last_modified_by")
   def status         = column [String]         ("status")
-  def contentType    = column [Option[String]] ("content_type")
+  def contentType    = column [String]         ("content_type")
   def commentable    = column [Boolean]        ("commentable")
   def headline       = column [Option[String]] ("headline")
   def published      = column [Boolean]        ("published")

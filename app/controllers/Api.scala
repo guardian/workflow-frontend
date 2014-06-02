@@ -10,41 +10,30 @@ import play.api.libs.json.{Reads, Json, Writes}
 
 import lib.Responses._
 import lib._
-import models.{ContentState, WorkflowContent, Stub}
+import models.{Section, ContentState, WorkflowContent, Stub}
 import org.joda.time.DateTime
 
 
 object Api extends Controller with Authenticated {
 
-
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
-  def filterPredicate(filterKey: String, value: String)(wc: WorkflowContent): Boolean = {
-    // Use of `forall` ensures content with no due date set is always shown
-    def filterDue(cmp: (DateTime, DateTime) => Boolean): Boolean =
-      wc.due.forall(due => Formatting.parseDate(value).forall(v => cmp(due, v)))
-
-    filterKey match {
-      case "section"   => wc.section.exists(_.name == value)
-      case "status"    => StatusDatabase.find(value) == Some(wc.status)
-      case "due.from"  => filterDue((due, v) => due.isEqual(v) || due.isAfter(v))
-      case "due.until" => filterDue((due, v) => due.isBefore(v))
-      case "state"     => ContentState.fromString(value).exists(_ == wc.state)
-      case "content-type" => wc.`type` == value
-      case _ => true
-    }
-  }
-
   def content = Authenticated.async { req =>
+
     for {
       sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
-      items = PostgresDB.allContent
 
-      predicate = (wc: WorkflowContent) => req.queryString.forall { case (k, vs) =>
-        vs.exists(v => filterPredicate(k, v)(wc))
-      }
-      content = items.filter(predicate).sortBy(_.due)
+      items = PostgresDB.getContent(
+        section = req.getQueryString("section").map(Section(_)),
+        dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate),
+        dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate),
+        status = req.getQueryString("status").flatMap(StatusDatabase.find),
+        contentType = req.getQueryString("content-type"),
+        published = req.getQueryString("state").flatMap(ContentState.fromString).map(_ == ContentState.Published)
+      )
+
+      content = items.sortBy(_.due)
     }
     yield {
       Ok(renderJsonResponse(content))
