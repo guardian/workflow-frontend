@@ -11,7 +11,8 @@ require.config({
     shim: {
         'angular' : {'exports' : 'angular'},
         'angularRoute': ['angular'],
-        'uiBootstrap': ['angular']
+        'uiBootstrap': ['angular'],
+        'ui.bootstrap.datetimepicker': ['angular']
     }
 });
 
