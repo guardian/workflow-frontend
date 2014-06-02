@@ -7,7 +7,6 @@ define([
 
     'controllers/dashboard',
     'controllers/dashboard/content',
-    'controllers/dashboard/date-filter',
 
     'controllers/stubs',
     'controllers/stubs/stubs',
