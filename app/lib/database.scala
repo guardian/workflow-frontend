@@ -2,23 +2,26 @@ package lib
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.slick.driver.PostgresDriver.simple._
+import com.github.tototoshi.slick.PostgresJodaSupport._
+
 import models._
 
 import akka.agent.Agent
 import play.api.libs.ws._
 import play.api.libs.json.JsArray
 import play.api.db._
-import anorm._
 
 import org.joda.time._
 import org.joda.time.format._
-import anorm._
+
 
 
 object AnormExtension {
 
+  import anorm.{Column, MetaDataItem, TypeDoesNotMatch, ToStatement}
 
-  val dateFormatGeneration: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmssSS");
+  val dateFormatGeneration: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmssSS")
 
   implicit def rowToDateTime: Column[DateTime] = Column.nonNull { (value, meta) =>
     val MetaDataItem(qualified, nullable, clazz) = meta
@@ -40,6 +43,7 @@ object AnormExtension {
 object PostgresDB {
   import play.api.Play.current
   import AnormExtension._
+  import anorm.{SQL, SqlRow}
 
   def rowToStub(row: SqlRow) = Stub(
     id = Some(row[Long]("pk")),
@@ -70,21 +74,27 @@ object PostgresDB {
       state = if (row[Boolean]("published")) ContentState.Published else ContentState.Draft
     )
 
+  import play.api.db.slick.{DB => SlickDB}
 
-  def getAllStubs: List[Stub] = DB.withConnection { implicit c =>
-    SQL("select * from stub")().map(rowToStub).toList
-  }
+  val stubs = TableQuery(DBStub)
 
-  def getStubs(dueFrom: DateTime, dueUntil: DateTime): List[Stub] =
-    DB.withConnection { implicit conn =>
-      SQL("""
-        SELECT * FROM stub
-        WHERE due >= {due_from}
-        AND due < {due_until}
-        """).on(
-          'due_from -> dueFrom,
-          'due_until -> dueUntil
-        )().map(rowToStub).toList
+  def getStubs(
+    dueFrom: Option[DateTime] = None,
+    dueUntil: Option[DateTime] = None
+  ): List[Stub] =
+    SlickDB.withTransaction { implicit session =>
+
+      val q =
+        dueUntil.foldLeft(
+          dueFrom.foldLeft(
+            stubs.map(identity)
+          )((q, dueFrom) => q.filter(_.due >= dueFrom))
+        )((q, dueUntil) => q.filter(_.due < dueUntil))
+
+      q.list.map {
+        case (pk, title, section, due, assignee, composerId) =>
+          Stub(Some(pk), title, section, due, assignee, composerId)
+      }
     }
 
   def createStub(stub: Stub): Unit = DB.withConnection { implicit c =>
@@ -298,3 +308,46 @@ object StatusDatabase {
   }
 }
 
+case class DBStub(tag: Tag) extends Table[(
+    Long,             // pk
+    String,           // working_title
+    String,           // section
+    Option[DateTime], // due
+    Option[String],   // assign_to
+    Option[String]    // composer_id
+  )](tag, "stub") {
+
+  def pk           = column [Long]             ("pk", O.PrimaryKey)
+  def workingTitle = column [String]           ("working_title")
+  def section      = column [String]           ("section")
+  def due          = column [Option[DateTime]] ("due")
+  def assignee     = column [Option[String]]   ("assign_to")
+  def composerId   = column [Option[String]]   ("composer_id")
+
+  def * = (pk, workingTitle, section, due, assignee, composerId)
+}
+
+case class DBContent(tag: Tag) extends Table[(
+    String,         // composer_id
+    Option[String], // path
+    DateTime,       // last_modified
+    Option[String], // last_modified_by
+    String,         // status
+    Option[String], // content_type
+    Boolean,        // commentable
+    Option[String], // headline
+    Boolean         // published
+  )](tag, "content") {
+
+  def composerId     = column [String]         ("composer_id", O.PrimaryKey)
+  def path           = column [Option[String]] ("path")
+  def lastModified   = column [DateTime]       ("last_modified")
+  def lastModifiedBy = column [Option[String]] ("last_modified_by")
+  def status         = column [String]         ("status")
+  def contentType    = column [Option[String]] ("content_type")
+  def commentable    = column [Boolean]        ("commentable")
+  def headline       = column [Option[String]] ("headline")
+  def published      = column [Boolean]        ("published")
+
+  def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published)
+}

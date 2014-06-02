@@ -7,6 +7,7 @@ import AssemblyKeys._
 import play.Keys.jdbc
 import play.Keys.anorm
 
+
 object WorkflowBuild extends Build {
 
   val commonSettings =
@@ -26,6 +27,8 @@ object WorkflowBuild extends Build {
         "com.typesafe.akka" %% "akka-agent" % "2.2.0",
         jdbc,
         anorm,
+        "com.typesafe.play" %% "play-slick" % "0.6.0.1",
+        "com.github.tototoshi" %% "slick-joda-mapper" % "1.1.0",
         "org.postgresql" % "postgresql" % "9.3-1100-jdbc4"
       ),
       requireJs += "main.js",

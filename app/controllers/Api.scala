@@ -60,12 +60,8 @@ object Api extends Controller with Authenticated {
   def stubs = Authenticated { implicit req =>
     stubFilters.bindFromRequest.fold(
       formWithErrors => BadRequest(formWithErrors.errorsAsJson),
-      {
-        case (Some(dueFrom), Some(dueUntil)) =>
-          Ok(renderJsonResponse(PostgresDB.getStubs(dueFrom, dueUntil)))
-        case _ =>
-          Ok(renderJsonResponse(PostgresDB.getAllStubs))
-      })
+      { case (dueFrom, dueUntil) => Ok(renderJsonResponse(PostgresDB.getStubs(dueFrom, dueUntil))) }
+    )
   }
 
   val stubForm: Form[Stub] = Form(
