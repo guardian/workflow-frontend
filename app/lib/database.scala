@@ -76,7 +76,19 @@ object PostgresDB {
 
   import play.api.db.slick.{DB => SlickDB}
 
-  val stubs = TableQuery(DBStub)
+  type StubQuery = Query[DBStub, (Long, String, String, Option[DateTime], Option[String], Option[String])]
+
+  val stubs: StubQuery = TableQuery(DBStub).map(identity)
+
+  implicit class OptionSyntax[A](self: Option[A]) {
+    /** flipped foldLeft */
+    def foldl[B](f: (B, A) => B): B => B = b => self.foldLeft(b)(f)
+  }
+
+  implicit class PipeSyntax[A](self: A) {
+    /** flipped apply */
+    def |> [B] (f: A => B): B = f(self)
+  }
 
   def getStubs(
     dueFrom: Option[DateTime] = None,
@@ -85,11 +97,9 @@ object PostgresDB {
     SlickDB.withTransaction { implicit session =>
 
       val q =
-        dueUntil.foldLeft(
-          dueFrom.foldLeft(
-            stubs.map(identity)
-          )((q, dueFrom) => q.filter(_.due >= dueFrom))
-        )((q, dueUntil) => q.filter(_.due < dueUntil))
+        stubs |>
+          dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
+          dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil))
 
       q.list.map {
         case (pk, title, section, due, assignee, composerId) =>
