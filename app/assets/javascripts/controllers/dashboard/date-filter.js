@@ -22,7 +22,8 @@ define([
         return moment(date).format("YYYY-MM-DDTHH:mm:ssZ");
     }
 
-    dashboardControllers.controller('DateFilterCtrl', ['$scope','$http', function($scope, $http) {
+    dashboardControllers.controller('DateFilterCtrl',
+        ['$scope','$http', 'filterParams', function($scope, $http, filterParams) {
 
         $scope.dateOptions = mkDateOptions();
 
@@ -52,8 +53,11 @@ define([
                 $scope.dueUntil = date.clone().add('days', 1);
             }
 
-            $scope.$emit('getContent', {'due.from': $scope.dueFrom && formatDateForUri($scope.dueFrom),
-                                        'due.until': $scope.dueUntil && formatDateForUri($scope.dueUntil)});
+            filterParams.register({
+                'due.from': $scope.dueFrom && formatDateForUri($scope.dueFrom),
+                'due.until': $scope.dueUntil && formatDateForUri($scope.dueUntil)}
+            );
+            $scope.$emit('getContent');
         });
 
     }]);

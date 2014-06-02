@@ -9,16 +9,10 @@ define([
 ) {
     'use strict';
 
-    dashboardControllers.controller('ContentCtrl', ['$scope','$http', function($scope, $http) {
-
-        var registeredFilters = {}; // params registered by other controllers
+    dashboardControllers.controller('ContentCtrl',
+        ['$scope','$http', 'filterParams', function($scope, $http, filterParams) {
 
         var getContent = function(evt, params) {
-            if (params) {
-                for (var key in params) {
-                    registeredFilters[key] = params[key];
-                }
-            }
             $http.get('/api/content', {params: buildContentParams()}).success(function(response){
                 $scope.contentItems = response.data;
             });
@@ -46,12 +40,7 @@ define([
         };
 
         function buildContentParams() {
-            var params = {};
-
-            // copy in filter params registered by other controllers
-            for (var key in registeredFilters) {
-                params[key] = registeredFilters[key];
-            }
+            var params = filterParams.get();
 
             if ($scope.selectedState) {
                 params.state = $scope.selectedState;
