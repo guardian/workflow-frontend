@@ -51,23 +51,34 @@ object Api extends Controller with Authenticated {
     }
   }
 
+  val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+  val iso8601DateTimeNoMillis = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
+
+  val stubFilters: Form[(Option[DateTime], Option[DateTime])] =
+    Form(tuple("due.from" -> optional(iso8601DateTimeNoMillis), "due.until" -> optional(iso8601DateTimeNoMillis)))
+
+  def stubs = Authenticated { implicit req =>
+    stubFilters.bindFromRequest.fold(
+      formWithErrors => BadRequest(formWithErrors.errorsAsJson),
+      {
+        case (Some(dueFrom), Some(dueUntil)) =>
+          Ok(renderJsonResponse(PostgresDB.getStubs(dueFrom, dueUntil)))
+        case _ =>
+          Ok(renderJsonResponse(PostgresDB.getAllStubs))
+      })
+  }
 
   val stubForm: Form[Stub] = Form(
     mapping(
       "id"      -> optional(longNumber),
       "title"   -> nonEmptyText,
       "section" -> text,
-      "due"     -> optional(jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSS'Z")),
+      "due"     -> optional(iso8601DateTime),
       "assignee" -> optional(text),
       "composerId" -> optional(text)
     )((id, title, section, due, assignee, composerId) =>
       Stub(id, title, section, due, assignee, composerId)
       )(s => Some((s.id, s.title, s.section, s.due, s.assignee, s.composerId))))
-
-  def stubs = Authenticated {
-    val stubs = PostgresDB.getAllStubs
-    Ok(renderJsonResponse(stubs))
-  }
 
   def newStub = Authenticated { implicit request =>
     stubForm.bindFromRequest.fold(
