@@ -38,6 +38,7 @@ define([
                 });
             }
         };
+
     }]);
 
     return stubsControllers;
