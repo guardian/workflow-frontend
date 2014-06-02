@@ -40,6 +40,7 @@ define([
                 });
             }
         };
+
     }]);
 
     return stubsControllers;
