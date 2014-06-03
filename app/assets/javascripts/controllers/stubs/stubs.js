@@ -20,8 +20,8 @@ define([
         $scope.$on('changedFilters', getStubs);
         $scope.$on('getStubs', getStubs);
 
-        $scope.$on('newStubButtonClicked', function () {
-            $scope.$broadcast('newStub');
+        $scope.$on('newStubButtonClicked', function (event, contentType) {
+            $scope.$broadcast('newStub', contentType);
         });
 
         $scope.editStub = function (stub) {
@@ -46,8 +46,8 @@ define([
     }]);
 
     stubsControllers.controller('NewStubDropdownCtrl', ['$scope', function ($scope) {
-        $scope.newStub = function () {
-            $scope.$emit('newStubButtonClicked');
+        $scope.newStub = function (contentType) {
+            $scope.$emit('newStubButtonClicked', contentType);
         };
     }]);
 
