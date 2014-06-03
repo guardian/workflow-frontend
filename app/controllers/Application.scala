@@ -62,7 +62,7 @@ object Application extends Controller with Authenticated {
       statuses <- StatusDatabase.statuses
     }
     yield {
-       Ok(views.html.contentDashboard(sections, statuses))
+       Ok(views.html.dashboard(sections, statuses))
     }
   }
 
