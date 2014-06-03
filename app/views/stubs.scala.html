@@ -53,10 +53,20 @@
                             <label for="assignee">assign to</label>
                             <input type="text" ng-model="stubForm.assignee" id="assignee" name="assignee" value="" class="form-control">
                         </div>
+                        <div class="form-group">
+                            <label>content type</label>
+                            <select ng-model="stubForm.contentType">
+                                <option value="article">Article</option>
+                                <option value="liveblog">Live Blog</option>
+                                <option value="gallery">Gallery</option>
+                                <option value="interactive">Interactive</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Close</button>
-                        <button type="submit" class="btn btn-primary" ng-click="ok()">Save</button>
+                        <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=false)">Save</button>
+                        <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=true)">Create in composer</button>
                     </div>
                 </form>
             </script>
@@ -83,7 +93,7 @@
                             <button class="btn btn-default btn-sm"
                                 data-toggle="modal"
                                 ng-hide="stub.composerId"
-                                data-target="#composerModal" ng-click="addToComposer(stub, '@newContentUrl')">
+                                data-target="#composerModal" ng-click="addToComposer(stub)">
                                 Create in Composer
                             </button>
                                 <a href=@adminUrl/{{stub.composerId}} class="btn btn-success btn-sm" target="_blank" ng-show="stub.composerId">Go to Composer</a>

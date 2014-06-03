@@ -3,6 +3,7 @@ define([
     'filters',
     'services',
     'directives',
+    'config',
     'controllers',
 
     'controllers/dashboard',
@@ -15,7 +16,7 @@ define([
     'controllers/stubs/composerModal',
 
     'angularRoute'
-    ], function (angular, filters, services, directives, controllers) {
+    ], function (angular, filters, services, directives, config, controllers) {
 
         'use strict';
 
@@ -26,6 +27,7 @@ define([
             'workflow.filters',
             'workflow.services',
             'workflow.directives',
+            'workflow.config',
             'workflow.controllers'
         ]);
 

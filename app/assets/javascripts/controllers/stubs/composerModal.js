@@ -21,22 +21,28 @@ define([
 
     stubsControllers.controller('ComposerModalInstanceCtrl', ['$scope','$modalInstance','items', ComposerModalInstanceCtrl]);
 
-    stubsControllers.controller('ComposerModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http){
+    stubsControllers.controller('ComposerModalCtrl', ['$scope',
+                                                      '$modal',
+                                                      '$http',
+                                                      'config', function($scope, $modal, $http, config){
 
-        $scope.$on('addToComposer', function(event, stub, composerUrl){
-            $scope.open(stub, composerUrl);
+
+        $scope.$on('addToComposer', function(event, stub){
+            $scope.open(stub);
         });
 
-        $scope.open = function (stub, composerUrl) {
+        $scope.open = function (stub) {
             var modalInstance = $modal.open({
                 templateUrl: 'composerModalContent.html',
                 controller: ComposerModalInstanceCtrl
             });
 
+            var composerNewContent = config['composerNewContent'];
+
             modalInstance.result.then(function (type) {
                 $http({
                     method: 'POST',
-                    url: composerUrl,
+                    url: composerNewContent,
                     params: {'type': type},
                     withCredentials: true
                 }).success(function(data){
@@ -51,7 +57,7 @@ define([
                 });
             });
         };
-    }])
+    }]);
 
     return stubsControllers;
 });
