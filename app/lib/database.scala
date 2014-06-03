@@ -182,7 +182,7 @@ object PostgresDB {
         c <- contentQuery if s.composerId === c.composerId
       } yield (s, c)
 
-      query.list.map {
+      query.sortBy { case (s, c) => s.due }.list.map {
         case ((pk, title, section, due, assignee, _),
               (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published)) =>
           WorkflowContent(

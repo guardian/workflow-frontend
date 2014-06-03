@@ -24,7 +24,7 @@ object Api extends Controller with Authenticated {
       sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
 
-      items = PostgresDB.getContent(
+      content = PostgresDB.getContent(
         section = req.getQueryString("section").map(Section(_)),
         dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate),
         dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate),
@@ -32,12 +32,8 @@ object Api extends Controller with Authenticated {
         contentType = req.getQueryString("content-type"),
         published = req.getQueryString("state").flatMap(ContentState.fromString).map(_ == ContentState.Published)
       )
-
-      content = items.sortBy(_.due)
     }
-    yield {
-      Ok(renderJsonResponse(content))
-    }
+    yield Ok(renderJsonResponse(content))
   }
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
