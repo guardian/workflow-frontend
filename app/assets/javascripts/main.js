@@ -20,11 +20,17 @@ require.config({
 //http://code.angularjs.org/1.2.1/docs/guide/bootstrap#overview_deferred-bootstrap
 window.name = "NG_DEFER_BOOTSTRAP!";
 
-require(['angular', 'app', 'routes', 'moment', 'uiBootstrap', 'bootstrapJs', 'sugar', 'ui.bootstrap.datetimepicker'],
+require(['angular',
+         'app',
+         'routes',
+         'moment',
+         'uiBootstrap',
+         'bootstrapJs',
+         'sugar',
+         'ui.bootstrap.datetimepicker'],
     function(angular, app, route) {
         'use strict';
         angular.element().ready(function() {
             angular.resumeBootstrap([app['name']]);
         });
-
     });

@@ -34,7 +34,9 @@ define([
 
     stubsControllers.controller('StubModalInstanceCtrl', ['$scope','$modalInstance','stub', 'addToComposer', StubModalInstanceCtrl]);
 
-    stubsControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', function($scope, $modal, $http){
+    stubsControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', 'config', function($scope, $modal, $http, config){
+
+        var composerNewContent = config['composerNewContent'];
 
         $scope.$on('editStub', function(event, stub) {
             $scope.open(stub);
@@ -83,7 +85,7 @@ define([
                     var type = stub.contentType;
                     $http({
                         method: 'POST',
-                        url: 'http://localhost:9081/admin/api/content',
+                        url: composerNewContent,
                         params: {'type': type},
                         withCredentials: true
                     }).success(function(data){
