@@ -26,6 +26,8 @@ Development prerequisites
             password=???
           }
         }
+        # Uncomment the line below if you want to see SQL queries in the log
+        # logger.scala.slick.jdbc.JdbcBackend.statement=DEBUG
 
 
 Running the application
