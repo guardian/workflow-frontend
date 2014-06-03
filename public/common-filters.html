@@ -1,19 +1,16 @@
 <div class="col-md-12 header-bar">
-    <div class="btn-group">
-        <button type="button" class="btn btn-default">New stub</button>
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+
+    <div class="btn-group" ng-controller="NewStubDropdownCtrl" dropdown>
+        <button type="button" class="btn btn-default" ng-click="newStub()">New Stub</button>
+        <button type="button" class="btn btn-default dropdown-toggle">
             <span class="caret"></span>
             <span class="sr-only">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Article</a>
-            </li>
-            <li><a href="#">Live blog</a>
-            </li>
-            <li><a href="#">Gallery</a>
-            </li>
-            <li><a href="#">Interactive</a>
-            </li>
+            <li><a ng-click="newStub('article')">Article</a></li>
+            <li><a ng-click="newStub('liveblog')">Live blog</a></li>
+            <li><a ng-click="newStub('gallery')">Gallery</a></li>
+            <li><a ng-click="newStub('interactive')">Interactive</a></li>
         </ul>
     </div>
 

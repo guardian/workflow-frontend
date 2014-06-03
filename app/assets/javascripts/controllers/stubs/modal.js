@@ -12,15 +12,8 @@ define([
     'use strict';
 
     var StubModalInstanceCtrl = function ($scope, $modalInstance, stub) {
-        //default to technology for first pass of testing
-        if (stub === undefined) {
-            $scope.stubForm = {'section': 'Technology',
-                               'contentType': 'article'
-                              };
-        }
-        else {
-            $scope.stubForm = stub;
-        }
+        $scope.stubForm = stub;
+
         $scope.ok = function (addToComposer) {
             $modalInstance.close({
                 addToComposer: addToComposer,
@@ -44,10 +37,18 @@ define([
         var composerNewContent = config['composerNewContent'];
 
         $scope.$on('editStub', function(event, stub) {
-            $scope.open(stub);
+            open(stub);
         });
 
-        $scope.open = function (stub, addToComposer) {
+        $scope.$on('newStub', function(event, contentType) {
+            var stub = {
+                contentType: contentType || 'article',
+                section: 'Technology'
+            };
+            open(stub);
+        });
+
+        function open(stub, addToComposer) {
 
             var modalInstance = $modal.open({
                 templateUrl: 'stubModalContent.html',
