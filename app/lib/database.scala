@@ -10,41 +10,14 @@ import models._
 import akka.agent.Agent
 import play.api.libs.ws._
 import play.api.libs.json.JsArray
-import play.api.db._
 
 import org.joda.time._
-import org.joda.time.format._
 
-
-
-object AnormExtension {
-
-  import anorm.{Column, MetaDataItem, TypeDoesNotMatch, ToStatement}
-
-  val dateFormatGeneration: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmssSS")
-
-  implicit def rowToDateTime: Column[DateTime] = Column.nonNull { (value, meta) =>
-    val MetaDataItem(qualified, nullable, clazz) = meta
-    value match {
-      case ts: java.sql.Timestamp => Right(new DateTime(ts.getTime, DateTimeZone.UTC))
-      case d: java.sql.Date => Right(new DateTime(d.getTime, DateTimeZone.UTC))
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass) )
-    }
-  }
-
-  implicit val dateTimeToStatement = new ToStatement[DateTime] {
-    def set(s: java.sql.PreparedStatement, index: Int, aValue: DateTime): Unit = {
-      s.setTimestamp(index, new java.sql.Timestamp(aValue.withMillisOfSecond(0).getMillis))
-    }
-  }
-
-}
 
 object PostgresDB {
+
   import play.api.Play.current
-  import play.api.db.slick.{DB => SlickDB}
-  import AnormExtension._
-  import anorm.{SQL, SqlRow}
+  import play.api.db.slick.DB
 
   type StubRow = (
     Long,             // pk
@@ -110,7 +83,7 @@ object PostgresDB {
     dueFrom: Option[DateTime] = None,
     dueUntil: Option[DateTime] = None
   ): List[Stub] =
-    SlickDB.withTransaction { implicit session =>
+    DB.withTransaction { implicit session =>
 
       val q =
         stubs |>
@@ -124,118 +97,61 @@ object PostgresDB {
     }
 
   def createStub(stub: Stub): Unit =
-    SlickDB.withSession { implicit session =>
+    DB.withTransaction { implicit session =>
       stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId))
     }
 
   def updateStub(id: Long, stub: Stub) {
-    DB.withConnection { implicit c =>
-      SQL("""
-            UPDATE Stub SET
-            working_title = {working_title},
-            section = {section},
-            due = {due},
-            assign_to = {assign_to},
-            composer_id = {composer_id}
-            WHERE pk = {pk}
-          """).on(
-          'pk -> id,
-          'working_title -> stub.title,
-          'section -> stub.section,
-          'due -> stub.due,
-          'assign_to -> stub.assignee,
-          'composer_id -> stub.composerId
-        ).executeUpdate
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId))
     }
   }
 
   def updateStubWithComposerId(id: Long, composerId: String) {
-    DB.withConnection { implicit c =>
-      SQL(
-        """
-          UPDATE Stub SET
-          composer_id = {composer_id}
-          WHERE pk = {id}
-        """).on(
-        'composer_id -> composerId,
-        'id -> id
-        ).executeUpdate
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.composerId)
+        .update(Some(composerId))
     }
   }
 
   def deleteStub(id: Long) {
-    DB.withConnection { implicit conn =>
-      SQL("DELETE FROM Stub WHERE pk = {id}").on('id -> id).executeUpdate
+    DB.withTransaction { implicit session =>
+      stubs.filter(_.pk === id).delete
     }
   }
 
-  def createOrModifyContent(wc: WorkflowContent): Unit = {
-    if (updateContent(wc) == 0) createContent(wc)
-  }
+  def createOrModifyContent(wc: WorkflowContent): Unit =
+    DB.withTransaction { implicit session =>
+      if (updateContent(wc) == 0) createContent(wc)
+    }
 
   def updateContent(wc: WorkflowContent): Int = {
-    DB.withConnection { implicit c =>
-      SQL("""
-          UPDATE content SET
-          path = {path},
-          headline = {headline},
-          last_modified = {last_modified},
-          last_modified_by = {last_modified_by},
-          status = {status},
-          content_type = {content_type},
-          commentable = {commentable},
-          published = {published}
-          WHERE
-          composer_id = {composer_id}
-          """).on(
-          'composer_id -> wc.composerId,
-          'path -> wc.path,
-          'headline -> wc.headline,
-          'last_modified -> wc.lastModification.dateTime,
-          'last_modified_by -> wc.lastModification.user,
-          'status -> wc.status.name,
-          'content_type -> wc.`type`,
-          'commentable -> wc.commentable,
-          'published -> (wc.state == ContentState.Published)
-        ).executeUpdate()
+    val published = wc.state == ContentState.Published
+    val lastMod = wc.lastModification.dateTime
+    val lastModBy = wc.lastModification.user
+
+    DB.withTransaction { implicit session =>
+      content
+        .filter(_.composerId === wc.composerId)
+        .map(c =>
+          (c.path, c.lastModified, c.lastModifiedBy, c.status, c.contentType, c.commentable, c.headline, c.published))
+        .update((wc.path, lastMod, lastModBy, wc.status.name, wc.`type`, wc.commentable, wc.headline, published))
     }
   }
 
-  def createContent(wc: WorkflowContent): Unit = {
-    DB.withConnection { implicit c =>
-      SQL(
-        """
-          INSERT INTO content (composer_id,
-                               path,
-                               headline,
-                               last_modified,
-                               last_modified_by,
-                               status,
-                               content_type,
-                               commentable,
-                               published)
-          VALUES ( {composer_id},
-                   {path},
-                   {headline},
-                   {last_modified},
-                   {last_modified_by},
-                   {status},
-                   {content_type},
-                   {commentable},
-                   {published}
-                 )
-        """
-      ).on(
-          'composer_id -> wc.composerId,
-          'path -> wc.path,
-          'headline -> wc.headline,
-          'last_modified -> wc.lastModification.dateTime,
-          'last_modified_by -> wc.lastModification.user,
-          'status -> wc.status.name,
-          'content_type -> wc.`type`,
-          'commentable -> wc.commentable,
-          'published -> (wc.state == ContentState.Published)
-      ).executeUpdate()
+  def createContent(wc: WorkflowContent) {
+    val lastMod = wc.lastModification.dateTime
+    val lastModBy = wc.lastModification.user
+    val published = wc.state == ContentState.Published
+
+    DB.withTransaction { implicit session =>
+      content +=
+        ((wc.composerId, wc.path, lastMod, lastModBy, wc.status.name, wc.`type`, wc.commentable, wc.headline, published))
     }
   }
 
@@ -247,7 +163,7 @@ object PostgresDB {
     contentType: Option[String] = None,
     published: Option[Boolean] = None
   ): List[WorkflowContent] =
-    SlickDB.withTransaction { implicit session =>
+    DB.withTransaction { implicit session =>
 
       val stubsQuery =
         stubs |>
