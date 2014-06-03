@@ -47,6 +47,10 @@ define([
             $scope.open(stub);
         });
 
+        $scope.$on('newStub', function(event) {
+            $scope.open();
+        });
+
         $scope.open = function (stub, addToComposer) {
 
             var modalInstance = $modal.open({
