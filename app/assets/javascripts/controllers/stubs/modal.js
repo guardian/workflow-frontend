@@ -24,6 +24,7 @@ define([
             $scope.stubForm = stub;
         }
         $scope.ok = function (addToComposer) {
+            //todo - make this an anon object with two fields
             $scope.stubForm.addToComposer = addToComposer;
             $modalInstance.close($scope.stubForm);
         };
@@ -34,7 +35,12 @@ define([
 
     stubsControllers.controller('StubModalInstanceCtrl', ['$scope','$modalInstance','stub', 'addToComposer', StubModalInstanceCtrl]);
 
-    stubsControllers.controller('StubModalCtrl', ['$scope', '$modal', '$http', 'config', function($scope, $modal, $http, config){
+    stubsControllers.controller('StubModalCtrl', ['$scope',
+                                                  '$modal',
+                                                  '$http',
+                                                  '$q',
+                                                  'config',
+                                                  function($scope, $modal, $http, $q, config){
 
         var composerNewContent = config['composerNewContent'];
 
@@ -60,13 +66,41 @@ define([
             modalInstance.result.then(function (stub) {
                 var newStub = angular.copy(stub);
                 newStub.due = Date.create(stub.due).toISOString();
-                var updateOrCreateStubResponse = function(stub) {
+                var addToComposer = stub.addToComposer;
+
+                function callComposer(addToComposer) {
+                    var deferred = $q.defer();
+                    var type = stub.contentType;
+                    if(addToComposer) {
+                        console.log('do I post to composer?')
+                        console.log('what is the type?')
+                        $http({
+                            method: 'POST',
+                            url: composerNewContent,
+                            params: {'type': type},
+                            withCredentials: true
+                        }).then(function(response){
+                            var composerId = response.data.data.id;
+                            deferred.resolve(composerId);
+                        },function(response){
+                            deferred.reject(response);
+                        });
+                    }
+                    else {
+                        deferred.resolve(null);
+                    }
+                    return deferred.promise;
+                };
+
+
+                callComposer(addToComposer).then(function(composerId) {
+                    newStub.composerId = composerId;
                     var response;
-                    if (stub.id === undefined) {
+                    if (newStub.id === undefined) {
                         response = $http({
                             method: 'POST',
                             url: '/api/stubs',
-                            params: stub,
+                            params: newStub,
                             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                         });
                     }
@@ -74,34 +108,17 @@ define([
                         response = $http({
                             method: 'PUT',
                             url: '/api/stubs/' + stub.id,
-                            params: stub,
+                            params: newStub,
                             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                         });
                     }
-                    return response
-                }
-                var response;
-                if(stub.addToComposer) {
-                    var type = stub.contentType;
-                    $http({
-                        method: 'POST',
-                        url: composerNewContent,
-                        params: {'type': type},
-                        withCredentials: true
-                    }).success(function(data){
-                        newStub.composerId = data.data.id;
-                        response = updateOrCreateStubResponse(newStub)
+                    response.success(function(){
+                        $scope.$emit('getStubs');
                     });
-                }
-                else {
-                    response = updateOrCreateStubResponse(newStub)
-                }
-                response.success(function(){
-                    $scope.$emit('getStubs');
                 });
             });
         };
-    }])
+    }]);
 
     return stubsControllers;
 });
