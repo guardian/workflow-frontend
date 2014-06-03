@@ -56,7 +56,7 @@ object PostgresDB {
   )
 
   case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
-    def pk           = column [Long]             ("pk", O.PrimaryKey)
+    def pk           = column [Long]             ("pk", O.PrimaryKey, O.AutoInc)
     def workingTitle = column [String]           ("working_title")
     def section      = column [String]           ("section")
     def due          = column [Option[DateTime]] ("due")
@@ -93,8 +93,8 @@ object PostgresDB {
   type StubQuery = Query[DBStub, StubRow]
   type ContentQuery = Query[DBContent, ContentRow]
 
-  val stubs: StubQuery = TableQuery(DBStub).map(identity)
-  val content: ContentQuery = TableQuery(DBContent).map(identity)
+  val stubs: StubQuery = TableQuery(DBStub)
+  val content: ContentQuery = TableQuery(DBContent)
 
   implicit class OptionSyntax[A](self: Option[A]) {
     /** flipped foldLeft */
@@ -123,17 +123,10 @@ object PostgresDB {
       }
     }
 
-  def createStub(stub: Stub): Unit = DB.withConnection { implicit c =>
-    SQL(""" INSERT INTO Stub(working_title, section, due, assign_to, composer_id)
-            VALUES({working_title}, {section}, {due}, {assign_to}, {composer_id})
-         """).on(
-        'working_title -> stub.title,
-        'section -> stub.section,
-        'due -> stub.due,
-        'assign_to -> stub.assignee,
-        'composer_id -> stub.composerId
-      ).executeUpdate
-  }
+  def createStub(stub: Stub): Unit =
+    SlickDB.withSession { implicit session =>
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId))
+    }
 
   def updateStub(id: Long, stub: Stub) {
     DB.withConnection { implicit c =>
