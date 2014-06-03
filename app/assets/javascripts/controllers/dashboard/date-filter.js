@@ -27,10 +27,6 @@ define([
 
         $scope.dateOptions = mkDateOptions();
 
-        $scope.selectDate = function(date) {
-            $scope.selectedDate = date;
-        };
-
         $scope.$watch('selectedDate', function(date) {
             if (typeof date == 'undefined') {
                 $scope.dueFrom = null;

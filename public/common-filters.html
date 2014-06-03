@@ -41,11 +41,11 @@
 
     <div class="constrain-by-date" ng-controller="DateFilterCtrl">
         <h4>Due by</h4>
-        <div class="btn-group btn-group-sm" data-toggle="buttons">
-            <button type="button" class="btn btn-default" ng-click="selectDate()">All</button>
-            <button type="button" class="btn btn-default" ng-click="selectDate('today')">Today</button>
-            <button type="button" class="btn btn-default" ng-click="selectDate('tomorrow')">Tomorrow</button>
-            <button type="button" class="btn btn-default" ng-click="selectDate('weekend')">This weekend</button>
+        <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="null">All</button>
+            <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'today'">Today</button>
+            <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'tomorrow'">Tomorrow</button>
+            <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
             <button type="button" class="btn btn-default" title="Select date">
                 <span class="glyphicon glyphicon-calendar"></span>
                 <select ng-model="selectedDate" ng-options="date as (date | formatDate) for date in dateOptions">
