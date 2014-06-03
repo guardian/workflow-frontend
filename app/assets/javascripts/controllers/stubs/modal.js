@@ -11,8 +11,6 @@ define([
 ) {
     'use strict';
 
-
-
     var StubModalInstanceCtrl = function ($scope, $modalInstance, stub) {
         //default to technology for first pass of testing
         if (stub === undefined) {
@@ -24,9 +22,10 @@ define([
             $scope.stubForm = stub;
         }
         $scope.ok = function (addToComposer) {
-            //todo - make this an anon object with two fields
-            $scope.stubForm.addToComposer = addToComposer;
-            $modalInstance.close($scope.stubForm);
+            $modalInstance.close({
+                addToComposer: addToComposer,
+                form: $scope.stubForm
+            });
         };
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
@@ -63,11 +62,11 @@ define([
                 }
             });
 
-            modalInstance.result.then(function (stub) {
+            modalInstance.result.then(function (modalCloseResult) {
+                var stub = modalCloseResult.form;
                 var newStub = angular.copy(stub);
-                newStub.due = Date.create(stub.due).toISOString();
-                var addToComposer = stub.addToComposer;
-
+                var addToComposer = modalCloseResult.addToComposer;
+                newStub.due = stub.due && Date.create(stub.due).toISOString();
                 function callComposer(addToComposer) {
                     var deferred = $q.defer();
                     var type = stub.contentType;
@@ -89,7 +88,6 @@ define([
                     }
                     return deferred.promise;
                 }
-
 
                 callComposer(addToComposer).then(function(composerId) {
                     newStub.composerId = composerId;
