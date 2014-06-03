@@ -5,12 +5,14 @@ define(['angular', 'services', 'moment'], function (angular, services, moment) {
 
     mod.filter('formatDateTime', function() {
         return function(date) {
+            if(date === undefined) return "";
             return moment(date).format("ddd D MMM, HH:mm");
         };
     });
 
     mod.filter('formatDate', function() {
         return function(date) {
+            if(date === undefined) return "";
             return moment(date).format("ddd D MMM");
         };
     });
