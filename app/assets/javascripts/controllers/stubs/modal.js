@@ -72,8 +72,6 @@ define([
                     var deferred = $q.defer();
                     var type = stub.contentType;
                     if(addToComposer) {
-                        console.log('do I post to composer?')
-                        console.log('what is the type?')
                         $http({
                             method: 'POST',
                             url: composerNewContent,
@@ -90,7 +88,7 @@ define([
                         deferred.resolve(null);
                     }
                     return deferred.promise;
-                };
+                }
 
 
                 callComposer(addToComposer).then(function(composerId) {
