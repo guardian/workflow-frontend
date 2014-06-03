@@ -24,7 +24,7 @@ class ComposerSqsReader extends Actor {
             Logger.error(errors.toString)
             Nil
         }
-        stubs    = PostgresDB.getAllStubs
+        stubs   = PostgresDB.getStubs()
         content = statuses.flatMap(status => stubs.find(_.composerId == Some(status.composerId))
                           .map(stub => WorkflowContent.fromWireStatus(status, stub)))
         _ <- Future.traverse(messages)(AWSWorkflowQueue.deleteMessage)

@@ -20,7 +20,7 @@ object Application extends Controller with Authenticated {
   }
 
   def stubs = Action.async {
-    val stubs = PostgresDB.getAllStubs
+    val stubs = PostgresDB.getStubs()
     for (sections <- SectionDatabase.sectionList)
     yield Ok(views.html.stubs(stubs, sections))
   }

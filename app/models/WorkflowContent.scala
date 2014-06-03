@@ -53,7 +53,7 @@ case class WorkflowContent(
   contributors: List[Contributor],
   section: Option[Section],
   status: Status,
-  lastModification: Option[ContentModification],
+  lastModification: ContentModification,
   scheduledLaunch: Option[DateTime],
   stateHistory: Map[Status, String] = Map.empty,
   commentable: Boolean,
@@ -65,11 +65,11 @@ case class WorkflowContent(
       contributors = wireStatus.contributors,
       section = wireStatus.tagSections.headOption,
       status = if (wireStatus.published) Final else status,
-      lastModification = Some(ContentModification(
+      lastModification = ContentModification(
         whatChanged = wireStatus.whatChanged,
         dateTime = wireStatus.lastModified,
         user = wireStatus.user
-      )),
+      ),
       state = if (wireStatus.published) ContentState.Published else state
     )
 }
@@ -89,7 +89,7 @@ object WorkflowContent {
       wireStatus.contributors,
       wireStatus.tagSections.headOption,
       if (wireStatus.published) Final else Writers,
-      Some(ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user)),
+      ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user),
       scheduledLaunch=None,
       commentable=wireStatus.commentable,
       state = if (wireStatus.published) ContentState.Published else ContentState.Draft
