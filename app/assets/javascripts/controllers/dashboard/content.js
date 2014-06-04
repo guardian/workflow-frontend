@@ -42,7 +42,7 @@ define([
         };
 
         function buildContentParams() {
-            var params = filterParams.get();
+            var params = angular.copy(filterParams.get());
 
             if ($scope.selectedState) {
                 params.state = $scope.selectedState;
