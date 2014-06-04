@@ -199,7 +199,6 @@ object PostgresDB {
             Status(status),
             ContentModification("", lastMod, lastModBy),
             None,
-            Map.empty,
             commentable,
             if (published) ContentState.Published else ContentState.Draft
           )

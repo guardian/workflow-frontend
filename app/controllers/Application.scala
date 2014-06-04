@@ -77,7 +77,7 @@ object Application extends Controller with Authenticated {
 
       case "status" => for { u<-user.toRight(BadRequest("user name not supplied")).right
                              s <- StatusDatabase.find(value).toRight(BadRequest(s"not a valid status $value")).right
-                           } yield (wc: WorkflowContent) => wc.copy(status=s, stateHistory = wc.stateHistory.updated(s,u))
+                           } yield (wc: WorkflowContent) => wc.copy(status=s)
 
 
       case "launch" => Formatting.parseDate(value)

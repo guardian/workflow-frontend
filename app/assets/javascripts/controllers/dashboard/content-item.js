@@ -11,7 +11,13 @@ define([
         var content = $scope.content;
         $scope.$watch('content.status', function(newValue, oldValue) {
             if (newValue !== oldValue) {
-                //post to the api
+                $http({
+                    method: 'PUT',
+                    url: '/api/content/' + content.composerId,
+                    data: content
+                }).success(function(){
+                    console.log('yay success!');
+                });
             }
         });
 

@@ -85,6 +85,13 @@ object Api extends Controller with Authenticated {
     )
   }
 
+  def putContent(composerId: String) = Authenticated { implicit request =>
+    request.body.asJson.map { wc =>
+      wc.validate[WorkflowContent]
+    }
+    Ok
+  }
+
   def deleteStub(stubId: Long) = Authenticated {
     PostgresDB.deleteStub(stubId)
     NoContent
