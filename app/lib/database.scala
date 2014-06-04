@@ -72,14 +72,18 @@ object PostgresDB {
 
   def getStubs(
     dueFrom: Option[DateTime] = None,
-    dueUntil: Option[DateTime] = None
+    dueUntil: Option[DateTime] = None,
+    composerId: Set[String] = Set.empty
   ): List[Stub] =
     DB.withTransaction { implicit session =>
+
+      val cIds = if (composerId.nonEmpty) Some(composerId) else None
 
       val q =
         stubs |>
           dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-          dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil))
+          dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+          cIds.foldl[StubQuery]     ((q, ids)      => q.filter(_.composerId inSet ids))
 
       q.list.map {
         case (pk, title, section, due, assignee, composerId) =>
