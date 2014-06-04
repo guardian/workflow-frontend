@@ -1,9 +1,9 @@
-package lib
+package lib.syntax
 
 import play.api.mvc.RequestHeader
 
 
-object RequestSyntax {
+trait RequestSyntax {
 
   implicit class RequestHeaderOps(self: RequestHeader) {
 
@@ -14,3 +14,5 @@ object RequestSyntax {
   }
 
 }
+
+object RequestSyntax extends RequestSyntax

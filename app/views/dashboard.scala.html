@@ -13,28 +13,28 @@
             <div class="sidebar">
 
                 <h5 class="query ">Content type</h5>
-                <div class="btn-group btn-group-xs " data-toggle="buttons">
+                <div class="btn-group btn-group-xs">
                     <button type="button " class="btn btn-default" title="all"
-                            ng-click="selectContentType()"
-                            ng-class="{active: contentTypeIsSelected()}">All</button>
+                            ng-model="selectedContentType"
+                            btn-radio="">All</button>
                     <button type="button " class="btn btn-default" title="article"
-                            ng-click="selectContentType('article')"
-                            ng-class="{active: contentTypeIsSelected('article')}">
+                            ng-model="selectedContentType"
+                            btn-radio="'article'">
                         <span class="glyphicon glyphicon-file"></span>
                     </button>
                     <button type="button " class="btn btn-default" title="liveblog"
-                            ng-click="selectContentType('liveblog')"
-                            ng-class="{active: contentTypeIsSelected('liveblog')}">
+                            ng-model="selectedContentType"
+                            btn-radio="'liveblog'">
                         <span class="glyphicon glyphicon-th-list "></span>
                     </button>
                     <button type="button" class="btn btn-default" title="gallery"
-                            ng-click="selectContentType('gallery')"
-                            ng-class="{active: contentTypeIsSelected('gallery')}">
+                            ng-model="selectedContentType"
+                            btn-radio="'gallery'">
                         <span class="glyphicon glyphicon-camera "></span>
                     </button>
                     <button type="button " class="btn btn-default" title="interactive"
-                            ng-click="selectContentType('interactive')"
-                            ng-class="{active: contentTypeIsSelected('interactive')}">
+                            ng-model="selectedContentType"
+                            btn-radio="'interactive'">
                         <span class="glyphicon glyphicon-hand-up "></span>
                     </button>
                 </div>

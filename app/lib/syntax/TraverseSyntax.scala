@@ -1,9 +1,9 @@
-package lib
+package lib.syntax
 
 import play.api.libs.functional.Applicative
 
 
-object TraverseSyntax {
+trait TraverseSyntax {
 
   implicit class TraverseOps[A](as: List[A]) {
 
@@ -16,3 +16,5 @@ object TraverseSyntax {
   }
 
 }
+
+object TraverseSyntax extends TraverseSyntax

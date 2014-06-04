@@ -19,6 +19,7 @@ define([
         };
         $scope.$on('getContent', getContent);
         $scope.$on('changedFilters', getContent);
+        $scope.$watch('selectedContentType', getContent);
 
         $scope.stateIsSelected = function(state) {
             return $scope.selectedState == state;
@@ -41,7 +42,7 @@ define([
         };
 
         function buildContentParams() {
-            var params = filterParams.get();
+            var params = angular.copy(filterParams.get());
 
             if ($scope.selectedState) {
                 params.state = $scope.selectedState;

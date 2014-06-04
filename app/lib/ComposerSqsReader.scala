@@ -4,7 +4,7 @@ import akka.actor.Actor
 import models.WorkflowContent
 import scala.concurrent.{Future, ExecutionContext}
 import ExecutionContext.Implicits.global
-import lib.TraverseSyntax._
+import lib.syntax.TraverseSyntax._
 import play.api.libs.json.{JsError, JsSuccess}
 import play.api.Logger
 
