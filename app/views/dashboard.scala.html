@@ -102,7 +102,7 @@
                     <td class="wf-table-heading " colspan="12 ">WRITING</td>
                 </tr>
 
-                <tr ng-repeat="content in contentItems" ng-click="showDetail(content)">
+                <tr ng-repeat="content in contentItems" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content">
                     <td>
                         <span class="glyphicon glyphicon-file" ng-show="content.type==='article'"></span>
                         <span class="glyphicon glyphicon-th-list" ng-show="content.type==='liveblog'"></span>
