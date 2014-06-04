@@ -5,7 +5,7 @@ import scala.concurrent.Future
 import java.util.UUID
 
 import lib._
-import lib.RequestSyntax._
+import lib.syntax.RequestSyntax._
 import models._
 
 import play.api.mvc._

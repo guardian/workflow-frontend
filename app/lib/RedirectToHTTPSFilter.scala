@@ -3,7 +3,7 @@ package lib
 import java.net.{URLDecoder, URI}
 import scala.concurrent.Future
 import play.api.mvc.{Results, SimpleResult, RequestHeader, Filter}
-import lib.RequestSyntax._
+import lib.syntax.RequestSyntax._
 
 
 object RedirectToHTTPSFilter extends Filter {
