@@ -25,7 +25,11 @@ define([
         };
     };
 
-    stubsControllers.controller('StubModalInstanceCtrl', ['$scope','$modalInstance','stub', 'addToComposer', StubModalInstanceCtrl]);
+    stubsControllers.controller('StubModalInstanceCtrl', ['$scope',
+                                                          '$modalInstance',
+                                                          'stub',
+                                                          'addToComposer',
+                                                          StubModalInstanceCtrl]);
 
     stubsControllers.controller('StubModalCtrl', ['$scope',
                                                   '$modal',

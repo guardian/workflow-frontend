@@ -1,4 +1,4 @@
-@(sections: List[Section], states: List[Status])
+@(sections: List[Section], statuses: List[Status])
 @import helper._
 @import lib.Formatting._
 @import models.Status
@@ -44,7 +44,7 @@
                     <li class="active">
                         <a href="#">All</a>
                     </li>
-                    @for(status <- List("Writers", "Subs", "Desk", "Live")) {
+                    @for(status <- statuses) {
                         <li>
                             <a href="# ">
                                 @status
@@ -92,6 +92,7 @@
                     <th>Due by</th>
                     <th>Embargoed?</th>
                     <th>Notes</th>
+                    <th>Status</th>
                 </tr>
                 </thead>
 
@@ -129,6 +130,11 @@
                     <td>{{content.due | formatDateTime }}</td>
                     <td></td>
                     <td></td>
+                    <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
+                        @for(status <- statuses) {
+                            <option value="@status">@status</option>
+                        }
+                    </select></td>
                 </tr>
                 </tbody>
             </table>

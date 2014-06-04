@@ -237,7 +237,6 @@ object SectionDatabase {
 object StatusDatabase {
 
   val store: Agent[List[Status]] = Agent(List(
-    Status("Stub"),
     Status("Writers"),
     Status("Desk"),
     Status("Subs"),
