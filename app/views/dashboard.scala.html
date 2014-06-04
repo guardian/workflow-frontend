@@ -41,16 +41,34 @@
 
                 <h5 class="query" data-toggle="collapse" data-target="#status">Status</h5>
                 <ul id="status" class="nav nav-sidebar">
-                    <li class="active">
-                        <a href="#">All</a>
+                    <li  ng-class="{active: statusIsSelected()}">
+                        <a href="#" ng-click="selectStatus(null)">All</a>
                     </li>
-                    @for(status <- statuses) {
-                        <li>
-                            <a href="# ">
-                                @status
-                            </a>
-                        </li>
-                    }
+                    <li ng-class="{active: statusIsSelected('Writers')}">
+                        <a href=" " ng-click="selectStatus('Writers')" >
+                            Writers
+                        </a>
+                    </li>
+                    <li ng-class="{active: statusIsSelected('Desk')}">
+                        <a href=" " ng-click="selectStatus('Desk')" >
+                            Desk
+                        </a>
+                    </li>
+                    <li ng-class="{active: statusIsSelected('Subs')}">
+                        <a href=" " ng-click="selectStatus('Subs')" >
+                            Subs
+                        </a>
+                    </li>
+                    <li ng-class="{active: statusIsSelected('Revise')}">
+                        <a href=" " ng-click="selectStatus('Revise')" >
+                            Revise
+                        </a>
+                    </li>
+                    <li ng-class="{active: statusIsSelected('Final')}">
+                        <a href=" " ng-click="selectStatus('Final')" >
+                            Final
+                        </a>
+                    </li>
                 </ul>
 
                 <h5 class="query" data-toggle="collapse" data-target="#state">State</h5>
@@ -58,8 +76,6 @@
                     <li ng-class="{active: stateIsSelected()}" >
                         <a href="" ng-click="selectState(null)">All</a>
                     </li>
-                    <!--<li><a href=" ">Stub</a>-->
-                    <!--</li>-->
                     <li ng-class="{active: stateIsSelected('draft')}">
                         <a href="" ng-click="selectState('draft')" >Draft</a>
                     </li>
@@ -97,10 +113,6 @@
                 </thead>
 
                 <tbody>
-
-                <tr class="wf-table-grouping ">
-                    <td class="wf-table-heading " colspan="12 ">WRITING</td>
-                </tr>
 
                 <tr ng-repeat="content in contentItems" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content">
                     <td>

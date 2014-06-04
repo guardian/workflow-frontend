@@ -155,7 +155,6 @@ object PostgresDB {
     published: Option[Boolean] = None
   ): List[WorkflowContent] =
     DB.withTransaction { implicit session =>
-
       val stubsQuery =
         stubs |>
           dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
