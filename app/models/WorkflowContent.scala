@@ -3,6 +3,7 @@ package models
 import play.api.libs.json._
 import org.joda.time.DateTime
 import models.Status._
+import play.api.libs.functional.syntax._
 
 case class Stub(id: Option[Long],
                 title: String,
@@ -55,7 +56,6 @@ case class WorkflowContent(
   status: Status,
   lastModification: ContentModification,
   scheduledLaunch: Option[DateTime],
-  stateHistory: Map[Status, String] = Map.empty,
   commentable: Boolean,
   state: ContentState
 ) {
@@ -105,6 +105,30 @@ object WorkflowContent {
   }
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
 
+  val readContributors = new Reads[List[Contributor]] {
+    def reads(json: JsValue): JsResult[List[Contributor]] =
+      (json \ "contributors")
+        .validate[Option[List[Contributor]]]
+        .map(_.toList.flatten)
+  }
+  import ContentState._
+  implicit val workFlowContentReads: Reads[WorkflowContent] =
+    ((__ \ "composerId").read[String] ~
+     (__ \ "path").readNullable[String] ~
+     (__ \ "workingTitle").read[String] ~
+     (__ \ "due").readNullable[Long].map { _.map(t => new DateTime(t)) } ~
+     (__ \ "assignee").readNullable[String] ~
+      (__ \ "headline").readNullable[String] ~
+      (__ \ "slug").readNullable[String] ~
+      (__ \ "type").read[String] ~
+      readContributors ~
+      (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
+      (__ \ "status").read[String].map { s => Status(s) } ~
+      (__ \ "lastModification").read[ContentModification] ~
+      (__ \ "scheduledLaunch").readNullable[Long].map { _.map(t => new DateTime(t)) } ~
+      (__ \ "commentable").read[Boolean] ~
+      (__ \ "state").read[String].map { s => ContentState.fromString(s).getOrElse(Draft)}
+    )(WorkflowContent.apply _)
 }
 
 case class ContentModification(
@@ -114,6 +138,7 @@ case class ContentModification(
 
 object ContentModification {
   implicit val contentModWrites: Writes[ContentModification] = Json.writes[ContentModification]
+  implicit val contentModReads: Reads[ContentModification] = Json.reads[ContentModification]
 }
 
   import play.api.libs.json._
@@ -185,4 +210,5 @@ object ContentState {
         case Published => "published"
       })
   }
+
 }

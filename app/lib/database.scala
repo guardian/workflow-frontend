@@ -190,7 +190,6 @@ object PostgresDB {
             Status(status),
             ContentModification("", lastMod, lastModBy),
             None,
-            Map.empty,
             commentable,
             if (published) ContentState.Published else ContentState.Draft
           )
@@ -228,7 +227,6 @@ object SectionDatabase {
 object StatusDatabase {
 
   val store: Agent[List[Status]] = Agent(List(
-    Status("Stub"),
     Status("Writers"),
     Status("Desk"),
     Status("Subs"),
