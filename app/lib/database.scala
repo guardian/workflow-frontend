@@ -101,12 +101,19 @@ object PostgresDB {
     }
   }
 
-  def updateStubWithComposerId(id: Long, composerId: String) {
+  def updateStubWithComposerId(id: Long, composerId: String): Int = {
     DB.withTransaction { implicit session =>
       stubs
         .filter(_.pk === id)
         .map(s => s.composerId)
         .update(Some(composerId))
+    }
+  }
+
+  def stubLinkedToComposer(id: Long): Boolean = {
+    DB.withTransaction { implicit session =>
+      val q = stubs.filter(stub => stub.pk === id && stub.composerId.isNotNull)
+      !q.list.distinct.isEmpty
     }
   }
 
