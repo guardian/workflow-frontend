@@ -84,6 +84,20 @@ object Api extends Controller with Authenticated {
     )
   }
 
+  def putContent(composerId: String) = Authenticated { implicit request =>
+    request.body.asJson.map { wc =>
+      wc.validate[WorkflowContent].fold(
+        jsErrors => {
+          BadRequest(s"that failed ${jsErrors}")
+        },
+        content => {
+          PostgresDB.updateContent(content)
+          NoContent
+        }
+      )
+    }.getOrElse(BadRequest("could not read json from the request"))
+  }
+
   def deleteStub(stubId: Long) = Authenticated {
     PostgresDB.deleteStub(stubId)
     NoContent

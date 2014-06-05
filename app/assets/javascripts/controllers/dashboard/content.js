@@ -29,12 +29,17 @@ define([
             getContent();
         };
 
+        $scope.statusIsSelected = function(status) {
+            return $scope.selectedStatus == status;
+        };
+
+        $scope.selectStatus = function(status) {
+            $scope.selectedStatus = status;
+            getContent();
+        };
+
         $scope.contentTypeIsSelected = function (contentType) {
             return $scope.selectedContentType == contentType;
-        };
-        $scope.selectContentType = function(contentType) {
-            $scope.selectedContentType = contentType;
-            getContent();
         };
 
         $scope.showDetail = function(content) {
@@ -50,6 +55,10 @@ define([
 
             if ($scope.selectedContentType) {
                 params["content-type"] = $scope.selectedContentType;
+            }
+
+            if ($scope.selectedStatus) {
+                params.status = $scope.selectedStatus;
             }
             return params;
         }
