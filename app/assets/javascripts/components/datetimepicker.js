@@ -16,10 +16,10 @@
 angular.module('ui.bootstrap.datetimepicker', [])
   .constant('dateTimePickerConfig', {
     dropdownSelector: null,
-    minuteStep: 5,
+    minuteStep: 10,
     minView: 'minute',
     startView: 'day',
-    weekStart: 0
+    weekStart: 1
   })
   .directive('datetimepicker', ['dateTimePickerConfig', function (defaultConfig) {
     "use strict";

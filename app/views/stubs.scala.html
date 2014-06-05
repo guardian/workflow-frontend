@@ -10,6 +10,8 @@
 <div class="container">
     <div class="stubs-table table" style="padding-top: 50px">
 
+
+        <!--- this section is the new/edit stubs modal form  -->
         <div ng-controller="StubModalCtrl">
 
             <script type="text/ng-template" id="stubModalContent.html">
@@ -21,7 +23,7 @@
                     <input type="hidden" ng-model="stubForm.id" />
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="title">title</label>
+                            <label for="title">Stub title *</label>
                             <input type="text" ng-model="stubForm.title" id="title" name="title" class="form-control" required>
                         </div>
                         <div class="form-group">
@@ -33,7 +35,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="due">due</label>
+                            <label for="due">Due by</label>
                             <div class="dropdown">
                                 <a class="dropdown-toggle my-toggle-select" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="">
                                     <div class="input-append">
@@ -48,23 +50,23 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="assignee">assign to</label>
+                            <label for="assignee">Assign to</label>
                             <input type="text" ng-model="stubForm.assignee" id="assignee" name="assignee" value="" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>content type</label>
                             <select ng-model="stubForm.contentType">
                                 <option value="article">Article</option>
-                                <option value="liveblog">Live Blog</option>
+                                <option value="liveblog">Live blog</option>
                                 <option value="gallery">Gallery</option>
                                 <option value="interactive">Interactive</option>
                             </select>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Close</button>
-                        <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=false)">Save</button>
-                        <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=true)">Create in composer</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+                        <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=true)">Create in Composer</button>
+                        <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=false)">Save stub</button>
                     </div>
                 </form>
             </script>
@@ -79,6 +81,7 @@
                     <th>Assigned to</th>
                     <th colspan="3"></th>
                 </tr>
+                <!--- this is the display of the stubs  -->
                 <tr ng-repeat="stub in stubItems">
                         <td>
                             <a href="@adminUrl/{{stub.composerId}}" ng-show="stub.composerId"> {{ stub.title }}</a>
@@ -88,7 +91,7 @@
                         <td>{{ stub.due | formatDateTime }}</td>
                         <td>{{ stub.assignee }}</td>
                         <td>
-                            <button class="btn btn-default btn-sm"
+                            <button class="btn btn-default btn-xs"
                                 data-toggle="modal"
                                 ng-hide="stub.composerId"
                                 data-target="#composerModal" ng-click="addToComposer(stub)">
@@ -96,11 +99,11 @@
                             </button>
                                 <a href=@adminUrl/{{stub.composerId}} class="btn btn-success btn-sm" target="_blank" ng-show="stub.composerId">Go to Composer</a>
                         </td>
-                        <td><button class="btn btn-default btn-small" ng-click="editStub(stub)">Edit</button></td>
-                        <td><button class="btn warning btn-small" ng-click="deleteStub(stub)">Delete</button></td>
+                        <td><button class="btn btn-default btn-xs" ng-click="editStub(stub)">Edit stub</button></td>
+                        <td><button class="btn warning btn-xs" ng-click="deleteStub(stub)"><span class="glyphicon glyphicon-trash"></span></button></td>
                 </tr>
             </table>
-
+        <!--- this is the composer modal  -->
         <div ng-controller="ComposerModalCtrl">
             <script type="text/ng-template" id="composerModalContent.html">
                 <div class="modal-header">
@@ -117,8 +120,8 @@
                     </select>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" ng-click="ok()">Create</button>
-                    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+                    <button class="btn btn-primary" ng-click="ok()">Create in Composer</button>
                 </div>
             </script>
         </div>
