@@ -15,8 +15,6 @@ define([
                     method: 'PUT',
                     url: '/api/content/' + content.composerId,
                     data: content
-                }).success(function(){
-                    console.log('yay success!');
                 });
             }
         });
