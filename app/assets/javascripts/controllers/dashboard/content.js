@@ -32,10 +32,6 @@ define([
         $scope.contentTypeIsSelected = function (contentType) {
             return $scope.selectedContentType == contentType;
         };
-        $scope.selectContentType = function(contentType) {
-            $scope.selectedContentType = contentType;
-            getContent();
-        };
 
         $scope.showDetail = function(content) {
             $scope.selectedContent = content;
