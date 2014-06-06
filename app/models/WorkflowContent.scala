@@ -29,13 +29,10 @@ object Contributor {
 
 case class WireStatus(
   composerId: String,
-  contributors: List[Contributor],
   path: Option[String],
   headline: Option[String],
-  slug: Option[String],
   `type`: String,
   published: Boolean,
-  whatChanged: String,
   user: Option[String],
   lastModified: DateTime,
   tagSections: List[Section],
@@ -180,13 +177,10 @@ object WireStatus {
   import Status._
   implicit val wireStatusReads: Reads[WireStatus] =
     ((__ \ "content" \ "identifiers" \ "composerId").read[String] ~
-      readContributors ~
       (__ \ "content" \ "identifiers" \ "path").readNullable[String] ~
       (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
-      (__ \ "content" \ "fields" \ "slug").readNullable[String] ~
       (__ \ "content" \ "type").read[String] ~
       (__ \ "published").read[Boolean] ~
-      (__ \ "whatChanged").read[String] ~
       readUser ~
       (__ \ "content" \ "lastModified").read[Long].map(t => new DateTime(t)) ~
       readTagSections ~
