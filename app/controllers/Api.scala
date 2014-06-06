@@ -9,7 +9,7 @@ import play.api.libs.json.{Reads, Json, Writes}
 
 import lib.Responses._
 import lib._
-import models.{Section, ContentState, WorkflowContent, Stub}
+import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
 
 
@@ -29,7 +29,8 @@ object Api extends Controller with Authenticated {
         dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate),
         status = req.getQueryString("status").flatMap(StatusDatabase.find),
         contentType = req.getQueryString("content-type"),
-        published = req.getQueryString("state").flatMap(ContentState.fromString).map(_ == ContentState.Published)
+        //todo - make this a boolean
+        published = req.getQueryString("state").map(_ == "published")
       )
     }
     yield Ok(renderJsonResponse(content))

@@ -17,16 +17,6 @@ object Stub {
   implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
 }
 
-case class Contributor(name: String)
-
-object Contributor {
-  implicit val contributorReads: Reads[Contributor] = new Reads[Contributor] {
-    def reads(jsValue: JsValue) = (jsValue \ "internalName").validate[String].map(Contributor(_))
-  }
-
-  implicit val contributorWrites: Writes[Contributor] = Json.writes[Contributor]
-}
-
 case class WireStatus(
   composerId: String,
   path: Option[String],
@@ -79,22 +69,8 @@ object WorkflowContent {
     )
   }
 
-  implicit val stateHistory = new Writes[Map[Status, String]] {
-    override def writes(hist: Map[Status, String]): JsValue = {
-      JsObject(
-        (for((k,v)<-hist) yield (k.toString, JsString(v))).toSeq
-      )
-    }
-  }
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
 
-  val readContributors = new Reads[List[Contributor]] {
-    def reads(json: JsValue): JsResult[List[Contributor]] =
-      (json \ "contributors")
-        .validate[Option[List[Contributor]]]
-        .map(_.toList.flatten)
-  }
-  import ContentState._
   implicit val workFlowContentReads: Reads[WorkflowContent] =
     ((__ \ "composerId").read[String] ~
      (__ \ "path").readNullable[String] ~
@@ -135,27 +111,10 @@ object DashboardRow {
   }
 }
 
-case class ContentModification(
-  whatChanged: String,
-  dateTime: DateTime,
-  user: Option[String])
-
-object ContentModification {
-  implicit val contentModWrites: Writes[ContentModification] = Json.writes[ContentModification]
-  implicit val contentModReads: Reads[ContentModification] = Json.reads[ContentModification]
-}
-
   import play.api.libs.json._
   import play.api.libs.functional.syntax._
 
 object WireStatus {
-
-  val readContributors = new Reads[List[Contributor]] {
-    def reads(json: JsValue): JsResult[List[Contributor]] =
-      (json \ "content" \ "taxonomy" \ "contributors")
-        .validate[Option[List[Contributor]]]
-        .map(_.toList.flatten)
-  }
 
   val readTagSections = new Reads[List[Section]] {
     def reads(json: JsValue): JsResult[List[Section]] = {
@@ -172,7 +131,6 @@ object WireStatus {
       }
       yield firstOpt.flatMap(f => lastOpt.map(l => f + " " + l))
   }
-
 
   import Status._
   implicit val wireStatusReads: Reads[WireStatus] =
@@ -192,24 +150,4 @@ object WireStatus {
 
 }
 
-sealed trait ContentState
 
-object ContentState {
-  case object Draft extends ContentState
-  case object Published extends ContentState
-
-  def fromString(s: String): Option[ContentState] = s match {
-    case "draft" => Some(Draft)
-    case "published" => Some(Published)
-    case _ => None
-  }
-
-  implicit val contentStateWrites: Writes[ContentState] = new Writes[ContentState] {
-    def writes(o: ContentState): JsValue =
-      JsString(o match {
-        case Draft => "draft"
-        case Published => "published"
-      })
-  }
-
-}
