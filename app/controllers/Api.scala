@@ -99,6 +99,22 @@ object Api extends Controller with Authenticated {
     }.getOrElse(BadRequest("could not read json from the request"))
   }
 
+
+  def putContentStatus(composerId: String) = Authenticated { implicit request =>
+    request.body.asJson.map { json =>
+      (json \ "data").validate[String].fold(
+        jsErrors => {
+          BadRequest(s"that failed ${jsErrors}")
+        },
+        status => {
+          PostgresDB.updateContentStatus(status, composerId)
+          NoContent
+        }
+      )
+      Ok
+    }.getOrElse(BadRequest("could not read json from the request"))
+  }
+
   def deleteStub(stubId: Long) = Authenticated {
     PostgresDB.deleteStub(stubId)
     NoContent

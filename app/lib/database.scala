@@ -142,6 +142,15 @@ object PostgresDB {
     }
   }
 
+  def updateContentStatus(status: String, composerId: String): Int = {
+    DB.withTransaction { implicit session =>
+      val q = for {
+        wc <- content if wc.composerId === composerId
+      } yield wc.status
+      q.update(status)
+    }
+  }
+
   def createContent(wc: WorkflowContent) {
     DB.withTransaction { implicit session =>
       content +=

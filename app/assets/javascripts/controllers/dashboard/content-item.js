@@ -13,8 +13,8 @@ define([
             if (newValue !== oldValue) {
                 $http({
                     method: 'PUT',
-                    url: '/api/content/' + content.composerId,
-                    data: content
+                    url: '/api/content/' + content.composerId + '/status',
+                    data: {'data': content.status}
                 });
             }
         });
