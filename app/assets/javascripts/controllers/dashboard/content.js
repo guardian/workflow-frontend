@@ -14,7 +14,8 @@ define([
 
         var getContent = function(evt, params) {
             $http.get('/api/content', {params: buildContentParams()}).success(function(response){
-                $scope.contentItems = response.data;
+                $scope.contentItems = response.content;
+                $scope.stubs = response.stubs;
             });
         };
         $scope.$on('getContent', getContent);
