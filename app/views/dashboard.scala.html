@@ -164,14 +164,14 @@
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
-                        <dd>{{ (selectedContent.lastModification.dateTime | formatDateTime) || "-" }}</dd>
+                        <dd>{{ (selectedContent.lastModified | formatDateTime) || "-" }}</dd>
                 </dl>
                 <hr />
 
                 <h5>People</h5>
                 <dl class="dl-horizontal">
                     <dt>Last modified by</dt>
-                        <dd>{{ selectedContent.lastModification.user || "-" }}</dd>
+                        <dd>{{ selectedContent.lastModifiedBy || "-" }}</dd>
                     <dt>Assigned to</dt>
                         <dd>{{ selectedContent.assignee || "-" }}</dd>
                 </dl>
