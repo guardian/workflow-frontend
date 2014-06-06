@@ -164,7 +164,7 @@ object PostgresDB {
     status:   Option[Status] = None,
     contentType: Option[String] = None,
     published: Option[Boolean] = None
-  ): List[WorkflowContent] =
+  ): List[DashboardRow] =
     DB.withTransaction { implicit session =>
       val stubsQuery =
         stubs |>
@@ -184,24 +184,21 @@ object PostgresDB {
       } yield (s, c)
 
       query.sortBy { case (s, c) => s.due }.list.map {
-        case ((pk, title, section, due, assignee, _),
+        case ((pk, title, section, due, assignee, cId),
               (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published)) =>
-          WorkflowContent(
-            composerId,
-            path,
-            title,
-            due,
-            assignee,
-            headline,
-            None,
-            contentType,
-            Nil,
-            Some(Section(section)),
-            Status(status),
-            ContentModification("", lastMod, lastModBy),
-            None,
-            commentable,
-            if (published) ContentState.Published else ContentState.Draft
+          DashboardRow(
+            Stub(Some(pk), title, section, due, assignee, cId),
+            WorkflowContent(
+              composerId,
+              path,
+              headline,
+              contentType,
+              Some(Section(section)),
+              Status(status),
+              ContentModification("", lastMod, lastModBy),
+              commentable,
+              if(published) ContentState.Published else ContentState.Draft
+            )
           )
       }
 

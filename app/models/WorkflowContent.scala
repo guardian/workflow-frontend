@@ -45,24 +45,17 @@ case class WireStatus(
 case class WorkflowContent(
   composerId: String,
   path: Option[String],
-  workingTitle: String,
-  due: Option[DateTime],
-  assignee: Option[String],
   headline: Option[String],
-  slug: Option[String],
   `type`: String,
-  contributors: List[Contributor],
   section: Option[Section],
   status: Status,
   lastModification: ContentModification,
-  scheduledLaunch: Option[DateTime],
   commentable: Boolean,
   state: ContentState
 ) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
     copy(
-      contributors = wireStatus.contributors,
       section = wireStatus.tagSections.headOption,
       status = if (wireStatus.published) Final else status,
       lastModification = ContentModification(
@@ -80,17 +73,11 @@ object WorkflowContent {
     WorkflowContent(
       wireStatus.composerId,
       wireStatus.path,
-      stub.title,
-      stub.due,
-      stub.assignee,
       wireStatus.headline,
-      wireStatus.slug,
       wireStatus.`type`,
-      wireStatus.contributors,
       wireStatus.tagSections.headOption,
       if (wireStatus.published) Final else Writers,
       ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user),
-      scheduledLaunch=None,
       commentable=wireStatus.commentable,
       state = if (wireStatus.published) ContentState.Published else ContentState.Draft
     )
@@ -115,20 +102,39 @@ object WorkflowContent {
   implicit val workFlowContentReads: Reads[WorkflowContent] =
     ((__ \ "composerId").read[String] ~
      (__ \ "path").readNullable[String] ~
-     (__ \ "workingTitle").read[String] ~
-     (__ \ "due").readNullable[Long].map { _.map(t => new DateTime(t)) } ~
-     (__ \ "assignee").readNullable[String] ~
       (__ \ "headline").readNullable[String] ~
-      (__ \ "slug").readNullable[String] ~
       (__ \ "type").read[String] ~
-      readContributors ~
       (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
       (__ \ "status").read[String].map { s => Status(s) } ~
       (__ \ "lastModification").read[ContentModification] ~
-      (__ \ "scheduledLaunch").readNullable[Long].map { _.map(t => new DateTime(t)) } ~
       (__ \ "commentable").read[Boolean] ~
       (__ \ "state").read[String].map { s => ContentState.fromString(s).getOrElse(Draft)}
     )(WorkflowContent.apply _)
+}
+
+case class DashboardRow(stub: Stub, wc: WorkflowContent)
+
+
+object DashboardRow {
+  implicit val dashboardRowWrites = new Writes[DashboardRow] {
+
+    def writes(d: DashboardRow) = {
+      JsObject(
+        Seq[(String, JsValue)]() ++
+          Some("composerId" -> JsString(d.wc.composerId)) ++
+          d.wc.path.map("path" -> JsString(_)) ++
+          Some("workingTitle" -> JsString(d.stub.title)) ++
+          d.stub.due.map(d => "due" -> JsNumber(d.getMillis)) ++
+          d.stub.assignee.map("assignee" -> JsString(_)) ++
+          Some("contentType" -> JsString(d.wc.`type`)) ++
+          Some("section" -> JsString(d.stub.section)) ++
+          Some("status" -> JsString(d.wc.status.toString)) ++
+          Some("lastModification" -> JsString("todo")) ++
+          Some("commentable" -> JsBoolean(d.wc.commentable)) ++
+          Some("state" -> JsString(d.wc.state.toString))
+        )
+    }
+  }
 }
 
 case class ContentModification(
