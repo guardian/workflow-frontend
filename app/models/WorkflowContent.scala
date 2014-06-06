@@ -51,7 +51,7 @@ case class WorkflowContent(
   status: Status,
   lastModification: ContentModification,
   commentable: Boolean,
-  state: ContentState
+  published: Boolean
 ) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
@@ -63,7 +63,7 @@ case class WorkflowContent(
         dateTime = wireStatus.lastModified,
         user = wireStatus.user
       ),
-      state = if (wireStatus.published) ContentState.Published else state
+      published = wireStatus.published
     )
 }
 
@@ -79,7 +79,7 @@ object WorkflowContent {
       if (wireStatus.published) Final else Writers,
       ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user),
       commentable=wireStatus.commentable,
-      state = if (wireStatus.published) ContentState.Published else ContentState.Draft
+      published = wireStatus.published
     )
   }
 
@@ -108,7 +108,7 @@ object WorkflowContent {
       (__ \ "status").read[String].map { s => Status(s) } ~
       (__ \ "lastModification").read[ContentModification] ~
       (__ \ "commentable").read[Boolean] ~
-      (__ \ "state").read[String].map { s => ContentState.fromString(s).getOrElse(Draft)}
+      (__ \ "published").read[Boolean]
     )(WorkflowContent.apply _)
 }
 
@@ -131,7 +131,7 @@ object DashboardRow {
           Some("status" -> JsString(d.wc.status.toString)) ++
           Some("lastModification" -> JsString("todo")) ++
           Some("commentable" -> JsBoolean(d.wc.commentable)) ++
-          Some("state" -> JsString(d.wc.state.toString))
+          Some("published" -> JsBoolean(d.wc.published))
         )
     }
   }

@@ -133,7 +133,6 @@ object PostgresDB {
     }
 
   def updateContent(wc: WorkflowContent): Int = {
-    val published = wc.state == ContentState.Published
     val lastMod = wc.lastModification.dateTime
     val lastModBy = wc.lastModification.user
 
@@ -142,18 +141,17 @@ object PostgresDB {
         .filter(_.composerId === wc.composerId)
         .map(c =>
           (c.path, c.lastModified, c.lastModifiedBy, c.status, c.contentType, c.commentable, c.headline, c.published))
-        .update((wc.path, lastMod, lastModBy, wc.status.name, wc.`type`, wc.commentable, wc.headline, published))
+        .update((wc.path, lastMod, lastModBy, wc.status.name, wc.`type`, wc.commentable, wc.headline, wc.published))
     }
   }
 
   def createContent(wc: WorkflowContent) {
     val lastMod = wc.lastModification.dateTime
     val lastModBy = wc.lastModification.user
-    val published = wc.state == ContentState.Published
 
     DB.withTransaction { implicit session =>
       content +=
-        ((wc.composerId, wc.path, lastMod, lastModBy, wc.status.name, wc.`type`, wc.commentable, wc.headline, published))
+        ((wc.composerId, wc.path, lastMod, lastModBy, wc.status.name, wc.`type`, wc.commentable, wc.headline, wc.published))
     }
   }
 
@@ -197,7 +195,7 @@ object PostgresDB {
               Status(status),
               ContentModification("", lastMod, lastModBy),
               commentable,
-              if(published) ContentState.Published else ContentState.Draft
+              published
             )
           )
       }
