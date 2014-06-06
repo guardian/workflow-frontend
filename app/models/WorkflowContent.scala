@@ -49,7 +49,8 @@ case class WorkflowContent(
   `type`: String,
   section: Option[Section],
   status: Status,
-  lastModification: ContentModification,
+  lastModified: DateTime,
+  lastModifiedBy: Option[String],
   commentable: Boolean,
   published: Boolean
 ) {
@@ -58,11 +59,8 @@ case class WorkflowContent(
     copy(
       section = wireStatus.tagSections.headOption,
       status = if (wireStatus.published) Final else status,
-      lastModification = ContentModification(
-        whatChanged = wireStatus.whatChanged,
-        dateTime = wireStatus.lastModified,
-        user = wireStatus.user
-      ),
+      lastModified =  wireStatus.lastModified,
+      lastModifiedBy = wireStatus.user,
       published = wireStatus.published
     )
 }
@@ -77,7 +75,8 @@ object WorkflowContent {
       wireStatus.`type`,
       wireStatus.tagSections.headOption,
       if (wireStatus.published) Final else Writers,
-      ContentModification(wireStatus.whatChanged, wireStatus.lastModified, wireStatus.user),
+      wireStatus.lastModified,
+      wireStatus.user,
       commentable=wireStatus.commentable,
       published = wireStatus.published
     )
@@ -106,7 +105,8 @@ object WorkflowContent {
       (__ \ "type").read[String] ~
       (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
       (__ \ "status").read[String].map { s => Status(s) } ~
-      (__ \ "lastModification").read[ContentModification] ~
+      (__ \ "lastModified").read[Long].map { t => new DateTime(t) } ~
+      (__ \ "lastModifiedBy").readNullable[String] ~
       (__ \ "commentable").read[Boolean] ~
       (__ \ "published").read[Boolean]
     )(WorkflowContent.apply _)
@@ -129,7 +129,8 @@ object DashboardRow {
           Some("contentType" -> JsString(d.wc.`type`)) ++
           Some("section" -> JsString(d.stub.section)) ++
           Some("status" -> JsString(d.wc.status.toString)) ++
-          Some("lastModification" -> JsString("todo")) ++
+          Some("lastModified" -> JsNumber(d.wc.lastModified.getMillis)) ++
+          d.wc.lastModifiedBy.map("lastModifiedBy" -> JsString(_)) ++
           Some("commentable" -> JsBoolean(d.wc.commentable)) ++
           Some("published" -> JsBoolean(d.wc.published))
         )
