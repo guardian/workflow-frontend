@@ -33,7 +33,7 @@ case class WorkflowContent(
   composerId: String,
   path: Option[String],
   headline: Option[String],
-  `type`: String,
+  contentType: String,
   section: Option[Section],
   status: Status,
   lastModified: DateTime,
@@ -75,7 +75,7 @@ object WorkflowContent {
     ((__ \ "composerId").read[String] ~
      (__ \ "path").readNullable[String] ~
       (__ \ "headline").readNullable[String] ~
-      (__ \ "type").read[String] ~
+      (__ \ "contentType").read[String] ~
       (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
       (__ \ "status").read[String].map { s => Status(s) } ~
       (__ \ "lastModified").read[Long].map { t => new DateTime(t) } ~
@@ -99,7 +99,7 @@ object DashboardRow {
           Some("workingTitle" -> JsString(d.stub.title)) ++
           d.stub.due.map(d => "due" -> JsNumber(d.getMillis)) ++
           d.stub.assignee.map("assignee" -> JsString(_)) ++
-          Some("contentType" -> JsString(d.wc.`type`)) ++
+          Some("contentType" -> JsString(d.wc.contentType)) ++
           Some("section" -> JsString(d.stub.section)) ++
           Some("status" -> JsString(d.wc.status.toString)) ++
           Some("lastModified" -> JsNumber(d.wc.lastModified.getMillis)) ++
