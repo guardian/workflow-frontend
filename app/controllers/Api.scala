@@ -1,7 +1,6 @@
 package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.Try
 
 import play.api.data.Form
 import play.api.data.Forms._
@@ -105,10 +104,19 @@ object Api extends Controller with Authenticated {
   }
 
   def linkStub(stubId: Long, composerId: String) = Authenticated { req =>
-    Try { stubId.toLong }.toOption.map { id =>
-      PostgresDB.updateStubWithComposerId(id, composerId)
-      Redirect(routes.Application.stubs())
-    }.getOrElse(BadRequest("could not parse stub id"))
+
+    import play.api.Play.current
+    import play.api.db.slick.DB
+
+    DB.withTransaction { implicit session =>
+      if(PostgresDB.stubLinkedToComposer(stubId)) {
+        BadRequest(s"stub with id $stubId is linked to a composer item")
+      }
+      else {
+        PostgresDB.updateStubWithComposerId(stubId, composerId)
+        Redirect(routes.Application.stubs())
+      }
+    }
   }
 
 }

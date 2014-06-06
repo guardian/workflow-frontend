@@ -14,6 +14,8 @@ define([
     var StubModalInstanceCtrl = function ($scope, $modalInstance, stub) {
         $scope.stubForm = stub;
 
+        $scope.disabled = stub.composerId !== undefined;
+
         $scope.ok = function (addToComposer) {
             $modalInstance.close({
                 addToComposer: addToComposer,

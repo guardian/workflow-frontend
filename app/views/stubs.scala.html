@@ -65,7 +65,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-                        <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=true)">Create in Composer</button>
+                        <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=true)" ng-disabled="disabled">Create in Composer</button>
                         <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=false)">Save stub</button>
                     </div>
                 </form>
@@ -97,7 +97,7 @@
                                 data-target="#composerModal" ng-click="addToComposer(stub)">
                                 Create in Composer
                             </button>
-                                <a href=@adminUrl/{{stub.composerId}} class="btn btn-success btn-sm" target="_blank" ng-show="stub.composerId">Go to Composer</a>
+                                <a href=@adminUrl/{{stub.composerId}} class="btn btn-success btn-xs" target="_blank" ng-show="stub.composerId">Go to Composer</a>
                         </td>
                         <td><button class="btn btn-default btn-xs" ng-click="editStub(stub)">Edit stub</button></td>
                         <td><button class="btn warning btn-xs" ng-click="deleteStub(stub)"><span class="glyphicon glyphicon-trash"></span></button></td>
