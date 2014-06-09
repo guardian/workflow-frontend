@@ -1,6 +1,7 @@
 @(sections: List[Section], statuses: List[Status])
 @import helper._
 @import lib.Formatting._
+@import lib.Composer._
 @import models.Status
 
 <div class="container-fluid top-control">
@@ -87,20 +88,34 @@
             </div>
         </div>
 
-        <div id="stubs" class="">
-            <ul>
-                <li ng-repeat="stub in stubs">
-                    {{stub.title}}
+        <div id="stubs-column" class="">
+            <div ng-repeat="stub in stubs" class="stub">
+                <ul>
+                <li class="secondary-info">{{stub.due | formatDateTime }}</li>
+                <li><strong>{{stub.title}}</strong></li>
+                <li class="secondary-info">
+                    {{stub.assignee}} | {{stub.section}}
+                    <span class="trash-right"><button class="btn warning btn-xs" ng-click="deleteStub(stub)"><span class="glyphicon glyphicon-trash"></span></button></span>
                 </li>
-            </ul>
+                <li class="stub-controls">
+                    <button class="btn btn-default btn-xs" ng-click="editStub(stub)">Edit stub</button>
+                    <button class="btn btn-default btn-xs"
+                            data-toggle="modal"
+                            ng-hide="stub.composerId"
+                            data-target="#composerModal" ng-click="addToComposer(stub)">
+                        Create in Composer
+                    </button>
+                    <a href=@adminUrl/{{stub.composerId}} class="btn btn-success btn-xs" target="_blank" ng-show="stub.composerId">Go to Composer</a>
+                </li>
+                </ul>
+            </div>
+
         </div>
 
         <div id="content" class="">
 
 
             <table class="table ">
-                <caption>Active stuff</caption>
-
                 <thead>
                 <tr>
                     <th></th>
@@ -114,7 +129,6 @@
                     <th>In use by</th>
                     <th>Assigned to</th>
                     <th>Due by</th>
-                    <th>Embargoed?</th>
                     <th>Notes</th>
                     <th>Status</th>
                 </tr>
@@ -148,7 +162,6 @@
                     <td></td>
                     <td>{{content.assignee}}</td>
                     <td>{{content.due | formatDateTime }}</td>
-                    <td></td>
                     <td></td>
                     <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
                         @for(status <- statuses) {

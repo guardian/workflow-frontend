@@ -59,14 +59,41 @@ overflow: auto;
 /*background-color: green;*/
 }
 
-#stubs {
+#stubs-column {
     width: 200px;
     position: absolute;
     top: 0;
     bottom: 0;
     left: 155px;
     overflow: auto;
+    border-right: 1px solid #eee;
     /*background-color: green;*/
+}
+
+.stub ul {
+    list-style-type: none;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.stub li {
+    padding-bottom: 5px;
+}
+
+.secondary-info{
+    font-size: 85%;
+    color: #666;
+    line-height: 1em;
+}
+.trash-right {
+    float: right;
+    margin-right: 6px;
+}
+
+.stub-controls {
+    padding-top: 5px;
+    clear: both;
 }
 
 #content {
