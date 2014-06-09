@@ -49,38 +49,32 @@ object Api extends Controller with Authenticated {
     )
   }
 
-  val stubForm: Form[Stub] = Form(
-    mapping(
-      "id"      -> optional(longNumber),
-      "title"   -> nonEmptyText,
-      "section" -> text,
-      "due"     -> optional(iso8601DateTime),
-      "assignee" -> optional(text),
-      "composerId" -> optional(text)
-    )((id, title, section, due, assignee, composerId) =>
-      Stub(id, title, section, due, assignee, composerId)
-      )(s => Some((s.id, s.title, s.section, s.due, s.assignee, s.composerId))))
-
   def newStub = Authenticated { implicit request =>
-    stubForm.bindFromRequest.fold(
-      formWithErrors =>  {
-        BadRequest(s"that failed ${formWithErrors}")
-      },
-      stub => {
-        PostgresDB.createStub(stub)
-        Redirect(routes.Application.stubs())
+    request.body.asJson.fold(
+      BadRequest("could not read json")
+    )(jsValue => {
+        jsValue.validate[Stub].fold(
+          jsErrors => BadRequest(s"failed to parse the json ${jsErrors}"),
+          stub => {
+            PostgresDB.createStub(stub)
+            NoContent
+          }
+        )
       }
     )
   }
 
   def putStub(stubId: Long) = Authenticated { implicit request =>
-    stubForm.bindFromRequest.fold(
-      formWithErrors =>  {
-        BadRequest(s"that failed ${formWithErrors}")
-      },
-      stub => {
-        PostgresDB.updateStub(stubId, stub)
-        NoContent
+    request.body.asJson.fold(
+      BadRequest("could not read json")
+    )(jsValue => {
+        jsValue.validate[Stub].fold(
+          jsErrors => BadRequest(s"failed to parse the json ${jsErrors}"),
+          stub => {
+            PostgresDB.updateStub(stubId, stub)
+            NoContent
+          }
+        )
       }
     )
   }
