@@ -129,13 +129,13 @@ object PostgresDB {
 
   def createOrModifyContent(wc: WorkflowContent): Unit =
     DB.withTransaction { implicit session =>
-      if (updateContent(wc) == 0) createContent(wc)
+      if (updateContent(wc, wc.composerId) == 0) createContent(wc)
     }
 
-  def updateContent(wc: WorkflowContent): Int = {
+  def updateContent(wc: WorkflowContent, composerId: String): Int = {
     DB.withTransaction { implicit session =>
       content
-        .filter(_.composerId === wc.composerId)
+        .filter(_.composerId === composerId)
         .map(c =>
           (c.path, c.lastModified, c.lastModifiedBy, c.status, c.contentType, c.commentable, c.headline, c.published))
         .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published))

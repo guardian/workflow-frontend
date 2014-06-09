@@ -4,14 +4,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.mvc.Controller
-import play.api.libs.json.{Reads, Json, Writes}
+import play.api.mvc.{AnyContent, SimpleResult, Controller}
+import play.api.libs.json._
 
 import lib.Responses._
 import lib._
 import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
-
 
 object Api extends Controller with Authenticated {
 
@@ -50,62 +49,44 @@ object Api extends Controller with Authenticated {
   }
 
   def newStub = Authenticated { implicit request =>
-    request.body.asJson.fold(
-      BadRequest("could not read json")
-    )(jsValue => {
-        jsValue.validate[Stub].fold(
-          jsErrors => BadRequest(s"failed to parse the json ${jsErrors}"),
-          stub => {
-            PostgresDB.createStub(stub)
-            NoContent
-          }
-        )
-      }
-    )
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+      stub <- extract[Stub](jsValue).right
+    } yield {
+      PostgresDB.createStub(stub)
+      NoContent
+    }).left.map(x => x).merge
   }
 
   def putStub(stubId: Long) = Authenticated { implicit request =>
-    request.body.asJson.fold(
-      BadRequest("could not read json")
-    )(jsValue => {
-        jsValue.validate[Stub].fold(
-          jsErrors => BadRequest(s"failed to parse the json ${jsErrors}"),
-          stub => {
-            PostgresDB.updateStub(stubId, stub)
-            NoContent
-          }
-        )
-      }
-    )
+    (for {
+          jsValue <- readJsonFromRequest(request.body).right
+          stub <- extract[Stub](jsValue).right
+        } yield {
+          PostgresDB.updateStub(stubId, stub)
+          NoContent
+     }).left.map(x => x).merge
   }
 
   def putContent(composerId: String) = Authenticated { implicit request =>
-     request.body.asJson.fold(
-       BadRequest("could not read json from the request body")
-     )(jsValue =>
-        jsValue.validate[WorkflowContent].fold(
-          jsErrors => BadRequest(s"failed to parse the json ${jsErrors}"),
-          wc => {
-            PostgresDB.updateContent(wc)
-            NoContent
-          }
-        )
-     )
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+      wc <- extract[WorkflowContent](jsValue).right
+    } yield {
+      PostgresDB.updateContent(wc, composerId)
+      NoContent
+    }).left.map(x => x).merge
   }
 
-
   def putContentStatus(composerId: String) = Authenticated { implicit request =>
-    request.body.asJson.fold(
-      BadRequest("could not read json from the request body")
-    )(jsValue =>
-      (jsValue \ "data").validate[String].fold(
-        jsErrors => BadRequest(s"that failed ${jsErrors}"),
-        status => {
-          PostgresDB.updateContentStatus(status, composerId)
-          NoContent
-        }
-      )
-    )
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+      status <- extract[String](jsValue \ "data").right
+    } yield {
+      PostgresDB.updateContentStatus(status, composerId)
+      NoContent
+    }).left.map(x => x).merge
+
   }
 
   def deleteStub(stubId: Long) = Authenticated {
@@ -129,6 +110,19 @@ object Api extends Controller with Authenticated {
     }
   }
 
+  private def readJsonFromRequest(requestBody: AnyContent): Either[SimpleResult, JsValue] = {
+    requestBody.asJson match {
+      case Some(jsValue) => Right(jsValue)
+      case None => Left(BadRequest("could not read json from the request body"))
+    }
+  }
+
+  private def extract[A: Reads](jsValue: JsValue): Either[SimpleResult, A] = {
+    jsValue.validate[A] match {
+      case JsSuccess(a, _) => Right(a)
+      case error @ JsError(_) => Left(BadRequest(s"failed to parse the json ${error}"))
+    }
+  }
 }
 
 case class User(id: String, email: String, firstName: String, lastName: String)
