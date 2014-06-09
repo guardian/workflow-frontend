@@ -7,14 +7,17 @@ define([
     'controllers',
 
     'controllers/dashboard',
+    'controllers/dashboard/content-item',
     'controllers/dashboard/dashboard',
     'controllers/dashboard/date-filter',
-    'controllers/dashboard/content-item',
+    'controllers/dashboard/stub-crud',
 
-    'controllers/stubs',
-    'controllers/stubs/stubs',
-    'controllers/stubs/modal',
-    'controllers/stubs/composerModal',
+    'services/sections-service',
+
+//    'controllers/stubs',
+//    'controllers/stubs/stubs',
+//    'controllers/stubs/modal',
+//    'controllers/stubs/composerModal',
 
     'angularRoute'
     ], function (angular, filters, services, directives, config, controllers) {
@@ -24,12 +27,13 @@ define([
         return angular.module('workflow', [
             'ngRoute',
             'dashboardControllers',
-            'stubsControllers',
+//            'stubsControllers',
             'workflow.filters',
             'workflow.services',
             'workflow.directives',
             'workflow.config',
-            'workflow.controllers'
+            'workflow.controllers',
+            'sectionsService'
         ]);
 
 });

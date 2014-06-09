@@ -69,6 +69,14 @@ define([
 
         // stubs stuff
 
+        $scope.$on('newStubButtonClicked', function (event, contentType) {
+            $scope.$broadcast('newStub', contentType);
+        });
+
+        $scope.editStub = function (stub) {
+            $scope.$broadcast('editStub', angular.copy(stub));
+        };
+
         $scope.deleteStub = function(stub) {
             if (window.confirm("Are you sure? \"" + stub.title + "\" looks like a nice stub to me.")) {
                 $http({

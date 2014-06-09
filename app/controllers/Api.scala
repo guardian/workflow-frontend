@@ -117,6 +117,13 @@ object Api extends Controller with Authenticated {
     }
   }
 
+  def sections = Authenticated.async {
+    for (sectionList <- SectionDatabase.sectionList)
+      yield {
+      Ok(Json.obj("data" -> sectionList))
+    }
+  }
+
 }
 
 case class User(id: String, email: String, firstName: String, lastName: String)
