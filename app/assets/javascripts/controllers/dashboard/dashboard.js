@@ -9,7 +9,7 @@ define([
 ) {
     'use strict';
 
-    dashboardControllers.controller('ContentCtrl',
+    dashboardControllers.controller('DashboardCtrl',
         ['$scope','$http', 'filterParams', function($scope, $http, filterParams) {
 
         // content and stub fetch
