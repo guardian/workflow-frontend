@@ -65,38 +65,4 @@ object Application extends Controller with Authenticated {
        Ok(views.html.dashboard(sections, statuses))
     }
   }
-
-
-  def fieldChange(field: String, value: String, contentId: String, user: Option[String]) = Action.async {
-
-    val updateFunction: Either[SimpleResult, WorkflowContent => WorkflowContent] = field match {
-
-      case "section" => Right(_.copy(section = Some(Section(value))))
-
-      case "workingTitle" => Right(_.copy(workingTitle = value))
-
-      case "status" => for { u<-user.toRight(BadRequest("user name not supplied")).right
-                             s <- StatusDatabase.find(value).toRight(BadRequest(s"not a valid status $value")).right
-                           } yield (wc: WorkflowContent) => wc.copy(status=s)
-
-
-      case "launch" => Formatting.parseDate(value)
-                       .map(d => (wc: WorkflowContent) => wc.copy(scheduledLaunch = Some(d)))
-                       .toRight(BadRequest(s"not a valid date $value"))
-
-      case f => Left(BadRequest(s"field '$f' doesn't exist"))
-    }
-    val id: Either[SimpleResult, UUID] = try { Right(UUID.fromString(contentId)) } catch {
-      case e: IllegalArgumentException => Left(BadRequest(s"invalid UUID $contentId"))
-    }
-    (for {
-      contentId <- id.right
-      fun       <- updateFunction.right
-    }
-    yield alterContent(contentId, field, fun)).left.map(Future.successful).merge
-  }
-
-  def alterContent(contentId: UUID, field: String, fun: WorkflowContent => WorkflowContent): Future[SimpleResult] =
-    ??? // TODO
-
 }
