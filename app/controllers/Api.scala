@@ -86,33 +86,32 @@ object Api extends Controller with Authenticated {
   }
 
   def putContent(composerId: String) = Authenticated { implicit request =>
-    request.body.asJson.map { wc =>
-      wc.validate[WorkflowContent].fold(
-        jsErrors => {
-          BadRequest(s"that failed ${jsErrors}")
-        },
-        content => {
-          PostgresDB.updateContent(content)
-          NoContent
-        }
-      )
-    }.getOrElse(BadRequest("could not read json from the request"))
+     request.body.asJson.fold(
+       BadRequest("could not read json from the request body")
+     )(jsValue =>
+        jsValue.validate[WorkflowContent].fold(
+          jsErrors => BadRequest(s"failed to parse the json ${jsErrors}"),
+          wc => {
+            PostgresDB.updateContent(wc)
+            NoContent
+          }
+        )
+     )
   }
 
 
   def putContentStatus(composerId: String) = Authenticated { implicit request =>
-    request.body.asJson.map { json =>
-      (json \ "data").validate[String].fold(
-        jsErrors => {
-          BadRequest(s"that failed ${jsErrors}")
-        },
+    request.body.asJson.fold(
+      BadRequest("could not read json from the request body")
+    )(jsValue =>
+      (jsValue \ "data").validate[String].fold(
+        jsErrors => BadRequest(s"that failed ${jsErrors}"),
         status => {
           PostgresDB.updateContentStatus(status, composerId)
           NoContent
         }
       )
-      Ok
-    }.getOrElse(BadRequest("could not read json from the request"))
+    )
   }
 
   def deleteStub(stubId: Long) = Authenticated {
