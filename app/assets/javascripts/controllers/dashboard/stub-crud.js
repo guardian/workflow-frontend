@@ -122,7 +122,7 @@ define([
                             });
                         }
                         response.success(function(){
-                            $scope.$emit('getStubs');
+                            $scope.$emit('getContent');
                         });
                     });
                 });
