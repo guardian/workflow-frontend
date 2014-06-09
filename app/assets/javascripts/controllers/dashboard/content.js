@@ -12,6 +12,7 @@ define([
     dashboardControllers.controller('ContentCtrl',
         ['$scope','$http', 'filterParams', function($scope, $http, filterParams) {
 
+        // content and stub fetch
         var getContent = function(evt, params) {
             $http.get('/api/content', {params: buildContentParams()}).success(function(response){
                 $scope.contentItems = response.content;
@@ -22,6 +23,25 @@ define([
         $scope.$on('changedFilters', getContent);
         $scope.$watch('selectedContentType', getContent);
 
+        function buildContentParams() {
+            var params = angular.copy(filterParams.get());
+
+            if ($scope.selectedState) {
+                params.state = $scope.selectedState;
+            }
+
+            if ($scope.selectedContentType) {
+                params["content-type"] = $scope.selectedContentType;
+            }
+
+            if ($scope.selectedStatus) {
+                params.status = $scope.selectedStatus;
+            }
+            return params;
+        };
+
+
+        // content items stuff
         $scope.stateIsSelected = function(state) {
             return $scope.selectedState == state;
         };
@@ -47,22 +67,18 @@ define([
             $scope.selectedContent = content;
         };
 
-        function buildContentParams() {
-            var params = angular.copy(filterParams.get());
+        // stubs stuff
 
-            if ($scope.selectedState) {
-                params.state = $scope.selectedState;
+        $scope.deleteStub = function(stub) {
+            if (window.confirm("Are you sure? \"" + stub.title + "\" looks like a nice stub to me.")) {
+                $http({
+                    method: 'DELETE',
+                    url: '/api/stubs/' + stub.id
+                }).success(function(){
+                    getContent();
+                });
             }
-
-            if ($scope.selectedContentType) {
-                params["content-type"] = $scope.selectedContentType;
-            }
-
-            if ($scope.selectedStatus) {
-                params.status = $scope.selectedStatus;
-            }
-            return params;
-        }
+        };
 
     }]);
 
