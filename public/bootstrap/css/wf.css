@@ -99,7 +99,7 @@ overflow: auto;
 #content {
 position: absolute;
 top: 0px;
-right: 305px;
+right: 205px;
 bottom: 0;
 left: 360px;
 overflow: auto;
@@ -107,7 +107,7 @@ overflow: auto;
 }
 
 #detail {
-width: 300px;
+width: 200px;
 position: absolute;
 top: -10px;
 right: 0;
@@ -222,7 +222,7 @@ h5.query {
 /*    float: left;*/
     width: 130px;
     overflow: hidden;
-    clear: left;
+    float : none;
     text-align: left;
     text-overflow: ellipsis;
     white-space: nowrap;
