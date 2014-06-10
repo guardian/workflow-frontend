@@ -1,6 +1,7 @@
 @(sections: List[Section], statuses: List[Status])
 @import helper._
 @import lib.Formatting._
+@import lib.Composer._
 @import models.Status
 
 <div class="container-fluid top-control">
@@ -87,12 +88,33 @@
             </div>
         </div>
 
+        <div id="stubs-column" class="">
+            <div ng-repeat="stub in stubs" class="stub">
+                <ul>
+                <li class="secondary-info">{{stub.due | formatDateTime }}</li>
+                <li><strong>{{stub.title}}</strong></li>
+                <li class="secondary-info">
+                    {{stub.assignee}} | {{stub.section}}
+                    <span class="trash-right"><button class="btn warning btn-xs" ng-click="deleteStub(stub)"><span class="glyphicon glyphicon-trash"></span></button></span>
+                </li>
+                <li class="stub-controls">
+                    <button class="btn btn-default btn-xs" ng-click="editStub(stub)">Edit stub</button>
+                    <button class="btn btn-default btn-xs"
+                            data-toggle="modal"
+                            ng-hide="stub.composerId"
+                            data-target="#composerModal" ng-click="addToComposer(stub)">
+                        Create in Composer
+                    </button>
+                </li>
+                </ul>
+            </div>
+
+        </div>
+
         <div id="content" class="">
 
 
             <table class="table ">
-                <caption>Active stuff</caption>
-
                 <thead>
                 <tr>
                     <th></th>
@@ -106,7 +128,6 @@
                     <th>In use by</th>
                     <th>Assigned to</th>
                     <th>Due by</th>
-                    <th>Embargoed?</th>
                     <th>Notes</th>
                     <th>Status</th>
                 </tr>
@@ -116,10 +137,10 @@
 
                 <tr ng-repeat="content in contentItems" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content">
                     <td>
-                        <span class="glyphicon glyphicon-file" ng-show="content.type==='article'"></span>
-                        <span class="glyphicon glyphicon-th-list" ng-show="content.type==='liveblog'"></span>
-                        <span class="glyphicon glyphicon-camera" ng-show="content.type==='gallery'"></span>
-                        <span class="glyphicon glyphicon-hand-up" ng-show="content.type==='interactive'"></span>
+                        <span class="glyphicon glyphicon-file" ng-show="content.contentType==='article'"></span>
+                        <span class="glyphicon glyphicon-th-list" ng-show="content.contentType==='liveblog'"></span>
+                        <span class="glyphicon glyphicon-camera" ng-show="content.contentType==='gallery'"></span>
+                        <span class="glyphicon glyphicon-hand-up" ng-show="content.contentType==='interactive'"></span>
                     </td>
                     <td>
                         <!-- <span class="glyphicon glyphicon-exclamation-sign "></span> -->
@@ -130,7 +151,7 @@
                     <td>
                         <!-- <span class="glyphicon glyphicon-picture "></span> -->
                     </td>
-                    <td colspan="2 "><strong>{{content.workingTitle}}</strong>
+                    <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.workingTitle}}</a></strong>
                         <br />
                         <span style="font-size: 90%; color: #666; line-height: 1em; ">
                             {{content.headline}}
@@ -140,7 +161,6 @@
                     <td></td>
                     <td>{{content.assignee}}</td>
                     <td>{{content.due | formatDateTime }}</td>
-                    <td></td>
                     <td></td>
                     <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
                         @for(status <- statuses) {
@@ -178,5 +198,86 @@
                 <hr />
             </div>
         </div>
+
+        <!--- this section is the new/edit stubs modal form  -->
+        <div ng-controller="StubModalCtrl">
+
+            <script type="text/ng-template" id="stubModalContent.html">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()">&times;</button>
+                    <h4 class="modal-title">Create new stub</h4>
+                </div>
+                <form>
+                    <input type="hidden" ng-model="stubForm.id" />
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="title">Stub title *</label>
+                            <input type="text" ng-model="stubForm.title" id="title" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="section">section</label>
+                            <select id="section" name="section" ng-model="stubForm.section" ng-options="section for section in sections"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="due">Due by</label>
+                            <div class="dropdown">
+                                <a class="dropdown-toggle my-toggle-select" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="">
+                                    <div class="input-append">
+                                        <input type="text" class="form-control" id="due" name="due" datetime data-ng-model="stubForm.due"><span class="add-on"><i
+                                            class="icon-calendar"></i></span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <datetimepicker data-ng-model="stubForm.due"
+                                                    data-datetimepicker-config="{ dropdownSelector: '.my-toggle-select' }"></datetimepicker>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignee">Assign to</label>
+                            <input type="text" ng-model="stubForm.assignee" id="assignee" name="assignee" value="" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>content type</label>
+                            <select ng-model="stubForm.contentType">
+                                <option value="article">Article</option>
+                                <option value="liveblog">Live blog</option>
+                                <option value="gallery">Gallery</option>
+                                <option value="interactive">Interactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+                        <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=true)" ng-disabled="disabled">Create in Composer</button>
+                        <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=false)">Save stub</button>
+                    </div>
+                </form>
+            </script>
+        </div>
+
+        <!--- this is the composer modal  -->
+        <div ng-controller="ComposerModalCtrl">
+            <script type="text/ng-template" id="composerModalContent.html">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()">&times;</button>
+                    <h3 class="modal-title">Create in Composer</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Select content type</p>
+                    <select id="contentType" name="contentType" ng-model="type.contentType">
+                        <option value="article">Article</option>
+                        <option value="liveblog">Live Blog</option>
+                        <option value="gallery">Gallery</option>
+                        <option value="interactive">Interactive</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+                    <button class="btn btn-primary" ng-click="ok()">Create in Composer</button>
+                </div>
+            </script>
+        </div>
+
     </div>
 </div>
