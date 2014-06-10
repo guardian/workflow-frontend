@@ -137,10 +137,10 @@
 
                 <tr ng-repeat="content in contentItems" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content">
                     <td>
-                        <span class="glyphicon glyphicon-file" ng-show="content.type==='article'"></span>
-                        <span class="glyphicon glyphicon-th-list" ng-show="content.type==='liveblog'"></span>
-                        <span class="glyphicon glyphicon-camera" ng-show="content.type==='gallery'"></span>
-                        <span class="glyphicon glyphicon-hand-up" ng-show="content.type==='interactive'"></span>
+                        <span class="glyphicon glyphicon-file" ng-show="content.contentType==='article'"></span>
+                        <span class="glyphicon glyphicon-th-list" ng-show="content.contentType==='liveblog'"></span>
+                        <span class="glyphicon glyphicon-camera" ng-show="content.contentType==='gallery'"></span>
+                        <span class="glyphicon glyphicon-hand-up" ng-show="content.contentType==='interactive'"></span>
                     </td>
                     <td>
                         <!-- <span class="glyphicon glyphicon-exclamation-sign "></span> -->
@@ -184,14 +184,14 @@
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
-                        <dd>{{ (selectedContent.lastModification.dateTime | formatDateTime) || "-" }}</dd>
+                        <dd>{{ (selectedContent.lastModified | formatDateTime) || "-" }}</dd>
                 </dl>
                 <hr />
 
                 <h5>People</h5>
                 <dl class="dl-horizontal">
                     <dt>Last modified by</dt>
-                        <dd>{{ selectedContent.lastModification.user || "-" }}</dd>
+                        <dd>{{ selectedContent.lastModifiedBy || "-" }}</dd>
                     <dt>Assigned to</dt>
                         <dd>{{ selectedContent.assignee || "-" }}</dd>
                 </dl>

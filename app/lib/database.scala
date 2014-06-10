@@ -166,27 +166,19 @@ object PostgresDB {
     }
 
   def updateContent(wc: WorkflowContent): Int = {
-    val published = wc.state == ContentState.Published
-    val lastMod = wc.lastModification.dateTime
-    val lastModBy = wc.lastModification.user
-
     DB.withTransaction { implicit session =>
       content
         .filter(_.composerId === wc.composerId)
         .map(c =>
           (c.path, c.lastModified, c.lastModifiedBy, c.status, c.contentType, c.commentable, c.headline, c.published))
-        .update((wc.path, lastMod, lastModBy, wc.status.name, wc.`type`, wc.commentable, wc.headline, published))
+        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published))
     }
   }
 
   def createContent(wc: WorkflowContent) {
-    val lastMod = wc.lastModification.dateTime
-    val lastModBy = wc.lastModification.user
-    val published = wc.state == ContentState.Published
-
     DB.withTransaction { implicit session =>
       content +=
-        ((wc.composerId, wc.path, lastMod, lastModBy, wc.status.name, wc.`type`, wc.commentable, wc.headline, published))
+        ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published))
     }
   }
 
@@ -197,7 +189,7 @@ object PostgresDB {
     status:   Option[Status] = None,
     contentType: Option[String] = None,
     published: Option[Boolean] = None
-  ): List[WorkflowContent] =
+  ): List[DashboardRow] =
     DB.withTransaction { implicit session =>
       val stubsQuery =
         stubs |>
@@ -217,24 +209,22 @@ object PostgresDB {
       } yield (s, c)
 
       query.sortBy { case (s, c) => s.due }.list.map {
-        case ((pk, title, section, due, assignee, _),
+        case ((pk, title, section, due, assignee, cId),
               (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published)) =>
-          WorkflowContent(
-            composerId,
-            path,
-            title,
-            due,
-            assignee,
-            headline,
-            None,
-            contentType,
-            Nil,
-            Some(Section(section)),
-            Status(status),
-            ContentModification("", lastMod, lastModBy),
-            None,
-            commentable,
-            if (published) ContentState.Published else ContentState.Draft
+          DashboardRow(
+            Stub(Some(pk), title, section, due, assignee, cId),
+            WorkflowContent(
+              composerId,
+              path,
+              headline,
+              contentType,
+              Some(Section(section)),
+              Status(status),
+              lastMod,
+              lastModBy,
+              commentable,
+              published
+            )
           )
       }
 

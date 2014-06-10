@@ -35,8 +35,6 @@ POST    /admin/status/remove                controllers.Admin.removeStatus
 POST    /admin/status/moveUp                controllers.Admin.moveStatusUp
 POST    /admin/status/moveDown              controllers.Admin.moveStatusDown
 
-POST    /fieldChange/*contentId             controllers.Application.fieldChange(field: String, value: String, contentId: String, user: Option[String])
-
 # Management
 GET     /management/healthcheck             controllers.Management.healthCheck
 
