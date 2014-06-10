@@ -15,11 +15,6 @@ define([
 
     'services/sections-service',
 
-//    'controllers/stubs',
-//    'controllers/stubs/stubs',
-//    'controllers/stubs/modal',
-//    'controllers/stubs/composerModal',
-
     'angularRoute'
     ], function (angular, filters, services, directives, config, controllers) {
 
@@ -28,7 +23,6 @@ define([
         return angular.module('workflow', [
             'ngRoute',
             'dashboardControllers',
-//            'stubsControllers',
             'workflow.filters',
             'workflow.services',
             'workflow.directives',

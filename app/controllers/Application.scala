@@ -19,12 +19,6 @@ object Application extends Controller with Authenticated {
     Ok(views.html.index("Hello wor... kflow :)"))
   }
 
-  def stubs = Action.async {
-    val stubs = PostgresDB.getStubs()
-    for (sections <- SectionDatabase.sectionList)
-    yield Ok(views.html.stubs(stubs, sections))
-  }
-
   def login = Action {
     Ok(views.html.login())
   }
