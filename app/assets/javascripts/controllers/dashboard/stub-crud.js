@@ -16,7 +16,12 @@ define([
     // stub create and edit
 
     var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sectionsService) {
+
         $scope.stubForm = stub;
+
+        //preset these values on the field
+        $scope.contentType = stub.contentType;
+        $scope.section = stub.section;
 
         $scope.disabled = stub.composerId !== undefined;
 
