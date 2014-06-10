@@ -5,7 +5,6 @@ import org.joda.time.DateTime
 import models.Status._
 import play.api.libs.functional.syntax._
 import play.api.data.Forms._
-import scala.Some
 import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
 import play.api.data.validation.ValidationError
 
