@@ -105,7 +105,6 @@
                             data-target="#composerModal" ng-click="addToComposer(stub)">
                         Create in Composer
                     </button>
-                    <a href=@adminUrl/{{stub.composerId}} class="btn btn-success btn-xs" target="_blank" ng-show="stub.composerId">Go to Composer</a>
                 </li>
                 </ul>
             </div>
@@ -152,7 +151,7 @@
                     <td>
                         <!-- <span class="glyphicon glyphicon-picture "></span> -->
                     </td>
-                    <td colspan="2 "><strong>{{content.workingTitle}}</strong>
+                    <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.workingTitle}}</a></strong>
                         <br />
                         <span style="font-size: 90%; color: #666; line-height: 1em; ">
                             {{content.headline}}
