@@ -16,23 +16,21 @@ object Api extends Controller with Authenticated {
 
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
-  def content = Authenticated.async { req =>
+  def content = Authenticated { implicit req =>
+    val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
+    val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
+    val content = PostgresDB.getContent(
+      section = req.getQueryString("section").map(Section(_)),
+      dueFrom = dueFrom,
+      dueUntil = dueUntil,
+      status = req.getQueryString("status").flatMap(StatusDatabase.find),
+      contentType = req.getQueryString("content-type"),
+      //todo - make this a boolean
+      published = req.getQueryString("state").map(_ == "published")
+    )
 
-    for {
-      sections <- SectionDatabase.sectionList
-      statuses <- StatusDatabase.statuses
-
-      content = PostgresDB.getContent(
-        section = req.getQueryString("section").map(Section(_)),
-        dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate),
-        dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate),
-        status = req.getQueryString("status").flatMap(StatusDatabase.find),
-        contentType = req.getQueryString("content-type"),
-        //todo - make this a boolean
-        published = req.getQueryString("state").map(_ == "published")
-      )
-    }
-    yield Ok(renderJsonResponse(content))
+    val stubs = PostgresDB.getStubs(dueFrom = dueFrom, dueUntil = dueUntil, unlinkedOnly = true)
+    Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
@@ -105,8 +103,15 @@ object Api extends Controller with Authenticated {
       }
       else {
         PostgresDB.updateStubWithComposerId(stubId, composerId)
-        Redirect(routes.Application.stubs())
+        NoContent
       }
+    }
+  }
+
+  def sections = Authenticated.async {
+    for (sectionList <- SectionDatabase.sectionList)
+      yield {
+      Ok(Json.obj("data" -> sectionList))
     }
   }
 

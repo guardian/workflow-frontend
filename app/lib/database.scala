@@ -73,14 +73,15 @@ object PostgresDB {
   def getStubs(
     dueFrom: Option[DateTime] = None,
     dueUntil: Option[DateTime] = None,
-    composerId: Set[String] = Set.empty
+    composerId: Set[String] = Set.empty,
+    unlinkedOnly: Boolean = false
   ): List[Stub] =
     DB.withTransaction { implicit session =>
 
       val cIds = if (composerId.nonEmpty) Some(composerId) else None
 
       val q =
-        stubs |>
+        (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
           dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
           dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
           cIds.foldl[StubQuery]     ((q, ids)      => q.filter(_.composerId inSet ids))
@@ -93,11 +94,17 @@ object PostgresDB {
 
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
+
+      stub.composerId.foreach(ensureContentExistsWithId(_))
+
       stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId))
     }
 
   def updateStub(id: Long, stub: Stub) {
     DB.withTransaction { implicit session =>
+
+      stub.composerId.foreach(ensureContentExistsWithId(_))
+
       stubs
         .filter(_.pk === id)
         .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId))
@@ -107,6 +114,9 @@ object PostgresDB {
 
   def updateStubWithComposerId(id: Long, composerId: String): Int = {
     DB.withTransaction { implicit session =>
+
+      ensureContentExistsWithId(composerId)
+
       stubs
         .filter(_.pk === id)
         .map(s => s.composerId)
@@ -124,6 +134,14 @@ object PostgresDB {
   def deleteStub(id: Long) {
     DB.withTransaction { implicit session =>
       stubs.filter(_.pk === id).delete
+    }
+  }
+
+  private def ensureContentExistsWithId(composerId: String)(implicit session: Session) {
+    val contentExists = content.filter(_.composerId === composerId).exists.run
+    if(!contentExists) {
+      content +=
+        ((composerId, None, new DateTime, None, Status.Writers.name, "article", false, None, false))
     }
   }
 

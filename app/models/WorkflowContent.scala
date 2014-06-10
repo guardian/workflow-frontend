@@ -113,6 +113,7 @@ object DashboardRow {
           Some("composerId" -> JsString(d.wc.composerId)) ++
           d.wc.path.map("path" -> JsString(_)) ++
           Some("workingTitle" -> JsString(d.stub.title)) ++
+          d.wc.headline.map("headline" -> JsString(_)) ++
           d.stub.due.map(d => "due" -> JsNumber(d.getMillis)) ++
           d.stub.assignee.map("assignee" -> JsString(_)) ++
           Some("contentType" -> JsString(d.wc.contentType)) ++
