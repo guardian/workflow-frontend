@@ -116,16 +116,14 @@ define([
                             response = $http({
                                 method: 'POST',
                                 url: '/api/stubs',
-                                params: newStub,
-                                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                                data: newStub
                             });
                         }
                         else {
                             response = $http({
                                 method: 'PUT',
                                 url: '/api/stubs/' + stub.id,
-                                params: newStub,
-                                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                                data: newStub
                             });
                         }
                         response.success(function(){
