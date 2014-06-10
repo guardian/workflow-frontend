@@ -4,6 +4,9 @@ import play.api.libs.json._
 import org.joda.time.DateTime
 import models.Status._
 import play.api.libs.functional.syntax._
+import play.api.data.Forms._
+import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
+import play.api.data.validation.ValidationError
 
 case class Stub(id: Option[Long],
                 title: String,
@@ -13,8 +16,21 @@ case class Stub(id: Option[Long],
                 composerId: Option[String])
 
 object Stub {
+  implicit val dateTimeFormat = DateFormat
   implicit val stubReads: Reads[Stub] = Json.reads[Stub]
   implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
+
+  object DateFormat extends Format[DateTime] {
+    def writes(d: DateTime): JsValue = JsString(d.toString)
+    def reads(json: JsValue): JsResult[DateTime] = {
+      json.validate[String].flatMap { dt =>
+        try { JsSuccess(ISODateTimeFormat.dateTimeParser().parseDateTime(dt)) }
+        catch { case e: IllegalArgumentException =>
+          JsError(ValidationError("validate.error.expected.date.isoformat",dt))
+        }
+      }
+    }
+  }
 }
 
 case class WireStatus(
