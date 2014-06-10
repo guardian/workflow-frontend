@@ -55,7 +55,7 @@ object Api extends Controller with Authenticated {
     } yield {
       PostgresDB.createStub(stub)
       NoContent
-    }).left.map(x => x).merge
+    }).merge
   }
 
   def putStub(stubId: Long) = Authenticated { implicit request =>
@@ -65,7 +65,7 @@ object Api extends Controller with Authenticated {
         } yield {
           PostgresDB.updateStub(stubId, stub)
           NoContent
-     }).left.map(x => x).merge
+     }).merge
   }
 
   def putContent(composerId: String) = Authenticated { implicit request =>
@@ -75,7 +75,7 @@ object Api extends Controller with Authenticated {
     } yield {
       PostgresDB.updateContent(wc, composerId)
       NoContent
-    }).left.map(x => x).merge
+    }).merge
   }
 
   def putContentStatus(composerId: String) = Authenticated { implicit request =>
@@ -85,7 +85,7 @@ object Api extends Controller with Authenticated {
     } yield {
       PostgresDB.updateContentStatus(status, composerId)
       NoContent
-    }).left.map(x => x).merge
+    }).merge
 
   }
 
@@ -111,10 +111,7 @@ object Api extends Controller with Authenticated {
   }
 
   private def readJsonFromRequest(requestBody: AnyContent): Either[SimpleResult, JsValue] = {
-    requestBody.asJson match {
-      case Some(jsValue) => Right(jsValue)
-      case None => Left(BadRequest("could not read json from the request body"))
-    }
+    requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
   }
 
   private def extract[A: Reads](jsValue: JsValue): Either[SimpleResult, A] = {

@@ -7,11 +7,6 @@ import play.api.libs.functional.syntax._
 import play.api.data.Forms._
 import scala.Some
 import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
-import play.api.libs.json.JsString
-import play.api.libs.json.JsBoolean
-import scala.Some
-import play.api.libs.json.JsNumber
-import play.api.libs.json.JsObject
 import play.api.data.validation.ValidationError
 
 case class Stub(id: Option[Long],
