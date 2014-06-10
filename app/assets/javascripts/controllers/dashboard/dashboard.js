@@ -10,7 +10,7 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'filterParams', function($scope, $http, filterParams) {
+        ['$scope','$http', function($scope, $http) {
 
         // content and stub fetch
         var getContent = function(evt, params) {
@@ -23,8 +23,10 @@ define([
         $scope.$on('changedFilters', getContent);
         $scope.$watch('selectedContentType', getContent);
 
+        $scope.filters = {};
+
         function buildContentParams() {
-            var params = angular.copy(filterParams.get());
+            var params = angular.copy($scope.filters);
 
             if ($scope.selectedState) {
                 params.state = $scope.selectedState;
