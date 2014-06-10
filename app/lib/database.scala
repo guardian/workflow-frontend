@@ -145,21 +145,6 @@ object PostgresDB {
     }
   }
 
-  /*
-  case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
-    def composerId     = column [String]         ("composer_id", O.PrimaryKey)
-    def path           = column [Option[String]] ("path")
-    def lastModified   = column [DateTime]       ("last_modified")
-    def lastModifiedBy = column [Option[String]] ("last_modified_by")
-    def status         = column [String]         ("status")
-    def contentType    = column [String]         ("content_type")
-    def commentable    = column [Boolean]        ("commentable")
-    def headline       = column [Option[String]] ("headline")
-    def published      = column [Boolean]        ("published")
-    def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published)
-  }
-   */
-
   def createOrModifyContent(wc: WorkflowContent): Unit =
     DB.withTransaction { implicit session =>
       if (updateContent(wc) == 0) createContent(wc)
