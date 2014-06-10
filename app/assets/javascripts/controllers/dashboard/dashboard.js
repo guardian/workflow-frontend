@@ -77,6 +77,10 @@ define([
             $scope.$broadcast('editStub', angular.copy(stub));
         };
 
+        $scope.addToComposer = function(stub, composerUrl) {
+            $scope.$broadcast('addToComposer', stub, composerUrl)
+        };
+
         $scope.deleteStub = function(stub) {
             if (window.confirm("Are you sure? \"" + stub.title + "\" looks like a nice stub to me.")) {
                 $http({

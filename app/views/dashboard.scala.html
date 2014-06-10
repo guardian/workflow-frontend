@@ -256,5 +256,29 @@
                 </form>
             </script>
         </div>
+
+        <!--- this is the composer modal  -->
+        <div ng-controller="ComposerModalCtrl">
+            <script type="text/ng-template" id="composerModalContent.html">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()">&times;</button>
+                    <h3 class="modal-title">Create in Composer</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Select content type</p>
+                    <select id="contentType" name="contentType" ng-model="type.contentType">
+                        <option value="article">Article</option>
+                        <option value="liveblog">Live Blog</option>
+                        <option value="gallery">Gallery</option>
+                        <option value="interactive">Interactive</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+                    <button class="btn btn-primary" ng-click="ok()">Create in Composer</button>
+                </div>
+            </script>
+        </div>
+
     </div>
 </div>

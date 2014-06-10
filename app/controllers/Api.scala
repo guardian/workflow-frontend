@@ -112,7 +112,7 @@ object Api extends Controller with Authenticated {
       }
       else {
         PostgresDB.updateStubWithComposerId(stubId, composerId)
-        Redirect(routes.Application.stubs())
+        NoContent
       }
     }
   }
