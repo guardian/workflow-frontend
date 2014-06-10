@@ -65,7 +65,7 @@ object Api extends Controller with Authenticated {
       },
       stub => {
         PostgresDB.createStub(stub)
-        Redirect(routes.Application.stubs())
+        NoContent
       }
     )
   }

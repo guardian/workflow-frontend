@@ -94,11 +94,17 @@ object PostgresDB {
 
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
+
+      stub.composerId.foreach(ensureContentExistsWithId(_))
+
       stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId))
     }
 
   def updateStub(id: Long, stub: Stub) {
     DB.withTransaction { implicit session =>
+
+      stub.composerId.foreach(ensureContentExistsWithId(_))
+
       stubs
         .filter(_.pk === id)
         .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId))
@@ -108,6 +114,9 @@ object PostgresDB {
 
   def updateStubWithComposerId(id: Long, composerId: String): Int = {
     DB.withTransaction { implicit session =>
+
+      ensureContentExistsWithId(composerId)
+
       stubs
         .filter(_.pk === id)
         .map(s => s.composerId)
@@ -127,6 +136,29 @@ object PostgresDB {
       stubs.filter(_.pk === id).delete
     }
   }
+
+  private def ensureContentExistsWithId(composerId: String)(implicit session: Session) {
+    val contentExists = content.filter(_.composerId === composerId).exists.run
+    if(!contentExists) {
+      content +=
+        ((composerId, None, new DateTime, None, Status.Writers.name, "article", false, None, false))
+    }
+  }
+
+  /*
+  case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
+    def composerId     = column [String]         ("composer_id", O.PrimaryKey)
+    def path           = column [Option[String]] ("path")
+    def lastModified   = column [DateTime]       ("last_modified")
+    def lastModifiedBy = column [Option[String]] ("last_modified_by")
+    def status         = column [String]         ("status")
+    def contentType    = column [String]         ("content_type")
+    def commentable    = column [Boolean]        ("commentable")
+    def headline       = column [Option[String]] ("headline")
+    def published      = column [Boolean]        ("published")
+    def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published)
+  }
+   */
 
   def createOrModifyContent(wc: WorkflowContent): Unit =
     DB.withTransaction { implicit session =>
