@@ -17,11 +17,7 @@ define([
 
     var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sectionsService) {
 
-        $scope.stubForm = stub;
-
-        //preset these values on the field
-        $scope.contentType = stub.contentType;
-        $scope.section = stub.section;
+        $scope.stub = stub;
 
         $scope.disabled = stub.composerId !== undefined;
 
@@ -32,7 +28,7 @@ define([
         $scope.ok = function (addToComposer) {
             $modalInstance.close({
                 addToComposer: addToComposer,
-                form: $scope.stubForm
+                stub: $scope.stub
             });
         };
         $scope.cancel = function () {
@@ -83,7 +79,7 @@ define([
                 });
 
                 modalInstance.result.then(function (modalCloseResult) {
-                    var stub = modalCloseResult.form;
+                    var stub = modalCloseResult.stub;
                     var newStub = angular.copy(stub);
                     var addToComposer = modalCloseResult.addToComposer;
                     newStub.due = stub.due && Date.create(stub.due).toISOString();
