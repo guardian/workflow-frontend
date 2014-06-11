@@ -26,7 +26,8 @@ object PostgresDB {
     String,           // section
     Option[DateTime], // due
     Option[String],   // assign_to
-    Option[String]    // composer_id
+    Option[String],    // composer_id
+    Option[String]    // content_type
   )
 
   case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
@@ -36,7 +37,8 @@ object PostgresDB {
     def due          = column [Option[DateTime]] ("due")
     def assignee     = column [Option[String]]   ("assign_to")
     def composerId   = column [Option[String]]   ("composer_id")
-    def * = (pk, workingTitle, section, due, assignee, composerId)
+    def contentType  = column [Option[String]]   ("content_type")
+    def * = (pk, workingTitle, section, due, assignee, composerId, contentType)
   }
 
   type ContentRow = (
@@ -87,8 +89,8 @@ object PostgresDB {
           cIds.foldl[StubQuery]     ((q, ids)      => q.filter(_.composerId inSet ids))
 
       q.list.map {
-        case (pk, title, section, due, assignee, composerId) =>
-          Stub(Some(pk), title, section, due, assignee, composerId)
+        case (pk, title, section, due, assignee, composerId, contentType) =>
+          Stub(Some(pk), title, section, due, assignee, composerId, contentType)
       }
     }
 
@@ -97,7 +99,7 @@ object PostgresDB {
 
       stub.composerId.foreach(ensureContentExistsWithId(_))
 
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId))
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
     }
 
   def updateStub(id: Long, stub: Stub) {
@@ -107,8 +109,8 @@ object PostgresDB {
 
       stubs
         .filter(_.pk === id)
-        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId))
-        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId))
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
     }
   }
 
@@ -203,10 +205,10 @@ object PostgresDB {
       } yield (s, c)
 
       query.sortBy { case (s, c) => s.due }.list.map {
-        case ((pk, title, section, due, assignee, cId),
+        case ((pk, title, section, due, assignee, cId, stubContentType),
               (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published)) =>
           DashboardRow(
-            Stub(Some(pk), title, section, due, assignee, cId),
+            Stub(Some(pk), title, section, due, assignee, cId, stubContentType),
             WorkflowContent(
               composerId,
               path,
