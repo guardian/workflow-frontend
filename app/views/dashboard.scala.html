@@ -5,7 +5,48 @@
 @import models.Status
 
 <div class="container-fluid top-control">
-    <div class="row" common-filters></div>
+    <div class="row">
+        <div class="col-md-12 header-bar">
+
+            <div class="btn-group" ng-controller="NewStubDropdownCtrl" dropdown>
+                <button type="button" class="btn btn-default" ng-click="newStub()">New Stub</button>
+                <button type="button" class="btn btn-default dropdown-toggle">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a ng-click="newStub('article')">Article</a></li>
+                    <li><a ng-click="newStub('liveblog')">Live blog</a></li>
+                    <li><a ng-click="newStub('gallery')">Gallery</a></li>
+                    <li><a ng-click="newStub('interactive')">Interactive</a></li>
+                </ul>
+            </div>
+
+            <div class="constrain-by-desk-section">
+                <label for="section_dropdown">Section</label>
+                <select id="section_dropdown" ng-model="selectedSection" ng-options="s for s in sections">
+                    <option value="">(All sections)</option>
+                </select>
+            </div>
+
+            <div class="constrain-by-date" ng-controller="DateFilterCtrl">
+                <h4>Due by</h4>
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="">All</button>
+                    <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'today'">Today</button>
+                    <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'tomorrow'">Tomorrow</button>
+                    <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
+                    <button type="button" class="btn btn-default" title="Select date">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                        <select ng-model="selectedDate" ng-options="date as (date | formatDate) for date in dateOptions">
+                        </select>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
 </div>
 
 <div class="container-fluid">

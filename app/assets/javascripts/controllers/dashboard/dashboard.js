@@ -22,6 +22,9 @@ define([
         $scope.$on('getContent', getContent);
         $scope.$on('changedFilters', getContent);
         $scope.$watch('selectedContentType', getContent);
+        $scope.$watch('selectedSection', getContent);
+
+        $scope.sections = ['Cities', 'Technology'];
 
         $scope.filters = {};
 
@@ -30,6 +33,10 @@ define([
 
             if ($scope.selectedState) {
                 params.state = $scope.selectedState;
+            }
+
+            if ($scope.selectedSection) {
+                params.section = $scope.selectedSection;
             }
 
             if ($scope.selectedContentType) {
