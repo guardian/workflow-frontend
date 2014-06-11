@@ -5,7 +5,6 @@
 # Application
 GET     /                                   controllers.Application.index
 GET     /dashboard                          controllers.Application.dashboard
-GET     /stubs                              controllers.Application.stubs
 
 POST    /login                              controllers.Application.loginPost
 GET     /login                              controllers.Application.login

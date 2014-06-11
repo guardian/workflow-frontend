@@ -208,38 +208,38 @@
                     <h4 class="modal-title">Create new stub</h4>
                 </div>
                 <form name="stubForm">
-                    <input type="hidden" ng-model="id" />
+                    <input type="hidden" ng-model="stub.id" />
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="title">Stub title *</label>
-                            <input type="text" ng-model="title" id="title" name="title" class="form-control" required>
+                            <input type="text" ng-model="stub.title" id="title" name="title" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="section">section</label>
-                            <select id="section" name="section" ng-model="section" ng-options="section for section in sections"></select>
+                            <select id="section" name="section" ng-model="stub.section" ng-options="section for section in sections"></select>
                         </div>
                         <div class="form-group">
                             <label for="due">Due by</label>
                             <div class="dropdown">
                                 <a class="dropdown-toggle my-toggle-select" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="">
                                     <div class="input-append">
-                                        <input type="text" class="form-control" id="due" name="due" datetime data-ng-model="due"><span class="add-on"><i
+                                        <input type="text" class="form-control" id="due" name="due" datetime data-ng-model="stub.due"><span class="add-on"><i
                                             class="icon-calendar"></i></span>
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                    <datetimepicker data-ng-model="due"
+                                    <datetimepicker data-ng-model="stub.due"
                                                     data-datetimepicker-config="{ dropdownSelector: '.my-toggle-select' }"></datetimepicker>
                                 </ul>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="assignee">Assign to</label>
-                            <input type="text" ng-model="assignee" id="assignee" name="assignee" value="" class="form-control">
+                            <input type="text" ng-model="stub.assignee" id="assignee" name="assignee" value="" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>content type</label>
-                            <select ng-model="contentType">
+                            <select ng-model="stub.contentType">
                                 <option value="article">Article</option>
                                 <option value="liveblog">Live blog</option>
                                 <option value="gallery">Gallery</option>
@@ -249,8 +249,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-                        <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=true)" ng-disabled="disabled">Create in Composer</button>
-                        <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=false)" ng-disabled="stubForm.$error.required">Save stub</button>
+                        <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid">Create in Composer</button>
+                        <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=false)" ng-disabled="stubForm.$invalid">Save stub</button>
                     </div>
                 </form>
             </script>
