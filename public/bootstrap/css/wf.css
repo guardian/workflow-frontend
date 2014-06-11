@@ -46,7 +46,6 @@ tr td {
 	left: 0;
 	right: 0;
 	bottom: 0px;
-	
 }
 
 #sidebar-container {
@@ -199,11 +198,10 @@ h5.query {
 	height: 40px;
 	padding: 3px;
 	background-color: #adadad;
-	position: fixed;
-	/*z-index: 1000;*/
+
 }
 
-.header-bar h4 {
+.header-bar h4, .header-bar label, .header-bar select {
 	display: inline-block;
 	margin-top: 0px;
 }
