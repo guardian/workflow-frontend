@@ -201,18 +201,17 @@ h5.query {
 
 }
 
-.header-bar h4, .header-bar label, .header-bar select {
-	display: inline-block;
-	margin-top: 0px;
+.date-filter label{
+    padding-right: 15px;
 }
 
-.constrain-by-date, .constrain-by-desk-section  {
-	display: inline-block;
-	margin-left: 100px;
+.date-filter .btn-default {
+    height: 34px;
 }
 
-.constrain-by-date h4 {
-	font-size: 1.6rem;
+.new-stub {
+    padding-left:0;
+    padding-right:0;
 }
 
 @media (min-width: 768px) {
