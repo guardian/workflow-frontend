@@ -30,22 +30,10 @@ define([
 
         function buildContentParams() {
             var params = angular.copy($scope.filters);
-
-            if ($scope.selectedState) {
-                params.state = $scope.selectedState;
-            }
-
-            if ($scope.selectedSection) {
-                params.section = $scope.selectedSection;
-            }
-
-            if ($scope.selectedContentType) {
-                params["content-type"] = $scope.selectedContentType;
-            }
-
-            if ($scope.selectedStatus) {
-                params.status = $scope.selectedStatus;
-            }
+            params.state = $scope.selectedState;
+            params.section = $scope.selectedSection;
+            params["content-type"] = $scope.selectedContentType;
+            params.status = $scope.selectedStatus;
             return params;
         };
 
