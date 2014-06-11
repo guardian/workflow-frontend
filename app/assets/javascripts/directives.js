@@ -10,12 +10,6 @@ define(['angular', 'services', 'moment'], function(angular, services, moment) {
         };
     }]);
 
-    mod.directive('commonFilters', function () {
-        return {
-            templateUrl: '/assets/common-filters.html'
-        };
-    });
-
     mod.directive('datetime', function() {
         return {
             restrict : 'A',
