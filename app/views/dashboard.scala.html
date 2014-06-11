@@ -92,7 +92,13 @@
             <div ng-repeat="stub in stubs" class="stub">
                 <ul>
                 <li class="secondary-info">{{stub.due | formatDateTime }}</li>
-                <li><strong>{{stub.title}}</strong></li>
+                <li>
+                    <span class="glyphicon glyphicon-file" ng-show="stub.contentType==='article'"></span>
+                    <span class="glyphicon glyphicon-th-list" ng-show="stub.contentType==='liveblog'"></span>
+                    <span class="glyphicon glyphicon-camera" ng-show="stub.contentType==='gallery'"></span>
+                    <span class="glyphicon glyphicon-hand-up" ng-show="stub.contentType==='interactive'"></span>
+                    <strong>{{stub.title}}</strong>
+                </li>
                 <li class="secondary-info">
                     {{stub.assignee}} | {{stub.section}}
                     <span class="trash-right"><button class="btn warning btn-xs" ng-click="deleteStub(stub)"><span class="glyphicon glyphicon-trash"></span></button></span>
@@ -240,6 +246,7 @@
                         <div class="form-group">
                             <label>content type</label>
                             <select ng-model="stub.contentType">
+                                <option value=""></option>
                                 <option value="article">Article</option>
                                 <option value="liveblog">Live blog</option>
                                 <option value="gallery">Gallery</option>
