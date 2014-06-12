@@ -1,6 +1,6 @@
-@(message: String)
+@(statuses: Option[play.api.libs.json.JsObject])
 
-@main("Welcome to Workflow") {
+@main("Welcome to Workflow", statuses) {
 
         <div ng-view></div>
 

@@ -15,8 +15,11 @@ import play.api.libs.openid.OpenID
 
 object Application extends Controller with Authenticated {
 
-  def index = Authenticated {
-    Ok(views.html.index("Hello wor... kflow :)"))
+  def index = Authenticated.async {
+    for {
+      statuses <- StatusDatabase.statuses
+    }
+    yield Ok(views.html.index(Some(Json.obj("data" -> statuses))))
   }
 
   def login = Action {

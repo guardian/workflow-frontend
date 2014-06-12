@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, statuses: Option[play.api.libs.json.JsObject] = None)(content: Html)
 @import lib.Composer._
 
 <!DOCTYPE html>
@@ -27,6 +27,7 @@
             data-main="/assets/javascripts/main"
             data-composer-newcontent="@newContentUrl"
             data-composer-viewcontent="@adminUrl"
+            data-statuses="@statuses"
             src="/assets/javascripts/require.js"
             id="require-script"></script>
 

@@ -6,7 +6,8 @@ require.config({
         'uiBootstrap': 'components/ui-bootstrap-tpls-0.11.0.min',
         'bootstrapJs': 'components/bootstrap',
         'ui.bootstrap.datetimepicker': 'components/datetimepicker',
-        'sugar': 'components/sugar.min'
+        'sugar': 'components/sugar.min',
+        'underscore': 'components/underscore-min'
 
     },
     shim: {
@@ -27,7 +28,8 @@ require(['angular',
          'uiBootstrap',
          'bootstrapJs',
          'sugar',
-         'ui.bootstrap.datetimepicker'],
+         'ui.bootstrap.datetimepicker',
+         'underscore'],
     function(angular, app, route) {
         'use strict';
         angular.element().ready(function() {
