@@ -31,7 +31,7 @@ define([
 
         $scope.filters = {};
 
-        var statuses = statuses['statuses'].data
+        var statuses = statuses['statuses']
 
         $scope.statuses = statuses;
 

@@ -16,7 +16,7 @@ object Application extends Controller with Authenticated {
     for {
       statuses <- StatusDatabase.statuses
     }
-    yield Ok(views.html.index(Some(Json.obj("data" -> statuses))))
+    yield Ok(views.html.index(Json.obj("data" -> statuses)))
   }
 
   def login = Action {

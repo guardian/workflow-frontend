@@ -1,4 +1,4 @@
-@(title: String, statuses: Option[play.api.libs.json.JsObject] = None)(content: Html)
+@(title: String)(content: Html)
 @import lib.Composer._
 
 <!DOCTYPE html>
@@ -23,13 +23,7 @@
     <script src="@routes.Assets.at("javascripts/jquery.simple-dtpicker.js")" type="text/javascript"></script>
 
     <!-- TODO fix minification -->
-    <script type="text/javascript"
-            data-main="/assets/javascripts/main"
-            data-composer-newcontent="@newContentUrl"
-            data-composer-viewcontent="@adminUrl"
-            data-statuses="@statuses"
-            src="/assets/javascripts/require.js"
-            id="require-script"></script>
+
 
 </head>
 

@@ -1,6 +1,14 @@
-@(statuses: Option[play.api.libs.json.JsObject])
+@(statuses: play.api.libs.json.JsObject)
+@import lib.Composer._
+@main("Welcome to Workflow") {
 
-@main("Welcome to Workflow", statuses) {
+<script type="text/javascript"
+        data-main="/assets/javascripts/main"
+        data-composer-newcontent="@newContentUrl"
+        data-composer-viewcontent="@adminUrl"
+        data-statuses="@statuses"
+        src="/assets/javascripts/require.js"
+        id="require-script"></script>
 
         <div ng-view></div>
 

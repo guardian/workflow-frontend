@@ -13,7 +13,7 @@ define(['angular'], function (angular) {
                             'composerViewContent': composerViewContent
                 });
 
-    mod.constant('statuses', {'statuses': JSON.parse(statuses)})
+    mod.constant('statuses', {'statuses': JSON.parse(statuses).data})
 
     return mod;
 
