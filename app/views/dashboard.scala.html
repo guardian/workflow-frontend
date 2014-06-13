@@ -161,8 +161,9 @@
                 </tr>
                 </thead>
                 <tbody>
-                        <tr ng-repeat-start="status in statuses">
-                            <td colspan="12" ng-show="contentByStatus[status]" class="status-row">{{ status }}</td>
+                        <tr ng-repeat-start="status in statuses" >
+                            <td colspan="12" ng-show="contentByStatus[status]" class="status-cell" style="height: 15px;
+    padding: 5px;">{{ status }}</td>
                         </tr>
                         <tr ng-repeat="content in contentByStatus[status]" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content" ng-show="content.status==status">
 
