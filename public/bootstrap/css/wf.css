@@ -220,6 +220,11 @@ h5.query {
     padding-right:0;
 }
 
+.status-cell {
+    background-color: #F0F8FF;
+
+}
+
 @media (min-width: 768px) {
   .dl-horizontal dt {
 /*    float: left;*/

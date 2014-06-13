@@ -93,29 +93,9 @@
                     <li  ng-class="{active: statusIsSelected()}">
                         <a href="" ng-click="selectStatus(null)">All</a>
                     </li>
-                    <li ng-class="{active: statusIsSelected('Writers')}">
-                        <a href="" ng-click="selectStatus('Writers')" >
-                            Writers
-                        </a>
-                    </li>
-                    <li ng-class="{active: statusIsSelected('Desk')}">
-                        <a href="" ng-click="selectStatus('Desk')" >
-                            Desk
-                        </a>
-                    </li>
-                    <li ng-class="{active: statusIsSelected('Subs')}">
-                        <a href="" ng-click="selectStatus('Subs')" >
-                            Subs
-                        </a>
-                    </li>
-                    <li ng-class="{active: statusIsSelected('Revise')}">
-                        <a href="" ng-click="selectStatus('Revise')" >
-                            Revise
-                        </a>
-                    </li>
-                    <li ng-class="{active: statusIsSelected('Final')}">
-                        <a href="" ng-click="selectStatus('Final')" >
-                            Final
+                    <li ng-repeat="status in statuses" ng-class="{active: statusIsSelected(status)}">
+                        <a href="" ng-click="selectStatus(status)" >
+                            {{ status }}
                         </a>
                     </li>
                 </ul>
@@ -186,42 +166,42 @@
                     <th>Status</th>
                 </tr>
                 </thead>
-
                 <tbody>
+                        <tr ng-repeat-start="status in statuses" >
+                            <td colspan="12" ng-show="contentByStatus[status]" class="status-cell" style="height: 15px;
+    padding: 5px;">{{ status }}</td>
+                        </tr>
+                        <tr ng-repeat="content in contentByStatus[status]" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content" ng-show="content.status==status">
 
-                <tr ng-repeat="content in contentItems" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content">
-                    <td>
-                        <span class="glyphicon glyphicon-file" ng-show="content.contentType==='article'"></span>
-                        <span class="glyphicon glyphicon-th-list" ng-show="content.contentType==='liveblog'"></span>
-                        <span class="glyphicon glyphicon-camera" ng-show="content.contentType==='gallery'"></span>
-                        <span class="glyphicon glyphicon-hand-up" ng-show="content.contentType==='interactive'"></span>
-                    </td>
-                    <td>
-                        <!-- <span class="glyphicon glyphicon-exclamation-sign "></span> -->
-                    </td>
-                    <td>
-                         <span class="glyphicon glyphicon-comment"  ng-show="content.commentable"></span>
-                    </td>
-                    <td>
-                        <!-- <span class="glyphicon glyphicon-picture "></span> -->
-                    </td>
-                    <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.workingTitle}}</a></strong>
-                        <br />
-                        <span style="font-size: 90%; color: #666; line-height: 1em; ">
-                            {{content.headline}}
-                        </span>
-                    </td>
-                    <td>n/a</td>
-                    <td></td>
-                    <td>{{content.assignee}}</td>
-                    <td>{{content.due | formatDateTime }}</td>
-                    <td></td>
-                    <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
-                        @for(status <- statuses) {
-                            <option value="@status">@status</option>
-                        }
-                    </select></td>
-                </tr>
+                            <td>
+                                <span class="glyphicon glyphicon-file" ng-show="content.contentType==='article'"></span>
+                                <span class="glyphicon glyphicon-th-list" ng-show="content.contentType==='liveblog'"></span>
+                                <span class="glyphicon glyphicon-camera" ng-show="content.contentType==='gallery'"></span>
+                                <span class="glyphicon glyphicon-hand-up" ng-show="content.contentType==='interactive'"></span>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                                <span class="glyphicon glyphicon-comment"  ng-show="content.commentable"></span>
+                            </td>
+                            <td>
+                            </td>
+                            <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.workingTitle}}</a></strong>
+                                <br />
+                            <span style="font-size: 90%; color: #666; line-height: 1em; ">
+                                {{content.headline}}
+                            </span>
+                            </td>
+                            <td>n/a</td>
+                            <td></td>
+                            <td>{{content.assignee}}</td>
+                            <td>{{content.due | formatDateTime }}</td>
+                            <td></td>
+                            <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
+                                <option ng-repeat="s in statuses">{{ s }}</option>
+                            </select></td>
+                        </tr>
+                    <tr ng-repeat-end></tr>
                 </tbody>
             </table>
 
