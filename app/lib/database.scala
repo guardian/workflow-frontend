@@ -88,7 +88,7 @@ object PostgresDB {
           dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
           cIds.foldl[StubQuery]     ((q, ids)      => q.filter(_.composerId inSet ids))
 
-      q.list.map {
+      q.sortBy(_.due.desc).list.map {
         case (pk, title, section, due, assignee, composerId, contentType) =>
           Stub(Some(pk), title, section, due, assignee, composerId, contentType)
       }

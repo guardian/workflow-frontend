@@ -23,7 +23,7 @@ define([
     }
 
     dashboardControllers.controller('DateFilterCtrl',
-        ['$scope','$http', 'filterParams', function($scope, $http, filterParams) {
+        ['$scope','$http', function($scope, $http) {
 
         $scope.dateOptions = mkDateOptions();
 
@@ -49,10 +49,10 @@ define([
                 $scope.dueUntil = date.clone().add('days', 1);
             }
 
-            filterParams.register({
-                'due.from': $scope.dueFrom && formatDateForUri($scope.dueFrom),
-                'due.until': $scope.dueUntil && formatDateForUri($scope.dueUntil)}
-            );
+
+            $scope.$parent.filters['due.from'] = $scope.dueFrom && formatDateForUri($scope.dueFrom)
+            $scope.$parent.filters['due.until'] = $scope.dueUntil && formatDateForUri($scope.dueUntil)
+
             $scope.$emit('changedFilters');
         });
 

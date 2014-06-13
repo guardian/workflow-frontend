@@ -46,7 +46,6 @@ tr td {
 	left: 0;
 	right: 0;
 	bottom: 0px;
-	
 }
 
 #sidebar-container {
@@ -154,7 +153,7 @@ border-left: 1px solid #eee;
     background-color: #f5f5f5;
     border-right: 1px solid #eee;
     position: fixed;
-  	width: 150px;
+  	width: 159px;
   }
 
 
@@ -199,22 +198,26 @@ h5.query {
 	height: 40px;
 	padding: 3px;
 	background-color: #adadad;
-	position: fixed;
-	/*z-index: 1000;*/
+
 }
 
-.header-bar h4 {
-	display: inline-block;
-	margin-top: 0px;
+.date-filter label{
+    padding-right: 15px;
 }
 
-.constrain-by-date, .constrain-by-desk-section  {
-	display: inline-block;
-	margin-left: 100px;
+.date-filter .btn-default {
+    height: 34px;
 }
 
-.constrain-by-date h4 {
-	font-size: 1.6rem;
+.btn.active {
+    color: #fff;
+    background-color: #3276b1;
+    border-color: #285e8e;
+}
+
+.new-stub {
+    padding-left:0;
+    padding-right:0;
 }
 
 @media (min-width: 768px) {

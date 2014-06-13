@@ -1,12 +1,9 @@
 package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import java.util.UUID
 
 import lib._
 import lib.syntax.RequestSyntax._
-import models._
 
 import play.api.mvc._
 import play.api.libs.json.Json
@@ -17,12 +14,6 @@ object Application extends Controller with Authenticated {
 
   def index = Authenticated {
     Ok(views.html.index("Hello wor... kflow :)"))
-  }
-
-  def stubs = Action.async {
-    val stubs = PostgresDB.getStubs()
-    for (sections <- SectionDatabase.sectionList)
-    yield Ok(views.html.stubs(stubs, sections))
   }
 
   def login = Action {

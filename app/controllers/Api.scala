@@ -94,18 +94,13 @@ object Api extends Controller with Authenticated {
 
   def linkStub(stubId: Long, composerId: String) = Authenticated { req =>
 
-    import play.api.Play.current
-    import play.api.db.slick.DB
+    if(PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
 
-    DB.withTransaction { implicit session =>
-      if(PostgresDB.stubLinkedToComposer(stubId)) {
-        BadRequest(s"stub with id $stubId is linked to a composer item")
-      }
-      else {
-        PostgresDB.updateStubWithComposerId(stubId, composerId)
-        NoContent
-      }
+    else {
+      PostgresDB.updateStubWithComposerId(stubId, composerId)
+      NoContent
     }
+
   }
 
   def sections = Authenticated.async {
