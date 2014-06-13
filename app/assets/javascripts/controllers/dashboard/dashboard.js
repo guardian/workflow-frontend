@@ -31,8 +31,6 @@ define([
 
         $scope.filters = {};
 
-        var statuses = statuses['statuses']
-
         $scope.statuses = statuses;
 
         function buildContentParams() {
