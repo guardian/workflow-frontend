@@ -172,12 +172,10 @@
                     <th>Working title <span style="font-size: 90%; color: #666; font-weight:normal; ">and headline</span>
                     </th>
                     <th></th>
-                    <th>Legal</th>
-                    <th>In use by</th>
                     <th>Assigned to</th>
                     <th>Due by</th>
-                    <th>Notes</th>
                     <th>Status</th>
+                    <th>State</th>
                 </tr>
                 </thead>
 
@@ -197,7 +195,6 @@
                          <span class="glyphicon glyphicon-comment"  ng-show="content.commentable"></span>
                     </td>
                     <td>
-                        <!-- <span class="glyphicon glyphicon-picture "></span> -->
                     </td>
                     <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.workingTitle}}</a></strong>
                         <br />
@@ -205,16 +202,16 @@
                             {{content.headline}}
                         </span>
                     </td>
-                    <td>n/a</td>
-                    <td></td>
                     <td>{{content.assignee}}</td>
                     <td>{{content.due | formatDateTime }}</td>
-                    <td></td>
                     <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
                         @for(status <- statuses) {
                             <option value="@status">@status</option>
                         }
                     </select></td>
+                    <td><p ng-show="content.published">Published</p>
+                        <p ng-show="!content.published">Draft</p>
+                    </td>
                 </tr>
                 </tbody>
             </table>
