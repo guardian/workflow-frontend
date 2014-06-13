@@ -99,7 +99,7 @@ object PostgresDB {
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
 
-      stub.composerId.foreach(ensureContentExistsWithId(_))
+      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
       stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
     }
@@ -107,7 +107,7 @@ object PostgresDB {
   def updateStub(id: Long, stub: Stub) {
     DB.withTransaction { implicit session =>
 
-      stub.composerId.foreach(ensureContentExistsWithId(_))
+      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
       stubs
         .filter(_.pk === id)
@@ -116,15 +116,15 @@ object PostgresDB {
     }
   }
 
-  def updateStubWithComposerId(id: Long, composerId: String): Int = {
+  def updateStubWithComposerId(id: Long, composerId: String, contentType: String): Int = {
     DB.withTransaction { implicit session =>
 
-      ensureContentExistsWithId(composerId)
+      ensureContentExistsWithId(composerId, contentType)
 
       stubs
         .filter(_.pk === id)
-        .map(s => s.composerId)
-        .update(Some(composerId))
+        .map(s => (s.composerId, s.contentType))
+        .update((Some(composerId), Some(contentType)))
     }
   }
 
@@ -141,11 +141,11 @@ object PostgresDB {
     }
   }
 
-  private def ensureContentExistsWithId(composerId: String)(implicit session: Session) {
+  private def ensureContentExistsWithId(composerId: String, contentType: String)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
       content +=
-        ((composerId, None, new DateTime, None, Status.Writers.name, "article", false, None, false))
+        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false))
     }
   }
 

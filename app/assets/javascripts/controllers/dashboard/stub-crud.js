@@ -192,7 +192,7 @@ define([
                         $http({
                             method: 'POST',
                             url: '/api/stubs/' + stub.id,
-                            params: {'composerId': composerId}
+                            params: {'composerId': composerId, 'contentType': type}
                         }).success(function(){
                             $scope.$emit('getContent');
                         });

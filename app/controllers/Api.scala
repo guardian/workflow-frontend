@@ -98,12 +98,12 @@ object Api extends Controller with Authenticated {
     NoContent
   }
 
-  def linkStub(stubId: Long, composerId: String) = Authenticated { req =>
+  def linkStub(stubId: Long, composerId: String, contentType: String) = Authenticated { req =>
 
     if(PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
 
     else {
-      PostgresDB.updateStubWithComposerId(stubId, composerId)
+      PostgresDB.updateStubWithComposerId(stubId, composerId, contentType)
       NoContent
     }
 
