@@ -209,6 +209,12 @@ h5.query {
     height: 34px;
 }
 
+.btn.active {
+    color: #fff;
+    background-color: #3276b1;
+    border-color: #285e8e;
+}
+
 .new-stub {
     padding-left:0;
     padding-right:0;

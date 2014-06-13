@@ -1,12 +1,9 @@
 package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import java.util.UUID
 
 import lib._
 import lib.syntax.RequestSyntax._
-import models._
 
 import play.api.mvc._
 import play.api.libs.json.Json
