@@ -20,13 +20,14 @@ object Api extends Controller with Authenticated {
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
     val section = req.getQueryString("section").map(Section(_))
+    val contentType = req.getQueryString("content-type")
 
     val content = PostgresDB.getContent(
       section = req.getQueryString("section").map(Section(_)),
       dueFrom = dueFrom,
       dueUntil = dueUntil,
       status = req.getQueryString("status").flatMap(StatusDatabase.find),
-      contentType = req.getQueryString("content-type"),
+      contentType = contentType,
       published = req.getQueryString("state").map(_ == "published")
     )
 
@@ -34,6 +35,7 @@ object Api extends Controller with Authenticated {
                   dueFrom = dueFrom,
                   dueUntil = dueUntil,
                   section = section,
+                  contentType = contentType,
                   unlinkedOnly = true)
 
     Ok(Json.obj("content" -> content, "stubs" -> stubs))

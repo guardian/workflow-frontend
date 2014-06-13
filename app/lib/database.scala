@@ -77,6 +77,7 @@ object PostgresDB {
     dueUntil: Option[DateTime] = None,
     section:  Option[Section] = None,
     composerId: Set[String] = Set.empty,
+    contentType: Option[String] = None,
     unlinkedOnly: Boolean = false
   ): List[Stub] =
     DB.withTransaction { implicit session =>
@@ -85,10 +86,11 @@ object PostgresDB {
 
       val q =
         (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
-          dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-          dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
-          cIds.foldl[StubQuery]     ((q, ids)      => q.filter(_.composerId inSet ids))
+          dueFrom.foldl[StubQuery]     ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
+          dueUntil.foldl[StubQuery]    ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+          section.foldl[StubQuery]     { case (q, Section(s))  => q.filter(_.section === s) } |>
+          contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
+          cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids))
 
       q.sortBy(_.due.desc).list.map {
         case (pk, title, section, due, assignee, composerId, contentType) =>
