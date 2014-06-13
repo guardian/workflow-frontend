@@ -21,11 +21,23 @@ define([
 
         $scope.disabled = stub.composerId !== undefined;
 
+        $scope.dueTextChanged = function() {
+          var due;
+          try {
+            due = Date.create($scope.stub.dueText).toISOString();
+            $scope.stub.due = due;
+          }
+          catch (e) {
+            delete $scope.stub.due;
+          }
+        };
+
         sectionsService.getSections().then(function (sections) {
             $scope.sections = sections.map(function(s) {return s.name;});
         });
 
         $scope.ok = function (addToComposer) {
+            delete $scope.stub.dueText;
             $modalInstance.close({
                 addToComposer: addToComposer,
                 stub: $scope.stub
@@ -82,7 +94,7 @@ define([
                     var stub = modalCloseResult.stub;
                     var newStub = angular.copy(stub);
                     var addToComposer = modalCloseResult.addToComposer;
-                    newStub.due = stub.due && Date.create(stub.due).toISOString();
+
                     function callComposer(addToComposer) {
                         var deferred = $q.defer();
                         var type = stub.contentType;
