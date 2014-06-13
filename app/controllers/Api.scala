@@ -19,17 +19,23 @@ object Api extends Controller with Authenticated {
   def content = Authenticated { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
+    val section = req.getQueryString("section").map(Section(_))
+
     val content = PostgresDB.getContent(
       section = req.getQueryString("section").map(Section(_)),
       dueFrom = dueFrom,
       dueUntil = dueUntil,
       status = req.getQueryString("status").flatMap(StatusDatabase.find),
       contentType = req.getQueryString("content-type"),
-      //todo - make this a boolean
       published = req.getQueryString("state").map(_ == "published")
     )
 
-    val stubs = PostgresDB.getStubs(dueFrom = dueFrom, dueUntil = dueUntil, unlinkedOnly = true)
+    val stubs = PostgresDB.getStubs(
+                  dueFrom = dueFrom,
+                  dueUntil = dueUntil,
+                  section = section,
+                  unlinkedOnly = true)
+
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
 

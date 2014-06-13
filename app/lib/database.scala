@@ -73,6 +73,7 @@ object PostgresDB {
   def getStubs(
     dueFrom: Option[DateTime] = None,
     dueUntil: Option[DateTime] = None,
+    section:  Option[Section] = None,
     composerId: Set[String] = Set.empty,
     unlinkedOnly: Boolean = false
   ): List[Stub] =
@@ -84,6 +85,7 @@ object PostgresDB {
         (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
           dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
           dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+          section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
           cIds.foldl[StubQuery]     ((q, ids)      => q.filter(_.composerId inSet ids))
 
       q.sortBy(_.due.desc).list.map {
