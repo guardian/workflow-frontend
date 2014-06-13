@@ -272,7 +272,7 @@
                 </div>
                 <div class="modal-body">
                     <p>Select content type</p>
-                    <select id="contentType" name="contentType" ng-model="type.contentType">
+                    <select id="contentType" name="contentType" ng-model="contentType.type">
                         <option value="article">Article</option>
                         <option value="liveblog">Live Blog</option>
                         <option value="gallery">Gallery</option>
@@ -281,7 +281,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-default" ng-click="cancel()">Cancel</button>
-                    <button class="btn btn-primary" ng-click="ok()">Create in Composer</button>
+                    <button class="btn btn-primary" ng-click="ok()" >Create in Composer</button>
                 </div>
             </script>
         </div>

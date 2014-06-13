@@ -132,19 +132,19 @@ define([
 
     // add to composer modal
 
-    var ComposerModalInstanceCtrl = function ($scope, $modalInstance) {
+    var ComposerModalInstanceCtrl = function ($scope, $modalInstance, stub) {
 
-        $scope.type = {'contentType': 'article'};
+        $scope.contentType = {type: stub.contentType || "article"};
 
         $scope.ok = function () {
-            $modalInstance.close($scope.type.contentType);
+            $modalInstance.close($scope.contentType.type);
         };
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
     };
 
-    dashboardControllers.controller('ComposerModalInstanceCtrl', ['$scope','$modalInstance','items', ComposerModalInstanceCtrl]);
+    dashboardControllers.controller('ComposerModalInstanceCtrl', ['$scope','$modalInstance','stub', ComposerModalInstanceCtrl]);
 
     dashboardControllers.controller('ComposerModalCtrl', ['$scope',
         '$modal',
@@ -153,13 +153,18 @@ define([
 
 
             $scope.$on('addToComposer', function(event, stub){
-                $scope.open(stub);
+                open(stub);
             });
 
-            $scope.open = function (stub) {
+            function open(stub) {
                 var modalInstance = $modal.open({
                     templateUrl: 'composerModalContent.html',
-                    controller: ComposerModalInstanceCtrl
+                    controller: ComposerModalInstanceCtrl,
+                    resolve: {
+                        stub: function () {
+                            return stub;
+                        }
+                    }
                 });
 
                 var composerNewContent = config['composerNewContent'];
