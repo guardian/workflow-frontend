@@ -69,6 +69,13 @@ overflow: auto;
     /*background-color: green;*/
 }
 
+#stubs-column h4 {
+    font-size : 1.2em;
+    margin : 0;
+    padding : 0 10px 10px 10px;
+    border-bottom : 2px solid #eee;
+}
+
 .stub ul {
     list-style-type: none;
     padding-left: 10px;
@@ -155,7 +162,6 @@ border-left: 1px solid #eee;
     position: fixed;
   	width: 159px;
   }
-
 
 /* Sidebar navigation */
 .nav-sidebar {
