@@ -12,7 +12,8 @@ case class Stub(id: Option[Long],
                 section: String,
                 due: Option[DateTime],
                 assignee: Option[String],
-                composerId: Option[String])
+                composerId: Option[String],
+                contentType: Option[String])
 
 object Stub {
   implicit val dateTimeFormat = DateFormat

@@ -1,22 +1,25 @@
 define([
     'angular',
     'moment',
+    'underscore',
     'controllers/dashboard'
 ], function (
     angular,
     moment,
+    _,
     dashboardControllers
 ) {
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', function($scope, $http) {
+        ['$scope','$http', 'statuses', function($scope, $http, statuses) {
 
         // content and stub fetch
         var getContent = function(evt, params) {
             $http.get('/api/content', {params: buildContentParams()}).success(function(response){
                 $scope.contentItems = response.content;
                 $scope.stubs = response.stubs;
+                $scope.contentByStatus = groupByStatus(response.content);
             });
         };
         $scope.$on('getContent', getContent);
@@ -28,6 +31,8 @@ define([
 
         $scope.filters = {};
 
+        $scope.statuses = statuses;
+
         function buildContentParams() {
             var params = angular.copy($scope.filters);
             params.state = $scope.selectedState;
@@ -37,8 +42,12 @@ define([
             return params;
         };
 
+        function groupByStatus(data) {
+            return _.groupBy(data, function(x){ return x.status; });
+        }
 
         // content items stuff
+
         $scope.stateIsSelected = function(state) {
             return $scope.selectedState == state;
         };

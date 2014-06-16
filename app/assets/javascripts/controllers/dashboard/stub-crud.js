@@ -21,11 +21,23 @@ define([
 
         $scope.disabled = stub.composerId !== undefined;
 
+        $scope.dueTextChanged = function() {
+          var due;
+          try {
+            due = Date.create($scope.stub.dueText).toISOString();
+            $scope.stub.due = due;
+          }
+          catch (e) {
+            delete $scope.stub.due;
+          }
+        };
+
         sectionsService.getSections().then(function (sections) {
             $scope.sections = sections.map(function(s) {return s.name;});
         });
 
         $scope.ok = function (addToComposer) {
+            delete $scope.stub.dueText;
             $modalInstance.close({
                 addToComposer: addToComposer,
                 stub: $scope.stub
@@ -82,7 +94,7 @@ define([
                     var stub = modalCloseResult.stub;
                     var newStub = angular.copy(stub);
                     var addToComposer = modalCloseResult.addToComposer;
-                    newStub.due = stub.due && Date.create(stub.due).toISOString();
+
                     function callComposer(addToComposer) {
                         var deferred = $q.defer();
                         var type = stub.contentType;
@@ -132,19 +144,19 @@ define([
 
     // add to composer modal
 
-    var ComposerModalInstanceCtrl = function ($scope, $modalInstance) {
+    var ComposerModalInstanceCtrl = function ($scope, $modalInstance, stub) {
 
-        $scope.type = {'contentType': 'article'};
+        $scope.contentType = {type: stub.contentType || "article"};
 
         $scope.ok = function () {
-            $modalInstance.close($scope.type.contentType);
+            $modalInstance.close($scope.contentType.type);
         };
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
     };
 
-    dashboardControllers.controller('ComposerModalInstanceCtrl', ['$scope','$modalInstance','items', ComposerModalInstanceCtrl]);
+    dashboardControllers.controller('ComposerModalInstanceCtrl', ['$scope','$modalInstance','stub', ComposerModalInstanceCtrl]);
 
     dashboardControllers.controller('ComposerModalCtrl', ['$scope',
         '$modal',
@@ -153,13 +165,18 @@ define([
 
 
             $scope.$on('addToComposer', function(event, stub){
-                $scope.open(stub);
+                open(stub);
             });
 
-            $scope.open = function (stub) {
+            function open(stub) {
                 var modalInstance = $modal.open({
                     templateUrl: 'composerModalContent.html',
-                    controller: ComposerModalInstanceCtrl
+                    controller: ComposerModalInstanceCtrl,
+                    resolve: {
+                        stub: function () {
+                            return stub;
+                        }
+                    }
                 });
 
                 var composerNewContent = config['composerNewContent'];
@@ -175,7 +192,7 @@ define([
                         $http({
                             method: 'POST',
                             url: '/api/stubs/' + stub.id,
-                            params: {'composerId': composerId}
+                            params: {'composerId': composerId, 'contentType': type}
                         }).success(function(){
                             $scope.$emit('getContent');
                         });

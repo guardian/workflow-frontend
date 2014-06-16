@@ -19,17 +19,25 @@ object Api extends Controller with Authenticated {
   def content = Authenticated { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
+    val section = req.getQueryString("section").map(Section(_))
+    val contentType = req.getQueryString("content-type")
+
     val content = PostgresDB.getContent(
       section = req.getQueryString("section").map(Section(_)),
       dueFrom = dueFrom,
       dueUntil = dueUntil,
       status = req.getQueryString("status").flatMap(StatusDatabase.find),
-      contentType = req.getQueryString("content-type"),
-      //todo - make this a boolean
+      contentType = contentType,
       published = req.getQueryString("state").map(_ == "published")
     )
 
-    val stubs = PostgresDB.getStubs(dueFrom = dueFrom, dueUntil = dueUntil, unlinkedOnly = true)
+    val stubs = PostgresDB.getStubs(
+                  dueFrom = dueFrom,
+                  dueUntil = dueUntil,
+                  section = section,
+                  contentType = contentType,
+                  unlinkedOnly = true)
+
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
 
@@ -92,12 +100,12 @@ object Api extends Controller with Authenticated {
     NoContent
   }
 
-  def linkStub(stubId: Long, composerId: String) = Authenticated { req =>
+  def linkStub(stubId: Long, composerId: String, contentType: String) = Authenticated { req =>
 
     if(PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
 
     else {
-      PostgresDB.updateStubWithComposerId(stubId, composerId)
+      PostgresDB.updateStubWithComposerId(stubId, composerId, contentType)
       NoContent
     }
 
