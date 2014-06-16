@@ -26,7 +26,8 @@ object PostgresDB {
     String,           // section
     Option[DateTime], // due
     Option[String],   // assign_to
-    Option[String]    // composer_id
+    Option[String],    // composer_id
+    Option[String]    // content_type
   )
 
   case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
@@ -36,7 +37,8 @@ object PostgresDB {
     def due          = column [Option[DateTime]] ("due")
     def assignee     = column [Option[String]]   ("assign_to")
     def composerId   = column [Option[String]]   ("composer_id")
-    def * = (pk, workingTitle, section, due, assignee, composerId)
+    def contentType  = column [Option[String]]   ("content_type")
+    def * = (pk, workingTitle, section, due, assignee, composerId, contentType)
   }
 
   type ContentRow = (
@@ -73,7 +75,9 @@ object PostgresDB {
   def getStubs(
     dueFrom: Option[DateTime] = None,
     dueUntil: Option[DateTime] = None,
+    section:  Option[Section] = None,
     composerId: Set[String] = Set.empty,
+    contentType: Option[String] = None,
     unlinkedOnly: Boolean = false
   ): List[Stub] =
     DB.withTransaction { implicit session =>
@@ -82,45 +86,47 @@ object PostgresDB {
 
       val q =
         (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
-          dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-          dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          cIds.foldl[StubQuery]     ((q, ids)      => q.filter(_.composerId inSet ids))
+          dueFrom.foldl[StubQuery]     ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
+          dueUntil.foldl[StubQuery]    ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+          section.foldl[StubQuery]     { case (q, Section(s))  => q.filter(_.section === s) } |>
+          contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
+          cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids))
 
       q.sortBy(_.due.desc).list.map {
-        case (pk, title, section, due, assignee, composerId) =>
-          Stub(Some(pk), title, section, due, assignee, composerId)
+        case (pk, title, section, due, assignee, composerId, contentType) =>
+          Stub(Some(pk), title, section, due, assignee, composerId, contentType)
       }
     }
 
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
 
-      stub.composerId.foreach(ensureContentExistsWithId(_))
+      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId))
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
     }
 
   def updateStub(id: Long, stub: Stub) {
     DB.withTransaction { implicit session =>
 
-      stub.composerId.foreach(ensureContentExistsWithId(_))
+      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
       stubs
         .filter(_.pk === id)
-        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId))
-        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId))
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
     }
   }
 
-  def updateStubWithComposerId(id: Long, composerId: String): Int = {
+  def updateStubWithComposerId(id: Long, composerId: String, contentType: String): Int = {
     DB.withTransaction { implicit session =>
 
-      ensureContentExistsWithId(composerId)
+      ensureContentExistsWithId(composerId, contentType)
 
       stubs
         .filter(_.pk === id)
-        .map(s => s.composerId)
-        .update(Some(composerId))
+        .map(s => (s.composerId, s.contentType))
+        .update((Some(composerId), Some(contentType)))
     }
   }
 
@@ -137,11 +143,11 @@ object PostgresDB {
     }
   }
 
-  private def ensureContentExistsWithId(composerId: String)(implicit session: Session) {
+  private def ensureContentExistsWithId(composerId: String, contentType: String)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
       content +=
-        ((composerId, None, new DateTime, None, Status.Writers.name, "article", false, None, false))
+        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false))
     }
   }
 
@@ -203,10 +209,10 @@ object PostgresDB {
       } yield (s, c)
 
       query.sortBy { case (s, c) => s.due }.list.map {
-        case ((pk, title, section, due, assignee, cId),
+        case ((pk, title, section, due, assignee, cId, stubContentType),
               (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published)) =>
           DashboardRow(
-            Stub(Some(pk), title, section, due, assignee, cId),
+            Stub(Some(pk), title, section, due, assignee, cId, stubContentType),
             WorkflowContent(
               composerId,
               path,

@@ -49,7 +49,7 @@ tr td {
 }
 
 #sidebar-container {
-width: 150px;
+width: 155px;
 position: absolute;
 top: 0;
 bottom: 0;
@@ -63,10 +63,17 @@ overflow: auto;
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 155px;
+    left: 160px;
     overflow: auto;
     border-right: 1px solid #eee;
     /*background-color: green;*/
+}
+
+#stubs-column h4 {
+    font-size : 1.2em;
+    margin : 0;
+    padding : 0 10px 10px 10px;
+    border-bottom : 2px solid #eee;
 }
 
 .stub ul {
@@ -100,7 +107,7 @@ position: absolute;
 top: 0px;
 right: 205px;
 bottom: 0;
-left: 360px;
+left: 365px;
 overflow: auto;
     /*background-color: yellow;*/
 }
@@ -155,7 +162,6 @@ border-left: 1px solid #eee;
     position: fixed;
   	width: 159px;
   }
-
 
 /* Sidebar navigation */
 .nav-sidebar {
@@ -218,6 +224,11 @@ h5.query {
 .new-stub {
     padding-left:0;
     padding-right:0;
+}
+
+.status-cell {
+    background-color: #F0F8FF;
+
 }
 
 @media (min-width: 768px) {

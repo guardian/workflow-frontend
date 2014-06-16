@@ -15,7 +15,8 @@ define([
                     method: 'PUT',
                     url: '/api/content/' + content.composerId + '/status',
                     data: {'data': content.status}
-                });
+                }).then(function(){ $scope.$emit('getContent'); });
+
             }
         });
 
