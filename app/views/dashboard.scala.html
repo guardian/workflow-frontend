@@ -159,12 +159,10 @@
                     <th>Working title <span style="font-size: 90%; color: #666; font-weight:normal; ">and headline</span>
                     </th>
                     <th></th>
-                    <th>Legal</th>
-                    <th>In use by</th>
                     <th>Assigned to</th>
                     <th>Due by</th>
-                    <th>Notes</th>
                     <th>Status</th>
+                    <th>State</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -193,14 +191,14 @@
                                 {{content.headline}}
                             </span>
                             </td>
-                            <td>n/a</td>
-                            <td></td>
                             <td>{{content.assignee}}</td>
                             <td>{{content.due | formatDateTime }}</td>
-                            <td></td>
                             <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
                                 <option ng-repeat="s in statuses">{{ s }}</option>
                             </select></td>
+                            <td><p ng-show="content.published">Published</p>
+                                <p ng-show="!content.published">Draft</p>
+                            </td>
                         </tr>
                     <tr ng-repeat-end></tr>
                 </tbody>
