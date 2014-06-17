@@ -27,7 +27,7 @@ define([
         $scope.$watch('selectedContentType', getContent);
         $scope.$watch('selectedSection', getContent);
 
-        $scope.sections = ['Cities', 'Technology'];
+        $scope.sections = ['Cities', 'Technology', 'Dev'];
 
         $scope.filters = {};
 
