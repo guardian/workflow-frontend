@@ -11,6 +11,10 @@ define([
         $scope.newStub = function (contentType) {
             $scope.$emit('newStubButtonClicked', contentType);
         };
+
+        $scope.importFromComposer = function () {
+            $scope.$emit('importFromComposerButtonClicked');
+        };
     }]);
 
     // stub create and edit
@@ -138,6 +142,121 @@ define([
                             $scope.$emit('getContent');
                         });
                     });
+                });
+            };
+        }]);
+
+    // composer import control
+    // stub create and edit
+
+    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService) {
+
+        $scope.stub = {
+            section: 'Technology'
+        };
+
+        $scope.disabled = $scope.stub.composerId !== undefined;
+
+        $scope.dueTextChanged = function() {
+            var due;
+            try {
+                due = Date.create($scope.stub.dueText).toISOString();
+                $scope.stub.due = due;
+            }
+            catch (e) {
+                delete $scope.stub.due;
+            }
+        };
+
+        sectionsService.getSections().then(function (sections) {
+            $scope.sections = sections.map(function(s) {return s.name;});
+        });
+
+        $scope.ok = function (addToComposer) {
+            delete $scope.stub.dueText;
+            $modalInstance.close({
+                stub: $scope.stub
+            });
+        };
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    };
+
+    dashboardControllers.controller('ComposerImportModalInstanceCtrl', ['$scope',
+        '$modalInstance',
+        'stub',
+        'sectionsService',
+        ComposerImportModalInstanceCtrl]);
+
+    dashboardControllers.controller('ComposerImportModalCtrl', ['$scope',
+        '$modal',
+        '$http',
+        '$q',
+        'config',
+        function($scope, $modal, $http, $q, config){
+
+            $scope.$on('composerImport', function(event) {
+                open();
+            });
+
+            function open() {
+
+                var modalInstance = $modal.open({
+                    templateUrl: 'composerImportModalContent.html',
+                    controller: ComposerImportModalInstanceCtrl
+                });
+
+                modalInstance.result.then(function (modalCloseResult) {
+                    var stub = modalCloseResult.stub;
+
+                    console.log('stub data:', stub);
+//                    var newStub = angular.copy(stub);
+//                    var addToComposer = modalCloseResult.addToComposer;
+//
+//                    function callComposer(addToComposer) {
+//                        var deferred = $q.defer();
+//                        var type = stub.contentType;
+//                        if(addToComposer) {
+//                            $http({
+//                                method: 'POST',
+//                                url: composerNewContent,
+//                                params: {'type': type},
+//                                withCredentials: true
+//                            }).then(function(response){
+//                                var composerId = response.data.data.id;
+//                                deferred.resolve(composerId);
+//                            },function(response){
+//                                deferred.reject(response);
+//                            });
+//                        }
+//                        else {
+//                            deferred.resolve(null);
+//                        }
+//                        return deferred.promise;
+//                    }
+//
+//                    callComposer(addToComposer).then(function(composerId) {
+//                        newStub.composerId = composerId;
+//                        var response;
+//                        if (newStub.id === undefined) {
+//                            response = $http({
+//                                method: 'POST',
+//                                url: '/api/stubs',
+//                                data: newStub
+//                            });
+//                        }
+//                        else {
+//                            response = $http({
+//                                method: 'PUT',
+//                                url: '/api/stubs/' + stub.id,
+//                                data: newStub
+//                            });
+//                        }
+//                        response.success(function(){
+//                            $scope.$emit('getContent');
+//                        });
+//                    });
                 });
             };
         }]);

@@ -79,6 +79,11 @@ define([
             $scope.$broadcast('newStub', contentType);
         });
 
+        $scope.$on('importFromComposerButtonClicked', function (event) {
+            console.log("opening composer import")
+            $scope.$broadcast('composerImport');
+        });
+
         $scope.editStub = function (stub) {
             $scope.$broadcast('editStub', angular.copy(stub));
         };
