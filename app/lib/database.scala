@@ -130,6 +130,15 @@ object PostgresDB {
     }
   }
 
+  def updateStubWithAssignee(id: Long, assignee: String): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.assignee)
+        .update(Some(assignee))
+    }
+  }
+
   def stubLinkedToComposer(id: Long): Boolean = {
     DB.withTransaction { implicit session =>
       val q = stubs.filter(stub => stub.pk === id && stub.composerId.isNotNull)

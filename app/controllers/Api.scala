@@ -74,6 +74,16 @@ object Api extends Controller with Authenticated {
      }).merge
   }
 
+  def putStubAssignee(stubId: Long) = Authenticated { implicit request =>
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+      assignee <- extract[String](jsValue \ "data").right
+    } yield {
+        PostgresDB.updateStubWithAssignee(stubId, assignee)
+        NoContent
+    }).merge
+  }
+
   def putContent(composerId: String) = Authenticated { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
@@ -92,7 +102,6 @@ object Api extends Controller with Authenticated {
       PostgresDB.updateContentStatus(status, composerId)
       NoContent
     }).merge
-
   }
 
   def deleteStub(stubId: Long) = Authenticated {

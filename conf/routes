@@ -18,6 +18,7 @@ PUT     /api/content/:composerId/status     controllers.Api.putContentStatus(com
 GET     /api/stubs                          controllers.Api.stubs
 POST    /api/stubs                          controllers.Api.newStub
 PUT     /api/stubs/:stubId                  controllers.Api.putStub(stubId: Long)
+PUT     /api/stubs/:stubId/assignee         controllers.Api.putStubAssignee(stubId: Long)
 DELETE  /api/stubs/:stubId                  controllers.Api.deleteStub(stubId: Long)
 POST    /api/stubs/:stubId                  controllers.Api.linkStub(stubId: Long, composerId: String, contentType: String)
 
