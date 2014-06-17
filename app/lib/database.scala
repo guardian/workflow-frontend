@@ -235,7 +235,7 @@ object PostgresDB {
 object SectionDatabase {
   val store: Agent[Set[Section]] = Agent(Set())
 
-  for(apiSections <- loadSectionsFromApi) store.alter(apiSections)
+  for(apiSections <- loadSectionsFromApi) store.alter(apiSections + Section("Dev"))
 
   def upsert(section: Section): Future[Set[Section]] = store.alter(_ + section)
   def remove(section: Section): Future[Set[Section]] = store.alter(_ - section)
