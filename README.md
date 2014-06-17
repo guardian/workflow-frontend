@@ -8,6 +8,7 @@ Development prerequisites
 
   * Install [SBT](http://www.scala-sbt.org/)
   * Get an account in the [aws-cms-workflow](https://aws-cms-workflow.signin.aws.amazon.com/console) AWS account
+  * Set your region in the AWS console (drop-down menu in the top right corner) - you probably want to choose Ireland.
   * Create your own CloudFormation stack, using the developer template in `cloudformation/dev-template.json`. NB: Enter
     a unique stack name in the "Stage" parameter, e.g. "DEV-{username}"
   * Query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values
