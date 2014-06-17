@@ -292,8 +292,11 @@
                 </div>
                 <form name="stubForm">
                     <input type="hidden" ng-model="stub.id" />
-                    <h1>Hello world</h1>
                     <div class="modal-body">
+                        <div class="form-group">
+                            <label for="stub_title">Composer url *</label>
+                            <input type="text" ng-model="formData.composerUrl" ng-change="composerUrlChanged()" id="composer_url" name="composerUrl" class="form-control" required>
+                        </div>
                         <div class="form-group">
                             <label for="stub_title">Stub title *</label>
                             <input type="text" ng-model="stub.title" id="stub_title" name="title" class="form-control" required>
@@ -304,7 +307,7 @@
                         </div>
                         <div class="form-group">
                             <label for="stub_due">Due by</label>
-                            <input type="text" ng-change="dueTextChanged()" ng-model="stub.dueText" id="stub_due" name="due" class="form-control">
+                            <input type="text" ng-change="dueTextChanged()" ng-model="formData.dueText" id="stub_due" name="due" class="form-control">
                             {{ stub.due && (stub.due | formatDateTime) }}
                         </div>
                         <div class="form-group">

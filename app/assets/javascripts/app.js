@@ -13,6 +13,7 @@ define([
     'controllers/dashboard/stub-crud',
 
     'services/sections-service',
+    'services/composer-service',
 
     'angularRoute'
     ], function (angular, filters, services, directives, config, controllers) {
@@ -27,7 +28,8 @@ define([
             'workflow.directives',
             'workflow.config',
             'workflow.controllers',
-            'sectionsService'
+            'sectionsService',
+            'composerService'
         ]);
 
 });

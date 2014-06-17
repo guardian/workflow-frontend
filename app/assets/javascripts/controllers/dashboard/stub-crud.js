@@ -149,18 +149,43 @@ define([
     // composer import control
     // stub create and edit
 
-    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService) {
+    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService, composerService) {
+
+        $scope.contentFound = false;
 
         $scope.stub = {
             section: 'Technology'
         };
 
+        $scope.formData = {};
+
         $scope.disabled = $scope.stub.composerId !== undefined;
+
+        $scope.composerUrlChanged = function() {
+            console.log($scope.formData.composerUrl);
+            composerService.getComposerContent($scope.formData.composerUrl).then(
+                function(content) {
+                    if(content) {
+                        $scope.contentFound = true;
+                        $scope.stub.composerId = content.id;
+                        $scope.stub.contentType = content.type;
+                        $scope.stub.title = content.headline;
+                    } else {
+                        $scope.contentFound = false;
+                        $scope.stub.composerId = null;
+                        $scope.stub.contentType = null;
+                        $scope.stub.title = null;
+                    }
+                }
+            );
+        };
+
+
 
         $scope.dueTextChanged = function() {
             var due;
             try {
-                due = Date.create($scope.stub.dueText).toISOString();
+                due = Date.create($scope.formData.dueText).toISOString();
                 $scope.stub.due = due;
             }
             catch (e) {
@@ -173,7 +198,6 @@ define([
         });
 
         $scope.ok = function (addToComposer) {
-            delete $scope.stub.dueText;
             $modalInstance.close({
                 stub: $scope.stub
             });
@@ -187,6 +211,7 @@ define([
         '$modalInstance',
         'stub',
         'sectionsService',
+        'composerService',
         ComposerImportModalInstanceCtrl]);
 
     dashboardControllers.controller('ComposerImportModalCtrl', ['$scope',
