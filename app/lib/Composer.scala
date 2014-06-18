@@ -11,6 +11,7 @@ object Composer {
   lazy val baseUrl = config.getString("composer.url").getOrElse("http://localhost:9081/admin")
   lazy val newContentUrl = baseUrl + "/api/content"
   lazy val adminUrl = baseUrl + "/content"
+  lazy val contentDetails = baseUrl + "/api/content/"
 
   def parseId(json: JsValue): Option[String] = {
     (json \ "data" \ "id") match {

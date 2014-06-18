@@ -14,6 +14,7 @@ define([
     'controllers/dashboard/stub-crud',
 
     'services/sections-service',
+    'services/composer-service',
 
     'angularRoute'
     ], function (angular, filters, services, directives, config, controllers) {
@@ -29,11 +30,14 @@ define([
             'workflow.config',
             'workflow.controllers',
             'sectionsService',
+            'composerService',
             'xeditable'
         ]);
+
         app.run(function(editableOptions) {
             editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
         });
+    
         return app;
 
 });
