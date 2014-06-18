@@ -19,7 +19,12 @@ object WorkflowBuild extends Build {
       scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings")
     )
 
-  val root = playProject("prototype")
+  lazy val commonLib = project("common-lib")
+    .settings(
+      libraryDependencies ++= databaseDependencies
+    )
+
+  lazy val root = playProject("prototype")
     .settings(
       libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies,
       requireJs += "main.js",
@@ -33,6 +38,7 @@ object WorkflowBuild extends Build {
     play.Project(path, path = file(path))
       .settings(commonSettings ++ playArtifactDistSettings ++ playArtifactSettings: _*)
       .settings(magentaPackageName := path)
+      .dependsOn(commonLib)
 
   def playArtifactSettings = Seq(
     ivyXML :=
