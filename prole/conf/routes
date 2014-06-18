@@ -1,0 +1,2 @@
+# Management
+GET     /management/healthcheck             controllers.Management.healthCheck

@@ -24,6 +24,8 @@ object WorkflowBuild extends Build {
       libraryDependencies ++= databaseDependencies
     )
 
+  lazy val prole = playProject("prole")
+
   lazy val root = playProject("prototype")
     .settings(
       libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies,
