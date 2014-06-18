@@ -81,6 +81,16 @@ define([
             });
         };
 
+
+        $scope.deleteContent = function(content) {
+            if (window.confirm("Are you sure? \"" + content.workingTitle + "\" looks like a nice content item to me.")) {
+                $http({
+                    method: 'DELETE',
+                    url: 'api/content/' + content.composerId
+                }).success(function(){getContent();})
+            };
+        }
+
         // stubs stuff
 
         $scope.$on('newStubButtonClicked', function (event, contentType) {
