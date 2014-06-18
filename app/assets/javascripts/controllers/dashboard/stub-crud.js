@@ -21,13 +21,20 @@ define([
 
         $scope.disabled = stub.composerId !== undefined;
 
+
+        // Set dueText field content on init
+        if (stub.due) {
+            stub.dueText = moment(stub.due).format("D MMM YYYY, HH:mm");
+        }
+
         // Watch changes to dueText
         $scope.$watch('stub.dueText', function() {
             $scope.dueTextChanged();
         });
 
+
         $scope.onDatePicked = function(newDate, oldDate) {
-            $scope.stub.dueText = moment(newDate).format("ddd D MMM YYYY, HH:mm");
+            $scope.stub.dueText = moment(newDate).format("D MMM YYYY, HH:mm");
         };
 
         $scope.dueTextChanged = function() {
