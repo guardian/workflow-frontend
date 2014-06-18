@@ -5,6 +5,7 @@ define([
     'directives',
     'config',
     'controllers',
+    'xeditable',
 
     'controllers/dashboard',
     'controllers/dashboard/content-item',
@@ -20,7 +21,7 @@ define([
 
         'use strict';
 
-        return angular.module('workflow', [
+        var app =  angular.module('workflow', [
             'ngRoute',
             'dashboardControllers',
             'workflow.filters',
@@ -29,7 +30,14 @@ define([
             'workflow.config',
             'workflow.controllers',
             'sectionsService',
-            'composerService'
+            'composerService',
+            'xeditable'
         ]);
+
+        app.run(function(editableOptions) {
+            editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
+        });
+    
+        return app;
 
 });

@@ -251,7 +251,13 @@ h5.query {
   }
 }
 
+.detail__editable.editable-empty{
+    color: #428bca;
+}
 
+.detail__editable.editable-click {
+    color: #000;
+}
 
 /*
  * Main content

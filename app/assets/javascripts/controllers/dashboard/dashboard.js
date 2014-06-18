@@ -73,6 +73,14 @@ define([
             $scope.selectedContent = content;
         };
 
+        $scope.updateAssignee = function(stubId, assignee) {
+            $http({
+                method: 'PUT',
+                url: '/api/stubs/' + stubId + '/assignee',
+                data: {data: assignee}
+            });
+        };
+
         // stubs stuff
 
         $scope.$on('newStubButtonClicked', function (event, contentType) {
