@@ -19,7 +19,7 @@ object WorkflowBuild extends Build {
       scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings")
     )
 
-  val root = playProject("prototype", ".")
+  val root = playProject("prototype")
     .settings(
       libraryDependencies ++= Seq(
         "com.amazonaws" % "aws-java-sdk" % "1.7.5",
@@ -33,10 +33,10 @@ object WorkflowBuild extends Build {
       requireJsShim += "main.js"
     )
 
-  def playProject(name: String, path: String): Project =
-    play.Project(name, path = file(path))
+  def playProject(path: String): Project =
+    play.Project(path, path = file(path))
       .settings(commonSettings ++ playArtifactDistSettings ++ playArtifactSettings: _*)
-      .settings(magentaPackageName := name)
+      .settings(magentaPackageName := path)
 
   def playArtifactSettings = Seq(
     ivyXML :=
