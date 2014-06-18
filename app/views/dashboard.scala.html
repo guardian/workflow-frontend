@@ -259,7 +259,7 @@
                                     <button type="button" id="stub_duedate" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-calendar"></i></button>
                                   </a>
                                   <ul class="dropdown-menu pull-right" role="menu">
-                                    <datetimepicker data-ng-model="stub.dueText" data-datetimepicker-config="{ dropdownSelector: '#stub_duedate', minView: 'hour' }"/>
+                                    <datetimepicker data-ng-model="stub.due" data-datetimepicker-config="{ dropdownSelector: '#stub_duedate', minView: 'hour' }" data-on-set-time="onDatePicked"/>
                                   </ul>
                                 </div>
                             </div>
