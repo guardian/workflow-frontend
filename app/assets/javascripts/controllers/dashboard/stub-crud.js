@@ -151,8 +151,6 @@ define([
 
     var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService, composerService) {
 
-        $scope.contentFound = false;
-
         $scope.stub = {
             section: 'Technology'
         };
@@ -162,16 +160,13 @@ define([
         $scope.disabled = $scope.stub.composerId !== undefined;
 
         $scope.composerUrlChanged = function() {
-            console.log($scope.formData.composerUrl);
             composerService.getComposerContent($scope.formData.composerUrl).then(
                 function(content) {
                     if(content) {
-                        $scope.contentFound = true;
                         $scope.stub.composerId = content.id;
                         $scope.stub.contentType = content.type;
                         $scope.stub.title = content.headline;
                     } else {
-                        $scope.contentFound = false;
                         $scope.stub.composerId = null;
                         $scope.stub.contentType = null;
                         $scope.stub.title = null;
@@ -179,8 +174,6 @@ define([
                 }
             );
         };
-
-
 
         $scope.dueTextChanged = function() {
             var due;
@@ -236,52 +229,15 @@ define([
                     var stub = modalCloseResult.stub;
 
                     console.log('stub data:', stub);
-//                    var newStub = angular.copy(stub);
-//                    var addToComposer = modalCloseResult.addToComposer;
-//
-//                    function callComposer(addToComposer) {
-//                        var deferred = $q.defer();
-//                        var type = stub.contentType;
-//                        if(addToComposer) {
-//                            $http({
-//                                method: 'POST',
-//                                url: composerNewContent,
-//                                params: {'type': type},
-//                                withCredentials: true
-//                            }).then(function(response){
-//                                var composerId = response.data.data.id;
-//                                deferred.resolve(composerId);
-//                            },function(response){
-//                                deferred.reject(response);
-//                            });
-//                        }
-//                        else {
-//                            deferred.resolve(null);
-//                        }
-//                        return deferred.promise;
-//                    }
-//
-//                    callComposer(addToComposer).then(function(composerId) {
-//                        newStub.composerId = composerId;
-//                        var response;
-//                        if (newStub.id === undefined) {
-//                            response = $http({
-//                                method: 'POST',
-//                                url: '/api/stubs',
-//                                data: newStub
-//                            });
-//                        }
-//                        else {
-//                            response = $http({
-//                                method: 'PUT',
-//                                url: '/api/stubs/' + stub.id,
-//                                data: newStub
-//                            });
-//                        }
-//                        response.success(function(){
-//                            $scope.$emit('getContent');
-//                        });
-//                    });
+                    var newStub = angular.copy(stub);
+
+                    var response = $http({
+                            method: 'POST',
+                            url: '/api/stubs',
+                            data: newStub
+                        }).success(function(){
+                            $scope.$emit('getContent');
+                        });
                 });
             };
         }]);
