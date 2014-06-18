@@ -316,8 +316,17 @@
                             <select id="stub_section" name="section" ng-model="stub.section" ng-options="section for section in sections"></select>
                         </div>
                         <div class="form-group">
-                            <label for="stub_due">Due by</label>
-                            <input type="text" ng-change="dueTextChanged()" ng-model="formData.dueText" id="stub_due" name="due" class="form-control">
+                            <label for="stub_due">Due by <em style="font-weight:normal; color: #666;"><small>e.g. today 3pm, tomorrow 15:00, tuesday next week 18:00, 2014-08-14</small></em></label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" data-ng-model="formData.dueText" id="stub_due" name="due">
+                                <div class="input-group-btn">
+                                    <button type="button" id="stub_duedate" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-calendar"></i></button>
+                                  </a>
+                                  <ul class="dropdown-menu pull-right" role="menu">
+                                    <datetimepicker data-ng-model="stub.due" data-datetimepicker-config="{ dropdownSelector: '#stub_duedate' }" data-on-set-time="onDatePicked"/>
+                                  </ul>
+                                </div>
+                            </div>
                             {{ stub.due && (stub.due | formatDateTime) }}
                         </div>
                         <div class="form-group">

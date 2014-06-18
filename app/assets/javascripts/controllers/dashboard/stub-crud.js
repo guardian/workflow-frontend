@@ -196,7 +196,23 @@ define([
             );
         };
 
+
+        // Watch changes to dueText
+        $scope.$watch('formData.dueText', function() {
+            $scope.dueTextChanged();
+        });
+
+
+        $scope.onDatePicked = function(newDate, oldDate) {
+            $scope.formData.dueText = moment(newDate).format("D MMM YYYY, HH:mm");
+        };
+
         $scope.dueTextChanged = function() {
+            if (!$scope.formData.dueText) { // set to none when empty
+                $scope.stub.due = null;
+                return;
+            }
+
             var due;
             try {
                 due = Date.create($scope.formData.dueText).toISOString();
