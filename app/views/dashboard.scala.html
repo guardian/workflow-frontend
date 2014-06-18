@@ -226,7 +226,8 @@
                     <dt>Last modified by</dt>
                         <dd>{{ selectedContent.lastModifiedBy || "-" }}</dd>
                     <dt>Assigned to</dt>
-                        <dd>{{ selectedContent.assignee || "-" }}</dd>
+                    <a href="#" class="detail__editable" editable-text="selectedContent.assignee" buttons="no" onbeforesave="updateAssignee(selectedContent.stubId, $data)">
+                        {{ selectedContent.assignee || "none" }}</a>
                 </dl>
                 <hr />
             </div>
