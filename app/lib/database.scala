@@ -194,6 +194,7 @@ object PostgresDB {
   def deleteContent(composerId: String) {
     DB.withTransaction { implicit session =>
       content.filter(_.composerId === composerId).delete
+      stubs.filter(_.composerId === composerId).delete
     }
   }
 
