@@ -255,14 +255,24 @@ h5.query {
     color: #428bca;
 }
 
+
+
+.detail__editable.editable-click {
+    color: #000;
+}
+
+/** Date picker **/
 .datetimepicker thead {
   background: transparent;
   color: #000;
 }
 
-.detail__editable.editable-click {
-    color: #000;
+.stubModal__exampleText {
+  font-size: 85%;
+  font-weight: normal;
+  color: #666;
 }
+
 
 /*
  * Main content

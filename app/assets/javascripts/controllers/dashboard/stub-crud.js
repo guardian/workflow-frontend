@@ -105,6 +105,7 @@ define([
                 var modalInstance = $modal.open({
                     templateUrl: 'stubModalContent.html',
                     controller: StubModalInstanceCtrl,
+                    windowClass: 'stubModal',
                     resolve: {
                         stub: function () {
                             return stub;
@@ -259,7 +260,8 @@ define([
 
                 var modalInstance = $modal.open({
                     templateUrl: 'composerImportModalContent.html',
-                    controller: ComposerImportModalInstanceCtrl
+                    controller: ComposerImportModalInstanceCtrl,
+                    windowClass: 'stubModal'
                 });
 
                 modalInstance.result.then(function (modalCloseResult) {
