@@ -282,7 +282,7 @@
             </script>
         </div>
 
-        <!--- this section is the new/edit stubs modal form  -->
+        <!--- this section is the create stub from composer content modal  -->
         <div ng-controller="ComposerImportModalCtrl">
 
             <script type="text/ng-template" id="composerImportModalContent.html">
@@ -327,8 +327,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-                        <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid">Create in Composer</button>
-                        <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=false)" ng-disabled="stubForm.$invalid">Save stub</button>
+                        <button type="submit" class="btn btn-primary" ng-click="ok()" ng-disabled="stubForm.$invalid || !stub.composerId">Import</button>
                     </div>
                 </form>
             </script>

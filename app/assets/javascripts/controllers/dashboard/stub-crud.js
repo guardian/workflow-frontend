@@ -190,7 +190,7 @@ define([
             $scope.sections = sections.map(function(s) {return s.name;});
         });
 
-        $scope.ok = function (addToComposer) {
+        $scope.ok = function () {
             $modalInstance.close({
                 stub: $scope.stub
             });
