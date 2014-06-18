@@ -82,7 +82,7 @@ define([
         };
 
         $scope.deleteContent = function(content) {
-            if (window.confirm("Are you sure? \"" + content.title + "\" looks like a nice content item to me.")) {
+            if (window.confirm("Are you sure? \"" + content.workingTitle + "\" looks like a nice content item to me.")) {
                 $http({
                     method: 'DELETE',
                     url: 'api/content/' + content.composerId
