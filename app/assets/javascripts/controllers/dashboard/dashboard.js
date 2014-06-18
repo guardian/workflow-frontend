@@ -81,6 +81,7 @@ define([
             });
         };
 
+
         $scope.deleteContent = function(content) {
             if (window.confirm("Are you sure? \"" + content.workingTitle + "\" looks like a nice content item to me.")) {
                 $http({
@@ -94,6 +95,10 @@ define([
 
         $scope.$on('newStubButtonClicked', function (event, contentType) {
             $scope.$broadcast('newStub', contentType);
+        });
+
+        $scope.$on('importFromComposerButtonClicked', function (event) {
+            $scope.$broadcast('composerImport');
         });
 
         $scope.editStub = function (stub) {
