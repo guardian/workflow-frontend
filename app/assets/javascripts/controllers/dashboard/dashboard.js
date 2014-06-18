@@ -80,7 +80,6 @@ define([
         });
 
         $scope.$on('importFromComposerButtonClicked', function (event) {
-            console.log("opening composer import")
             $scope.$broadcast('composerImport');
         });
 

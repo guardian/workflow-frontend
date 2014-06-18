@@ -4,7 +4,7 @@ define(['angular'], function(angular) {
     var sectionsService = angular.module('composerService', []);
 
     sectionsService.factory('composerService',
-        ['$http', 'config', function($http, config) {
+        ['$http', '$q', 'config', function($http, $q, config) {
 
             var composerContentFetch = config['composerContentDetails'];
 
@@ -36,7 +36,9 @@ define(['angular'], function(angular) {
                             return null;
                         });
                 } else {
-                    return deferred.resolve(null);
+                    var deferred = $q.defer();
+                    deferred.resolve(null);
+                    return deferred.promise;
                 }
             };
 
