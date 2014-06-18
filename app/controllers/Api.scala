@@ -79,7 +79,8 @@ object Api extends Controller with Authenticated {
       jsValue <- readJsonFromRequest(request.body).right
       assignee <- extract[String](jsValue \ "data").right
     } yield {
-        PostgresDB.updateStubWithAssignee(stubId, assignee)
+        val assignOpt = Some(assignee).filter(_.nonEmpty)
+        PostgresDB.updateStubWithAssignee(stubId, assignOpt)
         NoContent
     }).merge
   }

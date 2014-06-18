@@ -130,12 +130,12 @@ object PostgresDB {
     }
   }
 
-  def updateStubWithAssignee(id: Long, assignee: String): Int = {
+  def updateStubWithAssignee(id: Long, assignee: Option[String]): Int = {
     DB.withTransaction { implicit session =>
       stubs
         .filter(_.pk === id)
         .map(s => s.assignee)
-        .update(Some(assignee))
+        .update(assignee)
     }
   }
 
