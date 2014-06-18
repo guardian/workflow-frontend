@@ -163,6 +163,7 @@
                     <th>Due by</th>
                     <th>Status</th>
                     <th>State</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -199,6 +200,7 @@
                             <td><p ng-show="content.published">Published</p>
                                 <p ng-show="!content.published">Draft</p>
                             </td>
+                            <td><span ng-click="deleteContent(content)" class="glyphicon glyphicon-trash"></span></td>
                         </tr>
                     <tr ng-repeat-end></tr>
                 </tbody>
@@ -206,7 +208,7 @@
 
         </div>
 
-        <div id="detail" class="">
+        <div id="detail" class="" >
             <div class="detail-panel" ng-show="selectedContent">
                 <h4>{{ selectedContent.headline || selectedContent.workingTitle }}</h4>
 

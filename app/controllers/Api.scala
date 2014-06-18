@@ -95,10 +95,16 @@ object Api extends Controller with Authenticated {
 
   }
 
+  def deleteContent(composerId: String) = Authenticated {
+    PostgresDB.deleteContent(composerId)
+    NoContent
+  }
+
   def deleteStub(stubId: Long) = Authenticated {
     PostgresDB.deleteStub(stubId)
     NoContent
   }
+
 
   def linkStub(stubId: Long, composerId: String, contentType: String) = Authenticated { req =>
 

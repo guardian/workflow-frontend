@@ -73,6 +73,23 @@ define([
             $scope.selectedContent = content;
         };
 
+        $scope.updateAssignee = function(stubId, assignee) {
+            $http({
+                method: 'PUT',
+                url: '/api/stubs/' + stubId + '/assignee',
+                data: {data: assignee}
+            });
+        };
+
+        $scope.deleteContent = function(content) {
+            if (window.confirm("Are you sure? \"" + content.title + "\" looks like a nice content item to me.")) {
+                $http({
+                    method: 'DELETE',
+                    url: 'api/content/' + content.composerId
+                }).success(function(){getContent();})
+            };
+        }
+
         // stubs stuff
 
         $scope.$on('newStubButtonClicked', function (event, contentType) {

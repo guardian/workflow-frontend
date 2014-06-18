@@ -182,6 +182,12 @@ object PostgresDB {
     }
   }
 
+  def deleteContent(composerId: String) {
+    DB.withTransaction { implicit session =>
+      content.filter(_.composerId === composerId).delete
+    }
+  }
+
   def getContent(
     section:  Option[Section] = None,
     dueFrom:  Option[DateTime] = None,
