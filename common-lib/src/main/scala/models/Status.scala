@@ -1,7 +1,6 @@
 package models
 
 import play.api.libs.json._
-import lib.StatusDatabase
 import play.api.libs.json.JsString
 
 case class Status(name: String) {

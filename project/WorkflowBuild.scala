@@ -25,10 +25,11 @@ object WorkflowBuild extends Build {
     )
 
   lazy val prole = playProject("prole")
+                  .settings(libraryDependencies ++= awsDependencies)
 
   lazy val root = playProject("prototype")
     .settings(
-      libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies,
+      libraryDependencies ++= databaseDependencies ++ akkaDependencies,
       requireJs += "main.js",
       requireJsShim += "main.js"
     )
