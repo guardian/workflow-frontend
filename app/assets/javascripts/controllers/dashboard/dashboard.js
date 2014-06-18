@@ -12,7 +12,7 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'statuses', function($scope, $http, statuses) {
+        ['$scope','$http', 'statuses', 'sectionsService', function($scope, $http, statuses, sectionsService) {
 
         // content and stub fetch
         var getContent = function(evt, params) {
@@ -27,7 +27,7 @@ define([
         $scope.$watch('selectedContentType', getContent);
         $scope.$watch('selectedSection', getContent);
 
-        $scope.sections = ['Cities', 'Technology', 'Dev'];
+        $scope.sections = sectionsService.getSections();
 
         $scope.filters = {};
 
@@ -104,9 +104,7 @@ define([
                 $http({
                     method: 'DELETE',
                     url: '/api/stubs/' + stub.id
-                }).success(function(){
-                    getContent();
-                });
+                }).success(getContent());
             }
         };
 
