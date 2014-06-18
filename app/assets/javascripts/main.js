@@ -7,7 +7,8 @@ require.config({
         'bootstrapJs': 'components/bootstrap',
         'ui.bootstrap.datetimepicker': 'components/datetimepicker',
         'sugar': 'components/sugar.min',
-        'underscore': 'components/underscore-min'
+        'underscore': 'components/underscore-min',
+        'xeditable': 'components/xeditable.min'
 
     },
     shim: {

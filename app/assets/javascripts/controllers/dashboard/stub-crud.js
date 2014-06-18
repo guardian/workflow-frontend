@@ -11,6 +11,10 @@ define([
         $scope.newStub = function (contentType) {
             $scope.$emit('newStubButtonClicked', contentType);
         };
+
+        $scope.importFromComposer = function () {
+            $scope.$emit('importFromComposerButtonClicked');
+        };
     }]);
 
     // stub create and edit
@@ -159,6 +163,102 @@ define([
                             $scope.$emit('getContent');
                         });
                     });
+                });
+            };
+        }]);
+
+    // composer import control
+    // stub create and edit
+
+    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService, composerService) {
+
+        $scope.stub = {
+            section: 'Technology'
+        };
+
+        $scope.formData = {};
+
+        $scope.disabled = $scope.stub.composerId !== undefined;
+
+        $scope.composerUrlChanged = function() {
+            composerService.getComposerContent($scope.formData.composerUrl).then(
+                function(content) {
+                    if(content) {
+                        $scope.stub.composerId = content.id;
+                        $scope.stub.contentType = content.type;
+                        $scope.stub.title = content.headline;
+                    } else {
+                        $scope.stub.composerId = null;
+                        $scope.stub.contentType = null;
+                        $scope.stub.title = null;
+                    }
+                }
+            );
+        };
+
+        $scope.dueTextChanged = function() {
+            var due;
+            try {
+                due = Date.create($scope.formData.dueText).toISOString();
+                $scope.stub.due = due;
+            }
+            catch (e) {
+                delete $scope.stub.due;
+            }
+        };
+
+        sectionsService.getSections().then(function (sections) {
+            $scope.sections = sections.map(function(s) {return s.name;});
+        });
+
+        $scope.ok = function () {
+            $modalInstance.close({
+                stub: $scope.stub
+            });
+        };
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    };
+
+    dashboardControllers.controller('ComposerImportModalInstanceCtrl', ['$scope',
+        '$modalInstance',
+        'stub',
+        'sectionsService',
+        'composerService',
+        ComposerImportModalInstanceCtrl]);
+
+    dashboardControllers.controller('ComposerImportModalCtrl', ['$scope',
+        '$modal',
+        '$http',
+        '$q',
+        'config',
+        function($scope, $modal, $http, $q, config){
+
+            $scope.$on('composerImport', function(event) {
+                open();
+            });
+
+            function open() {
+
+                var modalInstance = $modal.open({
+                    templateUrl: 'composerImportModalContent.html',
+                    controller: ComposerImportModalInstanceCtrl
+                });
+
+                modalInstance.result.then(function (modalCloseResult) {
+                    var stub = modalCloseResult.stub;
+
+                    console.log('stub data:', stub);
+                    var newStub = angular.copy(stub);
+
+                    var response = $http({
+                            method: 'POST',
+                            url: '/api/stubs',
+                            data: newStub
+                        }).success(function(){
+                            $scope.$emit('getContent');
+                        });
                 });
             };
         }]);

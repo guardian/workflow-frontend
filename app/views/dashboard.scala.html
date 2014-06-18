@@ -18,6 +18,8 @@
                         <li><a ng-click="newStub('liveblog')">Live blog</a></li>
                         <li><a ng-click="newStub('gallery')">Gallery</a></li>
                         <li><a ng-click="newStub('interactive')">Interactive</a></li>
+                        <li class="divider"></li>
+                        <li><a ng-click="importFromComposer()">Import from Composer</a></li>
                     </ul>
                 </div>
             </div>
@@ -226,7 +228,8 @@
                     <dt>Last modified by</dt>
                         <dd>{{ selectedContent.lastModifiedBy || "-" }}</dd>
                     <dt>Assigned to</dt>
-                        <dd>{{ selectedContent.assignee || "-" }}</dd>
+                    <a href="#" class="detail__editable" editable-text="selectedContent.assignee" buttons="no" onbeforesave="updateAssignee(selectedContent.stubId, $data)">
+                        {{ selectedContent.assignee || "none" }}</a>
                 </dl>
                 <hr />
             </div>
@@ -284,6 +287,57 @@
                         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
                         <button type="button" class="btn btn-default" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid">Create in Composer</button>
                         <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=false)" ng-disabled="stubForm.$invalid">Save stub</button>
+                    </div>
+                </form>
+            </script>
+        </div>
+
+        <!--- this section is the create stub from composer content modal  -->
+        <div ng-controller="ComposerImportModalCtrl">
+
+            <script type="text/ng-template" id="composerImportModalContent.html">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()">&times;</button>
+                    <h4 class="modal-title">Import from composer</h4>
+                </div>
+                <form name="stubForm">
+                    <input type="hidden" ng-model="stub.id" />
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="stub_title">Composer url *</label>
+                            <input type="text" ng-model="formData.composerUrl" ng-change="composerUrlChanged()" id="composer_url" name="composerUrl" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="stub_title">Stub title *</label>
+                            <input type="text" ng-model="stub.title" id="stub_title" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="stub_section">section</label>
+                            <select id="stub_section" name="section" ng-model="stub.section" ng-options="section for section in sections"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="stub_due">Due by</label>
+                            <input type="text" ng-change="dueTextChanged()" ng-model="formData.dueText" id="stub_due" name="due" class="form-control">
+                            {{ stub.due && (stub.due | formatDateTime) }}
+                        </div>
+                        <div class="form-group">
+                            <label for="stub_assignee">Assign to</label>
+                            <input type="text" ng-model="stub.assignee" id="stub_assignee" name="assignee" value="" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>content type</label>
+                            <select ng-model="stub.contentType">
+                                <option value=""></option>
+                                <option value="article">Article</option>
+                                <option value="liveblog">Live blog</option>
+                                <option value="gallery">Gallery</option>
+                                <option value="interactive">Interactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" ng-click="ok()" ng-disabled="stubForm.$invalid || !stub.composerId">Import</button>
                     </div>
                 </form>
             </script>

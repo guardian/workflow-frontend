@@ -73,10 +73,22 @@ define([
             $scope.selectedContent = content;
         };
 
+        $scope.updateAssignee = function(stubId, assignee) {
+            $http({
+                method: 'PUT',
+                url: '/api/stubs/' + stubId + '/assignee',
+                data: {data: assignee}
+            });
+        };
+
         // stubs stuff
 
         $scope.$on('newStubButtonClicked', function (event, contentType) {
             $scope.$broadcast('newStub', contentType);
+        });
+
+        $scope.$on('importFromComposerButtonClicked', function (event) {
+            $scope.$broadcast('composerImport');
         });
 
         $scope.editStub = function (stub) {
