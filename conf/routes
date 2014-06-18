@@ -1,0 +1,44 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Application
+GET     /                                   controllers.Application.index
+GET     /dashboard                          controllers.Application.dashboard
+
+POST    /login                              controllers.Application.loginPost
+GET     /login                              controllers.Application.login
+GET     /redirect                           controllers.Application.openIdRedirect
+
+# API
+GET     /api/content                        controllers.Api.content
+PUT     /api/content/:composerId            controllers.Api.putContent(composerId: String)
+PUT     /api/content/:composerId/status     controllers.Api.putContentStatus(composerId: String)
+DELETE  /api/content/:composerId            controllers.Api.deleteContent(composerId: String)
+
+GET     /api/stubs                          controllers.Api.stubs
+POST    /api/stubs                          controllers.Api.newStub
+PUT     /api/stubs/:stubId                  controllers.Api.putStub(stubId: Long)
+PUT     /api/stubs/:stubId/assignee         controllers.Api.putStubAssignee(stubId: Long)
+DELETE  /api/stubs/:stubId                  controllers.Api.deleteStub(stubId: Long)
+POST    /api/stubs/:stubId                  controllers.Api.linkStub(stubId: Long, composerId: String, contentType: String)
+
+GET     /api/sections                       controllers.Api.sections
+
+# Admin
+GET     /admin/                             controllers.Admin.index
+GET     /admin/sections                     controllers.Admin.sections
+POST    /admin/sections/add                 controllers.Admin.addSection
+POST    /admin/sections/remove              controllers.Admin.removeSection
+
+GET     /admin/status                       controllers.Admin.status
+POST    /admin/status/add                   controllers.Admin.addStatus
+POST    /admin/status/remove                controllers.Admin.removeStatus
+POST    /admin/status/moveUp                controllers.Admin.moveStatusUp
+POST    /admin/status/moveDown              controllers.Admin.moveStatusDown
+
+# Management
+GET     /management/healthcheck             controllers.Management.healthCheck
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
