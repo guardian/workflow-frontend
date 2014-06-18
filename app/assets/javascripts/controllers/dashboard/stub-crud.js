@@ -21,15 +21,25 @@ define([
 
         $scope.disabled = stub.composerId !== undefined;
 
+        // Watch changes to dueText
+        $scope.$watch('stub.dueText', function() {
+            $scope.dueTextChanged();
+        });
+
         $scope.dueTextChanged = function() {
-          var due;
-          try {
-            due = Date.create($scope.stub.dueText).toISOString();
-            $scope.stub.due = due;
-          }
-          catch (e) {
-            delete $scope.stub.due;
-          }
+            if (!$scope.stub.dueText) { // set to none when empty
+                $scope.stub.due = null;
+                return;
+            }
+
+            var due;
+            try {
+                due = Date.create($scope.stub.dueText).toISOString();
+                $scope.stub.due = due;
+            }
+            catch (e) {
+                delete $scope.stub.due;
+            }
         };
 
         sectionsService.getSections().then(function (sections) {

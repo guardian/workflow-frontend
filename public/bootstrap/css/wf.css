@@ -252,6 +252,11 @@ h5.query {
 }
 
 
+.datetimepicker thead {
+  background: transparent;
+  color: #000;
+}
+
 
 /*
  * Main content
