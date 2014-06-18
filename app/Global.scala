@@ -20,20 +20,6 @@ object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
   }
 
-  override def onStart(app: Application) {
 
-    import play.api.Play.current
-    import play.api.libs.concurrent.Execution.Implicits._
-    import scala.concurrent.duration._
-    Akka.system.scheduler.schedule(
-      initialDelay = 0.seconds,
-      interval = 3.seconds,
-      receiver = Akka.system.actorOf(Props[ComposerSqsReader]),
-      message = SqsReader
-    )
-
-    // prod this to make it load initial state.
-    SectionDatabase.sectionList
-  }
 
 }
