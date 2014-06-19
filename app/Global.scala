@@ -2,7 +2,7 @@ import java.util.TimeZone
 import akka.actor.Props
 import play.api.libs.concurrent.Akka
 import play.api.mvc.WithFilters
-import play.api.{GlobalSettings, Application}
+import play.api.{Logger, GlobalSettings, Application}
 import lib.{SectionDatabase, RedirectToHTTPSFilter, SqsReader, ComposerSqsReader}
 
 
@@ -25,12 +25,21 @@ object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
     import play.api.Play.current
     import play.api.libs.concurrent.Execution.Implicits._
     import scala.concurrent.duration._
-    Akka.system.scheduler.schedule(
-      initialDelay = 0.seconds,
-      interval = 3.seconds,
-      receiver = Akka.system.actorOf(Props[ComposerSqsReader]),
-      message = SqsReader
-    )
+
+    val config = play.api.Play.configuration
+
+    if (config.getBoolean("consumeNotifications.active").getOrElse(true)) {
+      Logger.info("Started in ACTIVE mode. Consuming notifications...")
+      Akka.system.scheduler.schedule(
+        initialDelay = 0.seconds,
+        interval = 3.seconds,
+        receiver = Akka.system.actorOf(Props[ComposerSqsReader]),
+        message = SqsReader
+      )
+    }
+    else {
+      Logger.info("Started in PASSIVE mode. Not consuming notifications.")
+    }
 
     // prod this to make it load initial state.
     SectionDatabase.sectionList
