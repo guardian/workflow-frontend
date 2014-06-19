@@ -14,23 +14,21 @@ class ComposerSqsReader extends Actor {
   def receive = {
 
     case SqsReader =>
-
       for {
-        messages <- AWSWorkflowQueue.getMessages(10)
-        if messages.nonEmpty
-        jsResult = messages.traverse(AWSWorkflowQueue.toWireStatus)
-        statuses = jsResult match {
-          case JsSuccess(statuses, _) =>  statuses
-          case JsError(errors) =>
-            Logger.error(errors.toString)
-            Nil
-        }
-        stubs   = PostgresDB.getStubs(composerId = statuses.map(_.composerId).toSet)
-        content = statuses.flatMap(status => stubs.find(_.composerId == Some(status.composerId))
-                          .map(stub => WorkflowContent.fromWireStatus(status, stub)))
-        _ <- Future.traverse(messages)(AWSWorkflowQueue.deleteMessage)
-      }  {
-        content.foreach(PostgresDB.createOrModifyContent)
+          messages <- AWSWorkflowQueue.getMessages(10)
+          if messages.nonEmpty
+          //todo - would like to log out the error here
+          wireStatuses = messages.flatMap { msg => AWSWorkflowQueue.toWireStatus(msg).asOpt.map(msg -> _) }
+          stubs = PostgresDB.getStubs(composerId = wireStatuses.map(_._2.composerId).toSet)
+          content = wireStatuses.flatMap { case (msg, ws) => stubs.find(_.composerId == Some(ws.composerId))
+                              .map(stub => WorkflowContent.fromWireStatus(ws, stub)).map(msg -> _) }
+
+      } {
+          content.foreach {
+            case (msg, c) =>
+            PostgresDB.createOrModifyContent(c)
+            AWSWorkflowQueue.deleteMessage(msg)
+          }
       }
 
   }
