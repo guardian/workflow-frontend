@@ -4,12 +4,11 @@ define(['angular'], function(angular) {
     var sectionsService = angular.module('sectionsService', []);
 
     sectionsService.factory('sectionsService',
-        ['$http', function($http) {
+        [function() {
 
-
-            function getSections() { return $http.get('/api/sections').then(function(response){
-                return response.data.data;
-            });};
+            function getSections() {
+                return ['Dev', 'Cities', 'Technology']
+            };
 
             return {
                 getSections: getSections

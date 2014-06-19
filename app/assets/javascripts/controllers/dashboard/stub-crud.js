@@ -57,9 +57,7 @@ define([
             }
         };
 
-        sectionsService.getSections().then(function (sections) {
-            $scope.sections = sections.map(function(s) {return s.name;});
-        });
+        $scope.sections = sectionsService.getSections();
 
         $scope.ok = function (addToComposer) {
             delete $scope.stub.dueText;
