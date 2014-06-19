@@ -23,7 +23,7 @@ object Api extends Controller with Authenticated {
     val section = req.getQueryString("section").map(Section(_))
     val contentType = req.getQueryString("content-type")
 
-    val content = PostgresDB.getContent(
+    val content = Postgres.getContent(
       section = req.getQueryString("section").map(Section(_)),
       dueFrom = dueFrom,
       dueUntil = dueUntil,
