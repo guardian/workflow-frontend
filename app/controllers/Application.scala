@@ -3,7 +3,7 @@ package controllers
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import lib._
-import lib.syntax.RequestSyntax._
+import com.gu.workflow.syntax.RequestSyntax._
 
 import play.api.mvc._
 import play.api.libs.json.Json
