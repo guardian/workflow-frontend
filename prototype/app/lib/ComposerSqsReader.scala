@@ -1,13 +1,13 @@
 package lib
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.Actor
+import models.WorkflowContent
+import scala.concurrent.{Future, ExecutionContext}
+import ExecutionContext.Implicits.global
+import com.gu.workflow.syntax.TraverseSyntax._
 import play.api.libs.json.{JsError, JsSuccess}
 import play.api.Logger
-import com.gu.workflow.syntax.TraverseSyntax._
 import com.gu.workflow.db.PostgresDB
-import models.WorkflowContent
 
 
 class ComposerSqsReader extends Actor {

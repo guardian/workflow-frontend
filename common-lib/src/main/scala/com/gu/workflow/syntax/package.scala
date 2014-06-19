@@ -1,5 +1,4 @@
-package lib
-
+package com.gu.workflow
 
 package object syntax
   extends TraverseSyntax

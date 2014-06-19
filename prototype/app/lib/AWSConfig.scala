@@ -1,13 +1,17 @@
 package lib
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.libs.json.{JsResult, Json}
-import com.amazonaws.services.sqs.model.{DeleteMessageRequest, Message, ReceiveMessageRequest}
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.sqs.AmazonSQSClient
+import com.amazonaws.services.sqs.model.{DeleteMessageRequest, ReceiveMessageRequest, Message}
 import models.WireStatus
+import play.api.libs.json.{JsResult, JsValue, Json}
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model._
+import java.io.ByteArrayInputStream
+import scala.concurrent.{ExecutionContext, Future}
+import scala.io.Source
+import ExecutionContext.Implicits.global
 
 
 object AWSCreds {
@@ -18,6 +22,33 @@ object AWSCreds {
   private val secret = config.getString("aws.secret").getOrElse("blah")
 
   lazy val basic = new BasicAWSCredentials(accessKey, secret)
+}
+
+object AWSWorkflowBucket {
+
+  lazy val s3Client = new AmazonS3Client(AWSCreds.basic)
+
+  lazy val name = AWSCreds.config.getString("aws.stub.bucket").getOrElse(sys.error("Required: aws.stub.bucket"))
+
+  lazy val key = "tmp/stubs.txt"
+
+  def putJson(json: JsValue): Future[PutObjectResult] = {
+    val stream = new ByteArrayInputStream(json.toString.getBytes("UTF-8"))
+    val request = new PutObjectRequest(name, key, stream, new ObjectMetadata())
+    Future(s3Client.putObject(request))
+  }
+
+  //reads stubs file
+  def readStubsFile: Future[String] = {
+    for {
+      stubsFile <- Future(AWSWorkflowBucket.s3Client.getObject(new GetObjectRequest(name, key)))
+      stream <- Future(stubsFile.getObjectContent)
+    } yield {
+      val is = Source.fromInputStream(stream)
+      is.getLines.mkString
+    }
+  }
+
 }
 
 object AWSWorkflowQueue {

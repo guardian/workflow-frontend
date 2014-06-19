@@ -1,7 +1,8 @@
 package models
 
 import org.joda.time.DateTime
-import models.{Status, Section}
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 
 case class WireStatus(
@@ -15,10 +16,6 @@ case class WireStatus(
                        tagSections: List[Section],
                        status: Status,
                        commentable: Boolean)
-
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
-
 object WireStatus {
 
   val readTagSections = new Reads[List[Section]] {

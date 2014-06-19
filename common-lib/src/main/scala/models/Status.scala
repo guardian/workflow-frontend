@@ -17,9 +17,9 @@ object Status {
       (json \ "status").validate[String].map(Status(_))
     }
   }
-  def Stub = StatusDatabase.get("Stub")
-  def Writers = StatusDatabase.get("Writers")
-  def Subs = StatusDatabase.get("Subs")
-  def Revise = StatusDatabase.get("Revise")
-  def Final = StatusDatabase.get("Final")
+  def Stub = Status("Stub")
+  def Writers = Status("Writers")
+  def Subs = Status("Subs")
+  def Revise = Status("Revise")
+  def Final = Status("Final")
 }
