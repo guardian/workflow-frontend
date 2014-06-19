@@ -8,7 +8,7 @@ import models._
 import com.gu.workflow.db.Schema._
 
 
-object PostgresDB {
+object CommonDB {
 
   import play.api.Play.current
   import play.api.db.slick.DB
@@ -54,8 +54,6 @@ object PostgresDB {
     }
   }
 
-
-
   def createContent(wc: WorkflowContent) {
     DB.withTransaction { implicit session =>
       content +=
@@ -69,6 +67,4 @@ object PostgresDB {
       stubs.filter(_.composerId === composerId).delete
     }
   }
-
-
 }
