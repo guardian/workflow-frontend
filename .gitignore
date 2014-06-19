@@ -14,7 +14,7 @@ dist
 /RUNNING_PID
 /.settings
 
-conf/local.conf
+*/conf/local.conf
 # Created by http://www.gitignore.io
 
 ### Scala ###

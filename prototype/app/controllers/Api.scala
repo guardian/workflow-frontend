@@ -11,6 +11,7 @@ import lib.Responses._
 import lib._
 import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
+import com.gu.workflow.db.PostgresDB
 
 object Api extends Controller with Authenticated {
 

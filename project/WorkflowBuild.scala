@@ -4,7 +4,7 @@ import play.Keys._
 import plugins.PlayArtifact._
 import sbtassembly.Plugin.{AssemblyKeys, MergeStrategy}
 import AssemblyKeys._
-import play.Keys.jdbc
+import Dependencies._
 
 
 object WorkflowBuild extends Build {
@@ -19,24 +19,29 @@ object WorkflowBuild extends Build {
       scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings")
     )
 
-  val root = playProject("prototype")
+  lazy val commonLib = project("common-lib")
     .settings(
-      libraryDependencies ++= Seq(
-        "com.amazonaws" % "aws-java-sdk" % "1.7.5",
-        "com.typesafe.akka" %% "akka-agent" % "2.2.0",
-        jdbc,
-        "com.typesafe.play" %% "play-slick" % "0.6.0.1",
-        "com.github.tototoshi" %% "slick-joda-mapper" % "1.1.0",
-        "org.postgresql" % "postgresql" % "9.3-1100-jdbc4"
-      ),
+      libraryDependencies ++= databaseDependencies
+    )
+
+  lazy val prole = playProject("prole")
+                  .settings(libraryDependencies ++= awsDependencies)
+
+  lazy val root = playProject("prototype")
+    .settings(
+      libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies,
       requireJs += "main.js",
       requireJsShim += "main.js"
     )
+
+  def project(path: String): Project =
+    Project(path, file(path)).settings(commonSettings: _*)
 
   def playProject(path: String): Project =
     play.Project(path, path = file(path))
       .settings(commonSettings ++ playArtifactDistSettings ++ playArtifactSettings: _*)
       .settings(magentaPackageName := path)
+      .dependsOn(commonLib)
 
   def playArtifactSettings = Seq(
     ivyXML :=

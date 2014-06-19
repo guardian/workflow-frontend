@@ -4,16 +4,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.api.mvc._
-import lib.{StatusDatabase, SectionDatabase}
-import models._
-import models.{Status => WorkflowStatus}
 import play.api.data.Form
+
+import lib._
+import models.{Status => WorkflowStatus, Section}
 
 
 object Admin extends Controller {
 
   import play.api.data.Forms._
-
 
   def index = Action {
     Redirect(routes.Admin.sections)

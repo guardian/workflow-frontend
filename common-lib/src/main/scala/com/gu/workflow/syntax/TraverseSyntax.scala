@@ -1,4 +1,4 @@
-package lib.syntax
+package com.gu.workflow.syntax
 
 import play.api.libs.functional.Applicative
 
