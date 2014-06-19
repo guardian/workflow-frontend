@@ -8,7 +8,7 @@ import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
 import models.DashboardRow
 
-object Postgres {
+object PostgresDB {
 
   import play.api.Play.current
   import play.api.db.slick.DB

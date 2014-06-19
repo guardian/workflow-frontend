@@ -11,7 +11,7 @@ import lib.Responses._
 import lib._
 import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
-import com.gu.workflow.db.PostgresDB
+import com.gu.workflow.db.CommonDB
 
 object Api extends Controller with Authenticated {
 
@@ -23,7 +23,7 @@ object Api extends Controller with Authenticated {
     val section = req.getQueryString("section").map(Section(_))
     val contentType = req.getQueryString("content-type")
 
-    val content = Postgres.getContent(
+    val content = PostgresDB.getContent(
       section = req.getQueryString("section").map(Section(_)),
       dueFrom = dueFrom,
       dueUntil = dueUntil,
@@ -32,7 +32,7 @@ object Api extends Controller with Authenticated {
       published = req.getQueryString("state").map(_ == "published")
     )
 
-    val stubs = PostgresDB.getStubs(
+    val stubs = CommonDB.getStubs(
                   dueFrom = dueFrom,
                   dueUntil = dueUntil,
                   section = section,
@@ -51,7 +51,7 @@ object Api extends Controller with Authenticated {
   def stubs = Authenticated { implicit req =>
     stubFilters.bindFromRequest.fold(
       formWithErrors => BadRequest(formWithErrors.errorsAsJson),
-      { case (dueFrom, dueUntil) => Ok(renderJsonResponse(PostgresDB.getStubs(dueFrom, dueUntil))) }
+      { case (dueFrom, dueUntil) => Ok(renderJsonResponse(CommonDB.getStubs(dueFrom, dueUntil))) }
     )
   }
 
@@ -60,7 +60,7 @@ object Api extends Controller with Authenticated {
       jsValue <- readJsonFromRequest(request.body).right
       stub <- extract[Stub](jsValue).right
     } yield {
-      Postgres.createStub(stub)
+      PostgresDB.createStub(stub)
       NoContent
     }).merge
   }
@@ -70,7 +70,7 @@ object Api extends Controller with Authenticated {
           jsValue <- readJsonFromRequest(request.body).right
           stub <- extract[Stub](jsValue).right
         } yield {
-          Postgres.updateStub(stubId, stub)
+          PostgresDB.updateStub(stubId, stub)
           NoContent
      }).merge
   }
@@ -81,7 +81,7 @@ object Api extends Controller with Authenticated {
       assignee <- extract[String](jsValue \ "data").right
     } yield {
         val assignOpt = Some(assignee).filter(_.nonEmpty)
-        Postgres.updateStubWithAssignee(stubId, assignOpt)
+        PostgresDB.updateStubWithAssignee(stubId, assignOpt)
         NoContent
     }).merge
   }
@@ -91,7 +91,7 @@ object Api extends Controller with Authenticated {
       jsValue <- readJsonFromRequest(request.body).right
       wc <- extract[WorkflowContent](jsValue).right
     } yield {
-      PostgresDB.updateContent(wc, composerId)
+      CommonDB.updateContent(wc, composerId)
       NoContent
     }).merge
   }
@@ -101,28 +101,28 @@ object Api extends Controller with Authenticated {
       jsValue <- readJsonFromRequest(request.body).right
       status <- extract[String](jsValue \ "data").right
     } yield {
-      Postgres.updateContentStatus(status, composerId)
+      PostgresDB.updateContentStatus(status, composerId)
       NoContent
     }).merge
   }
 
   def deleteContent(composerId: String) = Authenticated {
-    PostgresDB.deleteContent(composerId)
+    CommonDB.deleteContent(composerId)
     NoContent
   }
 
   def deleteStub(stubId: Long) = Authenticated {
-    Postgres.deleteStub(stubId)
+    PostgresDB.deleteStub(stubId)
     NoContent
   }
 
 
   def linkStub(stubId: Long, composerId: String, contentType: String) = Authenticated { req =>
 
-    if(Postgres.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
+    if(PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
 
     else {
-      Postgres.updateStubWithComposerId(stubId, composerId, contentType)
+      PostgresDB.updateStubWithComposerId(stubId, composerId, contentType)
       NoContent
     }
 
