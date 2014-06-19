@@ -60,7 +60,7 @@ object Api extends Controller with Authenticated {
       jsValue <- readJsonFromRequest(request.body).right
       stub <- extract[Stub](jsValue).right
     } yield {
-      PostgresDB.createStub(stub)
+      Postgres.createStub(stub)
       NoContent
     }).merge
   }
@@ -70,7 +70,7 @@ object Api extends Controller with Authenticated {
           jsValue <- readJsonFromRequest(request.body).right
           stub <- extract[Stub](jsValue).right
         } yield {
-          PostgresDB.updateStub(stubId, stub)
+          Postgres.updateStub(stubId, stub)
           NoContent
      }).merge
   }
@@ -81,7 +81,7 @@ object Api extends Controller with Authenticated {
       assignee <- extract[String](jsValue \ "data").right
     } yield {
         val assignOpt = Some(assignee).filter(_.nonEmpty)
-        PostgresDB.updateStubWithAssignee(stubId, assignOpt)
+        Postgres.updateStubWithAssignee(stubId, assignOpt)
         NoContent
     }).merge
   }
@@ -101,7 +101,7 @@ object Api extends Controller with Authenticated {
       jsValue <- readJsonFromRequest(request.body).right
       status <- extract[String](jsValue \ "data").right
     } yield {
-      PostgresDB.updateContentStatus(status, composerId)
+      Postgres.updateContentStatus(status, composerId)
       NoContent
     }).merge
   }
@@ -112,17 +112,17 @@ object Api extends Controller with Authenticated {
   }
 
   def deleteStub(stubId: Long) = Authenticated {
-    PostgresDB.deleteStub(stubId)
+    Postgres.deleteStub(stubId)
     NoContent
   }
 
 
   def linkStub(stubId: Long, composerId: String, contentType: String) = Authenticated { req =>
 
-    if(PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
+    if(Postgres.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
 
     else {
-      PostgresDB.updateStubWithComposerId(stubId, composerId, contentType)
+      Postgres.updateStubWithComposerId(stubId, composerId, contentType)
       NoContent
     }
 
