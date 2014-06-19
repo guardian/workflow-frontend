@@ -7,7 +7,7 @@ import play.api.libs.json.{JsError, JsSuccess}
 import play.api.Logger
 import com.gu.workflow.syntax.TraverseSyntax._
 import com.gu.workflow.db.PostgresDB
-import models.WorkflowContent
+import models.{WireStatus, WorkflowContent}
 
 
 class ComposerSqsReader extends Actor {
@@ -17,12 +17,13 @@ class ComposerSqsReader extends Actor {
       for {
           messages <- AWSWorkflowQueue.getMessages(10)
           if messages.nonEmpty
-          //todo - would like to log out the error here
-          wireStatuses = messages.flatMap { msg => AWSWorkflowQueue.toWireStatus(msg).asOpt.map(msg -> _) }
+          wireStatuses = messages.flatMap { msg => AWSWorkflowQueue.toWireStatus(msg).fold(
+            error => { Logger.error(s"$error"); None },
+            wirestatus => Some(msg, wirestatus)
+          )}
           stubs = PostgresDB.getStubs(composerId = wireStatuses.map(_._2.composerId).toSet)
           content = wireStatuses.flatMap { case (msg, ws) => stubs.find(_.composerId == Some(ws.composerId))
-                              .map(stub => WorkflowContent.fromWireStatus(ws, stub)).map(msg -> _) }
-
+                              .map(stub => (msg, WorkflowContent.fromWireStatus(ws, stub)))}
       } {
           content.foreach {
             case (msg, c) =>
