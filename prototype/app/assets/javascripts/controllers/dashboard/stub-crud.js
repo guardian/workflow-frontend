@@ -25,15 +25,36 @@ define([
 
         $scope.disabled = stub.composerId !== undefined;
 
+
+        // Set dueText field content on init
+        if (stub.due) {
+            stub.dueText = moment(stub.due).format("D MMM YYYY, HH:mm");
+        }
+
+        // Watch changes to dueText
+        $scope.$watch('stub.dueText', function() {
+            $scope.dueTextChanged();
+        });
+
+
+        $scope.onDatePicked = function(newDate, oldDate) {
+            $scope.stub.dueText = moment(newDate).format("D MMM YYYY, HH:mm");
+        };
+
         $scope.dueTextChanged = function() {
-          var due;
-          try {
-            due = Date.create($scope.stub.dueText).toISOString();
-            $scope.stub.due = due;
-          }
-          catch (e) {
-            delete $scope.stub.due;
-          }
+            if (!$scope.stub.dueText) { // set to none when empty
+                $scope.stub.due = null;
+                return;
+            }
+
+            var due;
+            try {
+                due = Date.create($scope.stub.dueText).toISOString();
+                $scope.stub.due = due;
+            }
+            catch (e) {
+                delete $scope.stub.due;
+            }
         };
 
         $scope.sections = sectionsService.getSections();
@@ -82,6 +103,7 @@ define([
                 var modalInstance = $modal.open({
                     templateUrl: 'stubModalContent.html',
                     controller: StubModalInstanceCtrl,
+                    windowClass: 'stubModal',
                     resolve: {
                         stub: function () {
                             return stub;
@@ -173,7 +195,23 @@ define([
             );
         };
 
+
+        // Watch changes to dueText
+        $scope.$watch('formData.dueText', function() {
+            $scope.dueTextChanged();
+        });
+
+
+        $scope.onDatePicked = function(newDate, oldDate) {
+            $scope.formData.dueText = moment(newDate).format("D MMM YYYY, HH:mm");
+        };
+
         $scope.dueTextChanged = function() {
+            if (!$scope.formData.dueText) { // set to none when empty
+                $scope.stub.due = null;
+                return;
+            }
+
             var due;
             try {
                 due = Date.create($scope.formData.dueText).toISOString();
@@ -220,7 +258,8 @@ define([
 
                 var modalInstance = $modal.open({
                     templateUrl: 'composerImportModalContent.html',
-                    controller: ComposerImportModalInstanceCtrl
+                    controller: ComposerImportModalInstanceCtrl,
+                    windowClass: 'stubModal'
                 });
 
                 modalInstance.result.then(function (modalCloseResult) {
