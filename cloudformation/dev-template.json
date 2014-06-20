@@ -20,7 +20,13 @@
         "Stage": {
             "Type": "String",
             "Default": "DEV"
+        },
+        "GuardianIP": {
+            "Description": "Ip range for the office",
+            "Type": "String",
+            "Default": "77.91.248.0/21"
         }
+
     },
     "Resources": {
         "Group": {
@@ -113,7 +119,7 @@
                         "IpProtocol": "tcp",
                         "FromPort": { "Ref": "DBPort" },
                         "ToPort": { "Ref": "DBPort" },
-                        "CidrIp": "77.91.248.0/21"
+                        "CidrIp": { "Ref": "GuardianIP"}
                     }
                 ]
             }
