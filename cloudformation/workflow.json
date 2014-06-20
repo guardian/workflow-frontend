@@ -368,7 +368,7 @@
                     { "Ref": "AppServerSecurityGroup" },
                     { "Ref": "SSHSecurityGroup" }
                 ],
-                "InstanceType": "m1.micro",
+                "InstanceType": "t1.micro",
                 "IamInstanceProfile": {"Ref": "DistributionInstanceProfile"},
                 "UserData": { "Fn::Base64": {
                     "Fn::Join":["", [
