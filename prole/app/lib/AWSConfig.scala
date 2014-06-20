@@ -43,6 +43,7 @@ object AWSWorkflowQueue {
     )
   }
 
+  //todo validate the json
   def toWireStatus(awsMsg: Message): JsResult[WireStatus] = {
     val body = Json.parse(awsMsg.getBody)
     (body \ "Message").validate[String].flatMap { msg =>
