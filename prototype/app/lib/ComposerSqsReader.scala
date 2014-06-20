@@ -5,9 +5,8 @@ import models.WorkflowContent
 import scala.concurrent.{Future, ExecutionContext}
 import ExecutionContext.Implicits.global
 import com.gu.workflow.syntax.TraverseSyntax._
-import play.api.libs.json.{JsError, JsSuccess}
 import play.api.Logger
-import com.gu.workflow.db.PostgresDB
+import com.gu.workflow.db.CommonDB
 
 
 class ComposerSqsReader extends Actor {
@@ -21,15 +20,16 @@ class ComposerSqsReader extends Actor {
           error => { Logger.error(s"$error"); None },
           wirestatus => Some(msg, wirestatus)
         )}
-        stubs = PostgresDB.getStubs(composerId = wireStatuses.map(_._2.composerId).toSet)
+        stubs = CommonDB.getStubs(composerId = wireStatuses.map(_._2.composerId).toSet)
         content = wireStatuses.flatMap { case (msg, ws) => stubs.find(_.composerId == Some(ws.composerId))
           .map(stub => (msg, WorkflowContent.fromWireStatus(ws, stub)))}
       } {
         content.foreach {
           case (msg, c) =>
-            PostgresDB.createOrModifyContent(c)
+            CommonDB.createOrModifyContent(c)
             AWSWorkflowQueue.deleteMessage(msg)
         }
+
       }
 
   }

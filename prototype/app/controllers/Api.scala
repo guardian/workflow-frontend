@@ -11,7 +11,7 @@ import lib.Responses._
 import lib._
 import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
-import com.gu.workflow.db.PostgresDB
+import com.gu.workflow.db.CommonDB
 
 object Api extends Controller with Authenticated {
 
@@ -32,7 +32,7 @@ object Api extends Controller with Authenticated {
       published = req.getQueryString("state").map(_ == "published")
     )
 
-    val stubs = PostgresDB.getStubs(
+    val stubs = CommonDB.getStubs(
                   dueFrom = dueFrom,
                   dueUntil = dueUntil,
                   section = section,
@@ -51,7 +51,7 @@ object Api extends Controller with Authenticated {
   def stubs = Authenticated { implicit req =>
     stubFilters.bindFromRequest.fold(
       formWithErrors => BadRequest(formWithErrors.errorsAsJson),
-      { case (dueFrom, dueUntil) => Ok(renderJsonResponse(PostgresDB.getStubs(dueFrom, dueUntil))) }
+      { case (dueFrom, dueUntil) => Ok(renderJsonResponse(CommonDB.getStubs(dueFrom, dueUntil))) }
     )
   }
 
@@ -91,7 +91,7 @@ object Api extends Controller with Authenticated {
       jsValue <- readJsonFromRequest(request.body).right
       wc <- extract[WorkflowContent](jsValue).right
     } yield {
-      PostgresDB.updateContent(wc, composerId)
+      CommonDB.updateContent(wc, composerId)
       NoContent
     }).merge
   }
@@ -107,7 +107,7 @@ object Api extends Controller with Authenticated {
   }
 
   def deleteContent(composerId: String) = Authenticated {
-    PostgresDB.deleteContent(composerId)
+    CommonDB.deleteContent(composerId)
     NoContent
   }
 

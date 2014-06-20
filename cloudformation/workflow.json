@@ -51,6 +51,11 @@
             "Description": "Master password for the database",
             "Type": "String",
             "NoEcho": true
+        },
+        "GuardianIP": {
+            "Description": "Ip range for the office",
+            "Type": "String",
+            "Default": "77.91.248.0/21"
         }
     },
     "Resources": {
@@ -100,7 +105,7 @@
                         "IpProtocol": "tcp",
                         "FromPort": "22",
                         "ToPort": "22",
-                        "CidrIp": "77.91.248.0/21"
+                        "CidrIp": {"Ref": "GuardianIP"}
                     }
                 ]
             }
@@ -115,7 +120,7 @@
                         "IpProtocol": "tcp",
                         "FromPort": 9000,
                         "ToPort": 9000,
-                        "CidrIp": "77.91.248.0/21"
+                        "CidrIp": {"Ref": "GuardianIP"}
                     },
                     {
                         "IpProtocol": "tcp",
@@ -136,7 +141,7 @@
                         "IpProtocol": "tcp",
                         "FromPort": { "Ref": "DBPort" },
                         "ToPort": { "Ref": "DBPort" },
-                        "CidrIp": "77.91.248.0/21"
+                        "CidrIp": {"Ref": "GuardianIP"}
                     },
                     {
                         "IpProtocol": "tcp",
