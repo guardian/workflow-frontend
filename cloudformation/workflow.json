@@ -323,6 +323,91 @@
             }
         },
 
+        "ProleLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata": {
+                "AWS::CloudFormation::Authentication": {
+                    "distributionAuthentication": {
+                        "type": "S3",
+                        "roleName": { "Ref": "DistributionRole" },
+                        "buckets": [ "workflow-dist" ]
+                    }
+                },
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "users": {
+                            "workflow": {
+                                "homeDir": "/home/workflow"
+                            }
+                        },
+                        "files": {
+                            "/etc/init/prole.conf": {
+                                "source": { "Fn::Join" : ["", [
+                                    "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
+                                    { "Ref": "Stage" },
+                                    "/prole/prole.conf"
+                                ]]},
+                                "authentication": "distributionAuthentication"
+                            },
+                            "/home/workflow/app.jar": {
+                                "source": { "Fn::Join" : ["", [
+                                    "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
+                                    { "Ref": "Stage" },
+                                    "/prole/app.jar"
+                                ]]},
+                                "authentication": "distributionAuthentication"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "KeyName": { "Ref": "KeyName" },
+                "ImageId": {"Ref": "ImageIdInstanceStorage"},
+                "SecurityGroups": [
+                    { "Ref": "AppServerSecurityGroup" },
+                    { "Ref": "SSHSecurityGroup" }
+                ],
+                "InstanceType": "m1.micro",
+                "IamInstanceProfile": {"Ref": "DistributionInstanceProfile"},
+                "UserData": { "Fn::Base64": {
+                    "Fn::Join":["", [
+                        "#!/bin/bash -ev\n",
+
+                        "apt-get -y update\n",
+                        "apt-get -y install language-pack-en openjdk-7-jre-headless\n",
+                        "apt-get -y install python-setuptools\n",
+                        "apt-get -y install unzip\n",
+                        "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz","\n",
+                        "mkdir -p /root/aws-cfn-bootstrap-latest","\n",
+                        "tar xvfz /root/aws-cfn-bootstrap-latest.tar.gz --strip-components=1 -C /root/aws-cfn-bootstrap-latest","\n",
+                        "easy_install /root/aws-cfn-bootstrap-latest/","\n",
+
+                        "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r ProleLaunchConfig ",
+                        "  --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+
+                        "mkdir /home/workflow/logs\n",
+
+                        "chown -R workflow /home/workflow\n",
+                        "chgrp -R workflow /home/workflow\n",
+
+                        "sed -i \\\n",
+                        "    -e 's,@AWS_ACCESS_KEY@,", { "Ref": "PrototypeKey" }, ",g' \\\n",
+                        "    -e 's,@AWS_SECRET@,", { "Fn::GetAtt": [ "PrototypeKey", "SecretAccessKey" ] }, ",g' \\\n",
+                        "    -e 's,@AWS_FLEX_NOTIFICATIONS_QUEUE@,", { "Ref": "FCNotificationsQueue" }, ",g' \\\n",
+                        "    -e 's,@DB_URL@,jdbc:postgresql://", { "Fn::GetAtt": [ "PostgresInstance", "Endpoint.Address" ] }, ":", {"Ref":"DBPort"}, "/workflow,g' \\\n",
+                        "    -e 's,@DB_USER@,", {"Ref": "DBUser"}, ",g' \\\n",
+                        "    -e 's,@DB_PASSWORD@,", {"Ref": "DBPassword"}, ",g' \\\n",
+                        "    /etc/init/prole.conf\n",
+
+                        "start prole\n"
+                    ]]
+
+                }}
+
+            }
+        },
+
         "PrototypeGroup": {
             "Type": "AWS::IAM::Group",
             "Properties": {
