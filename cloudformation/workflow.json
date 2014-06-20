@@ -23,6 +23,11 @@
             "Type": "String",
             "Default": "ami-14907e63"
         },
+        "ImageIdEBSStorage": {
+            "Description": "AMI id for instances with ebs storage.",
+            "Type": "String",
+            "Default": "ami-cb4986bc"
+        },
         "FCMetadataTopic": {
             "Description": "ARN of the topic for Flexible Content metadata events",
             "Type": "String",
@@ -153,7 +158,7 @@
             }
         },
 
-        "PrototypeLoadBalancerSecurityGroup": {
+        "LoadBalancerSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
                 "GroupDescription": "Prototype application load balancer",
@@ -178,7 +183,7 @@
             "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
             "Properties": {
                 "AvailabilityZones": { "Fn::GetAZs": "" },
-                "SecurityGroups": [{ "Fn::GetAtt": ["PrototypeLoadBalancerSecurityGroup", "GroupId"] }],
+                "SecurityGroups": [{ "Fn::GetAtt": ["LoadBalancerSecurityGroup", "GroupId"] }],
                 "Listeners": [
                     {
                         "LoadBalancerPort": "80",
@@ -215,7 +220,7 @@
                 "HealthCheckType": "ELB",
                 "HealthCheckGracePeriod": 300,
                 "LoadBalancerNames": [
-                    { "Ref": "PrototypeLoadBalancer" }
+                    { "Ref": "ProleLoadBalancer" }
                 ],
                 "Tags": [
                     {
@@ -363,7 +368,7 @@
             },
             "Properties": {
                 "KeyName": { "Ref": "KeyName" },
-                "ImageId": {"Ref": "ImageIdInstanceStorage"},
+                "ImageId": {"Ref": "ImageIdEBSStorage"},
                 "SecurityGroups": [
                     { "Ref": "AppServerSecurityGroup" },
                     { "Ref": "SSHSecurityGroup" }
@@ -407,7 +412,68 @@
 
             }
         },
-
+        "ProleLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "AvailabilityZones": { "Fn::GetAZs": "" },
+                "SecurityGroups": [{ "Fn::GetAtt": ["LoadBalancerSecurityGroup", "GroupId"] }],
+                "Listeners": [
+                    {
+                        "LoadBalancerPort": "80",
+                        "InstancePort": "9000",
+                        "Protocol": "HTTP"
+                    },
+                    {
+                        "LoadBalancerPort": "443",
+                        "InstancePort": "9000",
+                        "Protocol": "HTTPS",
+                        "SSLCertificateId": { "Ref": "SSLCertificateId" }
+                    }
+                ],
+                "HealthCheck": {
+                    "Target": "HTTP:9000/management/healthcheck",
+                    "HealthyThreshold": "2",
+                    "UnhealthyThreshold": "2",
+                    "Interval": "10",
+                    "Timeout": "5"
+                }
+            }
+        },
+        "ProleAutoscalingGroup": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                },
+                "LaunchConfigurationName": { "Ref": "ProleLaunchConfig" },
+                "MinSize": "1",
+                "MaxSize": "2",
+                "DesiredCapacity": "1",
+                "Cooldown": "180",
+                "HealthCheckType": "ELB",
+                "HealthCheckGracePeriod": 300,
+                "LoadBalancerNames": [
+                    { "Ref": "ProleLoadBalancer" }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Stage",
+                        "Value": { "Ref": "Stage" },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Stack",
+                        "Value": "workflow",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "App",
+                        "Value": "prole",
+                        "PropagateAtLaunch": "true"
+                    }
+                ]
+            }
+        },
         "PrototypeGroup": {
             "Type": "AWS::IAM::Group",
             "Properties": {
