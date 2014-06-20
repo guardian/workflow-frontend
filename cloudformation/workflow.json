@@ -220,7 +220,7 @@
                 "HealthCheckType": "ELB",
                 "HealthCheckGracePeriod": 300,
                 "LoadBalancerNames": [
-                    { "Ref": "ProleLoadBalancer" }
+                    { "Ref": "PrototypeLoadBalancer" }
                 ],
                 "Tags": [
                     {
