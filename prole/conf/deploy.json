@@ -1,7 +1,7 @@
 {
     "defaultStacks": ["workflow"],
     "packages": {
-        "prototype": {
+        "prole": {
             "type": "autoscaling",
             "data": {
                 "port": 9000,
@@ -15,7 +15,7 @@
             "depends": ["uploadArtifacts", "deploy"]
         },
         "deploy": {
-            "actionsBeforeApp": ["prolo.deploy"]
+            "actionsBeforeApp": ["prole.deploy"]
         },
         "uploadArtifacts": {
             "actionsBeforeApp": ["prole.uploadArtifacts"]
