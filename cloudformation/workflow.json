@@ -534,28 +534,6 @@
             }
         },
 
-        "StubBucket": {
-            "Type": "AWS::S3::Bucket"
-        },
-        "StubBucketPolicy": {
-            "Type": "AWS::S3::BucketPolicy",
-            "Properties": {
-                "PolicyDocument": {
-                    "Id": "StubBucketPolicy",
-                    "Statement": [ {
-                        "Sid": "StubBucketWriteAccess",
-                        "Action": [ "s3:PutObject", "s3:GetObject", "s3:DeleteObject" ],
-                        "Effect": "Allow",
-                        "Resource": { "Fn::Join": [ "",
-                            [ "arn:aws:s3:::", { "Ref": "StubBucket" } , "/*" ] ]
-                        },
-                        "Principal": { "AWS": { "Fn::GetAtt": [ "PrototypeUser", "Arn" ] } }
-                    } ]
-                },
-                "Bucket": { "Ref": "StubBucket" }
-            }
-        },
-
         "PostgresInstance": {
             "Type" : "AWS::RDS::DBInstance",
             "Properties": {
