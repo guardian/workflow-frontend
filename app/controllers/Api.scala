@@ -86,16 +86,6 @@ object Api extends Controller with Authenticated {
     }).merge
   }
 
-  def putContent(composerId: String) = Authenticated { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      wc <- extract[WorkflowContent](jsValue).right
-    } yield {
-      CommonDB.updateContent(wc, composerId)
-      NoContent
-    }).merge
-  }
-
   def putContentStatus(composerId: String) = Authenticated { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
