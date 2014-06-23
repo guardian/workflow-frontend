@@ -188,11 +188,7 @@
                             </td>
                             <td>
                             </td>
-                            <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.workingTitle}}</a></strong>
-                                <br />
-                            <span style="font-size: 90%; color: #666; line-height: 1em; ">
-                                {{content.headline}}
-                            </span>
+                            <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a></strong>
                             </td>
                             <td>{{content.assignee}}</td>
                             <td>{{content.due | formatDateTime }}</td>
@@ -212,7 +208,15 @@
 
         <div id="detail" class="" >
             <div class="detail-panel" ng-show="selectedContent">
-                <h4>{{ selectedContent.headline || selectedContent.workingTitle }}</h4>
+                <h4>Details</h4>
+                <dl class="dl-horizontal">
+                    <dt>Headline</dt>
+                    <dd ng-show="selectedContent.headline">{{ selectedContent.headline }}</dd>
+                    <dd ng-hide="selectedContent.headline"><em>No headline set</em></dd>
+                    <dt>Working title</dt>
+                    <dd>{{ selectedContent.workingTitle }}</dd>
+
+                </dl>
 
                 <h5>Timing</h5>
                 <dl class="dl-horizontal">
