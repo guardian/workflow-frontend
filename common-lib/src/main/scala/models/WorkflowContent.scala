@@ -37,7 +37,7 @@ object WorkflowContent {
       wireStatus.headline,
       wireStatus.`type`,
       wireStatus.tagSections.headOption,
-      if (wireStatus.published) Final else Writers,
+      wireStatus.status, // not written to the database but the DTO requires a value.
       wireStatus.lastModified,
       wireStatus.user,
       commentable=wireStatus.commentable,
