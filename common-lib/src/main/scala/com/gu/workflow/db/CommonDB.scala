@@ -49,8 +49,8 @@ object CommonDB {
       content
         .filter(_.composerId === composerId)
         .map(c =>
-          (c.path, c.lastModified, c.lastModifiedBy, c.status, c.contentType, c.commentable, c.headline, c.published))
-        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published))
+          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.published))
+        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.published))
     }
   }
 
