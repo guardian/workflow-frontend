@@ -23,13 +23,18 @@ class ComposerSqsReader extends Actor {
             wirestatus => Some(msg, wirestatus)
           )}
           stubs = CommonDB.getStubs(composerId = wireStatuses.map(_._2.composerId).toSet)
+          composerIds = stubs.flatMap(_.composerId)
+          irrelevantMsgs = wireStatuses.filter { case (msg, ws) => !composerIds.contains(ws.composerId) }.map(_._1)
           content = wireStatuses.flatMap { case (msg, ws) => stubs.find(_.composerId == Some(ws.composerId))
-                              .map(stub => (msg, WorkflowContent.fromWireStatus(ws, stub)))}
-      } {
+                                                             .map(stub => (msg, WorkflowContent.fromWireStatus(ws, stub)))
+                                         }
+      }
+      {
+          AWSWorkflowQueue.deleteMessages(irrelevantMsgs)
           content.foreach {
             case (msg, c) =>
               CommonDB.createOrModifyContent(c)
-            AWSWorkflowQueue.deleteMessage(msg)
+              AWSWorkflowQueue.deleteMessage(msg)
           }
       }
   }
