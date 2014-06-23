@@ -313,7 +313,6 @@
                         "    -e 's,@AWS_ACCESS_KEY@,", { "Ref": "PrototypeKey" }, ",g' \\\n",
                         "    -e 's,@AWS_SECRET@,", { "Fn::GetAtt": [ "PrototypeKey", "SecretAccessKey" ] }, ",g' \\\n",
                         "    -e 's,@AWS_FLEX_NOTIFICATIONS_QUEUE@,", { "Ref": "FCNotificationsQueue" }, ",g' \\\n",
-                        "    -e 's,@AWS_STUB_BUCKET@,", { "Ref": "StubBucket" }, ",g' \\\n",
                         "    -e 's,@COMPOSER_URL@,", {"Ref": "ComposerUrl"}, ",g' \\\n",
                         "    -e 's,@DB_URL@,jdbc:postgresql://", { "Fn::GetAtt": [ "PostgresInstance", "Endpoint.Address" ] }, ":", {"Ref":"DBPort"}, "/workflow,g' \\\n",
                         "    -e 's,@DB_USER@,", {"Ref": "DBUser"}, ",g' \\\n",
