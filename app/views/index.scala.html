@@ -1,7 +1,7 @@
 @(statuses: play.api.libs.json.JsObject)
 @import lib.Composer._
 @main("Welcome to Workflow") {
-
+@*
 <script type="text/javascript"
         data-main="/assets/javascripts/main"
         data-composer-newcontent="@newContentUrl"
@@ -12,5 +12,26 @@
         id="require-script"></script>
 
         <div ng-view></div>
+*@
+
+@*** Composer endpoints exposed. TODO: move to head ***@
+<link rel="composer-newcontent" href="@newContentUrl"/>
+<link rel="composer-viewcontent" href="@adminUrl"/>
+<link rel="composer-contentdetails" href="@contentDetails"/>
+
+@*** SystemJS package manager setup ***@
+<script src="/assets/jspm_packages/system@@0.6.js"></script>
+<script src="/assets/config.js"></script>
+<script>
+    @* TODO: do something else with outputting @statuses *@
+    this._wfConfig = {
+        'statuses': @Html(statuses.toString)
+    };
+
+    window.name = 'NG_DEFER_BOOTSTRAP!';
+    System.import('app').catch(function(error) {
+        setTimeout(function() { throw error; }, 0);
+    });
+</script>
 
 }
