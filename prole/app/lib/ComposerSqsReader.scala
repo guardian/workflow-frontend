@@ -24,7 +24,7 @@ class ComposerSqsReader extends Actor {
           )}
           stubs = CommonDB.getStubs(composerId = wireStatuses.map(_._2.composerId).toSet)
           composerIds = stubs.flatMap(_.composerId)
-          irrelevantMsgs = wireStatuses.filter { case (msg, ws) => !composerIds.contains(ws.composerId) }.map(_._1)
+          irrelevantMsgs = wireStatuses.collect { case (msg, ws) if !composerIds.contains(ws.composerId) => msg }
           content = wireStatuses.flatMap { case (msg, ws) => stubs.find(_.composerId == Some(ws.composerId))
                                                              .map(stub => (msg, WorkflowContent.fromWireStatus(ws, stub)))
                                          }
