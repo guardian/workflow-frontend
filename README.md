@@ -18,7 +18,6 @@ Development prerequisites
           key = "{AwsId}"
           secret = "{AwsSecret}"
           flex.notifications.queue = "{SqsQueueUrl}"
-          stub.bucket = "{S3Bucket}"
         }
         db {
           default {
