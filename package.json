@@ -1,0 +1,15 @@
+{
+  "name": "workflow",
+  "version": "0.0.0",
+  "author": "Guardian Digital CMS team",
+  "registry": "jspm",
+  "directories": {
+    "jspmPackages": "public/jspm_packages"
+  },
+  "configFile": "public/config.js",
+  "dependencies": {
+    "angular": "^1.2.18",
+    "github:components/bootstrap": "^3.1.1",
+    "github:components/angular.js": "^1.2.16"
+  }
+}
