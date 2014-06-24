@@ -19,6 +19,7 @@ class ComposerSqsReader extends Actor {
 
       for {
           messages <- AWSWorkflowQueue.getMessages(10)
+          _ = ComposerSqsReader.updateLastRead()
           if messages.nonEmpty
           wireStatuses = messages.flatMap { msg => AWSWorkflowQueue.toWireStatus(msg).fold(
             error => { Logger.error(s"$error"); None },
@@ -46,7 +47,7 @@ class ComposerSqsReader extends Actor {
 object ComposerSqsReader {
   private val lastTimeSuccessfullyRead: AtomicReference[Option[DateTime]] = new AtomicReference(None)
   def lastUpdated(): Option[DateTime] = lastTimeSuccessfullyRead.get()
-  def update(): Unit = {
+  def updateLastRead(): Unit = {
     lastTimeSuccessfullyRead.set(Some(new DateTime()))
   }
 }
