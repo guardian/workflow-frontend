@@ -88,27 +88,6 @@
                 "Queues": [ { "Ref": "FCNotificationsQueue" } ]
             }
         },
-        "StubBucket": {
-            "Type": "AWS::S3::Bucket"
-        },
-        "StubBucketPolicy": {
-            "Type": "AWS::S3::BucketPolicy",
-            "Properties": {
-                "PolicyDocument": {
-                    "Id": "StubBucketPolicy",
-                    "Statement": [ {
-                        "Sid": "StubBucketWriteAccess",
-                        "Action": [ "s3:PutObject", "s3:GetObject", "s3:DeleteObject" ],
-                        "Effect": "Allow",
-                        "Resource": { "Fn::Join": [ "",
-                            [ "arn:aws:s3:::", { "Ref": "StubBucket" } , "/*" ] ]
-                        },
-                        "Principal": { "AWS": { "Fn::GetAtt": [ "User", "Arn" ] } }
-                    } ]
-                },
-                "Bucket": { "Ref": "StubBucket" }
-            }
-        },
 
         "DBSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
@@ -163,9 +142,6 @@
         },
         "SqsQueueUrl": {
             "Value": { "Ref" : "FCNotificationsQueue" }
-        },
-        "S3Bucket": {
-            "Value": { "Ref": "StubBucket" }
         },
         "DatabaseHost": {
             "Value": { "Fn::GetAtt": [ "PostgresInstance", "Endpoint.Address" ] }
