@@ -24,13 +24,13 @@ object Global extends GlobalSettings {
     import play.api.libs.concurrent.Execution.Implicits._
     import scala.concurrent.duration._
 
-//    Logger.info("Consuming notifications...")
-//    Akka.system.scheduler.schedule(
-//      initialDelay = 0.seconds,
-//      interval = 3.seconds,
-//      receiver = Akka.system.actorOf(Props[ComposerSqsReader]),
-//      message = SqsReader
-//    )
+    Logger.info("Consuming notifications...")
+    Akka.system.scheduler.schedule(
+      initialDelay = 0.seconds,
+      interval = 3.seconds,
+      receiver = Akka.system.actorOf(Props[ComposerSqsReader]),
+      message = SqsReader
+    )
 
     // prod this to make it load initial state.
     //SectionDatabase.sectionList

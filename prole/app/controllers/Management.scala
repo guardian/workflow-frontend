@@ -15,7 +15,6 @@ object Management extends Controller {
       ServiceUnavailable(s"Health check fail - last successful read ${timeSinceLastSQSRead}")
     }
     else {
-      Logger.info(s"Healthcheck ok, last successful read ${timeSinceLastSQSRead}")
       Ok(s"OK - last read ${timeSinceLastSQSRead}")
     }
   }
