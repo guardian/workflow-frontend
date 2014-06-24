@@ -44,10 +44,10 @@ class ComposerSqsReader extends Actor {
 }
 
 object ComposerSqsReader {
-  private val lastTimeSuccessfullyRead = new AtomicReference[DateTime](new DateTime())
-  def lastUpdated(): DateTime = lastTimeSuccessfullyRead.get()
+  private val lastTimeSuccessfullyRead: AtomicReference[Option[DateTime]] = new AtomicReference(None)
+  def lastUpdated(): Option[DateTime] = lastTimeSuccessfullyRead.get()
   def update(): Unit = {
-    lastTimeSuccessfullyRead.set(new DateTime())
+    lastTimeSuccessfullyRead.set(Some(new DateTime()))
   }
 }
 

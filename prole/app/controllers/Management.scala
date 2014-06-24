@@ -8,9 +8,8 @@ import play.Logger
 object Management extends Controller {
 
   def healthCheck = Action {
-
     val timeSinceLastSQSRead = lib.ComposerSqsReader.lastUpdated()
-    if(timeSinceLastSQSRead.isBefore(new DateTime().minusSeconds(20))) {
+    if(timeSinceLastSQSRead.exists(dt => dt.isBefore(new DateTime().minusSeconds(20)))) {
       Logger.info(s"Failing health check, last successful read ${timeSinceLastSQSRead}")
       ServiceUnavailable(s"Health check fail - last successful read ${timeSinceLastSQSRead}")
     }
