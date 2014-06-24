@@ -16,21 +16,26 @@ class ComposerSqsReader extends Actor {
     case SqsReader =>
 
       for {
-        messages <- AWSWorkflowQueue.getMessages(10)
-        if messages.nonEmpty
-        jsResult = messages.traverse(AWSWorkflowQueue.toWireStatus)
-        statuses = jsResult match {
-          case JsSuccess(statuses, _) =>  statuses
-          case JsError(errors) =>
-            Logger.error(errors.toString)
-            Nil
-        }
-        stubs   = CommonDB.getStubs(composerId = statuses.map(_.composerId).toSet)
-        content = statuses.flatMap(status => stubs.find(_.composerId == Some(status.composerId))
-                          .map(stub => WorkflowContent.fromWireStatus(status, stub)))
-        _ <- Future.traverse(messages)(AWSWorkflowQueue.deleteMessage)
-      }  {
-        content.foreach(CommonDB.createOrModifyContent)
+          messages <- AWSWorkflowQueue.getMessages(10)
+          if messages.nonEmpty
+          wireStatuses = messages.flatMap { msg => AWSWorkflowQueue.toWireStatus(msg).fold(
+            error => { Logger.error(s"$error"); None },
+            wirestatus => Some(msg, wirestatus)
+          )}
+          stubs = CommonDB.getStubs(composerId = wireStatuses.map(_._2.composerId).toSet)
+          composerIds = stubs.flatMap(_.composerId)
+          irrelevantMsgs = wireStatuses.collect { case (msg, ws) if !composerIds.contains(ws.composerId) => msg }
+          content = wireStatuses.flatMap { case (msg, ws) => stubs.find(_.composerId == Some(ws.composerId))
+                                                             .map(stub => (msg, WorkflowContent.fromWireStatus(ws, stub)))
+                                         }
+      }
+      {
+          AWSWorkflowQueue.deleteMessages(irrelevantMsgs)
+          content.foreach {
+            case (msg, c) =>
+              CommonDB.createOrModifyContent(c)
+              AWSWorkflowQueue.deleteMessage(msg)
+          }
       }
 
   }
