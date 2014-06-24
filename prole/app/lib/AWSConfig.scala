@@ -44,7 +44,7 @@ object AWSWorkflowQueue {
   }
 
   def deleteMessages(messages: List[Message]) = Future {
-    new DeleteMessageBatchRequest(queueUrl,  messages.map(msgEntry(_)).asJava)
+    sqsClient.deleteMessageBatch(queueUrl,  messages.map(msgEntry(_)).asJava)
   }
 
   def msgEntry(message: Message): DeleteMessageBatchRequestEntry = {
