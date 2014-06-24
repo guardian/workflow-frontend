@@ -8,15 +8,18 @@ import play.api.Logger
 import com.gu.workflow.syntax.TraverseSyntax._
 import com.gu.workflow.db.CommonDB
 import models.WorkflowContent
-
+import java.util.concurrent.atomic.AtomicReference
+import org.joda.time.DateTime
 
 class ComposerSqsReader extends Actor {
+
   def receive = {
 
     case SqsReader =>
 
       for {
           messages <- AWSWorkflowQueue.getMessages(10)
+          _ = ComposerSqsReader.updateLastRead()
           if messages.nonEmpty
           wireStatuses = messages.flatMap { msg => AWSWorkflowQueue.toWireStatus(msg).fold(
             error => { Logger.error(s"$error"); None },
@@ -36,10 +39,17 @@ class ComposerSqsReader extends Actor {
               CommonDB.createOrModifyContent(c)
               AWSWorkflowQueue.deleteMessage(msg)
           }
+
       }
-
   }
+}
 
+object ComposerSqsReader {
+  private val lastTimeSuccessfullyRead: AtomicReference[Option[DateTime]] = new AtomicReference(None)
+  def lastUpdated(): Option[DateTime] = lastTimeSuccessfullyRead.get()
+  def updateLastRead(): Unit = {
+    lastTimeSuccessfullyRead.set(Some(new DateTime()))
+  }
 }
 
 case object SqsReader
