@@ -25,7 +25,7 @@ object Login extends Controller with AuthActions {
   // this is the only place we use LoginAuthAction - to prevent authentication redirect loops
   def login = LoginAuthAction { request =>
     val error = request.flash.get("error")
-    Ok(error.toString)
+    Ok(views.html.login(error))
   }
 
   /*
@@ -73,6 +73,7 @@ object Login extends Controller with AuthActions {
   }
 
   def logout = Action { implicit request =>
+    println("CALLING LOGOUT")
     Redirect(routes.Application.index()).withNewSession
   }
 
