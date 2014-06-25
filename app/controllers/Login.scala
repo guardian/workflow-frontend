@@ -8,16 +8,23 @@ import com.gu.googleauth._
 import play.api.Play.current
 
 trait AuthActions extends Actions {
-  val loginTarget: Call = routes.Login.loginAction()
+  val loginTarget: Call = routes.Login.login()
 }
 
 object Login extends Controller with AuthActions {
+  import play.api.Play.current
+  val config = play.api.Play.configuration
+
+  val host = config.getString("host").getOrElse("http://localhost:9000")
+  val clientId = config.getString("google.clientId").getOrElse("...?")
+  val clientSecret = config.getString("google.clientSecret").getOrElse("...?")
+
   val ANTI_FORGERY_KEY = "antiForgeryToken"
   val googleAuthConfig =
     GoogleAuthConfig(
-      "715812401369-s2qbnkoiaup21bocaarrbf0mpat2ifjk.apps.googleusercontent.com",  // The client ID from the dev console
-      "eXmt-VbYXIs3FOdCyaE14CiE",                  // The client secret from the dev console
-      "http://localhost:9000/oauth2callback",      // The redirect URL Google send users back to (must be the same as
+      clientId,  // The client ID from the dev console
+      clientSecret,                  // The client secret from the dev console
+      host + "/oauth2callback",      // The redirect URL Google send users back to (must be the same as
       //    that configured in the developer console)
       Some("guardian.co.uk")                       // Google App domain to restrict login
     )
@@ -73,7 +80,6 @@ object Login extends Controller with AuthActions {
   }
 
   def logout = Action { implicit request =>
-    println("CALLING LOGOUT")
     Redirect(routes.Application.index()).withNewSession
   }
 
