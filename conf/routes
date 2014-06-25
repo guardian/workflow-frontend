@@ -10,6 +10,12 @@ POST    /login                              controllers.Application.loginPost
 GET     /login                              controllers.Application.login
 GET     /redirect                           controllers.Application.openIdRedirect
 
+# Login
+GET        /loginTest                       controllers.Login.login
+GET        /loginAction                     controllers.Login.loginAction
+GET        /oauth2callback                  controllers.Login.oauth2Callback
+GET        /logout                          controllers.Login.logout
+
 # API
 GET     /api/content                        controllers.Api.content
 PUT     /api/content/:composerId/status     controllers.Api.putContentStatus(composerId: String)
