@@ -16,8 +16,8 @@ object Login extends Controller with AuthActions {
   val config = play.api.Play.configuration
 
   val host = config.getString("host").getOrElse("http://localhost:9000")
-  val clientId = config.getString("google.clientId").getOrElse("...?")
-  val clientSecret = config.getString("google.clientSecret").getOrElse("...?")
+  val clientId = config.getString("google.clientId").getOrElse(sys.error("could not find google client id"))
+  val clientSecret = config.getString("google.clientSecret").getOrElse(sys.error("could not find google client secret"))
 
   val ANTI_FORGERY_KEY = "antiForgeryToken"
   val googleAuthConfig =
