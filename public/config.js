@@ -13,21 +13,8 @@ System.config({
     "github:components/bootstrap": "github:components/bootstrap@^3.1.1",
     "angular": "github:angular/bower-angular@^1.2.18",
 
-    // legacy code:
+    // main app mapping:
     "app": "javascripts/app",
-
-    "wfconfig": "javascripts/config",
-    "controllers": "javascripts/controllers",
-    "controllers/dashboard": "javascripts/controllers/dashboard",
-    "controllers/dashboard/content-item": "javascripts/controllers/dashboard/content-item",
-    "controllers/dashboard/dashboard": "javascripts/controllers/dashboard/dashboard",
-    "controllers/dashboard/date-filter": "javascripts/controllers/dashboard/date-filter",
-    "controllers/dashboard/stub-crud": "javascripts/controllers/dashboard/stub-crud",
-    "directives": "javascripts/directives",
-    "filters": "javascripts/filters",
-    "services": "javascripts/services",
-    "services/composer-service": "javascripts/services/composer-service",
-    "services/sections-service": "javascripts/services/sections-service",
 
     // old unmanaged packages
     "angularRoute": "javascripts/components/angular-route",
