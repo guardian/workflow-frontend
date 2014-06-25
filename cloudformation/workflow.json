@@ -69,7 +69,7 @@
             "Type": "AWS::IAM::InstanceProfile",
             "Properties": {
                 "Path": "/",
-                "Roles": [ {"Ref": "DistributionRole"}, {"Ref": "KeysRole"} ]
+                "Roles": [ {"Ref": "DistributionRole"} ]
             }
         },
 
@@ -93,35 +93,7 @@
                             {
                                 "Effect": "Allow",
                                 "Action": [ "s3:GetObject" ],
-                                "Resource": [ "arn:aws:s3:::workflow-dist/*" ]
-                            }
-                        ]
-                    }
-                } ]
-            }
-        },
-
-        "KeysRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "AssumeRolePolicyDocument": {
-                    "Statement": [ {
-                        "Effect": "Allow",
-                        "Principal": {
-                            "Service": [ "ec2.amazonaws.com" ]
-                        },
-                        "Action": [ "sts:AssumeRole" ]
-                    } ]
-                },
-                "Path": "/",
-                "Policies": [ {
-                    "PolicyName": "root",
-                    "PolicyDocument": {
-                        "Statement": [
-                            {
-                                "Effect": "Allow",
-                                "Action": [ "s3:GetObject" ],
-                                "Resource": [ "arn:aws:s3:::workflow-private/*" ]
+                                "Resource": [ "arn:aws:s3:::workflow-dist/*", "arn:aws:s3:::workflow-private/*" ]
                             }
                         ]
                     }
@@ -277,11 +249,6 @@
                   "type": "S3",
                   "roleName": { "Ref": "DistributionRole" },
                   "buckets": [ "workflow-dist" ]
-                },
-                "keysAuthentication": {
-                    "type": "S3",
-                    "roleName": { "Ref": "KeysRole"},
-                    "buckets": [ "workflow-private" ]
                 }
               },
               "AWS::CloudFormation::Init": {
@@ -310,7 +277,7 @@
                     },
                     "/home/workflow/conf/keys.conf": {
                       "source":  "https://s3-eu-west-1.amazonaws.com/workflow-private/keys.conf",
-                      "authentication": "keysAuthentication"
+                      "authentication": "distributionAuthentication"
                     }
                   }
                 }
