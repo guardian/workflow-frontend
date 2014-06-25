@@ -1,19 +1,20 @@
 define([
     'angular',
-    'filters',
-    'services',
-    'directives',
-    'wfconfig',
-    'controllers',
 
-    'controllers/dashboard',
-    'controllers/dashboard/content-item',
-    'controllers/dashboard/dashboard',
-    'controllers/dashboard/date-filter',
-    'controllers/dashboard/stub-crud',
+    './filters',
+    './services',
+    './directives',
+    './config',
+    './controllers',
 
-    'services/sections-service',
-    'services/composer-service',
+    './controllers/dashboard',
+    './controllers/dashboard/content-item',
+    './controllers/dashboard/dashboard',
+    './controllers/dashboard/date-filter',
+    './controllers/dashboard/stub-crud',
+
+    './services/sections-service',
+    './services/composer-service',
 
     'xeditable',
     'angularRoute'
