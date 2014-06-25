@@ -1,7 +1,7 @@
 import java.util.TimeZone
 import play.api.mvc.WithFilters
 import play.api.{GlobalSettings, Application}
-import lib.RedirectToHTTPSFilter
+import lib.{PrototypeConfiguration, RedirectToHTTPSFilter}
 
 
 object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
@@ -16,6 +16,12 @@ object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
 
     System.setProperty("user.timezone", "UTC")
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+
+    //throw an exception if required config is not all there
+    PrototypeConfiguration.apply
+
   }
+
+
 
 }
