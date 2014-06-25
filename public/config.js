@@ -35,7 +35,6 @@ System.config({
     "moment": "javascripts/components/moment.min",
     "sugar": "javascripts/components/sugar.min",
     "ui.bootstrap.datetimepicker": "javascripts/components/datetimepicker",
-    "uiBootstrap": "javascripts/components/bootstrap",
     "uiBootstrap": "javascripts/components/ui-bootstrap-tpls-0.11.0.min",
     "underscore": "javascripts/components/underscore-min",
     "xeditable": "javascripts/components/xeditable.min"
