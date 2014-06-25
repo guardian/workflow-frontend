@@ -69,7 +69,7 @@
             "Type": "AWS::IAM::InstanceProfile",
             "Properties": {
                 "Path": "/",
-                "Roles": [ {"Ref": "DistributionRole"} ]
+                "Roles": [ {"Ref": "DistributionRole"}, {"Ref": "KeysRole"} ]
             }
         },
 
@@ -98,14 +98,6 @@
                         ]
                     }
                 } ]
-            }
-        },
-
-        "KeysInstanceProfile": {
-            "Type": "AWS::IAM::InstanceProfile",
-            "Properties": {
-                "Path": "/",
-                "Roles": [ {"Ref": "KeysRole"} ]
             }
         },
 
