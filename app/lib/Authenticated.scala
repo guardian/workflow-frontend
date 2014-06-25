@@ -8,6 +8,6 @@ import controllers.{routes, User}
 trait Authenticated { this: Controller =>
 
   object Authenticated extends AuthenticatedBuilder(req => req.session.get("user").flatMap(u => User.find(u)),
-    req => Redirect(routes.Application.login()))
+    req => Redirect(routes.Login.login()))
 
 }
