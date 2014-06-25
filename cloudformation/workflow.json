@@ -101,6 +101,42 @@
             }
         },
 
+        "KeysInstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [ {"Ref": "KeysRole"} ]
+            }
+        },
+
+        "KeysRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [ {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": [ "ec2.amazonaws.com" ]
+                        },
+                        "Action": [ "sts:AssumeRole" ]
+                    } ]
+                },
+                "Path": "/",
+                "Policies": [ {
+                    "PolicyName": "root",
+                    "PolicyDocument": {
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Action": [ "s3:GetObject" ],
+                                "Resource": [ "arn:aws:s3:::workflow-private/*" ]
+                            }
+                        ]
+                    }
+                } ]
+            }
+        },
+
         "SSHSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
@@ -249,6 +285,11 @@
                   "type": "S3",
                   "roleName": { "Ref": "DistributionRole" },
                   "buckets": [ "workflow-dist" ]
+                },
+                "keysAuthentication": {
+                    "type": "S3",
+                    "roleName": { "Ref": "KeysRole"},
+                    "buckets": [ "workflow-private" ]
                 }
               },
               "AWS::CloudFormation::Init": {
@@ -274,6 +315,10 @@
                         "/prototype/app.jar"
                       ]]},
                       "authentication": "distributionAuthentication"
+                    },
+                    "/home/workflow/conf/keys.conf": {
+                      "source":  "https://s3-eu-west-1.amazonaws.com/workflow-private/keys.conf",
+                      "authentication": "keysAuthentication"
                     }
                   }
                 }
