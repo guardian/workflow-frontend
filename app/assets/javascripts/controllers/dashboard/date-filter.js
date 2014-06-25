@@ -1,7 +1,7 @@
 define([
     'angular',
     'moment',
-    'controllers/dashboard'
+    '../dashboard'
 ], function (
     angular,
     moment,

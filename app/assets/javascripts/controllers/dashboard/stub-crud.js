@@ -1,6 +1,6 @@
 define([
     'angular',
-    'controllers/dashboard'
+    '../dashboard'
 ], function (
     angular,
     dashboardControllers

@@ -1,4 +1,4 @@
-define(['angular', 'services', 'moment'], function (angular, services, moment) {
+define(['angular', 'moment'], function (angular, moment) {
     'use strict';
 
     var mod = angular.module('workflow.filters', []);
