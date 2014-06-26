@@ -57,10 +57,23 @@
             "Type": "String",
             "NoEcho": true
         },
+        "GoogleClientId": {
+            "Description": "Google Application Id for OAuth2",
+            "Type": "String"
+        },
+        "GoogleSecret": {
+            "Description": "Google Application Secret for OAuth2",
+            "Type": "String"
+        },
         "GuardianIP": {
             "Description": "Ip range for the office",
             "Type": "String",
             "Default": "77.91.248.0/21"
+        },
+        "Host": {
+            "Description": "Hostname of the application",
+            "Type": "String",
+            "Default": "https://workflow.gutools.co.uk"
         }
     },
     "Resources": {
@@ -317,6 +330,9 @@
                         "    -e 's,@DB_URL@,jdbc:postgresql://", { "Fn::GetAtt": [ "PostgresInstance", "Endpoint.Address" ] }, ":", {"Ref":"DBPort"}, "/workflow,g' \\\n",
                         "    -e 's,@DB_USER@,", {"Ref": "DBUser"}, ",g' \\\n",
                         "    -e 's,@DB_PASSWORD@,", {"Ref": "DBPassword"}, ",g' \\\n",
+                        "    -e 's,@GOOGLE_CLIENT_ID@,", {"Ref": "GoogleClientId"}, ",g' \\\n",
+                        "    -e 's,@GOOGLE_SECRET@,", {"Ref": "GoogleSecret"}, ",g' \\\n",
+                        "    -e 's,@HOST@,", {"Ref": "Host"}, ",g' \\\n",
                         "    /etc/init/prototype.conf\n",
 
                         "start prototype\n"
