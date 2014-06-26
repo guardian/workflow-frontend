@@ -15,7 +15,7 @@ object Login extends Controller with AuthActions {
   import play.api.Play.current
   val config = play.api.Play.configuration
 
-  val host = config.getString("host").getOrElse("http://localhost:9000")
+  val host = config.getString("host").getOrElse(sys.error("could not find host"))
   val clientId = config.getString("google.clientId").getOrElse(sys.error("could not find google client id"))
   val clientSecret = config.getString("google.clientSecret").getOrElse(sys.error("could not find google client secret"))
 
