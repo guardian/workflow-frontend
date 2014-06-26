@@ -11,12 +11,13 @@
     <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
     <title>@title</title>
 
-    <!-- Bootstrap -->
-    <link href="@routes.Assets.at("bootstrap/css/bootstrap.css")" rel="stylesheet">
-    <!--<link href="bootstrap/css/dashboard.css" rel="stylesheet">-->
+    @** Pull css in with SystemJS CSS plugin **@
+    <link href="@routes.Assets.at("jspm_packages/github/components/bootstrap@3.1.1/css/bootstrap.min.css")" rel="stylesheet">
+    <link href="@routes.Assets.at("jspm_packages/github/dalelotts/angular-bootstrap-datetimepicker@0.2.4/src/css/datetimepicker.css")" rel="stylesheet">
+    <link href="@routes.Assets.at("jspm_packages/github/vitalets/angular-xeditable@0.1.8/dist/css/xeditable.css")" rel="stylesheet">
+
     <link href="@routes.Assets.at("bootstrap/css/wf.css")" rel="stylesheet">
-    <link href="@routes.Assets.at("stylesheets/datetimepicker.css")" rel="stylesheet">
-    <link href="@routes.Assets.at("stylesheets/xeditable.css")" rel="stylesheet">
+
 
     <!-- TODO - move these into require managements -->
     <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
