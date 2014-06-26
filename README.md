@@ -13,6 +13,7 @@ Development prerequisites
     a unique stack name in the "Stage" parameter, e.g. "DEV-{username}"
   * Query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values
     into `conf/local.conf` using the following template:
+  * Google OAuth2 credentials can be found at https://console.developers.google.com/project/apps~gu-workflow	
 
         aws {
           key = "{AwsId}"
@@ -25,6 +26,10 @@ Development prerequisites
             user=???
             password=???
           }
+        }
+	google {
+    	  clientId=???
+          clientSecret=??? 
         }
         # Uncomment the line below if you want to see SQL queries in the log
         # logger.scala.slick.jdbc.JdbcBackend.statement=DEBUG
