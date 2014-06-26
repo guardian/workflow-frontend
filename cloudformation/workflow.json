@@ -69,6 +69,11 @@
             "Description": "Ip range for the office",
             "Type": "String",
             "Default": "77.91.248.0/21"
+        },
+        "Host": {
+            "Description": "Hostname of the application",
+            "Type": "String",
+            "Default": "https://workflow.gutools.co.uk"
         }
     },
     "Resources": {
@@ -327,6 +332,7 @@
                         "    -e 's,@DB_PASSWORD@,", {"Ref": "DBPassword"}, ",g' \\\n",
                         "    -e 's,@GOOGLE_CLIENT_ID@,", {"Ref": "GoogleClientId"}, ",g' \\\n",
                         "    -e 's,@GOOGLE_SECRET@,", {"Ref": "GoogleSecret"}, ",g' \\\n",
+                        "    -e 's,@HOST@,", {"Ref": "Host"}, ",g' \\\n",
                         "    /etc/init/prototype.conf\n",
 
                         "start prototype\n"
