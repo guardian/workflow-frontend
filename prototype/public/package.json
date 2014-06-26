@@ -5,14 +5,14 @@
   "registry": "jspm",
   "directories": {},
   "dependencies": {
-    "npm:angular-xeditable": "^0.0.1",
-    "npm:bootstrap": "^3.1.1",
-    "npm:moment": "^2.7.0",
-    "npm:angular-bootstrap": "^0.11.0",
-    "npm:angular": "^1.2.18",
-    "npm:underscore": "^1.6.0",
-    "npm:sugar": "^1.4.0",
-    "github:components/angular-route": "^1.2.0",
-    "github:dalelotts/angular-bootstrap-datetimepicker": "^0.2.0"
+    "sugar": "npm:sugar@^1.4.1",
+    "uiBootstrap": "npm:angular-bootstrap@^0.11.0",
+    "angularRoute": "github:components/angular-route@^1.2.0",
+    "bootstrapJs": "github:components/bootstrap@^3.1.1",
+    "xeditable": "github:vitalets/angular-xeditable@^0.1.8",
+    "underscore": "github:jashkenas/underscore@^1.6.0",
+    "ui.bootstrap.datetimepicker": "github:dalelotts/angular-bootstrap-datetimepicker@^0.2.4",
+    "moment": "^2.7.0",
+    "angular": "1.2.1"
   }
 }
