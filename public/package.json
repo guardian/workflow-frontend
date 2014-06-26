@@ -1,0 +1,18 @@
+{
+  "name": "workflow-public-assets",
+  "version": "0.0.0",
+  "author": "Guardian Digital CMS team",
+  "registry": "jspm",
+  "directories": {},
+  "dependencies": {
+    "npm:angular-xeditable": "^0.0.1",
+    "npm:bootstrap": "^3.1.1",
+    "npm:moment": "^2.7.0",
+    "npm:angular-bootstrap": "^0.11.0",
+    "npm:angular": "^1.2.18",
+    "npm:underscore": "^1.6.0",
+    "npm:sugar": "^1.4.0",
+    "github:components/angular-route": "^1.2.0",
+    "github:dalelotts/angular-bootstrap-datetimepicker": "^0.2.0"
+  }
+}
