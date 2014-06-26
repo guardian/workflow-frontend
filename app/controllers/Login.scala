@@ -13,8 +13,6 @@ trait AuthActions extends Actions {
 }
 
 object Login extends Controller with AuthActions {
-  import play.api.Play.current
-  val config = play.api.Play.configuration
 
   val host = PrototypeConfiguration.apply.host
   val clientId = PrototypeConfiguration.apply.googleClientId
