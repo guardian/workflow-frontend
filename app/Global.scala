@@ -1,6 +1,6 @@
 import java.util.TimeZone
 import play.api.mvc.WithFilters
-import play.api.{GlobalSettings, Application}
+import play.api.{Logger, GlobalSettings, Application}
 import lib.{PrototypeConfiguration, RedirectToHTTPSFilter}
 
 
@@ -19,7 +19,7 @@ object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
 
     //throw an exception if required config is not all there
     PrototypeConfiguration.apply
-
+    Logger.info("successfully loaded configuration variables")
   }
 
 
