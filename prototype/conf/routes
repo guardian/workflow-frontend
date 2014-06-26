@@ -6,9 +6,11 @@
 GET     /                                   controllers.Application.index
 GET     /dashboard                          controllers.Application.dashboard
 
-POST    /login                              controllers.Application.loginPost
-GET     /login                              controllers.Application.login
-GET     /redirect                           controllers.Application.openIdRedirect
+# Login
+GET        /login                           controllers.Login.login
+GET        /loginAction                     controllers.Login.loginAction
+GET        /oauth2callback                  controllers.Login.oauth2Callback
+GET        /logout                          controllers.Login.logout
 
 # API
 GET     /api/content                        controllers.Api.content
