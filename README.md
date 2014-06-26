@@ -27,7 +27,7 @@ Development prerequisites
             password=???
           }
         }
-	google {
+	    google {
     	  clientId=???
           clientSecret=??? 
         }
