@@ -16,6 +16,9 @@ define([
     './services/sections-service',
     './services/composer-service',
 
+    'bootstrapJs',
+    'uiBootstrap',
+    'moment',
     'xeditable',
     'angularRoute'
 
