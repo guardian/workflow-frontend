@@ -1,6 +1,6 @@
 import akka.actor.Props
 import java.util.TimeZone
-import lib.{SqsReader, ComposerSqsReader}
+import lib.{ProleConfiguration, SqsReader, ComposerSqsReader}
 import play.api.libs.concurrent.Akka
 import play.api.{Application, GlobalSettings, Logger}
 
@@ -16,6 +16,10 @@ object Global extends GlobalSettings {
 
     System.setProperty("user.timezone", "UTC")
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+
+    ProleConfiguration.apply
+    Logger.info("successfully loaded configuration variables")
+
   }
 
   override def onStart(app: Application) {
