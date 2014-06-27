@@ -13,11 +13,11 @@ import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
 import com.gu.workflow.db.CommonDB
 
-object Api extends Controller with Authenticated {
+object Api extends Controller with AuthActions {
 
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
-  def content = Authenticated { implicit req =>
+  def content = AuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
     val section = req.getQueryString("section").map(Section(_))
@@ -48,14 +48,14 @@ object Api extends Controller with Authenticated {
   val stubFilters: Form[(Option[DateTime], Option[DateTime])] =
     Form(tuple("due.from" -> optional(iso8601DateTimeNoMillis), "due.until" -> optional(iso8601DateTimeNoMillis)))
 
-  def stubs = Authenticated { implicit req =>
+  def stubs = AuthAction { implicit req =>
     stubFilters.bindFromRequest.fold(
       formWithErrors => BadRequest(formWithErrors.errorsAsJson),
       { case (dueFrom, dueUntil) => Ok(renderJsonResponse(CommonDB.getStubs(dueFrom, dueUntil))) }
     )
   }
 
-  def newStub = Authenticated { implicit request =>
+  def newStub = AuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       stub <- extract[Stub](jsValue).right
@@ -65,7 +65,7 @@ object Api extends Controller with Authenticated {
     }).merge
   }
 
-  def putStub(stubId: Long) = Authenticated { implicit request =>
+  def putStub(stubId: Long) = AuthAction { implicit request =>
     (for {
           jsValue <- readJsonFromRequest(request.body).right
           stub <- extract[Stub](jsValue).right
@@ -75,7 +75,7 @@ object Api extends Controller with Authenticated {
      }).merge
   }
 
-  def putStubAssignee(stubId: Long) = Authenticated { implicit request =>
+  def putStubAssignee(stubId: Long) = AuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       assignee <- extract[String](jsValue \ "data").right
@@ -86,7 +86,7 @@ object Api extends Controller with Authenticated {
     }).merge
   }
 
-  def putContentStatus(composerId: String) = Authenticated { implicit request =>
+  def putContentStatus(composerId: String) = AuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       status <- extract[String](jsValue \ "data").right
@@ -96,18 +96,18 @@ object Api extends Controller with Authenticated {
     }).merge
   }
 
-  def deleteContent(composerId: String) = Authenticated {
+  def deleteContent(composerId: String) = AuthAction {
     CommonDB.deleteContent(composerId)
     NoContent
   }
 
-  def deleteStub(stubId: Long) = Authenticated {
+  def deleteStub(stubId: Long) = AuthAction {
     PostgresDB.deleteStub(stubId)
     NoContent
   }
 
 
-  def linkStub(stubId: Long, composerId: String, contentType: String) = Authenticated { req =>
+  def linkStub(stubId: Long, composerId: String, contentType: String) = AuthAction { req =>
 
     if(PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
 
@@ -118,7 +118,7 @@ object Api extends Controller with Authenticated {
 
   }
 
-  def sections = Authenticated.async {
+  def sections = AuthAction.async {
     for (sectionList <- SectionDatabase.sectionList)
       yield {
       Ok(Json.obj("data" -> sectionList))
@@ -137,13 +137,4 @@ object Api extends Controller with Authenticated {
   }
 }
 
-case class User(id: String, email: String, firstName: String, lastName: String)
 
-object User {
-
-  implicit val userWrites: Writes[User] = Json.writes[User]
-  implicit val userReads: Reads[User] = Json.reads[User]
-
-  def find(u: String): Option[User] = Json.parse(u).validate[User].asOpt
-
-}
