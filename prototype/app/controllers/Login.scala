@@ -5,6 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
 import scala.concurrent.Future
 import com.gu.googleauth._
+import lib.PrototypeConfiguration
 import play.api.Play.current
 
 trait AuthActions extends Actions {
@@ -12,12 +13,10 @@ trait AuthActions extends Actions {
 }
 
 object Login extends Controller with AuthActions {
-  import play.api.Play.current
-  val config = play.api.Play.configuration
 
-  val host = config.getString("host").getOrElse(sys.error("could not find host"))
-  val clientId = config.getString("google.clientId").getOrElse(sys.error("could not find google client id"))
-  val clientSecret = config.getString("google.clientSecret").getOrElse(sys.error("could not find google client secret"))
+  val host = PrototypeConfiguration.apply.host
+  val clientId = PrototypeConfiguration.apply.googleClientId
+  val clientSecret = PrototypeConfiguration.apply.googleClientSecret
 
   val ANTI_FORGERY_KEY = "antiForgeryToken"
   val googleAuthConfig =

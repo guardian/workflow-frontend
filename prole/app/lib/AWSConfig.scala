@@ -11,11 +11,9 @@ import models.WireStatus
 
 
 object AWSCreds {
-  import play.api.Play.current
-  val config = play.api.Play.configuration
 
-  private val accessKey = config.getString("aws.key").getOrElse("blah")
-  private val secret = config.getString("aws.secret").getOrElse("blah")
+  private val accessKey = ProleConfiguration.apply.awsKey
+  private val secret = ProleConfiguration.apply.awsSecret
 
   lazy val basic = new BasicAWSCredentials(accessKey, secret)
 }
@@ -28,8 +26,7 @@ object AWSWorkflowQueue {
     client
   }
 
-  lazy val queueUrl = AWSCreds.config.getString("aws.flex.notifications.queue")
-    .getOrElse(sys.error("Required: aws.flex.notifications.queue"))
+  lazy val queueUrl = ProleConfiguration.apply.flexNotificationsQ
 
   def getMessages(messageCount: Int): Future[List[Message]] = Future {
     sqsClient.receiveMessage(
