@@ -14,6 +14,7 @@
     "underscore": "github:jashkenas/underscore@^1.6.0",
     "moment": "^2.7.0",
     "angular": "1.2.1",
-    "angularRoute": "github:components/angular-route@^1.2.0"
+    "angularRoute": "github:components/angular-route@^1.2.0",
+    "jquery": "^1.11.0"
   }
 }
