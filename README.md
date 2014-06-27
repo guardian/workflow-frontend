@@ -13,7 +13,13 @@ Development prerequisites
     a unique stack name in the "Stage" parameter, e.g. "DEV-{username}"
   * Query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values
     into `conf/local.conf` using the following template:
-  * Google OAuth2 credentials can be found at https://console.developers.google.com/project/apps~gu-workflow	
+  * Google OAuth2 credentials can be found at https://console.developers.google.com/project/apps~gu-workflow
+  * Download our private keys from the `workflow-private` S3 bucket. You will need an AWS account so ask another dev.
+
+      If you have the AWS CLI set up you can run
+      ```
+      aws s3 cp s3://workflow-private/keys.conf /path/to/workflow/prototype/conf/keys.conf
+      ```
 
         aws {
           key = "{AwsId}"
