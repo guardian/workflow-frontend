@@ -2,15 +2,10 @@
 
 export JDK_HOME=/usr/lib/jvm/java-1.7.0
 
-# Install client-side packages
-pushd prototype/public
-
-  ## Temp override of xeditable
-  jspm install xeditable=github:vitalets/angular-xeditable -o "{main: 'dist/js/xeditable.min'}"
-  jspm install
-
+# Compile client-side packages
+pushd prototype
+  ./setup.sh
 popd
-
 
 # Build with SBT
 /usr/lib/jvm/java-1.7.0/bin/java \
