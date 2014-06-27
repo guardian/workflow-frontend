@@ -10,11 +10,11 @@ import lib._
 import models.{Status => WorkflowStatus, Section}
 
 
-object Admin extends Controller {
+object Admin extends Controller with AuthActions {
 
   import play.api.data.Forms._
 
-  def index = Action {
+  def index = AuthAction {
     Redirect(routes.Admin.sections)
   }
 
@@ -24,11 +24,11 @@ object Admin extends Controller {
     )(Section.apply)(Section.unapply)
   )
 
-  def sections = Action.async {
+  def sections = AuthAction.async {
     for (sections <- SectionDatabase.sectionList) yield Ok(views.html.sections(sections, addSectionForm))
   }
 
-  def addSection = Action.async { implicit request =>
+  def addSection = AuthAction.async { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => {
         Future.successful(BadRequest("failed to add section"))
@@ -41,7 +41,7 @@ object Admin extends Controller {
     )
   }
 
-  def removeSection = Action.async { implicit request =>
+  def removeSection = AuthAction.async { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => {
         Future.successful(BadRequest("failed to remove section"))
@@ -60,7 +60,7 @@ object Admin extends Controller {
     )(WorkflowStatus.apply)(WorkflowStatus.unapply)
   )
 
-  def status = Action.async {
+  def status = AuthAction.async {
     for (statuses <- StatusDatabase.statuses) yield Ok(views.html.status(statuses, statusForm))
   }
 
