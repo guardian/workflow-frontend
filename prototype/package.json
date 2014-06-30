@@ -1,0 +1,13 @@
+{
+  "name": "workflow",
+  "version": "0.0.0",
+  "author": "Guardian Digital CMS team",
+  "private": true,
+  "devDependencies": {
+    "jspm": "^0.6.5"
+  },
+  "repository": {
+    "type": "git",
+    "url" : "https://github.com/guardian/workflow.git"
+  }
+}

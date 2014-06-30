@@ -21,24 +21,26 @@ Development prerequisites
       aws s3 cp s3://workflow-private/keys.conf /etc/gu/workflow-keys.conf
       ```
 
-        aws {
+      ```
+      aws {
           key = "{AwsId}"
           secret = "{AwsSecret}"
           flex.notifications.queue = "{SqsQueueUrl}"
         }
-        db {
-          default {
-            url="jdbc:postgresql://{DatabaseHost}:5432/workflow"
-            user=???
-            password=???
-          }
-        }
-	    google {
-    	  clientId=???
-          clientSecret=??? 
-        }
-        # Uncomment the line below if you want to see SQL queries in the log
-        # logger.scala.slick.jdbc.JdbcBackend.statement=DEBUG
+      }
+      google {
+        clientId=???
+        clientSecret=???
+      }
+      # Uncomment the line below if you want to see SQL queries in the log
+      # logger.scala.slick.jdbc.JdbcBackend.statement=DEBUG
+      ```
+
+  * Setup and install client-side dependencies:
+
+    ```
+      ./prototype/setup.sh
+    ```
 
 
 Running the application

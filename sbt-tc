@@ -2,6 +2,12 @@
 
 export JDK_HOME=/usr/lib/jvm/java-1.7.0
 
+# Compile client-side packages
+pushd prototype
+  ./setup.sh
+popd
+
+# Build with SBT
 /usr/lib/jvm/java-1.7.0/bin/java \
   -XX:+CMSClassUnloadingEnabled -Xmx2g -XX:MaxPermSize=350m -XX:+UseCompressedOops  \
   -Dbuild.number="$BUILD_NUMBER" -Dbuild.vcs.number="$BUILD_VCS_NUMBER" -Dbuild.vcs.branch="$BUILD_VCS_BRANCH" \
