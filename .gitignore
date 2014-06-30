@@ -15,7 +15,7 @@ dist
 /.settings
 
 */conf/local.conf
-*/conf/keys.conf
+
 # Created by http://www.gitignore.io
 
 ### Scala ###
