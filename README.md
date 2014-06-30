@@ -9,30 +9,37 @@ Development prerequisites
   * Install [SBT](http://www.scala-sbt.org/)
   * Get an account in the [aws-cms-workflow](https://aws-cms-workflow.signin.aws.amazon.com/console) AWS account
   * Set your region in the AWS console (drop-down menu in the top right corner) - you probably want to choose Ireland.
-  * Create your own CloudFormation stack, using the developer template in `cloudformation/dev-template.json`. NB: Enter
-    a unique stack name in the "Stage" parameter, e.g. "DEV-{username}"
-  * Query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values
-    into `conf/local.conf` using the following template:
-  * Google OAuth2 credentials can be found at https://console.developers.google.com/project/apps~gu-workflow	
+  * Create your own CloudFormation stack, using the developer template in `cloudformation/dev-template.json`. NB: Enter a unique stack name in the "Stage" parameter, e.g. "DEV-{username}"
+  * Query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values into `conf/local.conf` using the following template:
 
-        aws {
-          key = "{AwsId}"
-          secret = "{AwsSecret}"
-          flex.notifications.queue = "{SqsQueueUrl}"
+    ```
+      aws {
+        key = "{AwsId}"
+        secret = "{AwsSecret}"
+        flex.notifications.queue = "{SqsQueueUrl}"
+      }
+      db {
+        default {
+          url="jdbc:postgresql://{DatabaseHost}:5432/workflow"
+          user=???
+          password=???
         }
-        db {
-          default {
-            url="jdbc:postgresql://{DatabaseHost}:5432/workflow"
-            user=???
-            password=???
-          }
-        }
-	    google {
-    	  clientId=???
-          clientSecret=??? 
-        }
-        # Uncomment the line below if you want to see SQL queries in the log
-        # logger.scala.slick.jdbc.JdbcBackend.statement=DEBUG
+      }
+      google {
+        clientId=???
+        clientSecret=???
+      }
+      # Uncomment the line below if you want to see SQL queries in the log
+      # logger.scala.slick.jdbc.JdbcBackend.statement=DEBUG
+    ```
+
+    * Google OAuth2 `clientId` and `clientSecret` credentials can be found at https://console.developers.google.com/project/apps~gu-workflow
+
+  * Setup and install client-side dependencies:
+
+    ```
+      ./prototype/setup.sh
+    ```
 
 
 Running the application
