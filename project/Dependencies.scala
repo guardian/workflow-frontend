@@ -14,6 +14,6 @@ object Dependencies {
 
   val akkaDependencies = Seq("com.typesafe.akka" %% "akka-agent" % "2.2.0")
 
-  val googleOAuthDependencies = Seq("com.gu" %% "play-googleauth" % "0.0.2")
+  val googleOAuthDependencies = Seq("com.gu" %% "play-googleauth" % "0.0.3")
 
 }
