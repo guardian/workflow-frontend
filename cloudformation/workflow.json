@@ -288,7 +288,7 @@
                       ]]},
                       "authentication": "distributionAuthentication"
                     },
-                    "/home/workflow/conf/keys.conf": {
+                    "/etc/gu/workflow-keys.conf": {
                       "source":  "https://s3-eu-west-1.amazonaws.com/workflow-private/keys.conf",
                       "authentication": "distributionAuthentication"
                     }
