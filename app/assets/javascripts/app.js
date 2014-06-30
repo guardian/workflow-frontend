@@ -16,11 +16,11 @@ define([
     './services/sections-service',
     './services/composer-service',
 
-    'bootstrapJs',
-    'uiBootstrap',
+    'bootstrap',
+    'angular-bootstrap',
     'moment',
-    'xeditable',
-    'angularRoute'
+    'angular-xeditable',
+    'angular-route'
 
     ], function (angular, filters, services, directives, config, controllers) {
 
