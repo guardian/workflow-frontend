@@ -106,7 +106,7 @@
                             {
                                 "Effect": "Allow",
                                 "Action": [ "s3:GetObject" ],
-                                "Resource": [ "arn:aws:s3:::workflow-dist/*" ]
+                                "Resource": [ "arn:aws:s3:::workflow-dist/*", "arn:aws:s3:::workflow-private/*" ]
                             }
                         ]
                     }
@@ -286,6 +286,10 @@
                         { "Ref": "Stage" },
                         "/prototype/app.jar"
                       ]]},
+                      "authentication": "distributionAuthentication"
+                    },
+                    "/home/workflow/conf/keys.conf": {
+                      "source":  "https://s3-eu-west-1.amazonaws.com/workflow-private/keys.conf",
                       "authentication": "distributionAuthentication"
                     }
                   }

@@ -13,6 +13,7 @@ object PrototypeConfiguration {
         googleClientId <- Config.getConfigString("google.clientId").right
         googleClientSecret <- Config.getConfigString("google.clientSecret").right
         host <- Config.getConfigString("host").right
+        appSecret <- Config.getConfigString("application.secret").right
       } yield PrototypeConfiguration(composerUrl, googleClientId, googleClientSecret, host))
     configEit.fold(error => {
       Logger.error(s"could not instantiate Prototype Configuration ${error}")
