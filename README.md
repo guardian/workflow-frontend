@@ -18,7 +18,7 @@ Development prerequisites
 
       If you have the AWS CLI set up you can run
       ```
-      aws s3 cp s3://workflow-private/keys.conf /path/to/workflow/prototype/conf/keys.conf
+      aws s3 cp s3://workflow-private/keys.conf /etc/gu/workflow-keys.conf
       ```
 
         aws {
