@@ -2,7 +2,17 @@
 /**
  * Module which exposes a directive outputting a Date picker form field.
  *
- * <div wf-date-time-picker ng-model="stub.due"></div>
+ * To show just a date picker field:
+ *   <div wf-date-time-picker ng-model="stub.due"/>
+ *
+ * To show date picker field with a label:
+ *  <div wf-date-time-picker label="Due date" ng-model="stub.due"/>
+ *
+ * To show date picker field with a label and help text:
+ *   <div wf-date-time-picker label="Due something" help-text="true" ng-model="stub.due"/>
+ *
+ * To show date picker field with a label and custom help text:
+ *   <div wf-date-time-picker label="Due something" help-text="custom help text" ng-model="stub.due"/>
  */
 
 import angular from 'angular';
@@ -34,11 +44,21 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
       require: 'ngModel',
       scope: {
         dateValue: '=ngModel',
-        onDatePicked: '='
+        onDatePicked: '=',
+        label: '@',
+        helpText: '@'
       },
       templateUrl: '/assets/components/date-time-picker/date-time-picker.html',
 
       link: function(scope, element, attrs) {
+
+        var idSuffix = (new Date()).getTime();
+
+        scope.textInputId = 'wfDateTimePickerText' + idSuffix;
+        scope.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
+
+        scope.dateTimePickerConfig = { dropdownSelector: '#' + scope.dropDownButtonId };
+
 
         // Set dateText field content on init
         if (scope.dateValue) {
