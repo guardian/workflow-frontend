@@ -1,0 +1,11 @@
+<div class="input-group">
+    <input type="text" class="form-control" data-ng-model="dateText" id="stub_due2" name="due">
+    <div class="input-group-btn">
+        <button type="button" id="stub_duedate2" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-calendar"></i></button>
+      </a>
+      <ul class="dropdown-menu pull-right" role="menu">
+        <datetimepicker data-ng-model="dateValue" data-datetimepicker-config="{ dropdownSelector: '#stub_duedate2' }" data-on-set-time="onDatePickedFromDropDown"/>
+      </ul>
+    </div>
+</div>
+{{ dateValue && (dateValue | wfDateTimePicker.formatDateTime) }}
