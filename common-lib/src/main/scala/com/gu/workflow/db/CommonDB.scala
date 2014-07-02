@@ -33,11 +33,14 @@ object CommonDB {
           contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
           cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids))
 
-      q.sortBy(_.due.desc).list.map {
-        case (pk, title, section, due, assignee, composerId, contentType) =>
-          Stub(Some(pk), title, section, due, assignee, composerId, contentType)
+      q.filter(s => dueDateNotExpired(s.due))
+        .sortBy(_.due.desc).list.map {
+            case (pk, title, section, due, assignee, composerId, contentType) =>
+         Stub(Some(pk), title, section, due, assignee, composerId, contentType)
       }
     }
+
+  def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
 
   def createOrModifyContent(wc: WorkflowContent): Unit =
     DB.withTransaction { implicit session =>
