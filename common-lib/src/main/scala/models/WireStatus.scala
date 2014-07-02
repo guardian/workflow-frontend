@@ -16,7 +16,9 @@ case class WireStatus(
                        lastModified: DateTime,
                        tagSections: List[Section],
                        status: Status,
-                       commentable: Boolean)
+                       commentable: Boolean,
+                       lastMajorRevisionDate: Option[DateTime]
+                       )
 object WireStatus {
 
   val readTagSections = new Reads[List[Section]] {
@@ -49,7 +51,8 @@ object WireStatus {
       (__ \ "published").read[Boolean].map(p => if (p) Final else Writers) ~
       (__ \ "content" \ "settings" \ "commentable").readNullable[String].map {
         s => s.exists(_=="true")
-      }
+      } ~
+      (__ \ "lastMajorRevisionDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t)))
       )(WireStatus.apply _)
 
 }

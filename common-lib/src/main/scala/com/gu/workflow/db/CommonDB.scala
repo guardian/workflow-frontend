@@ -47,9 +47,9 @@ object CommonDB {
   def setPublishedTime(timePublished: DateTime, composerId: String): Int = {
     DB.withTransaction { implicit session =>
       content
-        .filter(_.composerId === composerId)
+        .filter(c => c.composerId === composerId && c.timePublished.isNull)
         .map(c =>
-        (c.timePublished)
+          (c.timePublished)
         ).update(Some(timePublished))
     }
   }
