@@ -16,4 +16,6 @@ object Dependencies {
 
   val googleOAuthDependencies = Seq("com.gu" %% "play-googleauth" % "0.0.3")
 
+  val testDependencies = Seq("org.scalatest" %% "scalatest" % "2.1.5" % "test")
+
 }

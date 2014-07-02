@@ -15,6 +15,7 @@ object WorkflowBuild extends Build {
       scalaVersion in ThisBuild := "2.10.3",
       organization := "com.gu",
       version      := "0.1",
+      fork in Test := false,
       resolvers ++= Seq("Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"),
       scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings")
     )
@@ -25,7 +26,7 @@ object WorkflowBuild extends Build {
     )
 
   lazy val prole = playProject("prole")
-                  .settings(libraryDependencies ++= awsDependencies)
+                  .settings(libraryDependencies ++= awsDependencies ++ testDependencies)
 
   lazy val root = playProject("prototype")
     .settings(
