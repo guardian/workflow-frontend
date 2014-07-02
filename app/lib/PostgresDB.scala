@@ -41,7 +41,7 @@ object PostgresDB {
 
       query.sortBy { case (s, c) => s.due }.list.map {
         case ((pk, title, section, due, assignee, cId, stubContentType),
-        (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published)) =>
+        (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
           DashboardRow(
             Stub(Some(pk), title, section, due, assignee, cId, stubContentType),
             WorkflowContent(
@@ -65,7 +65,7 @@ object PostgresDB {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
       content +=
-        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false))
+        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false, None))
     }
   }
 
