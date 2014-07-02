@@ -10,6 +10,7 @@ case class WireStatus(
                        path: Option[String],
                        headline: Option[String],
                        `type`: String,
+                       whatChanged: String,
                        published: Boolean,
                        user: Option[String],
                        lastModified: DateTime,
@@ -40,6 +41,7 @@ object WireStatus {
       (__ \ "content" \ "identifiers" \ "path").readNullable[String] ~
       (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
       (__ \ "content" \ "type").read[String] ~
+      (__ \ "whatChanged").read[String] ~
       (__ \ "published").read[Boolean] ~
       readUser ~
       (__ \ "content" \ "lastModified").read[Long].map(t => new DateTime(t)) ~

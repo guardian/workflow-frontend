@@ -44,6 +44,16 @@ object CommonDB {
       if (updateContent(wc, wc.composerId) == 0) createContent(wc)
     }
 
+  def setPublishedTime(timePublished: DateTime, composerId: String): Int = {
+    DB.withTransaction { implicit session =>
+      content
+        .filter(_.composerId === composerId)
+        .map(c =>
+        (c.timePublished)
+        ).update(Some(timePublished))
+    }
+  }
+
   def updateContent(wc: WorkflowContent, composerId: String): Int = {
     DB.withTransaction { implicit session =>
       content
@@ -57,7 +67,7 @@ object CommonDB {
   def createContent(wc: WorkflowContent) {
     DB.withTransaction { implicit session =>
       content +=
-        ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published))
+        ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published, None))
     }
   }
 
