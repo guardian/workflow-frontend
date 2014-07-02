@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
+import com.gu.workflow.db.CommonDB._
 import models.DashboardRow
 
 object PostgresDB {
@@ -38,25 +39,26 @@ object PostgresDB {
         s <- stubsQuery
         c <- contentQuery if s.composerId === c.composerId
       } yield (s, c)
-
-      query.sortBy { case (s, c) => s.due }.list.map {
-        case ((pk, title, section, due, assignee, cId, stubContentType),
-        (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
-          DashboardRow(
-            Stub(Some(pk), title, section, due, assignee, cId, stubContentType),
-            WorkflowContent(
-              composerId,
-              path,
-              headline,
-              contentType,
-              Some(Section(section)),
-              Status(status),
-              lastMod,
-              lastModBy,
-              commentable,
-              published
-            )
-          )
+      
+      query.filter( {case (s, c) => dueDateNotExpired(s.due) })
+           .sortBy { case (s, c) => s.due }.list.map {
+            case ((pk, title, section, due, assignee, cId, stubContentType),
+            (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
+              DashboardRow(
+                Stub(Some(pk), title, section, due, assignee, cId, stubContentType),
+                WorkflowContent(
+                  composerId,
+                  path,
+                  headline,
+                  contentType,
+                  Some(Section(section)),
+                  Status(status),
+                  lastMod,
+                  lastModBy,
+                  commentable,
+                  published
+                )
+              )
       }
 
     }
