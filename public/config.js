@@ -40,7 +40,7 @@ System.config({
   "versions": {
     "npm:angular-bootstrap": "0.11.0",
     "github:dalelotts/angular-bootstrap-datetimepicker": "0.2.4",
-    "github:components/bootstrap": "3.1.1",
+    "github:components/bootstrap": "3.2.0",
     "github:components/angular-route": "1.2.0",
     "github:vitalets/angular-xeditable": "0.1.8",
     "github:jashkenas/underscore": "1.6.0",
@@ -53,7 +53,7 @@ System.config({
     "npm:Base64": "0.2.1",
     "github:systemjs/plugin-json": "master",
     "npm:inherits": "2.0.1",
-    "github:components/jquery": "1.11.0"
+    "github:components/jquery": "1.11.1"
   }
 });
 
