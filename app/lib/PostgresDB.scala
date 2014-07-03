@@ -41,7 +41,7 @@ object PostgresDB {
       } yield (s, c)
       
       query.filter( {case (s, c) => dueDateNotExpired(s.due) })
-           .sortBy { case (s, c) => s.due }.list.map {
+           .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
             case ((pk, title, section, due, assignee, cId, stubContentType, priority) ,
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
               DashboardRow(
