@@ -226,9 +226,9 @@
                     "Fn::GetAZs": ""
                 },
                 "LaunchConfigurationName": { "Ref": "PrototypeLaunchConfig" },
-                "MinSize": "1",
-                "MaxSize": "2",
-                "DesiredCapacity": "1",
+                "MinSize": "2",
+                "MaxSize": "4",
+                "DesiredCapacity": "2",
                 "Cooldown": "180",
                 "HealthCheckType": "ELB",
                 "HealthCheckGracePeriod": 300,
