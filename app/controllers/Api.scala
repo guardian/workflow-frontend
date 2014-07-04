@@ -86,6 +86,16 @@ object Api extends Controller with AuthActions {
     }).merge
   }
 
+  def putStubDueDate(stubId: Long) = AuthAction { implicit request =>
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+    } yield {
+        val dueDate = (jsValue \ "data").asOpt[String].map(new DateTime(_))
+        PostgresDB.updateStubDueDate(stubId, dueDate)
+        NoContent
+    }).merge
+  }
+
   def putContentStatus(composerId: String) = AuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
