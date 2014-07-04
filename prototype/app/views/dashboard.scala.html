@@ -132,6 +132,9 @@
                 </li>
                 <li class="secondary-info">
                     {{stub.assignee}} | {{stub.section}}
+                    <span class="glyphicon glyphicon-exclamation-sign" ng-show="stub.priority===1"></span>
+                    <span class="glyphicon glyphicon-exclamation-sign" ng-show="stub.priority===2"></span>
+                    <span class="glyphicon glyphicon-exclamation-sign" ng-show="stub.priority===2"></span>
                     <span class="trash-right"><button class="btn warning btn-xs" ng-click="deleteStub(stub)"><span class="glyphicon glyphicon-trash"></span></button></span>
                 </li>
                 <li class="stub-controls">
