@@ -17,8 +17,7 @@ pushd public
 popd
 
 
-if [ $JSPM_EXIT == "0" ]; then
-    exit 0
-else
+if [ $JSPM_EXIT != "0" ]; then
+    echo "failed jspm install"
     exit 1
 fi
