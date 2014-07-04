@@ -9,7 +9,8 @@ pushd prototype
     SETUP_EXIT=$?
 popd
 
-if [ SETUP_EXIT != "0" ]; then
+if [ $SETUP_EXIT != "0" ]; then
+    echo "setup script failed"
     exit 1
 fi
 
