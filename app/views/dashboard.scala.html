@@ -223,7 +223,7 @@
                     <dt>Production deadline</dt>
                         <dd class="dropdown">
                             {{ selectedContent.due | formatDateTime }}
-                            <button class="btn warning btn-xs dropdown-toggle"><span class="glyphicon glyphicon-calendar"></span></button>
+                            <button class="btn warning btn-xs dropdown-toggle" id="details_duedate"><span class="glyphicon glyphicon-calendar"></span></button>
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <datetimepicker data-ng-model="selectedContent.due" data-datetimepicker-config="{ dropdownSelector: '#details_duedate' }" data-on-set-time="dueDateUpdated"/>
                             </ul>
