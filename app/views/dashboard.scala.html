@@ -227,7 +227,13 @@
                 <h5>Timing</h5>
                 <dl class="dl-horizontal">
                     <dt>Production deadline</dt>
-                        <dd>{{ selectedContent.due | formatDateTime }}</dd>
+                        <dd class="dropdown">
+                            {{ selectedContent.due | formatDateTime }}
+                            <button class="btn warning btn-xs dropdown-toggle" id="details_duedate"><span class="glyphicon glyphicon-calendar"></span></button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <datetimepicker data-ng-model="selectedContent.due" data-datetimepicker-config="{ dropdownSelector: '#details_duedate' }" data-on-set-time="dueDateUpdated"/>
+                            </ul>
+                        </dd>
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
