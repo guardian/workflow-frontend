@@ -113,6 +113,15 @@ object PostgresDB {
     }
   }
 
+  def updateStubDueDate(id: Long, dueDate: Option[DateTime]): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.due)
+        .update(dueDate)
+    }
+  }
+
   def stubLinkedToComposer(id: Long): Boolean = {
     DB.withTransaction { implicit session =>
       val q = stubs.filter(stub => stub.pk === id && stub.composerId.isNotNull)

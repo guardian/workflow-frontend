@@ -2,19 +2,6 @@
 
 export JDK_HOME=/usr/lib/jvm/java-1.7.0
 
-# Compile client-side packages
-pushd prototype
-    ./setup.sh
-
-    SETUP_EXIT=$?
-popd
-
-if [ $SETUP_EXIT != "0" ]; then
-    echo "setup script failed"
-    exit 1
-fi
-
-
 # Build with SBT
 /usr/lib/jvm/java-1.7.0/bin/java \
   -XX:+CMSClassUnloadingEnabled -Xmx2g -XX:MaxPermSize=350m -XX:+UseCompressedOops  \
