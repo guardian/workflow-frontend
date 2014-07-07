@@ -26,7 +26,8 @@ Development prerequisites
   * Setup and install client-side dependencies:
 
     ```
-      ./prototype/setup.sh
+      cd prototype
+      ./setup.sh
     ```
 
 
