@@ -1,13 +1,12 @@
 package lib
 
-import models.{WorkflowContent, Stub, Status, Section}
+import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
 import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
 import com.gu.workflow.db.CommonDB._
-import models.DashboardRow
 
 object PostgresDB {
 
@@ -42,10 +41,10 @@ object PostgresDB {
       
       query.filter( {case (s, c) => dueDateNotExpired(s.due) })
            .sortBy { case (s, c) => s.due }.list.map {
-            case ((pk, title, section, due, assignee, cId, stubContentType),
+            case ((pk, title, section, due, assignee, cId, stubContentType, needsLegal),
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
               DashboardRow(
-                Stub(Some(pk), title, section, due, assignee, cId, stubContentType),
+                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, needsLegal),
                 WorkflowContent(
                   composerId,
                   path,
@@ -76,7 +75,7 @@ object PostgresDB {
 
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, Flag.NotRequired))
     }
 
 
