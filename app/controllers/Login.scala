@@ -9,7 +9,7 @@ import lib.PrototypeConfiguration
 import play.api.Play.current
 
 trait AuthActions extends Actions {
-  val loginTarget: Call = routes.Login.login()
+  val loginTarget: Call = routes.Login.loginAction()
 }
 
 object Login extends Controller with AuthActions {
@@ -79,7 +79,7 @@ object Login extends Controller with AuthActions {
   }
 
   def logout = Action { implicit request =>
-    Redirect(routes.Application.index()).withNewSession
+    Redirect(routes.Login.login()).withNewSession
   }
 
 }
