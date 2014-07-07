@@ -24,7 +24,8 @@ object DashboardRow {
           Some("lastModified" -> JsNumber(d.wc.lastModified.getMillis)) ++
           d.wc.lastModifiedBy.map("lastModifiedBy" -> JsString(_)) ++
           Some("commentable" -> JsBoolean(d.wc.commentable)) ++
-          Some("published" -> JsBoolean(d.wc.published))
+          Some("published" -> JsBoolean(d.wc.published)) ++
+          Some("needsLegal" -> JsString(d.stub.needsLegal.toString))
         )
     }
   }
