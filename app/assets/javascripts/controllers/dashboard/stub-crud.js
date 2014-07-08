@@ -69,6 +69,7 @@ define([
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
+
     };
 
     dashboardControllers.controller('StubModalInstanceCtrl', ['$scope',
@@ -93,7 +94,8 @@ define([
             $scope.$on('newStub', function(event, contentType) {
                 var stub = {
                     contentType: contentType || 'article',
-                    section: 'Technology'
+                    section: 'Technology',
+                    priority: 0
                 };
                 open(stub);
             });

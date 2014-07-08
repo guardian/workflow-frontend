@@ -41,11 +41,11 @@ object PostgresDB {
       } yield (s, c)
       
       query.filter( {case (s, c) => dueDateNotExpired(s.due) })
-           .sortBy { case (s, c) => s.due }.list.map {
-            case ((pk, title, section, due, assignee, cId, stubContentType),
+           .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
+            case ((pk, title, section, due, assignee, cId, stubContentType, priority) ,
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
               DashboardRow(
-                Stub(Some(pk), title, section, due, assignee, cId, stubContentType),
+                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority),
                 WorkflowContent(
                   composerId,
                   path,
@@ -76,7 +76,7 @@ object PostgresDB {
 
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority))
     }
 
 
@@ -87,8 +87,8 @@ object PostgresDB {
 
       stubs
         .filter(_.pk === id)
-        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType))
-        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType, s.priority))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority))
     }
   }
 
