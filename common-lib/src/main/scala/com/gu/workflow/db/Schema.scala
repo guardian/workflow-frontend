@@ -1,7 +1,7 @@
 package com.gu.workflow.db
 
 import models.Flag
-import models.Flag.Flag
+import models.Flag._
 import org.joda.time.DateTime
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.{Query, TableQuery}
@@ -11,14 +11,15 @@ import com.github.tototoshi.slick.PostgresJodaSupport._
 object Schema {
 
   type StubRow = (
-    Long,             // pk
-    String,           // working_title
-    String,           // section
-    Option[DateTime], // due
-    Option[String],   // assign_to
-    Option[String],   // composer_id
-    Option[String],   // content_type
-    Flag              // needs_legal
+    Long,               // pk
+    String,             // working_title
+    String,             // section
+    Option[DateTime],   // due
+    Option[String],     // assign_to
+    Option[String],     // composer_id
+    Option[String],     // content_type
+    Int,                // priority
+    Flag                // needs_legal
   )
 
   case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
@@ -29,8 +30,9 @@ object Schema {
     def assignee     = column [Option[String]]   ("assign_to")
     def composerId   = column [Option[String]]   ("composer_id")
     def contentType  = column [Option[String]]   ("content_type")
+    def priority     = column [Int]              ("priority")
     def needsLegal   = column [Flag]             ("needs_legal")
-    def * = (pk, workingTitle, section, due, assignee, composerId, contentType, needsLegal)
+    def * = (pk, workingTitle, section, due, assignee, composerId, contentType, priority, needsLegal)
   }
 
   type ContentRow = (

@@ -34,9 +34,9 @@ object CommonDB {
           cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids))
 
       q.filter(s => dueDateNotExpired(s.due))
-        .sortBy(_.due.desc).list.map {
-            case (pk, title, section, due, assignee, composerId, contentType, needsLegal) =>
-         Stub(Some(pk), title, section, due, assignee, composerId, contentType, needsLegal)
+        .sortBy(s => (s.priority.desc, s.due.desc)).list.map {
+            case (pk, title, section, due, assignee, composerId, contentType, priority, needsLegal) =>
+         Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal)
       }
     }
 

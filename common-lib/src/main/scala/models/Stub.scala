@@ -14,6 +14,7 @@ case class Stub(id: Option[Long],
                 assignee: Option[String],
                 composerId: Option[String],
                 contentType: Option[String],
+                priority: Int,
                 needsLegal: Flag)
 
 object Stub {
