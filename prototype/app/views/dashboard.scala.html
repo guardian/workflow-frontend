@@ -248,6 +248,13 @@
                     <dt>Assigned to</dt>
                     <a href="#" class="detail__editable" editable-text="selectedContent.assignee" buttons="no" onbeforesave="updateAssignee(selectedContent.stubId, $data)">
                         {{ selectedContent.assignee || "none" }}</a>
+                    <dt>Legal</dt>
+                        <dd><select id="stub_detail_legal" name="needsLegal"
+                                    ng-model="selectedContent.needsLegal"
+                                    ng-options="ls.value as ls.name for ls in legalStates"
+                                    ng-change="updateNeedsLegal()">
+                            </select>
+                        </dd>
                 </dl>
                 <hr />
             </div>

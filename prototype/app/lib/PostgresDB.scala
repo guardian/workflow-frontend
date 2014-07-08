@@ -1,5 +1,6 @@
 package lib
 
+import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
@@ -117,6 +118,15 @@ object PostgresDB {
         .filter(_.pk === id)
         .map(s => s.due)
         .update(dueDate)
+    }
+  }
+
+  def updateStubLegalStatus(id: Long, status: Flag): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.needsLegal)
+        .update(status)
     }
   }
 

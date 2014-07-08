@@ -1,5 +1,7 @@
 package controllers
 
+import models.Flag.Flag
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import play.api.data.Form
@@ -102,6 +104,16 @@ object Api extends Controller with AuthActions {
       status <- extract[String](jsValue \ "data").right
     } yield {
       PostgresDB.updateContentStatus(status, composerId)
+      NoContent
+    }).merge
+  }
+
+  def putStubLegalStatus(stubId: Long) = AuthAction { implicit request =>
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+      status <- extract[Flag](jsValue \ "data").right
+    } yield {
+      PostgresDB.updateStubLegalStatus(stubId, status)
       NoContent
     }).merge
   }
