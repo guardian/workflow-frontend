@@ -132,6 +132,9 @@
                 </li>
                 <li class="secondary-info">
                     {{stub.assignee}} | {{stub.section}}
+                    <span class="glyphicon glyphicon-exclamation-sign" ng-show="stub.priority===1"></span>
+                    <span class="glyphicon glyphicon-exclamation-sign" ng-show="stub.priority===2"></span>
+                    <span class="glyphicon glyphicon-exclamation-sign" ng-show="stub.priority===2"></span>
                     <span class="trash-right"><button class="btn warning btn-xs" ng-click="deleteStub(stub)"><span class="glyphicon glyphicon-trash"></span></button></span>
                 </li>
                 <li class="stub-controls">
@@ -154,7 +157,6 @@
             <table class="table ">
                 <thead>
                 <tr>
-                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -182,11 +184,12 @@
                                 <span class="glyphicon glyphicon-hand-up" ng-show="content.contentType==='interactive'"></span>
                             </td>
                             <td>
+                                <span class="glyphicon glyphicon-exclamation-sign" ng-show="content.priority===1"></span>
+                                <span class="glyphicon glyphicon-exclamation-sign" ng-show="content.priority===2"></span>
+                                <span class="glyphicon glyphicon-exclamation-sign" ng-show="content.priority===2"></span>
                             </td>
                             <td>
                                 <span class="glyphicon glyphicon-comment"  ng-show="content.commentable"></span>
-                            </td>
-                            <td>
                             </td>
                             <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a></strong>
                             </td>
@@ -221,7 +224,13 @@
                 <h5>Timing</h5>
                 <dl class="dl-horizontal">
                     <dt>Production deadline</dt>
-                        <dd>{{ selectedContent.due | formatDateTime }}</dd>
+                        <dd class="dropdown">
+                            {{ selectedContent.due | formatDateTime }}
+                            <button class="btn warning btn-xs dropdown-toggle" id="details_duedate"><span class="glyphicon glyphicon-calendar"></span></button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <datetimepicker data-ng-model="selectedContent.due" data-datetimepicker-config="{ dropdownSelector: '#details_duedate' }" data-on-set-time="dueDateUpdated"/>
+                            </ul>
+                        </dd>
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
@@ -262,6 +271,14 @@
                         </div>
                         <div class="form-group">
                             <div wf-date-time-picker label="Due by" help-text="true" ng-model="stub.due"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="stub_priority">Priority</label>
+                                <div class="btn-group">
+                                    <label class="btn btn-default btn-sm" ng-model="stub.priority" btn-radio="0">.</label>
+                                    <label class="btn btn-default btn-sm" ng-model="stub.priority" btn-radio="1">!</label>
+                                    <label class="btn btn-default btn-sm" ng-model="stub.priority" btn-radio="2">!!</label>
+                                </div>
                         </div>
                         <div class="form-group">
                             <label for="stub_assignee">Assign to</label>

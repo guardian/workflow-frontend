@@ -7,7 +7,7 @@ import play.api.libs.json.{JsError, JsSuccess}
 import play.api.Logger
 import com.gu.workflow.syntax.TraverseSyntax._
 import com.gu.workflow.db.CommonDB
-import models.WorkflowContent
+import models.{WireStatus, WorkflowContent}
 import java.util.concurrent.atomic.AtomicReference
 import org.joda.time.DateTime
 
@@ -29,14 +29,18 @@ class ComposerSqsReader extends Actor {
           composerIds = stubs.flatMap(_.composerId)
           irrelevantMsgs = wireStatuses.collect { case (msg, ws) if !composerIds.contains(ws.composerId) => msg }
           content = wireStatuses.flatMap { case (msg, ws) => stubs.find(_.composerId == Some(ws.composerId))
-                                                             .map(stub => (msg, WorkflowContent.fromWireStatus(ws, stub)))
+                                                             .map(stub => (msg, ws, WorkflowContent.fromWireStatus(ws, stub)))
                                          }
       }
       {
           AWSWorkflowQueue.deleteMessages(irrelevantMsgs)
           content.foreach {
-            case (msg, c) =>
+            case (msg, ws, c) =>
               CommonDB.createOrModifyContent(c)
+              if(ComposerSqsReader.setPublishedTime(ws)) {
+                val publishedTime = ws.lastMajorRevisionDate.getOrElse(ws.lastModified)
+                CommonDB.setPublishedTime(publishedTime, c.composerId)
+              }
               AWSWorkflowQueue.deleteMessage(msg)
           }
 
@@ -49,6 +53,10 @@ object ComposerSqsReader {
   def lastUpdated(): Option[DateTime] = lastTimeSuccessfullyRead.get()
   def updateLastRead(): Unit = {
     lastTimeSuccessfullyRead.set(Some(new DateTime()))
+  }
+
+  def setPublishedTime(wireStatus: WireStatus): Boolean = {
+    wireStatus.whatChanged == "published" && wireStatus.published
   }
 }
 

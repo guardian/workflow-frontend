@@ -10,12 +10,15 @@ case class WireStatus(
                        path: Option[String],
                        headline: Option[String],
                        `type`: String,
+                       whatChanged: String,
                        published: Boolean,
                        user: Option[String],
                        lastModified: DateTime,
                        tagSections: List[Section],
                        status: Status,
-                       commentable: Boolean)
+                       commentable: Boolean,
+                       lastMajorRevisionDate: Option[DateTime]
+                       )
 object WireStatus {
 
   val readTagSections = new Reads[List[Section]] {
@@ -40,6 +43,7 @@ object WireStatus {
       (__ \ "content" \ "identifiers" \ "path").readNullable[String] ~
       (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
       (__ \ "content" \ "type").read[String] ~
+      (__ \ "whatChanged").read[String] ~
       (__ \ "published").read[Boolean] ~
       readUser ~
       (__ \ "content" \ "lastModified").read[Long].map(t => new DateTime(t)) ~
@@ -47,7 +51,8 @@ object WireStatus {
       (__ \ "published").read[Boolean].map(p => if (p) Final else Writers) ~
       (__ \ "content" \ "settings" \ "commentable").readNullable[String].map {
         s => s.exists(_=="true")
-      }
+      } ~
+      (__ \ "lastMajorRevisionDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t)))
       )(WireStatus.apply _)
 
 }

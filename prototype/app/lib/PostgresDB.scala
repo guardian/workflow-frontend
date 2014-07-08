@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
+import com.gu.workflow.db.CommonDB._
 import models.DashboardRow
 
 object PostgresDB {
@@ -38,25 +39,26 @@ object PostgresDB {
         s <- stubsQuery
         c <- contentQuery if s.composerId === c.composerId
       } yield (s, c)
-
-      query.sortBy { case (s, c) => s.due }.list.map {
-        case ((pk, title, section, due, assignee, cId, stubContentType),
-        (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published)) =>
-          DashboardRow(
-            Stub(Some(pk), title, section, due, assignee, cId, stubContentType),
-            WorkflowContent(
-              composerId,
-              path,
-              headline,
-              contentType,
-              Some(Section(section)),
-              Status(status),
-              lastMod,
-              lastModBy,
-              commentable,
-              published
-            )
-          )
+      
+      query.filter( {case (s, c) => dueDateNotExpired(s.due) })
+           .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
+            case ((pk, title, section, due, assignee, cId, stubContentType, priority) ,
+            (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
+              DashboardRow(
+                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority),
+                WorkflowContent(
+                  composerId,
+                  path,
+                  headline,
+                  contentType,
+                  Some(Section(section)),
+                  Status(status),
+                  lastMod,
+                  lastModBy,
+                  commentable,
+                  published
+                )
+              )
       }
 
     }
@@ -65,7 +67,7 @@ object PostgresDB {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
       content +=
-        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false))
+        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false, None))
     }
   }
 
@@ -74,7 +76,7 @@ object PostgresDB {
 
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority))
     }
 
 
@@ -85,8 +87,8 @@ object PostgresDB {
 
       stubs
         .filter(_.pk === id)
-        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType))
-        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType, s.priority))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority))
     }
   }
 
@@ -108,6 +110,15 @@ object PostgresDB {
         .filter(_.pk === id)
         .map(s => s.assignee)
         .update(assignee)
+    }
+  }
+
+  def updateStubDueDate(id: Long, dueDate: Option[DateTime]): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.due)
+        .update(dueDate)
     }
   }
 

@@ -33,16 +33,29 @@ object CommonDB {
           contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
           cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids))
 
-      q.sortBy(_.due.desc).list.map {
-        case (pk, title, section, due, assignee, composerId, contentType) =>
-          Stub(Some(pk), title, section, due, assignee, composerId, contentType)
+      q.filter(s => dueDateNotExpired(s.due))
+        .sortBy(s => (s.priority.desc, s.due.desc)).list.map {
+            case (pk, title, section, due, assignee, composerId, contentType, priority) =>
+         Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority)
       }
     }
+
+  def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
 
   def createOrModifyContent(wc: WorkflowContent): Unit =
     DB.withTransaction { implicit session =>
       if (updateContent(wc, wc.composerId) == 0) createContent(wc)
     }
+
+  def setPublishedTime(timePublished: DateTime, composerId: String): Int = {
+    DB.withTransaction { implicit session =>
+      content
+        .filter(c => c.composerId === composerId && c.timePublished.isNull)
+        .map(c =>
+          (c.timePublished)
+        ).update(Some(timePublished))
+    }
+  }
 
   def updateContent(wc: WorkflowContent, composerId: String): Int = {
     DB.withTransaction { implicit session =>
@@ -57,7 +70,7 @@ object CommonDB {
   def createContent(wc: WorkflowContent) {
     DB.withTransaction { implicit session =>
       content +=
-        ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published))
+        ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published, None))
     }
   }
 
