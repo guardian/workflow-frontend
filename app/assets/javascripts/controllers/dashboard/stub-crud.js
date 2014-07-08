@@ -191,11 +191,13 @@ define([
                         $scope.stub.composerId = content.id;
                         $scope.stub.contentType = content.type;
                         $scope.stub.title = content.headline;
+                        $scope.stub.priority = 0;
                         $scope.stub.needsLegal = 'NA';
                     } else {
                         $scope.stub.composerId = null;
                         $scope.stub.contentType = null;
                         $scope.stub.title = null;
+                        $scope.stub.priority = 0;
                         $scope.stub.needsLegal = 'NA';
                     }
                 }
