@@ -193,6 +193,7 @@
                                 <span class="glyphicon glyphicon-comment"  ng-show="content.commentable"></span>
                             </td>
                             <td>
+                                <span class="glyphicon glyphicon-eye-open"  ng-show="content.needsLegal === 'REQUIRED'"></span>
                             </td>
                             <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a></strong>
                             </td>
