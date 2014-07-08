@@ -15,7 +15,7 @@ dist
 /.settings
 
 */conf/local.conf
-
+*/conf/devtoprod.conf
 # Created by http://www.gitignore.io
 
 ### Scala ###
