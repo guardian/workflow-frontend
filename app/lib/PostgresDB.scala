@@ -40,11 +40,12 @@ object PostgresDB {
       } yield (s, c)
       
       query.filter( {case (s, c) => dueDateNotExpired(s.due) })
-           .sortBy { case (s, c) => s.due }.list.map {
-            case ((pk, title, section, due, assignee, cId, stubContentType, needsLegal),
+
+           .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
+            case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal) ,
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
               DashboardRow(
-                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, needsLegal),
+                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal),
                 WorkflowContent(
                   composerId,
                   path,
@@ -72,10 +73,8 @@ object PostgresDB {
 
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
-
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
-
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, Flag.NotRequired))
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, Flag.NotRequired))
     }
 
 
@@ -86,8 +85,8 @@ object PostgresDB {
 
       stubs
         .filter(_.pk === id)
-        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType))
-        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType))
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType, s.priority))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority))
     }
   }
 

@@ -18,6 +18,7 @@ object DashboardRow {
           d.stub.due.map(d => "due" -> JsNumber(d.getMillis)) ++
           d.stub.assignee.map("assignee" -> JsString(_)) ++
           d.stub.id.map("stubId" -> JsNumber(_)) ++
+          Some("priority" -> JsNumber(d.stub.priority)) ++
           Some("contentType" -> JsString(d.wc.contentType)) ++
           Some("section" -> JsString(d.stub.section)) ++
           Some("status" -> JsString(d.wc.status.toString)) ++

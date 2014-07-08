@@ -132,6 +132,9 @@
                 </li>
                 <li class="secondary-info">
                     {{stub.assignee}} | {{stub.section}}
+                    <span class="glyphicon glyphicon-exclamation-sign" ng-show="stub.priority===1"></span>
+                    <span class="glyphicon glyphicon-exclamation-sign" ng-show="stub.priority===2"></span>
+                    <span class="glyphicon glyphicon-exclamation-sign" ng-show="stub.priority===2"></span>
                     <span class="trash-right"><button class="btn warning btn-xs" ng-click="deleteStub(stub)"><span class="glyphicon glyphicon-trash"></span></button></span>
                 </li>
                 <li class="stub-controls">
@@ -182,6 +185,9 @@
                                 <span class="glyphicon glyphicon-hand-up" ng-show="content.contentType==='interactive'"></span>
                             </td>
                             <td>
+                                <span class="glyphicon glyphicon-exclamation-sign" ng-show="content.priority===1"></span>
+                                <span class="glyphicon glyphicon-exclamation-sign" ng-show="content.priority===2"></span>
+                                <span class="glyphicon glyphicon-exclamation-sign" ng-show="content.priority===2"></span>
                             </td>
                             <td>
                                 <span class="glyphicon glyphicon-comment"  ng-show="content.commentable"></span>
@@ -279,6 +285,14 @@
                                 </div>
                             </div>
                             {{ stub.due && (stub.due | formatDateTime) }}
+                        </div>
+                        <div class="form-group">
+                            <label for="stub_priority">Priority</label>
+                                <div class="btn-group">
+                                    <label class="btn btn-default btn-sm" ng-model="stub.priority" btn-radio="0">.</label>
+                                    <label class="btn btn-default btn-sm" ng-model="stub.priority" btn-radio="1">!</label>
+                                    <label class="btn btn-default btn-sm" ng-model="stub.priority" btn-radio="2">!!</label>
+                                </div>
                         </div>
                         <div class="form-group">
                             <label for="stub_assignee">Assign to</label>
