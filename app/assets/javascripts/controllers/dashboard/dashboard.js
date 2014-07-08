@@ -81,6 +81,17 @@ define([
             });
         };
 
+        $scope.dueDateUpdated = function(newDate) {
+            var pickedDate = moment(newDate);
+            $http({
+                method: 'PUT',
+                url: '/api/stubs/' + $scope.selectedContent.stubId + '/dueDate',
+                data: {data: pickedDate.toISOString()}
+            }).success(function() {
+                $scope.selectedContent.due = pickedDate;
+            })
+        };
+
 
         $scope.deleteContent = function(content) {
             if (window.confirm("Are you sure? \"" + content.workingTitle + "\" looks like a nice content item to me.")) {
