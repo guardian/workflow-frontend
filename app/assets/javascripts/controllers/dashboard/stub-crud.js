@@ -19,7 +19,7 @@ define([
 
     // stub create and edit
 
-    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sectionsService) {
+    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sectionsService, legalStatesService) {
 
         $scope.stub = stub;
 
@@ -58,6 +58,7 @@ define([
         };
 
         $scope.sections = sectionsService.getSections();
+        $scope.legalStates = legalStatesService.getLegalStates();
 
         $scope.ok = function (addToComposer) {
             delete $scope.stub.dueText;
@@ -76,6 +77,7 @@ define([
         '$modalInstance',
         'stub',
         'sectionsService',
+        'legalStatesService',
         StubModalInstanceCtrl]);
 
     dashboardControllers.controller('StubModalCtrl', ['$scope',
@@ -95,7 +97,8 @@ define([
                 var stub = {
                     contentType: contentType || 'article',
                     section: 'Technology',
-                    priority: 0
+                    priority: 0,
+                    needsLegal: 'NA'
                 };
                 open(stub);
             });
@@ -171,7 +174,7 @@ define([
     // composer import control
     // stub create and edit
 
-    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService, composerService) {
+    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService, legalStatesService, composerService) {
 
         $scope.stub = {
             section: 'Technology'
@@ -188,10 +191,14 @@ define([
                         $scope.stub.composerId = content.id;
                         $scope.stub.contentType = content.type;
                         $scope.stub.title = content.headline;
+                        $scope.stub.priority = 0;
+                        $scope.stub.needsLegal = 'NA';
                     } else {
                         $scope.stub.composerId = null;
                         $scope.stub.contentType = null;
                         $scope.stub.title = null;
+                        $scope.stub.priority = 0;
+                        $scope.stub.needsLegal = 'NA';
                     }
                 }
             );
@@ -225,6 +232,7 @@ define([
         };
 
         $scope.sections = sectionsService.getSections();
+        $scope.legalStates = legalStatesService.getLegalStates();
 
         $scope.ok = function () {
             $modalInstance.close({
@@ -240,6 +248,7 @@ define([
         '$modalInstance',
         'stub',
         'sectionsService',
+        'legalStatesService',
         'composerService',
         ComposerImportModalInstanceCtrl]);
 
