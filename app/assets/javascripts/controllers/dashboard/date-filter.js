@@ -23,12 +23,12 @@ define([
     }
 
     dashboardControllers.controller('DateFilterCtrl',
-        ['$scope','$http', function($scope, $http) {
-
+        ['$scope','$location', 'urlParser', function($scope, $location, urlParser) {
         $scope.dateOptions = mkDateOptions();
+        $scope.selectedDate = urlParser.parseUrl['selectedDateModel'];
 
-        $scope.$watch('selectedDate', function(date) {
-            if (typeof date == 'undefined') {
+        var updateDateFilters = function (date){
+                if (typeof date == 'undefined') {
                 $scope.dueFrom = null;
                 $scope.dueUntil = null;
             }
@@ -49,11 +49,15 @@ define([
                 $scope.dueUntil = date.clone().add('days', 1);
             }
 
-
-            $scope.$parent.filters['due.from'] = $scope.dueFrom && formatDateForUri($scope.dueFrom)
-            $scope.$parent.filters['due.until'] = $scope.dueUntil && formatDateForUri($scope.dueUntil)
+            $scope.$parent.filters['due.from'] = $scope.dueFrom && formatDateForUri($scope.dueFrom);
+            $scope.$parent.filters['due.until'] = $scope.dueUntil && formatDateForUri($scope.dueUntil);
 
             $scope.$emit('changedFilters');
+         };
+            updateDateFilters($scope.selectedDate);
+
+        $scope.$watch('selectedDate', function(date) {
+            updateDateFilters(date);
         });
 
     }]);
