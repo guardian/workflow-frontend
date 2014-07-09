@@ -42,10 +42,10 @@ object PostgresDB {
       
       query.filter( {case (s, c) => dueDateNotExpired(s.due) })
            .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
-            case ((pk, title, section, due, assignee, cId, stubContentType, priority) ,
+            case ((pk, title, section, due, assignee, cId, stubContentType, priority, note) ,
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
               DashboardRow(
-                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority),
+                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, note),
                 WorkflowContent(
                   composerId,
                   path,
@@ -76,7 +76,7 @@ object PostgresDB {
 
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority))
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, stub.note))
     }
 
 
