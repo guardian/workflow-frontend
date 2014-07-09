@@ -32,11 +32,10 @@ object CommonDB {
           section.foldl[StubQuery]     { case (q, Section(s))  => q.filter(_.section === s) } |>
           contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
           cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids))
-
       q.filter(s => dueDateNotExpired(s.due))
         .sortBy(s => (s.priority.desc, s.due.desc)).list.map {
-            case (pk, title, section, due, assignee, composerId, contentType, priority) =>
-         Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority)
+            case (pk, title, section, due, assignee, composerId, contentType, priority, note) =>
+         Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, note)
       }
     }
 
