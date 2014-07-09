@@ -15,6 +15,7 @@ define([
 
     './services/sections-service',
     './services/composer-service',
+    './services/url-parser',
 
     'bootstrap',
     'angular-bootstrap',
@@ -36,12 +37,16 @@ define([
           'workflow.controllers',
           'sectionsService',
           'composerService',
+          'urlParser',
           'xeditable'
         ]);
 
         // App routes
         app.config(['$routeProvider', function($routeProvider) {
-          $routeProvider.when('/dashboard', { templateUrl: 'dashboard', controller: 'DashboardCtrl' });
+          $routeProvider.when('/dashboard', { templateUrl: 'dashboard',
+                                              controller: 'DashboardCtrl',
+                                              reloadOnSearch: false
+                                             });
           $routeProvider.otherwise({redirectTo: '/dashboard'});
         }]);
 
