@@ -41,6 +41,7 @@ define([
             params.section = $scope.selectedSection;
             params["content-type"] = $scope.selectedContentType;
             params.status = $scope.selectedStatus;
+            params.flags = $scope.flags;
             return params;
         };
 
@@ -77,6 +78,8 @@ define([
             } else {
                 $scope.flags = $scope.flags.filter( function(e) { return e !== flag });
             }
+
+            getContent();
         };
 
         $scope.contentTypeIsSelected = function (contentType) {

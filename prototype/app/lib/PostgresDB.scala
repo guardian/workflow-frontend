@@ -14,17 +14,26 @@ object PostgresDB {
   import play.api.Play.current
   import play.api.db.slick.DB
 
+  val flagsToStubFilters = Map(
+    "needsLegal" -> {q: StubQuery => q.filter(_.needsLegal === Flag.Required)}
+  )
+
   def getContent(
-                  section:  Option[Section] = None,
-                  dueFrom:  Option[DateTime] = None,
-                  dueUntil: Option[DateTime] = None,
-                  status:   Option[Status] = None,
-                  contentType: Option[String] = None,
-                  published: Option[Boolean] = None
+                  section:     Option[Section]  = None,
+                  dueFrom:     Option[DateTime] = None,
+                  dueUntil:    Option[DateTime] = None,
+                  status:      Option[Status]   = None,
+                  contentType: Option[String]   = None,
+                  published:   Option[Boolean]  = None,
+                  flags:       Seq[String]      = Nil
                   ): List[DashboardRow] =
     DB.withTransaction { implicit session =>
+
+
       val stubsQuery =
-        stubs |>
+          flags.foldLeft(stubs){ case(q, flag) =>
+            flagsToStubFilters.get(flag).map{ filter => filter(q)}.getOrElse(q)
+          } |>
           dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
           dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
           section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) }
