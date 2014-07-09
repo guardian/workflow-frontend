@@ -12,24 +12,33 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'statuses', 'sectionsService', function($scope, $http, statuses, sectionsService) {
+        ['$scope','$http', '$location', 'urlParser', 'statuses', 'sectionsService',
+         function($scope, $http, $location, urlParser, statuses, sectionsService) {
 
-        // content and stub fetch
+         //initialise the model from the url
+         var initialParams = urlParser.parseUrl;
+         $scope.filters = {};
+         $scope.selectedStatus = initialParams['status'];
+         $scope.selectedState = initialParams['state'];
+         $scope.selectedSection = initialParams['section'];
+         $scope.selectedContentType = initialParams['content-type'];
+
         var getContent = function(evt, params) {
-            $http.get('/api/content', {params: buildContentParams()}).success(function(response){
+            var params = buildContentParams();
+            $http.get('/api/content', {params: params}).success(function(response){
                 $scope.contentItems = response.content;
                 $scope.stubs = response.stubs;
                 $scope.contentByStatus = groupByStatus(response.content);
+                urlParser.setUrl(params);
             });
         };
+
         $scope.$on('getContent', getContent);
         $scope.$on('changedFilters', getContent);
         $scope.$watch('selectedContentType', getContent);
         $scope.$watch('selectedSection', getContent);
 
         $scope.sections = sectionsService.getSections();
-
-        $scope.filters = {};
 
         $scope.statuses = statuses;
 
