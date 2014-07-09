@@ -32,8 +32,8 @@ define([
         $scope.legalStates = legalStatesService.getLegalStates();
 
         $scope.filters = {};
-
         $scope.statuses = statuses;
+        $scope.flags = [];
 
         function buildContentParams() {
             var params = angular.copy($scope.filters);
@@ -65,6 +65,18 @@ define([
         $scope.selectStatus = function(status) {
             $scope.selectedStatus = status;
             getContent();
+        };
+
+        $scope.flagActive = function(flag) {
+            return $scope.flags.indexOf(flag) != -1;
+        };
+
+        $scope.toggleFlag = function(flag) {
+            if($scope.flags.indexOf(flag) == -1) {
+                $scope.flags.push(flag);
+            } else {
+                $scope.flags = $scope.flags.filter( function(e) { return e !== flag });
+            }
         };
 
         $scope.contentTypeIsSelected = function (contentType) {
