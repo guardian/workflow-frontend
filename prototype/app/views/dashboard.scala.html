@@ -221,6 +221,12 @@
 
                 </dl>
 
+                <div ng-show="selectedContent.published">
+                    <h5>View in Ophan</h5>
+                    <a href="http://dashboard.ophan.co.uk/summary?path=/{{ selectedContent.path }}" target="_blank">
+                        <img src="http://sparklines.ophan.co.uk/png?showStats=1&showHours=1&width=150&height=50&page=/{{ selectedContent.path }}">
+                    </a>
+                </div>
                 <h5>Timing</h5>
                 <dl class="dl-horizontal">
                     <dt>Production deadline</dt>
