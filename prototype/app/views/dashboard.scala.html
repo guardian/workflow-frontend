@@ -247,6 +247,10 @@
                         {{ selectedContent.assignee || "none" }}</a>
                 </dl>
                 <hr />
+                <div ng-show="selectedContent.note">
+                  <h5>Note</h5>
+                  <p class="content-note">{{selectedContent.note}}</p>
+                </div>
             </div>
         </div>
 
