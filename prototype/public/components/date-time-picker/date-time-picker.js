@@ -31,7 +31,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
       if (format == 'full') {
         format = 'dddd D MMM YYYY, HH:mm';
       } else {
-        format = 'D MMM YYYY, HH:mm';
+        format = 'D MMM YYYY HH:mm';
       }
 
       return moment(date).format(format);
@@ -51,6 +51,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
         dateFormat: '@wfDateFormat',
         label: '@',
         helpText: '@',
+        small: '@wfSmall',
         updateOn: '@wfUpdateOn',
         cancelOn: '@wfCancelOn',
         onCancel: '&wfOnCancel',
