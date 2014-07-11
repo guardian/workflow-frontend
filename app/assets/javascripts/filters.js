@@ -17,5 +17,13 @@ define(['angular', 'moment'], function (angular, moment) {
         };
     });
 
+
+    mod.filter('formatDateTimeDetailView', function() {
+        return function(date) {
+            if(date === undefined) return "";
+            return moment(date).format("ddd D MMM YYYY, HH:mm");
+        };
+    });
+
     return mod;
 });

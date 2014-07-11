@@ -209,10 +209,10 @@
 
         </div>
 
-        <div id="detail" class="" >
+        <div id="detail" class="detail">
             <div class="detail-panel" ng-show="selectedContent">
                 <h4>Details</h4>
-                <dl class="dl-horizontal">
+                <dl>
                     <dt>Headline</dt>
                     <dd ng-show="selectedContent.headline">{{ selectedContent.headline }}</dd>
                     <dd ng-hide="selectedContent.headline"><em>No headline set</em></dd>
@@ -222,28 +222,29 @@
                 </dl>
 
                 <h5>Timing</h5>
-                <dl class="dl-horizontal">
+                <dl>
                     <dt>Production deadline</dt>
-                        <dd>
-                            <a class="detail__editable" ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true">{{ (selectedContent.due | formatDateTime) || 'Not set' }}</a>
+                        <dd class="detail__data--editable">
+                            <a ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true">{{ (selectedContent.due | formatDateTimeDetailView) || 'None' }}</a>
                             <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
-                                <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated()"></div>
+                                <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated(); dateTimeEdit = false" wf-small="true"></div>
                             </form>
                         </dd>
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
-                        <dd>{{ (selectedContent.lastModified | formatDateTime) || "-" }}</dd>
+                        <dd>{{ (selectedContent.lastModified | formatDateTimeDetailView) || "-" }}</dd>
                 </dl>
                 <hr />
 
                 <h5>People</h5>
-                <dl class="dl-horizontal">
+                <dl>
                     <dt>Last modified by</dt>
                         <dd>{{ selectedContent.lastModifiedBy || "-" }}</dd>
                     <dt>Assigned to</dt>
-                    <a href="#" class="detail__editable" editable-text="selectedContent.assignee" buttons="no" onbeforesave="updateAssignee(selectedContent.stubId, $data)">
-                        {{ selectedContent.assignee || "none" }}</a>
+                    <dd class="detail__data--editable">
+                        <a href="#" editable-text="selectedContent.assignee" buttons="no" onbeforesave="updateAssignee(selectedContent.stubId, $data)">{{ selectedContent.assignee || "none" }}</a>
+                    </dd>
                 </dl>
                 <hr />
             </div>
