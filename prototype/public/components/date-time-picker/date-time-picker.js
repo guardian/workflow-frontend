@@ -39,6 +39,9 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
   })
 
   .directive('wfDateTimePicker', ['wfDateTimePicker.formatDateTimeFilter', '$log', function(formatDateTime, $log) {
+
+    var pickerCount = 0;
+
     return {
       restrict: 'A',
       require: ['ngModel'],
@@ -54,19 +57,20 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
       },
       templateUrl: '/assets/components/date-time-picker/date-time-picker.html',
 
+      controller: function($scope, $element, $attrs) {
+        var idSuffix = pickerCount++;
+
+        this.textInputId = 'wfDateTimePickerText' + idSuffix;
+        this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
+      },
+      controllerAs: 'dateTimePicker',
+
       link: function(scope, element, attrs) {
 
         var onCancel = scope.onCancel;
         scope.onCancel = function() {
           scope.$apply(onCancel);
         };
-
-        var idSuffix = (new Date()).getTime();
-
-        scope.textInputId = 'wfDateTimePickerText' + idSuffix;
-        scope.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
-
-        scope.dateTimePickerConfig = { dropdownSelector: '#' + scope.dropDownButtonId };
 
         // handler sets text in date field when a date is selected from Drop Down picker
         scope.onDatePickedFromDropDown = function(newDate, oldDate) {
