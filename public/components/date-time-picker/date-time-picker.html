@@ -5,7 +5,7 @@
         <button type="button" id="{{dateTimePicker.dropDownButtonId}}" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-calendar"></i></button>
       </a>
       <ul class="dropdown-menu pull-right" role="menu">
-        <datetimepicker data-ng-model="dateValue" data-datetimepicker-config="{ dropdownSelector: '#{{dateTimePicker.dropDownButtonId}}' }"/>
+        <datetimepicker data-ng-model="dateValue" data-datetimepicker-config="{ 'weekStart': 1, dropdownSelector: '#{{dateTimePicker.dropDownButtonId}}' }"/>
       </ul>
     </div>
 </div>
