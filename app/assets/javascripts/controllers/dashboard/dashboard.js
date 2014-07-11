@@ -81,15 +81,19 @@ define([
             });
         };
 
-        $scope.dueDateUpdated = function(newDate) {
-            var pickedDate = moment(newDate);
+        $scope.dueDateUpdated = function() {
+
+            var content = $scope.selectedContent,
+            dueDate = content.due,
+            data = {
+              data: dueDate && moment(dueDate).toISOString() || ''
+            };
+
             $http({
                 method: 'PUT',
-                url: '/api/stubs/' + $scope.selectedContent.stubId + '/dueDate',
-                data: {data: pickedDate.toISOString()}
-            }).success(function() {
-                $scope.selectedContent.due = pickedDate;
-            })
+                url: '/api/stubs/' + content.stubId + '/dueDate',
+                data: data
+            });
         };
 
 
