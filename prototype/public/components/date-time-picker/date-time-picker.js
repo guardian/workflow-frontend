@@ -53,7 +53,8 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
         helpText: '@',
         updateOn: '@wfUpdateOn',
         cancelOn: '@wfCancelOn',
-        onCancel: '&wfOnCancel'
+        onCancel: '&wfOnCancel',
+        onUpdate: '&wfOnUpdate'
       },
       templateUrl: '/assets/components/date-time-picker/date-time-picker.html',
 
@@ -63,21 +64,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
         this.textInputId = 'wfDateTimePickerText' + idSuffix;
         this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
       },
-      controllerAs: 'dateTimePicker',
-
-      link: function(scope, element, attrs) {
-
-        var onCancel = scope.onCancel;
-        scope.onCancel = function() {
-          scope.$apply(onCancel);
-        };
-
-        // handler sets text in date field when a date is selected from Drop Down picker
-        scope.onDatePickedFromDropDown = function(newDate, oldDate) {
-          scope.dateText = formatDateTime(newDate);
-        };
-
-      }
+      controllerAs: 'dateTimePicker'
     };
   }])
 
@@ -88,12 +75,13 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
         textValue: '=ngModel',
         updateOn: '@wfUpdateOn',
         cancelOn: '@wfCancelOn',
-        onCancel: '&wfOnCancel'
+        onCancel: '&wfOnCancel',
+        onUpdate: '&wfOnUpdate'
       },
 
       link: function(scope, elem, attrs, ngModel) {
 
-        var cancelUpdate, commitUpdate,
+        var cancelUpdate, commitUpdate, hasChanged, parseDate,
 
         updateOn = scope.updateOn;
 
@@ -138,20 +126,17 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
         };
 
         cancelUpdate = function() {
-          ngModel.$setViewValue(formatDateTimeFilter(ngModel.$modelValue));
-          ngModel.$render();
+          scope.$apply(function() {
+            if (hasChanged()) { // reset to model value
+              ngModel.$setViewValue(formatDateTimeFilter(ngModel.$modelValue));
+              ngModel.$render();
+            }
 
-          if (angular.isFunction(scope.onCancel)) {
             scope.onCancel();
-          }
+          });
         };
 
-
-        ngModel.$render = function() {
-          elem.val(ngModel.$viewValue || '');
-        };
-
-        ngModel.$parsers.push(function(value) {
+        parseDate = function(value) {
           Date.setLocale('en-UK');
 
           try {
@@ -167,9 +152,23 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
           catch (err) {
             $log.error('Error parsing date: ', err);
           }
-        });
+        };
+
+        hasChanged = function() {
+          return !moment(ngModel.$modelValue).isSame(parseDate(elem.val()));
+        };
+
+        ngModel.$render = function() {
+          elem.val(ngModel.$viewValue || '');
+        };
+
+        ngModel.$parsers.push(parseDate);
 
         ngModel.$formatters.push(formatDateTimeFilter);
+
+        ngModel.$viewChangeListeners.push(function() {
+          scope.onUpdate(ngModel.$modelValue);
+        });
       }
     };
   }]);
