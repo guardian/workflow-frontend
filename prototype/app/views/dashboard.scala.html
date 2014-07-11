@@ -224,12 +224,11 @@
                 <h5>Timing</h5>
                 <dl class="dl-horizontal">
                     <dt>Production deadline</dt>
-                        <dd class="dropdown">
-                            {{ selectedContent.due | formatDateTime }}
-                            <button class="btn warning btn-xs dropdown-toggle" id="details_duedate"><span class="glyphicon glyphicon-calendar"></span></button>
-                            <ul class="dropdown-menu pull-right" role="menu">
-                                <datetimepicker data-ng-model="selectedContent.due" data-datetimepicker-config="{ dropdownSelector: '#details_duedate' }" data-on-set-time="dueDateUpdated"/>
-                            </ul>
+                        <dd>
+                            <a class="detail__editable" ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true">{{ (selectedContent.due | formatDateTime) || 'Not set' }}</a>
+                            <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
+                                <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated()"></div>
+                            </form>
                         </dd>
                     <dt>Last launched</dt>
                         <dd>-</dd>
