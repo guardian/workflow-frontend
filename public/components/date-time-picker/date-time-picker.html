@@ -1,11 +1,11 @@
-<label for="{{textInputId}}" ng-if="label">{{ label }} <span class="stubModal__exampleText" ng-if="helpText">{{ helpText == 'true' && 'e.g. today 3pm, tomorrow 15:00, tuesday next week 18:00, 2014-08-14' || helpText }}</span></label>
+<label for="{{dateTimePicker.textInputId}}" ng-if="label">{{ label }} <span class="stubModal__exampleText" ng-if="helpText">{{ helpText == 'true' && 'e.g. today 3pm, tomorrow 15:00, tuesday next week 18:00, 2014-08-14' || helpText }}</span></label>
 <div class="input-group">
-    <input type="text" wf-date-time-field class="form-control" id="{{textInputId}}" name="due" wf-on-cancel="onCancel()" wf-update-on="{{updateOn}}" wf-cancel-on="{{cancelOn}}">
+    <input type="text" wf-date-time-field class="form-control" id="{{dateTimePicker.textInputId}}" name="due" wf-on-cancel="onCancel()" wf-update-on="{{updateOn}}" wf-cancel-on="{{cancelOn}}">
     <div class="input-group-btn">
-        <button type="button" id="{{dropDownButtonId}}" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-calendar"></i></button>
+        <button type="button" id="{{dateTimePicker.dropDownButtonId}}" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-calendar"></i></button>
       </a>
       <ul class="dropdown-menu pull-right" role="menu">
-        <datetimepicker data-ng-model="dateValue" data-datetimepicker-config="dateTimePickerConfig" data-on-set-time="onDatePickedFromDropDown"/>
+        <datetimepicker data-ng-model="dateValue" data-datetimepicker-config="{ dropdownSelector: '#{{dateTimePicker.dropDownButtonId}}' }"/>
       </ul>
     </div>
 </div>
