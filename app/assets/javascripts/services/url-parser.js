@@ -7,6 +7,7 @@ define(['angular', 'moment'], function(angular, moment) {
         function parseUrl() {
             var params = $location.search();
             selectedDateModel(params);
+            selectedFlagsModel(params);
             return params;
         };
 
@@ -15,6 +16,7 @@ define(['angular', 'moment'], function(angular, moment) {
             var updatedParams = serverToClientParms(serverParams);
             if(!angular.equals(currentParams, updatedParams)) {
                 $location.search(updatedParams);
+
             }
         };
 
@@ -42,6 +44,9 @@ define(['angular', 'moment'], function(angular, moment) {
             if(serverParams['content-type']) {
                 params['content-type'] = serverParams['content-type'];
             }
+            if(serverParams['flags'] && serverParams['flags'].length >0) {
+                params['flags'] = serverParams['flags'].toString();
+            }
 
             return params;
         }
@@ -60,6 +65,13 @@ define(['angular', 'moment'], function(angular, moment) {
             else if (moment(selectedDate, ["DD-MM-YYYY"]).isValid()){
                 var day = moment(selectedDate, ["DD-MM-YYYY"]);
                 params['selectedDateModel'] = day;
+            }
+        };
+
+        function selectedFlagsModel(params) {
+            var selectedFlags = params['flags'];
+            if(selectedFlags) {
+                params['flagsModel'] = selectedFlags.split(",")
             }
         };
 

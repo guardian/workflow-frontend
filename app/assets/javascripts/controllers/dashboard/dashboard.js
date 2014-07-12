@@ -12,8 +12,8 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', '$location', 'urlParser', 'statuses', 'sectionsService',
-         function($scope, $http, $location, urlParser, statuses, sectionsService) {
+        ['$scope','$http', '$location', 'urlParser', 'statuses', 'sectionsService','legalStatesService',
+         function($scope, $http, $location, urlParser, statuses, sectionsService, legalStatesService) {
 
          //initialise the model from the url
          var initialParams = urlParser.parseUrl;
@@ -22,6 +22,7 @@ define([
          $scope.selectedState = initialParams['state'];
          $scope.selectedSection = initialParams['section'];
          $scope.selectedContentType = initialParams['content-type'];
+         $scope.flags = initialParams['flagsModel'] || [];
 
         var getContent = function(evt, params) {
             var params = buildContentParams();
@@ -39,6 +40,7 @@ define([
         $scope.$watch('selectedSection', getContent);
 
         $scope.sections = sectionsService.getSections();
+        $scope.legalStates = legalStatesService.getLegalStates();
 
         $scope.statuses = statuses;
 
@@ -48,6 +50,7 @@ define([
             params.section = $scope.selectedSection;
             params["content-type"] = $scope.selectedContentType;
             params.status = $scope.selectedStatus;
+            params.flags = $scope.flags;
             return params;
         };
 
@@ -71,6 +74,20 @@ define([
 
         $scope.selectStatus = function(status) {
             $scope.selectedStatus = status;
+            getContent();
+        };
+
+        $scope.flagActive = function(flag) {
+            return $scope.flags.indexOf(flag) != -1;
+        };
+
+        $scope.toggleFlag = function(flag) {
+            if($scope.flags.indexOf(flag) == -1) {
+                $scope.flags.push(flag);
+            } else {
+                $scope.flags = $scope.flags.filter( function(e) { return e !== flag });
+            }
+
             getContent();
         };
 
@@ -101,6 +118,13 @@ define([
             })
         };
 
+        $scope.updateNeedsLegal = function() {
+            $http({
+                method: 'PUT',
+                url: '/api/stubs/' + $scope.selectedContent.stubId + '/needsLegal',
+                data: {data: $scope.selectedContent.needsLegal}
+            });
+        };
 
         $scope.deleteContent = function(content) {
             if (window.confirm("Are you sure? \"" + content.workingTitle + "\" looks like a nice content item to me.")) {

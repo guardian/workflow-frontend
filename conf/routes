@@ -22,6 +22,7 @@ POST    /api/stubs                          controllers.Api.newStub
 PUT     /api/stubs/:stubId                  controllers.Api.putStub(stubId: Long)
 PUT     /api/stubs/:stubId/assignee         controllers.Api.putStubAssignee(stubId: Long)
 PUT     /api/stubs/:stubId/dueDate          controllers.Api.putStubDueDate(stubId: Long)
+PUT     /api/stubs/:stubId/needsLegal       controllers.Api.putStubLegalStatus(stubId: Long)
 DELETE  /api/stubs/:stubId                  controllers.Api.deleteStub(stubId: Long)
 POST    /api/stubs/:stubId                  controllers.Api.linkStub(stubId: Long, composerId: String, contentType: String)
 
