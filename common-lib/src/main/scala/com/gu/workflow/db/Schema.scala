@@ -1,5 +1,7 @@
 package com.gu.workflow.db
 
+import models.Flag
+import models.Flag._
 import org.joda.time.DateTime
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.{Query, TableQuery}
@@ -10,14 +12,15 @@ object Schema {
 
   type StubRow = (
     Long,               // pk
-      String,           // working_title
-      String,           // section
-      Option[DateTime], // due
-      Option[String],   // assign_to
-      Option[String],    // composer_id
-      Option[String],    // content_type
-      Int                // priority
-    )
+    String,             // working_title
+    String,             // section
+    Option[DateTime],   // due
+    Option[String],     // assign_to
+    Option[String],     // composer_id
+    Option[String],     // content_type
+    Int,                // priority
+    Flag                // needs_legal
+  )
 
   case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
     def pk           = column [Long]             ("pk", O.PrimaryKey, O.AutoInc)
@@ -28,7 +31,8 @@ object Schema {
     def composerId   = column [Option[String]]   ("composer_id")
     def contentType  = column [Option[String]]   ("content_type")
     def priority     = column [Int]              ("priority")
-    def * = (pk, workingTitle, section, due, assignee, composerId, contentType, priority)
+    def needsLegal   = column [Flag]             ("needs_legal")
+    def * = (pk, workingTitle, section, due, assignee, composerId, contentType, priority, needsLegal)
   }
 
   type ContentRow = (
@@ -64,4 +68,8 @@ object Schema {
   val stubs: StubQuery = TableQuery(DBStub)
   val content: ContentQuery = TableQuery(DBContent)
 
+  implicit def flagColumnType = MappedColumnType.base[Flag, String] (
+    f => f.toString,
+    s => Flag.withName(s)
+  )
 }
