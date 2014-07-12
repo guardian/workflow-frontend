@@ -13,9 +13,10 @@ define([
     './controllers/dashboard/date-filter',
     './controllers/dashboard/stub-crud',
 
-    './services/sections-service',
     './services/composer-service',
     './services/url-parser',
+    './services/legal-states-service',
+    './services/sections-service',
 
     'bootstrap',
     'angular-bootstrap',
@@ -35,9 +36,10 @@ define([
           'workflow.directives',
           'workflow.config',
           'workflow.controllers',
-          'sectionsService',
           'composerService',
           'urlParser',
+          'legalStatesService',
+          'sectionsService',
           'xeditable'
         ]);
 
