@@ -12,7 +12,7 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'statuses', 'sectionsService', function($scope, $http, statuses, sectionsService) {
+        ['$scope','$http', 'statuses', 'sectionsService', 'config', function($scope, $http, statuses, sectionsService, config) {
 
         // content and stub fetch
         var getContent = function(evt, params) {
@@ -86,6 +86,7 @@ define([
         };
 
         $scope.updateNote = function(stubId, note) {
+            if(note.length > config.maxNoteLength) return "Note too long";
             updateStubField(stubId, "note", note);
         };
 
