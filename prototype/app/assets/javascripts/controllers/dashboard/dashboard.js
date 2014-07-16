@@ -73,12 +73,20 @@ define([
             $scope.selectedContent = content;
         };
 
-        $scope.updateAssignee = function(stubId, assignee) {
+        function updateStubField(stubId, field, data) {
             $http({
                 method: 'PUT',
-                url: '/api/stubs/' + stubId + '/assignee',
-                data: {data: assignee}
+                url: '/api/stubs/' + stubId + '/' + field,
+                data: {data: data}
             });
+        }
+
+        $scope.updateAssignee = function(stubId, assignee) {
+            updateStubField(stubId, "assignee", assignee);
+        };
+
+        $scope.updateNote = function(stubId, note) {
+            updateStubField(stubId, "note", note);
         };
 
         $scope.dueDateUpdated = function(newDate) {

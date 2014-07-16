@@ -249,7 +249,7 @@
                 <hr />
                 <div ng-show="selectedContent.note">
                   <h5>Note</h5>
-                  <p class="content-note">{{selectedContent.note}}</p>
+                  <p class="content-note" editable-textarea="selectedContent.note" onbeforesave="updateNote(selectedContent.stubId, $data)">{{selectedContent.note}}</p>
                 </div>
             </div>
         </div>
