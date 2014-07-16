@@ -247,9 +247,12 @@
                         {{ selectedContent.assignee || "none" }}</a>
                 </dl>
                 <hr />
-                <div ng-show="selectedContent.note">
+                <div>
                   <h5>Note</h5>
-                  <p class="content-note" editable-textarea="selectedContent.note" onbeforesave="updateNote(selectedContent.stubId, $data)">{{selectedContent.note}}</p>
+                  <p class="content-note">
+		    <span class="detail__editable" editable-textarea="selectedContent.note"
+			  onbeforesave="updateNote(selectedContent.stubId, $data)">{{selectedContent.note || 'Add note'}}</span>
+		  </p>
                 </div>
             </div>
         </div>
