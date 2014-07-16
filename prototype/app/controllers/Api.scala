@@ -97,11 +97,11 @@ object Api extends Controller with AuthActions {
   }
 
   def putStubNote(stubId: Long) = AuthAction { implicit request =>
-	println("Request body:\n" + request.body)
     (for {
       jsValue <- readJsonFromRequest(request.body).right
     } yield {
-        val note = (jsValue \ "data").asOpt[String].map(str => str)
+        // treat empty input as removing the optional note
+        val note = (jsValue \ "data").asOpt[String].filter(_.length > 0)
         PostgresDB.updateStubNote(stubId, note)
         NoContent
     }).merge
