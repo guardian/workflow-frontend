@@ -122,6 +122,15 @@ object PostgresDB {
     }
   }
 
+  def updateStubNote(id: Long, note: Option[String]): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.note)
+        .update(note)
+    }
+  }
+
   def stubLinkedToComposer(id: Long): Boolean = {
     DB.withTransaction { implicit session =>
       val q = stubs.filter(stub => stub.pk === id && stub.composerId.isNotNull)

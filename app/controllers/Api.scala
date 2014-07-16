@@ -96,6 +96,17 @@ object Api extends Controller with AuthActions {
     }).merge
   }
 
+  def putStubNote(stubId: Long) = AuthAction { implicit request =>
+	println("Request body:\n" + request.body)
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+    } yield {
+        val note = (jsValue \ "data").asOpt[String].map(str => str)
+        PostgresDB.updateStubNote(stubId, note)
+        NoContent
+    }).merge
+  }
+
   def putContentStatus(composerId: String) = AuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
