@@ -1,5 +1,6 @@
 package models
 
+import models.Flag.Flag
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import play.api.data.validation.ValidationError
@@ -14,6 +15,7 @@ case class Stub(id: Option[Long],
                 composerId: Option[String],
                 contentType: Option[String],
                 priority: Int,
+                needsLegal: Flag,
                 note: Option[String])
 
 object Stub {
@@ -32,4 +34,16 @@ object Stub {
       }
     }
   }
+}
+
+object Flag extends Enumeration {
+  type Flag = Value
+
+  val NotRequired = Value("NA")
+  val Required    = Value("REQUIRED")
+  val Complete    = Value("COMPLETE")
+
+  implicit val enumReads: Reads[Flag] = EnumUtils.enumReads(Flag)
+
+  implicit def enumWrites: Writes[Flag] = EnumUtils.enumWrites
 }
