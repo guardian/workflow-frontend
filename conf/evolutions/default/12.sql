@@ -1,8 +1,8 @@
 
 # --- !Ups
 
-ALTER TABLE stub ADD note VARCHAR(500);
+ALTER TABLE stub ADD needs_legal varchar(16) NOT NULL DEFAULT 'NA';
 
 # --- !Downs
 
-ALTER TABLE stub DROP note;
+ALTER TABLE stub DROP needs_legal;

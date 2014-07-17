@@ -1,5 +1,7 @@
 package controllers
 
+import models.Flag.Flag
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import play.api.data.Form
@@ -22,6 +24,7 @@ object Api extends Controller with AuthActions {
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
     val section = req.getQueryString("section").map(Section(_))
     val contentType = req.getQueryString("content-type")
+    val flags = req.queryString.get("flags") getOrElse Nil
 
     val content = PostgresDB.getContent(
       section = req.getQueryString("section").map(Section(_)),
@@ -29,7 +32,8 @@ object Api extends Controller with AuthActions {
       dueUntil = dueUntil,
       status = req.getQueryString("status").flatMap(StatusDatabase.find),
       contentType = contentType,
-      published = req.getQueryString("state").map(_ == "published")
+      published = req.getQueryString("state").map(_ == "published"),
+      flags = flags
     )
 
     val stubs = CommonDB.getStubs(
@@ -119,6 +123,16 @@ object Api extends Controller with AuthActions {
       status <- extract[String](jsValue \ "data").right
     } yield {
       PostgresDB.updateContentStatus(status, composerId)
+      NoContent
+    }).merge
+  }
+
+  def putStubLegalStatus(stubId: Long) = AuthAction { implicit request =>
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+      status <- extract[Flag](jsValue \ "data").right
+    } yield {
+      PostgresDB.updateStubLegalStatus(stubId, status)
       NoContent
     }).merge
   }
