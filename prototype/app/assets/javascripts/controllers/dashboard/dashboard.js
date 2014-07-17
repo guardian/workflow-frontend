@@ -119,11 +119,7 @@ define([
         };
 
         $scope.updateNeedsLegal = function() {
-            $http({
-                method: 'PUT',
-                url: '/api/stubs/' + $scope.selectedContent.stubId + '/needsLegal',
-                data: {data: $scope.selectedContent.needsLegal}
-            });
+	    updateStubField($scope.selectedContent.stubId, 'needsLegal', $scope.selectedContent.needsLegal)
         };
 
         $scope.deleteContent = function(content) {
