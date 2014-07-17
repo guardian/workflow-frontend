@@ -48,6 +48,8 @@ object Api extends Controller with AuthActions {
   val stubFilters: Form[(Option[DateTime], Option[DateTime])] =
     Form(tuple("due.from" -> optional(iso8601DateTimeNoMillis), "due.until" -> optional(iso8601DateTimeNoMillis)))
 
+  val STUB_NOTE_MAXLEN = 500
+
   def stubs = AuthAction { implicit req =>
     stubFilters.bindFromRequest.fold(
       formWithErrors => BadRequest(formWithErrors.errorsAsJson),
@@ -102,8 +104,12 @@ object Api extends Controller with AuthActions {
     } yield {
         // treat empty input as removing the optional note
         val note = (jsValue \ "data").asOpt[String].filter(_.length > 0)
-        PostgresDB.updateStubNote(stubId, note)
-        NoContent
+        if (!note.isEmpty && note.get.length > STUB_NOTE_MAXLEN)
+          BadRequest("Note too long")
+        else {
+          PostgresDB.updateStubNote(stubId, note)
+          NoContent
+        }
     }).merge
   }
 
