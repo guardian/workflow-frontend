@@ -1,6 +1,7 @@
 #/bin/bash
 
 echo "Installing nodejs packages"
+rm -rf node_modules/
 npm install
 NPM_EXIT=$?
 
