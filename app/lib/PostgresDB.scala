@@ -52,10 +52,10 @@ object PostgresDB {
       query.filter( {case (s, c) => dueDateNotExpired(s.due) })
 
            .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
-            case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal) ,
+            case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note) ,
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
               DashboardRow(
-                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal),
+                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note),
                 WorkflowContent(
                   composerId,
                   path,
@@ -84,7 +84,7 @@ object PostgresDB {
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, Flag.NotRequired))
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, Flag.NotRequired, stub.note))
     }
 
 
@@ -127,6 +127,15 @@ object PostgresDB {
         .filter(_.pk === id)
         .map(s => s.due)
         .update(dueDate)
+    }
+  }
+
+  def updateStubNote(id: Long, note: Option[String]): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.note)
+        .update(note)
     }
   }
 
