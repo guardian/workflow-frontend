@@ -14,7 +14,8 @@ define(['angular'], function (angular) {
       {
         'composerNewContent': $composerNewContent.attr('href'),
         'composerViewContent': $composerViewContent.attr('href'),
-        'composerContentDetails': $composerContentDetails.attr('href')
+        'composerContentDetails': $composerContentDetails.attr('href'),
+        'maxNoteLength': 500
       }
     );
 

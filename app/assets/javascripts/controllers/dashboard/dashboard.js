@@ -12,8 +12,8 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', '$location', 'urlParser', 'statuses', 'sectionsService','legalStatesService',
-         function($scope, $http, $location, urlParser, statuses, sectionsService, legalStatesService) {
+        ['$scope','$http', '$location', 'urlParser', 'statuses', 'sectionsService','legalStatesService', 'config',
+         function($scope, $http, $location, urlParser, statuses, sectionsService, legalStatesService, config) {
 
          //initialise the model from the url
          var initialParams = urlParser.parseUrl;
@@ -99,12 +99,21 @@ define([
             $scope.selectedContent = content;
         };
 
-        $scope.updateAssignee = function(stubId, assignee) {
+        function updateStubField(stubId, field, data) {
             $http({
                 method: 'PUT',
-                url: '/api/stubs/' + stubId + '/assignee',
-                data: {data: assignee}
+                url: '/api/stubs/' + stubId + '/' + field,
+                data: {data: data}
             });
+        }
+
+        $scope.updateAssignee = function(stubId, assignee) {
+            updateStubField(stubId, "assignee", assignee);
+        };
+
+        $scope.updateNote = function(stubId, note) {
+            if(note.length > config.maxNoteLength) return "Note too long";
+            updateStubField(stubId, "note", note);
         };
 
         $scope.dueDateUpdated = function(newDate) {
@@ -119,11 +128,7 @@ define([
         };
 
         $scope.updateNeedsLegal = function() {
-            $http({
-                method: 'PUT',
-                url: '/api/stubs/' + $scope.selectedContent.stubId + '/needsLegal',
-                data: {data: $scope.selectedContent.needsLegal}
-            });
+	    updateStubField($scope.selectedContent.stubId, 'needsLegal', $scope.selectedContent.needsLegal)
         };
 
         $scope.deleteContent = function(content) {
