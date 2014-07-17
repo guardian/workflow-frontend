@@ -27,7 +27,7 @@ object DashboardRow {
           Some("commentable" -> JsBoolean(d.wc.commentable)) ++
           Some("published" -> JsBoolean(d.wc.published)) ++
           Some("needsLegal" -> JsString(d.stub.needsLegal.toString)) ++
-		  d.stub.note.map("note" -> JsString(_))
+          d.stub.note.map("note" -> JsString(_))
         )
     }
   }
