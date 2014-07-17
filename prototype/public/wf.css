@@ -129,6 +129,14 @@ border-left: 1px solid #eee;
 	width: 260px;
 }
 
+.detail-panel .content-note .editable-input {
+    padding: 0;
+}
+
+.detail-panel .content-note .editable-buttons {
+    display: block;
+    margin-top: 6px;
+}
 
 /*
  * Global add-ons
