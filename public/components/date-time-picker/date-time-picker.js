@@ -16,8 +16,8 @@
  */
 
 import angular from 'angular';
-
 import 'angular-bootstrap-datetimepicker';
+import 'angular-bootstrap-datetimepicker/src/css/datetimepicker.css!';
 import moment from 'moment';
 import 'sugar';
 
