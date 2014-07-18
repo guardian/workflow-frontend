@@ -32,7 +32,8 @@ System.config({
     "npm:inherits@2.0.1": {},
     "npm:base64-js@0.0.4": {},
     "npm:Base64@0.2.1": {},
-    "npm:ieee754@1.1.3": {}
+    "npm:ieee754@1.1.3": {},
+    "css": "github:systemjs/plugin-css@^0.1.0"
   }
 });
 
@@ -53,7 +54,8 @@ System.config({
     "npm:Base64": "0.2.1",
     "github:systemjs/plugin-json": "master",
     "npm:inherits": "2.0.1",
-    "github:components/jquery": "1.11.1"
+    "github:components/jquery": "1.11.1",
+    "github:systemjs/plugin-css": "0.1.0"
   }
 });
 
