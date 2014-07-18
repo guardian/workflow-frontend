@@ -267,32 +267,32 @@ h5.query {
   margin-bottom: 10px;
 }
 
-.detail__data--editable a.editable-empty{
-  color: #428bca;
-}
 
-.detail__data--editable a {
+/**
+ * Editable Fields in Details block.
+ * TODO: move all detials block related styles to own file;
+ */
+.detail__data--editable,
+.detail__data--editable-empty {
   color: #333;
   border-bottom: dashed 1px #333;
-  text-decoration: none;
   cursor: pointer;
 }
 
-.detail__data--editable a:hover {
+.detail__data--editable-empty {
+  font-style: italic;
+}
+
+.detail__data--editable:hover {
   color: #428bca;
   border-color: #428bca;
+  text-decoration: none;
 }
 
 /** Date picker **/
 .datetimepicker thead {
   background: transparent;
   color: #000;
-}
-
-.stubModal__exampleText {
-  font-size: 85%;
-  font-weight: normal;
-  color: #666;
 }
 
 

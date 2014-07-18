@@ -241,8 +241,8 @@
                 <h5>Timing</h5>
                 <dl>
                     <dt>Production deadline</dt>
-                        <dd class="detail__data--editable">
-                            <a ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true">{{ (selectedContent.due | formatDateTimeDetailView) || 'None' }}</a>
+                        <dd>
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }">{{ (selectedContent.due | formatDateTimeDetailView) || 'None' }}</span>
                             <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
                                 <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated(); dateTimeEdit = false" wf-small="true"></div>
                             </form>
@@ -257,9 +257,9 @@
                 <div>
                   <h5>Note</h5>
                   <p class="content-note">
-		    <span class="detail__editable" editable-textarea="selectedContent.note"
-			  onbeforesave="updateNote(selectedContent.stubId, $data)">{{selectedContent.note || 'Add note'}}</span>
-		  </p>
+                    <span class="detail__data--editable" editable-textarea="selectedContent.note"
+                      onbeforesave="updateNote(selectedContent.stubId, $data)">{{selectedContent.note || 'Add note'}}</span>
+                  </p>
                 </div>
 
                 <hr />
@@ -269,8 +269,8 @@
                     <dt>Last modified by</dt>
                         <dd>{{ selectedContent.lastModifiedBy || "-" }}</dd>
                     <dt>Assigned to</dt>
-                    <dd class="detail__data--editable">
-                        <a href="#" editable-text="selectedContent.assignee" buttons="no" onbeforesave="updateAssignee(selectedContent.stubId, $data)">{{ selectedContent.assignee || "none" }}</a>
+                    <dd>
+                        <span class="detail__data--editable" editable-text="selectedContent.assignee" buttons="no" onbeforesave="updateAssignee(selectedContent.stubId, $data)">{{ selectedContent.assignee || "None" }}</span>
                     </dd>
                     <dt>Legal</dt>
                         <dd><select id="stub_detail_legal" name="needsLegal"
