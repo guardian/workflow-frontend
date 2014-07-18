@@ -103,6 +103,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
         function commitUpdate() {
           scope.$apply(function() {
             ngModel.$setViewValue(elem.val());
+            scope.onUpdate(ngModel.$modelValue);
           });
         }
 
@@ -176,9 +177,6 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
 
         ngModel.$formatters.push(formatDateTimeFilter);
 
-        ngModel.$viewChangeListeners.push(function() {
-          scope.onUpdate(ngModel.$modelValue);
-        });
       }
     };
   }]);
