@@ -21,6 +21,8 @@ import 'angular-bootstrap-datetimepicker/src/css/datetimepicker.css!';
 import moment from 'moment';
 import 'sugar';
 
+import './date-time-picker.css!';
+
 
 angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
 
