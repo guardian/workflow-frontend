@@ -72,6 +72,20 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
   }])
 
   .directive('wfDateTimeField', ['wfDateTimePicker.formatDateTimeFilter', '$browser', '$log', function(formatDateTimeFilter, $browser, $log) {
+
+    // Utility methods
+    function isArrowKey(keyCode) {
+      return 37 <= keyCode && keyCode <= 40;
+    }
+
+    function isModifierKey(keyCode) {
+      return 15 < keyCode && keyCode < 19;
+    }
+
+    // Constants
+    var KEYCODE_COMMAND = 91;
+    var KEYCODE_ESCAPE = 27;
+
     return {
       require: '^ngModel',
       scope: {
@@ -84,51 +98,15 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
 
       link: function(scope, elem, attrs, ngModel) {
 
-        var cancelUpdate, commitUpdate, hasChanged, parseDate,
+        var updateOn = scope.updateOn || 'default';
 
-        updateOn = scope.updateOn;
-
-        if (!updateOn || updateOn === '') {
-          updateOn = 'default';
-        }
-
-        // Slightly hacky, but it works..
-        angular.element(elem[0].form).on('submit', function() {
-          commitUpdate();
-        });
-
-        elem.off('input keydown change'); // reset default input event handlers
-        elem.on('input keydown change blur', function(ev) {
-          var key = ev.keyCode;
-
-          if (updateOn == 'default' && (ev.type == 'keydown')) {
-
-            // ignore:
-            //    command            modifiers                   arrows
-            if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) { return; }
-
-            $browser.defer(function() {
-              commitUpdate();
-            });
-          }
-
-          if (scope.cancelOn == 'blur' && ev.type == 'blur') {
-            cancelUpdate();
-          }
-
-          // cancel via escape
-          if (ev.type == 'keydown' && key == 27) {
-            cancelUpdate();
-          }
-        });
-
-        commitUpdate = function() {
+        function commitUpdate() {
           scope.$apply(function() {
             ngModel.$setViewValue(elem.val());
           });
-        };
+        }
 
-        cancelUpdate = function() {
+        function cancelUpdate() {
           scope.$apply(function() {
             if (hasChanged()) { // reset to model value
               ngModel.$setViewValue(formatDateTimeFilter(ngModel.$modelValue));
@@ -137,9 +115,9 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
 
             scope.onCancel();
           });
-        };
+        }
 
-        parseDate = function(value) {
+        function parseDate(value) {
           Date.setLocale('en-UK');
 
           try {
@@ -155,11 +133,40 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
           catch (err) {
             $log.error('Error parsing date: ', err);
           }
-        };
+        }
 
-        hasChanged = function() {
+        function hasChanged() {
           return !moment(ngModel.$modelValue).isSame(parseDate(elem.val()));
-        };
+        }
+
+
+        // Setup input handlers
+        // Slightly hacky, but it works..
+        angular.element(elem[0].form).on('submit', commitUpdate);
+
+        // Set event handlers on the input element
+        elem.off('input keydown change'); // reset default angular input event handlers
+        elem.on('input keydown change blur', function(ev) {
+          var key = ev.keyCode,
+              type = ev.type;
+
+          if (type == 'keydown' && updateOn == 'default') {
+
+            // ignore the following keys on input
+            if ((key === KEYCODE_COMMAND) || isModifierKey(key) || isArrowKey(key)) { return; }
+
+            $browser.defer(commitUpdate);
+          }
+
+          if (type == 'blur' && scope.cancelOn == 'blur') {
+            cancelUpdate();
+          }
+
+          // cancel via escape
+          if (type == 'keydown' && key == KEYCODE_ESCAPE) {
+            cancelUpdate();
+          }
+        });
 
         ngModel.$render = function() {
           elem.val(ngModel.$viewValue || '');
