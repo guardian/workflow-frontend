@@ -110,15 +110,20 @@ define([
         $scope.dueDateUpdated = function() {
 
             var content = $scope.selectedContent,
-            dueDate = content.due,
-            data = {
-              data: dueDate && moment(dueDate).toISOString() || ''
-            };
+                parsedDate,
+                requestData;
+
+            if (content.due) {
+                parsedDate = moment(content.due);
+                if (parsedDate.isValid()) {
+                    requestData = { data: parsedDate.toISOString() };
+                }
+            }
 
             $http({
                 method: 'PUT',
                 url: '/api/stubs/' + content.stubId + '/dueDate',
-                data: data
+                data: requestData || {}
             });
         };
 
