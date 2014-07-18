@@ -3,20 +3,19 @@ body {
 	padding-top: 50px;
 }
 
-
+/**
+ * Content-list styles.
+ * TODO: separate into new file and BEMify properly.
+ */
 td.wf-table-heading {
 	font-weight: bold;
 }
 
-thead {
-	color: white;
+.content-list__head {
+	color: #fff;
 	background-color: #666;
 	font-size: 75%;
 	letter-spacing: 0.5px;
-}
-
-thead.th{
-	color: #666;
 }
 
 tr.wf-table-grouping td {
@@ -287,12 +286,6 @@ h5.query {
   color: #428bca;
   border-color: #428bca;
   text-decoration: none;
-}
-
-/** Date picker **/
-.datetimepicker thead {
-  background: transparent;
-  color: #000;
 }
 
 
