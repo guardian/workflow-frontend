@@ -36,7 +36,7 @@
                 </form>
             </div>
 
-            <div class="col-md-6" >
+            <div class="col-md-5">
                 <div ng-controller="DateFilterCtrl" class="date-filter">
                     <label>Due by</label>
                     <div class="btn-group btn-group-sm">
@@ -46,10 +46,24 @@
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
                         <button type="button" class="btn btn-default" title="Select date">
                             <span class="glyphicon glyphicon-calendar"></span>
-                            <select ng-model="selectedDate" ng-options="date as (date | formatDate) for date in dateOptions">
+                            <select ng-model="selectedDate" ng-options="date as (date | formatDateTime:'ddd D MMMM') for date in dateOptions">
                             </select>
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="dropdown pull-right" ng-controller="wfLocationPickerController as locationPicker">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="locationDropdownButton">
+                        {{ locationPicker.locations[locationPicker.locationKey].title }}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="locationDropdownButton">
+                        <li ng-repeat="(key, location) in locationPicker.locations">
+                            <a role="menuitem" class="dropdown-toggle" href="" ng-click="locationPicker.locationKey = key">{{ location.title }}</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
@@ -238,7 +252,7 @@
                 <dl>
                     <dt>Production deadline</dt>
                         <dd>
-                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }">{{ (selectedContent.due | formatDateTimeDetailView) || 'None' }}</span>
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }">{{ (selectedContent.due | formatDateTime) || 'None' }}</span>
                             <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
                                 <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated(); dateTimeEdit = false" wf-small="true"></div>
                             </form>
@@ -246,7 +260,7 @@
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
-                        <dd>{{ (selectedContent.lastModified | formatDateTimeDetailView) || "-" }}</dd>
+                        <dd>{{ (selectedContent.lastModified | formatDateTime) || "-" }}</dd>
                 </dl>
                 <hr />
 
