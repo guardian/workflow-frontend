@@ -1,48 +1,39 @@
+/**
+ * Date service providing date formatting and parsing functionality taking
+ * timezone settings into account.
+ */
 
-import moment from 'moment';
 import angular from 'angular';
 
+import moment from 'moment';
+import 'moment-timezone/moment-timezone'; // moment-timezone extends the moment object
+import timezoneData from 'moment-timezone/data/packed/latest.json!';
+
 import './settings-service';
+
+// Load in timezone data for moment
+moment.tz.load(timezoneData);
 
 angular.module('wfDateService', ['wfSettingsService'])
   .factory('wfDateService', ['wfSettingsService', function(settingsService) {
 
     var self = {
+
+      // List of available timezones; keys are Airport Codes
       timezones: {
-        'UK/LON': {
-          title: 'London, UK',
-          'DST': {
-            name: 'British Summer Time',
-            abbr: 'BST',
-            offset: '+0100'
-          },
-          name: 'Greenwich Mean Time',
-          abbr: 'GMT',
-          offset: '+0000'
+        'LON': {
+          title: 'London',
+          tzKey: 'Europe/London'
         },
 
-        'USA/NY': {
-          title: 'New York, USA',
-          'DST': {
-            name: 'Eastern Daylight Time',
-            abbr: 'EDT',
-            offset: '-0400'
-          },
-          name: 'Eastern Standard Time',
-          abbr: 'EST',
-          offset: '-0500'
+        'NYC': {
+          title: 'New York',
+          tzKey: 'America/New_York'
         },
 
-        'AUS/SYD': {
-          title: 'Sydney, Australia',
-          'DST': {
-            name: 'Australian Eastern Daylight Time',
-            abbr: 'AEDT',
-            offset: '+1100'
-          },
-          name: 'Australian Eastern Standard Time',
-          abbr: 'AEST',
-          offset: '+1000'
+        'SYD': {
+          title: 'Sydney',
+          tzKey: 'Australia/Sydney'
         }
       },
 
@@ -71,8 +62,7 @@ angular.module('wfDateService', ['wfSettingsService'])
       },
 
       format: function(dateValue, format) {
-        var date = moment(dateValue);
-        date.zone(self.getCurrentTimezone().offset);
+        var date = moment.tz(dateValue, self.getCurrentTimezone().tzKey);
 
         return date.format(format);
       }
@@ -83,8 +73,8 @@ angular.module('wfDateService', ['wfSettingsService'])
   }])
 
   .filter('formatDateTime', ['wfDateService', function(dateService) {
-    return function(dateValue, format = 'ddd D MMM YYYY, HH:mm') {
+    return function(dateValue, format = 'ddd D MMM YYYY, HH:mm z') {
       if (!dateValue) { return ''; }
-      return dateService.format(dateValue, format) + ' ' + dateService.getCurrentTimezone().abbr;
+      return dateService.format(dateValue, format);
     };
   }]);
