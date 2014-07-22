@@ -9,4 +9,4 @@
       </ul>
     </div>
 </div>
-<span class="help-block" ng-class="{'small': small}">{{ dateValue && (dateValue | wfDateTimePicker.formatDateTime) }}</span>
+<span class="help-block" ng-class="{'small': small}">{{ dateValue && (dateValue | formatDateTime:'ddd D MMM YYYY HH:mm z') }}</span>
