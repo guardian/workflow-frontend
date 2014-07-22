@@ -61,7 +61,7 @@
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="locationDropdownButton">
                         <li ng-repeat="(key, location) in locationPicker.locations">
-                            <a role="menuitem" class="dropdown-toggle" href="" ng-click="locationPicker.locationKey = key">{{ location.title }}</a>
+                            <a role="menuitem" href="" ng-click="locationPicker.locationKey = key">{{ location.title }}</a>
                         </li>
                     </ul>
                 </div>
@@ -215,7 +215,7 @@
                             <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a></strong>
                             </td>
                             <td>{{content.assignee}}</td>
-                            <td>{{content.due | formatDateTime }}</td>
+                            <td title="{{content.due | formatDateTime:'long' }}">{{content.due | formatDateTime }}</td>
                             <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
                                 <option ng-repeat="s in statuses">{{ s }}</option>
                             </select></td>
@@ -252,7 +252,9 @@
                 <dl>
                     <dt>Production deadline</dt>
                         <dd>
-                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }">{{ (selectedContent.due | formatDateTime) || 'None' }}</span>
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }" title="{{ (selectedContent.due | formatDateTime:'long') || '' }}">
+                                {{ (selectedContent.due | formatDateTime) || 'None' }}
+                            </span>
                             <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
                                 <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated(); dateTimeEdit = false" wf-small="true"></div>
                             </form>
@@ -260,7 +262,9 @@
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
-                        <dd>{{ (selectedContent.lastModified | formatDateTime) || "-" }}</dd>
+                        <dd title="{{ (selectedContent.lastModified | formatDateTime:'long') || '-' }}">
+                            {{ (selectedContent.lastModified | formatDateTime) || "-" }}
+                        </dd>
                 </dl>
                 <hr />
 
