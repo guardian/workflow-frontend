@@ -12,8 +12,8 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', '$location', 'urlParser', 'statuses', 'sectionsService','legalStatesService', 'config',
-         function($scope, $http, $location, urlParser, statuses, sectionsService, legalStatesService, config) {
+        ['$scope','$http', 'urlParser', 'statuses', 'sectionsService','legalStatesService', 'config',
+         function($scope, $http, urlParser, statuses, sectionsService, legalStatesService, config) {
 
          //initialise the model from the url
          var initialParams = urlParser.parseUrl;
