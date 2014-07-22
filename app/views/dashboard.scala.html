@@ -54,14 +54,14 @@
             </div>
 
             <div class="col-md-2">
-                <div class="dropdown pull-right" ng-controller="wfLocationPickerController as locationPicker">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="locationDropdownButton">
+                <div class="dropdown pull-right" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
+                    <button class="dropdown-toggle btn btn-default" type="button" id="locationDropdownButton">
                         {{ locationPicker.locations[locationPicker.locationKey].title }}
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="locationDropdownButton">
                         <li ng-repeat="(key, location) in locationPicker.locations">
-                            <a role="menuitem" href="" ng-click="locationPicker.locationKey = key">{{ location.title }}</a>
+                            <a role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">{{ location.title }}</a>
                         </li>
                     </ul>
                 </div>
