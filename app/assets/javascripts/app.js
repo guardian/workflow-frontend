@@ -19,7 +19,6 @@ define([
     'lib/date-service',
 
     'angular-bootstrap',
-    'moment',
     'angular-xeditable',
     'angular-route'
 
