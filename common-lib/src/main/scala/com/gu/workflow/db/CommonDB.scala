@@ -41,9 +41,12 @@ object CommonDB {
 
   def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
 
-  def createOrModifyContent(wc: WorkflowContent): Unit =
+  def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
+    //is this introducing a race condition by read/write in different sessions?
     DB.withTransaction { implicit session =>
-      if (updateContent(wc, wc.composerId) == 0) createContent(wc)
+      val contentExists = content.filter(_.composerId === wc.composerId).exists.run
+      if(!contentExists) updateContent(wc, revision)
+      else createContent(wc, Some(revision))
     }
 
   def setPublishedTime(timePublished: DateTime, composerId: String): Int = {
@@ -56,20 +59,21 @@ object CommonDB {
     }
   }
 
-  def updateContent(wc: WorkflowContent, composerId: String): Int = {
+  def updateContent(wc: WorkflowContent, revision: Long): Int = {
     DB.withTransaction { implicit session =>
       content
-        .filter(_.composerId === composerId)
+        .filter(_.composerId === wc.composerId)
+        .filter(c => c.revision < revision || c.revision.isNull)
         .map(c =>
-          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.published))
-        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.published))
+          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.published, c.revision))
+        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.published, Some(revision)))
     }
   }
 
-  def createContent(wc: WorkflowContent) {
+  def createContent(wc: WorkflowContent, revision: Option[Long]) {
     DB.withTransaction { implicit session =>
       content +=
-        ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published, None))
+        ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published, None, revision))
     }
   }
 

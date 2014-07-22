@@ -36,7 +36,7 @@ class ComposerSqsReader extends Actor {
           AWSWorkflowQueue.deleteMessages(irrelevantMsgs)
           content.foreach {
             case (msg, ws, c) =>
-              CommonDB.createOrModifyContent(c)
+              CommonDB.createOrModifyContent(c, ws.revision)
               if(ComposerSqsReader.setPublishedTime(ws)) {
                 val publishedTime = ws.lastMajorRevisionDate.getOrElse(ws.lastModified)
                 CommonDB.setPublishedTime(publishedTime, c.composerId)
