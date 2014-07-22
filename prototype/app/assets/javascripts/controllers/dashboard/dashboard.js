@@ -15,6 +15,7 @@ define([
         ['$scope','$http', 'urlParser', 'statuses', 'sectionsService','legalStatesService', 'config',
          function($scope, $http, urlParser, statuses, sectionsService, legalStatesService, config) {
 
+
          //initialise the model from the url
          var initialParams = urlParser.parseUrl;
          $scope.filters = {};
