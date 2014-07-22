@@ -73,8 +73,11 @@ angular.module('wfDateService', ['wfSettingsService'])
   }])
 
   .filter('formatDateTime', ['wfDateService', function(dateService) {
-    return function(dateValue, format = 'ddd D MMM YYYY, HH:mm z') {
+    return function(dateValue, format = 'ddd D MMM YYYY, HH:mm') {
       if (!dateValue) { return ''; }
+      if (format == 'long') {
+        format = 'dddd D MMMM YYYY, HH:mm z';
+      }
       return dateService.format(dateValue, format);
     };
   }]);
