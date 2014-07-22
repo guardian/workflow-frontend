@@ -19,9 +19,9 @@ import './settings-service';
 moment.tz.load(timezoneData);
 
 angular.module('wfDateService', ['wfSettingsService'])
-  .factory('wfDateService', ['wfSettingsService', function(settingsService) {
+  .factory('wfDateService', ['wfSettingsService', function(wfSettingsService) {
 
-    var self = {
+    var wfDateService = {
 
       // List of available timezones; keys are Airport Codes
       timezones: {
@@ -45,12 +45,12 @@ angular.module('wfDateService', ['wfSettingsService'])
       },
 
       getCurrentTimezoneKey: function() {
-        return settingsService.get('timezone');
+        return wfSettingsService.get('timezone');
       },
 
       getCurrentTimezone: function() {
-        var timezoneKey = settingsService.get('timezone'),
-            timezone = self.timezones[timezoneKey];
+        var timezoneKey = wfSettingsService.get('timezone'),
+            timezone = wfDateService.timezones[timezoneKey];
 
         if (!timezone) {
           throw new Error('Invalid timezone set: ' + timezoneKey);
@@ -60,16 +60,16 @@ angular.module('wfDateService', ['wfSettingsService'])
       },
 
       setCurrentTimezone: function(key) {
-        if (!self.timezones[key]) {
+        if (!wfDateService.timezones[key]) {
           throw new Error('Invalid timezone specified: ' + key);
         }
 
-        settingsService.set('timezone', key);
+        wfSettingsService.set('timezone', key);
         return this;
       },
 
       format: function(dateValue, format) {
-        var date = moment.tz(dateValue, self.getCurrentTimezone().tzKey);
+        var date = moment.tz(dateValue, wfDateService.getCurrentTimezone().tzKey);
 
         return date.format(format);
       },
@@ -81,7 +81,7 @@ angular.module('wfDateService', ['wfSettingsService'])
        * @return {Date}
        */
       parse: function(input) {
-        var timezone = self.getCurrentTimezone(),
+        var timezone = wfDateService.getCurrentTimezone(),
         locale = timezone.locale,
 
         // Use sugar.js to parse the input string catering for natural language, ie: "next week"
@@ -103,11 +103,11 @@ angular.module('wfDateService', ['wfSettingsService'])
       }
     };
 
-    return self;
+    return wfDateService;
 
   }])
 
-  .filter('formatDateTime', ['wfDateService', function(dateService) {
+  .filter('wfFormatDateTime', ['wfDateService', function(dateService) {
     return function(dateValue, format = 'ddd D MMM YYYY, HH:mm') {
       if (!dateValue) { return ''; }
       if (format == 'long') {
