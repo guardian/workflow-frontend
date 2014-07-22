@@ -9,7 +9,6 @@ class WireStatusModelSpec extends FunSuite with ShouldMatchers with ResourcesHel
   test("parse flex notification 1") {
     val resource = slurp("flex-notification1.json").getOrElse(throw new RuntimeException("could not find test resource"))
     val JsSuccess(ws, _) = Json.parse(resource).validate[WireStatus]
-    println(ws.lastModified)
     ws.composerId should equal("53b3e0863004701d9b381539")
     ws.path should equal (None)
     ws.`type` should equal ("article")
@@ -20,6 +19,7 @@ class WireStatusModelSpec extends FunSuite with ShouldMatchers with ResourcesHel
     ws.commentable should equal (false)
     ws.published should equal (false)
     ws.lastMajorRevisionDate should equal (None)
+    ws.revision should equal (2)
   }
 
   test("parse flex notification 2") {
@@ -35,5 +35,6 @@ class WireStatusModelSpec extends FunSuite with ShouldMatchers with ResourcesHel
     ws.commentable should equal (false)
     ws.published should equal (true)
     ws.lastMajorRevisionDate should equal (Some(new DateTime(2014, 7, 2, 14, 18, 58, 687)))
+    ws.revision should equal (3)
   }
 }
