@@ -12,17 +12,29 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'statuses', 'sectionsService', 'legalStatesService', 'config',
-            function($scope, $http, statuses, sectionsService, legalStatesService, config) {
+        ['$scope','$http', 'urlParser', 'statuses', 'sectionsService','legalStatesService', 'config',
+         function($scope, $http, urlParser, statuses, sectionsService, legalStatesService, config) {
 
-        // content and stub fetch
+
+         //initialise the model from the url
+         var initialParams = urlParser.parseUrl;
+         $scope.filters = {};
+         $scope.selectedStatus = initialParams['status'];
+         $scope.selectedState = initialParams['state'];
+         $scope.selectedSection = initialParams['section'];
+         $scope.selectedContentType = initialParams['content-type'];
+         $scope.flags = initialParams['flagsModel'] || [];
+
         var getContent = function(evt, params) {
-            $http.get('/api/content', {params: buildContentParams()}).success(function(response){
+            var params = buildContentParams();
+            $http.get('/api/content', {params: params}).success(function(response){
                 $scope.contentItems = response.content;
                 $scope.stubs = response.stubs;
                 $scope.contentByStatus = groupByStatus(response.content);
+                urlParser.setUrl(params);
             });
         };
+
         $scope.$on('getContent', getContent);
         $scope.$on('changedFilters', getContent);
         $scope.$watch('selectedContentType', getContent);
@@ -31,9 +43,7 @@ define([
         $scope.sections = sectionsService.getSections();
         $scope.legalStates = legalStatesService.getLegalStates();
 
-        $scope.filters = {};
         $scope.statuses = statuses;
-        $scope.flags = [];
 
         function buildContentParams() {
             var params = angular.copy($scope.filters);
