@@ -19,7 +19,8 @@ object Schema {
     Option[String],     // composer_id
     Option[String],     // content_type
     Int,                // priority
-    Flag                // needs_legal
+    Flag,               // needs_legal
+    Option[String]      // note
   )
 
   case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
@@ -32,7 +33,8 @@ object Schema {
     def contentType  = column [Option[String]]   ("content_type")
     def priority     = column [Int]              ("priority")
     def needsLegal   = column [Flag]             ("needs_legal")
-    def * = (pk, workingTitle, section, due, assignee, composerId, contentType, priority, needsLegal)
+    def note         = column [Option[String]]   ("note")
+    def * = (pk, workingTitle, section, due, assignee, composerId, contentType, priority, needsLegal, note)
   }
 
   type ContentRow = (
