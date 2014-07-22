@@ -68,7 +68,13 @@ angular.module('wfDateService', ['wfSettingsService'])
         return this;
       },
 
-      format: function(dateValue, format) {
+      format: function(dateValue, format = 'ddd D MMM YYYY, HH:mm') {
+        if (!dateValue) { return ''; }
+
+        if (format == 'long') {
+          format = 'dddd D MMMM YYYY, HH:mm z';
+        }
+
         var date = moment.tz(dateValue, wfDateService.getCurrentTimezone().tzKey);
 
         return date.format(format);
@@ -96,7 +102,7 @@ angular.module('wfDateService', ['wfSettingsService'])
         // parse dates properly in another timezone, so collect parsed date as
         // input by user without a timezone, then use moment.tz to convert
         // date properly to set timezone.
-        parsedText = parsed.format('YYYY-MM-DDTHH:mm:ss');
+        parsedText = parsed.format('YYYY-MM-DDTHH:mm');
 
 
         return moment.tz(parsedText, timezone.tzKey).toDate();
@@ -108,11 +114,5 @@ angular.module('wfDateService', ['wfSettingsService'])
   }])
 
   .filter('wfFormatDateTime', ['wfDateService', function(dateService) {
-    return function(dateValue, format = 'ddd D MMM YYYY, HH:mm') {
-      if (!dateValue) { return ''; }
-      if (format == 'long') {
-        format = 'dddd D MMMM YYYY, HH:mm z';
-      }
-      return dateService.format(dateValue, format);
-    };
+    return dateService.format;
   }]);
