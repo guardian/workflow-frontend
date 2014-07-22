@@ -62,7 +62,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
     };
   }])
 
-  .directive('wfDateTimeField', ['formatDateTimeFilter', 'wfDateService', '$browser', '$log', function(formatDateTimeFilter, wfDateService, $browser, $log) {
+  .directive('wfDateTimeField', ['wfFormatDateTimeFilter', 'wfDateService', '$browser', '$log', function(wfFormatDateTimeFilter, wfDateService, $browser, $log) {
 
     // Utility methods
     function isArrowKey(keyCode) {
@@ -92,7 +92,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         var updateOn = scope.updateOn || 'default';
 
         function formatText(input) {
-          return formatDateTimeFilter(input, 'D MMM YYYY HH:mm');
+          return wfFormatDateTimeFilter(input, 'D MMM YYYY HH:mm');
         }
 
         function commitUpdate() {

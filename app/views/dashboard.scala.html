@@ -46,7 +46,7 @@
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
                         <button type="button" class="btn btn-default" title="Select date">
                             <span class="glyphicon glyphicon-calendar"></span>
-                            <select ng-model="selectedDate" ng-options="date as (date | formatDateTime:'ddd D MMMM') for date in dateOptions">
+                            <select ng-model="selectedDate" ng-options="date as (date | wfFormatDateTime:'ddd D MMMM') for date in dateOptions">
                             </select>
                         </button>
                     </div>
@@ -143,7 +143,7 @@
             <h4>Stubs</h4>
             <div ng-repeat="stub in stubs" class="stub">
                 <ul>
-                <li class="secondary-info">{{stub.due | formatDateTime }}</li>
+                <li class="secondary-info">{{stub.due | wfFormatDateTime }}</li>
                 <li>
                     <span class="glyphicon glyphicon-file" ng-show="stub.contentType==='article'"></span>
                     <span class="glyphicon glyphicon-th-list" ng-show="stub.contentType==='liveblog'"></span>
@@ -215,7 +215,7 @@
                             <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a></strong>
                             </td>
                             <td>{{content.assignee}}</td>
-                            <td title="{{content.due | formatDateTime:'long' }}">{{content.due | formatDateTime }}</td>
+                            <td title="{{content.due | wfFormatDateTime:'long' }}">{{content.due | wfFormatDateTime }}</td>
                             <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
                                 <option ng-repeat="s in statuses">{{ s }}</option>
                             </select></td>
@@ -252,8 +252,8 @@
                 <dl>
                     <dt>Production deadline</dt>
                         <dd>
-                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }" title="{{ (selectedContent.due | formatDateTime:'long') || '' }}">
-                                {{ (selectedContent.due | formatDateTime) || 'None' }}
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }" title="{{ (selectedContent.due | wfFormatDateTime:'long') || '' }}">
+                                {{ (selectedContent.due | wfFormatDateTime) || 'None' }}
                             </span>
                             <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
                                 <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated(); dateTimeEdit = false" wf-small="true"></div>
@@ -262,8 +262,8 @@
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
-                        <dd title="{{ (selectedContent.lastModified | formatDateTime:'long') || '-' }}">
-                            {{ (selectedContent.lastModified | formatDateTime) || "-" }}
+                        <dd title="{{ (selectedContent.lastModified | wfFormatDateTime:'long') || '-' }}">
+                            {{ (selectedContent.lastModified | wfFormatDateTime) || "-" }}
                         </dd>
                 </dl>
                 <hr />
