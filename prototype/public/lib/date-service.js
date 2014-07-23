@@ -13,7 +13,7 @@ import timezoneData from './date-service/timezone-data.json!';
 import 'sugar';
 
 // local libs
-import './settings-service';
+import './location-service';
 
 
 // Load in timezone data for moment
@@ -25,72 +25,44 @@ import './settings-service';
 moment.tz.load(timezoneData);
 
 
-angular.module('wfDateService', ['wfSettingsService'])
-  .factory('wfDateService', ['wfSettingsService', function(wfSettingsService) {
+angular.module('wfDateService', ['wfLocationService'])
+  .factory('wfDateService', ['wfLocationService', function(wfLocationService) {
 
-    var wfDateService = {
-
-      // List of available timezones; keys are Airport Codes
-      timezones: {
-        'LON': {
-          title: 'London',
-          tzKey: 'Europe/London',
-          locale: 'en-UK'
-        },
-
-        'NYC': {
-          title: 'New York',
-          tzKey: 'America/New_York',
-          locale: 'en-US'
-        },
-
-        'SYD': {
-          title: 'Sydney',
-          tzKey: 'Australia/Sydney',
-          locale: 'en-AU'
-        }
+    // maps locations to their timezone data
+    var timezones = {
+      'LON': {
+        tzKey: 'Europe/London',
+        locale: 'en-UK'
       },
 
-      getTimezone: function(locationKey) {
-        locationKey = locationKey || wfSettingsService.get('timezone');
-        return wfDateService.timezones[locationKey];
+      'NYC': {
+        tzKey: 'America/New_York',
+        locale: 'en-US'
       },
 
-      getCurrentTimezoneKey: function() {
-        return wfSettingsService.get('timezone');
-      },
+      'SYD': {
+        tzKey: 'Australia/Sydney',
+        locale: 'en-AU'
+      }
+    };
 
-      getCurrentTimezone: function() {
-        var timezoneKey = wfSettingsService.get('timezone'),
-            timezone = wfDateService.timezones[timezoneKey];
+    class DateService {
 
-        if (!timezone) {
-          throw new Error('Invalid timezone set: ' + timezoneKey);
-        }
+      getTimezone(locationKey) {
+        return timezones[wfLocationService.getLocationKey(locationKey)];
+      }
 
-        return timezone;
-      },
-
-      setCurrentTimezone: function(key) {
-        if (!wfDateService.timezones[key]) {
-          throw new Error('Invalid timezone specified: ' + key);
-        }
-
-        wfSettingsService.set('timezone', key);
-        return this;
-      },
-
-      format: function(dateValue, format = 'ddd D MMM YYYY, HH:mm', locationKey = undefined) {
+      format(dateValue, dateFormat = 'ddd D MMM YYYY, HH:mm', locationKey = undefined) {
         if (!dateValue) { return ''; }
 
-        if (format == 'long') {
-          format = 'dddd D MMMM YYYY, HH:mm z';
+        if (dateFormat == 'long') {
+          dateFormat = 'dddd D MMMM YYYY, HH:mm z';
         }
 
-        var date = moment.tz(dateValue, wfDateService.getTimezone(locationKey).tzKey);
+        var date = moment.tz(dateValue, this.getTimezone(locationKey).tzKey);
 
-        return date.format(format);
-      },
+        return date.format(dateFormat);
+      }
 
       /**
        * Parses a Date from an input string.
@@ -98,8 +70,8 @@ angular.module('wfDateService', ['wfSettingsService'])
        * @param {string} input string to parse.
        * @return {Date}
        */
-      parse: function(input, locationKey) {
-        var timezone = wfDateService.getTimezone(locationKey),
+      parse(input, locationKey) {
+        var timezone = this.getTimezone(locationKey),
 
         locale = timezone.locale,
 
@@ -120,12 +92,12 @@ angular.module('wfDateService', ['wfSettingsService'])
 
         return moment.tz(parsedText, timezone.tzKey).toDate();
       }
-    };
+    }
 
-    return wfDateService;
+    return new DateService();
 
   }])
 
-  .filter('wfFormatDateTime', ['wfDateService', function(dateService) {
-    return dateService.format;
+  .filter('wfFormatDateTime', ['wfDateService', function(wfDateService) {
+    return angular.bind(wfDateService, wfDateService.format);
   }]);

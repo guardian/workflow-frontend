@@ -1,17 +1,20 @@
 /**
  * Controller for location picker in top-toolbar.
+ *
+ * Broadcasts a "location:change" event when a new location is selected.
  */
 
 import angular from 'angular';
 
 import 'lib/date-service';
+import 'lib/location-service';
 
 import './location-picker.css!';
 
-angular.module('wfLocationPicker', ['wfDateService'])
-  .controller('wfLocationPickerController', ['$scope', '$timeout', 'wfDateService', function($scope, $timeout, dateService) {
-    this.locations = dateService.timezones;
-    this.locationKey = dateService.getCurrentTimezoneKey();
+angular.module('wfLocationPicker', ['wfLocationService', 'wfDateService'])
+  .controller('wfLocationPickerController', ['$scope', '$rootScope', '$timeout', 'wfLocationService', function($scope, $rootScope, $timeout, wfLocationService) {
+    this.locations = wfLocationService.locations;
+    this.locationKey = wfLocationService.getLocationKey();
 
     // Setup timer to update current time every minute
     var timer;
@@ -42,7 +45,8 @@ angular.module('wfLocationPicker', ['wfDateService'])
       angular.bind(this, function() { return this.locationKey; }),
       function(newValue, oldValue) {
         if (newValue !== oldValue) {
-          dateService.setCurrentTimezone(newValue);
+          wfLocationService.setLocation(newValue);
+          $rootScope.$broadcast('location:change', newValue, oldValue);
         }
       }
     );

@@ -61,15 +61,9 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         // Watch changes in the dateValue and its formatting, then update the datePicker
         // Datepicker doesn't support timezones, so we must strip off the timezone before
         // displaying the interface.
-        // TODO: use event action listeners rather than watch values
-        $scope.$watch(
-          function() {
-            return wfDateService.format($scope.dateValue, 'YYYY-MM-DDTHH:mm');
-          },
-          function(newValue) {
-            $scope.datePickerValue = newValue;
-          }
-        );
+        $scope.$on('location:change', function() {
+          $scope.datePickerValue = wfDateService.format($scope.dateValue, 'YYYY-MM-DDTHH:mm');
+        });
 
         this.onDatePicked = function(newValue) {
           $scope.dateValue = wfDateService.parse(newValue);
@@ -191,16 +185,10 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         ngModel.$formatters.push(formatText);
 
         // Watch for changes to timezone
-        // TODO: use event action listeners rather than watch values
-        scope.$watch(
-          function() {
-            return wfDateService.getCurrentTimezoneKey();
-          },
-          function() {
-            ngModel.$setViewValue(formatText(ngModel.$modelValue));
-            ngModel.$render();
-          }
-        );
+        scope.$on('location:change', function() {
+          ngModel.$setViewValue(formatText(ngModel.$modelValue));
+          ngModel.$render();
+        });
 
       }
     };
