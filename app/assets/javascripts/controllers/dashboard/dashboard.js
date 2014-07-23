@@ -117,15 +117,24 @@ define([
             updateStubField(stubId, "note", note);
         };
 
-        $scope.dueDateUpdated = function(newDate) {
-            var pickedDate = moment(newDate);
+        $scope.dueDateUpdated = function() {
+
+            var content = $scope.selectedContent,
+                parsedDate,
+                requestData;
+
+            if (content.due) {
+                parsedDate = moment(content.due);
+                if (parsedDate.isValid()) {
+                    requestData = { data: parsedDate.toISOString() };
+                }
+            }
+
             $http({
                 method: 'PUT',
-                url: '/api/stubs/' + $scope.selectedContent.stubId + '/dueDate',
-                data: {data: pickedDate.toISOString()}
-            }).success(function() {
-                $scope.selectedContent.due = pickedDate;
-            })
+                url: '/api/stubs/' + content.stubId + '/dueDate',
+                data: requestData || {}
+            });
         };
 
         $scope.updateNeedsLegal = function() {
