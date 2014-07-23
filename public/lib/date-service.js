@@ -6,17 +6,24 @@
 // 3rd party dependencies
 import angular from 'angular';
 
-import moment from 'moment';
-import 'moment-timezone/moment-timezone'; // moment-timezone extends the moment object
-import timezoneData from 'moment-timezone/data/packed/latest.json!';
+// moment-timezone should require moment as dependency
+import moment from 'moment-timezone/builds/moment-timezone.min';
+import timezoneData from './date-service/timezone-data.json!';
 
 import 'sugar';
 
 // local libs
 import './settings-service';
 
+
 // Load in timezone data for moment
+//   Only the necessary data required has been manually extracted from:
+//   moment-timezone/data/packed/2014e.json
+//   This will need to be manually updated when a new version of the data
+//   is available in moment-timezone
+//   TODO: extract latest data automatically in build process
 moment.tz.load(timezoneData);
+
 
 angular.module('wfDateService', ['wfSettingsService'])
   .factory('wfDateService', ['wfSettingsService', function(wfSettingsService) {
