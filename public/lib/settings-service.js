@@ -10,19 +10,9 @@ angular.module('wfSettingsService', ['wfLocalStorageAdapter'])
     class Settings {
 
       constructor() {
-        this._settings = localStorageAdapter.getObject('settings');
-        if (!this._settings) {
-          this.setDefaults();
-        }
+        this._settings = localStorageAdapter.getObject('settings') || {};
 
         // TODO: add listeners to local storage events
-      }
-
-      setDefaults() {
-        this._settings = {
-          location: 'LON'
-        };
-        localStorageAdapter.set('settings', this._settings);
       }
 
       get(key) {
