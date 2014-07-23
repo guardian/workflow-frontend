@@ -96,7 +96,7 @@ object Api extends Controller with AuthActions {
     (for {
       jsValue <- readJsonFromRequest(request.body).right
     } yield {
-        val dueDate = (jsValue \ "data").asOpt[String].map(new DateTime(_))
+        val dueDate = (jsValue \ "data").asOpt[String] filter { _.length != 0 } map { new DateTime(_) }
         PostgresDB.updateStubDueDate(stubId, dueDate)
         NoContent
     }).merge

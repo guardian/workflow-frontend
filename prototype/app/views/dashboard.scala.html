@@ -161,15 +161,11 @@
         <div id="content" class="">
 
 
-            <table class="table ">
-                <thead>
+            <table class="content-list table">
+                <thead class="content-list__head">
                 <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th>Working title <span style="font-size: 90%; color: #666; font-weight:normal; ">and headline</span>
-                    </th>
+                    <th colspan="4"></th>
+                    <th>Working title / Headline</span></th>
                     <th></th>
                     <th>Assigned to</th>
                     <th>Due by</th>
@@ -220,10 +216,10 @@
 
         </div>
 
-        <div id="detail" class="" >
+        <div id="detail" class="detail">
             <div class="detail-panel" ng-show="selectedContent">
                 <h4>Details</h4>
-                <dl class="dl-horizontal">
+                <dl>
                     <dt>Headline</dt>
                     <dd ng-show="selectedContent.headline">{{ selectedContent.headline }}</dd>
                     <dd ng-hide="selectedContent.headline"><em>No headline set</em></dd>
@@ -239,39 +235,39 @@
                     </a>
                 </div>
                 <h5>Timing</h5>
-                <dl class="dl-horizontal">
+                <dl>
                     <dt>Production deadline</dt>
-                        <dd class="dropdown">
-                            {{ selectedContent.due | formatDateTime }}
-                            <button class="btn warning btn-xs dropdown-toggle" id="details_duedate"><span class="glyphicon glyphicon-calendar"></span></button>
-                            <ul class="dropdown-menu pull-right" role="menu">
-                                <datetimepicker data-ng-model="selectedContent.due" data-datetimepicker-config="{ dropdownSelector: '#details_duedate' }" data-on-set-time="dueDateUpdated"/>
-                            </ul>
+                        <dd>
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }">{{ (selectedContent.due | formatDateTimeDetailView) || 'None' }}</span>
+                            <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
+                                <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated(); dateTimeEdit = false" wf-small="true"></div>
+                            </form>
                         </dd>
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
-                        <dd>{{ (selectedContent.lastModified | formatDateTime) || "-" }}</dd>
+                        <dd>{{ (selectedContent.lastModified | formatDateTimeDetailView) || "-" }}</dd>
                 </dl>
                 <hr />
 
                 <div>
                   <h5>Note</h5>
                   <p class="content-note">
-		    <span class="detail__editable" editable-textarea="selectedContent.note"
-			  onbeforesave="updateNote(selectedContent.stubId, $data)">{{selectedContent.note || 'Add note'}}</span>
-		  </p>
+                    <span class="detail__data--editable" editable-textarea="selectedContent.note"
+                      onbeforesave="updateNote(selectedContent.stubId, $data)">{{selectedContent.note || 'Add note'}}</span>
+                  </p>
                 </div>
 
                 <hr />
 
                 <h5>People</h5>
-                <dl class="dl-horizontal">
+                <dl>
                     <dt>Last modified by</dt>
                         <dd>{{ selectedContent.lastModifiedBy || "-" }}</dd>
                     <dt>Assigned to</dt>
-                    <a href="#" class="detail__editable" editable-text="selectedContent.assignee" buttons="no" onbeforesave="updateAssignee(selectedContent.stubId, $data)">
-                        {{ selectedContent.assignee || "none" }}</a>
+                    <dd>
+                        <span class="detail__data--editable" editable-text="selectedContent.assignee" buttons="no" onbeforesave="updateAssignee(selectedContent.stubId, $data)">{{ selectedContent.assignee || "None" }}</span>
+                    </dd>
                     <dt>Legal</dt>
                         <dd><select id="stub_detail_legal" name="needsLegal"
                                     ng-model="selectedContent.needsLegal"
@@ -303,18 +299,7 @@
                             <select id="stub_section" name="section" ng-model="stub.section" ng-options="section for section in sections"></select>
                         </div>
                         <div class="form-group">
-                            <label for="stub_due">Due by <span class="stubModal__exampleText">e.g. today 3pm, tomorrow 15:00, tuesday next week 18:00, 2014-08-14</span></label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" data-ng-model="stub.dueText" id="stub_due" name="due">
-                                <div class="input-group-btn">
-                                    <button type="button" id="stub_duedate" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-calendar"></i></button>
-                                  </a>
-                                  <ul class="dropdown-menu pull-right" role="menu">
-                                    <datetimepicker data-ng-model="stub.due" data-datetimepicker-config="{ dropdownSelector: '#stub_duedate' }" data-on-set-time="onDatePicked"/>
-                                  </ul>
-                                </div>
-                            </div>
-                            {{ stub.due && (stub.due | formatDateTime) }}
+                            <div wf-date-time-picker label="Due by" help-text="true" ng-model="stub.due"/>
                         </div>
                         <div class="form-group clearfix">
                             <div class="pull-left">
@@ -376,18 +361,9 @@
                             <select id="stub_section" name="section" ng-model="stub.section" ng-options="section for section in sections"></select>
                         </div>
                         <div class="form-group">
-                            <label for="stub_due">Due by <span class="stubModal__exampleText">e.g. today 3pm, tomorrow 15:00, tuesday next week 18:00, 2014-08-14</span></label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" data-ng-model="formData.dueText" id="stub_due" name="due">
-                                <div class="input-group-btn">
-                                    <button type="button" id="stub_duedate" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-calendar"></i></button>
-                                  </a>
-                                  <ul class="dropdown-menu pull-right" role="menu">
-                                    <datetimepicker data-ng-model="stub.due" data-datetimepicker-config="{ dropdownSelector: '#stub_duedate' }" data-on-set-time="onDatePicked"/>
-                                  </ul>
-                                </div>
+                            <div class="form-group">
+                                <div wf-date-time-picker label="Due by" help-text="true" ng-model="stub.due"/>
                             </div>
-                            {{ stub.due && (stub.due | formatDateTime) }}
                         </div>
 
                         <div class="form-group clearfix">
