@@ -20,7 +20,7 @@ angular.module('wfSettingsService', ['wfLocalStorageAdapter'])
 
       setDefaults() {
         this._settings = {
-          timezone: 'LON'
+          location: 'LON'
         };
         localStorageAdapter.set('settings', this._settings);
       }
