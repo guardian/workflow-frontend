@@ -42,10 +42,9 @@ object CommonDB {
   def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
-    //is this introducing a race condition by read/write in different sessions?
     DB.withTransaction { implicit session =>
       val contentExists = content.filter(_.composerId === wc.composerId).exists.run
-      if(!contentExists) updateContent(wc, revision)
+      if(contentExists) updateContent(wc, revision)
       else createContent(wc, Some(revision))
     }
 
@@ -59,22 +58,18 @@ object CommonDB {
     }
   }
 
-  def updateContent(wc: WorkflowContent, revision: Long): Int = {
-    DB.withTransaction { implicit session =>
+  def updateContent(wc: WorkflowContent, revision: Long)(implicit session: Session): Int = {
       content
         .filter(_.composerId === wc.composerId)
         .filter(c => c.revision < revision || c.revision.isNull)
         .map(c =>
           (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.published, c.revision))
         .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.published, Some(revision)))
-    }
   }
 
-  def createContent(wc: WorkflowContent, revision: Option[Long]) {
-    DB.withTransaction { implicit session =>
+  def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {
       content +=
         ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published, None, revision))
-    }
   }
 
   def deleteContent(composerId: String) {
