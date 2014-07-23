@@ -1,5 +1,6 @@
 
 import angular from 'angular';
+import moment from 'moment';
 
 import './settings-service';
 
@@ -7,8 +8,6 @@ angular.module('wfLocationService', ['wfSettingsService'])
   .factory('wfLocationService', ['wfSettingsService', function(wfSettingsService) {
 
     var SETTING_LOCATION_KEY = 'location',
-
-    DEFAULT_LOCATION = 'LON',
 
     // map of available locations <city airport code>:<city metadata>
     locations = {
@@ -35,7 +34,7 @@ angular.module('wfLocationService', ['wfSettingsService'])
        * Retrieves the user location from settings and/or validate the input locationKey.
        */
       getLocationKey(locationKey) {
-        locationKey = locationKey || wfSettingsService.get(SETTING_LOCATION_KEY) || DEFAULT_LOCATION;
+        locationKey = locationKey || wfSettingsService.get(SETTING_LOCATION_KEY) || this.guessLocation();
 
         if (!this.isValidLocation(locationKey)) {
           throw new Error('Invalid location: ' + locationKey);
@@ -51,6 +50,24 @@ angular.module('wfLocationService', ['wfSettingsService'])
 
         wfSettingsService.set(SETTING_LOCATION_KEY, locationKey);
         return this;
+      }
+
+      /**
+       * Guess the user's location from their local timezone.
+       * Logic ported from composer / swells.
+       */
+      guessLocation(date) {
+        var offset = moment(date).zone();
+        // offset to be applied to now in minutes to get to UTC
+        // I.E if now is UTC +0100 offset is -60
+        // don't blame me.
+        if (offset <= -480 && offset >= -660) {
+          return 'SYD';
+        } else if (offset <= 560 && offset >= 240) {
+          return 'NYC';
+        } else {
+          return 'LON';
+        }
       }
     }
 
