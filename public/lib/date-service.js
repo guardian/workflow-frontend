@@ -51,6 +51,11 @@ angular.module('wfDateService', ['wfSettingsService'])
         }
       },
 
+      getTimezone: function(locationKey) {
+        locationKey = locationKey || wfSettingsService.get('timezone');
+        return wfDateService.timezones[locationKey];
+      },
+
       getCurrentTimezoneKey: function() {
         return wfSettingsService.get('timezone');
       },
@@ -75,14 +80,14 @@ angular.module('wfDateService', ['wfSettingsService'])
         return this;
       },
 
-      format: function(dateValue, format = 'ddd D MMM YYYY, HH:mm') {
+      format: function(dateValue, format = 'ddd D MMM YYYY, HH:mm', locationKey = undefined) {
         if (!dateValue) { return ''; }
 
         if (format == 'long') {
           format = 'dddd D MMMM YYYY, HH:mm z';
         }
 
-        var date = moment.tz(dateValue, wfDateService.getCurrentTimezone().tzKey);
+        var date = moment.tz(dateValue, wfDateService.getTimezone(locationKey).tzKey);
 
         return date.format(format);
       },
@@ -93,8 +98,9 @@ angular.module('wfDateService', ['wfSettingsService'])
        * @param {string} input string to parse.
        * @return {Date}
        */
-      parse: function(input) {
-        var timezone = wfDateService.getCurrentTimezone(),
+      parse: function(input, locationKey) {
+        var timezone = wfDateService.getTimezone(locationKey),
+
         locale = timezone.locale,
 
         // Use sugar.js to parse the input string catering for natural language, ie: "next week"
