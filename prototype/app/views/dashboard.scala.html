@@ -57,11 +57,15 @@
                 <div class="dropdown pull-right" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
                     <button class="dropdown-toggle btn btn-default" type="button" id="locationDropdownButton">
                         {{ locationPicker.locations[locationPicker.locationKey].title }}
+                        <span class="top-toolbar__location-picker-localtime">{{ locationPicker.now | wfFormatDateTime:'HH:mm':key }}</span>
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="locationDropdownButton">
+                    <ul class="top-toolbar__location-picker-menu dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="locationDropdownButton">
                         <li ng-repeat="(key, location) in locationPicker.locations">
-                            <a role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">{{ location.title }}</a>
+                            <a class="top-toolbar__location-picker-menuitem" role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">
+                                <span class="top-toolbar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfFormatDateTime:'HH:mm z':key }}</span>
+                                {{ location.title }}
+                            </a>
                         </li>
                     </ul>
                 </div>
