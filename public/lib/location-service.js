@@ -8,6 +8,8 @@ angular.module('wfLocationService', ['wfSettingsService'])
 
     var SETTING_LOCATION_KEY = 'location',
 
+    DEFAULT_LOCATION = 'LON',
+
     // map of available locations <city airport code>:<city metadata>
     locations = {
       'LON': { 'title': 'London' },
@@ -33,7 +35,7 @@ angular.module('wfLocationService', ['wfSettingsService'])
        * Retrieves the user location from settings and/or validate the input locationKey.
        */
       getLocationKey(locationKey) {
-        locationKey = locationKey || wfSettingsService.get(SETTING_LOCATION_KEY);
+        locationKey = locationKey || wfSettingsService.get(SETTING_LOCATION_KEY) || DEFAULT_LOCATION;
 
         if (!this.isValidLocation(locationKey)) {
           throw new Error('Invalid location: ' + locationKey);
