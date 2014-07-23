@@ -10,7 +10,7 @@ System.config({
 System.config({
   "map": {
     "app": "javascripts/app",
-    "angular": "github:angular/bower-angular@1.2.1",
+    "angular": "github:angular/bower-angular@1.2.20",
     "angular-bootstrap": "npm:angular-bootstrap@^0.11.0",
     "angular-bootstrap-datetimepicker": "github:dalelotts/angular-bootstrap-datetimepicker@0.2.4",
     "angular-route": "github:components/angular-route@^1.2.0",
@@ -32,7 +32,8 @@ System.config({
     "npm:inherits@2.0.1": {},
     "npm:base64-js@0.0.4": {},
     "npm:Base64@0.2.1": {},
-    "npm:ieee754@1.1.3": {}
+    "npm:ieee754@1.1.3": {},
+    "css": "github:systemjs/plugin-css@^0.1.0"
   }
 });
 
@@ -46,14 +47,15 @@ System.config({
     "github:jashkenas/underscore": "1.6.0",
     "npm:sugar": "1.4.1",
     "github:moment/moment": "2.7.0",
-    "github:angular/bower-angular": "1.2.1",
+    "github:angular/bower-angular": "1.2.20",
     "github:jspm/nodelibs": "0.0.2",
     "npm:base64-js": "0.0.4",
     "npm:ieee754": "1.1.3",
     "npm:Base64": "0.2.1",
     "github:systemjs/plugin-json": "master",
     "npm:inherits": "2.0.1",
-    "github:components/jquery": "1.11.1"
+    "github:components/jquery": "1.11.1",
+    "github:systemjs/plugin-css": "0.1.0"
   }
 });
 

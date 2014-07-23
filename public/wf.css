@@ -3,24 +3,23 @@ body {
 	padding-top: 50px;
 }
 
-
+/**
+ * Content-list styles.
+ * TODO: separate into new file and BEMify properly.
+ */
 td.wf-table-heading {
 	font-weight: bold;
 }
 
-thead {
-	color: white;	
+.content-list__head {
+	color: #fff;
 	background-color: #666;
 	font-size: 75%;
 	letter-spacing: 0.5px;
 }
 
-thead.th{
-	color: #666;	
-}
-
 tr.wf-table-grouping td {
-	color: black;	
+	color: black;
 	background-color: #F5F5F5;
 	font-size: 75%;
 	letter-spacing: 0.5px;
@@ -121,7 +120,7 @@ bottom: 0;
 background-color: #f5f5f5;
 border-left: 1px solid #eee;
 /*border: 1px solid #333;*/
-} 
+}
 
 .detail-panel .picture {
 	height: 180px;
@@ -180,15 +179,15 @@ border-left: 1px solid #eee;
 
 .nav-sidebar > li > a {
   padding: 3px 20px 3px 30px;
-  
+
 }
 
 div.col-md-2.sidebar div.btn-group.btn-group-xs {
-	padding-left: 10px;	
+	padding-left: 10px;
 }
 
 div.col-md-2.sidebar div.btn-group.btn-group-xs button.btn.btn-default {
-	width: 34px;	
+	width: 34px;
 }
 
 .nav-sidebar > .active > a {
@@ -197,17 +196,17 @@ div.col-md-2.sidebar div.btn-group.btn-group-xs button.btn.btn-default {
 }
 
 .detail-panel {
-	padding-left: 20px;
-	
+	padding: 0 20px;
+
 }
 
 h5.query {
 	font-weight: bold;
 }
 
- 
+
  /* Header bar */
- 
+
 .header-bar {
 	height: 40px;
 	padding: 3px;
@@ -259,26 +258,34 @@ h5.query {
   }
 }
 
-.detail__editable.editable-empty{
-    color: #428bca;
+.detail {
+  font-size: 90%;
+}
+
+.detail dd {
+  margin-bottom: 10px;
 }
 
 
-
-.detail__editable.editable-click {
-    color: #000;
+/**
+ * Editable Fields in Details block.
+ * TODO: move all detials block related styles to own file;
+ */
+.detail__data--editable,
+.detail__data--editable-empty {
+  color: #333;
+  border-bottom: dashed 1px #333;
+  cursor: pointer;
 }
 
-/** Date picker **/
-.datetimepicker thead {
-  background: transparent;
-  color: #000;
+.detail__data--editable-empty {
+  font-style: italic;
 }
 
-.stubModal__exampleText {
-  font-size: 85%;
-  font-weight: normal;
-  color: #666;
+.detail__data--editable:hover {
+  color: #428bca;
+  border-color: #428bca;
+  text-decoration: none;
 }
 
 
