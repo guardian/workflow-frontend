@@ -38,16 +38,17 @@ object Schema {
   }
 
   type ContentRow = (
-      String,         // composer_id
-      Option[String], // path
-      DateTime,       // last_modified
-      Option[String], // last_modified_by
-      String,         // status
-      String,         // content_type
-      Boolean,        // commentable
-      Option[String], // headline
+      String,          // composer_id
+      Option[String],  // path
+      DateTime,        // last_modified
+      Option[String],  // last_modified_by
+      String,          // status
+      String,          // content_type
+      Boolean,         // commentable
+      Option[String],  // headline
       Boolean,         // published
-      Option[DateTime] // timePublished
+      Option[DateTime],// timePublished
+      Option[Long]     // revision
     )
 
   case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
@@ -61,7 +62,8 @@ object Schema {
     def headline       = column [Option[String]]    ("headline")
     def published      = column [Boolean]           ("published")
     def timePublished  = column [Option[DateTime]]  ("time_published")
-    def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published, timePublished)
+    def revision       = column [Option[Long]]      ("revision")
+    def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published, timePublished, revision)
   }
 
   type StubQuery = Query[DBStub, StubRow]
