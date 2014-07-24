@@ -13,6 +13,7 @@ define([
     './controllers/dashboard/stub-crud',
 
     './services/composer-service',
+    './services/url-parser',
     './services/legal-states-service',
     './services/sections-service',
 
@@ -35,6 +36,7 @@ define([
           'workflow.config',
           'workflow.controllers',
           'composerService',
+          'urlParser',
           'legalStatesService',
           'sectionsService',
           'xeditable'
@@ -42,7 +44,10 @@ define([
 
         // App routes
         app.config(['$routeProvider', function($routeProvider) {
-          $routeProvider.when('/dashboard', { templateUrl: 'dashboard', controller: 'DashboardCtrl' });
+          $routeProvider.when('/dashboard', { templateUrl: 'dashboard',
+                                              controller: 'DashboardCtrl',
+                                              reloadOnSearch: false
+                                             });
           $routeProvider.otherwise({redirectTo: '/dashboard'});
         }]);
 

@@ -50,10 +50,9 @@ object PostgresDB {
       } yield (s, c)
       
       query.filter( {case (s, c) => dueDateNotExpired(s.due) })
-
            .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
             case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note) ,
-            (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished)) =>
+            (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
               DashboardRow(
                 Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note),
                 WorkflowContent(
@@ -77,7 +76,7 @@ object PostgresDB {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
       content +=
-        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false, None))
+        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false, None, None))
     }
   }
 
