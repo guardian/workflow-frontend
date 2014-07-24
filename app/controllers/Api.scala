@@ -103,18 +103,15 @@ object Api extends Controller with AuthActions {
   }
 
   def putStubNote(stubId: Long) = AuthAction { implicit request =>
+    val testReads = Reads.maxLength[String](10)
     (for {
       jsValue <- readJsonFromRequest(request.body).right
+      input   <- extract[String](jsValue \ "data")(testReads).right
     } yield {
         // treat empty input as removing the optional note
-        val note = (jsValue \ "data").asOpt[String].filter(_.length > 0)
-        if (!note.isEmpty && note.get.length > STUB_NOTE_MAXLEN)
-          BadRequest("Note too long")
-        else {
-          PostgresDB.updateStubNote(stubId, note)
-          NoContent
-        }
-    }).merge
+       PostgresDB.updateStubNote(stubId, input)
+       NoContent
+     }).merge
   }
 
   def putContentStatus(composerId: String) = AuthAction { implicit request =>
@@ -170,10 +167,22 @@ object Api extends Controller with AuthActions {
     requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
   }
 
+  /* JsError's may contain a number of different errors for differnt
+   * paths. This will aggregate them into a single string */
+  private def errorMsgs(error: JsError) =
+    (for((path, msgs) <- error.errors; msg <- msgs)
+     yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
+
+  /* the lone colon in the type paramater makes this a 'context'
+   * variance type parameter, which causes the compiler to implicitly
+   * add a second implict argument set which provides takes a
+   * Reads[A] */
   private def extract[A: Reads](jsValue: JsValue): Either[SimpleResult, A] = {
     jsValue.validate[A] match {
       case JsSuccess(a, _) => Right(a)
-      case error @ JsError(_) => Left(BadRequest(s"failed to parse the json ${error}"))
+      case error @ JsError(_) =>
+        val errMsg = errorMsgs(error)
+        Left(BadRequest(s"failed to parse the json ${errMsg}"))
     }
   }
 }
