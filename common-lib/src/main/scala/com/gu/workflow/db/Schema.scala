@@ -76,4 +76,15 @@ object Schema {
     f => f.toString,
     s => Flag.withName(s)
   )
+
+  type SectionRow = (
+    Long,   //pk
+    String  //section
+  )
+
+  case class DBSection(tag: Tag) extends Table[SectionRow](tag, "section") {
+    def pk      = column [Long]     ("pk", O.PrimaryKey)
+    def section = column [String]   ("section")
+    def * = (pk, section)
+  }
 }
