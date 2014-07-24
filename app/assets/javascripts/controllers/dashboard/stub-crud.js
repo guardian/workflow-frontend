@@ -98,7 +98,9 @@ define([
                     contentType: contentType || 'article',
                     section: 'Technology',
                     priority: 0,
-                    needsLegal: 'NA'
+                    needsLegal: 'NA',
+                    // XXX TODO - need to implement the proper default here
+                    prodOffice: 'UK'
                 };
                 open(stub);
             });
