@@ -103,10 +103,9 @@ object Api extends Controller with AuthActions {
   }
 
   def putStubNote(stubId: Long) = AuthAction { implicit request =>
-    val noteReads = Reads.maxLength[String](STUB_NOTE_MAXLEN)
     (for {
        jsValue <- readJsonFromRequest(request.body).right
-       note    <- extract[String](jsValue \ "data")(noteReads).right
+       note    <- extract[String](jsValue \ "data")(Stub.noteReads).right
      } yield {
        // treat empty input as removing the optional note
        PostgresDB.updateStubNote(stubId, note)

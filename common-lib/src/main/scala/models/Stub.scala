@@ -20,9 +20,16 @@ case class Stub(id: Option[Long],
                 prodOffice: String)
 
 object Stub {
+  // validation requirements for individual fields
+  val prodOfficeReads = Reads.maxLength[String](20)
+  val noteReads       = Reads.maxLength[String](500)
+
   implicit val dateTimeFormat = DateFormat
   implicit val stubReads: Reads[Stub] =
-    (__ \ "prodOffice").read(Reads.maxLength[String](20)) andKeep Json.reads[Stub]
+    (__ \ "prodOffice").read(prodOfficeReads) andKeep
+      (__ \ "note").readNullable(noteReads) andKeep
+      Json.reads[Stub]
+
   implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
 
   object DateFormat extends Format[DateTime] {
