@@ -182,7 +182,7 @@ object Api extends Controller with AuthActions {
       case JsSuccess(a, _) => Right(a)
       case error @ JsError(_) =>
         val errMsg = errorMsgs(error)
-        Left(BadRequest(s"failed to parse the json ${errMsg}"))
+        Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
     }
   }
 }
