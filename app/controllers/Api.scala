@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.mvc.{AnyContent, SimpleResult, Controller}
+import play.api.mvc.{AnyContent, Result, Controller}
 import play.api.libs.json._
 
 import lib.Responses._
@@ -166,11 +166,11 @@ object Api extends Controller with AuthActions {
     }
   }
 
-  private def readJsonFromRequest(requestBody: AnyContent): Either[SimpleResult, JsValue] = {
+  private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
     requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
   }
 
-  private def extract[A: Reads](jsValue: JsValue): Either[SimpleResult, A] = {
+  private def extract[A: Reads](jsValue: JsValue): Either[Result, A] = {
     jsValue.validate[A] match {
       case JsSuccess(a, _) => Right(a)
       case error @ JsError(_) => Left(BadRequest(s"failed to parse the json ${error}"))
