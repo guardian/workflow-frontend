@@ -23,12 +23,22 @@ define([
     }
 
     dashboardControllers.controller('DateFilterCtrl',
-        ['$scope','$http', function($scope, $http) {
-
+        ['$scope','$location', 'urlParser', function($scope, $location, urlParser) {
         $scope.dateOptions = mkDateOptions();
+        var selectedDate = urlParser.parseUrl['selectedDateModel'];
 
-        $scope.$watch('selectedDate', function(date) {
-            if (typeof date == 'undefined') {
+        // ensure that the date from the URL is the same object as the
+        // one used in the Select drop-down, as its compared with ===
+        $scope.dateOptions.forEach(function(date) {
+          if (date.isSame(selectedDate)) {
+            selectedDate = date;
+          }
+        });
+
+        $scope.selectedDate = selectedDate;
+
+        var updateDateFilters = function (date){
+                if (typeof date == 'undefined') {
                 $scope.dueFrom = null;
                 $scope.dueUntil = null;
             }
@@ -49,11 +59,15 @@ define([
                 $scope.dueUntil = date.clone().add('days', 1);
             }
 
-
-            $scope.$parent.filters['due.from'] = $scope.dueFrom && formatDateForUri($scope.dueFrom)
-            $scope.$parent.filters['due.until'] = $scope.dueUntil && formatDateForUri($scope.dueUntil)
+            $scope.$parent.filters['due.from'] = $scope.dueFrom && formatDateForUri($scope.dueFrom);
+            $scope.$parent.filters['due.until'] = $scope.dueUntil && formatDateForUri($scope.dueUntil);
 
             $scope.$emit('changedFilters');
+         };
+            updateDateFilters($scope.selectedDate);
+
+        $scope.$watch('selectedDate', function(date) {
+            updateDateFilters(date);
         });
 
     }]);
