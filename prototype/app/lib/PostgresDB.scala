@@ -139,6 +139,15 @@ object PostgresDB {
     }
   }
 
+  def updateStubProdOffice(id: Long, prodOffice: String): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.prodOffice)
+        .update(prodOffice)
+    }
+  }
+
   def updateStubLegalStatus(id: Long, status: Flag): Int = {
     DB.withTransaction { implicit session =>
       stubs

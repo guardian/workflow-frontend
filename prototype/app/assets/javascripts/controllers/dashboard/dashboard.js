@@ -117,6 +117,10 @@ define([
             updateStubField(stubId, "note", note);
         };
 
+        $scope.updateProdOffice = function(stubId, prodOffice) {
+            updateStubField(stubId, "prodOffice", prodOffice);
+        };
+
         $scope.dueDateUpdated = function() {
 
             var content = $scope.selectedContent,

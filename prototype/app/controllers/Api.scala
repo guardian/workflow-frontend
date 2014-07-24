@@ -107,8 +107,17 @@ object Api extends Controller with AuthActions {
        jsValue <- readJsonFromRequest(request.body).right
        note    <- extract[String](jsValue \ "data")(Stub.noteReads).right
      } yield {
-       // treat empty input as removing the optional note
        PostgresDB.updateStubNote(stubId, note)
+       NoContent
+     }).merge
+  }
+
+  def putStubProdOffice(stubId: Long) = AuthAction { implicit request =>
+    (for {
+       jsValue    <- readJsonFromRequest(request.body).right
+       prodOffice <- extract[String](jsValue \ "data")(Stub.prodOfficeReads).right
+     } yield {
+       PostgresDB.updateStubProdOffice(stubId, prodOffice)
        NoContent
      }).merge
   }
