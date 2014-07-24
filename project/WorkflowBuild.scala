@@ -1,7 +1,8 @@
+import plugins.PlayArtifact._
 import sbt._
 import sbt.Keys._
-import play.Keys._
-import plugins.PlayArtifact._
+import play.Play.autoImport._
+import PlayKeys._
 import sbtassembly.Plugin.{AssemblyKeys, MergeStrategy}
 import AssemblyKeys._
 import Dependencies._
@@ -11,8 +12,8 @@ object WorkflowBuild extends Build {
 
   val commonSettings =
     Seq(
-      scalaVersion := "2.10.3",
-      scalaVersion in ThisBuild := "2.10.3",
+      scalaVersion := "2.10.4",
+      scalaVersion in ThisBuild := "2.10.4",
       organization := "com.gu",
       version      := "0.1",
       fork in Test := false,
@@ -39,7 +40,8 @@ object WorkflowBuild extends Build {
     Project(path, file(path)).settings(commonSettings: _*)
 
   def playProject(path: String): Project =
-    play.Project(path, path = file(path))
+    Project(path, file(path)).enablePlugins(play.PlayScala)
+      .settings(libraryDependencies += ws)
       .settings(commonSettings ++ playArtifactDistSettings ++ playArtifactSettings: _*)
       .settings(magentaPackageName := path)
       .dependsOn(commonLib)

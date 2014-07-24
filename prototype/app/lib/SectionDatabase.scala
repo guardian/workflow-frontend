@@ -6,6 +6,7 @@ import akka.agent.Agent
 import models.Section
 import play.api.libs.json.JsArray
 import play.api.libs.ws.WS
+import play.api.Play.current
 
 
 object SectionDatabase {
