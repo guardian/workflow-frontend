@@ -129,7 +129,8 @@ object PostgresDB {
     }
   }
 
-  def updateStubNote(id: Long, note: Option[String]): Int = {
+  def updateStubNote(id: Long, input: String): Int = {
+    val note: Option[String] = if(input.length > 0) Some(input) else None
     DB.withTransaction { implicit session =>
       stubs
         .filter(_.pk === id)
