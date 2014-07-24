@@ -16,7 +16,8 @@ case class Stub(id: Option[Long],
                 contentType: Option[String],
                 priority: Int,
                 needsLegal: Flag,
-                note: Option[String])
+                note: Option[String],
+                prodOffice: String)
 
 object Stub {
   implicit val dateTimeFormat = DateFormat
