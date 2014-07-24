@@ -247,7 +247,16 @@
                         <dd>-</dd>
                     <dt>Last modified</dt>
                         <dd>{{ (selectedContent.lastModified | formatDateTimeDetailView) || "-" }}</dd>
-                </dl>
+                    <dt>Production Office</dt>
+                        <dd><select id="stub_detail_prodOffice" name="prodOffice"
+                                    ng-model="selectedContent.prodOffice"
+                                    ng-change="updateProdOffice(selectedContent.stubId, selectedContent.prodOffice)">
+                                <option value="UK">UK</option>
+                                <option value="AU">Australia</option>
+                                <option value="US">US</option>
+                            </select>
+                        </dd>
+
                 <hr />
 
                 <div>
