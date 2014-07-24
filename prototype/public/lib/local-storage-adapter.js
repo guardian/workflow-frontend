@@ -1,29 +1,51 @@
+/**
+ * Adapter wrapping browser localStorage.
+ * Values are namespaced by default to avoid name collisions.
+ */
 
 import angular from 'angular';
 
 angular.module('wfLocalStorageAdapter', [])
-  .factory('wfLocalStorageAdapter', [function() {
+  .factory('wfLocalStorageAdapter', ['$log', function($log) {
 
     var DEFAULT_PREFIX = 'wf_';
 
-    var adapter = {
-      get: function(key, prefix = DEFAULT_PREFIX) {
+    class LocalStorageAdapter {
+
+      /**
+       * Retrieve a value from localStorage.
+       * @throws {Error} If localStorage is unavailable.
+       * @return {String}
+       */
+      get(key, prefix = DEFAULT_PREFIX) {
         return window.localStorage.getItem(prefix + key);
-      },
+      }
 
-      getObject: function(key, prefix) {
-        return JSON.parse(adapter.get(key, prefix));
-      },
+      /**
+       * Retrieve and parse JSON stringified object from local storage.
+       * @return {Object}
+       */
+      getObject(key, prefix) {
+        var raw = this.get(key, prefix);
 
-      set: function(key, value, prefix = DEFAULT_PREFIX) {
+        if (!raw) { return; }
+
+        return JSON.parse(raw);
+      }
+
+      /**
+       * Store a value in localStorage.
+       * @throws {Error} If localStorage is unavailable or full.
+       */
+      set(key, value, prefix = DEFAULT_PREFIX) {
         if (typeof(value) == 'object') {
           value = JSON.stringify(value);
         }
 
         window.localStorage.setItem(prefix + key, value);
       }
-    };
+    }
 
-    return adapter;
+    return new LocalStorageAdapter();
 
   }]);
