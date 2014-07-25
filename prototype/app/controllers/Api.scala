@@ -25,6 +25,7 @@ object Api extends Controller with AuthActions {
     val section = req.getQueryString("section").map(Section(_))
     val contentType = req.getQueryString("content-type")
     val flags = req.queryString.get("flags") getOrElse Nil
+    val prodOffice = req.getQueryString("prodOffice")
 
     val content = PostgresDB.getContent(
       section = req.getQueryString("section").map(Section(_)),
@@ -33,7 +34,8 @@ object Api extends Controller with AuthActions {
       status = req.getQueryString("status").flatMap(StatusDatabase.find),
       contentType = contentType,
       published = req.getQueryString("state").map(_ == "published"),
-      flags = flags
+      flags = flags,
+      prodOffice = prodOffice
     )
 
     val stubs = CommonDB.getStubs(
@@ -41,7 +43,8 @@ object Api extends Controller with AuthActions {
                   dueUntil = dueUntil,
                   section = section,
                   contentType = contentType,
-                  unlinkedOnly = true)
+                  unlinkedOnly = true,
+                  prodOffice = prodOffice)
 
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
