@@ -19,7 +19,7 @@ define([
 
     // stub create and edit
 
-    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sectionsService, legalStatesService) {
+    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sectionsService, legalStatesService, prodOfficeService) {
 
         $scope.stub = stub;
 
@@ -59,6 +59,7 @@ define([
 
         $scope.sections = sectionsService.getSections();
         $scope.legalStates = legalStatesService.getLegalStates();
+        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.ok = function (addToComposer) {
             delete $scope.stub.dueText;
