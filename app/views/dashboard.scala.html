@@ -29,6 +29,7 @@
                         <label for="prodoffice_dropdown" class="col-sm-3 control-label">Office</label>
                         <div class="col-sm-6">
                             <select id="prodOffice_dropdown" class="form-control" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
+                                <option value="">(All offices)</option>
                             </select>
                         </div>
                     </div>
@@ -261,10 +262,7 @@
                     <dt>Production Office</dt>
                         <dd><select id="stub_detail_prodOffice" name="prodOffice"
                                     ng-model="selectedContent.prodOffice"
-                                    ng-change="updateProdOffice(selectedContent.stubId, selectedContent.prodOffice)">
-                                <option value="UK">UK</option>
-                                <option value="AU">Australia</option>
-                                <option value="US">US</option>
+                                    ng-change="updateProdOffice(selectedContent.stubId, selectedContent.prodOffice)" ng-options="office.value as office.name for office in prodOffices">
                             </select>
                         </dd>
 
@@ -351,10 +349,8 @@
                           </div>
                           <div class="pull-right">
                             <label>production office</label>
-                            <select ng-model="stub.prodOffice">
-                                <option value="UK">UK</option>
-                                <option value="AU">Australia</option>
-                                <option value="US">US</option>
+                            <select ng-model="stub.prodOffice"
+                                    ng-options="office.value as office.name for office in prodOffices">
                             </select>
                           </div>
                         </div>
