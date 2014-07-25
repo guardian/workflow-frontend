@@ -19,7 +19,7 @@ define([
 
     // stub create and edit
 
-    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sectionsService, legalStatesService) {
+    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService) {
 
         $scope.stub = stub;
 
@@ -57,7 +57,7 @@ define([
             }
         };
 
-        $scope.sections = sectionsService.getSections();
+        $scope.sections = sections;
         $scope.legalStates = legalStatesService.getLegalStates();
 
         $scope.ok = function (addToComposer) {
@@ -76,7 +76,7 @@ define([
     dashboardControllers.controller('StubModalInstanceCtrl', ['$scope',
         '$modalInstance',
         'stub',
-        'sectionsService',
+        'sections',
         'legalStatesService',
         StubModalInstanceCtrl]);
 
@@ -174,7 +174,7 @@ define([
     // composer import control
     // stub create and edit
 
-    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService, legalStatesService, composerService) {
+    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sections, legalStatesService, composerService) {
 
         $scope.stub = {
             section: 'Technology'
@@ -231,7 +231,7 @@ define([
             }
         };
 
-        $scope.sections = sectionsService.getSections();
+        $scope.sections = sections;
         $scope.legalStates = legalStatesService.getLegalStates();
 
         $scope.ok = function () {
@@ -247,7 +247,7 @@ define([
     dashboardControllers.controller('ComposerImportModalInstanceCtrl', ['$scope',
         '$modalInstance',
         'stub',
-        'sectionsService',
+        'sections',
         'legalStatesService',
         'composerService',
         ComposerImportModalInstanceCtrl]);

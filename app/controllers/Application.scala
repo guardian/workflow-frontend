@@ -18,7 +18,9 @@ object Application extends Controller with AuthActions {
       sections = SectionDB.sectionList
     }
     //put these in one object
-    yield Ok(views.html.index(Json.obj("data" -> statuses), Json.obj("data" -> sections)))
+    yield {
+      Ok(views.html.index(Json.obj("data" -> statuses), Json.obj("data" -> sections)))
+    }
   }
 
   def dashboard = AuthAction.async { req =>
