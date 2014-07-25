@@ -5,7 +5,6 @@ define(['angular'], function(angular) {
 
     sectionsService.factory('sectionsService',
         [function() {
-
             function getSections() {
                 return ['Dev', 'Cities', 'Technology']
             };
