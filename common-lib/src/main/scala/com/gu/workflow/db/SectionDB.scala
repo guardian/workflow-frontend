@@ -15,10 +15,14 @@ object SectionDB {
     }
   }
 
-  //how to handle data duplication?
-  def upsert(section: Section) = {
+  def upsert(section: Section): Int = {
     DB.withTransaction { implicit session =>
-      sections += (0, section.name)
+      lazy val sectionExists = sections.filter(_.section === section.name).exists.run
+      if(!sectionExists) {
+        sections += (0, section.name)
+        1
+      }
+      else 0
     }
   }
 
