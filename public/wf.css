@@ -214,12 +214,18 @@ h5.query {
 
 }
 
-.date-filter label{
-    padding-right: 15px;
+.date-filter__label{
+  padding-right: 5px;
 }
 
 .date-filter .btn-default {
-    height: 34px;
+  height: 34px;
+}
+
+@media (max-width: 1100px) {
+  .date-filter__button--optional {
+    display: none;
+  }
 }
 
 .btn.active {
@@ -228,9 +234,29 @@ h5.query {
     border-color: #285e8e;
 }
 
-.new-stub {
-    padding-left:0;
-    padding-right:0;
+/**
+ * Top toolbar.
+ */
+.top-toolbar {
+  display: flex;
+}
+
+
+.top-toolbar__new-stub {
+  width: 160px;
+}
+
+.top-toolbar__section-selector {
+  width: 200px;
+}
+
+.top-toolbar__due-by-filter {
+  margin: 0 auto;
+}
+
+.top-toolbar__location-picker {
+  width: 200px;
+  text-align: right;
 }
 
 .status-cell {

@@ -5,8 +5,8 @@
 @import models.Status
 
 <div class="container-fluid top-control">
-    <div class="row header-bar">
-            <div class="col-md-2 new-stub">
+    <div class="top-toolbar row header-bar">
+            <div class="top-toolbar__new-stub">
                 <div class="btn-group" ng-controller="NewStubDropdownCtrl" dropdown>
                     <button type="button" class="btn btn-default" ng-click="newStub()">New Stub</button>
                     <button type="button" class="btn btn-default dropdown-toggle">
@@ -23,11 +23,11 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="top-toolbar__section-selector">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
                         <label for="section_dropdown" class="col-sm-3 control-label">Section</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-9">
                             <select id="section_dropdown" class="form-control" ng-model="selectedSection" ng-options="s for s in sections">
                                 <option value="">(All sections)</option>
                             </select>
@@ -36,13 +36,13 @@
                 </form>
             </div>
 
-            <div class="col-md-5">
+            <div class="top-toolbar__due-by-filter">
                 <div ng-controller="DateFilterCtrl" class="date-filter">
-                    <label>Due by</label>
+                    <label class="date-filter__label">Due by</label>
                     <div class="btn-group btn-group-sm">
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="">All</button>
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'today'">Today</button>
-                        <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'tomorrow'">Tomorrow</button>
+                        <button type="button" class="btn btn-default date-filter__button--optional" ng-model="selectedDate" btn-radio="'tomorrow'">Tomorrow</button>
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
                         <button type="button" class="btn btn-default" title="Select date">
                             <span class="glyphicon glyphicon-calendar"></span>
@@ -53,22 +53,21 @@
                 </div>
             </div>
 
-            <div class="col-md-2">
-                <div class="dropdown pull-right" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
-                    <button class="dropdown-toggle btn btn-default" type="button" id="locationDropdownButton">
-                        {{ locationPicker.locations[locationPicker.locationKey].title }}
-                        <span class="top-toolbar__location-picker-localtime">{{ locationPicker.now | wfFormatDateTime:'HH:mm':key }}</span>
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="top-toolbar__location-picker-menu dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="locationDropdownButton">
-                        <li ng-repeat="(key, location) in locationPicker.locations">
-                            <a class="top-toolbar__location-picker-menuitem" role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">
-                                <span class="top-toolbar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfFormatDateTime:'HH:mm z':key }}</span>
-                                {{ location.title }}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+
+            <div class="top-toolbar__location-picker dropdown pull-right" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
+                <button class="dropdown-toggle btn btn-default" type="button" id="locationDropdownButton">
+                    {{ locationPicker.locations[locationPicker.locationKey].title }}
+                    <span class="top-toolbar__location-picker-localtime">{{ locationPicker.now | wfFormatDateTime:'HH:mm':key }}</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="top-toolbar__location-picker-menu dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="locationDropdownButton">
+                    <li ng-repeat="(key, location) in locationPicker.locations">
+                        <a class="top-toolbar__location-picker-menuitem" role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">
+                            <span class="top-toolbar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfFormatDateTime:'HH:mm z':key }}</span>
+                            {{ location.title }}
+                        </a>
+                    </li>
+                </ul>
             </div>
 
         </div>
