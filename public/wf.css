@@ -30,6 +30,10 @@ tr td {
 	font-size: 90%;
 }
 
+.content-list__item-row--selected {
+  background-color: #f9f9f9;
+}
+
 /*Styles from dashboard*/
 
 /*
