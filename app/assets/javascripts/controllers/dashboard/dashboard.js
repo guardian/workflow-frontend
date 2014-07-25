@@ -12,8 +12,8 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'urlParser', 'statuses', 'sectionsService','legalStatesService', 'config',
-         function($scope, $http, urlParser, statuses, sectionsService, legalStatesService, config) {
+        ['$scope','$http', 'urlParser', 'statuses', 'sectionsService','legalStatesService', 'config', 'prodOfficeService',
+         function($scope, $http, urlParser, statuses, sectionsService, legalStatesService, config, prodOfficeService) {
 
 
          //initialise the model from the url
@@ -22,6 +22,7 @@ define([
          $scope.selectedStatus = initialParams['status'];
          $scope.selectedState = initialParams['state'];
          $scope.selectedSection = initialParams['section'];
+         $scope.selectedProdOffice = "UK";
          $scope.selectedContentType = initialParams['content-type'];
          $scope.flags = initialParams['flagsModel'] || [];
 
@@ -42,6 +43,8 @@ define([
 
         $scope.sections = sectionsService.getSections();
         $scope.legalStates = legalStatesService.getLegalStates();
+
+        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.statuses = statuses;
 

@@ -17,6 +17,7 @@ define([
     './services/url-parser',
     './services/legal-states-service',
     './services/sections-service',
+    './services/prodoffice-service',
 
     'bootstrap',
     'angular-bootstrap',
@@ -40,6 +41,7 @@ define([
           'urlParser',
           'legalStatesService',
           'sectionsService',
+          'prodOfficeService',
           'xeditable'
         ]);
 

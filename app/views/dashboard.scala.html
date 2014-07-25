@@ -23,6 +23,17 @@
                     </ul>
                 </div>
             </div>
+            <div class="col-md-2">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="prodoffice_dropdown" class="col-sm-3 control-label">Office</label>
+                        <div class="col-sm-6">
+                            <select id="prodOffice_dropdown" class="form-control" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
             <div class="col-md-3">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
@@ -36,7 +47,7 @@
                 </form>
             </div>
 
-            <div class="col-md-6" >
+            <div class="col-md-5" >
                 <div ng-controller="DateFilterCtrl" class="date-filter">
                     <label>Due by</label>
                     <div class="btn-group btn-group-sm">
