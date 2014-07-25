@@ -33,7 +33,9 @@ System.config({
     "npm:base64-js@0.0.4": {},
     "npm:Base64@0.2.1": {},
     "npm:ieee754@1.1.3": {},
-    "css": "github:systemjs/plugin-css@^0.1.0"
+    "css": "github:systemjs/plugin-css@^0.1.0",
+    "moment-timezone": "github:moment/moment-timezone@^0.1.0",
+    "json": "github:systemjs/plugin-json@master"
   }
 });
 
@@ -55,7 +57,8 @@ System.config({
     "github:systemjs/plugin-json": "master",
     "npm:inherits": "2.0.1",
     "github:components/jquery": "1.11.1",
-    "github:systemjs/plugin-css": "0.1.0"
+    "github:systemjs/plugin-css": "0.1.0",
+    "github:moment/moment-timezone": "0.1.0"
   }
 });
 
