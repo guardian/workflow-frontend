@@ -22,7 +22,7 @@ define([
          $scope.selectedStatus = initialParams['status'];
          $scope.selectedState = initialParams['state'];
          $scope.selectedSection = initialParams['section'];
-         $scope.selectedProdOffice = "UK";
+         $scope.selectedProdOffice = initialParams['prodOffice'];
          $scope.selectedContentType = initialParams['content-type'];
          $scope.flags = initialParams['flagsModel'] || [];
 
@@ -40,6 +40,7 @@ define([
         $scope.$on('changedFilters', getContent);
         $scope.$watch('selectedContentType', getContent);
         $scope.$watch('selectedSection', getContent);
+        $scope.$watch('selectedProdOffice', getContent);
 
         $scope.sections = sectionsService.getSections();
         $scope.legalStates = legalStatesService.getLegalStates();
@@ -55,6 +56,7 @@ define([
             params["content-type"] = $scope.selectedContentType;
             params.status = $scope.selectedStatus;
             params.flags = $scope.flags;
+            params.prodOffice = $scope.selectedProdOffice;
             return params;
         };
 
