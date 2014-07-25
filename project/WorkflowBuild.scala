@@ -1,10 +1,8 @@
-import plugins.PlayArtifact._
+import com.gu.deploy.PlayArtifact._
 import sbt._
 import sbt.Keys._
 import play.Play.autoImport._
 import PlayKeys._
-import sbtassembly.Plugin.{AssemblyKeys, MergeStrategy}
-import AssemblyKeys._
 import Dependencies._
 
 
@@ -18,7 +16,9 @@ object WorkflowBuild extends Build {
       version      := "0.1",
       fork in Test := false,
       resolvers ++= Seq("Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"),
-      scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings")
+      scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings"),
+      doc in Compile <<= target.map(_ / "none"),
+      incOptions := incOptions.value.withNameHashing(nameHashing = true)
     )
 
   lazy val commonLib = project("common-lib")
@@ -52,13 +52,7 @@ object WorkflowBuild extends Build {
         <exclude org="commons-logging"/>
         <exclude org="org.springframework"/>
         <exclude org="org.scala-tools.sbt"/>
-      </dependencies>,
-    mergeStrategy in assembly <<= (mergeStrategy in assembly) { old => {
-      case f if f.startsWith("org/apache/lucene/index/") => MergeStrategy.first
-      case "play/core/server/ServerWithStop.class" => MergeStrategy.first
-      case "ehcache.xml" => MergeStrategy.first
-      case x => old(x)
-    }}
+      </dependencies>
   )
 
 }
