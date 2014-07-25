@@ -17,7 +17,7 @@ object SectionDB {
 
   def upsert(section: Section): Int = {
     DB.withTransaction { implicit session =>
-      lazy val sectionExists = sections.filter(_.section === section.name).exists.run
+      val sectionExists = sections.filter(_.section === section.name).exists.run
       if(!sectionExists) {
         sections += (0, section.name)
         1
