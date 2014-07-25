@@ -92,8 +92,4 @@ object Schema {
 
   val sections: SectionQuery = TableQuery(DBSection)
 
-
-
-
-
 }

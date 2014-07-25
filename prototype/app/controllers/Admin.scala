@@ -1,5 +1,7 @@
 package controllers
 
+import com.gu.workflow.db.SectionDB
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -24,32 +26,27 @@ object Admin extends Controller with AuthActions {
     )(Section.apply)(Section.unapply)
   )
 
-  def sections = AuthAction.async {
-    for (sections <- SectionDatabase.sectionList) yield Ok(views.html.sections(sections, addSectionForm))
+  def sections = AuthAction {
+    val sections = SectionDB.sectionList
+    Ok(views.html.sections(sections, addSectionForm))
   }
 
-  def addSection = AuthAction.async { implicit request =>
+  def addSection = AuthAction { implicit request =>
     addSectionForm.bindFromRequest.fold(
-      formWithErrors => {
-        Future.successful(BadRequest("failed to add section"))
-      },
+      formWithErrors => BadRequest("failed to add section"),
       section => {
-        SectionDatabase.upsert(section).map{ _ =>
-          Redirect(routes.Admin.sections)
-        }
+         SectionDB.upsert(section)
+         Redirect(routes.Admin.sections)
       }
     )
   }
 
-  def removeSection = AuthAction.async { implicit request =>
+  def removeSection = AuthAction { implicit request =>
     addSectionForm.bindFromRequest.fold(
-      formWithErrors => {
-        Future.successful(BadRequest("failed to remove section"))
-      },
+      formWithErrors => BadRequest("failed to remove section"),
       section => {
-        SectionDatabase.remove(section).map{ _ =>
-          NoContent
-        }
+        SectionDB.remove(section)
+        NoContent
       }
     )
   }
