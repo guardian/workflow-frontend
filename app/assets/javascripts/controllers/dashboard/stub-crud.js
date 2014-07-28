@@ -96,7 +96,7 @@ define([
             $scope.$on('newStub', function(event, contentType) {
                 var stub = {
                     contentType: contentType || 'article',
-                    section: 'Technology',
+                    section: $scope.selectedSection || 'Technology',
                     priority: 0,
                     needsLegal: 'NA'
                 };
@@ -174,11 +174,9 @@ define([
     // composer import control
     // stub create and edit
 
-    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sections, legalStatesService, composerService) {
+    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sections, legalStatesService, composerService, stub) {
 
-        $scope.stub = {
-            section: 'Technology'
-        };
+        $scope.stub = stub;
 
         $scope.formData = {};
 
@@ -191,14 +189,10 @@ define([
                         $scope.stub.composerId = content.id;
                         $scope.stub.contentType = content.type;
                         $scope.stub.title = content.headline;
-                        $scope.stub.priority = 0;
-                        $scope.stub.needsLegal = 'NA';
                     } else {
                         $scope.stub.composerId = null;
                         $scope.stub.contentType = null;
                         $scope.stub.title = null;
-                        $scope.stub.priority = 0;
-                        $scope.stub.needsLegal = 'NA';
                     }
                 }
             );
@@ -260,15 +254,24 @@ define([
         function($scope, $modal, $http, $q, config){
 
             $scope.$on('composerImport', function(event) {
-                open();
+                var stub = {
+                    section: $scope.selectedSection || 'Technology',
+                    priority: 0,
+                    needsLegal: 'NA'
+                };
+                open(stub);
             });
 
-            function open() {
-
+            function open(stub) {
                 var modalInstance = $modal.open({
                     templateUrl: 'composerImportModalContent.html',
                     controller: ComposerImportModalInstanceCtrl,
-                    windowClass: 'stubModal'
+                    windowClass: 'stubModal',
+                    resolve: {
+                        stub: function(){
+                            return stub;
+                        }
+                    }
                 });
 
                 modalInstance.result.then(function (modalCloseResult) {
