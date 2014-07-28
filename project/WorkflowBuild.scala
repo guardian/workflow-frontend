@@ -3,6 +3,8 @@ import sbt._
 import sbt.Keys._
 import play.Play.autoImport._
 import PlayKeys._
+import com.typesafe.sbt.web._
+import com.typesafe.sbt.web.Import._
 import Dependencies._
 
 
@@ -40,7 +42,7 @@ object WorkflowBuild extends Build {
     Project(path, file(path)).settings(commonSettings: _*)
 
   def playProject(path: String): Project =
-    Project(path, file(path)).enablePlugins(play.PlayScala)
+    Project(path, file(path)).enablePlugins(play.PlayScala).enablePlugins(SbtWeb)
       .settings(libraryDependencies += ws)
       .settings(commonSettings ++ playArtifactDistSettings ++ playArtifactSettings: _*)
       .settings(magentaPackageName := path)
