@@ -101,8 +101,7 @@ define([
                     section: 'Technology',
                     priority: 0,
                     needsLegal: 'NA',
-                    // XXX TODO - need to implement the proper default here
-                    prodOffice: prodOffice.defaultOffice
+                    prodOffice: prodOffice.getDefaultOffice()
                 };
                 open(stub);
             });
@@ -182,7 +181,7 @@ define([
 
         $scope.stub = {
             section: 'Technology',
-            prodOffice: prodOfficeService.defaultOffice
+            prodOffice: prodOfficeService.getDefaultOffice()
         };
 
         $scope.prodOffices = prodOfficeService.getProdOffices();
