@@ -8,9 +8,9 @@ define(['angular'], function(angular) {
 
             function getProdOffices() {
                 return [
-                    {name: 'Australia', value: 'AU'},
-                    {name: 'UK',        value: 'UK'},
-                    {name: 'US',        value: 'US'}
+                    {name: 'AU', value: 'AU'},
+                    {name: 'UK', value: 'UK'},
+                    {name: 'US', value: 'US'}
                 ]
             };
 
