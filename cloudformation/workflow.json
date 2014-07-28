@@ -280,11 +280,11 @@
                       ]]},
                       "authentication": "distributionAuthentication"
                     },
-                    "/home/workflow/app.jar": {
+                    "/home/workflow/prototype.zip": {
                       "source": { "Fn::Join" : ["", [
                         "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
                         { "Ref": "Stage" },
-                        "/prototype/app.jar"
+                        "/prototype/prototype.zip"
                       ]]},
                       "authentication": "distributionAuthentication"
                     },
@@ -320,6 +320,8 @@
 
                         "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r PrototypeLaunchConfig ",
                         "  --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+
+                        "unzip -d /home/workflow /home/workflow/prototype.zip\n",
 
                         "mkdir /home/workflow/logs\n",
 
