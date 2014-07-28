@@ -1,7 +1,6 @@
 define([
     'angular',
 
-    './filters',
     './services',
     './directives',
     './config',
@@ -19,9 +18,9 @@ define([
     './services/sections-service',
     './services/prodoffice-service',
 
-    'bootstrap',
+    'lib/date-service',
+
     'angular-bootstrap',
-    'moment',
     'angular-xeditable',
     'angular-route'
 
@@ -32,7 +31,7 @@ define([
         var app =  angular.module('workflow', [
           'ngRoute',
           'dashboardControllers',
-          'workflow.filters',
+          'wfDateService',
           'workflow.services',
           'workflow.directives',
           'workflow.config',
