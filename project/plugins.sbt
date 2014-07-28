@@ -9,6 +9,8 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.3.2")
 
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.9.2")
 
+addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.0.0")
+
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "0.6.2")
 
 addSbtPlugin("com.gu" % "sbt-version-info-plugin" % "2.8")
