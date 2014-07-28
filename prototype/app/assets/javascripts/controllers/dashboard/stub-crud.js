@@ -86,7 +86,8 @@ define([
         '$http',
         '$q',
         'config',
-        function($scope, $modal, $http, $q, config){
+        'prodOfficeService',
+        function($scope, $modal, $http, $q, config, prodOffice){
 
             var composerNewContent = config['composerNewContent'];
 
@@ -101,7 +102,7 @@ define([
                     priority: 0,
                     needsLegal: 'NA',
                     // XXX TODO - need to implement the proper default here
-                    prodOffice: 'UK'
+                    prodOffice: prodOffice.defaultOffice
                 };
                 open(stub);
             });
