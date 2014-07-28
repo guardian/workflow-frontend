@@ -178,11 +178,14 @@ define([
     // composer import control
     // stub create and edit
 
-    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService, legalStatesService, composerService) {
+    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService, legalStatesService, composerService, prodOfficeService) {
 
         $scope.stub = {
-            section: 'Technology'
+            section: 'Technology',
+            prodOffice: prodOfficeService.defaultOffice
         };
+
+        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.formData = {};
 
