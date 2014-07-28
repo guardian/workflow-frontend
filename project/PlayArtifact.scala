@@ -34,7 +34,7 @@ object PlayArtifact extends Plugin {
     playArtifactFile := "artifacts.zip",
     playArtifact := {
       val distFile = target.value / playArtifactFile.value
-      streams.value.log.info("Disting " + distFile)
+//      streams.value.log.info("Disting " + distFile)
 
       if (distFile.exists()) {
         distFile.delete()
@@ -44,7 +44,7 @@ object PlayArtifact extends Plugin {
       // Tells TeamCity to publish the artifact => leave this println in here
       println(s"##teamcity[publishArtifacts '$distFile => ${name.value}']")
 
-      streams.value.log.info("Done disting.")
+//      streams.value.log.info("Done disting.")
       distFile
     }
   )
