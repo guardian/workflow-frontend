@@ -82,8 +82,15 @@ angular.module('wfAnalytics', ['wfUser'])
       });
     });
 
+    // Track import from composer
+    $rootScope.$on('content.import', function(event, data) {
+      wfAnalytics.track('Content imported', {
+        'Section': data.content.section,
+        'Content type': data.content.contentType
+      });
+    });
+
     // TODO Things to track:
-    //  Import from Composer
     //  Content edited
     //  Content / Stub deleted
     //  View in Composer
