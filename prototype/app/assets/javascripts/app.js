@@ -13,12 +13,14 @@ define([
     './controllers/dashboard/stub-crud',
 
     './services/composer-service',
-    './services/url-parser',
     './services/legal-states-service',
 
     './services/prodoffice-service',
 
     'lib/date-service',
+    'lib/params-service',
+    'lib/server-params',
+    'lib/filters-service',
 
     'angular-bootstrap',
     'angular-xeditable',
@@ -37,9 +39,11 @@ define([
           'workflow.config',
           'workflow.controllers',
           'composerService',
-          'urlParser',
           'legalStatesService',
           'prodOfficeService',
+          'paramsService',
+          'serverParams',
+          'filtersService',
           'xeditable'
         ]);
 
