@@ -288,6 +288,8 @@ define([
                             url: '/api/stubs',
                             data: newStub
                         }).success(function(){
+                            $scope.$emit('content.import', { 'content': newStub });
+
                             $scope.$emit('getContent');
                         });
                 });
