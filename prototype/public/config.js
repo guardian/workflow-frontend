@@ -35,7 +35,8 @@ System.config({
     "npm:ieee754@1.1.3": {},
     "css": "github:systemjs/plugin-css@^0.1.0",
     "moment-timezone": "github:moment/moment-timezone@^0.1.0",
-    "json": "github:systemjs/plugin-json@master"
+    "json": "github:systemjs/plugin-json@master",
+    "mixpanel": "github:mixpanel/mixpanel-js@^2.2.2"
   }
 });
 
@@ -58,7 +59,8 @@ System.config({
     "npm:inherits": "2.0.1",
     "github:components/jquery": "1.11.1",
     "github:systemjs/plugin-css": "0.1.0",
-    "github:moment/moment-timezone": "0.1.0"
+    "github:moment/moment-timezone": "0.1.0",
+    "github:mixpanel/mixpanel-js": "2.2.2"
   }
 });
 
