@@ -36,7 +36,8 @@ System.config({
     "css": "github:systemjs/plugin-css@^0.1.0",
     "moment-timezone": "github:moment/moment-timezone@^0.1.0",
     "json": "github:systemjs/plugin-json@master",
-    "mixpanel": "github:mixpanel/mixpanel-js@^2.2.2"
+    "mixpanel": "github:mixpanel/mixpanel-js@^2.2.2",
+    "ua-parser": "github:faisalman/ua-parser-js@^0.7.0"
   }
 });
 
@@ -60,7 +61,8 @@ System.config({
     "github:components/jquery": "1.11.1",
     "github:systemjs/plugin-css": "0.1.0",
     "github:moment/moment-timezone": "0.1.0",
-    "github:mixpanel/mixpanel-js": "2.2.2"
+    "github:mixpanel/mixpanel-js": "2.2.2",
+    "github:faisalman/ua-parser-js": "0.7.0"
   }
 });
 
