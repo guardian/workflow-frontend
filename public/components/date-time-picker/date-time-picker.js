@@ -15,41 +15,30 @@
  *   <div wf-date-time-picker label="Due something" help-text="custom help text" ng-model="stub.due"/>
  */
 
+// 3rd party dependencies
 import angular from 'angular';
+import moment from 'moment';
 import 'angular-bootstrap-datetimepicker';
 import 'angular-bootstrap-datetimepicker/src/css/datetimepicker.css!';
-import moment from 'moment';
-import 'sugar';
 
+// local dependencies
+import 'lib/date-service';
+
+// component dependencies
 import './date-time-picker.css!';
 
 
-angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
+angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateService'])
 
-  .filter('wfDateTimePicker.formatDateTime', function() {
-    return function(date, format) {
-      if (!date || date === '') { return ''; }
-
-      if (format == 'full') {
-        format = 'dddd D MMM YYYY, HH:mm';
-      } else {
-        format = 'D MMM YYYY HH:mm';
-      }
-
-      return moment(date).format(format);
-    };
-  })
-
-  .directive('wfDateTimePicker', ['wfDateTimePicker.formatDateTimeFilter', '$log', function(formatDateTime, $log) {
+  .directive('wfDateTimePicker', ['$log', '$timeout', 'wfDateService', function($log, $timeout, wfDateService) {
 
     var pickerCount = 0;
 
     return {
       restrict: 'A',
-      require: ['ngModel'],
+      require: '^ngModel',
       scope: {
         dateValue: '=ngModel',
-        onDatePicked: '=',
         dateFormat: '@wfDateFormat',
         label: '@',
         helpText: '@',
@@ -66,12 +55,30 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
 
         this.textInputId = 'wfDateTimePickerText' + idSuffix;
         this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
+
+        $scope.datePickerValue = $scope.dateValue;
+
+        // Watch changes in the dateValue and its formatting, then update the datePicker
+        // Datepicker doesn't support timezones, so we must strip off the timezone before
+        // displaying the interface.
+        $scope.$on('location:change', function() {
+          $scope.datePickerValue = wfDateService.format($scope.dateValue, 'YYYY-MM-DDTHH:mm');
+        });
+
+        this.onDatePicked = function(newValue) {
+          $scope.dateValue = wfDateService.parse(newValue);
+
+          // Delay running onUpdate so digest can run and update dateValue properly.
+          $timeout(function() {
+            $scope.onUpdate($scope.dateValue);
+          }, 0);
+        };
       },
       controllerAs: 'dateTimePicker'
     };
   }])
 
-  .directive('wfDateTimeField', ['wfDateTimePicker.formatDateTimeFilter', '$browser', '$log', function(formatDateTimeFilter, $browser, $log) {
+  .directive('wfDateTimeField', ['wfFormatDateTimeFilter', 'wfDateService', '$browser', '$log', function(wfFormatDateTimeFilter, wfDateService, $browser, $log) {
 
     // Utility methods
     function isArrowKey(keyCode) {
@@ -100,6 +107,10 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
 
         var updateOn = scope.updateOn || 'default';
 
+        function formatText(input) {
+          return wfFormatDateTimeFilter(input, 'D MMM YYYY HH:mm');
+        }
+
         function commitUpdate() {
           scope.$apply(function() {
             ngModel.$setViewValue(elem.val());
@@ -110,7 +121,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
         function cancelUpdate() {
           scope.$apply(function() {
             if (hasChanged()) { // reset to model value
-              ngModel.$setViewValue(formatDateTimeFilter(ngModel.$modelValue));
+              ngModel.$setViewValue(formatText(ngModel.$modelValue));
               ngModel.$render();
             }
 
@@ -118,21 +129,17 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
           });
         }
 
-        function parseDate(value) {
-          Date.setLocale('en-UK');
-
+        function parseDate(input) {
+          if (!input) { return; }
           try {
-            // Uses sugar.js Date.create to parse natural date language, ie: "today"
-            var due = moment(Date.create(value));
-
-            if (due.isValid()) {
-              return moment(due).toDate();
-            }
+            return wfDateService.parse(input);
 
             // TODO: setInvalid when invalid date specified. How do we handle errors?
           }
           catch (err) {
-            $log.error('Error parsing date: ', err);
+            if (updateOn != 'default') {
+              $log.error('Error parsing date: ', err);
+            }
           }
         }
 
@@ -175,7 +182,13 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker'])
 
         ngModel.$parsers.push(parseDate);
 
-        ngModel.$formatters.push(formatDateTimeFilter);
+        ngModel.$formatters.push(formatText);
+
+        // Watch for changes to timezone
+        scope.$on('location:change', function() {
+          ngModel.$setViewValue(formatText(ngModel.$modelValue));
+          ngModel.$render();
+        });
 
       }
     };
