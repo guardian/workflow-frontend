@@ -96,7 +96,7 @@ define([
             $scope.$on('newStub', function(event, contentType) {
                 var stub = {
                     contentType: contentType || 'article',
-                    section: $scope.selectedSection || 'Technology',
+                    section: $scope.selectedSection,
                     priority: 0,
                     needsLegal: 'NA'
                 };
@@ -255,7 +255,7 @@ define([
 
             $scope.$on('composerImport', function(event) {
                 var stub = {
-                    section: $scope.selectedSection || 'Technology',
+                    section: $scope.selectedSection,
                     priority: 0,
                     needsLegal: 'NA'
                 };
