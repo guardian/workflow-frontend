@@ -5,8 +5,8 @@
 @import models.Status
 
 <div class="container-fluid top-control">
-    <div class="row header-bar">
-            <div class="col-md-2 new-stub">
+    <div class="top-toolbar row header-bar">
+            <div class="top-toolbar__new-stub">
                 <div class="btn-group" ng-controller="NewStubDropdownCtrl" dropdown>
                     <button type="button" class="btn btn-default" ng-click="newStub()">New Stub</button>
                     <button type="button" class="btn btn-default dropdown-toggle">
@@ -23,11 +23,11 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="top-toolbar__section-selector">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
                         <label for="section_dropdown" class="col-sm-3 control-label">Section</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-9">
                             <select id="section_dropdown" class="form-control" ng-model="selectedSection" ng-options="s for s in sections">
                                 <option value="">(All sections)</option>
                             </select>
@@ -36,21 +36,38 @@
                 </form>
             </div>
 
-            <div class="col-md-6" >
+            <div class="top-toolbar__due-by-filter">
                 <div ng-controller="DateFilterCtrl" class="date-filter">
-                    <label>Due by</label>
+                    <label class="date-filter__label">Due by</label>
                     <div class="btn-group btn-group-sm">
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="">All</button>
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'today'">Today</button>
-                        <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'tomorrow'">Tomorrow</button>
+                        <button type="button" class="btn btn-default date-filter__button--optional" ng-model="selectedDate" btn-radio="'tomorrow'">Tomorrow</button>
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
                         <button type="button" class="btn btn-default" title="Select date">
                             <span class="glyphicon glyphicon-calendar"></span>
-                            <select ng-model="selectedDate" ng-options="date as (date | formatDate) for date in dateOptions">
+                            <select ng-model="selectedDate" ng-options="date as (date | wfFormatDateTime:'ddd D MMMM') for date in dateOptions">
                             </select>
                         </button>
                     </div>
                 </div>
+            </div>
+
+
+            <div class="top-toolbar__location-picker dropdown pull-right" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
+                <button class="dropdown-toggle btn btn-default" type="button" id="locationDropdownButton">
+                    {{ locationPicker.locations[locationPicker.locationKey].title }}
+                    <span class="top-toolbar__location-picker-localtime">{{ locationPicker.now | wfFormatDateTime:'HH:mm':key }}</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="top-toolbar__location-picker-menu dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="locationDropdownButton">
+                    <li ng-repeat="(key, location) in locationPicker.locations">
+                        <a class="top-toolbar__location-picker-menuitem" role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">
+                            <span class="top-toolbar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfFormatDateTime:'HH:mm z':key }}</span>
+                            {{ location.title }}
+                        </a>
+                    </li>
+                </ul>
             </div>
 
         </div>
@@ -129,7 +146,7 @@
             <h4>Stubs</h4>
             <div ng-repeat="stub in stubs" class="stub">
                 <ul>
-                <li class="secondary-info">{{stub.due | formatDateTime }}</li>
+                <li class="secondary-info">{{stub.due | wfFormatDateTime }}</li>
                 <li>
                     <span class="glyphicon glyphicon-file" ng-show="stub.contentType==='article'"></span>
                     <span class="glyphicon glyphicon-th-list" ng-show="stub.contentType==='liveblog'"></span>
@@ -179,7 +196,7 @@
                             <td colspan="12" ng-show="contentByStatus[status]" class="status-cell" style="height: 15px;
     padding: 5px;">{{ status }}</td>
                         </tr>
-                        <tr ng-repeat="content in contentByStatus[status]" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content" ng-show="content.status==status">
+                        <tr ng-repeat="content in contentByStatus[status]" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content" ng-show="content.status==status" ng-class="{ 'content-list__item-row--selected': selectedContent === content }">
 
                             <td>
                                 <span class="glyphicon glyphicon-file" ng-show="content.contentType==='article'"></span>
@@ -201,7 +218,7 @@
                             <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a></strong>
                             </td>
                             <td>{{content.assignee}}</td>
-                            <td>{{content.due | formatDateTime }}</td>
+                            <td title="{{content.due | wfFormatDateTime:'long' }}">{{content.due | wfFormatDateTime }}</td>
                             <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
                                 <option ng-repeat="s in statuses">{{ s }}</option>
                             </select></td>
@@ -238,7 +255,9 @@
                 <dl>
                     <dt>Production deadline</dt>
                         <dd>
-                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }">{{ (selectedContent.due | formatDateTimeDetailView) || 'None' }}</span>
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }" title="{{ (selectedContent.due | wfFormatDateTime:'long') || '' }}">
+                                {{ (selectedContent.due | wfFormatDateTime) || 'None' }}
+                            </span>
                             <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
                                 <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated(); dateTimeEdit = false" wf-small="true"></div>
                             </form>
@@ -246,7 +265,9 @@
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
-                        <dd>{{ (selectedContent.lastModified | formatDateTimeDetailView) || "-" }}</dd>
+                        <dd title="{{ (selectedContent.lastModified | wfFormatDateTime:'long') || '-' }}">
+                            {{ (selectedContent.lastModified | wfFormatDateTime) || "-" }}
+                        </dd>
                 </dl>
                 <hr />
 
