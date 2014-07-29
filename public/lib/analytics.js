@@ -9,10 +9,17 @@ angular.module('wfAnalytics', ['wfUser'])
 
   .factory('wfAnalytics', ['wfUser', function(wfUser) {
 
+    function getMixpanelToken() {
+      if (window.location.hostname == 'workflow.gutools.co.uk') {
+        return '8bed1eea7b1ff4e758ae8fbc60968d26';
+      }
+      return '5db5be65ee7d6c82a730a4cbec2465f2';
+    }
+
     class Analytics {
 
       init() {
-        mixpanel.init('5db5be65ee7d6c82a730a4cbec2465f2');
+        mixpanel.init(getMixpanelToken());
         mixpanel.identify(wfUser.email);
         mixpanel.people.set({
           '$email': wfUser.email,
