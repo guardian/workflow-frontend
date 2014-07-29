@@ -12,19 +12,19 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService',
-
-        function($scope, $http, urlParser, statuses, sections, legalStatesService, config, prodOfficeService) {
+        ['$scope','$http', 'statuses', 'sectionsService','legalStatesService', 'config', 'paramsService', 'serverParams', 'filtersService','prodOfficeService',
+         function($scope, $http, statuses, sectionsService, legalStatesService, config, paramsService, serverParams, filtersService, prodOfficeService) {
 
          //initialise the model from the url
-         var initialParams = urlParser.parseUrl;
+
          $scope.filters = {};
-         $scope.selectedStatus = initialParams['status'];
-         $scope.selectedState = initialParams['state'];
-         $scope.selectedSection = initialParams['section'];
-         $scope.selectedProdOffice = initialParams['prodOffice'];
-         $scope.selectedContentType = initialParams['content-type'];
-         $scope.flags = initialParams['flagsModel'] || [];
+         $scope.filters['due.from'] = filtersService.get('dueFrom');
+         $scope.filters['due.until'] = filtersService.get('dueUntil');
+         $scope.selectedStatus = filtersService.get('status');
+         $scope.selectedState = filtersService.get('state');
+         $scope.selectedSection = filtersService.get('section');
+         $scope.selectedContentType = filtersService.get('content-type');
+         $scope.flags = filtersService.get('flags');
 
         var getContent = function(evt, params) {
             var params = buildContentParams();
@@ -32,7 +32,7 @@ define([
                 $scope.contentItems = response.content;
                 $scope.stubs = response.stubs;
                 $scope.contentByStatus = groupByStatus(response.content);
-                urlParser.setUrl(params);
+                serverParams.updateParams(params);
             });
         };
 
