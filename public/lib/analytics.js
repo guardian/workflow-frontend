@@ -43,17 +43,42 @@ angular.module('wfAnalytics', ['wfUser'])
   }])
 
   // Initialise and attach event listeners on load (run)
-  .run(['wfAnalytics', function(wfAnalytics) {
+  .run(['$rootScope', 'wfAnalytics', function($rootScope, wfAnalytics) {
 
     wfAnalytics.init();
 
     wfAnalytics.track('Dashboard loaded');
 
+    // Track Stub created
+    $rootScope.$on('stub.created', function(event, data) {
+      wfAnalytics.track('Stub created', {
+        'Section': data.section,
+        'Content type': data.contentType,
+        'Created in Composer': !!data.composerId
+      });
+    });
+
+    // Track stub edited
+    $rootScope.$on('stub.edited', function(event, data) {
+      wfAnalytics.track('Stub edited', {
+        'Section': data.section,
+        'Content type': data.contentType
+      });
+    });
+
+    // Track stub/content status change
+    $rootScope.$on('content.status.changed', function(event, data) {
+      wfAnalytics.track('Status changed', {
+        'Section': data.content.section,
+        'Content type': data.content.contentType,
+        'Status transition': data.oldStatus + ' to ' + data.status
+      });
+    });
+
     // TODO Things to track:
-    //  Stub created
+    //  Import from Composer
     //  Content edited
-    //  Status changed
-    //    Stub->Writers
+    //  Content / Stub deleted
     //  View in Composer
     //  Content list filtered
 
