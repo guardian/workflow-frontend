@@ -23,9 +23,9 @@ define([
     }
 
     dashboardControllers.controller('DateFilterCtrl',
-        ['$scope','$location', 'urlParser', function($scope, $location, urlParser) {
+        ['$scope','$location', 'paramsService', 'filtersService', function($scope, $location, paramsService, filtersService) {
         $scope.dateOptions = mkDateOptions();
-        var selectedDate = urlParser.parseUrl['selectedDateModel'];
+        var selectedDate = filtersService.get('selectedDate');
 
         // ensure that the date from the URL is the same object as the
         // one used in the Select drop-down, as its compared with ===
@@ -36,6 +36,7 @@ define([
         });
 
         $scope.selectedDate = selectedDate;
+
 
         var updateDateFilters = function (date){
                 if (typeof date == 'undefined') {
@@ -64,7 +65,8 @@ define([
 
             $scope.$emit('changedFilters');
          };
-            updateDateFilters($scope.selectedDate);
+
+         //updateDateFilters($scope.selectedDate);
 
         $scope.$watch('selectedDate', function(date) {
             updateDateFilters(date);
