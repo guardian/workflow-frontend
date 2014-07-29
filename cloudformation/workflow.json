@@ -26,7 +26,7 @@
         "ImageIdEBSStorage": {
             "Description": "AMI id for instances with ebs storage.",
             "Type": "String",
-            "Default": "ami-cb4986bc"
+            "Default": "ami-096cbd7e"
         },
         "FCMetadataTopic": {
             "Description": "ARN of the topic for Flexible Content metadata events",
@@ -372,11 +372,11 @@
                                 ]]},
                                 "authentication": "distributionAuthentication"
                             },
-                            "/home/workflow/app.jar": {
+                            "/home/workflow/prole.zip": {
                                 "source": { "Fn::Join" : ["", [
                                     "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
                                     { "Ref": "Stage" },
-                                    "/prole/app.jar"
+                                    "/prole/prole.zip"
                                 ]]},
                                 "authentication": "distributionAuthentication"
                             }
@@ -409,6 +409,8 @@
                         "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r ProleLaunchConfig ",
                         "  --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
 
+                        "unzip -d /home/workflow /home/workflow/prole.zip\n",
+                        
                         "mkdir /home/workflow/logs\n",
 
                         "chown -R workflow /home/workflow\n",
