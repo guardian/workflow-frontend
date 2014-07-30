@@ -15,6 +15,12 @@ angular.module('filtersService', ['urlService'])
                 else return [];
             }
 
+            arrayToString(value) {
+                if(value.length > 0){
+                   return value.toString
+                }
+            }
+
             stringToDate(value) {
                 if (moment(value, ["DD-MM-YYYY"]).isValid()){
                     return moment(value, ["DD-MM-YYYY"]);
@@ -46,8 +52,17 @@ angular.module('filtersService', ['urlService'])
             }
 
 
-            getParams() {
-                return this.filters;
+            toServerParams() {
+                var params = {};
+                params.status = this.filters['status'];
+                params.state = this.filters['state'];
+                params.section = this.filters['section'];
+                params["content-type"] = this.filters["content-type"];
+                params['due.from'] = this.filters['due.from'];
+                params['due.until'] = this.filters['due.until'];
+                params.flags = this.filters['flags'];
+                return params;
+
             }
 
             update(key, value) {
