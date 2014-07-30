@@ -168,7 +168,7 @@ define([
                             //   stubs with ids are being edited and not new
                             var eventName = (stub.id) ? 'stub.edited' : 'stub.created';
 
-                            $scope.$emit(eventName, newStub);
+                            $scope.$emit(eventName, { 'content': newStub });
 
                             $scope.$emit('getContent');
                         });
