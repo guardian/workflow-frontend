@@ -21,12 +21,12 @@
         "ImageIdInstanceStorage": {
             "Description": "AMI id for instances with instance storage.",
             "Type": "String",
-            "Default": "ami-14907e63"
+            "Default": "ami-3b69b84c"
         },
         "ImageIdEBSStorage": {
             "Description": "AMI id for instances with ebs storage.",
             "Type": "String",
-            "Default": "ami-cb4986bc"
+            "Default": "ami-fd6cbd8a"
         },
         "FCMetadataTopic": {
             "Description": "ARN of the topic for Flexible Content metadata events",
@@ -280,11 +280,11 @@
                       ]]},
                       "authentication": "distributionAuthentication"
                     },
-                    "/home/workflow/app.jar": {
+                    "/home/workflow/prototype.zip": {
                       "source": { "Fn::Join" : ["", [
                         "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
                         { "Ref": "Stage" },
-                        "/prototype/app.jar"
+                        "/prototype/prototype.zip"
                       ]]},
                       "authentication": "distributionAuthentication"
                     },
@@ -303,7 +303,7 @@
                     { "Ref": "AppServerSecurityGroup" },
                     { "Ref": "SSHSecurityGroup" }
                 ],
-                "InstanceType": "m1.small",
+                "InstanceType": "m3.medium",
                 "IamInstanceProfile": {"Ref": "DistributionInstanceProfile"},
                 "UserData": { "Fn::Base64": {
                     "Fn::Join":["", [
@@ -320,6 +320,8 @@
 
                         "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r PrototypeLaunchConfig ",
                         "  --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+
+                        "unzip -d /home/workflow /home/workflow/prototype.zip\n",
 
                         "mkdir /home/workflow/logs\n",
 
@@ -370,11 +372,11 @@
                                 ]]},
                                 "authentication": "distributionAuthentication"
                             },
-                            "/home/workflow/app.jar": {
+                            "/home/workflow/prole.zip": {
                                 "source": { "Fn::Join" : ["", [
                                     "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
                                     { "Ref": "Stage" },
-                                    "/prole/app.jar"
+                                    "/prole/prole.zip"
                                 ]]},
                                 "authentication": "distributionAuthentication"
                             }
@@ -389,7 +391,7 @@
                     { "Ref": "AppServerSecurityGroup" },
                     { "Ref": "SSHSecurityGroup" }
                 ],
-                "InstanceType": "t1.micro",
+                "InstanceType": "t2.micro",
                 "IamInstanceProfile": {"Ref": "DistributionInstanceProfile"},
                 "UserData": { "Fn::Base64": {
                     "Fn::Join":["", [
@@ -406,6 +408,8 @@
 
                         "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r ProleLaunchConfig ",
                         "  --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+
+                        "unzip -d /home/workflow /home/workflow/prole.zip\n",
 
                         "mkdir /home/workflow/logs\n",
 

@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
-
+import play.api.libs.functional.syntax._
 
 case class Stub(id: Option[Long],
                 title: String,
@@ -16,11 +16,20 @@ case class Stub(id: Option[Long],
                 contentType: Option[String],
                 priority: Int,
                 needsLegal: Flag,
-                note: Option[String])
+                note: Option[String],
+                prodOffice: String)
 
 object Stub {
+  // validation requirements for individual fields
+  val prodOfficeReads = Reads.maxLength[String](20)
+  val noteReads       = Reads.maxLength[String](500)
+
   implicit val dateTimeFormat = DateFormat
-  implicit val stubReads: Reads[Stub] = Json.reads[Stub]
+  implicit val stubReads: Reads[Stub] =
+    (__ \ "prodOffice").read(prodOfficeReads) andKeep
+      (__ \ "note").readNullable(noteReads) andKeep
+      Json.reads[Stub]
+
   implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
 
   object DateFormat extends Format[DateTime] {

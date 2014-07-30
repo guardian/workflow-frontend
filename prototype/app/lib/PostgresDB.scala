@@ -25,7 +25,8 @@ object PostgresDB {
                   status:      Option[Status]   = None,
                   contentType: Option[String]   = None,
                   published:   Option[Boolean]  = None,
-                  flags:       Seq[String]      = Nil
+                  flags:       Seq[String]      = Nil,
+                  prodOffice:  Option[String]   = None
                   ): List[DashboardRow] =
     DB.withTransaction { implicit session =>
 
@@ -36,7 +37,8 @@ object PostgresDB {
           } |>
           dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
           dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) }
+          section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
+          prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
 
       val contentQuery =
         content |>
@@ -48,13 +50,13 @@ object PostgresDB {
         s <- stubsQuery
         c <- contentQuery if s.composerId === c.composerId
       } yield (s, c)
-      
+
       query.filter( {case (s, c) => dueDateNotExpired(s.due) })
            .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
-            case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note) ,
+            case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice) ,
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
               DashboardRow(
-                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note),
+                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice),
                 WorkflowContent(
                   composerId,
                   path,
@@ -83,7 +85,7 @@ object PostgresDB {
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, Flag.NotRequired, stub.note))
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, Flag.NotRequired, stub.note, stub.prodOffice))
     }
 
 
@@ -94,8 +96,8 @@ object PostgresDB {
 
       stubs
         .filter(_.pk === id)
-        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType, s.priority))
-        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority))
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType, s.priority, s.prodOffice))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, stub.prodOffice))
     }
   }
 
@@ -129,12 +131,22 @@ object PostgresDB {
     }
   }
 
-  def updateStubNote(id: Long, note: Option[String]): Int = {
+  def updateStubNote(id: Long, input: String): Int = {
+    val note: Option[String] = if(input.length > 0) Some(input) else None
     DB.withTransaction { implicit session =>
       stubs
         .filter(_.pk === id)
         .map(s => s.note)
         .update(note)
+    }
+  }
+
+  def updateStubProdOffice(id: Long, prodOffice: String): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.prodOffice)
+        .update(prodOffice)
     }
   }
 
