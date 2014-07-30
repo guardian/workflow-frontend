@@ -90,8 +90,16 @@ angular.module('wfAnalytics', ['wfUser'])
       });
     });
 
+    // Track content when its edited
+    $rootScope.$on('content.edited', function(event, data) {
+      wfAnalytics.track('Content edited', {
+        'Section': data.content.section,
+        'Content type': data.content.contentType,
+        'Field': data.field
+      });
+    });
+
     // TODO Things to track:
-    //  Content edited
     //  Content / Stub deleted
     //  View in Composer
     //  Content list filtered
