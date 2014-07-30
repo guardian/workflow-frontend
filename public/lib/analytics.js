@@ -73,6 +73,14 @@ angular.module('wfAnalytics', ['wfUser'])
       });
     });
 
+    // Track deletion of stubs
+    $rootScope.$on('stub.deleted', function(event, data) {
+      wfAnalytics.track('Stub deleted', {
+        'Section': data.content.section,
+        'Content type': data.content.contentType
+      });
+    });
+
     // Track stub/content status change
     $rootScope.$on('content.status.changed', function(event, data) {
       wfAnalytics.track('Status changed', {
@@ -99,8 +107,15 @@ angular.module('wfAnalytics', ['wfUser'])
       });
     });
 
+    // Track deletion of content
+    $rootScope.$on('content.deleted', function(event, data) {
+      wfAnalytics.track('Content deleted', {
+        'Section': data.content.section,
+        'Content type': data.content.contentType
+      });
+    });
+
     // TODO Things to track:
-    //  Content / Stub deleted
     //  View in Composer
     //  Content list filtered
 

@@ -150,7 +150,10 @@ define([
                 $http({
                     method: 'DELETE',
                     url: 'api/content/' + content.composerId
-                }).success(function(){getContent();})
+                }).success(function(){
+                  $scope.$emit('content.deleted', { 'content': content });
+                  getContent();
+                });
             };
         }
 
@@ -177,7 +180,10 @@ define([
                 $http({
                     method: 'DELETE',
                     url: '/api/stubs/' + stub.id
-                }).success(getContent());
+                }).success(function() {
+                  $scope.$emit('stub.deleted', { 'content': stub });
+                  getContent();
+                });
             }
         };
 
