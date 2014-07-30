@@ -19,7 +19,7 @@ define([
 
     // stub create and edit
 
-    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService) {
+    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService, prodOfficeService) {
 
         $scope.stub = stub;
 
@@ -59,6 +59,7 @@ define([
 
         $scope.sections = sections;
         $scope.legalStates = legalStatesService.getLegalStates();
+        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.ok = function (addToComposer) {
             delete $scope.stub.dueText;
@@ -85,7 +86,8 @@ define([
         '$http',
         '$q',
         'config',
-        function($scope, $modal, $http, $q, config){
+        'prodOfficeService',
+        function($scope, $modal, $http, $q, config, prodOffice){
 
             var composerNewContent = config['composerNewContent'];
 
@@ -98,7 +100,8 @@ define([
                     contentType: contentType || 'article',
                     section: $scope.selectedSection,
                     priority: 0,
-                    needsLegal: 'NA'
+                    needsLegal: 'NA',
+                    prodOffice: prodOffice.getDefaultOffice()
                 };
                 open(stub);
             });
@@ -178,6 +181,8 @@ define([
 
         $scope.stub = stub;
 
+        $scope.prodOffices = prodOfficeService.getProdOffices();
+
         $scope.formData = {};
 
         $scope.disabled = $scope.stub.composerId !== undefined;
@@ -251,11 +256,13 @@ define([
         '$http',
         '$q',
         'config',
-        function($scope, $modal, $http, $q, config){
+        'prodOfficeService'
+        function($scope, $modal, $http, $q, config, prodOfficeService){
 
             $scope.$on('composerImport', function(event) {
                 var stub = {
                     section: $scope.selectedSection,
+                    prodOffice: prodOfficeService.getDefaultOffice(),
                     priority: 0,
                     needsLegal: 'NA'
                 };

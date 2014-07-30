@@ -85,7 +85,7 @@ object Admin extends Controller with AuthActions {
     }
   }
 
-  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[SimpleResult]) = Action.async { implicit request =>
+  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[Result]) = Action.async { implicit request =>
     statusForm.bindFromRequest.fold(
       formWithErrors => {
         Future.successful(BadRequest(error))
