@@ -41,7 +41,6 @@ define(['angular'], function(angular) {
 
             $rootScope.$on('location:change', function(ev, newValue, oldValue) {
                 curDefaultOffice = officeToTimezone(newValue);
-                console.log("location:change: " + prodOffices.getDefaultOffice());
             })
 
             return prodOffices;
