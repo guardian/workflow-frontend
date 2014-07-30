@@ -34,12 +34,51 @@ Development prerequisites
 Running the application
 -----------------------
 
-This is a Play! application, so you can run it thus:
+### Nginx
+
+To run correctly in standalone mode we run behind nginx, This can be installed as follows (you may have done
+this already if you work with identity, r2 or similar):
+
+1. Install nginx:
+  * *Linux:*   ```sudo apt-get install nginx```
+  * *Mac OSX:* ```brew install nginx```
+
+2. Make sure you have a sites-enabled folder under your nginx home. This should be
+  * *Linux:* ```/etc/nginx/sites-enabled```
+  * *Mac OSX:* ```/usr/local/etc/nginx/```
+
+3. Make sure your nginx.conf (found in your nginx home) contains the following line in the http{} block:
+`include sites-enabled/*;`
+  * you may also want to disable the default server on 8080
+
+4. Run:
+
+    ./nginx/setup.sh
+
+
+You will also need to add the entries in /nginx/hosts into the hosts file on your computer.
+
+### the apps
+
+There are 2 Play! applications, so you can run prototype thus:
 
     $ sbt
-    $ run [optional port number - default 9000]
+    $ project prototype
+    $ run [optional port number - default 9090]
 
-This will run the application in development mode, so it automatically recompiles any changes when you make a request.
+and prole thus:
+
+    $ sbt
+    $ project prole
+    $ run [optional port number - default 9091]
+
+you will also need to kick prole into life by hitting ```http://localhost:9091/management/healthcheck``` - this forces
+play to compile and start the app.
+
+There are also hand start scripts in the project root that will, erm, start things for you
+
+These will run the applications in development mode, so it automatically recompiles any changes when you make a request.
+You can access your running workflow dashboard on ```https://workflow.local.dev-gutools.co.uk/```
 
 Debugging in the cloud
 ----------------------

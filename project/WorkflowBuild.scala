@@ -30,13 +30,14 @@ object WorkflowBuild extends Build {
 
   lazy val prole = playProject("prole")
                   .settings(libraryDependencies ++= awsDependencies ++ testDependencies)
+                  .settings(playDefaultPort := 9091)
 
   lazy val root = playProject("prototype")
     .settings(
       libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies ++ googleOAuthDependencies,
       requireJs += "main.js",
       requireJsShim += "main.js"
-    )
+    ).settings(playDefaultPort := 9090)
 
   def project(path: String): Project =
     Project(path, file(path)).settings(commonSettings: _*)

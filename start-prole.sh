@@ -1,1 +1,1 @@
-sbt "project prole" "run 9001" 
+sbt "project prole" "run"
