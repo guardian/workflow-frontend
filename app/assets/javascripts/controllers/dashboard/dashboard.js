@@ -105,6 +105,8 @@ define([
                 method: 'PUT',
                 url: '/api/stubs/' + stubId + '/' + field,
                 data: {data: data}
+            }).success(function() {
+                $scope.$emit('content.edited', { 'content': $scope.selectedContent, 'field': field });
             });
         }
 
@@ -134,6 +136,8 @@ define([
                 method: 'PUT',
                 url: '/api/stubs/' + content.stubId + '/dueDate',
                 data: requestData || {}
+            }).success(function() {
+                $scope.$emit('content.edited', { 'content': content, 'field': 'dueDate' });
             });
         };
 
