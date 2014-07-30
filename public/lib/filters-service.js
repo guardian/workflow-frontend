@@ -22,6 +22,15 @@ angular.module('filtersService', ['urlService'])
                 else return value;
             }
 
+            dateToString(value) {
+                if(typeof value == 'object') {
+                    return moment(value).format("DD-MM-YYYY");
+                }
+                else return value;
+            }
+
+
+
             constructor() {
                 this.filters = {};
                 this.filters['status'] = urlService.get('status');
@@ -32,8 +41,39 @@ angular.module('filtersService', ['urlService'])
                 var dateToEndpoint = this.dateToEndpoints(date);
                 this.filters['selectedDate'] = this.stringToDate(urlService.get('selectedDate'));
                 this.filters['flags'] = this.stringToArray(urlService.get('flags'));
-                this.filters['dueFrom'] = dateToEndpoint['dueFrom'];
-                this.filters['dueUntil'] = dateToEndpoint['dueUntil'];
+                this.filters['due.from'] = dateToEndpoint['dueFrom'];
+                this.filters['due.until'] = dateToEndpoint['dueUntil'];
+            }
+
+
+            getParams() {
+                return this.filters;
+            }
+
+            update(key, value) {
+                this.filters[key] = value;
+                urlService.set(key,value);
+            }
+
+            updateDate(date) {
+                this.filters['selectedDate'] = this.dateToString(date);
+                var dateToEndpoint = this.dateToEndpoints(date);
+                this.filters['due.from'] = dateToEndpoint['dueFrom'];
+                this.filters['due.until'] = dateToEndpoint['dueUntil'];
+                urlService.set('selectedDate',this.dateToString(date));
+            }
+
+            formatDateForUri(date) {
+                return moment(date).format("YYYY-MM-DDTHH:mm:ssZ");
+            }
+
+            mkDateOptions() {
+                var choices = [];
+                var today = moment().startOf('day');
+                for (var i = 0; i < 6; i++) {
+                    choices.push(today.clone().add('days', i));
+                }
+                return choices;
             }
 
             dateToEndpoints(date) {
@@ -54,8 +94,8 @@ angular.module('filtersService', ['urlService'])
                     data['dueUntil'] = moment().day(7).startOf('day').add('days', 1);
                 }
                 else if (typeof date == 'object') {
-                    data['dueFrom'] = date;
-                    data['dueUntil'] = date.clone().add('days', 1);
+                    data['dueFrom'] = date && this.formatDateForUri(date);
+                    data['dueUntil'] = date.clone().add('days', 1) && this.formatDateForUri(date);
                 }
 
                 return data;
