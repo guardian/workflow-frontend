@@ -12,9 +12,9 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'urlParser', 'statuses', 'sections', 'legalStatesService', 'config',
-         function($scope, $http, urlParser, statuses, sections, legalStatesService, config) {
+        ['$scope','$http', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService',
 
+        function($scope, $http, urlParser, statuses, sections, legalStatesService, config, prodOfficeService) {
 
          //initialise the model from the url
          var initialParams = urlParser.parseUrl;
@@ -22,6 +22,7 @@ define([
          $scope.selectedStatus = initialParams['status'];
          $scope.selectedState = initialParams['state'];
          $scope.selectedSection = initialParams['section'];
+         $scope.selectedProdOffice = initialParams['prodOffice'];
          $scope.selectedContentType = initialParams['content-type'];
          $scope.flags = initialParams['flagsModel'] || [];
 
@@ -39,9 +40,12 @@ define([
         $scope.$on('changedFilters', getContent);
         $scope.$watch('selectedContentType', getContent);
         $scope.$watch('selectedSection', getContent);
+        $scope.$watch('selectedProdOffice', getContent);
 
         $scope.sections = sections;
         $scope.legalStates = legalStatesService.getLegalStates();
+
+        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.statuses = statuses;
 
@@ -52,6 +56,7 @@ define([
             params["content-type"] = $scope.selectedContentType;
             params.status = $scope.selectedStatus;
             params.flags = $scope.flags;
+            params.prodOffice = $scope.selectedProdOffice;
             return params;
         };
 
@@ -114,6 +119,10 @@ define([
         $scope.updateNote = function(stubId, note) {
             if(note.length > config.maxNoteLength) return "Note too long";
             updateStubField(stubId, "note", note);
+        };
+
+        $scope.updateProdOffice = function(stubId, prodOffice) {
+            updateStubField(stubId, "prodOffice", prodOffice);
         };
 
         $scope.dueDateUpdated = function() {

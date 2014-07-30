@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.mvc.{AnyContent, SimpleResult, Controller}
+import play.api.mvc.{AnyContent, Result, Controller}
 import play.api.libs.json._
 
 import lib.Responses._
@@ -25,6 +25,7 @@ object Api extends Controller with AuthActions {
     val section = req.getQueryString("section").map(Section(_))
     val contentType = req.getQueryString("content-type")
     val flags = req.queryString.get("flags") getOrElse Nil
+    val prodOffice = req.getQueryString("prodOffice")
 
     val content = PostgresDB.getContent(
       section = req.getQueryString("section").map(Section(_)),
@@ -33,7 +34,8 @@ object Api extends Controller with AuthActions {
       status = req.getQueryString("status").flatMap(StatusDatabase.find),
       contentType = contentType,
       published = req.getQueryString("state").map(_ == "published"),
-      flags = flags
+      flags = flags,
+      prodOffice = prodOffice
     )
 
     val stubs = CommonDB.getStubs(
@@ -41,7 +43,8 @@ object Api extends Controller with AuthActions {
                   dueUntil = dueUntil,
                   section = section,
                   contentType = contentType,
-                  unlinkedOnly = true)
+                  unlinkedOnly = true,
+                  prodOffice = prodOffice)
 
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
@@ -104,17 +107,22 @@ object Api extends Controller with AuthActions {
 
   def putStubNote(stubId: Long) = AuthAction { implicit request =>
     (for {
-      jsValue <- readJsonFromRequest(request.body).right
-    } yield {
-        // treat empty input as removing the optional note
-        val note = (jsValue \ "data").asOpt[String].filter(_.length > 0)
-        if (!note.isEmpty && note.get.length > STUB_NOTE_MAXLEN)
-          BadRequest("Note too long")
-        else {
-          PostgresDB.updateStubNote(stubId, note)
-          NoContent
-        }
-    }).merge
+       jsValue <- readJsonFromRequest(request.body).right
+       note    <- extract[String](jsValue \ "data")(Stub.noteReads).right
+     } yield {
+       PostgresDB.updateStubNote(stubId, note)
+       NoContent
+     }).merge
+  }
+
+  def putStubProdOffice(stubId: Long) = AuthAction { implicit request =>
+    (for {
+       jsValue    <- readJsonFromRequest(request.body).right
+       prodOffice <- extract[String](jsValue \ "data")(Stub.prodOfficeReads).right
+     } yield {
+       PostgresDB.updateStubProdOffice(stubId, prodOffice)
+       NoContent
+     }).merge
   }
 
   def putContentStatus(composerId: String) = AuthAction { implicit request =>
@@ -164,14 +172,26 @@ object Api extends Controller with AuthActions {
     Ok(Json.obj("data" -> sectionList))
   }
 
-  private def readJsonFromRequest(requestBody: AnyContent): Either[SimpleResult, JsValue] = {
+  private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
     requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
   }
 
-  private def extract[A: Reads](jsValue: JsValue): Either[SimpleResult, A] = {
+  /* JsError's may contain a number of different errors for differnt
+   * paths. This will aggregate them into a single string */
+  private def errorMsgs(error: JsError) =
+    (for((path, msgs) <- error.errors; msg <- msgs)
+     yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
+
+  /* the lone colon in the type paramater makes this a 'context'
+   * variance type parameter, which causes the compiler to implicitly
+   * add a second implict argument set which provides takes a
+   * Reads[A] */
+  private def extract[A: Reads](jsValue: JsValue): Either[Result, A] = {
     jsValue.validate[A] match {
       case JsSuccess(a, _) => Right(a)
-      case error @ JsError(_) => Left(BadRequest(s"failed to parse the json ${error}"))
+      case error @ JsError(_) =>
+        val errMsg = errorMsgs(error)
+        Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
     }
   }
 }
