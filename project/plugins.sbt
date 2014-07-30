@@ -14,3 +14,5 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "0.6.2")
 addSbtPlugin("com.gu" % "sbt-version-info-plugin" % "2.8")
 
 addSbtPlugin("com.gu" % "sbt-teamcity-test-reporting-plugin" % "1.5")
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % "1.0.0")
