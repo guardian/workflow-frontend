@@ -28,7 +28,7 @@ define([
 				 $scope.selectedProdOffice = filtersService.get('prodOffice');
 
         var getContent = function(evt, params) {
-            var params = filtersService.getParams();
+            var params = filtersService.toServerParams();
             $http.get('/api/content', {params: params}).success(function(response){
                 $scope.contentItems = response.content;
                 $scope.stubs = response.stubs;
