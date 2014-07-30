@@ -19,7 +19,8 @@ object CommonDB {
     section:  Option[Section] = None,
     composerId: Set[String] = Set.empty,
     contentType: Option[String] = None,
-    unlinkedOnly: Boolean = false
+    unlinkedOnly: Boolean = false,
+    prodOffice: Option[String] = None
   ): List[Stub] =
     DB.withTransaction { implicit session =>
 
@@ -31,11 +32,13 @@ object CommonDB {
           dueUntil.foldl[StubQuery]    ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
           section.foldl[StubQuery]     { case (q, Section(s))  => q.filter(_.section === s) } |>
           contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
-          cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids))
+          cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids)) |>
+          prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
+
       q.filter(s => dueDateNotExpired(s.due))
         .sortBy(s => (s.priority.desc, s.due.desc)).list.map {
-            case (pk, title, section, due, assignee, composerId, contentType, priority, needsLegal, note) =>
-         Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal, note)
+            case (pk, title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice) =>
+         Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice)
       }
     }
 
