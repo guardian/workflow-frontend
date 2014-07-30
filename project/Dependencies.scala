@@ -1,20 +1,21 @@
 import sbt._
-import play.Keys.jdbc
+import play.Play.autoImport._
+import PlayKeys._
 
 object Dependencies {
 
   val databaseDependencies = Seq(
     jdbc,
-    "com.typesafe.play" %% "play-slick" % "0.6.0.1",
+    "com.typesafe.play" %% "play-slick" % "0.7.0",
     "com.github.tototoshi" %% "slick-joda-mapper" % "1.1.0",
     "org.postgresql" % "postgresql" % "9.3-1100-jdbc4"
   )
 
   val awsDependencies = Seq("com.amazonaws" % "aws-java-sdk" % "1.7.5")
 
-  val akkaDependencies = Seq("com.typesafe.akka" %% "akka-agent" % "2.2.0")
+  val akkaDependencies = Seq("com.typesafe.akka" %% "akka-agent" % "2.3.4")
 
-  val googleOAuthDependencies = Seq("com.gu" %% "play-googleauth" % "0.0.3")
+  val googleOAuthDependencies = Seq("com.gu" %% "play-googleauth" % "0.1.4")
 
   val testDependencies = Seq("org.scalatest" %% "scalatest" % "2.1.5" % "test")
 
