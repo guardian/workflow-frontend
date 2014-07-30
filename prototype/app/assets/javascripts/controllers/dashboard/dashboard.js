@@ -18,29 +18,38 @@ define([
          //initialise the model from the url
 
          $scope.filters = {};
-         $scope.filters['due.from'] = filtersService.get('dueFrom');
-         $scope.filters['due.until'] = filtersService.get('dueUntil');
+         $scope.filters['due.from'] = filtersService.get('due.from');
+         $scope.filters['due.until'] = filtersService.get('due.until');
          $scope.selectedStatus = filtersService.get('status');
          $scope.selectedState = filtersService.get('state');
          $scope.selectedSection = filtersService.get('section');
          $scope.selectedContentType = filtersService.get('content-type');
          $scope.flags = filtersService.get('flags');
+				 $scope.selectedProdOffice = filtersService.get('prodOffice');
 
         var getContent = function(evt, params) {
-            var params = buildContentParams();
+            var params = filtersService.getParams();
             $http.get('/api/content', {params: params}).success(function(response){
                 $scope.contentItems = response.content;
                 $scope.stubs = response.stubs;
                 $scope.contentByStatus = groupByStatus(response.content);
-                serverParams.updateParams(params);
             });
         };
 
         $scope.$on('getContent', getContent);
         $scope.$on('changedFilters', getContent);
-        $scope.$watch('selectedContentType', getContent);
-        $scope.$watch('selectedSection', getContent);
-        $scope.$watch('selectedProdOffice', getContent);
+        $scope.$watch('selectedProdOffice', function(){
+						filtersService.update('prodOffice, $scope.selectedProdOffice);
+						getContent();
+				});
+        $scope.$watch('selectedContentType', function(){
+            filtersService.update('content-type', $scope.selectedContentType);
+            getContent();
+        });
+        $scope.$watch('selectedSection', function(){
+            filtersService.update('section', $scope.selectedSection);
+            getContent();
+        });
 
         $scope.sections = sections;
         $scope.legalStates = legalStatesService.getLegalStates();
@@ -49,6 +58,7 @@ define([
 
         $scope.statuses = statuses;
 
+<<<<<<< HEAD
         function buildContentParams() {
             var params = angular.copy($scope.filters);
             params.state = $scope.selectedState;
@@ -60,6 +70,8 @@ define([
             return params;
         };
 
+=======
+>>>>>>> 457f649... maintain state at the filters service
         function groupByStatus(data) {
             return _.groupBy(data, function(x){ return x.status; });
         }
@@ -71,6 +83,7 @@ define([
         };
         $scope.selectState = function(state) {
             $scope.selectedState = state;
+            filtersService.update('state', state);
             getContent();
         };
 
@@ -80,6 +93,7 @@ define([
 
         $scope.selectStatus = function(status) {
             $scope.selectedStatus = status;
+            filtersService.update('status', status);
             getContent();
         };
 
@@ -93,6 +107,10 @@ define([
             } else {
                 $scope.flags = $scope.flags.filter( function(e) { return e !== flag });
             }
+<<<<<<< HEAD
+=======
+            filtersService.update('flags', $scope.flags);
+>>>>>>> 457f649... maintain state at the filters service
             getContent();
         };
 
