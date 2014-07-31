@@ -50,7 +50,7 @@ System.config({
     "github:vitalets/angular-xeditable": "0.1.8",
     "github:jashkenas/underscore": "1.6.0",
     "npm:sugar": "1.4.1",
-    "github:moment/moment": "2.7.0",
+    "github:moment/moment": "2.8.0",
     "github:angular/bower-angular": "1.2.20",
     "github:jspm/nodelibs": "0.0.2",
     "npm:base64-js": "0.0.4",
