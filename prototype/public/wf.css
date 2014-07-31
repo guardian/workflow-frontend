@@ -218,15 +218,6 @@ h5.query {
 }
 
 
- /* Header bar */
-
-.header-bar {
-	height: 40px;
-	padding: 3px;
-	background-color: #adadad;
-
-}
-
 .date-filter__label{
   padding-right: 5px;
 }
@@ -252,15 +243,20 @@ h5.query {
  */
 .top-toolbar {
   display: flex;
+  height: 40px;
+  padding: 3px 0;
+  background-color: #adadad;
 }
 
 
 .top-toolbar__prod-office {
   width: 160px;
+  padding: 0 10px;
 }
 
 .top-toolbar__section-selector {
   width: 200px;
+  padding: 0 10px;
 }
 
 .top-toolbar__due-by-filter {
