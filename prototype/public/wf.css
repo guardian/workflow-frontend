@@ -89,6 +89,10 @@ z-index: 100;
   margin: 10px;
 }
 
+.stubs-column__new-stub-cta-label {
+  margin-left: 10px;
+}
+
 .stub ul {
     list-style-type: none;
     padding-left: 10px;
