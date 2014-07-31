@@ -247,6 +247,10 @@ h5.query {
   background-color: #adadad;
 }
 
+/* @override bootstrap */
+.top-toolbar .input-sm {
+  height: 34px;
+}
 
 .top-toolbar__prod-office {
   width: 160px;
