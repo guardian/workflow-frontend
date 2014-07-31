@@ -46,7 +46,10 @@ angular.module('filtersService', ['urlService'])
                 var date = urlService.get('selectedDate');
                 var dateToEndpoint = this.dateToEndpoints(date);
                 this.filters['selectedDate'] = this.stringToDate(urlService.get('selectedDate'));
-                this.filters['flags'] = this.stringToArray(urlService.get('flags'));
+                var tmp = this.stringToArray(urlService.get('flags'));
+                this.filters['flags'] = tmp;
+                console.log(tmp);
+                console.log(typeof tmp);
                 this.filters['due.from'] = dateToEndpoint['dueFrom'];
                 this.filters['due.until'] = dateToEndpoint['dueUntil'];
             }
