@@ -79,6 +79,15 @@ overflow: auto;
     border-bottom : 2px solid #eee;
 }
 
+.stubs-column__new-stub-wrapper {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+}
+
+.stubs-column__new-stub-cta {
+  margin: 10px;
+}
+
 .stub ul {
     list-style-type: none;
     padding-left: 10px;
@@ -246,7 +255,7 @@ h5.query {
 }
 
 
-.top-toolbar__new-stub {
+.top-toolbar__prod-office {
   width: 160px;
 }
 
