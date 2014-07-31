@@ -98,7 +98,7 @@ define([
             $scope.$on('newStub', function(event, contentType) {
                 var stub = {
                     contentType: contentType || 'article',
-                    section: $scope.selectedSection,
+                    section: $scope.selectedSection || 'Technology',
                     priority: 0,
                     needsLegal: 'NA',
                     prodOffice: prodOffice.getDefaultOffice()
@@ -177,11 +177,9 @@ define([
     // composer import control
     // stub create and edit
 
-    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sections, legalStatesService, composerService, stub) {
+     var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sections, legalStatesService, composerService, stub) {
 
         $scope.stub = stub;
-
-        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.formData = {};
 
@@ -256,12 +254,12 @@ define([
         '$http',
         '$q',
         'config',
-        'prodOfficeService'
+        'prodOfficeService',
         function($scope, $modal, $http, $q, config, prodOfficeService){
 
             $scope.$on('composerImport', function(event) {
                 var stub = {
-                    section: $scope.selectedSection,
+                    section: $scope.selectedSection || 'Technology',
                     prodOffice: prodOfficeService.getDefaultOffice(),
                     priority: 0,
                     needsLegal: 'NA'
