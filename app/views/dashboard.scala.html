@@ -10,10 +10,10 @@
             <div class="top-toolbar__prod-office">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label class="col-sm-3 control-label" for="prodOffice_dropdown">Office</label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label" for="prodOffice_dropdown">Office</label>
+                        <div class="col-sm-8">
                             <select class="form-control" id="prodOffice_dropdown" class="form-control" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
-                                <option value="">(All offices)</option>
+                                <option value="">(All)</option>
                             </select>
                         </div>
                     </div>
@@ -22,8 +22,8 @@
             <div class="top-toolbar__section-selector">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label for="section_dropdown" class="col-sm-3 control-label">Section</label>
-                        <div class="col-sm-9">
+                        <label for="section_dropdown" class="col-sm-4 control-label">Section</label>
+                        <div class="col-sm-8">
                             <select id="section_dropdown" class="form-control" ng-model="selectedSection" ng-options="s for s in sections">
                                 <option value="">(All sections)</option>
                             </select>
