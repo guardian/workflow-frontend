@@ -6,24 +6,8 @@
 
 <div class="container-fluid top-control">
     <div class="top-toolbar row header-bar">
-            <div class="top-toolbar__new-stub">
-                <div class="btn-group" ng-controller="NewStubDropdownCtrl" dropdown>
-                    <button type="button" class="btn btn-default" ng-click="newStub()">New Stub</button>
-                    <button type="button" class="btn btn-default dropdown-toggle">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a ng-click="newStub('article')">Article</a></li>
-                        <li><a ng-click="newStub('liveblog')">Live blog</a></li>
-                        <li><a ng-click="newStub('gallery')">Gallery</a></li>
-                        <li><a ng-click="newStub('interactive')">Interactive</a></li>
-                        <li class="divider"></li>
-                        <li><a ng-click="importFromComposer()">Import from Composer</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-2">
+
+            <div class="top-toolbar__prod-office">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
                         <label class="col-sm-3 control-label" for="prodOffice_dropdown">Office</label>
@@ -154,6 +138,23 @@
 
         <div id="stubs-column" class="">
             <h4>Stubs</h4>
+            <div class="stubs-column__new-stub-wrapper">
+                <div class="stubs-column__new-stub-cta btn-group" ng-controller="NewStubDropdownCtrl" dropdown>
+                    <button type="button" class="btn btn-default" ng-click="newStub()"><span class="glyphicon glyphicon-pencil"></span> New Stub</button>
+                    <button type="button" class="btn btn-default dropdown-toggle">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a ng-click="newStub('article')">Article</a></li>
+                        <li><a ng-click="newStub('liveblog')">Live blog</a></li>
+                        <li><a ng-click="newStub('gallery')">Gallery</a></li>
+                        <li><a ng-click="newStub('interactive')">Interactive</a></li>
+                        <li class="divider"></li>
+                        <li><a ng-click="importFromComposer()">Import from Composer</a></li>
+                    </ul>
+                </div>
+            </div>
             <div ng-repeat="stub in stubs" class="stub">
                 <ul>
                 <li class="secondary-info">{{stub.due | wfFormatDateTime }}</li>
