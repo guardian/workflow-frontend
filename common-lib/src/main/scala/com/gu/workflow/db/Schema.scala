@@ -88,11 +88,9 @@ object Schema {
 
   val sections: SectionQuery = TableQuery(DBSection)
 
-  implicit val flagColumnType = MappedColumnType.base[Flag, String] (
+  implicit lazy val flagColumnType = MappedColumnType.base[Flag, String] (
     f => f.toString,
     s => Flag.withName(s)
   )
-
-
 
 }
