@@ -19,7 +19,7 @@ define([
 
     // stub create and edit
 
-    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sectionsService, legalStatesService) {
+    var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sectionsService, legalStatesService, prodOfficeService) {
 
         $scope.stub = stub;
 
@@ -59,6 +59,7 @@ define([
 
         $scope.sections = sectionsService.getSections();
         $scope.legalStates = legalStatesService.getLegalStates();
+        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.ok = function (addToComposer) {
             delete $scope.stub.dueText;
@@ -85,7 +86,8 @@ define([
         '$http',
         '$q',
         'config',
-        function($scope, $modal, $http, $q, config){
+        'prodOfficeService',
+        function($scope, $modal, $http, $q, config, prodOffice){
 
             var composerNewContent = config['composerNewContent'];
 
@@ -98,7 +100,8 @@ define([
                     contentType: contentType || 'article',
                     section: 'Technology',
                     priority: 0,
-                    needsLegal: 'NA'
+                    needsLegal: 'NA',
+                    prodOffice: prodOffice.getDefaultOffice()
                 };
                 open(stub);
             });
@@ -180,11 +183,14 @@ define([
     // composer import control
     // stub create and edit
 
-    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService, legalStatesService, composerService) {
+    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sectionsService, legalStatesService, composerService, prodOfficeService) {
 
         $scope.stub = {
-            section: 'Technology'
+            section: 'Technology',
+            prodOffice: prodOfficeService.getDefaultOffice()
         };
+
+        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.formData = {};
 

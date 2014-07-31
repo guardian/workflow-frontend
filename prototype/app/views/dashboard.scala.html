@@ -23,6 +23,18 @@
                     </ul>
                 </div>
             </div>
+            <div class="col-md-2">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="prodOffice_dropdown">Office</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="prodOffice_dropdown" class="form-control" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
+                                <option value="">(All offices)</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
             <div class="top-toolbar__section-selector">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
@@ -52,8 +64,6 @@
                     </div>
                 </div>
             </div>
-
-
             <div class="top-toolbar__location-picker dropdown pull-right" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
                 <button class="dropdown-toggle btn btn-default" type="button" id="locationDropdownButton">
                     {{ locationPicker.locations[locationPicker.locationKey].title }}
@@ -185,7 +195,7 @@
                     <th>Working title / Headline</span></th>
                     <th></th>
                     <th>Assigned to</th>
-                    <th>Due by</th>
+                    <th>Production deadline</th>
                     <th>Status</th>
                     <th>State</th>
                     <th></th>
@@ -268,6 +278,12 @@
                         <dd title="{{ (selectedContent.lastModified | wfFormatDateTime:'long') || '-' }}">
                             {{ (selectedContent.lastModified | wfFormatDateTime) || "-" }}
                         </dd>
+                    <dt>Production Office</dt>
+                        <dd><select id="stub_detail_prodOffice" name="prodOffice"
+                                    ng-model="selectedContent.prodOffice"
+                                    ng-change="updateProdOffice(selectedContent.stubId, selectedContent.prodOffice)" ng-options="office.value as office.name for office in prodOffices">
+                            </select>
+                        </dd>
                 </dl>
                 <hr />
 
@@ -320,7 +336,7 @@
                             <select id="stub_section" name="section" ng-model="stub.section" ng-options="section for section in sections"></select>
                         </div>
                         <div class="form-group">
-                            <div wf-date-time-picker label="Due by" help-text="true" ng-model="stub.due"/>
+                            <div wf-date-time-picker label="Production deadline" help-text="true" ng-model="stub.due"/>
                         </div>
                         <div class="form-group clearfix">
                             <div class="pull-left">
@@ -339,7 +355,8 @@
                             <label for="stub_assignee">Assign to</label>
                             <input type="text" ng-model="stub.assignee" id="stub_assignee" name="assignee" value="" class="form-control">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group clearfix">
+                          <div class="pull-left">
                             <label>content type</label>
                             <select ng-model="stub.contentType">
                                 <option value=""></option>
@@ -348,6 +365,13 @@
                                 <option value="gallery">Gallery</option>
                                 <option value="interactive">Interactive</option>
                             </select>
+                          </div>
+                          <div class="pull-right">
+                            <label>production office</label>
+                            <select ng-model="stub.prodOffice"
+                                    ng-options="office.value as office.name for office in prodOffices">
+                            </select>
+                          </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -378,12 +402,18 @@
                             <input type="text" ng-model="stub.title" id="stub_title" name="title" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="stub_section">section</label>
-                            <select id="stub_section" name="section" ng-model="stub.section" ng-options="section for section in sections"></select>
+                            <div class="pull-left">
+                                <label for="stub_section">section</label>
+                                <select id="stub_section" name="section" ng-model="stub.section" ng-options="section for section in sections"></select>
+                            </div>
+                            <div class="pull-right">
+                                <label for="stub_prodOffice">office</label>
+                                <select id="stub_prodOffice" name="prodOffice" ng-model="stub.prodOffice" ng-options="office.value as office.name for office in prodOffices"></select>
+                            </div>
                         </div>
                         <div class="form-group">
                             <div class="form-group">
-                                <div wf-date-time-picker label="Due by" help-text="true" ng-model="stub.due"/>
+                                <div wf-date-time-picker label="Production deadline" help-text="true" ng-model="stub.due"/>
                             </div>
                         </div>
 
