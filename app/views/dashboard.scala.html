@@ -12,8 +12,8 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label" for="prodOffice_dropdown">Office</label>
                         <div class="col-sm-8">
-                            <select class="form-control" id="prodOffice_dropdown" class="form-control" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
-                                <option value="">(All)</option>
+                            <select class="form-control input-sm" id="prodOffice_dropdown" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
+                                <option value="">All</option>
                             </select>
                         </div>
                     </div>
@@ -24,8 +24,8 @@
                     <div class="form-group">
                         <label for="section_dropdown" class="col-sm-4 control-label">Section</label>
                         <div class="col-sm-8">
-                            <select id="section_dropdown" class="form-control" ng-model="selectedSection" ng-options="s for s in sections">
-                                <option value="">(All sections)</option>
+                            <select id="section_dropdown" class="form-control input-sm" ng-model="selectedSection" ng-options="s for s in sections">
+                                <option value="">All sections</option>
                             </select>
                         </div>
                     </div>
