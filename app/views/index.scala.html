@@ -1,4 +1,4 @@
-@(statuses: play.api.libs.json.JsObject, user: Option[String])
+@(statuses: play.api.libs.json.JsObject, sections: play.api.libs.json.JsObject, user: Option[String])
 @import lib.Composer._
 @main("Welcome to Workflow") {
 
@@ -16,6 +16,7 @@
     @* TODO: do something else with outputting @statuses *@
     this._wfConfig = {
         'statuses': @Html(statuses.toString),
+        'sections': @Html(sections.toString),
         'user': @Html(user.get)
     };
 

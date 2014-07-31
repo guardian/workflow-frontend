@@ -12,9 +12,9 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'urlParser', 'statuses', 'sectionsService','legalStatesService', 'config', 'prodOfficeService',
-         function($scope, $http, urlParser, statuses, sectionsService, legalStatesService, config, prodOfficeService) {
+        ['$scope','$http', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService',
 
+        function($scope, $http, urlParser, statuses, sections, legalStatesService, config, prodOfficeService) {
 
          //initialise the model from the url
          var initialParams = urlParser.parseUrl;
@@ -42,7 +42,7 @@ define([
         $scope.$watch('selectedSection', getContent);
         $scope.$watch('selectedProdOffice', getContent);
 
-        $scope.sections = sectionsService.getSections();
+        $scope.sections = sections;
         $scope.legalStates = legalStatesService.getLegalStates();
 
         $scope.prodOffices = prodOfficeService.getProdOffices();
@@ -93,7 +93,6 @@ define([
             } else {
                 $scope.flags = $scope.flags.filter( function(e) { return e !== flag });
             }
-
             getContent();
         };
 
