@@ -48,6 +48,10 @@ define(['angular', 'moment'], function(angular, moment) {
                 params['flags'] = serverParams['flags'].toString();
             }
 
+            if(serverParams['prodOffice']) {
+                params['prodOffice'] = serverParams['prodOffice'];
+            }
+
             return params;
         }
 
