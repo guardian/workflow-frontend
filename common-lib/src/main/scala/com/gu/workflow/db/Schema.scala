@@ -3,6 +3,7 @@ package com.gu.workflow.db
 import models.Flag
 import models.Flag._
 import org.joda.time.DateTime
+import play.api.db.slick._
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.{Query, TableQuery}
 import com.github.tototoshi.slick.PostgresJodaSupport._
@@ -68,8 +69,20 @@ object Schema {
     def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published, timePublished, revision)
   }
 
+  type SectionRow = (
+      Long,   //pk
+      String //section
+    )
+
+  case class DBSection(tag: Tag) extends Table[SectionRow](tag, "section") {
+    def pk      = column [Long]     ("pk", O.PrimaryKey, O.AutoInc)
+    def section = column [String]   ("section")
+    def * = (pk, section)
+  }
+
   type StubQuery = Query[DBStub, StubRow]
   type ContentQuery = Query[DBContent, ContentRow]
+  type SectionQuery = Query[DBSection, SectionRow]
 
   val stubs: StubQuery = TableQuery(DBStub)
   val content: ContentQuery = TableQuery(DBContent)
@@ -78,4 +91,7 @@ object Schema {
     f => f.toString,
     s => Flag.withName(s)
   )
+
+  val sections: SectionQuery = TableQuery(DBSection)
+
 }
