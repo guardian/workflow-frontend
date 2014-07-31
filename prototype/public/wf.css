@@ -243,7 +243,7 @@ h5.query {
 .top-toolbar {
   display: flex;
   height: 40px;
-  padding: 3px 0;
+  padding: 3px 200px 3px 0;
   background-color: #adadad;
 }
 
