@@ -13,7 +13,7 @@ import lib.Responses._
 import lib._
 import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
-import com.gu.workflow.db.CommonDB
+import com.gu.workflow.db.{SectionDB, CommonDB}
 
 object Api extends Controller with AuthActions {
 
@@ -167,11 +167,9 @@ object Api extends Controller with AuthActions {
 
   }
 
-  def sections = AuthAction.async {
-    for (sectionList <- SectionDatabase.sectionList)
-      yield {
-      Ok(Json.obj("data" -> sectionList))
-    }
+  def sections = AuthAction {
+    val sectionList = SectionDB.sectionList
+    Ok(Json.obj("data" -> sectionList))
   }
 
   private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
