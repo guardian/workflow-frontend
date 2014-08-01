@@ -11,8 +11,8 @@
             <ul class="list-unstyled" >
                 @for(section <- sections) {
                 <li>
-                    <span class="label label-danger remove" data-section="@{section.name}">x</span>
-                    <a href="@{routes.Api.content}?section=@{section.name}">@{section.name}</a>
+                    <a href class="label label-danger remove" data-section="@{section.name}">x</a>
+                    @{section.name}
                 </li>
                 }
             </ul>
@@ -31,14 +31,17 @@
 <script>
     $('.remove').on('click', function (event) {
         var section = $(event.target).data('section');
-        $.ajax({
-            type: "POST",
-            url: "@routes.Admin.removeSection",
-            data: {name: section},
-            success: function() {
-                $(event.target).parent().remove();
-            }
-        });
+        if(window.confirm("Do you want to delete the section \"" + section +"\"?")) {
+            $.ajax({
+                type: "POST",
+                url: "@routes.Admin.removeSection",
+                data: {name: section},
+                success: function() {
+                    $(event.target).parent().remove();
+                }
+            });
+        }
+
     });
 
 </script>
