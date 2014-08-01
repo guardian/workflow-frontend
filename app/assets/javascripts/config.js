@@ -20,6 +20,7 @@ define(['angular'], function (angular) {
     );
 
     mod.constant({ 'statuses': _wfConfig.statuses.data });
+    mod.constant({ 'sections': _wfConfig.sections.data });
 
     return mod;
 });

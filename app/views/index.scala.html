@@ -1,4 +1,4 @@
-@(statuses: play.api.libs.json.JsObject)
+@(statuses: play.api.libs.json.JsObject, sections: play.api.libs.json.JsObject)
 @import lib.Composer._
 @main("Welcome to Workflow") {
 
@@ -15,7 +15,8 @@
 <script>
     @* TODO: do something else with outputting @statuses *@
     this._wfConfig = {
-        'statuses': @Html(statuses.toString)
+        'statuses': @Html(statuses.toString),
+        'sections': @Html(sections.toString)
     };
 
     window.name = 'NG_DEFER_BOOTSTRAP!';

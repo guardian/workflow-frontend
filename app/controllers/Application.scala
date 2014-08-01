@@ -1,5 +1,7 @@
 package controllers
 
+import com.gu.workflow.db.SectionDB
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import lib._
@@ -13,17 +15,21 @@ object Application extends Controller with AuthActions {
   def index = AuthAction.async { request =>
     for {
       statuses <- StatusDatabase.statuses
+      sections = SectionDB.sectionList
     }
-    yield Ok(views.html.index(Json.obj("data" -> statuses)))
+    //put these in one object
+    yield {
+      Ok(views.html.index(Json.obj("data" -> statuses), Json.obj("data" -> sections)))
+    }
   }
 
   def dashboard = AuthAction.async { req =>
     for {
-      sections <- SectionDatabase.sectionList
       statuses <- StatusDatabase.statuses
     }
     yield {
-       Ok(views.html.dashboard(sections, statuses))
+      val sections = SectionDB.sectionList
+      Ok(views.html.dashboard(sections, statuses))
     }
   }
 }

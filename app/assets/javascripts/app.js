@@ -15,7 +15,7 @@ define([
     './services/composer-service',
     './services/url-parser',
     './services/legal-states-service',
-    './services/sections-service',
+
     './services/prodoffice-service',
 
     'lib/date-service',
@@ -39,7 +39,6 @@ define([
           'composerService',
           'urlParser',
           'legalStatesService',
-          'sectionsService',
           'prodOfficeService',
           'xeditable'
         ]);
