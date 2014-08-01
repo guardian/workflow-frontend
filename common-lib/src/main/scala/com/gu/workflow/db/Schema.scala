@@ -3,7 +3,6 @@ package com.gu.workflow.db
 import models.Flag
 import models.Flag._
 import org.joda.time.DateTime
-import play.api.db.slick._
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.{Query, TableQuery}
 import com.github.tototoshi.slick.PostgresJodaSupport._
@@ -87,11 +86,11 @@ object Schema {
   val stubs: StubQuery = TableQuery(DBStub)
   val content: ContentQuery = TableQuery(DBContent)
 
-  implicit def flagColumnType = MappedColumnType.base[Flag, String] (
+  val sections: SectionQuery = TableQuery(DBSection)
+
+  implicit lazy val flagColumnType = MappedColumnType.base[Flag, String] (
     f => f.toString,
     s => Flag.withName(s)
   )
-
-  val sections: SectionQuery = TableQuery(DBSection)
 
 }

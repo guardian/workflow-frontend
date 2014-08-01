@@ -167,11 +167,6 @@ object Api extends Controller with AuthActions {
 
   }
 
-  def sections = AuthAction {
-    val sectionList = SectionDB.sectionList
-    Ok(Json.obj("data" -> sectionList))
-  }
-
   private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
     requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
   }
