@@ -68,14 +68,29 @@ object Schema {
     def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published, timePublished, revision)
   }
 
+  type SectionRow = (
+      Long,   //pk
+      String //section
+    )
+
+  case class DBSection(tag: Tag) extends Table[SectionRow](tag, "section") {
+    def pk      = column [Long]     ("pk", O.PrimaryKey, O.AutoInc)
+    def section = column [String]   ("section")
+    def * = (pk, section)
+  }
+
   type StubQuery = Query[DBStub, StubRow]
   type ContentQuery = Query[DBContent, ContentRow]
+  type SectionQuery = Query[DBSection, SectionRow]
 
   val stubs: StubQuery = TableQuery(DBStub)
   val content: ContentQuery = TableQuery(DBContent)
 
-  implicit def flagColumnType = MappedColumnType.base[Flag, String] (
+  val sections: SectionQuery = TableQuery(DBSection)
+
+  implicit lazy val flagColumnType = MappedColumnType.base[Flag, String] (
     f => f.toString,
     s => Flag.withName(s)
   )
+
 }
