@@ -55,9 +55,6 @@ this already if you work with identity, r2 or similar):
 
     ./nginx/setup.sh
 
-
-You will also need to add the entries in /nginx/hosts into the hosts file on your computer.
-
 ### the apps
 
 There are 2 Play! applications, so you can run prototype thus:

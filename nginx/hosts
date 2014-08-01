@@ -1,4 +1,0 @@
-# Lines in this file should be added to /etc/hosts.
-# On a Mac, the entries should point at 127.0.0.1 instead.
-
-127.0.1.1   workflow.local.dev-gutools.co.uk            # workflow
