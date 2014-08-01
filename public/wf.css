@@ -329,6 +329,9 @@ h5.query {
   text-decoration: none;
 }
 
+.admin {
+    padding: 20px;
+}
 
 /*
  * Main content
