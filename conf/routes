@@ -28,8 +28,6 @@ PUT     /api/stubs/:stubId/prodOffice       controllers.Api.putStubProdOffice(st
 DELETE  /api/stubs/:stubId                  controllers.Api.deleteStub(stubId: Long)
 POST    /api/stubs/:stubId                  controllers.Api.linkStub(stubId: Long, composerId: String, contentType: String)
 
-GET     /api/sections                       controllers.Api.sections
-
 # Admin
 GET     /admin/                             controllers.Admin.index
 GET     /admin/sections                     controllers.Admin.sections
