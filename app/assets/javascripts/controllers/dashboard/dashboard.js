@@ -17,9 +17,6 @@ define([
 
          //initialise the model from the url
 
-         $scope.filters = {};
-         $scope.filters['due.from'] = filtersService.get('due.from');
-         $scope.filters['due.until'] = filtersService.get('due.until');
          $scope.selectedStatus = filtersService.get('status');
          $scope.selectedState = filtersService.get('state');
          $scope.selectedSection = filtersService.get('section');

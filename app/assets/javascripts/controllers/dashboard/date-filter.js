@@ -12,8 +12,9 @@ define([
 
 
     dashboardControllers.controller('DateFilterCtrl',
-        ['$scope','$location', 'paramsService', 'filtersService', function($scope, $location, paramsService, filtersService) {
-        $scope.dateOptions = filtersService.mkDateOptions();
+        ['$scope','$location', 'paramsService', 'filtersService', 'dateFilters',
+         function($scope, $location, paramsService, filtersService, dateFilters) {
+        $scope.dateOptions = dateFilters.mkDateOptions();
         var selectedDate = filtersService.get('selectedDate');
 
         // ensure that the date from the URL is the same object as the
@@ -27,7 +28,7 @@ define([
         $scope.selectedDate = selectedDate;
 
         $scope.$watch('selectedDate', function(date) {
-            filtersService.updateDate(date);
+            filtersService.update('selectedDate', date);
             $scope.$emit('changedFilters');
         });
 
