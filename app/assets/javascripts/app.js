@@ -21,6 +21,7 @@ define([
     'lib/params-service',
     'lib/server-params',
     'lib/filters-service',
+    'lib/date-filters-service',
 
     'angular-bootstrap',
     'angular-xeditable',
@@ -44,6 +45,7 @@ define([
           'paramsService',
           'serverParams',
           'filtersService',
+          'dateFilters',
           'xeditable'
         ]);
 
