@@ -9,11 +9,9 @@ define([
 ) {
     'use strict';
 
-
-
     dashboardControllers.controller('DateFilterCtrl',
-        ['$scope','$location', 'paramsService', 'filtersService', 'dateFilters',
-         function($scope, $location, paramsService, filtersService, dateFilters) {
+        ['$scope','$location', 'filtersService', 'dateFilters',
+         function($scope, $location, filtersService, dateFilters) {
         $scope.dateOptions = dateFilters.mkDateOptions();
         var selectedDate = filtersService.get('selectedDate');
 
