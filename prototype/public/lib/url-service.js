@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-angular.module('urlService', []).factory('urlService', ['$location', function($location){
+angular.module('urlService', []).factory('urlService', ['$location', 'formatService', function($location, formatService){
 
     class UrlService {
         constructor() {
@@ -12,8 +12,9 @@ angular.module('urlService', []).factory('urlService', ['$location', function($l
         }
 
         set(key, value) {
-            this.params[key] = value;
-            $location.search(key, value);
+            var strValue = formatService.objToStr(value);
+            this.params[key] = strValue;
+            $location.search(key, strValue);
         }
     }
 

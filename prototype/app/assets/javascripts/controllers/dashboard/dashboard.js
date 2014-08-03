@@ -12,7 +12,6 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-
         ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'filtersService','prodOfficeService',
          function($scope, $http, statuses, sections, legalStatesService, config, filtersService, prodOfficeService) {
 
@@ -34,17 +33,15 @@ define([
 
         $scope.$on('getContent', getContent);
         $scope.$on('changedFilters', getContent);
+
         $scope.$watch('selectedProdOffice', function(){
-            filtersService.update('prodOffice', $scope.selectedProdOffice);
-            getContent();
+            $scope.$emit('filtersChanged.prodOffice', $scope.selectedProdOffice)
         });
         $scope.$watch('selectedContentType', function(){
-            filtersService.update('content-type', $scope.selectedContentType);
-            getContent();
+            $scope.$emit('filtersChanged.content-type', $scope.selectedContentType);
         });
         $scope.$watch('selectedSection', function(){
-            filtersService.update('section', $scope.selectedSection);
-            getContent();
+            $scope.$emit('filtersChanged.section', $scope.selectedSection);
         });
 
         $scope.sections = sections;
@@ -65,8 +62,7 @@ define([
         };
         $scope.selectState = function(state) {
             $scope.selectedState = state;
-            filtersService.update('state', state);
-            getContent();
+            $scope.$emit('filtersChanged.state', $scope.selectedState);
         };
 
         $scope.statusIsSelected = function(status) {
@@ -75,8 +71,7 @@ define([
 
         $scope.selectStatus = function(status) {
             $scope.selectedStatus = status;
-            filtersService.update('status', status);
-            getContent();
+            $scope.$emit('filtersChanged.status', $scope.selectedStatus);
         };
 
         $scope.flagActive = function(flag) {
@@ -89,9 +84,7 @@ define([
             } else {
                 $scope.flags = $scope.flags.filter( function(e) { return e !== flag });
             }
-
-            filtersService.update('flags', $scope.flags);
-            getContent();
+            $scope.$emit('filtersChanged.flags', $scope.flags);
         };
 
         $scope.contentTypeIsSelected = function (contentType) {
