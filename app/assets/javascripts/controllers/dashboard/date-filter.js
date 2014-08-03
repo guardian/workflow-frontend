@@ -25,9 +25,8 @@ define([
 
         $scope.selectedDate = selectedDate;
 
-        $scope.$watch('selectedDate', function(date) {
-            filtersService.update('selectedDate', date);
-            $scope.$emit('changedFilters');
+        $scope.$watch('selectedDate', function() {
+            $scope.$emit('filtersChanged.selectedDate', $scope.selectedDate);
         });
 
     }]);
