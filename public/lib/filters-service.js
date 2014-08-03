@@ -1,41 +1,12 @@
 import angular from 'angular';
 import moment from 'moment';
 
-angular.module('filtersService', ['urlService'])
-       .factory('filtersService', function(urlService){
+import './format-service';
 
-        //var possibleFilters = ['status','state','section','due.from','due.until','selectedDate','content-type','flags']
+angular.module('filtersService', ['urlService', 'formatService'])
+       .factory('filtersService', function(urlService, formatService){
 
         class FiltersService {
-
-            stringToArray(value) {
-                if(value) {
-                    return value.split(",");
-                }
-                else return [];
-            }
-
-            arrayToString(value) {
-                if(value.length > 0){
-                   return value.toString
-                }
-            }
-
-            stringToDate(value) {
-                if (moment(value, ["DD-MM-YYYY"]).isValid()){
-                    return moment(value, ["DD-MM-YYYY"]);
-                }
-                else return value;
-            }
-
-            dateToString(value) {
-                if(typeof value == 'object') {
-                    return moment(value).format("DD-MM-YYYY");
-                }
-                else return value;
-            }
-
-
 
             constructor() {
                 this.filters = {};
@@ -45,11 +16,8 @@ angular.module('filtersService', ['urlService'])
                 this.filters['content-type']= urlService.get('content-type');
                 var date = urlService.get('selectedDate');
                 var dateToEndpoint = this.dateToEndpoints(date);
-                this.filters['selectedDate'] = this.stringToDate(urlService.get('selectedDate'));
-                var tmp = this.stringToArray(urlService.get('flags'));
-                this.filters['flags'] = tmp;
-                console.log(tmp);
-                console.log(typeof tmp);
+                this.filters['selectedDate'] = formatService.stringToDate(urlService.get('selectedDate'));
+                this.filters['flags'] = formatService.stringToArray(urlService.get('flags'));;
                 this.filters['due.from'] = dateToEndpoint['dueFrom'];
                 this.filters['due.until'] = dateToEndpoint['dueUntil'];
             }
@@ -74,11 +42,11 @@ angular.module('filtersService', ['urlService'])
             }
 
             updateDate(date) {
-                this.filters['selectedDate'] = this.dateToString(date);
+                this.filters['selectedDate'] = formatService.dateToString(date);
                 var dateToEndpoint = this.dateToEndpoints(date);
                 this.filters['due.from'] = dateToEndpoint['dueFrom'];
                 this.filters['due.until'] = dateToEndpoint['dueUntil'];
-                urlService.set('selectedDate',this.dateToString(date));
+                urlService.set('selectedDate',formatService.dateToString(date));
             }
 
             formatDateForUri(date) {
