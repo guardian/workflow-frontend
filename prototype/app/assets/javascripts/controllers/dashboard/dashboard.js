@@ -12,17 +12,16 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'statuses', 'sectionsService','legalStatesService', 'config', 'paramsService', 'serverParams', 'filtersService','prodOfficeService',
-         function($scope, $http, statuses, sectionsService, legalStatesService, config, paramsService, serverParams, filtersService, prodOfficeService) {
 
-         //initialise the model from the url
+        ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'filtersService','prodOfficeService',
+         function($scope, $http, statuses, sections, legalStatesService, config, filtersService, prodOfficeService) {
 
          $scope.selectedStatus = filtersService.get('status');
          $scope.selectedState = filtersService.get('state');
          $scope.selectedSection = filtersService.get('section');
          $scope.selectedContentType = filtersService.get('content-type');
          $scope.flags = filtersService.get('flags');
-				 $scope.selectedProdOffice = filtersService.get('prodOffice');
+         $scope.selectedProdOffice = filtersService.get('prodOffice');
 
         var getContent = function(evt, params) {
             var params = filtersService.toServerParams();
@@ -36,9 +35,9 @@ define([
         $scope.$on('getContent', getContent);
         $scope.$on('changedFilters', getContent);
         $scope.$watch('selectedProdOffice', function(){
-						filtersService.update('prodOffice, $scope.selectedProdOffice);
-						getContent();
-				});
+            filtersService.update('prodOffice', $scope.selectedProdOffice);
+            getContent();
+        });
         $scope.$watch('selectedContentType', function(){
             filtersService.update('content-type', $scope.selectedContentType);
             getContent();
@@ -55,20 +54,6 @@ define([
 
         $scope.statuses = statuses;
 
-<<<<<<< HEAD
-        function buildContentParams() {
-            var params = angular.copy($scope.filters);
-            params.state = $scope.selectedState;
-            params.section = $scope.selectedSection;
-            params["content-type"] = $scope.selectedContentType;
-            params.status = $scope.selectedStatus;
-            params.flags = $scope.flags;
-            params.prodOffice = $scope.selectedProdOffice;
-            return params;
-        };
-
-=======
->>>>>>> 457f649... maintain state at the filters service
         function groupByStatus(data) {
             return _.groupBy(data, function(x){ return x.status; });
         }
@@ -104,10 +89,8 @@ define([
             } else {
                 $scope.flags = $scope.flags.filter( function(e) { return e !== flag });
             }
-<<<<<<< HEAD
-=======
+
             filtersService.update('flags', $scope.flags);
->>>>>>> 457f649... maintain state at the filters service
             getContent();
         };
 

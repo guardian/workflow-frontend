@@ -18,8 +18,6 @@ define([
     './services/prodoffice-service',
 
     'lib/date-service',
-    'lib/params-service',
-    'lib/server-params',
     'lib/filters-service',
     'lib/date-filters-service',
 
@@ -42,8 +40,6 @@ define([
           'composerService',
           'legalStatesService',
           'prodOfficeService',
-          'paramsService',
-          'serverParams',
           'filtersService',
           'dateFilters',
           'xeditable'

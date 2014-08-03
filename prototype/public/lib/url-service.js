@@ -3,7 +3,6 @@ import angular from 'angular';
 angular.module('urlService', []).factory('urlService', ['$location', function($location){
 
     class UrlService {
-
         constructor() {
             this.params = $location.search();
         }
