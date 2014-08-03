@@ -1,6 +1,7 @@
 import angular from 'angular';
 import moment from 'moment';
 
+import './url-service';
 import './format-service';
 import './date-filters-service';
 
