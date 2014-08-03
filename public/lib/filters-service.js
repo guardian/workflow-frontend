@@ -18,6 +18,7 @@ angular.module('filtersService', ['urlService', 'formatService', 'dateFilters'])
                 this.filters['content-type']= urlService.get('content-type');
                 this.filters['selectedDate'] = formatService.stringToDate(urlService.get('selectedDate'));
                 this.filters['flags'] = formatService.stringToArray(urlService.get('flags'));
+                this.filters['prodOffice'] = urlService.get('prodOffice');
             }
 
             toServerParams() {
