@@ -6,30 +6,14 @@
 
 <div class="container-fluid top-control">
     <div class="top-toolbar row header-bar">
-            <div class="top-toolbar__new-stub">
-                <div class="btn-group" ng-controller="NewStubDropdownCtrl" dropdown>
-                    <button type="button" class="btn btn-default" ng-click="newStub()">New Stub</button>
-                    <button type="button" class="btn btn-default dropdown-toggle">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a ng-click="newStub('article')">Article</a></li>
-                        <li><a ng-click="newStub('liveblog')">Live blog</a></li>
-                        <li><a ng-click="newStub('gallery')">Gallery</a></li>
-                        <li><a ng-click="newStub('interactive')">Interactive</a></li>
-                        <li class="divider"></li>
-                        <li><a ng-click="importFromComposer()">Import from Composer</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-2">
+
+            <div class="top-toolbar__prod-office">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label class="col-sm-3 control-label" for="prodOffice_dropdown">Office</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" id="prodOffice_dropdown" class="form-control" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
-                                <option value="">(All offices)</option>
+                        <label class="col-sm-4 control-label" for="prodOffice_dropdown">Office</label>
+                        <div class="col-sm-8">
+                            <select class="form-control input-sm" id="prodOffice_dropdown" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
+                                <option value="">All</option>
                             </select>
                         </div>
                     </div>
@@ -38,10 +22,10 @@
             <div class="top-toolbar__section-selector">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label for="section_dropdown" class="col-sm-3 control-label">Section</label>
-                        <div class="col-sm-9">
-                            <select id="section_dropdown" class="form-control" ng-model="selectedSection" ng-options="s for s in sections">
-                                <option value="">(All sections)</option>
+                        <label for="section_dropdown" class="col-sm-4 control-label">Section</label>
+                        <div class="col-sm-8">
+                            <select id="section_dropdown" class="form-control input-sm" ng-model="selectedSection" ng-options="s for s in sections">
+                                <option value="">All sections</option>
                             </select>
                         </div>
                     </div>
@@ -64,22 +48,6 @@
                     </div>
                 </div>
             </div>
-            <div class="top-toolbar__location-picker dropdown pull-right" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
-                <button class="dropdown-toggle btn btn-default" type="button" id="locationDropdownButton">
-                    {{ locationPicker.locations[locationPicker.locationKey].title }}
-                    <span class="top-toolbar__location-picker-localtime">{{ locationPicker.now | wfFormatDateTime:'HH:mm':key }}</span>
-                    <span class="caret"></span>
-                </button>
-                <ul class="top-toolbar__location-picker-menu dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="locationDropdownButton">
-                    <li ng-repeat="(key, location) in locationPicker.locations">
-                        <a class="top-toolbar__location-picker-menuitem" role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">
-                            <span class="top-toolbar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfFormatDateTime:'HH:mm z':key }}</span>
-                            {{ location.title }}
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
         </div>
 
     </div>
@@ -89,6 +57,22 @@
     <div id="content-container" class="" >
         <div id="sidebar-container" class="">
             <div class="sidebar">
+                <div class="sidebar__location-picker dropdown" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
+                    <button class="dropdown-toggle btn btn-default btn-sm" type="button" id="locationDropdownButton">
+                        {{ locationPicker.locations[locationPicker.locationKey].title }}
+                        <span class="sidebar__location-picker-localtime">{{ locationPicker.now | wfFormatDateTime:'HH:mm':key }}</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="sidebar__location-picker-menu dropdown-menu" role="menu" aria-labelledby="locationDropdownButton">
+                        <li ng-repeat="(key, location) in locationPicker.locations">
+                            <a class="sidebar__location-picker-menuitem" role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">
+                                <span class="sidebar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfFormatDateTime:'HH:mm z':key }}</span>
+                                {{ location.title }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
 
                 <h5 class="query ">Content type</h5>
                 <div class="btn-group btn-group-xs">
@@ -154,6 +138,23 @@
 
         <div id="stubs-column" class="">
             <h4>Stubs</h4>
+            <div class="stubs-column__new-stub-wrapper">
+                <div class="stubs-column__new-stub-cta btn-group" ng-controller="NewStubDropdownCtrl" dropdown>
+                    <button type="button" class="btn btn-default" ng-click="newStub()"><span class="glyphicon glyphicon-pencil"></span><span class="stubs-column__new-stub-cta-label">New Stub</span></button>
+                    <button type="button" class="btn btn-default dropdown-toggle">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a ng-click="newStub('article')">Article</a></li>
+                        <li><a ng-click="newStub('liveblog')">Live blog</a></li>
+                        <li><a ng-click="newStub('gallery')">Gallery</a></li>
+                        <li><a ng-click="newStub('interactive')">Interactive</a></li>
+                        <li class="divider"></li>
+                        <li><a ng-click="importFromComposer()">Import from Composer</a></li>
+                    </ul>
+                </div>
+            </div>
             <div ng-repeat="stub in stubs" class="stub">
                 <ul>
                 <li class="secondary-info">{{stub.due | wfFormatDateTime }}</li>
