@@ -226,7 +226,7 @@
                             <td>
                                 <span class="glyphicon glyphicon-eye-open"  ng-show="content.needsLegal === 'REQUIRED'"></span>
                             </td>
-                            <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a></strong>
+                            <td colspan="2 "><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a>
                             </td>
                             <td>{{content.assignee}}</td>
                             <td title="{{content.due | wfFormatDateTime:'long' }}">{{content.due | wfFormatDateTime }}</td>
