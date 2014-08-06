@@ -183,7 +183,7 @@ define([
     // composer import control
     // stub create and edit
 
-     var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sections, legalStatesService, composerService, stub) {
+     var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService, composerService, prodOfficeService) {
 
         $scope.stub = stub;
 
@@ -236,6 +236,7 @@ define([
 
         $scope.sections = sections;
         $scope.legalStates = legalStatesService.getLegalStates();
+        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.ok = function () {
             $modalInstance.close({
@@ -253,6 +254,7 @@ define([
         'sections',
         'legalStatesService',
         'composerService',
+        'prodOfficeService',
         ComposerImportModalInstanceCtrl]);
 
     dashboardControllers.controller('ComposerImportModalCtrl', ['$scope',
