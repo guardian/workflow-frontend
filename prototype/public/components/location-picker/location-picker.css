@@ -3,17 +3,17 @@
  */
 
 /* Bootstrap override - hence specificity */
-.top-toolbar__location-picker-menu > li > a {
+.sidebar__location-picker-menu > li > a {
   padding-right: 90px;
 }
 
-.top-toolbar__location-picker-localtime,
-.top-toolbar__location-picker-localtime--inmenu {
+.sidebar__location-picker-localtime,
+.sidebar__location-picker-localtime--inmenu {
   font-size: 12px;
   color: #666;
 }
 
-.top-toolbar__location-picker-localtime--inmenu {
+.sidebar__location-picker-localtime--inmenu {
   position: relative;
   right: -70px;
   line-height: 1em;
