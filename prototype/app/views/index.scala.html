@@ -17,7 +17,7 @@
     this._wfConfig = {
         'statuses': @Html(statuses.toString),
         'sections': @Html(sections.toString),
-        'user': @Html(user.get)
+        'user': @Html(user.getOrElse("false"))
     };
 
     window.name = 'NG_DEFER_BOOTSTRAP!';
