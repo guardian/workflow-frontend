@@ -33,10 +33,22 @@ angular.module('wfAnalytics', ['wfUser'])
       init() {
         mixpanel.init(getMixpanelToken());
         mixpanel.identify(wfUser.email);
+
+        // Set the user for every tracked event
         mixpanel.people.set({
           '$email': wfUser.email,
           '$first_name': wfUser.firstName,
           '$last_name': wfUser.lastName
+        });
+
+        // Set the browser and OS version for every tracked event
+        var ua = new UAParser(), // parse the user agent
+            browser = ua.getBrowser(),
+            os = ua.getOS();
+
+        mixpanel.register({
+          'Browser version': browser.name + ' ' + browser.major,
+          'Operating System version': os.name + ' ' + os.version
         });
       }
 
@@ -49,13 +61,8 @@ angular.module('wfAnalytics', ['wfUser'])
        */
       track(eventName, properties = {}) {
 
-        var ua = new UAParser(), // parse the user agent
-            browser = ua.getBrowser(),
-            os = ua.getOS();
-
+        // Screen res and viewport may change, so re- tracking
         angular.extend(properties, {
-          'Browser version': browser.name + ' ' + browser.major,
-          'Operating System version': os.name + ' ' + os.version,
           'Screen resolution': window.screen.width + ' x ' + window.screen.height,
           'Screen viewport': document.documentElement.clientWidth + ' x ' + document.documentElement.clientHeight
         });
