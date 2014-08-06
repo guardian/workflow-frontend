@@ -195,6 +195,7 @@
                     <th colspan="4"></th>
                     <th>Working title / Headline</span></th>
                     <th></th>
+                    <th>Section</th>
                     <th>Assigned to</th>
                     <th>Production deadline</th>
                     <th>Status</th>
@@ -226,8 +227,9 @@
                             <td>
                                 <span class="glyphicon glyphicon-eye-open"  ng-show="content.needsLegal === 'REQUIRED'"></span>
                             </td>
-                            <td colspan="2 "><strong><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a></strong>
+                            <td colspan="2 "><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a>
                             </td>
+                            <td>{{content.section}}</td>
                             <td>{{content.assignee}}</td>
                             <td title="{{content.due | wfFormatDateTime:'long' }}">{{content.due | wfFormatDateTime }}</td>
                             <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
