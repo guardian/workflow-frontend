@@ -15,5 +15,5 @@ import angular from 'angular';
 
 angular.module('wfUser', [])
   .factory('wfUser', [function() {
-    return window._wfConfig.user;
+    return window._wfConfig.user || {};
   }]);
