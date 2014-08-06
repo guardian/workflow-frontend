@@ -296,7 +296,7 @@ define([
                             url: '/api/stubs',
                             data: newStub
                         }).success(function(){
-                            $scope.$emit('content.import', { 'content': newStub });
+                            $scope.$emit('content.imported', { 'content': newStub });
 
                             $scope.$emit('getContent');
                         });
@@ -356,7 +356,7 @@ define([
                             url: '/api/stubs/' + stub.id,
                             params: {'composerId': composerId, 'contentType': type}
                         }).success(function(){
-                            $scope.$emit('content.status.changed', {
+                            $scope.$emit('content.statusChanged', {
                               content: stub,
                               status: 'Writers',
                               oldStatus: 'Stub'
