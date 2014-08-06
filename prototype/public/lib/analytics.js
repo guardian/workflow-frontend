@@ -128,14 +128,14 @@ angular.module('wfAnalytics', ['wfUser'])
     });
 
     // Track stub/content status change
-    $rootScope.$on('content.status.changed', function(event, data) {
+    $rootScope.$on('content.statusChanged', function(event, data) {
       track('Status changed', data, {
         'Status transition': data.oldStatus + ' to ' + data.status
       });
     });
 
     // Track import from composer
-    $rootScope.$on('content.import', function(event, data) {
+    $rootScope.$on('content.imported', function(event, data) {
       track('Content imported', data);
     });
 
