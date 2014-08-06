@@ -1,6 +1,6 @@
 package models
 
-import play.api.libs.json.{Json, Writes, JsValue, Reads}
+import play.api.libs.json._
 
 
 case class Section(name: String) {
@@ -12,5 +12,7 @@ object Section {
     def reads(jsValue: JsValue) = (jsValue \ "tag" \ "section" \ "name").validate[String].map(Section(_))
   }
 
-  implicit val section: Writes[Section] = Json.writes[Section]
+  implicit val section: Writes[Section] = new Writes[Section] {
+    def writes(section: Section): JsValue = JsString(section.name)
+  }
 }
