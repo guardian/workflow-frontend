@@ -40,11 +40,11 @@
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'today'">Today</button>
                         <button type="button" class="btn btn-default date-filter__button--optional" ng-model="selectedDate" btn-radio="'tomorrow'">Tomorrow</button>
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
-                        <button type="button" class="btn btn-default" title="Select date">
+                        <span class="btn btn-default" title="Select date">
                             <span class="glyphicon glyphicon-calendar"></span>
                             <select ng-model="selectedDate" ng-options="date as (date | wfFormatDateTime:'ddd D MMMM') for date in dateOptions">
                             </select>
-                        </button>
+                        </span>
                     </div>
                 </div>
             </div>
