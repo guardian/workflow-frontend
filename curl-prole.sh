@@ -1,4 +1,4 @@
-while ! lsof -i :9001 > /dev/null;
+while ! lsof -i :9091 > /dev/null;
 	do sleep 5;
 done;	
-curl http://localhost:9001/management/healthcheck
+curl http://localhost:9091/management/healthcheck
