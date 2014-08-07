@@ -15,7 +15,7 @@ import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
 import com.gu.workflow.db.{SectionDB, CommonDB}
 
-object Api extends Controller with AuthActions {
+object Api extends Controller with PanDomainAuthActions {
 
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 

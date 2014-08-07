@@ -10,7 +10,7 @@ import play.api.mvc._
 import play.api.libs.json.Json
 
 
-object Application extends Controller with AuthActions {
+object Application extends Controller with PanDomainAuthActions {
 
   def index = AuthAction.async { request =>
     for {
