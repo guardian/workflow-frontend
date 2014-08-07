@@ -167,6 +167,12 @@ define([
                             });
                         }
                         response.success(function(){
+                            // emit event
+                            //   stubs with ids are being edited and not new
+                            var eventName = (stub.id) ? 'stub.edited' : 'stub.created';
+
+                            $scope.$emit(eventName, { 'content': newStub });
+
                             $scope.$emit('getContent');
                         });
                     });
@@ -292,6 +298,8 @@ define([
                             url: '/api/stubs',
                             data: newStub
                         }).success(function(){
+                            $scope.$emit('content.imported', { 'content': newStub });
+
                             $scope.$emit('getContent');
                         });
                 });
@@ -350,6 +358,12 @@ define([
                             url: '/api/stubs/' + stub.id,
                             params: {'composerId': composerId, 'contentType': type}
                         }).success(function(){
+                            $scope.$emit('content.statusChanged', {
+                              content: stub,
+                              status: 'Writers',
+                              oldStatus: 'Stub'
+                            });
+
                             $scope.$emit('getContent');
                         });
                     });
