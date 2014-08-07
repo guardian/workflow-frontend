@@ -18,6 +18,8 @@
     "underscore": "github:jashkenas/underscore@^1.6.0",
     "css": "^0.1.0",
     "moment-timezone": "github:moment/moment-timezone@^0.1.0",
-    "json": "master"
+    "json": "master",
+    "angular-mocks": "github:angular/bower-angular-mocks@^1.2.7",
+    "github:angular/bower-angular-mocks": "^1.2.7"
   }
 }
