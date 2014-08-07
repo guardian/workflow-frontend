@@ -87,10 +87,9 @@ angular.module('wfDateService', ['wfLocationService'])
         // parse dates properly in another timezone, so collect parsed date as
         // input by user without a timezone, then use moment.tz to convert
         // date properly to set timezone.
-        parsedText = parsed.format('YYYY-MM-DDTHH:mm');
+        parsedText = parsed.format('YYYY-MM-DD HH:mm');
 
-
-        return moment.tz(parsedText, timezone.tzKey).toDate();
+        return moment.tz(parsedText, 'YYYY-MM-DD HH:mm', timezone.tzKey).toDate();
       }
     }
 
