@@ -6,7 +6,7 @@ import PlayKeys._
 import com.typesafe.sbt.web._
 import com.typesafe.sbt.web.Import._
 import Dependencies._
-
+import com.typesafe.sbt.gzip.Import._
 
 object WorkflowBuild extends Build {
 
@@ -33,9 +33,11 @@ object WorkflowBuild extends Build {
 
   lazy val root = playProject("prototype")
     .settings(
-      libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies ++ googleOAuthDependencies,
-      requireJs += "main.js",
-      requireJsShim += "main.js"
+      libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
+    )
+    .settings(
+      includeFilter in gzip := "*.html" || "*.css" || "*.js",
+      pipelineStages := Seq(gzip)
     )
 
   def project(path: String): Project =
