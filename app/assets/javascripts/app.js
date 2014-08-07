@@ -19,6 +19,7 @@ define([
     './services/prodoffice-service',
 
     'lib/date-service',
+    'lib/analytics',
 
     'angular-bootstrap',
     'angular-xeditable',
@@ -32,6 +33,7 @@ define([
           'ngRoute',
           'dashboardControllers',
           'wfDateService',
+          'wfAnalytics',
           'workflow.services',
           'workflow.directives',
           'workflow.config',
