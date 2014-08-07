@@ -7,10 +7,7 @@ GET     /                                   controllers.Application.index
 GET     /dashboard                          controllers.Application.dashboard
 
 # Login
-GET        /login                           controllers.Login.login
-GET        /loginAction                     controllers.Login.loginAction
-GET        /oauth2callback                  controllers.Login.oauth2Callback
-GET        /logout                          controllers.Login.logout
+GET        /oauthCallback                   controllers.Login.oauthCallback
 
 # API
 GET     /api/content                        controllers.Api.content
