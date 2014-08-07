@@ -58,6 +58,7 @@ top: 0;
 bottom: 0;
 left: 0;
 overflow: auto;
+z-index: 100;
 /*background-color: green;*/
 }
 
@@ -77,6 +78,19 @@ overflow: auto;
     margin : 0;
     padding : 0 10px 10px 10px;
     border-bottom : 2px solid #eee;
+}
+
+.stubs-column__new-stub-wrapper {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+}
+
+.stubs-column__new-stub-cta {
+  margin: 10px;
+}
+
+.stubs-column__new-stub-cta-label {
+  margin-left: 10px;
 }
 
 .stub ul {
@@ -166,8 +180,6 @@ border-left: 1px solid #eee;
     display: block;
     padding: 20px;
 /*    margin: -20px;*/
-    overflow-x: hidden;
-    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
     background-color: #f5f5f5;
     border-right: 1px solid #eee;
     position: fixed;
@@ -209,15 +221,6 @@ h5.query {
 }
 
 
- /* Header bar */
-
-.header-bar {
-	height: 40px;
-	padding: 3px;
-	background-color: #adadad;
-
-}
-
 .date-filter__label{
   padding-right: 5px;
 }
@@ -243,24 +246,32 @@ h5.query {
  */
 .top-toolbar {
   display: flex;
+  height: 40px;
+  padding: 3px 200px 3px 0;
+  background-color: #adadad;
 }
 
+/* @override bootstrap */
+.top-toolbar .input-sm {
+  height: 34px;
+}
 
-.top-toolbar__new-stub {
+.top-toolbar__prod-office {
   width: 160px;
+  padding: 0 10px;
 }
 
 .top-toolbar__section-selector {
   width: 200px;
+  padding: 0 10px;
 }
 
 .top-toolbar__due-by-filter {
   margin: 0 auto;
 }
 
-.top-toolbar__location-picker {
-  width: 200px;
-  text-align: right;
+.sidebar__location-picker {
+  margin-bottom: 20px;
 }
 
 .status-cell {
