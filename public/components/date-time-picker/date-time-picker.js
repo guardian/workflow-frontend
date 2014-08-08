@@ -30,7 +30,7 @@ import './date-time-picker.css!';
 
 angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateService'])
 
-  .directive('wfDateTimePicker', ['$log', '$timeout', 'wfDateService', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', function($log, $timeout, wfDateService, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
+  .directive('wfDateTimePicker', ['$log', '$timeout', 'wfDateParser', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', function($log, $timeout, wfDateParser, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
 
     var pickerCount = 0;
 
@@ -66,7 +66,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
 
         this.onDatePicked = function(newValue) {
-          $scope.dateValue = wfDateService.parseDate(newValue);
+          $scope.dateValue = wfDateParser.parseDate(newValue);
 
           // Delay running onUpdate so digest can run and update dateValue properly.
           $timeout(function() {
@@ -79,7 +79,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
     };
   }])
 
-  .directive('wfDateTimeField', ['wfFormatDateTimeFilter', 'wfLocaliseDateTimeFilter', 'wfDateService', '$browser', '$log', function(wfFormatDateTimeFilter, wfLocaliseDateTimeFilter, wfDateService, $browser, $log) {
+  .directive('wfDateTimeField', ['wfFormatDateTimeFilter', 'wfLocaliseDateTimeFilter', 'wfDateParser', '$browser', '$log', function(wfFormatDateTimeFilter, wfLocaliseDateTimeFilter, wfDateParser, $browser, $log) {
 
     // Utility methods
     function isArrowKey(keyCode) {
@@ -133,7 +133,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         function parseDate(input) {
           if (!input) { return; }
           try {
-            return wfDateService.parseDate(input);
+            return wfDateParser.parseDate(input);
 
             // TODO: setInvalid when invalid date specified. How do we handle errors?
           }

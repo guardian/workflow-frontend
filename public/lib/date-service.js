@@ -60,9 +60,9 @@ function getTimezoneLocaleForLocation(location) {
 }
 
 angular.module('wfDateService', ['wfLocationService'])
-  .factory('wfDateService', ['wfLocaliseDateTimeFilter', 'wfLocationService', function(wfLocaliseDateTimeFilter, wfLocationService) {
+  .factory('wfDateParser', ['wfLocaliseDateTimeFilter', 'wfLocationService', function(wfLocaliseDateTimeFilter, wfLocationService) {
 
-    class DateService {
+    class DateParser {
 
       /**
        * Parses a Date from an input string.
@@ -97,7 +97,7 @@ angular.module('wfDateService', ['wfLocationService'])
       }
     }
 
-    return new DateService();
+    return new DateParser();
 
   }])
 
