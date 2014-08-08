@@ -25,26 +25,42 @@ import './location-service';
 moment.tz.load(timezoneData);
 
 
+// maps locations to their timezone data
+var timezones = {
+  'LON': {
+    tzKey: 'Europe/London',
+    locale: 'en-UK'
+  },
+
+  'NYC': {
+    tzKey: 'America/New_York',
+    locale: 'en-US'
+  },
+
+  'SYD': {
+    tzKey: 'Australia/Sydney',
+    locale: 'en-AU'
+  }
+};
+
+function getTimezoneForLocation(location) {
+  if (!timezones[location]) {
+    throw new Error('Unknown location: ' + location);
+  }
+
+  return timezones[location].tzKey;
+}
+
+function getTimezoneLocaleForLocation(location) {
+  if (!timezones[location]) {
+    throw new Error('Unknown location: ' + location);
+  }
+
+  return timezones[location].locale;
+}
+
 angular.module('wfDateService', ['wfLocationService'])
   .factory('wfDateService', ['wfLocationService', function(wfLocationService) {
-
-    // maps locations to their timezone data
-    var timezones = {
-      'LON': {
-        tzKey: 'Europe/London',
-        locale: 'en-UK'
-      },
-
-      'NYC': {
-        tzKey: 'America/New_York',
-        locale: 'en-US'
-      },
-
-      'SYD': {
-        tzKey: 'Australia/Sydney',
-        locale: 'en-AU'
-      }
-    };
 
     class DateService {
 
@@ -52,17 +68,16 @@ angular.module('wfDateService', ['wfLocationService'])
         return timezones[wfLocationService.getLocationKey(locationKey)];
       }
 
-      format(dateValue, dateFormat = 'ddd D MMM YYYY, HH:mm', locationKey = undefined) {
+      format(dateValue, dateFormat = 'ddd D MMM YYYY, HH:mm') {
         if (!dateValue) { return ''; }
 
         if (dateFormat == 'long') {
           dateFormat = 'dddd D MMMM YYYY, HH:mm z';
         }
 
-        var date = moment.tz(dateValue, this.getTimezone(locationKey).tzKey);
-
-        return date.format(dateFormat);
+        return moment(dateValue).format(dateFormat);
       }
+
 
       /**
        * Parses a Date from an input string.
@@ -71,6 +86,9 @@ angular.module('wfDateService', ['wfLocationService'])
        * @return {Date}
        */
       parse(input, locationKey) {
+        // TODO: parse input without any location, then use wfLocaliseDateTimeFilter to localise
+
+
         var timezone = this.getTimezone(locationKey),
 
         locale = timezone.locale,
@@ -91,12 +109,47 @@ angular.module('wfDateService', ['wfLocationService'])
 
         return moment.tz(parsedText, 'YYYY-MM-DD HH:mm', timezone.tzKey).toDate();
       }
+
+      /**
+       * Normalises a date input string to YYYY-MM-DD HH:mm, accepting
+       * natural language inputs such as "today", "tuesday next week 18:00"
+       */
+      normaliseDateString(input, location) {
+        var locale = timezones[location].locale,
+
+        // Parse input using sugar.js catering for natural language, ie: "next week"
+        parsed = moment(Date.create(input, locale));
+
+        if (!parsed.isValid()) {
+          throw new Error('Could not parse date: ' + input);
+        }
+
+        return parsed.format('YYYY-MM-DD HH:mm');
+      }
     }
 
     return new DateService();
 
   }])
 
-  .filter('wfFormatDateTime', ['wfDateService', function(wfDateService) {
-    return angular.bind(wfDateService, wfDateService.format);
+  .filter('wfLocaliseDateTime', ['wfLocationService', function(wfLocationService) {
+    return function(dateValue, location) {
+      if (!dateValue) { return dateValue; }
+
+      location = location || wfLocationService.getLocationKey();
+
+      return moment.tz(dateValue, getTimezoneForLocation(location)).toDate();
+    };
+  }])
+
+  .filter('wfFormatDateTime', [function() {
+    return function wfFormatDateTime(dateValue, dateFormat = 'ddd D MMM YYYY, HH:mm') {
+      if (!dateValue) { return ''; }
+
+      if (dateFormat == 'long') {
+        dateFormat = 'dddd D MMMM YYYY, HH:mm z';
+      }
+
+      return moment(dateValue).format(dateFormat);
+    };
   }]);

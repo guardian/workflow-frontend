@@ -42,7 +42,7 @@
                         <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
                         <span class="btn btn-default" title="Select date">
                             <span class="glyphicon glyphicon-calendar"></span>
-                            <select ng-model="selectedDate" ng-options="date as (date | wfFormatDateTime:'ddd D MMMM') for date in dateOptions">
+                            <select ng-model="selectedDate" ng-options="date as (date | wfLocaliseDateTime | wfFormatDateTime:'ddd D MMMM') for date in dateOptions">
                             </select>
                         </span>
                     </div>
@@ -60,13 +60,13 @@
                 <div class="sidebar__location-picker dropdown" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
                     <button class="dropdown-toggle btn btn-default btn-sm" type="button" id="locationDropdownButton">
                         {{ locationPicker.locations[locationPicker.locationKey].title }}
-                        <span class="sidebar__location-picker-localtime">{{ locationPicker.now | wfFormatDateTime:'HH:mm':key }}</span>
+                        <span class="sidebar__location-picker-localtime">{{ locationPicker.now | wfLocaliseDateTime | wfFormatDateTime:'HH:mm' }}</span>
                         <span class="caret"></span>
                     </button>
                     <ul class="sidebar__location-picker-menu dropdown-menu" role="menu" aria-labelledby="locationDropdownButton">
                         <li ng-repeat="(key, location) in locationPicker.locations">
                             <a class="sidebar__location-picker-menuitem" role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">
-                                <span class="sidebar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfFormatDateTime:'HH:mm z':key }}</span>
+                                <span class="sidebar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfLocaliseDateTime:key | wfFormatDateTime:'HH:mm z' }}</span>
                                 {{ location.title }}
                             </a>
                         </li>
@@ -157,7 +157,7 @@
             </div>
             <div ng-repeat="stub in stubs" class="stub">
                 <ul>
-                <li class="secondary-info">{{stub.due | wfFormatDateTime }}</li>
+                <li class="secondary-info">{{stub.due | wfLocaliseDateTime | wfFormatDateTime }}</li>
                 <li>
                     <span class="glyphicon glyphicon-file" ng-show="stub.contentType==='article'"></span>
                     <span class="glyphicon glyphicon-th-list" ng-show="stub.contentType==='liveblog'"></span>
@@ -231,7 +231,7 @@
                             </td>
                             <td>{{content.section}}</td>
                             <td>{{content.assignee}}</td>
-                            <td title="{{content.due | wfFormatDateTime:'long' }}">{{content.due | wfFormatDateTime }}</td>
+                            <td title="{{content.due | wfLocaliseDateTime | wfFormatDateTime:'long' }}">{{content.due | wfLocaliseDateTime | wfFormatDateTime }}</td>
                             <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
                                 <option ng-repeat="s in statuses">{{ s }}</option>
                             </select></td>
@@ -268,8 +268,8 @@
                 <dl>
                     <dt>Production deadline</dt>
                         <dd>
-                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }" title="{{ (selectedContent.due | wfFormatDateTime:'long') || '' }}">
-                                {{ (selectedContent.due | wfFormatDateTime) || 'None' }}
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'detail__data--editable': selectedContent.due, 'detail__data--editable-empty': !selectedContent.due }" title="{{ (selectedContent.due | wfLocaliseDateTime | wfFormatDateTime:'long') || '' }}">
+                                {{ (selectedContent.due | wfLocaliseDateTime | wfFormatDateTime) || 'None' }}
                             </span>
                             <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
                                 <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated(); dateTimeEdit = false" wf-small="true"></div>
@@ -278,8 +278,8 @@
                     <dt>Last launched</dt>
                         <dd>-</dd>
                     <dt>Last modified</dt>
-                        <dd title="{{ (selectedContent.lastModified | wfFormatDateTime:'long') || '-' }}">
-                            {{ (selectedContent.lastModified | wfFormatDateTime) || "-" }}
+                        <dd title="{{ (selectedContent.lastModified | wfLocaliseDateTime | wfFormatDateTime:'long') || '-' }}">
+                            {{ (selectedContent.lastModified | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
                         </dd>
                     <dt>Production Office</dt>
                         <dd><select id="stub_detail_prodOffice" name="prodOffice"
