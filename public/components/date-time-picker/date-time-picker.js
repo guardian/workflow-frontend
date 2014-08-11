@@ -60,7 +60,9 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         // Watch for model updates to dateValue, and update datePicker when changes
         $scope.$watch('dateValue', function(newValue) {
           if ($scope.datePickerValue != newValue) {
-            $scope.datePickerValue = newValue;
+
+            // Date picker will support a localised date when passed a moment object
+            $scope.datePickerValue = wfLocaliseDateTimeFilter(newValue);
           }
         });
 

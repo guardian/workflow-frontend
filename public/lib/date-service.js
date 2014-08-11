@@ -86,8 +86,14 @@ angular.module('wfDateService', ['wfLocationService'])
       normaliseDateString(input, locationKey) {
         locationKey = locationKey || wfLocationService.getLocationKey();
 
-        // Parse input using sugar.js catering for natural language, ie: "next week"
-        var parsed = moment(Date.create(input, getTimezoneLocaleForLocation(locationKey)));
+        var parsed;
+        if (moment.isMoment(input)) {
+          parsed = input;
+
+        } else {
+          // Parse input using sugar.js catering for natural language, ie: "next week"
+          parsed = moment(Date.create(input, getTimezoneLocaleForLocation(locationKey)));
+        }
 
         if (!parsed.isValid()) {
           throw new Error('Could not parse date: ' + input);
@@ -101,6 +107,10 @@ angular.module('wfDateService', ['wfLocationService'])
 
   }])
 
+  /**
+   * Localises a date input value to the specified value.
+   * @return {moment}
+   */
   .filter('wfLocaliseDateTime', ['wfLocationService', function(wfLocationService) {
     return function(dateValue, location) {
       if (!dateValue) { return dateValue; }
