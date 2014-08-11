@@ -30,7 +30,7 @@ import './date-time-picker.css!';
 
 angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateService'])
 
-  .directive('wfDateTimePicker', ['$log', '$timeout', 'wfDateService', function($log, $timeout, wfDateService) {
+  .directive('wfDateTimePicker', ['$log', '$timeout', 'wfDateParser', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', function($log, $timeout, wfDateParser, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
 
     var pickerCount = 0;
 
@@ -56,17 +56,19 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         this.textInputId = 'wfDateTimePickerText' + idSuffix;
         this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
 
-        $scope.datePickerValue = $scope.dateValue;
 
-        // Watch changes in the dateValue and its formatting, then update the datePicker
-        // Datepicker doesn't support timezones, so we must strip off the timezone before
-        // displaying the interface.
-        $scope.$on('location:change', function() {
-          $scope.datePickerValue = wfDateService.format($scope.dateValue, 'YYYY-MM-DDTHH:mm');
+        // Watch for model updates to dateValue, and update datePicker when changes
+        $scope.$watch('dateValue', function(newValue) {
+          if ($scope.datePickerValue != newValue) {
+
+            // Date picker will support a localised date when passed a moment object
+            $scope.datePickerValue = wfDateParser.normaliseDateString(wfLocaliseDateTimeFilter(newValue));
+          }
         });
 
+
         this.onDatePicked = function(newValue) {
-          $scope.dateValue = wfDateService.parse(newValue);
+          $scope.dateValue = wfDateParser.parseDate(newValue);
 
           // Delay running onUpdate so digest can run and update dateValue properly.
           $timeout(function() {
@@ -75,10 +77,11 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         };
       },
       controllerAs: 'dateTimePicker'
+
     };
   }])
 
-  .directive('wfDateTimeField', ['wfFormatDateTimeFilter', 'wfDateService', '$browser', '$log', function(wfFormatDateTimeFilter, wfDateService, $browser, $log) {
+  .directive('wfDateTimeField', ['wfFormatDateTimeFilter', 'wfLocaliseDateTimeFilter', 'wfDateParser', '$browser', '$log', function(wfFormatDateTimeFilter, wfLocaliseDateTimeFilter, wfDateParser, $browser, $log) {
 
     // Utility methods
     function isArrowKey(keyCode) {
@@ -108,7 +111,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         var updateOn = scope.updateOn || 'default';
 
         function formatText(input) {
-          return wfFormatDateTimeFilter(input, 'D MMM YYYY HH:mm');
+          return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(input), 'D MMM YYYY HH:mm');
         }
 
         function commitUpdate() {
@@ -132,7 +135,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         function parseDate(input) {
           if (!input) { return; }
           try {
-            return wfDateService.parse(input);
+            return wfDateParser.parseDate(input);
 
             // TODO: setInvalid when invalid date specified. How do we handle errors?
           }

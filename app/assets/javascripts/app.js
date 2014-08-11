@@ -20,6 +20,7 @@ define([
     'lib/date-service',
     'lib/filters-service',
     'lib/date-filters-service',
+    'lib/analytics',
 
     'angular-bootstrap',
     'angular-xeditable',
@@ -33,6 +34,7 @@ define([
           'ngRoute',
           'dashboardControllers',
           'wfDateService',
+          'wfAnalytics',
           'workflow.services',
           'workflow.directives',
           'workflow.config',
