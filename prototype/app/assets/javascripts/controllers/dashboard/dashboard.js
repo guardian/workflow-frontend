@@ -100,6 +100,8 @@ define([
                 method: 'PUT',
                 url: '/api/stubs/' + stubId + '/' + field,
                 data: {data: data}
+            }).success(function() {
+                $scope.$emit('content.edited', { 'content': $scope.selectedContent, 'field': field });
             });
         }
 
@@ -133,6 +135,8 @@ define([
                 method: 'PUT',
                 url: '/api/stubs/' + content.stubId + '/dueDate',
                 data: requestData || {}
+            }).success(function() {
+                $scope.$emit('content.edited', { 'content': content, 'field': 'dueDate' });
             });
         };
 
@@ -145,7 +149,10 @@ define([
                 $http({
                     method: 'DELETE',
                     url: 'api/content/' + content.composerId
-                }).success(function(){getContent();})
+                }).success(function(){
+                  $scope.$emit('content.deleted', { 'content': content });
+                  getContent();
+                });
             };
         }
 
@@ -172,7 +179,10 @@ define([
                 $http({
                     method: 'DELETE',
                     url: '/api/stubs/' + stub.id
-                }).success(getContent());
+                }).success(function() {
+                  $scope.$emit('stub.deleted', { 'content': stub });
+                  getContent();
+                });
             }
         };
 
