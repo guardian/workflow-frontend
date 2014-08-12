@@ -164,6 +164,25 @@ angular.module('wfDateService', ['wfLocationService'])
           return this.createDayRange(parsed);
         }
       }
+
+
+      /**
+       * Retrieves an Array of day starts for the localised week.
+       *
+       * @returns {Array.<Date>}
+       */
+      getDaysThisWeek(locationKey) {
+        var today = wfLocaliseDateTimeFilter(this.now(), locationKey).startOf('day'),
+
+        choices = [ today.toDate() ];
+
+        for (var i = 1; i < 7; i++) {
+          choices.push(today.clone().add('days', i).toDate());
+        }
+
+        return choices;
+      }
+
     }
 
     return new DateParser();
