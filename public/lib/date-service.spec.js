@@ -59,7 +59,7 @@ describe('lib/date-service', function() {
   });
 
   // integration tests to parse a date range
-  describe('wfDateParser.parseRange()', function() {
+  describe('wfDateParser.parseRangeFromString()', function() {
 
     it('should parse range for today in LON', function() {
 
@@ -67,7 +67,7 @@ describe('lib/date-service', function() {
 
         sinon.stub(wfDateParser, 'now').returns(new Date('2014-10-07T06:48:32Z'));
 
-        var parsed = wfDateParser.parseRange('today', 'LON');
+        var parsed = wfDateParser.parseRangeFromString('today', 'LON');
 
         expect(parsed).not.to.be.null;
         expect(parsed.from).to.be.an.instanceof(Date);
@@ -87,7 +87,7 @@ describe('lib/date-service', function() {
 
         sinon.stub(wfDateParser, 'now').returns(new Date('2014-10-07T06:48:32Z'));
 
-        var parsed = wfDateParser.parseRange('tomorrow', 'LON');
+        var parsed = wfDateParser.parseRangeFromString('tomorrow', 'LON');
 
         expect(parsed).not.to.be.null;
         expect(parsed.from).to.be.an.instanceof(Date);
@@ -107,7 +107,7 @@ describe('lib/date-service', function() {
 
         sinon.stub(wfDateParser, 'now').returns(new Date('2014-10-07T06:48:32Z'));
 
-        var parsed = wfDateParser.parseRange('weekend', 'LON');
+        var parsed = wfDateParser.parseRangeFromString('weekend', 'LON');
 
         expect(parsed).not.to.be.null;
         expect(parsed.from).to.be.an.instanceof(Date);
@@ -127,7 +127,7 @@ describe('lib/date-service', function() {
 
         sinon.stub(wfDateParser, 'now').returns(new Date('2014-10-07T06:48:32Z'));
 
-        var parsed = wfDateParser.parseRange('tomorrow', 'NYC');
+        var parsed = wfDateParser.parseRangeFromString('tomorrow', 'NYC');
 
         expect(parsed).not.to.be.null;
         expect(parsed.from).to.be.an.instanceof(Date);
@@ -147,7 +147,7 @@ describe('lib/date-service', function() {
 
         sinon.stub(wfDateParser, 'now').returns(new Date('2014-10-07T06:48:32Z'));
 
-        var parsed = wfDateParser.parseRange('tomorrow', 'SYD');
+        var parsed = wfDateParser.parseRangeFromString('tomorrow', 'SYD');
 
         expect(parsed).not.to.be.null;
         expect(parsed.from).to.be.an.instanceof(Date);
@@ -156,6 +156,24 @@ describe('lib/date-service', function() {
         // 2014-10-11 is +1100
         expect(parsed.from.toISOString()).to.eql('2014-10-07T13:00:00.000Z');
         expect(parsed.until.toISOString()).to.eql('2014-10-08T13:00:00.000Z');
+      });
+
+    });
+
+
+    it('should parse day range for specified date in SYD', function() {
+
+      angular.mock.inject(function(wfDateParser) {
+
+        var parsed = wfDateParser.parseRangeFromString('2014-08-14', 'SYD');
+
+        expect(parsed).not.to.be.null;
+        expect(parsed.from).to.be.an.instanceof(Date);
+        expect(parsed.until).to.be.an.instanceof(Date);
+
+        // 2014-08-14 is +1000
+        expect(parsed.from.toISOString()).to.eql('2014-08-13T14:00:00.000Z');
+        expect(parsed.until.toISOString()).to.eql('2014-08-14T14:00:00.000Z');
       });
 
     });
