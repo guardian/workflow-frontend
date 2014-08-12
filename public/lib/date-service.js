@@ -106,43 +106,63 @@ angular.module('wfDateService', ['wfLocationService'])
         return new Date();
       }
 
-      parseRange(startDate, endDate, locationKey) {
-        if (!locationKey && typeof(endDate) === 'string') {
-          locationKey = endDate;
-          endDate = undefined;
-        }
+      /**
+       * Retrieve a date range between two explicit dates.
+       *
+       * @returns {{from: Date, to: Date}}
+       */
+      createRange(from, until) {
+        return {
+          from: moment(from).toDate(),
+          until: moment(until).toDate()
+        };
+      }
+
+      /**
+       * Retrieve a range from the start of a day, til the start of the next.
+       *
+       * @returns {{from: Date, to: Date}}
+       */
+      createDayRange(day) {
+        var dayStart = moment(day).startOf('day');
+
+        return this.createRange(dayStart, dayStart.clone().add(1, 'days'));
+      }
+
+      /**
+       * Parses a date range using simple natural language strings
+       * (eg: "tomorrow") and explicit standard date formatted date strings,
+       * such as in YYYY-MM-DD.
+       *
+       * @returns {{from: Date, to: Date}}
+       */
+      parseRangeFromString(input, locationKey) {
 
         var now = wfLocaliseDateTimeFilter(this.now(), locationKey).clone();
 
-        function createRange(momentFrom, momentUntil) {
-          return {
-            from: momentFrom.toDate(),
-            until: momentUntil.toDate()
-          };
-        }
 
-        function dayRange(day) {
-          var dayStart = day.startOf('day');
+        // Parses some natural language dates - doesn't use sugar as I'd like
+        // to remove it as a dependency one day as it modifies the global Date object
+        if (input == 'today') {
+          return this.createDayRange(now);
 
-          return createRange(dayStart, dayStart.clone().add(1, 'days'));
-        }
+        } else if (input == 'tomorrow') {
+          return this.createDayRange(now.add(1, 'days'));
 
-        if (startDate == 'today') {
-          return dayRange(now);
-
-        } else if (startDate == 'tomorrow') {
-          return dayRange(now.add(1, 'days'));
-
-        } else if (startDate == 'weekend') {
+        } else if (input == 'weekend') {
           var weekendStart = now.day(6).startOf('day');
 
-          return createRange(weekendStart, weekendStart.clone().add(2, 'days'));
+          return this.createRange(weekendStart, weekendStart.clone().add(2, 'days'));
 
+        } else {
+          var parsed = wfLocaliseDateTimeFilter(input, locationKey);
+
+          if (!parsed.isValid()) {
+            throw new Error('Could not parse date: ' + input);
+          }
+
+          return this.createDayRange(parsed);
         }
-
-        // TODO: range for a specific day / date-range
-
-        throw 'fail!';
       }
     }
 
