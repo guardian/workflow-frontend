@@ -4,10 +4,21 @@
   "author": "Guardian Digital CMS team",
   "private": true,
   "devDependencies": {
-    "jspm": "^0.6.5"
+    "chai": "^1.9.1",
+    "jspm": "^0.6.5",
+    "karma": "^0.12.21",
+    "karma-chai": "^0.1.0",
+    "karma-cli": "0.0.4",
+    "karma-mocha": "^0.1.6",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sinon": "^1.0.3",
+    "sinon": "^1.10.3"
   },
   "repository": {
     "type": "git",
-    "url" : "https://github.com/guardian/workflow.git"
+    "url": "https://github.com/guardian/workflow.git"
+  },
+  "scripts": {
+    "test": "karma start"
   }
 }
