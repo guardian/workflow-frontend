@@ -101,6 +101,49 @@ angular.module('wfDateService', ['wfLocationService'])
 
         return parsed.format('YYYY-MM-DD HH:mm');
       }
+
+      now() {
+        return new Date();
+      }
+
+      parseRange(startDate, endDate, locationKey) {
+        if (!locationKey && typeof(endDate) === 'string') {
+          locationKey = endDate;
+          endDate = undefined;
+        }
+
+        var now = wfLocaliseDateTimeFilter(this.now(), locationKey).clone();
+
+        function createRange(momentFrom, momentUntil) {
+          return {
+            from: momentFrom.toDate(),
+            until: momentUntil.toDate()
+          };
+        }
+
+        function dayRange(day) {
+          var dayStart = day.startOf('day');
+
+          return createRange(dayStart, dayStart.clone().add(1, 'days'));
+        }
+
+        if (startDate == 'today') {
+          return dayRange(now);
+
+        } else if (startDate == 'tomorrow') {
+          return dayRange(now.add(1, 'days'));
+
+        } else if (startDate == 'weekend') {
+          var weekendStart = now.day(6).startOf('day');
+
+          return createRange(weekendStart, weekendStart.clone().add(2, 'days'));
+
+        }
+
+        // TODO: range for a specific day / date-range
+
+        throw 'fail!';
+      }
     }
 
     return new DateParser();
