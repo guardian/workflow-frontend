@@ -167,6 +167,12 @@ define([
                             });
                         }
                         response.success(function(){
+                            // emit event
+                            //   stubs with ids are being edited and not new
+                            var eventName = (stub.id) ? 'stub.edited' : 'stub.created';
+
+                            $scope.$emit(eventName, { 'content': newStub });
+
                             $scope.$emit('getContent');
                         });
                     });
@@ -177,7 +183,7 @@ define([
     // composer import control
     // stub create and edit
 
-     var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, sections, legalStatesService, composerService, stub) {
+     var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService, composerService, prodOfficeService) {
 
         $scope.stub = stub;
 
@@ -230,6 +236,7 @@ define([
 
         $scope.sections = sections;
         $scope.legalStates = legalStatesService.getLegalStates();
+        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.ok = function () {
             $modalInstance.close({
@@ -247,6 +254,7 @@ define([
         'sections',
         'legalStatesService',
         'composerService',
+        'prodOfficeService',
         ComposerImportModalInstanceCtrl]);
 
     dashboardControllers.controller('ComposerImportModalCtrl', ['$scope',
@@ -290,6 +298,8 @@ define([
                             url: '/api/stubs',
                             data: newStub
                         }).success(function(){
+                            $scope.$emit('content.imported', { 'content': newStub });
+
                             $scope.$emit('getContent');
                         });
                 });
@@ -348,6 +358,12 @@ define([
                             url: '/api/stubs/' + stub.id,
                             params: {'composerId': composerId, 'contentType': type}
                         }).success(function(){
+                            $scope.$emit('content.statusChanged', {
+                              content: stub,
+                              status: 'Writers',
+                              oldStatus: 'Stub'
+                            });
+
                             $scope.$emit('getContent');
                         });
                     });
