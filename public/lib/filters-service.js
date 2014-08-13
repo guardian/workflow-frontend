@@ -4,10 +4,11 @@ import moment from 'moment';
 import './url-service';
 import './format-service';
 import './date-filters-service';
+import './date-service';
 
-angular.module('filtersService', ['urlService', 'formatService', 'dateFilters'])
-       .factory('filtersService', ['$rootScope', 'urlService', 'formatService', 'dateFilters',
-        function($rootScope, urlService, formatService, dateFilters) {
+angular.module('filtersService', ['urlService', 'formatService', 'dateFilters', 'wfDateService'])
+       .factory('filtersService', ['$rootScope', 'urlService', 'formatService', 'dateFilters', 'wfDateParser',
+        function($rootScope, urlService, formatService, dateFilters, wfDateParser) {
 
         class FiltersService
         {
@@ -77,7 +78,7 @@ angular.module('filtersService', ['urlService', 'formatService', 'dateFilters'])
                 params.flags = this.filters['flags'];
                 params.prodOffice = this.filters['prodOffice'];
 
-                var dateParams = dateFilters.setToAndFrom(this.filters['selectedDate']);
+                var dateParams = wfDateParser.parseRangeFromString(this.filters['selectedDate']);
 
                 params['due.from'] = formatService.dateForUri(dateParams['due.from']);
                 params['due.until'] = formatService.dateForUri(dateParams['due.until']);
