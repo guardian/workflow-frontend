@@ -227,7 +227,9 @@
                             <td>
                                 <span class="glyphicon glyphicon-eye-open"  ng-show="content.needsLegal === 'REQUIRED'"></span>
                             </td>
-                            <td colspan="2 "><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a>
+                            <td colspan="2 ">
+                                <p><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a></p>
+                                <p class="content-list__item-row-note" ng-show="content.note && content.note.length > 0"><span>Note:</span> {{content.note}}</p>
                             </td>
                             <td>{{content.section}}</td>
                             <td>{{content.assignee}}</td>
