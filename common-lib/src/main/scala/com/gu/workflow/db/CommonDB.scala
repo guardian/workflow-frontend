@@ -44,6 +44,22 @@ object CommonDB {
 
   def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
 
+  def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
+    (
+      //content item has been published within last 24 hours
+      (c.timePublished.isNull || c.timePublished > DateTime.now().minusDays(1)) &&
+
+      //content has been modified within last 7 days
+      (c.lastModified.isNull || c.lastModified > DateTime.now().minusDays(7)) &&
+
+      //due date is within last 7 days
+      (s.due.isNull || s.due > DateTime.now().minusDays(7))
+
+      //or item has a status of hold
+      || c.status === Status("Hold").name
+    )
+  }
+
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
     DB.withTransaction { implicit session =>
       val contentExists = content.filter(_.composerId === wc.composerId).exists.run
