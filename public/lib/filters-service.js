@@ -6,10 +6,52 @@ import './format-service';
 import './date-filters-service';
 
 angular.module('filtersService', ['urlService', 'formatService', 'dateFilters'])
-       .factory('filtersService', function(urlService, formatService, dateFilters) {
+       .factory('filtersService', ['$rootScope', 'urlService', 'formatService', 'dateFilters',
+        function($rootScope, urlService, formatService, dateFilters) {
 
         class FiltersService
         {
+
+            attachListeners() {
+                var self = this;
+                $rootScope.$on('filtersChanged.prodOffice', function(event, data) {
+                    self.update('prodOffice', data);
+                    $rootScope.$broadcast('getContent');
+                });
+                $rootScope.$on('filtersChanged.content-type', function(event, data) {
+                    self.update('content-type', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
+                $rootScope.$on('filtersChanged.section', function(event, data) {
+                    self.update('section', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
+                $rootScope.$on('filtersChanged.state', function(event, data) {
+                    self.update('state', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
+                $rootScope.$on('filtersChanged.status', function(event, data) {
+                    self.update('status', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
+                $rootScope.$on('filtersChanged.flags', function(event, data) {
+                    self.update('flags', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
+                $rootScope.$on('filtersChanged.selectedDate', function(event, data) {
+                    self.update('selectedDate', data);
+                    $rootScope.$broadcast('getContent');
+                });
+            }
+
+            init() {
+                this.attachListeners()
+            }
 
             constructor()
             {
@@ -22,6 +64,8 @@ angular.module('filtersService', ['urlService', 'formatService', 'dateFilters'])
                 this.filters['flags'] = formatService.stringToArray(urlService.get('flags'));
                 this.filters['prodOffice'] = urlService.get('prodOffice');
             }
+
+
 
             toServerParams()
             {
@@ -43,7 +87,6 @@ angular.module('filtersService', ['urlService', 'formatService', 'dateFilters'])
 
             update(key, value) {
                 this.filters[key] = value;
-                urlService.set(key, formatService.objToStr(value));
             }
 
             get(key){
@@ -54,43 +97,8 @@ angular.module('filtersService', ['urlService', 'formatService', 'dateFilters'])
         return new FiltersService();
 
 
-    })
+    }])
 
-    .run(['$rootScope', 'filtersService', function($rootScope, filtersService){
-
-        $rootScope.$on('filtersChanged.prodOffice', function(event, data) {
-            filtersService.update('prodOffice', data);
-            $rootScope.$broadcast('getContent');
-        });
-
-        $rootScope.$on('filtersChanged.content-type', function(event, data) {
-            filtersService.update('content-type', data);
-            $rootScope.$broadcast('getContent');
-        });
-
-        $rootScope.$on('filtersChanged.section', function(event, data) {
-            filtersService.update('section', data);
-            $rootScope.$broadcast('getContent');
-        });
-
-        $rootScope.$on('filtersChanged.state', function(event, data) {
-            filtersService.update('state', data);
-            $rootScope.$broadcast('getContent');
-        });
-
-        $rootScope.$on('filtersChanged.status', function(event, data) {
-            filtersService.update('status', data);
-            $rootScope.$broadcast('getContent');
-        });
-
-        $rootScope.$on('filtersChanged.flags', function(event, data) {
-            filtersService.update('flags', data);
-            $rootScope.$broadcast('getContent');
-        });
-
-        $rootScope.$on('filtersChanged.selectedDate', function(event, data) {
-            filtersService.update('selectedDate', data);
-            $rootScope.$broadcast('getContent');
-        });
-
+    .run(['filtersService', function(filtersService){
+        filtersService.init();
     }]);
