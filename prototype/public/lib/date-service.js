@@ -101,6 +101,88 @@ angular.module('wfDateService', ['wfLocationService'])
 
         return parsed.format('YYYY-MM-DD HH:mm');
       }
+
+      now() {
+        return new Date();
+      }
+
+      /**
+       * Retrieve a date range between two explicit dates.
+       *
+       * @returns {{from: Date, to: Date}}
+       */
+      createRange(from, until) {
+        return {
+          from: moment(from).toDate(),
+          until: moment(until).toDate()
+        };
+      }
+
+      /**
+       * Retrieve a range from the start of a day, til the start of the next.
+       *
+       * @returns {{from: Date, to: Date}}
+       */
+      createDayRange(day) {
+        var dayStart = moment(day).startOf('day');
+
+        return this.createRange(dayStart, dayStart.clone().add(1, 'days'));
+      }
+
+      /**
+       * Parses a date range using simple natural language strings
+       * (eg: "tomorrow") and explicit standard date formatted date strings,
+       * such as in YYYY-MM-DD.
+       *
+       * @returns {{from: Date, to: Date}}
+       */
+      parseRangeFromString(input, locationKey) {
+
+        var now = wfLocaliseDateTimeFilter(this.now(), locationKey).clone();
+
+
+        // Parses some natural language dates - doesn't use sugar as I'd like
+        // to remove it as a dependency one day as it modifies the global Date object
+        if (input == 'today') {
+          return this.createDayRange(now);
+
+        } else if (input == 'tomorrow') {
+          return this.createDayRange(now.add(1, 'days'));
+
+        } else if (input == 'weekend') {
+          var weekendStart = now.day(6).startOf('day');
+
+          return this.createRange(weekendStart, weekendStart.clone().add(2, 'days'));
+
+        } else {
+          var parsed = wfLocaliseDateTimeFilter(input, locationKey);
+
+          if (!parsed.isValid()) {
+            throw new Error('Could not parse date: ' + input);
+          }
+
+          return this.createDayRange(parsed);
+        }
+      }
+
+
+      /**
+       * Retrieves an Array of day starts for the localised week.
+       *
+       * @returns {Array.<Date>}
+       */
+      getDaysThisWeek(locationKey) {
+        var today = wfLocaliseDateTimeFilter(this.now(), locationKey).startOf('day'),
+
+        choices = [ today.toDate() ];
+
+        for (var i = 1; i < 7; i++) {
+          choices.push(today.clone().add('days', i).toDate());
+        }
+
+        return choices;
+      }
+
     }
 
     return new DateParser();
