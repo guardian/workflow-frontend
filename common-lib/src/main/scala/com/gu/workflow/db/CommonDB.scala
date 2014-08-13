@@ -45,20 +45,24 @@ object CommonDB {
   def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
 
   def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
-    pastDisplayTime(s, c) ||
+    withinDisplayTime(s, c) ||
     //or item has a status of hold
     c.status === Status("Hold").name
   }
 
-  def pastDisplayTime(s: Schema.DBStub, c: Schema.DBContent) = {
+  def withinDisplayTime(s: Schema.DBStub, c: Schema.DBContent) = {
+    def publishedWithinLastDay = c.timePublished > DateTime.now().minusDays(1)
+    def dueDateWithinLastWeek =  s.due > DateTime.now().minusDays(7)
+    def lastModifiedWithinWeek = c.lastModified > DateTime.now().minusDays(7)
+    def dueDateInFuture = s.due > DateTime.now()
+
     //content item has been published within last 24 hours
-    ((c.timePublished.isNull || c.timePublished > DateTime.now().minusDays(1)) &&
+    ((publishedWithinLastDay || c.timePublished.isNull) &&
 
-    //content has been modified within last 7 days
-    (c.lastModified.isNull || c.lastModified > DateTime.now().minusDays(7)) &&
+    (dueDateWithinLastWeek || s.due.isNull ) &&
 
-    //due date is within last 7 days
-    (s.due.isNull || s.due > DateTime.now().minusDays(7)))
+    (lastModifiedWithinWeek || c.lastModified.isNull || dueDateInFuture))
+
   }
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
