@@ -67,7 +67,8 @@ object PostgresDB {
                   lastMod,
                   lastModBy,
                   commentable,
-                  published
+                  published,
+                  timePublished
                 )
               )
       }
