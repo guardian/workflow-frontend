@@ -30,6 +30,15 @@ tr td {
 	font-size: 90%;
 }
 
+.content-list__item-row-note {
+	font-size: 80%;
+	font-style: italic;
+	max-width: 250px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
 .content-list__item-row--selected {
   background-color: #f9f9f9;
 }
