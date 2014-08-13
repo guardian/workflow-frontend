@@ -30,7 +30,7 @@ tr td {
 	font-size: 90%;
 }
 
-.contentNote {
+.content-list__item-row-note {
 	font-size: 80%;
 	font-style: italic;
 	max-width: 250px;
