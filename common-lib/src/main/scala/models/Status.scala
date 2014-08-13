@@ -22,4 +22,5 @@ object Status {
   def Subs = Status("Subs")
   def Revise = Status("Revise")
   def Final = Status("Final")
+  def Hold = Status("Hold")
 }
