@@ -12,9 +12,9 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', '$interval', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService',
+        ['$scope','$http', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService', 'wfContentPollingService',
 
-        function($scope, $http, $interval, urlParser, statuses, sections, legalStatesService, config, prodOfficeService) {
+        function($scope, $http, urlParser, statuses, sections, legalStatesService, config, prodOfficeService, wfContentPollingService) {
 
          //initialise the model from the url
          var initialParams = urlParser.parseUrl;
@@ -49,12 +49,21 @@ define([
 
         $scope.statuses = statuses;
 
+        // Poll for updates
+        var poller = new wfContentPollingService();
 
-        function poll() {
-          getContent();
-        }
+        poller.startPolling(buildContentParams, function(data) {
+          $scope.contentItems = data.content;
+          $scope.stubs = data.stubs;
+          $scope.contentByStatus = groupByStatus(data.content);
+        });
 
-        $interval(poll, 5000);
+        $scope.$on('destroy', function() {
+          poller.stopPolling();
+        });
+
+        // end polling logic
+
 
         function buildContentParams() {
             var params = angular.copy($scope.filters);
