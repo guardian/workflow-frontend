@@ -78,7 +78,7 @@ angular.module('filtersService', ['urlService', 'formatService', 'dateFilters', 
                 params.flags = this.filters['flags'];
                 params.prodOffice = this.filters['prodOffice'];
 
-                var dateParams = wfDateParser.parseRangeFromString(this.filters['selectedDate']);
+                var dateParams = dateFilters.setToAndFrom(this.filters['selectedDate']);
 
                 params['due.from'] = formatService.dateForUri(dateParams['due.from']);
                 params['due.until'] = formatService.dateForUri(dateParams['due.until']);
