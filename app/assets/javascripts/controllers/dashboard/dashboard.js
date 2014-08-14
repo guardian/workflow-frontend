@@ -12,9 +12,9 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService', 'wfContentPollingService',
+        ['$scope','$http', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService', 'wfContentService', 'wfContentPollingService',
 
-        function($scope, $http, urlParser, statuses, sections, legalStatesService, config, prodOfficeService, wfContentPollingService) {
+        function($scope, $http, urlParser, statuses, sections, legalStatesService, config, prodOfficeService, wfContentService, wfContentPollingService) {
 
          //initialise the model from the url
          var initialParams = urlParser.parseUrl;
@@ -28,10 +28,8 @@ define([
 
         var getContent = function(evt, params) {
             var params = buildContentParams();
-            $http.get('/api/content', {params: params}).success(function(response){
-                $scope.contentItems = response.content;
-                $scope.stubs = response.stubs;
-                $scope.contentByStatus = groupByStatus(response.content);
+            wfContentService.get(params).success(function(response){
+                updateScopeModels(response);
                 urlParser.setUrl(params);
             });
         };
@@ -49,14 +47,25 @@ define([
 
         $scope.statuses = statuses;
 
-        // Poll for updates
-        var poller = new wfContentPollingService();
 
-        poller.startPolling(buildContentParams, function(data) {
+        // Update models in the scope when data is retrieved
+        function updateScopeModels(data) {
           $scope.contentItems = data.content;
           $scope.stubs = data.stubs;
           $scope.contentByStatus = groupByStatus(data.content);
-        });
+
+          if ($scope.selectedContent) {
+            var found = _.findWhere(data.content, { composerId: $scope.selectedContent.composerId });
+
+            // found will be undefined when not found -> when something is deleted.
+            $scope.selectedContent = found;
+          }
+        }
+
+        // Poll for updates
+        var poller = new wfContentPollingService();
+
+        poller.startPolling(buildContentParams, updateScopeModels);
 
         $scope.$on('destroy', function() {
           poller.stopPolling();
