@@ -155,7 +155,7 @@
                     </ul>
                 </div>
             </div>
-            <div ng-repeat="stub in stubs" class="stub">
+            <div ng-repeat="stub in stubs track by stub.id" class="stub">
                 <ul>
                 <li class="secondary-info">{{stub.due | wfLocaliseDateTime | wfFormatDateTime }}</li>
                 <li>
@@ -208,7 +208,7 @@
                             <td colspan="12" ng-show="contentByStatus[status]" class="status-cell" style="height: 15px;
     padding: 5px;">{{ status }}</td>
                         </tr>
-                        <tr ng-repeat="content in contentByStatus[status]" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content" ng-show="content.status==status" ng-class="{ 'content-list__item-row--selected': selectedContent === content }">
+                        <tr ng-repeat="content in contentByStatus[status] track by content.composerId" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content" ng-show="content.status==status" ng-class="{ 'content-list__item-row--selected': selectedContent === content }">
 
                             <td>
                                 <span class="glyphicon glyphicon-file" ng-show="content.contentType==='article'"></span>
