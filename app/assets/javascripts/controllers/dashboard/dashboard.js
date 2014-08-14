@@ -12,9 +12,9 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService',
+        ['$scope','$http', '$interval', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService',
 
-        function($scope, $http, urlParser, statuses, sections, legalStatesService, config, prodOfficeService) {
+        function($scope, $http, $interval, urlParser, statuses, sections, legalStatesService, config, prodOfficeService) {
 
          //initialise the model from the url
          var initialParams = urlParser.parseUrl;
@@ -48,6 +48,13 @@ define([
         $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.statuses = statuses;
+
+
+        function poll() {
+          getContent();
+        }
+
+        $interval(poll, 5000);
 
         function buildContentParams() {
             var params = angular.copy($scope.filters);
