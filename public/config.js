@@ -38,7 +38,8 @@ System.config({
     "json": "github:systemjs/plugin-json@master",
     "angular-mocks": "github:angular/bower-angular-mocks@^1.2.7",
     "mixpanel": "github:mixpanel/mixpanel-js@^2.2.2",
-    "ua-parser": "github:faisalman/ua-parser-js@^0.7.0"
+    "ua-parser": "github:faisalman/ua-parser-js@^0.7.0",
+    "angular-animate": "github:angular/bower-angular-animate@^1.2.22"
   }
 });
 
@@ -62,9 +63,10 @@ System.config({
     "github:components/jquery": "1.11.1",
     "github:systemjs/plugin-css": "0.1.0",
     "github:moment/moment-timezone": "0.2.1",
-    "github:angular/bower-angular-mocks": "1.2.7",
-    "github:mixpanel/mixpanel-js": "2.2.2",
-    "github:faisalman/ua-parser-js": "0.7.0"
+    "github:angular/bower-angular-mocks": "1.2.22",
+    "github:mixpanel/mixpanel-js": "2.2.3",
+    "github:faisalman/ua-parser-js": "0.7.0",
+    "github:angular/bower-angular-animate": "1.2.22"
   }
 });
 

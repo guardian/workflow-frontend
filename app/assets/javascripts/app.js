@@ -23,7 +23,8 @@ define([
 
     'angular-bootstrap',
     'angular-xeditable',
-    'angular-route'
+    'angular-route',
+    'angular-animate/angular-animate.min'
 
     ], function (angular, filters, services, directives, config, controllers) {
 
@@ -31,6 +32,7 @@ define([
 
         var app =  angular.module('workflow', [
           'ngRoute',
+          'ngAnimate',
           'dashboardControllers',
           'wfDateService',
           'wfAnalytics',
