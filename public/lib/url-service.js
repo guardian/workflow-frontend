@@ -1,7 +1,7 @@
 import angular from 'angular';
 
-angular.module('urlService', []).factory('urlService', ['$location', '$rootScope', 'formatService', 'wfDateParser',
-    function($location, $rootScope, formatService, wfDateParser){
+angular.module('urlService', []).factory('urlService', ['$location', '$rootScope', 'wfDateParser',
+    function($location, $rootScope, wfDateParser){
 
     class UrlService {
 
@@ -31,7 +31,6 @@ angular.module('urlService', []).factory('urlService', ['$location', '$rootScope
         }
 
         init() {
-            console.log('calling init');
             this.attachListeners()
         }
         constructor() {

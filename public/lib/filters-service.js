@@ -2,13 +2,12 @@ import angular from 'angular';
 import moment from 'moment';
 
 import './url-service';
-import './format-service';
 import './date-filters-service';
 import './date-service';
 
-angular.module('filtersService', ['urlService', 'formatService', 'dateFilters', 'wfDateService'])
-       .factory('filtersService', ['$rootScope', 'urlService', 'formatService', 'dateFilters', 'wfDateParser', 'wfFormatDateTimeFilter',
-        function($rootScope, urlService, formatService, dateFilters, wfDateParser, wfFormatDateTimeFilter) {
+angular.module('filtersService', ['urlService', 'dateFilters', 'wfDateService'])
+       .factory('filtersService', ['$rootScope', 'urlService', 'dateFilters', 'wfDateParser', 'wfFormatDateTimeFilter',
+        function($rootScope, urlService, dateFilters, wfDateParser, wfFormatDateTimeFilter) {
 
         class FiltersService
         {
@@ -63,12 +62,10 @@ angular.module('filtersService', ['urlService', 'formatService', 'dateFilters', 
                 this.filters['state'] = urlService.get('state');
                 this.filters['section'] = urlService.get('section');
                 this.filters['content-type'] = urlService.get('content-type');
-                this.filters['selectedDate'] = wfDateParser.parseQueryString(selectedDate);;
-                this.filters['flags'] = formatService.stringToArray(urlService.get('flags'));
+                this.filters['selectedDate'] = wfDateParser.parseQueryString(selectedDate);
+                this.filters['flags'] = urlService.get('flags') || [];
                 this.filters['prodOffice'] = urlService.get('prodOffice');
             }
-
-
 
             toServerParams()
             {
@@ -94,6 +91,7 @@ angular.module('filtersService', ['urlService', 'formatService', 'dateFilters', 
             get(key){
                 return this.filters[key];
             }
+
         }
 
         return new FiltersService();
