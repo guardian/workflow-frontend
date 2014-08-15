@@ -53,6 +53,11 @@ angular.module('filtersService', ['urlService', 'dateFilters', 'wfDateService'])
                 this.attachListeners()
             }
 
+            stringToArray(value) {
+                if(value) return value.split(",");
+                else return [];
+            }
+
             constructor()
             {
                 var selectedDate = urlService.get('selectedDate');
@@ -63,7 +68,7 @@ angular.module('filtersService', ['urlService', 'dateFilters', 'wfDateService'])
                 this.filters['section'] = urlService.get('section');
                 this.filters['content-type'] = urlService.get('content-type');
                 this.filters['selectedDate'] = wfDateParser.parseQueryString(selectedDate);
-                this.filters['flags'] = urlService.get('flags') || [];
+                this.filters['flags'] = this.stringToArray(urlService.get('flags'));
                 this.filters['prodOffice'] = urlService.get('prodOffice');
             }
 
