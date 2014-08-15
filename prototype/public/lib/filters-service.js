@@ -1,13 +1,12 @@
 import angular from 'angular';
 import moment from 'moment';
 
-import './url-service';
 import './date-filters-service';
 import './date-service';
 
-angular.module('filtersService', ['urlService', 'dateFilters', 'wfDateService'])
-       .factory('filtersService', ['$rootScope', 'urlService', 'dateFilters', 'wfDateParser', 'wfFormatDateTimeFilter',
-        function($rootScope, urlService, dateFilters, wfDateParser, wfFormatDateTimeFilter) {
+angular.module('filtersService', ['dateFilters', 'wfDateService'])
+       .factory('filtersService', ['$rootScope', '$location', 'dateFilters', 'wfDateParser', 'wfFormatDateTimeFilter',
+        function($rootScope, $location, dateFilters, wfDateParser, wfFormatDateTimeFilter) {
 
         class FiltersService
         {
@@ -60,16 +59,19 @@ angular.module('filtersService', ['urlService', 'dateFilters', 'wfDateService'])
 
             constructor()
             {
-                var selectedDate = urlService.get('selectedDate');
+                var params = $location.search();
+
+                var selectedDate = params['selectedDate'];
 
                 this.filters = {};
-                this.filters['status'] = urlService.get('status');
-                this.filters['state'] = urlService.get('state');
-                this.filters['section'] = urlService.get('section');
-                this.filters['content-type'] = urlService.get('content-type');
+                this.filters['status'] = params['status'];
+                this.filters['state'] = params['state'];
+                this.filters['section'] = params['section'];
+                this.filters['content-type'] = params['content-type'];
                 this.filters['selectedDate'] = wfDateParser.parseQueryString(selectedDate);
-                this.filters['flags'] = this.stringToArray(urlService.get('flags'));
-                this.filters['prodOffice'] = urlService.get('prodOffice');
+                this.filters['flags'] = this.stringToArray(params['flags']);
+                this.filters['prodOffice'] = params['prodOffice'];
+
             }
 
             toServerParams()
@@ -90,7 +92,15 @@ angular.module('filtersService', ['urlService', 'dateFilters', 'wfDateService'])
             }
 
             update(key, value) {
-                this.filters[key] = value;
+                if(key === 'selectedDate')  {
+                    var dateStr = wfDateParser.setQueryString(value);
+                    this.filters[key] = dateStr;
+                    $location.search(key, dateStr);
+                }
+                else {
+                    this.filters[key] = value;
+                    $location.search(key, value);
+                }
             }
 
             get(key){
