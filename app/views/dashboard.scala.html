@@ -277,8 +277,10 @@
                                 <div wf-date-time-picker ng-model="selectedContent.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="dueDateUpdated(); dateTimeEdit = false" wf-small="true"></div>
                             </form>
                         </dd>
-                    <dt>Last launched</dt>
-                        <dd>-</dd>
+                    <dt>Time published</dt>
+                        <dd title="{{ (selectedContent.timePublished | wfLocaliseDateTime | wfFormatDateTime:'long') || '-' }}">
+                            {{ (selectedContent.timePublished | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
+                        </dd>
                     <dt>Last modified</dt>
                         <dd title="{{ (selectedContent.lastModified | wfLocaliseDateTime | wfFormatDateTime:'long') || '-' }}">
                             {{ (selectedContent.lastModified | wfLocaliseDateTime | wfFormatDateTime) || "-" }}

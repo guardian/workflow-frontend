@@ -13,7 +13,8 @@ object StatusDatabase {
     Status("Desk"),
     Status("Subs"),
     Status("Revise"),
-    Status("Final")
+    Status("Final"),
+    Status("Hold")
   ))
 
   def statuses = store.future()
