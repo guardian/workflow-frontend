@@ -1,6 +1,7 @@
 import angular from 'angular';
 
-angular.module('urlService', []).factory('urlService', ['$location', '$rootScope', 'formatService', function($location, $rootScope, formatService){
+angular.module('urlService', []).factory('urlService', ['$location', '$rootScope', 'formatService', 'wfDateParser',
+    function($location, $rootScope, formatService, wfDateParser){
 
     class UrlService {
 
@@ -42,9 +43,15 @@ angular.module('urlService', []).factory('urlService', ['$location', '$rootScope
         }
 
         set(key, value) {
-            var strValue = formatService.objToStr(value);
-            this.params[key] = strValue;
-            $location.search(key, strValue);
+            if(key === 'selectedDate')  {
+                var dateStr = wfDateParser.setQueryString(value);
+                this.params[key] = dateStr;
+                $location.search(key, dateStr);
+            }
+            else {
+                this.params[key] = value;
+                $location.search(key, value);
+            }
         }
     }
 

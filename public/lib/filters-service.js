@@ -7,8 +7,8 @@ import './date-filters-service';
 import './date-service';
 
 angular.module('filtersService', ['urlService', 'formatService', 'dateFilters', 'wfDateService'])
-       .factory('filtersService', ['$rootScope', 'urlService', 'formatService', 'dateFilters', 'wfDateParser',
-        function($rootScope, urlService, formatService, dateFilters, wfDateParser) {
+       .factory('filtersService', ['$rootScope', 'urlService', 'formatService', 'dateFilters', 'wfDateParser', 'wfFormatDateTimeFilter',
+        function($rootScope, urlService, formatService, dateFilters, wfDateParser, wfFormatDateTimeFilter) {
 
         class FiltersService
         {
@@ -56,12 +56,14 @@ angular.module('filtersService', ['urlService', 'formatService', 'dateFilters', 
 
             constructor()
             {
+                var selectedDate = urlService.get('selectedDate');
+
                 this.filters = {};
                 this.filters['status'] = urlService.get('status');
                 this.filters['state'] = urlService.get('state');
                 this.filters['section'] = urlService.get('section');
                 this.filters['content-type'] = urlService.get('content-type');
-                this.filters['selectedDate'] = formatService.stringToDate(urlService.get('selectedDate'));
+                this.filters['selectedDate'] = wfDateParser.parseQueryString(selectedDate);;
                 this.filters['flags'] = formatService.stringToArray(urlService.get('flags'));
                 this.filters['prodOffice'] = urlService.get('prodOffice');
             }
@@ -77,11 +79,10 @@ angular.module('filtersService', ['urlService', 'formatService', 'dateFilters', 
                 params["content-type"] = this.filters["content-type"];
                 params.flags = this.filters['flags'];
                 params.prodOffice = this.filters['prodOffice'];
-
-                var dateParams = dateFilters.setToAndFrom(this.filters['selectedDate']);
-
-                params['due.from'] = formatService.dateForUri(dateParams['due.from']);
-                params['due.until'] = formatService.dateForUri(dateParams['due.until']);
+                var selectedDate = this.filters['selectedDate'];
+                var dateRange = wfDateParser.parseRangeFromString(selectedDate);
+                params['due.from'] = wfFormatDateTimeFilter(dateRange['from'], "YYYY-MM-DDTHH:mm:ssZ");
+                params['due.until'] = wfFormatDateTimeFilter(dateRange['until'], "YYYY-MM-DDTHH:mm:ssZ");
                 return params;
 
             }
