@@ -12,18 +12,18 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'filtersService','prodOfficeService',
-         function($scope, $http, statuses, sections, legalStatesService, config, filtersService, prodOfficeService) {
+        ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'wfFiltersService','prodOfficeService',
+         function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService) {
 
-         $scope.selectedStatus = filtersService.get('status');
-         $scope.selectedState = filtersService.get('state');
-         $scope.selectedSection = filtersService.get('section');
-         $scope.selectedContentType = filtersService.get('content-type');
-         $scope.flags = filtersService.get('flags');
-         $scope.selectedProdOffice = filtersService.get('prodOffice');
+         $scope.selectedStatus = wfFiltersService.get('status');
+         $scope.selectedState = wfFiltersService.get('state');
+         $scope.selectedSection = wfFiltersService.get('section');
+         $scope.selectedContentType = wfFiltersService.get('content-type');
+         $scope.flags = wfFiltersService.get('flags');
+         $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
         var getContent = function(evt, params) {
-            var params = filtersService.toServerParams();
+            var params = wfFiltersService.toServerParams();
             $http.get('/api/content', {params: params}).success(function(response){
                 $scope.contentItems = response.content;
                 $scope.stubs = response.stubs;
