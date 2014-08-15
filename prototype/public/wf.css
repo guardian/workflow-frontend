@@ -43,26 +43,33 @@ tr td {
   background-color: #f9f9f9;
 }
 
-.content-list tr {
-    -webkit-transition: all 1s ease-out;
-    -moz-transition: all 1s ease-out;
-    transition: all 1s ease-out;
+
+.content-list__item-row.ng-enter {
+  -webkit-animation: content-list__item-row--enter-sequence 2s ease-out;
+  animation: content-list__item-row--enter-sequence 2s ease-out;
+}
+@-webkit-keyframes content-list__item-row--enter-sequence {
+  0% { background: #fcf8e3; opacity: 0; }
+  50% { background: #fcf8e3; opacity: 1; }
+}
+@keyframes content-list__item-row--enter-sequence {
+  0% { background: #fcf8e3; opacity: 0; }
+  50% { background: #fcf8e3; opacity: 1; }
 }
 
-.content-list .ng-enter {
-  background: #fcf8e3;
+
+.content-list__item-row.ng-leave {
+  -webkit-animation: content-list__item-row--leave-sequence 0.5s ease-out;
+  animation: content-list__item-row--leave-sequence 0.5s ease-out;
 }
 
-.content-list .ng-leave {
-  -webkit-transition: all 0.5s ease-out;
-  -moz-transition: all 0.5s ease-out;
-  transition: all 0.5s ease-out;
+@-webkit-keyframes content-list__item-row--leave-sequence {
+  to { opacity: 0; }
 }
 
-.content-list .ng-leave.ng-leave-active {
-  opacity: 0;
+@keyframes content-list__item-row--leave-sequence {
+  to { opacity: 0; }
 }
-
 
 /*Styles from dashboard*/
 
