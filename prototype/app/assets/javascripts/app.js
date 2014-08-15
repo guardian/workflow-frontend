@@ -41,7 +41,7 @@ define([
           'composerService',
           'legalStatesService',
           'prodOfficeService',
-          'filtersService',
+          'wfFiltersService',
           'xeditable'
         ]);
 

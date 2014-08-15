@@ -3,8 +3,8 @@ import moment from 'moment';
 
 import './date-service';
 
-angular.module('filtersService', ['wfDateService'])
-       .factory('filtersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter',
+angular.module('wfFiltersService', ['wfDateService'])
+       .factory('wfFiltersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter',
         function($rootScope, $location, wfDateParser, wfFormatDateTimeFilter) {
 
         class FiltersService
@@ -117,6 +117,6 @@ angular.module('filtersService', ['wfDateService'])
 
     }])
 
-    .run(['filtersService', function(filtersService){
-        filtersService.init();
+    .run(['wfFiltersService', function(wfFiltersService){
+        wfFiltersService.init();
     }]);
