@@ -15,7 +15,8 @@ case class WorkflowContent(
                             lastModified: DateTime,
                             lastModifiedBy: Option[String],
                             commentable: Boolean,
-                            published: Boolean
+                            published: Boolean,
+                            timePublished: Option[DateTime]
                             ) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
@@ -41,7 +42,8 @@ object WorkflowContent {
       wireStatus.lastModified,
       wireStatus.user,
       commentable=wireStatus.commentable,
-      published = wireStatus.published
+      published = wireStatus.published,
+      timePublished = None
     )
   }
 
@@ -57,6 +59,7 @@ object WorkflowContent {
       (__ \ "lastModified").read[Long].map { t => new DateTime(t) } ~
       (__ \ "lastModifiedBy").readNullable[String] ~
       (__ \ "commentable").read[Boolean] ~
-      (__ \ "published").read[Boolean]
+      (__ \ "published").read[Boolean] ~
+      (__ \ "timePublished").readNullable[Long].map( _.map( t => new DateTime(t)))
       )(WorkflowContent.apply _)
 }
