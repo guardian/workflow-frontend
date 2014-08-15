@@ -63,30 +63,34 @@ angular.module('filtersService', ['dateFilters', 'wfDateService'])
 
                 var selectedDate = params['selectedDate'];
 
-                this.filters = {};
-                this.filters['status'] = params['status'];
-                this.filters['state'] = params['state'];
-                this.filters['section'] = params['section'];
-                this.filters['content-type'] = params['content-type'];
-                this.filters['selectedDate'] = wfDateParser.parseQueryString(selectedDate);
-                this.filters['flags'] = this.stringToArray(params['flags']);
-                this.filters['prodOffice'] = params['prodOffice'];
-
+                this.filters = {
+                   'status': params['status'],
+                   'state': params['state'],
+                   'section': params['section'],
+                   'content-type': params['content-type'],
+                   'selectedDate': wfDateParser.parseQueryString(selectedDate),
+                   'flags': this.stringToArray(params['flags']),
+                   'prodOffice': params['prodOffice']
+                };
             }
 
             toServerParams()
             {
-                var params = {};
-                params.status = this.filters['status'];
-                params.state = this.filters['state'];
-                params.section = this.filters['section'];
-                params["content-type"] = this.filters["content-type"];
-                params.flags = this.filters['flags'];
-                params.prodOffice = this.filters['prodOffice'];
                 var selectedDate = this.filters['selectedDate'];
+
                 var dateRange = wfDateParser.parseRangeFromString(selectedDate);
-                params['due.from'] = wfFormatDateTimeFilter(dateRange['from'], "YYYY-MM-DDTHH:mm:ssZ");
-                params['due.until'] = wfFormatDateTimeFilter(dateRange['until'], "YYYY-MM-DDTHH:mm:ssZ");
+
+                var params = {
+                    'status': this.filters['status'],
+                    'state': this.filters['state'],
+                    'section': this.filters['section'],
+                    'content-type': this.filters["content-type"],
+                    'flags': this.filters['flags'],
+                    'prodOffice': this.filters['prodOffice'],
+                    'due.from': wfFormatDateTimeFilter(dateRange['from'], "YYYY-MM-DDTHH:mm:ssZ"),
+                    'due.until': wfFormatDateTimeFilter(dateRange['until'], "YYYY-MM-DDTHH:mm:ssZ")
+                };
+
                 return params;
 
             }
