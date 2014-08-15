@@ -141,6 +141,41 @@ z-index: 100;
     padding-bottom: 5px;
 }
 
+.stubs-column__stub {
+  overflow: hidden;
+}
+
+
+.stubs-column__stub.ng-enter {
+  -webkit-animation: stubs-column__stub--enter-sequence 2s ease-out;
+  animation: stubs-column__stub--enter-sequence 2s ease-out;
+}
+@-webkit-keyframes stubs-column__stub--enter-sequence {
+  0% { background: #fcf8e3; opacity: 0; max-height: 0; }
+  50% { background: #fcf8e3; opacity: 1; max-height: 500px; }
+}
+@keyframes stubs-column__stub--enter-sequence {
+  0% { background: #fcf8e3; opacity: 0; max-height: 0; }
+  50% { background: #fcf8e3; opacity: 1; max-height: 500px; }
+}
+
+
+.stubs-column__stub.ng-leave {
+  -webkit-animation: stubs-column__stub--leave-sequence 0.5s ease-out;
+  animation: stubs-column__stub--leave-sequence 0.5s ease-out;
+}
+
+@-webkit-keyframes stubs-column__stub--leave-sequence {
+  from { max-height: 200px; }
+  to { opacity: 0; max-height: 0; }
+}
+
+@keyframes stubs-column__stub--leave-sequence {
+  from { max-height: 200px; }
+  to { opacity: 0; max-height: 0; }
+}
+
+
 .secondary-info{
     font-size: 85%;
     color: #666;
