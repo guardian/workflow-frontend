@@ -177,7 +177,8 @@ angular.module('wfDateService', ['wfLocationService'])
          */
 
       parseQueryString(date) {
-         if(date === 'today' || date === 'yesterday' || date === 'weekend') {
+         if(!date) return undefined;
+         if(date === 'today' || date === 'tomorrow' || date === 'weekend') {
              return date;
          }
          else if(moment(date, ["YYYY-MM-DD"]).isValid()){
@@ -192,6 +193,7 @@ angular.module('wfDateService', ['wfLocationService'])
          */
 
       setQueryString(date) {
+        if(!date) return undefined;
         var dateFormat = wfFormatDateTimeFilter(date, "YYYY-MM-DD");
         if(dateFormat !== 'Invalid date') {
             return dateFormat
