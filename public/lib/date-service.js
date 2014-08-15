@@ -60,7 +60,10 @@ function getTimezoneLocaleForLocation(location) {
 }
 
 angular.module('wfDateService', ['wfLocationService'])
-  .factory('wfDateParser', ['wfLocaliseDateTimeFilter', 'wfLocationService', function(wfLocaliseDateTimeFilter, wfLocationService) {
+  .factory('wfDateParser', ['wfLocaliseDateTimeFilter', 'wfLocationService', 'wfFormatDateTimeFilter',
+        function(wfLocaliseDateTimeFilter, wfLocationService, wfFormatDateTimeFilter) {
+
+
 
     class DateParser {
 
@@ -140,7 +143,9 @@ angular.module('wfDateService', ['wfLocationService'])
 
         var now = wfLocaliseDateTimeFilter(this.now(), locationKey).clone();
 
-
+        if(!input) {
+            return {};
+        }
         // Parses some natural language dates - doesn't use sugar as I'd like
         // to remove it as a dependency one day as it modifies the global Date object
         if (input == 'today') {
@@ -165,6 +170,35 @@ angular.module('wfDateService', ['wfLocationService'])
         }
       }
 
+        /**
+         * Retrieve either string representation of 'day', or day object
+         *
+         * @returns {String, or <Date>}
+         */
+
+      parseQueryString(date) {
+         if(date === 'today' || date === 'yesterday' || date === 'weekend') {
+             return date;
+         }
+         else if(moment(date, ["YYYY-MM-DD"]).isValid()){
+             return moment(date, ["YYYY-MM-DD"]);
+         }
+      }
+
+        /**
+         * Formats date to string if passed a date object, otherwise return what is passsed
+         *
+         * @returns {String, or <Date>}
+         */
+
+      setQueryString(date) {
+        var dateFormat = wfFormatDateTimeFilter(date, "YYYY-MM-DD");
+        if(dateFormat !== 'Invalid date') {
+            return dateFormat
+        }
+        else return date
+
+      }
 
       /**
        * Retrieves an Array of day starts for the localised week.
