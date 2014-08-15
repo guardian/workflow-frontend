@@ -10,11 +10,11 @@ define([
     'use strict';
 
     dashboardControllers.controller('DateFilterCtrl',
-        ['$scope','$location', 'filtersService', 'wfDateParser',
-         function($scope, $location, filtersService, wfDateParser) {
+        ['$scope','$location', 'wfFiltersService', 'wfDateParser',
+         function($scope, $location, wfFiltersService, wfDateParser) {
 
          $scope.dateOptions = wfDateParser.getDaysThisWeek();
-         var selectedDate = filtersService.get('selectedDate');
+         var selectedDate = wfFiltersService.get('selectedDate');
 
         // ensure that the date from the URL is the same object as the
         // one used in the Select drop-down, as its compared with ===
