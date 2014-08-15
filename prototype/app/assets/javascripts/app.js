@@ -19,7 +19,6 @@ define([
 
     'lib/date-service',
     'lib/filters-service',
-    'lib/date-filters-service',
     'lib/analytics',
 
     'angular-bootstrap',
@@ -43,7 +42,6 @@ define([
           'legalStatesService',
           'prodOfficeService',
           'filtersService',
-          'dateFilters',
           'xeditable'
         ]);
 
