@@ -1,12 +1,11 @@
 import angular from 'angular';
 import moment from 'moment';
 
-import './date-filters-service';
 import './date-service';
 
-angular.module('filtersService', ['dateFilters', 'wfDateService'])
-       .factory('filtersService', ['$rootScope', '$location', 'dateFilters', 'wfDateParser', 'wfFormatDateTimeFilter',
-        function($rootScope, $location, dateFilters, wfDateParser, wfFormatDateTimeFilter) {
+angular.module('filtersService', ['wfDateService'])
+       .factory('filtersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter',
+        function($rootScope, $location, wfDateParser, wfFormatDateTimeFilter) {
 
         class FiltersService
         {
