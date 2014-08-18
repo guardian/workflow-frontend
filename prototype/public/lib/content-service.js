@@ -41,6 +41,52 @@ angular.module('wfContentService', [])
 
     class ContentPollingService {
 
+      constructor(paramsProvider) {
+        this._paramsProvider = paramsProvider;
+
+        this.init();
+      }
+
+      init() {
+        function getHiddenProp(){
+          var prefixes = ['webkit','moz','ms','o'];
+
+          // if 'hidden' is natively supported just return it
+          if ('hidden' in document) return 'hidden';
+
+          // otherwise loop over all the known prefixes until we find one
+          for (var i = 0; i < prefixes.length; i++){
+              if ((prefixes[i] + 'Hidden') in document)
+                  return prefixes[i] + 'Hidden';
+          }
+
+          // otherwise it's not supported
+          return null;
+        }
+
+        function isHidden() {
+          var prop = getHiddenProp();
+          if (!prop) return false;
+
+          return document[prop];
+        }
+
+        var visProp = getHiddenProp();
+        var evtname = visProp.replace(/[H|h]idden/,'') + 'visibilitychange';
+        document.addEventListener(evtname, (function() {
+          if (isHidden()) {
+            this.stopPolling();
+          } else {
+            this.startPolling();
+          }
+        }).bind(this));
+      }
+
+
+      onPoll(callback) {
+        this._callback = callback;
+      }
+
       /**
        * Start polling for updates.
        *
@@ -49,15 +95,13 @@ angular.module('wfContentService', [])
        *                                  cater for changes in filters.
        * @param {function} callback called on each successful polled reponse.
        */
-      startPolling(paramsProvider, callback) {
+      startPolling() {
         var tick = (function() {
-          wfContentService.get(paramsProvider())
-            .success(function(data) {
-              callback(data);
-            })
-            .finally(function() {
+          wfContentService.get(this._paramsProvider())
+            .success(this._callback)
+            .finally((function() {
               this._timer = $timeout(tick, POLLING_DELAY);
-            });
+            }).bind(this));
 
         }).bind(this);
 
