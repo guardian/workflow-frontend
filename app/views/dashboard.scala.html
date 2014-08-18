@@ -188,6 +188,9 @@
 
         <div id="content" class="">
 
+            <div class="alert alert-danger" ng-if="getContentError">
+              <strong>Error:</strong> A problem occurred retrieving updates. Please <a href="javascript:window.location.reload()">reload</a> the page.
+            </div>
 
             <table class="content-list table">
                 <thead class="content-list__head">
