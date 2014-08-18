@@ -74,6 +74,11 @@ define([
         // end polling logic
 
 
+        $scope.$on('getContent.failed', function(event, msg) {
+          $scope.getContentError = msg.error;
+        });
+
+
         function buildContentParams() {
             var params = angular.copy($scope.filters);
             params.state = $scope.selectedState;
