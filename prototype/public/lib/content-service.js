@@ -2,7 +2,7 @@
 import angular from 'angular';
 
 angular.module('wfContentService', [])
-  .factory('wfContentService', ['$http', '$timeout', function($http, $timeout) {
+  .factory('wfContentService', ['$http', '$timeout', '$rootScope', function($http, $timeout, $rootScope) {
 
     class ContentService {
 
@@ -13,11 +13,17 @@ angular.module('wfContentService', [])
        * @returns {Promise}
        */
       get(params) {
-        return $http({
+        var deferred = $http({
           method: 'GET',
           url: '/api/content',
           params: params
         });
+
+        deferred.catch(function(err) {
+          $rootScope.$broadcast('getContent.failed', { error: err });
+        });
+
+        return deferred;
       }
 
     }
