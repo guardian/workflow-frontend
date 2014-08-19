@@ -1,7 +1,8 @@
 
 import angular from 'angular';
+import 'lib/visibility-service';
 
-angular.module('wfContentService', [])
+angular.module('wfContentService', ['wfVisibilityService'])
   .factory('wfContentService', ['$http', '$timeout', '$rootScope', function($http, $timeout, $rootScope) {
 
     class ContentService {
@@ -35,7 +36,7 @@ angular.module('wfContentService', [])
   /**
    * Content polling service.
    */
-  .factory('wfContentPollingService', ['$http', '$timeout', 'wfContentService', function($http, $timeout, wfContentService) {
+  .factory('wfContentPollingService', ['$http', '$timeout', '$rootScope', 'wfContentService', function($http, $timeout, $rootScope, wfContentService) {
 
     var POLLING_DELAY = 5000;
 
@@ -48,41 +49,17 @@ angular.module('wfContentService', [])
       }
 
       init() {
-        function getHiddenProp(){
-          var prefixes = ['webkit','moz','ms','o'];
-
-          // if 'hidden' is natively supported just return it
-          if ('hidden' in document) return 'hidden';
-
-          // otherwise loop over all the known prefixes until we find one
-          for (var i = 0; i < prefixes.length; i++){
-              if ((prefixes[i] + 'Hidden') in document)
-                  return prefixes[i] + 'Hidden';
-          }
-
-          // otherwise it's not supported
-          return null;
-        }
-
-        function isHidden() {
-          var prop = getHiddenProp();
-          if (!prop) return false;
-
-          return document[prop];
-        }
-
-        var visProp = getHiddenProp();
-        var evtname = visProp.replace(/[H|h]idden/,'') + 'visibilitychange';
-        document.addEventListener(evtname, (function() {
-          if (isHidden()) {
-            this.stopPolling();
-          } else {
+        // event provided by visibility service
+        $rootScope.$on('visibility.changed', (function(event, data) {
+          if (data.visibility) {
             this.startPolling();
+          } else {
+            this.stopPolling();
           }
         }).bind(this));
       }
 
-
+      // single callback only required so far...
       onPoll(callback) {
         this._callback = callback;
       }
