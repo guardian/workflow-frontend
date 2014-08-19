@@ -12,9 +12,9 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService',
+        ['$scope','$http', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService', 'wfContentService', 'wfContentPollingService',
 
-        function($scope, $http, urlParser, statuses, sections, legalStatesService, config, prodOfficeService) {
+        function($scope, $http, urlParser, statuses, sections, legalStatesService, config, prodOfficeService, wfContentService, wfContentPollingService) {
 
          //initialise the model from the url
          var initialParams = urlParser.parseUrl;
@@ -28,10 +28,8 @@ define([
 
         var getContent = function(evt, params) {
             var params = buildContentParams();
-            $http.get('/api/content', {params: params}).success(function(response){
-                $scope.contentItems = response.content;
-                $scope.stubs = response.stubs;
-                $scope.contentByStatus = groupByStatus(response.content);
+            wfContentService.get(params).success(function(response){
+                updateScopeModels(response);
                 urlParser.setUrl(params);
             });
         };
@@ -48,6 +46,38 @@ define([
         $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.statuses = statuses;
+
+
+        // Update models in the scope when data is retrieved
+        function updateScopeModels(data) {
+          $scope.contentItems = data.content;
+          $scope.stubs = data.stubs;
+          $scope.contentByStatus = groupByStatus(data.content);
+
+          if ($scope.selectedContent) {
+            var found = _.findWhere(data.content, { composerId: $scope.selectedContent.composerId });
+
+            // found will be undefined when not found -> when something is deleted.
+            $scope.selectedContent = found;
+          }
+        }
+
+        // Poll for updates
+        var poller = new wfContentPollingService();
+
+        poller.startPolling(buildContentParams, updateScopeModels);
+
+        $scope.$on('destroy', function() {
+          poller.stopPolling();
+        });
+
+        // end polling logic
+
+
+        $scope.$on('getContent.failed', function(event, msg) {
+          $scope.getContentError = msg.error;
+        });
+
 
         function buildContentParams() {
             var params = angular.copy($scope.filters);
@@ -109,6 +139,8 @@ define([
                 method: 'PUT',
                 url: '/api/stubs/' + stubId + '/' + field,
                 data: {data: data}
+            }).success(function() {
+                $scope.$emit('content.edited', { 'content': $scope.selectedContent, 'field': field });
             });
         }
 
@@ -142,6 +174,8 @@ define([
                 method: 'PUT',
                 url: '/api/stubs/' + content.stubId + '/dueDate',
                 data: requestData || {}
+            }).success(function() {
+                $scope.$emit('content.edited', { 'content': content, 'field': 'dueDate' });
             });
         };
 
@@ -154,7 +188,10 @@ define([
                 $http({
                     method: 'DELETE',
                     url: 'api/content/' + content.composerId
-                }).success(function(){getContent();})
+                }).success(function(){
+                  $scope.$emit('content.deleted', { 'content': content });
+                  getContent();
+                });
             };
         }
 
@@ -181,7 +218,10 @@ define([
                 $http({
                     method: 'DELETE',
                     url: '/api/stubs/' + stub.id
-                }).success(getContent());
+                }).success(function() {
+                  $scope.$emit('stub.deleted', { 'content': stub });
+                  getContent();
+                });
             }
         };
 
