@@ -13,13 +13,15 @@ import play.api.libs.json.Json
 object Application extends Controller with PanDomainAuthActions {
 
   def index = AuthAction.async { request =>
+    val user = request.session.get("identity")
+
     for {
       statuses <- StatusDatabase.statuses
       sections = SectionDB.sectionList
     }
     //put these in one object
     yield {
-      Ok(views.html.index(Json.obj("data" -> statuses), Json.obj("data" -> sections)))
+      Ok(views.html.index(Json.obj("data" -> statuses), Json.obj("data" -> sections), user))
     }
   }
 
