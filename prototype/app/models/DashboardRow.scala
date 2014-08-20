@@ -29,7 +29,8 @@ object DashboardRow {
           Some("needsLegal" -> JsString(d.stub.needsLegal.toString)) ++
           d.stub.note.map("note" -> JsString(_)) ++
           Some("prodOffice" -> JsString(d.stub.prodOffice)) ++
-          d.wc.timePublished.map(t => "timePublished" -> JsNumber(t.getMillis) )
+          d.wc.timePublished.map(t => "timePublished" -> JsNumber(t.getMillis) ) ++
+          d.stub.createdAt.map(date => "createdAt" -> JsNumber(date.getMillis))
         )
     }
   }
