@@ -18,7 +18,7 @@ case class Stub(id: Option[Long],
                 needsLegal: Flag,
                 note: Option[String],
                 prodOffice: String,
-                createdAt: DateTime)
+                createdAt: Option[DateTime])
 
 object Stub {
   // validation requirements for individual fields
