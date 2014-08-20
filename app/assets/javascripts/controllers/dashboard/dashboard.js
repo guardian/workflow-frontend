@@ -63,9 +63,11 @@ define([
         }
 
         // Poll for updates
-        var poller = new wfContentPollingService();
+        var poller = new wfContentPollingService(buildContentParams);
 
-        poller.startPolling(buildContentParams, updateScopeModels);
+        poller.onPoll(updateScopeModels);
+
+        poller.startPolling();
 
         $scope.$on('destroy', function() {
           poller.stopPolling();

@@ -1,7 +1,8 @@
 
 import angular from 'angular';
+import 'lib/visibility-service';
 
-angular.module('wfContentService', [])
+angular.module('wfContentService', ['wfVisibilityService'])
   .factory('wfContentService', ['$http', '$timeout', '$rootScope', function($http, $timeout, $rootScope) {
 
     class ContentService {
@@ -35,11 +36,33 @@ angular.module('wfContentService', [])
   /**
    * Content polling service.
    */
-  .factory('wfContentPollingService', ['$http', '$timeout', 'wfContentService', function($http, $timeout, wfContentService) {
+  .factory('wfContentPollingService', ['$http', '$timeout', '$rootScope', 'wfContentService', function($http, $timeout, $rootScope, wfContentService) {
 
     var POLLING_DELAY = 5000;
 
     class ContentPollingService {
+
+      constructor(paramsProvider) {
+        this._paramsProvider = paramsProvider;
+
+        this.init();
+      }
+
+      init() {
+        // event provided by visibility service
+        $rootScope.$on('visibility.changed', (function(event, data) {
+          if (data.visibility) {
+            this.startPolling();
+          } else {
+            this.stopPolling();
+          }
+        }).bind(this));
+      }
+
+      // single callback only required so far...
+      onPoll(callback) {
+        this._callback = callback;
+      }
 
       /**
        * Start polling for updates.
@@ -49,15 +72,13 @@ angular.module('wfContentService', [])
        *                                  cater for changes in filters.
        * @param {function} callback called on each successful polled reponse.
        */
-      startPolling(paramsProvider, callback) {
+      startPolling() {
         var tick = (function() {
-          wfContentService.get(paramsProvider())
-            .success(function(data) {
-              callback(data);
-            })
-            .finally(function() {
+          wfContentService.get(this._paramsProvider())
+            .success(this._callback)
+            .finally((function() {
               this._timer = $timeout(tick, POLLING_DELAY);
-            });
+            }).bind(this));
 
         }).bind(this);
 
