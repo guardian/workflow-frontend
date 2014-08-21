@@ -30,7 +30,7 @@ object DashboardRow {
           d.stub.note.map("note" -> JsString(_)) ++
           Some("prodOffice" -> JsString(d.stub.prodOffice)) ++
           d.wc.timePublished.map(t => "timePublished" -> JsNumber(t.getMillis) ) ++
-          d.stub.createdAt.map(date => "createdAt" -> JsNumber(date.getMillis))
+          Some("createdAt" -> JsNumber(d.stub.createdAt.getMillis))
         )
     }
   }

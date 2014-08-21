@@ -56,7 +56,7 @@ object PostgresDB {
             case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice, createdAt) ,
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
               DashboardRow(
-                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice, Some(createdAt)),
+                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice, createdAt),
                 WorkflowContent(
                   composerId,
                   path,
@@ -86,7 +86,7 @@ object PostgresDB {
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, Flag.NotRequired, stub.note, stub.prodOffice, stub.createdAt.getOrElse(new DateTime)))
+      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, Flag.NotRequired, stub.note, stub.prodOffice, stub.createdAt))
     }
 
 
