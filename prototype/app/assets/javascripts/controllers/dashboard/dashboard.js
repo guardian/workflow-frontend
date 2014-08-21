@@ -23,7 +23,7 @@ define([
          $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
         var getContent = function(evt, params) {
-            var params = wfFiltersService.toServerParams();
+            var params = wfContentService.getServerParams();
             $http.get('/api/content', {params: params}).success(function(response){
                 updateScopeModels(response)
             });
@@ -64,7 +64,7 @@ define([
         }
 
         // Poll for updates
-        var poller = new wfContentPollingService(function(){return wfFiltersService.toServerParams()});
+        var poller = new wfContentPollingService(function(){return wfContentService.getServerParams()});
 
         poller.onPoll(updateScopeModels);
 
