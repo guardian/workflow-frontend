@@ -73,27 +73,6 @@ angular.module('wfFiltersService', ['wfDateService'])
                 };
             }
 
-            toServerParams()
-            {
-                var selectedDate = this.filters['selectedDate'];
-
-                var dateRange = wfDateParser.parseRangeFromString(selectedDate);
-
-                var params = {
-                    'status': this.filters['status'],
-                    'state': this.filters['state'],
-                    'section': this.filters['section'],
-                    'content-type': this.filters["content-type"],
-                    'flags': this.filters['flags'],
-                    'prodOffice': this.filters['prodOffice'],
-                    'due.from': wfFormatDateTimeFilter(dateRange['from'], "YYYY-MM-DDTHH:mm:ssZ"),
-                    'due.until': wfFormatDateTimeFilter(dateRange['until'], "YYYY-MM-DDTHH:mm:ssZ")
-                };
-
-                return params;
-
-            }
-
             update(key, value) {
                 if(key === 'selectedDate')  {
                     var dateStr = wfDateParser.setQueryString(value);
@@ -108,6 +87,10 @@ angular.module('wfFiltersService', ['wfDateService'])
 
             get(key){
                 return this.filters[key];
+            }
+
+            getAll() {
+                return this.filters;
             }
 
         }
