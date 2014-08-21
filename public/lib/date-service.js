@@ -210,10 +210,10 @@ angular.module('wfDateService', ['wfLocationService'])
       getDaysThisWeek(locationKey) {
         var today = wfLocaliseDateTimeFilter(this.now(), locationKey).startOf('day'),
 
-        choices = [ today.toDate() ];
+        choices = [ moment(today.toDate()) ];
 
         for (var i = 1; i < 7; i++) {
-          choices.push(today.clone().add('days', i).toDate());
+          choices.push(moment(today.clone().add('days', i).toDate()));
         }
 
         return choices;
