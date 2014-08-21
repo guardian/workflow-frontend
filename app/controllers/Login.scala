@@ -8,8 +8,25 @@ import com.gu.googleauth._
 import lib.PrototypeConfiguration
 import play.api.Play.current
 
-trait AuthActions extends Actions {
+trait AuthActions extends Actions with Results {
   val loginTarget: Call = routes.Login.loginAction()
+
+  object XHRAuthAction extends ActionBuilder[AuthenticatedRequest] {
+    override def invokeBlock[A](request: Request[A],
+                                block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] = {
+
+      UserIdentity.fromRequest(request) match {
+        case Some(identity) if identity.isValid => block(new AuthenticatedRequest(Some(identity), request))
+        case _ =>
+          if (request.headers.get("X-Requested-With").isDefined)
+            Future.successful(new Status(419))
+
+          else sendForAuth(request)
+
+      }
+    }
+
+  }
 }
 
 object Login extends Controller with AuthActions {
