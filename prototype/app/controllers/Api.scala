@@ -19,7 +19,7 @@ object Api extends Controller with AuthActions {
 
   implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
-  def content = AuthAction { implicit req =>
+  def content = XHRAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
     val section = req.getQueryString("section").map(Section(_))
