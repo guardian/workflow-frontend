@@ -38,7 +38,7 @@ object CommonDB {
       q.filter(s => dueDateNotExpired(s.due))
         .sortBy(s => (s.priority.desc, s.due.desc)).list.map {
             case (pk, title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice, createdAt) =>
-         Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice, Some(createdAt))
+         Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice, createdAt)
       }
     }
 
