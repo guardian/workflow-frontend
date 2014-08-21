@@ -12,8 +12,8 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'wfFiltersService','prodOfficeService',
-         function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService) {
+        ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'wfFiltersService','prodOfficeService', 'wfContentService', 'wfContentPollingService',
+         function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService) {
 
          $scope.selectedStatus = wfFiltersService.get('status');
          $scope.selectedState = wfFiltersService.get('state');
@@ -25,9 +25,7 @@ define([
         var getContent = function(evt, params) {
             var params = wfFiltersService.toServerParams();
             $http.get('/api/content', {params: params}).success(function(response){
-                $scope.contentItems = response.content;
-                $scope.stubs = response.stubs;
-                $scope.contentByStatus = groupByStatus(response.content);
+                updateScopeModels(response)
             });
         };
 
@@ -50,6 +48,39 @@ define([
         $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.statuses = statuses;
+
+        // Update models in the scope when data is retrieved
+        function updateScopeModels(data) {
+          $scope.contentItems = data.content;
+          $scope.stubs = data.stubs;
+          $scope.contentByStatus = groupByStatus(data.content);
+
+          if ($scope.selectedContent) {
+            var found = _.findWhere(data.content, { composerId: $scope.selectedContent.composerId });
+
+            // found will be undefined when not found -> when something is deleted.
+            $scope.selectedContent = found;
+          }
+        }
+
+        // Poll for updates
+        var poller = new wfContentPollingService(function(){return wfFiltersService.toServerParams()});
+
+        poller.onPoll(updateScopeModels);
+
+        poller.startPolling();
+
+        $scope.$on('destroy', function() {
+          poller.stopPolling();
+        });
+
+        // end polling logic
+
+
+        $scope.$on('getContent.failed', function(event, msg) {
+          $scope.getContentError = msg.error;
+        });
+
 
         function groupByStatus(data) {
             return _.groupBy(data, function(x){ return x.status; });
