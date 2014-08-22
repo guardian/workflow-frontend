@@ -28,7 +28,7 @@ define([
 
         var getContent = function(evt, params) {
             var params = buildContentParams();
-            wfContentService.get(params).success(function(response){
+            wfContentService.get(params).then(function(response){
                 updateScopeModels(response);
                 urlParser.setUrl(params);
             });

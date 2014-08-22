@@ -8,6 +8,7 @@ GET     /dashboard                          controllers.Application.dashboard
 
 # Login
 GET        /login                           controllers.Login.login
+GET        /login/status                    controllers.Login.status
 GET        /loginAction                     controllers.Login.loginAction
 GET        /oauth2callback                  controllers.Login.oauth2Callback
 GET        /logout                          controllers.Login.logout

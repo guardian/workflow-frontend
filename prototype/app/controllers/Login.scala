@@ -95,6 +95,11 @@ object Login extends Controller with AuthActions {
     }
   }
 
+  def status = AuthAction { request =>
+    val user = request.session.get("identity")
+    Ok(views.html.loginStatus(user.getOrElse("{}")))
+  }
+
   def logout = Action { implicit request =>
     Redirect(routes.Login.login()).withNewSession
   }
