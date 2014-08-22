@@ -52,9 +52,7 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfUser'])
 
             } else {
               // TODO: make event more generic for catch all
-              $rootScope.$apply(function() {
-                $rootScope.$broadcast('getContent.failed', { error: err });
-              });
+              $rootScope.$broadcast('getContent.failed', { error: err });
 
               reject(err);
             }
