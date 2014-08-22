@@ -65,13 +65,21 @@ object Api extends Controller with AuthActions {
   }
 
   def newStub = AuthAction { implicit request =>
+    val setCreatedAt: Transform = { js =>
+      lazy val createdAt = JsObject(Seq("createdAt" -> JsString(DateTime.now.toString)))
+      js match {
+        case o: JsObject => Right(o ++ createdAt)
+        case _ => Left(BadRequest("Request did not contain a JSON object"))
+      }
+    }
+
     (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      stub <- extract[Stub](jsValue).right
-    } yield {
-      PostgresDB.createStub(stub)
-      NoContent
-    }).merge
+       jsValue <- readJsonFromRequest(request.body).right
+       stub <- extractWithTransform[Stub](jsValue, setCreatedAt).right
+     } yield {
+       PostgresDB.createStub(stub)
+       NoContent
+     }).merge
   }
 
   def putStub(stubId: Long) = AuthAction { implicit request =>
@@ -189,6 +197,7 @@ object Api extends Controller with AuthActions {
         Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
     }
   }
+  private type Transform = JsValue => Either[Result, JsValue]
+  private def extractWithTransform[A: Reads](jsValue: JsValue, transform: Transform) =
+    transform(jsValue).right.flatMap(extract[A](_))
 }
-
-
