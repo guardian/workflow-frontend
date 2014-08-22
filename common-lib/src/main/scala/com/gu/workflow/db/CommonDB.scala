@@ -1,5 +1,6 @@
 package com.gu.workflow.db
 
+import play.api.Logger
 import scala.slick.driver.PostgresDriver.simple._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time._
@@ -36,10 +37,7 @@ object CommonDB {
           prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
 
       q.filter(s => dueDateNotExpired(s.due))
-        .sortBy(s => (s.priority.desc, s.due.desc)).list.map {
-            case (pk, title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice, createdAt) =>
-         Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice, createdAt)
-      }
+        .sortBy(s => (s.priority.desc, s.due.desc)).list.map(row => Stub.fromStubRow(row))
     }
 
   def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
