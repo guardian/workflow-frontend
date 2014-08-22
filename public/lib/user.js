@@ -34,7 +34,7 @@ angular.module('wfUser', [])
 
       if (!$sessionCheckFrame) {
         // singleton iframe
-        $sessionCheckFrame = angular.element('<iframe class="session-check__frame">');
+        $sessionCheckFrame = angular.element('<iframe class="login-check__frame">');
 
         angular.element(document.body).append($sessionCheckFrame);
       }
