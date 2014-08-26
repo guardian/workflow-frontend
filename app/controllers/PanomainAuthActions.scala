@@ -12,7 +12,7 @@ trait PanDomainAuthActions extends AuthActions {
     (authedUser.user.email endsWith ("@guardian.co.uk")) && authedUser.multiFactor
   }
 
-  override def redirectUrl: String = config.getString("host").get + "/oathCallback"
+  override def authCallbackUrl: String = config.getString("host").get + "/oathCallback"
 
   override lazy val domain: String = config.getString("pandomain.domain").get
   override lazy val awsSecretAccessKey: String = config.getString("pandomain.aws.secret").get
