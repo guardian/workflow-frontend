@@ -21,12 +21,13 @@ angular.module('wfUser', [])
   }])
 
 
-  .factory('wfUserSession', ['$timeout', function($timeout) {
+  .factory('wfUserSession', ['$timeout', '$window', function($timeout, $window) {
 
     var SESSION_CHECK_URL = '/login/status',
 
-    $window = angular.element(window),
-    $sessionCheckFrame;
+    $sessionCheckFrame,
+
+    $$window = angular.element($window);
 
 
     // Restrictions, url must be same origin on Load
@@ -36,7 +37,7 @@ angular.module('wfUser', [])
         // singleton iframe
         $sessionCheckFrame = angular.element('<iframe class="login-check__frame">');
 
-        angular.element(document.body).append($sessionCheckFrame);
+        angular.element('body').append($sessionCheckFrame);
       }
 
       return new Promise((resolve, reject) => {
@@ -46,7 +47,7 @@ angular.module('wfUser', [])
         function postMessageListener(event) {
           if (event.originalEvent.data) { // TODO: check for sessionCheck identifier in message data
 
-            $window.off('message', postMessageListener);
+            $$window.off('message', postMessageListener);
             $timeout.cancel(timeout);
 
             resolve(event.originalEvent.data);
@@ -54,13 +55,13 @@ angular.module('wfUser', [])
 
         }
 
-        $window.on('message', postMessageListener);
+        $$window.on('message', postMessageListener);
 
 
         // Timeout fallback
         timeout = $timeout(function() {
 
-            $window.off('message', postMessageListener);
+            $$window.off('message', postMessageListener);
 
             reject(new Error('Timeout loading URL in iframe: ' + url));
 
@@ -81,7 +82,7 @@ angular.module('wfUser', [])
 
           } catch (err) {
 
-            $window.off('message', postMessageListener);
+            $$window.off('message', postMessageListener);
             $timeout.cancel(timeout);
 
             reject(err);
