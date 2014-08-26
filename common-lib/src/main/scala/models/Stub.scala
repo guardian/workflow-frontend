@@ -1,5 +1,6 @@
 package models
 
+import com.gu.workflow.db.Schema
 import models.Flag.Flag
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -32,6 +33,13 @@ object Stub {
       Json.reads[Stub]
 
   implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
+
+  def fromStubRow(row: Schema.StubRow): Stub = row match {
+    case (pk, title, section, due, assignee, composerId, contentType, priority,
+          needsLegal, note, prodOffice, createdAt) =>
+      Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority,
+           needsLegal, note, prodOffice, createdAt)
+  }
 
   object DateFormat extends Format[DateTime] {
     def writes(d: DateTime): JsValue = JsString(d.toString)

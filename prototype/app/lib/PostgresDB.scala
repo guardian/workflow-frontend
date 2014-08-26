@@ -53,24 +53,23 @@ object PostgresDB {
 
       query.filter( {case (s,c) => displayContentItem(s, c) })
            .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
-            case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice, createdAt) ,
-            (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
-              DashboardRow(
-                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice, createdAt),
-                WorkflowContent(
-                  composerId,
-                  path,
-                  headline,
-                  contentType,
-                  Some(Section(section)),
-                  Status(status),
-                  lastMod,
-                  lastModBy,
-                  commentable,
-                  published,
-                  timePublished
-                )
-              )
+            case (stubData,
+                  (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
+          val stub    = Stub.fromStubRow(stubData)
+          val content = WorkflowContent(
+            composerId,
+            path,
+            headline,
+            contentType,
+            Some(Section(stub.section)),
+            Status(status),
+            lastMod,
+            lastModBy,
+            commentable,
+            published,
+            timePublished
+          )
+          DashboardRow(stub, content)
       }
 
     }
