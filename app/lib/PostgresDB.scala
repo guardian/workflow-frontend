@@ -51,17 +51,10 @@ object PostgresDB {
         s <- stubsQuery
         c <- contentQuery
         if s.composerId === c.composerId
-        if c.status isNot "Final"
       } yield (s, c)
 
-      val query2 = for {
-        s <- stubsQuery
-        c <- contentQuery
-        if s.composerId === c.composerId
-        if c.status === "Final"
-      } yield (s,c)
 
-      val draftQuery = query.sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
+      query.filter { case (s, c) => !contentItemExpired(s, c) || c.status === Status("Hold").name  }.list.map {
             case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice) ,
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
               DashboardRow(
@@ -82,28 +75,7 @@ object PostgresDB {
               )
       }
 
-      val publishedQuery = query2.sortBy { case (s, c) => (c.timePublished.desc.nullsLast, c.lastModified.desc.nullsLast)}
-                                .filter { case (s, c) => displayContentItem(s, c) }.list.map {
-        case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice) ,
-        (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
-          DashboardRow(
-            Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice),
-            WorkflowContent(
-              composerId,
-              path,
-              headline,
-              contentType,
-              Some(Section(section)),
-              Status(status),
-              lastMod,
-              lastModBy,
-              commentable,
-              published,
-              timePublished
-            )
-          )
-      }
-      draftQuery ::: publishedQuery
+
     }
 
   private def ensureContentExistsWithId(composerId: String, contentType: String)(implicit session: Session) {
