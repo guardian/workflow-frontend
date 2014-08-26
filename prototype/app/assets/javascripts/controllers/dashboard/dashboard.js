@@ -93,7 +93,16 @@ define([
         };
 
         function groupByStatus(data) {
-            return _.groupBy(data, function(x){ return x.status; });
+            var tmp = _.groupBy(data, function(x){ return x.status; });
+            for(var prop in tmp) {
+                if(tmp[prop] === 'Final') {
+                    tmp[prop] = _.sortBy(tmp[prop], function(x) { return -x.timePublished,  -x.lastModified })
+                }
+                else {
+                    tmp[prop] = _.sortBy(tmp[prop], function(x){ return -x.priority, -x.due})
+                }
+            }
+            return tmp;
         }
 
         // content items stuff

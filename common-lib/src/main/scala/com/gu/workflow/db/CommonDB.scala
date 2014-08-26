@@ -35,8 +35,7 @@ object CommonDB {
           cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids)) |>
           prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
 
-      q.filter(s => dueDateNotExpired(s.due))
-        .sortBy(s => (s.priority.desc, s.due.desc)).list.map {
+      q.sortBy(s => (s.priority.desc, s.due.desc)).list.map {
             case (pk, title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice) =>
          Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice)
       }
@@ -44,25 +43,21 @@ object CommonDB {
 
   def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
 
-  def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
-    withinDisplayTime(s, c) ||
-    //or item has a status of hold
-    c.status === Status("Hold").name
-  }
+  def contentItemExpired(s: Schema.DBStub, c: Schema.DBContent) = {
+    def publishedOverADay = c.timePublished.isNotNull && c.timePublished < DateTime.now().minusHours(1)
+    def dueDateOverAWeek = s.due.isNotNull && s.due < DateTime.now().minusDays(7)
+    def lastModifiedOverAWeek = c.lastModified.isNotNull && c.lastModified < DateTime.now().minusDays(7)
+    def publishedTimeNotSet = c.timePublished.isNull
+    def dueDateNotSet = s.due.isNull
 
-  def withinDisplayTime(s: Schema.DBStub, c: Schema.DBContent) = {
-    def publishedWithinLastDay = c.timePublished > DateTime.now().minusDays(1)
-    def dueDateWithinLastWeek =  s.due > DateTime.now().minusDays(7)
-    def lastModifiedWithinWeek = c.lastModified > DateTime.now().minusDays(7)
-    def dueDateInFuture = s.due > DateTime.now()
-
-    //content item has been published within last 24 hours
-    ((publishedWithinLastDay || c.timePublished.isNull) &&
-
-    (dueDateWithinLastWeek || s.due.isNull ) &&
-
-    (lastModifiedWithinWeek || c.lastModified.isNull || dueDateInFuture || c.timePublished.isNull))
-
+    c.published &&
+    //published over a day ago
+    (publishedOverADay ||
+    //published time unknown, but one week past due by
+    (dueDateOverAWeek && publishedTimeNotSet) ||
+    //published time unknown, due date not set, but hasnt been modified in over a week
+    (lastModifiedOverAWeek && dueDateNotSet && publishedTimeNotSet)
+    )
   }
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
