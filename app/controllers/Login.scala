@@ -11,18 +11,23 @@ import play.api.Play.current
 trait AuthActions extends Actions with Results {
   val loginTarget: Call = routes.Login.loginAction()
 
-  object XHRAuthAction extends ActionBuilder[AuthenticatedRequest] {
+  /**
+   * An ActionBuilder for an API action that verifies a User's session and
+   * responds accordingly to the client.
+   *
+   * 401 response when User's session isn't detected (signed out).
+   * 419 response when User's session is invalid/expired.
+   */
+  object APIAuthAction extends ActionBuilder[AuthenticatedRequest] {
     override def invokeBlock[A](request: Request[A],
                                 block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] = {
 
       UserIdentity.fromRequest(request) match {
         case Some(identity) if identity.isValid => block(new AuthenticatedRequest(Some(identity), request))
         case _ =>
-          if (request.headers.get("X-Requested-With").isDefined)
-            Future.successful(new Status(419))
+          val statusCode = if (request.session.get(UserIdentity.KEY).isDefined) 419 else 401
 
-          else sendForAuth(request)
-
+          Future.successful(new Status(statusCode))
       }
     }
 
@@ -96,7 +101,7 @@ object Login extends Controller with AuthActions {
   }
 
   def status = AuthAction { request =>
-    val user = request.session.get("identity")
+    val user = request.session.get(UserIdentity.KEY)
     Ok(views.html.loginStatus(user.getOrElse("{}")))
   }
 
