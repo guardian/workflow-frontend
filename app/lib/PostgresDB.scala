@@ -4,6 +4,7 @@ import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
+import play.api.libs.json.{JsObject, Writes}
 import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
@@ -48,11 +49,19 @@ object PostgresDB {
 
       val query = for {
         s <- stubsQuery
-        c <- contentQuery if s.composerId === c.composerId
+        c <- contentQuery
+        if s.composerId === c.composerId
+        if c.status isNot "Final"
       } yield (s, c)
 
-      query.filter( {case (s,c) => displayContentItem(s, c) })
-           .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
+      val query2 = for {
+        s <- stubsQuery
+        c <- contentQuery
+        if s.composerId === c.composerId
+        if c.status === "Final"
+      } yield (s,c)
+
+      val draftQuery = query.sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
             case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice) ,
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
               DashboardRow(
@@ -73,6 +82,28 @@ object PostgresDB {
               )
       }
 
+      val publishedQuery = query2.sortBy { case (s, c) => (c.timePublished.desc.nullsLast, c.lastModified.desc.nullsLast)}
+                                .filter { case (s, c) => displayContentItem(s, c) }.list.map {
+        case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice) ,
+        (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
+          DashboardRow(
+            Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice),
+            WorkflowContent(
+              composerId,
+              path,
+              headline,
+              contentType,
+              Some(Section(section)),
+              Status(status),
+              lastMod,
+              lastModBy,
+              commentable,
+              published,
+              timePublished
+            )
+          )
+      }
+      draftQuery ::: publishedQuery
     }
 
   private def ensureContentExistsWithId(composerId: String, contentType: String)(implicit session: Session) {
