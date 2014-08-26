@@ -50,9 +50,8 @@ define([
 
         // Update models in the scope when data is retrieved
         function updateScopeModels(data) {
-          $scope.contentItems = data.content;
           $scope.stubs = data.stubs;
-          $scope.contentByStatus = groupByStatus(data.content);
+          $scope.contentByStatus = data.content;
 
           if ($scope.selectedContent) {
             var found = _.findWhere(data.content, { composerId: $scope.selectedContent.composerId });
@@ -91,19 +90,6 @@ define([
             params.prodOffice = $scope.selectedProdOffice;
             return params;
         };
-
-        function groupByStatus(data) {
-            var tmp = _.groupBy(data, function(x){ return x.status; });
-            for(var prop in tmp) {
-                if(tmp[prop] === 'Final') {
-                    tmp[prop] = _.sortBy(tmp[prop], function(x) { return -x.timePublished,  -x.lastModified })
-                }
-                else {
-                    tmp[prop] = _.sortBy(tmp[prop], function(x){ return -x.priority, -x.due})
-                }
-            }
-            return tmp;
-        }
 
         // content items stuff
 
