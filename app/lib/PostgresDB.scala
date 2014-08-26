@@ -53,21 +53,10 @@ object PostgresDB {
 
       query.filter( {case (s,c) => displayContentItem(s, c) })
            .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
-            case (stubData,
-                  (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
+            case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
-          val content = WorkflowContent(
-            composerId,
-            path,
-            headline,
-            contentType,
-            Some(Section(stub.section)),
-            Status(status),
-            lastMod,
-            lastModBy,
-            commentable,
-            published,
-            timePublished
+          val content = WorkflowContent.fromContentRow(contentData).copy(
+            section = Some(Section(stub.section))
           )
           DashboardRow(stub, content)
       }
@@ -85,7 +74,7 @@ object PostgresDB {
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, Flag.NotRequired, stub.note, stub.prodOffice, stub.createdAt))
+      stubs += Stub.newStubRow(stub)
     }
 
 
