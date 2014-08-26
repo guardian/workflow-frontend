@@ -17,7 +17,7 @@ import com.gu.workflow.db.{SectionDB, CommonDB}
 
 object Api extends Controller with AuthActions {
 
-  implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
+  implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isAfter _)
 
   def content = AuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
@@ -38,6 +38,14 @@ object Api extends Controller with AuthActions {
       prodOffice = prodOffice
     )
 
+    val sortedContent = content.groupBy(d => d.wc.status).map { case(status,list) =>
+        if(status == models.Status("Final")) {
+          (status.name, list.sortBy(d => (d.wc.timePublished, d.wc.lastModified)))
+        }
+        else (status.name, list.sortBy(d => (-d.stub.priority, d.stub.due)))
+
+    }
+
     val stubs = CommonDB.getStubs(
                   dueFrom = dueFrom,
                   dueUntil = dueUntil,
@@ -46,7 +54,7 @@ object Api extends Controller with AuthActions {
                   unlinkedOnly = true,
                   prodOffice = prodOffice)
 
-    Ok(Json.obj("content" -> content, "stubs" -> stubs))
+    Ok(Json.obj("content" -> Json.toJson(sortedContent), "stubs" -> stubs))
   }
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
