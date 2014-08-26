@@ -15,9 +15,6 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfUser'])
      */
     function httpRequest(options = {}) {
 
-      options.headers = options.headers || {};
-      options.headers['X-Requested-With'] = 'XMLHttpRequest';
-
       return new Promise((resolve, reject) => {
 
         $http(options)
@@ -26,7 +23,7 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfUser'])
           .catch(function(err) {
 
             // Check whether session has become invalid
-            if (err && err.status === 419) {
+            if (err && (err.status === 401 || err.status === 419)) {
               $log.info('Invalid session, attempting to re-establish');
 
               wfUserSession.reEstablishSession().then(
