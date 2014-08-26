@@ -41,6 +41,14 @@ object Stub {
            needsLegal, note, prodOffice, createdAt)
   }
 
+  /* provide a tuple suitable for insertion into the database */
+  def newStubRow(s: Stub) = s match {
+    case Stub(_, title, section, due, assignee, composerId, contentType, priority,
+              needsLegal, note, prodOffice, createdAt) =>
+      (0L, title, section, due, assignee, composerId, contentType, priority,
+       needsLegal, note, prodOffice, createdAt)
+  }
+
   object DateFormat extends Format[DateTime] {
     def writes(d: DateTime): JsValue = JsString(d.toString)
     def reads(json: JsValue): JsResult[DateTime] = {

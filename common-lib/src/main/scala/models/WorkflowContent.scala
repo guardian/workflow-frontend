@@ -1,6 +1,7 @@
 package models
 
 import models.Status._
+import com.gu.workflow.db.Schema
 import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -46,6 +47,18 @@ object WorkflowContent {
       timePublished = None
     )
   }
+
+  def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
+    case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
+          headline, published, timePublished, _) =>
+          WorkflowContent(
+            composerId, path, headline, contentType, None, Status(status), lastMod,
+            lastModBy, commentable, published, timePublished
+          )
+  }
+  def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
+    (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
+     wc.contentType, wc.commentable, wc.headline, wc.published, None, revision)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
 

@@ -90,8 +90,7 @@ object CommonDB {
   }
 
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {
-      content +=
-        ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published, None, revision))
+      content += WorkflowContent.newContentRow(wc, revision)
   }
 
   def deleteContent(composerId: String) {
