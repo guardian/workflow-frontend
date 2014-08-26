@@ -189,7 +189,7 @@
         <div id="content" class="">
 
             <div class="alert alert-danger" ng-if="getContentError">
-              <strong>Error:</strong> A problem occurred retrieving updates. Please <a href="javascript:window.location.reload()">reload</a> the page.
+              Auto-refresh is paused. Please <a href="javascript:window.location.reload()">reload</a> the page.
             </div>
 
             <table class="content-list table">
@@ -240,7 +240,7 @@
                             <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
                                 <option ng-repeat="s in statuses">{{ s }}</option>
                             </select></td>
-                            <td><p ng-show="content.published">Published</p>
+                            <td class="content-list__item-published"><p ng-show="content.published">Published<br/><span class="small">{{ content.timePublished | wfLocaliseDateTime | wfFormatDateTime:'DD MMM, HH:mm' }}</span></p>
                                 <p ng-show="!content.published">Draft</p>
                             </td>
                             <td><span ng-click="deleteContent(content)" class="glyphicon glyphicon-trash"></span></td>
