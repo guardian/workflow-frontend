@@ -15,9 +15,31 @@ import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
 import com.gu.workflow.db.{SectionDB, CommonDB}
 
+import scala.math.Ordering
+
 object Api extends Controller with AuthActions {
 
-  implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isAfter _)
+  implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
+
+  implicit val priorityOrdering: Ordering[Int] = Ordering.fromLessThan(_ > _)
+
+  implicit def nonesLast[T](implicit ord: Ordering[T]): Ordering[Option[T]] = new Ordering[Option[T]] {
+    override def compare(x: Option[T], y: Option[T]) = (x, y) match {
+      case (None, None)       => 0
+      case (None, _)          => 1
+      case (_, None)          => -1
+      case (Some(x), Some(y)) => ord.compare(x, y)
+    }
+  }
+
+  implicit val unpublishedOrdering: Ordering[(Int, Option[DateTime])] = {
+    implicit val priorityOrdering: Ordering[Int] = Ordering.fromLessThan(_ > _)
+    Ordering.Tuple2(priorityOrdering, Ordering.Option(jodaDateTimeOrdering.reverse))
+  }
+
+  implicit val publishedOrdering: Ordering[(Option[DateTime], DateTime)] = {
+    Ordering.Tuple2(nonesLast(jodaDateTimeOrdering.reverse), jodaDateTimeOrdering.reverse)
+  }
 
   def content = AuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
@@ -38,21 +60,20 @@ object Api extends Controller with AuthActions {
       prodOffice = prodOffice
     )
 
-    val sortedContent = content.groupBy(d => d.wc.status).map { case(status,list) =>
-        if(status == models.Status("Final")) {
-          (status.name, list.sortBy(d => (d.wc.timePublished, d.wc.lastModified)))
-        }
-        else (status.name, list.sortBy(d => (-d.stub.priority, d.stub.due)))
-
+    val sortedContent = content.groupBy(d => d.wc.status).map { case (status, list) =>
+      if (status == models.Status("Final")) {
+        (status.name, list.sortBy(d =>(d.wc.timePublished, d.wc.lastModified))(publishedOrdering))
+      }
+      else (status.name, list.sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering))
     }
 
     val stubs = CommonDB.getStubs(
-                  dueFrom = dueFrom,
-                  dueUntil = dueUntil,
-                  section = section,
-                  contentType = contentType,
-                  unlinkedOnly = true,
-                  prodOffice = prodOffice)
+      dueFrom = dueFrom,
+      dueUntil = dueUntil,
+      section = section,
+      contentType = contentType,
+      unlinkedOnly = true,
+      prodOffice = prodOffice).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
 
     Ok(Json.obj("content" -> Json.toJson(sortedContent), "stubs" -> stubs))
   }
@@ -67,8 +88,7 @@ object Api extends Controller with AuthActions {
 
   def stubs = AuthAction { implicit req =>
     stubFilters.bindFromRequest.fold(
-      formWithErrors => BadRequest(formWithErrors.errorsAsJson),
-      { case (dueFrom, dueUntil) => Ok(renderJsonResponse(CommonDB.getStubs(dueFrom, dueUntil))) }
+    formWithErrors => BadRequest(formWithErrors.errorsAsJson), { case (dueFrom, dueUntil) => Ok(renderJsonResponse(CommonDB.getStubs(dueFrom, dueUntil)))}
     )
   }
 
@@ -84,12 +104,12 @@ object Api extends Controller with AuthActions {
 
   def putStub(stubId: Long) = AuthAction { implicit request =>
     (for {
-          jsValue <- readJsonFromRequest(request.body).right
-          stub <- extract[Stub](jsValue).right
-        } yield {
-          PostgresDB.updateStub(stubId, stub)
-          NoContent
-     }).merge
+      jsValue <- readJsonFromRequest(request.body).right
+      stub <- extract[Stub](jsValue).right
+    } yield {
+      PostgresDB.updateStub(stubId, stub)
+      NoContent
+    }).merge
   }
 
   def putStubAssignee(stubId: Long) = AuthAction { implicit request =>
@@ -97,9 +117,9 @@ object Api extends Controller with AuthActions {
       jsValue <- readJsonFromRequest(request.body).right
       assignee <- extract[String](jsValue \ "data").right
     } yield {
-        val assignOpt = Some(assignee).filter(_.nonEmpty)
-        PostgresDB.updateStubWithAssignee(stubId, assignOpt)
-        NoContent
+      val assignOpt = Some(assignee).filter(_.nonEmpty)
+      PostgresDB.updateStubWithAssignee(stubId, assignOpt)
+      NoContent
     }).merge
   }
 
@@ -107,30 +127,34 @@ object Api extends Controller with AuthActions {
     (for {
       jsValue <- readJsonFromRequest(request.body).right
     } yield {
-        val dueDate = (jsValue \ "data").asOpt[String] filter { _.length != 0 } map { new DateTime(_) }
-        PostgresDB.updateStubDueDate(stubId, dueDate)
-        NoContent
+      val dueDate = (jsValue \ "data").asOpt[String] filter {
+        _.length != 0
+      } map {
+        new DateTime(_)
+      }
+      PostgresDB.updateStubDueDate(stubId, dueDate)
+      NoContent
     }).merge
   }
 
   def putStubNote(stubId: Long) = AuthAction { implicit request =>
     (for {
-       jsValue <- readJsonFromRequest(request.body).right
-       note    <- extract[String](jsValue \ "data")(Stub.noteReads).right
-     } yield {
-       PostgresDB.updateStubNote(stubId, note)
-       NoContent
-     }).merge
+      jsValue <- readJsonFromRequest(request.body).right
+      note <- extract[String](jsValue \ "data")(Stub.noteReads).right
+    } yield {
+      PostgresDB.updateStubNote(stubId, note)
+      NoContent
+    }).merge
   }
 
   def putStubProdOffice(stubId: Long) = AuthAction { implicit request =>
     (for {
-       jsValue    <- readJsonFromRequest(request.body).right
-       prodOffice <- extract[String](jsValue \ "data")(Stub.prodOfficeReads).right
-     } yield {
-       PostgresDB.updateStubProdOffice(stubId, prodOffice)
-       NoContent
-     }).merge
+      jsValue <- readJsonFromRequest(request.body).right
+      prodOffice <- extract[String](jsValue \ "data")(Stub.prodOfficeReads).right
+    } yield {
+      PostgresDB.updateStubProdOffice(stubId, prodOffice)
+      NoContent
+    }).merge
   }
 
   def putContentStatus(composerId: String) = AuthAction { implicit request =>
@@ -166,7 +190,7 @@ object Api extends Controller with AuthActions {
 
   def linkStub(stubId: Long, composerId: String, contentType: String) = AuthAction { req =>
 
-    if(PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
+    if (PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
 
     else {
       PostgresDB.updateStubWithComposerId(stubId, composerId, contentType)
@@ -182,8 +206,8 @@ object Api extends Controller with AuthActions {
   /* JsError's may contain a number of different errors for differnt
    * paths. This will aggregate them into a single string */
   private def errorMsgs(error: JsError) =
-    (for((path, msgs) <- error.errors; msg <- msgs)
-     yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
+    (for ((path, msgs) <- error.errors; msg <- msgs)
+    yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
 
   /* the lone colon in the type paramater makes this a 'context'
    * variance type parameter, which causes the compiler to implicitly
@@ -192,7 +216,7 @@ object Api extends Controller with AuthActions {
   private def extract[A: Reads](jsValue: JsValue): Either[Result, A] = {
     jsValue.validate[A] match {
       case JsSuccess(a, _) => Right(a)
-      case error @ JsError(_) =>
+      case error@JsError(_) =>
         val errMsg = errorMsgs(error)
         Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
     }
