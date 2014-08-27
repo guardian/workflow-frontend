@@ -3,8 +3,6 @@ package models
 import com.gu.workflow.db.Schema
 import models.Flag.Flag
 import org.joda.time.DateTime
-import org.joda.time.format.ISODateTimeFormat
-import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
@@ -47,18 +45,6 @@ object Stub {
               needsLegal, note, prodOffice, createdAt) =>
       (0L, title, section, due, assignee, composerId, contentType, priority,
        needsLegal, note, prodOffice, createdAt)
-  }
-
-  object DateFormat extends Format[DateTime] {
-    def writes(d: DateTime): JsValue = JsString(d.toString)
-    def reads(json: JsValue): JsResult[DateTime] = {
-      json.validate[String].flatMap { dt =>
-        try { JsSuccess(ISODateTimeFormat.dateTimeParser().parseDateTime(dt)) }
-        catch { case e: IllegalArgumentException =>
-          JsError(ValidationError("validate.error.expected.date.isoformat",dt))
-        }
-      }
-    }
   }
 }
 

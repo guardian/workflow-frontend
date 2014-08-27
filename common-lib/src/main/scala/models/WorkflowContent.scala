@@ -32,6 +32,8 @@ case class WorkflowContent(
 
 object WorkflowContent {
 
+  implicit val dateTimeFormat = DateFormat
+
   def fromWireStatus(wireStatus: WireStatus, stub: Stub): WorkflowContent = {
     WorkflowContent(
       wireStatus.composerId,
@@ -69,10 +71,10 @@ object WorkflowContent {
       (__ \ "contentType").read[String] ~
       (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
       (__ \ "status").read[String].map { s => Status(s) } ~
-      (__ \ "lastModified").read[Long].map { t => new DateTime(t) } ~
+      (__ \ "lastModified").read[DateTime] ~
       (__ \ "lastModifiedBy").readNullable[String] ~
       (__ \ "commentable").read[Boolean] ~
       (__ \ "published").read[Boolean] ~
-      (__ \ "timePublished").readNullable[Long].map( _.map( t => new DateTime(t)))
+      (__ \ "timePublished").readNullable[DateTime]
       )(WorkflowContent.apply _)
 }
