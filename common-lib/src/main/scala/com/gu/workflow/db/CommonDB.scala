@@ -35,7 +35,7 @@ object CommonDB {
           cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids)) |>
           prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
 
-      q.sortBy(s => (s.priority.desc, s.due.desc)).list.map {
+      q.list.map {
             case (pk, title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice) =>
          Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice)
       }
