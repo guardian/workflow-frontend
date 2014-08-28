@@ -51,7 +51,7 @@ define([
         // Update models in the scope when data is retrieved
         function updateScopeModels(data) {
           $scope.stubs = data.stubs;
-          $scope.contentByStatus = data.content;
+          $scope.contentByStatus = groupByStatus(data.content);
 
           if ($scope.selectedContent) {
             var found = _.findWhere(data.content, { composerId: $scope.selectedContent.composerId });
@@ -78,6 +78,10 @@ define([
         $scope.$on('getContent.failed', function(event, msg) {
           $scope.getContentError = msg.error;
         });
+
+        function groupByStatus(data) {
+           return _.groupBy(data, function(x){ return x.status; });
+        }
 
 
         function buildContentParams() {

@@ -15,31 +15,9 @@ import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
 import com.gu.workflow.db.{SectionDB, CommonDB}
 
-import scala.math.Ordering
+import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
 
 object Api extends Controller with AuthActions {
-
-  implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
-
-  implicit val priorityOrdering: Ordering[Int] = Ordering.fromLessThan(_ > _)
-
-  implicit def nonesLast[T](implicit ord: Ordering[T]): Ordering[Option[T]] = new Ordering[Option[T]] {
-    override def compare(x: Option[T], y: Option[T]) = (x, y) match {
-      case (None, None)       => 0
-      case (None, _)          => 1
-      case (_, None)          => -1
-      case (Some(x), Some(y)) => ord.compare(x, y)
-    }
-  }
-
-  implicit val unpublishedOrdering: Ordering[(Int, Option[DateTime])] = {
-    implicit val priorityOrdering: Ordering[Int] = Ordering.fromLessThan(_ > _)
-    Ordering.Tuple2(priorityOrdering, Ordering.Option(jodaDateTimeOrdering.reverse))
-  }
-
-  implicit val publishedOrdering: Ordering[(Option[DateTime], DateTime)] = {
-    Ordering.Tuple2(nonesLast(jodaDateTimeOrdering.reverse), jodaDateTimeOrdering.reverse)
-  }
 
   def content = AuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
@@ -60,12 +38,10 @@ object Api extends Controller with AuthActions {
       prodOffice = prodOffice
     )
 
-    val sortedContent = content.groupBy(d => d.wc.status).map { case (status, list) =>
-      if (status == models.Status("Final")) {
-        (status.name, list.sortBy(d =>(d.wc.timePublished, d.wc.lastModified))(publishedOrdering))
-      }
-      else (status.name, list.sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering))
-    }
+
+    val publishedContent = content.filter(d => d.wc.status == models.Status("Final")).sortBy(s => (s.wc.timePublished, s.wc.lastModified))(publishedOrdering)
+    val unpublishedContent = content.filterNot(d => d.wc.status == models.Status("Final")).sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering)
+    val sortedContent = publishedContent ::: unpublishedContent
 
     val stubs = CommonDB.getStubs(
       dueFrom = dueFrom,
@@ -75,7 +51,7 @@ object Api extends Controller with AuthActions {
       unlinkedOnly = true,
       prodOffice = prodOffice).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
 
-    Ok(Json.obj("content" -> Json.toJson(sortedContent), "stubs" -> stubs))
+    Ok(Json.obj("content" -> sortedContent, "stubs" -> stubs))
   }
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
