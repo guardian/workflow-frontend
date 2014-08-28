@@ -3,8 +3,9 @@ import angular from 'angular';
 import 'lib/user';
 import 'lib/visibility-service';
 
-angular.module('wfContentService', ['wfVisibilityService', 'wfUser'])
-  .factory('wfContentService', ['$http', '$timeout', '$rootScope', '$log', 'wfUserSession', function($http, $timeout, $rootScope, $log, wfUserSession) {
+angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser'])
+  .factory('wfContentService', ['$http', '$timeout', '$rootScope', '$log', 'wfDateParser', 'wfFormatDateTimeFilter','wfFiltersService', 'wfUserSession',
+        function($http, $timeout, $rootScope, $log, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfUserSession) {
 
     /**
      * Make a http request to the Workflow Content API.
@@ -74,6 +75,36 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfUser'])
           url: '/api/content',
           params: params
         });
+      }
+
+
+      /**
+      * Formats model params into params to send to server.
+      *
+      * @param {Object} params
+      * @returns {Object}
+      */
+
+      getServerParams(){
+        var modelParams = wfFiltersService.getAll();
+
+        var selectedDate = modelParams['selectedDate'];
+
+        var dateRange = wfDateParser.parseRangeFromString(selectedDate);
+
+        var params = {
+            'status': modelParams['status'],
+            'state': modelParams['state'],
+            'section': modelParams['section'],
+            'content-type': modelParams["content-type"],
+            'flags': modelParams['flags'],
+            'prodOffice': modelParams['prodOffice'],
+            'due.from': wfFormatDateTimeFilter(dateRange['from'], "ISO8601") || null,
+            'due.until': wfFormatDateTimeFilter(dateRange['until'], "ISO8601") || null
+        };
+
+        return params;
+
       }
 
     }
