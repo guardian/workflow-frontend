@@ -50,7 +50,7 @@ object CommonDB {
     def publishedTimeNotSet = c.timePublished.isNull
     def dueDateNotSet = s.due.isNull
 
-    c.published &&
+    (c.status === Status("Final").name || c.published) &&
     //published over a day ago
     (publishedOverADay ||
     //published time unknown, but one week past due by
