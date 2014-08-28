@@ -14,9 +14,7 @@ object PostgresDB {
   import play.api.Play.current
   import play.api.db.slick.DB
 
-  val flagsToStubFilters = Map(
-    "needsLegal" -> {q: StubQuery => q.filter(_.needsLegal === Flag.Required)}
-  )
+  val queryStringToFlag = Map("needsLegal" -> Flag.Required, "approved" -> Flag.Complete, "notRequired" -> Flag.NotRequired)
 
   def getContent(
                   section:     Option[Section]  = None,
@@ -30,15 +28,16 @@ object PostgresDB {
                   ): List[DashboardRow] =
     DB.withTransaction { implicit session =>
 
+      val flagFilters = flags.flatMap(queryStringToFlag.get(_)).seq
+      val flagFilterOpt = if(flagFilters.isEmpty) None else Some(flagFilters)
 
       val stubsQuery =
-          flags.foldLeft(stubs){ case(q, flag) =>
-            flagsToStubFilters.get(flag).map{ filter => filter(q)}.getOrElse(q)
-          } |>
-          dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-          dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
-          prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
+        stubs |>
+        flagFilterOpt.foldl[StubQuery]((q, filters) => q.filter(_.needsLegal inSet(filters))) |>
+        dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
+        dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+        section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
+        prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
 
       val contentQuery =
         content |>
