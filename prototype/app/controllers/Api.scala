@@ -1,6 +1,7 @@
 package controllers
 
 import models.Flag.Flag
+import play.api.Logger
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -26,6 +27,8 @@ object Api extends Controller with AuthActions {
     val contentType = req.getQueryString("content-type")
     val flags = req.queryString.get("flags") getOrElse Nil
     val prodOffice = req.getQueryString("prodOffice")
+    val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
+    val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
 
     val content = PostgresDB.getContent(
       section = req.getQueryString("section").map(Section(_)),
@@ -35,7 +38,9 @@ object Api extends Controller with AuthActions {
       contentType = contentType,
       published = req.getQueryString("state").map(_ == "published"),
       flags = flags,
-      prodOffice = prodOffice
+      prodOffice = prodOffice,
+      createdFrom = createdFrom,
+      createdUntil = createdUntil
     )
 
     val stubs = CommonDB.getStubs(
