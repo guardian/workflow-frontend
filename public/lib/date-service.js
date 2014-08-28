@@ -248,6 +248,10 @@ angular.module('wfDateService', ['wfLocationService'])
         dateFormat = 'dddd D MMMM YYYY, HH:mm z';
       }
 
+      if(dateFormat == 'ISO8601') {
+          return dateValue.toISOString();
+      }
+
       return moment(dateValue).format(dateFormat);
     };
   }]);
