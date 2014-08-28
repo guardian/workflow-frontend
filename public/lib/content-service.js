@@ -2,8 +2,9 @@
 import angular from 'angular';
 import 'lib/visibility-service';
 
-angular.module('wfContentService', ['wfVisibilityService'])
-  .factory('wfContentService', ['$http', '$timeout', '$rootScope', function($http, $timeout, $rootScope) {
+angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfFiltersService'])
+  .factory('wfContentService', ['$http', '$timeout', '$rootScope', 'wfDateParser', 'wfFormatDateTimeFilter','wfFiltersService',
+        function($http, $timeout, $rootScope, wfDateParser, wfFormatDateTimeFilter, wfFiltersService) {
 
     class ContentService {
 
@@ -25,6 +26,36 @@ angular.module('wfContentService', ['wfVisibilityService'])
         });
 
         return deferred;
+      }
+
+
+      /**
+      * Formats model params into params to send to server.
+      *
+      * @param {Object} params
+      * @returns {Object}
+      */
+
+      getServerParams(){
+        var modelParams = wfFiltersService.getAll();
+
+        var selectedDate = modelParams['selectedDate'];
+
+        var dateRange = wfDateParser.parseRangeFromString(selectedDate);
+
+        var params = {
+            'status': modelParams['status'],
+            'state': modelParams['state'],
+            'section': modelParams['section'],
+            'content-type': modelParams["content-type"],
+            'flags': modelParams['flags'],
+            'prodOffice': modelParams['prodOffice'],
+            'due.from': wfFormatDateTimeFilter(dateRange['from'], "ISO8601") || null,
+            'due.until': wfFormatDateTimeFilter(dateRange['until'], "ISO8601") || null
+        };
+
+        return params;
+
       }
 
     }
