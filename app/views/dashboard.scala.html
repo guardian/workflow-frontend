@@ -136,7 +136,9 @@
                 <h5 class="query" data-toggle="collapse" data-target="createdAt">Creation date</h5>
                 <ul id="createdAt" class="nav nav-sidebar" ng-controller="CreatedAtFilter">
                     <li ng-repeat="cannedFilter in cannedFilters">
-                        <a href="">{{cannedFilter.name}}</a>
+                        <a href="" ng-click="filterClick(cannedFilter)">
+                            {{cannedFilter.caption}}
+                        </a>
                     </li>
                 </ul>
 
