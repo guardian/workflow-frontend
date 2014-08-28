@@ -10,6 +10,7 @@ define([
     './controllers/dashboard/content-item',
     './controllers/dashboard/dashboard',
     './controllers/dashboard/date-filter',
+    './controllers/dashboard/created-at-filter',
     './controllers/dashboard/stub-crud',
 
     './services/composer-service',
