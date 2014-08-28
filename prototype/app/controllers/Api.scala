@@ -39,8 +39,11 @@ object Api extends Controller with AuthActions {
     )
 
 
-    val publishedContent = content.filter(d => d.wc.status == models.Status("Final")).sortBy(s => (s.wc.timePublished, s.wc.lastModified))(publishedOrdering)
-    val unpublishedContent = content.filterNot(d => d.wc.status == models.Status("Final")).sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering)
+    val publishedContent = content.filter(d => d.wc.status == models.Status("Final"))
+                                  .sortBy(s => (s.wc.timePublished, s.wc.lastModified))(publishedOrdering)
+    val unpublishedContent = content.filterNot(d => d.wc.status == models.Status("Final"))
+                                   .sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering)
+    
     val sortedContent = publishedContent ::: unpublishedContent
 
     val stubs = CommonDB.getStubs(
