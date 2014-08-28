@@ -1,7 +1,6 @@
 package controllers
 
 import models.Flag.Flag
-import play.api.Logger
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

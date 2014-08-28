@@ -159,6 +159,10 @@ angular.module('wfDateService', ['wfLocationService'])
 
           return this.createRange(weekendStart, weekendStart.clone().add(2, 'days'));
 
+        } else if (input == 'yesterday') {
+
+          return this.createDayRange(now.subtract(1, 'days'));
+
         } else {
           var parsed = wfLocaliseDateTimeFilter(input, locationKey);
 
