@@ -50,8 +50,8 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
             'content-type': modelParams["content-type"],
             'flags': modelParams['flags'],
             'prodOffice': modelParams['prodOffice'],
-            'due.from': wfFormatDateTimeFilter(dateRange['from'], "YYYY-MM-DDTHH:mm:ssZ") || null,
-            'due.until': wfFormatDateTimeFilter(dateRange['until'], "YYYY-MM-DDTHH:mm:ssZ") || null
+            'due.from': wfFormatDateTimeFilter(dateRange['from'], "ISO8601") || null,
+            'due.until': wfFormatDateTimeFilter(dateRange['until'], "ISO8601") || null
         };
 
         return params;
