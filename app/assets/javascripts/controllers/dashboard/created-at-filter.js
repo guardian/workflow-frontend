@@ -1,19 +1,18 @@
 define(['moment', '../dashboard'], function(moment, dashboardControllers) {
 
-  'use strict';
+    'use strict';
 
-  var baseDate = function() { return moment() };
+    dashboardControllers.controller('CreatedAtFilter', ['$scope', function($scope) {
+        $scope.cannedFilters = [{
+            caption: "Yesterday", value: "yesterday"
+        }]
 
-  /* most filters just subtract a certain amount from the base date */
-  function simpleSubtract(unit, amt) {
-    return function(dt) { return { from: dt.subtract(unit, amt) } }
-  }
+        $scope.selectedFilter = "";
 
-  dashboardControllers.controller('CreatedAtFilter', ['$scope', function($scope) {
-    /* cb's return an obj containing from and to. Times relative to the base date */
-    $scope.cannedFilters = [{
-      name: "Last 24hrs", cb: simpleSubtract('days', 1)
-    }]
-  }]);
+        $scope.filterClick = function(filter) {
+            $scope.selectedFilter = filter;
+            $scope.$emit('filtersChanged.createdAt', filter.value);
+        }
+    }]);
 
 });

@@ -81,7 +81,6 @@ define([
           $scope.getContentError = msg.error;
         });
 
-
         function groupByStatus(data) {
             return _.groupBy(data, function(x){ return x.status; });
         }
@@ -104,6 +103,14 @@ define([
             $scope.selectedStatus = status;
             $scope.$emit('filtersChanged.status', $scope.selectedStatus);
         };
+
+        $scope.selectCreatedFilter = function(fromDate, untilDate) {
+            $scope.selectedCreatedFrom  = fromDate  != null ? fromDate.toISOString()  : "";
+            $scope.selectedCreatedUntil = untilDate != null ? untilDate.toISOString() : "";
+            console.log("Setting filter: " + $scope.selectedCreatedFrom + " :: " +
+                        $scope.selectedCreatedUntil);
+            getContent();
+        }
 
         $scope.flagActive = function(flag) {
             return $scope.flags.indexOf(flag) != -1;
