@@ -39,6 +39,10 @@ tr td {
 	white-space: nowrap;
 }
 
+.content-list__item-published {
+  width: 85px;
+}
+
 .content-list__item-row--selected {
   background-color: #f9f9f9;
 }
