@@ -445,3 +445,15 @@ h5.query {
   display: inline-block;
   border-radius: 50%;
 }*/
+
+
+/**
+ * .session-check__frame   iframe used to re-establish the user's session.
+ */
+.login-check__frame {
+  position: absolute;
+  overflow: hidden;
+  border: none;
+  width: 0;
+  height: 0;
+}

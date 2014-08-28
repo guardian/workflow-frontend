@@ -24,8 +24,8 @@ define([
 
         var getContent = function(evt, params) {
             var params = wfContentService.getServerParams();
-            $http.get('/api/content', {params: params}).success(function(response){
-                updateScopeModels(response)
+            wfContentService.get(params).then(function(response){
+                updateScopeModels(response);
             });
         };
 
