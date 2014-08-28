@@ -19,26 +19,29 @@ object PostgresDB {
   )
 
   def getContent(
-                  section:     Option[Section]  = None,
-                  dueFrom:     Option[DateTime] = None,
-                  dueUntil:    Option[DateTime] = None,
-                  status:      Option[Status]   = None,
-                  contentType: Option[String]   = None,
-                  published:   Option[Boolean]  = None,
-                  flags:       Seq[String]      = Nil,
-                  prodOffice:  Option[String]   = None
+                  section:      Option[Section]  = None,
+                  dueFrom:      Option[DateTime] = None,
+                  dueUntil:     Option[DateTime] = None,
+                  status:       Option[Status]   = None,
+                  contentType:  Option[String]   = None,
+                  published:    Option[Boolean]  = None,
+                  flags:        Seq[String]      = Nil,
+                  prodOffice:   Option[String]   = None,
+                  createdFrom:  Option[DateTime] = None,
+                  createdUntil: Option[DateTime] = None
                   ): List[DashboardRow] =
     DB.withTransaction { implicit session =>
 
-
       val stubsQuery =
-          flags.foldLeft(stubs){ case(q, flag) =>
-            flagsToStubFilters.get(flag).map{ filter => filter(q)}.getOrElse(q)
-          } |>
+        flags.foldLeft(stubs) { case(q, flag) =>
+          flagsToStubFilters.get(flag).map{ filter => filter(q)}.getOrElse(q)
+        } |>
           dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
           dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
           section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
-          prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
+          prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
+          createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
+          createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
 
       val contentQuery =
         content |>
