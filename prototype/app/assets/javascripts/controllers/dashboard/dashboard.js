@@ -50,6 +50,7 @@ define([
 
         // Update models in the scope when data is retrieved
         function updateScopeModels(data) {
+          $scope.contentItems = data.content;
           $scope.stubs = data.stubs;
           $scope.contentByStatus = groupByStatus(data.content);
 
