@@ -61,6 +61,8 @@ define([
             // found will be undefined when not found -> when something is deleted.
             $scope.selectedContent = found;
           }
+
+          $scope.$apply();
         }
 
         // Poll for updates
