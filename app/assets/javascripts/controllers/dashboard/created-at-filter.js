@@ -9,9 +9,17 @@ define(['moment', '../dashboard'], function(moment, dashboardControllers) {
 
         $scope.selectedFilter = "";
 
+        $scope.filterIsSelected = function(filter) {
+            return (filter != null && filter.value === $scope.selectedFilter);
+        }
+
         $scope.filterClick = function(filter) {
-            $scope.selectedFilter = filter;
-            $scope.$emit('filtersChanged.createdAt', filter.value);
+            if($scope.filterIsSelected(filter)) {
+                $scope.selectedFilter = null;
+            } else {
+                $scope.selectedFilter = filter.value;
+            }
+            $scope.$emit('filtersChanged.createdAt', $scope.selectedFilter);
         }
     }]);
 

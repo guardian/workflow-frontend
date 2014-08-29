@@ -79,15 +79,16 @@ angular.module('wfFiltersService', ['wfDateService'])
                 };
             }
 
-            update(key, preValue) {
-                var value;
-                if(key === 'selectedDate' || key === 'created')
-                    value = wfDateParser.setQueryString(preValue);
-                else
-                    value = preValue;
-
-                this.filters[key] = value;
-                $location.search(key, value);
+            update(key, value) {
+                if(key === 'selectedDate')  {
+                    var dateStr = wfDateParser.setQueryString(value);
+                    this.filters[key] = dateStr;
+                    $location.search(key, dateStr);
+                }
+                else {
+                    this.filters[key] = value;
+                    $location.search(key, value);
+                }
             }
 
             get(key){
