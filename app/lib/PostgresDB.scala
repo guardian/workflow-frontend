@@ -54,7 +54,7 @@ object PostgresDB {
       } yield (s, c)
 
 
-      query.filter { case (s, c) => !contentItemExpired(s, c) || c.status === Status("Hold").name  }.list.map {
+      query.filter { case (s, c) => displayContentItem(s,c) }.list.map {
             case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice) ,
             (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
               DashboardRow(
