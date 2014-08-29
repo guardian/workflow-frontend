@@ -1,4 +1,4 @@
-define(['moment', '../dashboard'], function(moment, dashboardControllers) {
+define(['../dashboard'], function(dashboardControllers) {
 
     'use strict';
 
