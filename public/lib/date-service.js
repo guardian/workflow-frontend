@@ -163,6 +163,14 @@ angular.module('wfDateService', ['wfLocationService'])
 
           return this.createDayRange(now.subtract(1, 'days'));
 
+        } else if (input === 'last24') {
+
+          return this.createRange(now.clone().subtract(24, 'hours'), now);
+
+        } else if (input === 'last48') {
+
+          return this.createRange(now.clone().subtract(48, 'hours'), now);
+
         } else {
           var parsed = wfLocaliseDateTimeFilter(input, locationKey);
 
