@@ -59,7 +59,7 @@ object CommonDB {
 
     (dueDateWithinLastWeek || s.due.isNull ) &&
 
-    (lastModifiedWithinWeek || c.lastModified.isNull || dueDateInFuture))
+    (lastModifiedWithinWeek || c.lastModified.isNull || dueDateInFuture || c.timePublished.isNull))
 
   }
 
