@@ -3,11 +3,15 @@ define(['moment', '../dashboard'], function(moment, dashboardControllers) {
     'use strict';
 
     dashboardControllers.controller('CreatedAtFilter', ['$scope', function($scope) {
-        $scope.cannedFilters = [{
-            caption: "Yesterday", value: "yesterday"
-        }]
+        $scope.cannedFilters = [
+            { caption: "Any", value: null },
+            { caption: "Yesterday", value: "yesterday" },
+            { caption: "Today", value: "today" },
+            { caption: "Last 24 Hours", value: "last24" },
+            { caption: "Last 48 Hours", value: "last48" }
+        ]
 
-        $scope.selectedFilter = "";
+        $scope.selectedFilter = null;
 
         $scope.filterIsSelected = function(filter) {
             return (filter != null && filter.value === $scope.selectedFilter);
