@@ -109,8 +109,6 @@ define([
         $scope.selectCreatedFilter = function(fromDate, untilDate) {
             $scope.selectedCreatedFrom  = fromDate  != null ? fromDate.toISOString()  : "";
             $scope.selectedCreatedUntil = untilDate != null ? untilDate.toISOString() : "";
-            console.log("Setting filter: " + $scope.selectedCreatedFrom + " :: " +
-                        $scope.selectedCreatedUntil);
             getContent();
         }
 
