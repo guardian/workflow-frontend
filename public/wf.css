@@ -39,6 +39,10 @@ tr td {
 	white-space: nowrap;
 }
 
+.content-list__item-published {
+  width: 85px;
+}
+
 .content-list__item-row--selected {
   background-color: #f9f9f9;
 }
@@ -441,3 +445,15 @@ h5.query {
   display: inline-block;
   border-radius: 50%;
 }*/
+
+
+/**
+ * .session-check__frame   iframe used to re-establish the user's session.
+ */
+.login-check__frame {
+  position: absolute;
+  overflow: hidden;
+  border: none;
+  width: 0;
+  height: 0;
+}
