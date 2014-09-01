@@ -60,7 +60,7 @@ object WorkflowContent {
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
     (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
-     wc.contentType, wc.commentable, wc.headline, wc.published, None, revision)
+     wc.contentType, wc.commentable, wc.headline, wc.published, wc.timePublished, revision)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
 
