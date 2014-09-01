@@ -85,3 +85,24 @@ If you want to SSH to one of the EC2 instances:
   * Obtain a copy of the `workflow-developers` private key
   * Add it to your ssh agent using `ssh-add workflow-developers.pem`
   * Use the username `ubuntu` to log into the EC2 instance
+
+Integration Tests
+-------------
+
+Integration tests for Workflow which are written in JavaScript using Protractor and Jasmine. Currently these can only be run locally, but will eventually run as part of the build process
+
+Install protractor on your machine - this also bundles Selenium webdriver
+
+    $ npm install -g protractor
+
+Install or update Selenium webdriver to the newest version
+
+    $ webdriver-manager update
+
+Start the Selenium server
+
+    $ webdriver-manager start
+
+Run the tests
+
+    $ protractor test/conf.js

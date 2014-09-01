@@ -14,8 +14,8 @@ describe('stub creation', function() {
     var saveStubButton = by.partialButtonText('Save stub');
     var sectionDropdown = by.model('selectedSection');
     var technologyOption = by.cssContainingText('option', 'Technology');
-
-
+    var newStubButton = by.partialButtonText('New Stub');
+    var stubTitleField = by.id("stub_title");
     browser.ignoreSynchronization = true;
     browser.get(workflowUri);
     //redirects to google login page
@@ -25,13 +25,12 @@ describe('stub creation', function() {
     browser.driver.sleep(5000);
     ptor.waitForAngular();
     expect(browser.getTitle()).toEqual('Welcome to Workflow');
-    element(by.partialButtonText('New Stub')).click();
-    element(by.id("stub_title")).sendKeys(stubTitle);
+    element(newStubButton).click();
+    element(stubTitleField).sendKeys(stubTitle);
     element(datePicker).sendKeys("8pm");
     browser.wait(function() {
        return ptor.isElementPresent(datePicked);
    }, 8000);
-
     expect(ptor.isElementPresent(datePicked)).toBeTruthy();
     element(saveStubButton).click();
     browser.driver.sleep(5000);
@@ -39,14 +38,7 @@ describe('stub creation', function() {
     element(technologyOption).click();
     ptor.waitForAngular();
     expect(ptor.isElementPresent(stub)).toBeTruthy();
-
-//     var sectionList = element.all(by.options('s for s in sections'));
-// expect(sectionList.count()).toEqual(2);
-// var firstOption = sectionList.first();
-// expect(firstOption.getText()).toEqual('red');
-
   });
 });
 
-// TEST FOR THE NEWLY CREATED STUB SOMEHOW
 
