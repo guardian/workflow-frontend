@@ -38,12 +38,7 @@ object CommonDB {
 
       q.filter(s => dueDateNotExpired(s.due))
         .list.map(row => Stub.fromStubRow(row))
-          dueFrom.foldl[StubQuery]((q, dueFrom) => q.filter(_.due >= dueFrom)) |>
-          dueUntil.foldl[StubQuery]((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          section.foldl[StubQuery] { case (q, Section(s)) => q.filter(_.section === s)} |>
-          contentType.foldl[StubQuery] { case (q, _) => q.filter(_.contentType === contentType)} |>
-          cIds.foldl[StubQuery]((q, ids) => q.filter(_.composerId inSet ids)) |>
-          prodOffice.foldl[StubQuery]((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
+      
 
 
     }
