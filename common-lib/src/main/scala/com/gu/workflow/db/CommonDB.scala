@@ -14,31 +14,30 @@ object CommonDB {
   import play.api.db.slick.DB
 
   def getStubs(
-    dueFrom: Option[DateTime] = None,
-    dueUntil: Option[DateTime] = None,
-    section:  Option[Section] = None,
-    composerId: Set[String] = Set.empty,
-    contentType: Option[String] = None,
-    unlinkedOnly: Boolean = false,
-    prodOffice: Option[String] = None
-  ): List[Stub] =
+                dueFrom: Option[DateTime] = None,
+                dueUntil: Option[DateTime] = None,
+                section: Option[Section] = None,
+                composerId: Set[String] = Set.empty,
+                contentType: Option[String] = None,
+                unlinkedOnly: Boolean = false,
+                prodOffice: Option[String] = None
+                ): List[Stub] =
     DB.withTransaction { implicit session =>
 
       val cIds = if (composerId.nonEmpty) Some(composerId) else None
 
       val q =
         (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
-          dueFrom.foldl[StubQuery]     ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-          dueUntil.foldl[StubQuery]    ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          section.foldl[StubQuery]     { case (q, Section(s))  => q.filter(_.section === s) } |>
-          contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
-          cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids)) |>
-          prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
+          dueFrom.foldl[StubQuery]((q, dueFrom) => q.filter(_.due >= dueFrom)) |>
+          dueUntil.foldl[StubQuery]((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+          section.foldl[StubQuery] { case (q, Section(s)) => q.filter(_.section === s)} |>
+          contentType.foldl[StubQuery] { case (q, _) => q.filter(_.contentType === contentType)} |>
+          cIds.foldl[StubQuery]((q, ids) => q.filter(_.composerId inSet ids)) |>
+          prodOffice.foldl[StubQuery]((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
 
-      q.filter(s => dueDateNotExpired(s.due))
-        .sortBy(s => (s.priority.desc, s.due.desc)).list.map {
-            case (pk, title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice) =>
-         Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice)
+      q.list.map {
+        case (pk, title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice) =>
+          Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice)
       }
     }
 
@@ -46,31 +45,29 @@ object CommonDB {
 
   def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
     withinDisplayTime(s, c) ||
-    //or item has a status of hold
-    c.status === Status("Hold").name
+      //or item has a status of hold
+      c.status === Status("Hold").name
   }
 
   def withinDisplayTime(s: Schema.DBStub, c: Schema.DBContent) = {
     def publishedWithinLastDay = c.timePublished > DateTime.now().minusDays(1)
-    def dueDateWithinLastWeek =  s.due > DateTime.now().minusDays(7)
+    def dueDateWithinLastWeek = s.due > DateTime.now().minusDays(7)
     def lastModifiedWithinWeek = c.lastModified > DateTime.now().minusDays(7)
     def dueDateInFuture = s.due > DateTime.now()
-
     //content item has been published within last 24 hours
     ((publishedWithinLastDay || c.timePublished.isNull) &&
 
-    (dueDateWithinLastWeek || s.due.isNull ) &&
-
-    (lastModifiedWithinWeek || c.lastModified.isNull || dueDateInFuture || c.timePublished.isNull))
-
+      (dueDateWithinLastWeek || s.due.isNull) &&
+      (lastModifiedWithinWeek || c.lastModified.isNull || dueDateInFuture || c.timePublished.isNull))
   }
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
     DB.withTransaction { implicit session =>
       val contentExists = content.filter(_.composerId === wc.composerId).exists.run
-      if(contentExists) updateContent(wc, revision)
+      if (contentExists) updateContent(wc, revision)
       else createContent(wc, Some(revision))
     }
+
 
   def updateContent(wc: WorkflowContent, revision: Long)(implicit session: Session): Int = {
       content
@@ -82,8 +79,8 @@ object CommonDB {
   }
 
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {
-      content +=
-        ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published, None, revision))
+    content +=
+      ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published, None, revision))
   }
 
   def deleteContent(composerId: String) {

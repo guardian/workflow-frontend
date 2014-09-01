@@ -83,10 +83,10 @@ define([
           $scope.getContentError = msg.error;
         });
 
-
         function groupByStatus(data) {
-            return _.groupBy(data, function(x){ return x.status; });
+           return _.groupBy(data, function(x){ return x.status; });
         }
+
 
         // content items stuff
 
