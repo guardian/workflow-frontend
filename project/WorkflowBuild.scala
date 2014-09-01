@@ -32,10 +32,41 @@ object WorkflowBuild extends Build {
                   .settings(libraryDependencies ++= awsDependencies ++ testDependencies)
                   .settings(playDefaultPort := 9091)
 
+  val sass = taskKey[Seq[File]]("Compiles Sass files")
+  val sassOutputStyle = settingKey[String]("CSS output style (nested|expanded|compact|compressed)")
+
   lazy val root = playProject("prototype")
     .settings(
       libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
-    ).settings(
+    )
+    .settings(
+      sassOutputStyle := "compressed",
+      sass := {
+        val sourceDir = (resourceDirectory in Assets).value
+
+        val sourceFiles = ((sourceDir ** "*.scss") --- (sourceDir ** "_*.scss")).get
+
+
+        println("Compiling " + sourceFiles.length + " Sass sources...")
+
+        // node-sass cli for nodejs lib-sass wrapper
+        val sassCmd = baseDirectory(_ / "node_modules/.bin/node-sass").value
+
+        for (src <- sourceFiles) {
+          val dest = src.getParentFile / src.base + ".css"
+          println()
+          println("Compiling Sass source: " + src.toString)
+
+
+          // sourcemap arg has to go at end
+          Seq(sassCmd.toString, "--include-path", sourceDir.toString, "--output-style", sassOutputStyle.value, src.toString, dest, "--source-map").!
+        }
+
+        (sourceDir ** "*.css").get
+      },
+      sourceGenerators in Assets += sass.taskValue
+    )
+    .settings(
       includeFilter in gzip := "*.html" || "*.css" || "*.js",
       pipelineStages := Seq(gzip)
     ).settings(playDefaultPort := 9090)
