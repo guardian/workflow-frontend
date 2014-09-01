@@ -1,15 +1,19 @@
+/**
+ * Dashboard layout styles.
+ */
+
 @import "components/content-list/content-list";
 @import "components/stubs-list/stubs-list";
 @import "components/details-panel/details-panel";
+
+@import "sidebar";
+@import "top-toolbar";
 
 body {
 /*  min-width: 800px;*/
     padding-top: 50px;
 }
 
-
-
-/*Styles from dashboard*/
 
 /*
  * Base structure
@@ -91,30 +95,6 @@ overflow: auto;
     width: 159px;
   }
 
-/* Sidebar navigation */
-.nav-sidebar {
-  margin-right: -21px; /* 20px padding + 1px border */
-  margin-bottom: 20px;
-  margin-left: -20px;
-}
-
-.nav-sidebar > li > a {
-  padding: 3px 20px 3px 30px;
-
-}
-
-div.col-md-2.sidebar div.btn-group.btn-group-xs {
-    padding-left: 10px;
-}
-
-div.col-md-2.sidebar div.btn-group.btn-group-xs button.btn.btn-default {
-    width: 34px;
-}
-
-.nav-sidebar > .active > a {
-  color: #fff;
-  background-color: #428bca;
-}
 
 
 
@@ -123,19 +103,6 @@ h5.query {
 }
 
 
-.date-filter__label{
-  padding-right: 5px;
-}
-
-.date-filter .btn-default {
-  height: 34px;
-}
-
-@media (max-width: 1100px) {
-  .date-filter__button--optional {
-    display: none;
-  }
-}
 
 .btn.active {
     color: #fff;
@@ -143,38 +110,7 @@ h5.query {
     border-color: #285e8e;
 }
 
-/**
- * Top toolbar.
- */
-.top-toolbar {
-  display: flex;
-  height: 40px;
-  padding: 3px 200px 3px 0;
-  background-color: #adadad;
-}
 
-/* @override bootstrap */
-.top-toolbar .input-sm {
-  height: 34px;
-}
-
-.top-toolbar__prod-office {
-  width: 160px;
-  padding: 0 10px;
-}
-
-.top-toolbar__section-selector {
-  width: 200px;
-  padding: 0 10px;
-}
-
-.top-toolbar__due-by-filter {
-  margin: 0 auto;
-}
-
-.sidebar__location-picker {
-  margin-bottom: 20px;
-}
 
 
 
