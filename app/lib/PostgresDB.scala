@@ -4,6 +4,7 @@ import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
+import play.api.libs.json.{JsObject, Writes}
 import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
@@ -51,11 +52,13 @@ object PostgresDB {
 
       val query = for {
         s <- stubsQuery
-        c <- contentQuery if s.composerId === c.composerId
+        c <- contentQuery
+        if s.composerId === c.composerId
       } yield (s, c)
 
+
       query.filter( {case (s,c) => displayContentItem(s, c) })
-           .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
+           .list.map {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
           val content = WorkflowContent.fromContentRow(contentData).copy(
@@ -63,6 +66,7 @@ object PostgresDB {
           )
           DashboardRow(stub, content)
       }
+
 
     }
 
