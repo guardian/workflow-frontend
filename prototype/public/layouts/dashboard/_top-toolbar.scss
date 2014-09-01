@@ -1,0 +1,45 @@
+
+/**
+ * Top toolbar.
+ */
+.top-toolbar {
+  display: flex;
+  height: 40px;
+  padding: 3px 200px 3px 0;
+  background-color: #adadad;
+}
+
+/* @override bootstrap */
+.top-toolbar .input-sm {
+  height: 34px;
+}
+
+.top-toolbar__prod-office {
+  width: 160px;
+  padding: 0 10px;
+}
+
+.top-toolbar__section-selector {
+  width: 200px;
+  padding: 0 10px;
+}
+
+.top-toolbar__due-by-filter {
+  margin: 0 auto;
+}
+
+
+
+.date-filter__label{
+  padding-right: 5px;
+}
+
+.date-filter .btn-default {
+  height: 34px;
+}
+
+@media (max-width: 1100px) {
+  .date-filter__button--optional {
+    display: none;
+  }
+}
