@@ -19,7 +19,7 @@ import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTi
 
 object Api extends Controller with AuthActions {
 
-  def content = AuthAction { implicit req =>
+  def content = APIAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
     val section = req.getQueryString("section").map(Section(_))
@@ -65,13 +65,13 @@ object Api extends Controller with AuthActions {
 
   val STUB_NOTE_MAXLEN = 500
 
-  def stubs = AuthAction { implicit req =>
+  def stubs = APIAuthAction { implicit req =>
     stubFilters.bindFromRequest.fold(
     formWithErrors => BadRequest(formWithErrors.errorsAsJson), { case (dueFrom, dueUntil) => Ok(renderJsonResponse(CommonDB.getStubs(dueFrom, dueUntil)))}
     )
   }
 
-  def newStub = AuthAction { implicit request =>
+  def newStub = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       stub <- extract[Stub](jsValue).right
@@ -81,7 +81,7 @@ object Api extends Controller with AuthActions {
     }).merge
   }
 
-  def putStub(stubId: Long) = AuthAction { implicit request =>
+  def putStub(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       stub <- extract[Stub](jsValue).right
@@ -91,7 +91,7 @@ object Api extends Controller with AuthActions {
     }).merge
   }
 
-  def putStubAssignee(stubId: Long) = AuthAction { implicit request =>
+  def putStubAssignee(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       assignee <- extract[String](jsValue \ "data").right
@@ -102,7 +102,7 @@ object Api extends Controller with AuthActions {
     }).merge
   }
 
-  def putStubDueDate(stubId: Long) = AuthAction { implicit request =>
+  def putStubDueDate(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
     } yield {
@@ -116,7 +116,7 @@ object Api extends Controller with AuthActions {
     }).merge
   }
 
-  def putStubNote(stubId: Long) = AuthAction { implicit request =>
+  def putStubNote(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       note <- extract[String](jsValue \ "data")(Stub.noteReads).right
@@ -126,7 +126,7 @@ object Api extends Controller with AuthActions {
     }).merge
   }
 
-  def putStubProdOffice(stubId: Long) = AuthAction { implicit request =>
+  def putStubProdOffice(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       prodOffice <- extract[String](jsValue \ "data")(Stub.prodOfficeReads).right
@@ -136,7 +136,7 @@ object Api extends Controller with AuthActions {
     }).merge
   }
 
-  def putContentStatus(composerId: String) = AuthAction { implicit request =>
+  def putContentStatus(composerId: String) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       status <- extract[String](jsValue \ "data").right
@@ -146,7 +146,7 @@ object Api extends Controller with AuthActions {
     }).merge
   }
 
-  def putStubLegalStatus(stubId: Long) = AuthAction { implicit request =>
+  def putStubLegalStatus(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       status <- extract[Flag](jsValue \ "data").right
@@ -156,18 +156,18 @@ object Api extends Controller with AuthActions {
     }).merge
   }
 
-  def deleteContent(composerId: String) = AuthAction {
+  def deleteContent(composerId: String) = APIAuthAction {
     CommonDB.deleteContent(composerId)
     NoContent
   }
 
-  def deleteStub(stubId: Long) = AuthAction {
+  def deleteStub(stubId: Long) = APIAuthAction {
     PostgresDB.deleteStub(stubId)
     NoContent
   }
 
 
-  def linkStub(stubId: Long, composerId: String, contentType: String) = AuthAction { req =>
+  def linkStub(stubId: Long, composerId: String, contentType: String) = APIAuthAction { req =>
 
     if (PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
 
