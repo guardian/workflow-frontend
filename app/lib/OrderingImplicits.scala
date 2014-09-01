@@ -17,7 +17,7 @@ object OrderingImplicits {
   }
 
   implicit val unpublishedOrdering: Ordering[(Int, Option[DateTime])] = {
-    Ordering.Tuple2(Ordering.Int.reverse, Ordering.Option(jodaDateTimeOrdering.reverse))
+    Ordering.Tuple2(Ordering.Int.reverse, Ordering.Option(jodaDateTimeOrdering))
   }
 
   implicit val publishedOrdering: Ordering[(Option[DateTime], DateTime)] = {
