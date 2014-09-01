@@ -70,23 +70,13 @@ object CommonDB {
       else createContent(wc, Some(revision))
     }
 
-  def setPublishedTime(timePublished: DateTime, composerId: String): Int = {
-    DB.withTransaction { implicit session =>
-      content
-        .filter(c => c.composerId === composerId && c.timePublished.isNull)
-        .map(c =>
-          (c.timePublished)
-        ).update(Some(timePublished))
-    }
-  }
-
   def updateContent(wc: WorkflowContent, revision: Long)(implicit session: Session): Int = {
       content
         .filter(_.composerId === wc.composerId)
         .filter(c => c.revision < revision || c.revision.isNull)
         .map(c =>
-          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.published, c.revision))
-        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.published, Some(revision)))
+          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.published, c.timePublished, c.revision))
+        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.published, wc.timePublished, Some(revision)))
   }
 
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {

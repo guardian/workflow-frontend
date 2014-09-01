@@ -46,7 +46,7 @@ object WorkflowContent {
       wireStatus.user,
       commentable=wireStatus.commentable,
       published = wireStatus.published,
-      timePublished = None
+      timePublished = wireStatus.publicationDate
     )
   }
 
