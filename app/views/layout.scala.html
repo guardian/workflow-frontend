@@ -1,0 +1,33 @@
+@(title: String, config: play.api.libs.json.JsObject)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>@title | Workflow</title>
+  <script>
+    this._wfConfig = @Html(config.toString);
+  </script>
+</head>
+<body>
+
+  <div ng-view>
+    <div class="splash__title">
+        <h1>Workflow</h1>
+    </div>
+    <div class="splash__message">Loading...</div>
+    <noscript class="splash__noscript"><p>Please enable JavaScript to use Workflow.</p></noscript>
+  </div>
+
+  @*** SystemJS package manager setup ***@
+  <script src="@routes.Assets.at("jspm_packages/system@0.6.js")"></script>
+  <script src="@routes.Assets.at("config.js")"></script>
+  <script>
+    System.import('app').catch(function(error) {
+      setTimeout(function() { throw error; }, 0);
+    });
+  </script>
+
+</body>
+</html>

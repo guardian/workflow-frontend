@@ -9,7 +9,6 @@ System.config({
 
 System.config({
   "map": {
-    "app": "javascripts/app",
     "angular": "github:angular/bower-angular@1.2.20",
     "angular-bootstrap": "npm:angular-bootstrap@^0.11.0",
     "angular-bootstrap-datetimepicker": "github:dalelotts/angular-bootstrap-datetimepicker@0.2.4",
