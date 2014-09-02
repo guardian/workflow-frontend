@@ -22,9 +22,9 @@ import 'lib/filters-service';
 import 'lib/analytics';
 
 // 3rd party libs
+import 'angular-ui-router';
 import 'angular-bootstrap';
 import 'angular-xeditable';
-import 'angular-route';
 import 'angular-animate/angular-animate.min';
 
 // App-wide Styles
@@ -34,7 +34,7 @@ import 'main.css!';
 
 angular.module('workflow',
   [
-    'ngRoute',
+    'ui.router',
     'ngAnimate',
     'dashboardControllers',
     'wfDateService',
@@ -49,13 +49,16 @@ angular.module('workflow',
     'xeditable'
   ])
 
-  // Routes
-  .config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/dashboard', { templateUrl: 'dashboard',
-                                        controller: 'DashboardCtrl',
-                                        reloadOnSearch: false
-                                       });
-    $routeProvider.otherwise({redirectTo: '/dashboard'});
+  .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+    // TODO: remember user's state and redirect there on default '' route
+    $urlRouterProvider.when('', '/dashboard');
+
+    $stateProvider.state('dashboard', {
+      url: '/dashboard',
+      templateUrl: '/dashboard',
+      controller: 'DashboardCtrl'
+    });
+
   }])
 
 
