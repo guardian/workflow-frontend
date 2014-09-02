@@ -1,0 +1,459 @@
+body {
+/*	min-width: 800px;*/
+	padding-top: 50px;
+}
+
+/**
+ * Content-list styles.
+ * TODO: separate into new file and BEMify properly.
+ */
+td.wf-table-heading {
+	font-weight: bold;
+}
+
+.content-list__head {
+	color: #fff;
+	background-color: #666;
+	font-size: 75%;
+	letter-spacing: 0.5px;
+}
+
+tr.wf-table-grouping td {
+	color: black;
+	background-color: #F5F5F5;
+	font-size: 75%;
+	letter-spacing: 0.5px;
+}
+
+tr td {
+	/*border-right: 1px solid white;*/
+	font-size: 90%;
+}
+
+.content-list__item-row-note {
+	font-size: 80%;
+	font-style: italic;
+	max-width: 250px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.content-list__item-published {
+  width: 85px;
+}
+
+.content-list__item-row--selected {
+  background-color: #f9f9f9;
+}
+
+
+.content-list__item-row.ng-enter {
+  -webkit-animation: content-list__item-row--enter-sequence 2s ease-out;
+  animation: content-list__item-row--enter-sequence 2s ease-out;
+}
+@-webkit-keyframes content-list__item-row--enter-sequence {
+  0% { background: #fcf8e3; opacity: 0; }
+  50% { background: #fcf8e3; opacity: 1; }
+}
+@keyframes content-list__item-row--enter-sequence {
+  0% { background: #fcf8e3; opacity: 0; }
+  50% { background: #fcf8e3; opacity: 1; }
+}
+
+
+.content-list__item-row.ng-leave {
+  -webkit-animation: content-list__item-row--leave-sequence 0.5s ease-out;
+  animation: content-list__item-row--leave-sequence 0.5s ease-out;
+}
+
+@-webkit-keyframes content-list__item-row--leave-sequence {
+  to { opacity: 0; }
+}
+
+@keyframes content-list__item-row--leave-sequence {
+  to { opacity: 0; }
+}
+
+/*Styles from dashboard*/
+
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+
+
+#content-container {
+	position: absolute;
+	top: 100px;
+	left: 0;
+	right: 0;
+	bottom: 0px;
+}
+
+#sidebar-container {
+width: 155px;
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+overflow: auto;
+z-index: 100;
+/*background-color: green;*/
+}
+
+#stubs-column {
+    width: 200px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 160px;
+    overflow: auto;
+    border-right: 1px solid #eee;
+    /*background-color: green;*/
+}
+
+#stubs-column h4 {
+    font-size : 1.2em;
+    margin : 0;
+    padding : 0 10px 10px 10px;
+    border-bottom : 2px solid #eee;
+}
+
+.stubs-column__new-stub-wrapper {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+}
+
+.stubs-column__new-stub-cta {
+  margin: 10px;
+}
+
+.stubs-column__new-stub-cta-label {
+  margin-left: 10px;
+}
+
+.stub ul {
+    list-style-type: none;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.stub li {
+    padding-bottom: 5px;
+}
+
+.stubs-column__stub {
+  overflow: hidden;
+}
+
+
+.stubs-column__stub.ng-enter {
+  -webkit-animation: stubs-column__stub--enter-sequence 2s ease-out;
+  animation: stubs-column__stub--enter-sequence 2s ease-out;
+}
+@-webkit-keyframes stubs-column__stub--enter-sequence {
+  0% { background: #fcf8e3; opacity: 0; max-height: 0; }
+  50% { background: #fcf8e3; opacity: 1; max-height: 500px; }
+}
+@keyframes stubs-column__stub--enter-sequence {
+  0% { background: #fcf8e3; opacity: 0; max-height: 0; }
+  50% { background: #fcf8e3; opacity: 1; max-height: 500px; }
+}
+
+
+.stubs-column__stub.ng-leave {
+  -webkit-animation: stubs-column__stub--leave-sequence 0.5s ease-out;
+  animation: stubs-column__stub--leave-sequence 0.5s ease-out;
+}
+
+@-webkit-keyframes stubs-column__stub--leave-sequence {
+  from { max-height: 200px; }
+  to { opacity: 0; max-height: 0; }
+}
+
+@keyframes stubs-column__stub--leave-sequence {
+  from { max-height: 200px; }
+  to { opacity: 0; max-height: 0; }
+}
+
+
+.secondary-info{
+    font-size: 85%;
+    color: #666;
+    line-height: 1em;
+}
+.trash-right {
+    float: right;
+    margin-right: 6px;
+}
+
+.stub-controls {
+    padding-top: 5px;
+    clear: both;
+}
+
+#content {
+position: absolute;
+top: 0px;
+right: 205px;
+bottom: 0;
+left: 365px;
+overflow: auto;
+    /*background-color: yellow;*/
+}
+
+#detail {
+width: 200px;
+position: absolute;
+top: -10px;
+right: 0;
+bottom: 0;
+background-color: #f5f5f5;
+border-left: 1px solid #eee;
+/*border: 1px solid #333;*/
+}
+
+.detail-panel .picture {
+	height: 180px;
+	background-color: pink;
+	width: 260px;
+}
+
+.detail-panel .content-note .editable-input {
+    padding: 0;
+}
+
+.detail-panel .content-note .editable-buttons {
+    display: block;
+    margin-top: 6px;
+}
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+
+
+  .sidebar {
+  	top: 90px;
+    bottom: 0;
+    left: 0;
+    /*z-index: 1000;*/
+    display: block;
+    padding: 20px;
+/*    margin: -20px;*/
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+    position: fixed;
+  	width: 159px;
+  }
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-bottom: 20px;
+  margin-left: -20px;
+}
+
+.nav-sidebar > li > a {
+  padding: 3px 20px 3px 30px;
+
+}
+
+div.col-md-2.sidebar div.btn-group.btn-group-xs {
+	padding-left: 10px;
+}
+
+div.col-md-2.sidebar div.btn-group.btn-group-xs button.btn.btn-default {
+	width: 34px;
+}
+
+.nav-sidebar > .active > a {
+  color: #fff;
+  background-color: #428bca;
+}
+
+.detail-panel {
+	padding: 0 20px;
+
+}
+
+h5.query {
+	font-weight: bold;
+}
+
+
+.date-filter__label{
+  padding-right: 5px;
+}
+
+.date-filter .btn-default {
+  height: 34px;
+}
+
+@media (max-width: 1100px) {
+  .date-filter__button--optional {
+    display: none;
+  }
+}
+
+.btn.active {
+    color: #fff;
+    background-color: #3276b1;
+    border-color: #285e8e;
+}
+
+/**
+ * Top toolbar.
+ */
+.top-toolbar {
+  display: flex;
+  height: 40px;
+  padding: 3px 200px 3px 0;
+  background-color: #adadad;
+}
+
+/* @override bootstrap */
+.top-toolbar .input-sm {
+  height: 34px;
+}
+
+.top-toolbar__prod-office {
+  width: 160px;
+  padding: 0 10px;
+}
+
+.top-toolbar__section-selector {
+  width: 200px;
+  padding: 0 10px;
+}
+
+.top-toolbar__due-by-filter {
+  margin: 0 auto;
+}
+
+.sidebar__location-picker {
+  margin-bottom: 20px;
+}
+
+.status-cell {
+    background-color: #F0F8FF;
+
+}
+
+@media (min-width: 768px) {
+  .dl-horizontal dt {
+/*    float: left;*/
+    width: 130px;
+    overflow: hidden;
+    float : none;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /*background-color: yellow;*/
+    font-size: 90%;
+  }
+  .dl-horizontal dd {
+    margin-left: 20px;
+    /*background-color: pink;*/
+    font-size: 90%;
+  	margin-right: 10px;
+  }
+}
+
+.detail {
+  font-size: 90%;
+}
+
+.detail dd {
+  margin-bottom: 10px;
+}
+
+
+/**
+ * Editable Fields in Details block.
+ * TODO: move all detials block related styles to own file;
+ */
+.detail__data--editable,
+.detail__data--editable-empty {
+  color: #333;
+  border-bottom: dashed 1px #333;
+  cursor: pointer;
+}
+
+.detail__data--editable-empty {
+  font-style: italic;
+}
+
+.detail__data--editable:hover {
+  color: #428bca;
+  border-color: #428bca;
+  text-decoration: none;
+}
+
+.admin {
+    padding: 20px;
+}
+
+/*
+ * Main content
+ */
+
+/*.main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0;
+}*/
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+/*.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
+}*/
+
+
+/**
+ * .session-check__frame   iframe used to re-establish the user's session.
+ */
+.login-check__frame {
+  position: absolute;
+  overflow: hidden;
+  border: none;
+  width: 0;
+  height: 0;
+}
