@@ -21,7 +21,7 @@
     };
 
     window.name = 'NG_DEFER_BOOTSTRAP!';
-    System.import('app').catch(function(error) {
+    System.import('javascripts/app').catch(function(error) {
         setTimeout(function() { throw error; }, 0);
     });
 </script>
