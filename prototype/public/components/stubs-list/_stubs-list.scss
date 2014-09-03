@@ -4,11 +4,11 @@
  * Lists all stubs in a vertical list.
  */
 
-#stubs-column h4 {
-    font-size : 1.2em;
-    margin : 0;
-    padding : 0 10px 10px 10px;
-    border-bottom : 2px solid #eee;
+.stubs-column h4 {
+  font-size : 1.2em;
+  margin: 10px 0 0;
+  padding: 0 10px 10px 10px;
+  border-bottom : 2px solid #eee;
 }
 
 .stubs-column__new-stub-wrapper {
