@@ -55,8 +55,17 @@ angular.module('workflow',
 
     $stateProvider.state('dashboard', {
       url: '/dashboard',
-      templateUrl: '/assets/layouts/dashboard/dashboard.html',
-      controller: 'DashboardCtrl'
+      views: {
+        '': {
+          templateUrl: '/assets/layouts/dashboard/dashboard.html',
+          controller: 'DashboardCtrl'
+        },
+        'view-toolbar': {
+          templateUrl: '/assets/layouts/dashboard/dashboard-toolbar.html',
+          controller: 'DashboardCtrl'
+        }
+      }
+
     });
 
   }])
