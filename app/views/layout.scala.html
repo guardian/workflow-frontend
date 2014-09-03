@@ -9,12 +9,21 @@
   <script>
     this._wfConfig = @Html(config.toString);
   </script>
+  <link rel="stylesheet" type="text/css" href="@routes.Assets.at("layouts/global/core.css")"/>
 </head>
 <body>
-<h1 class="splash__title">Workflow</h1>
-  <div ui-view="top-toolbar"></div>
-  <div ui-view>
+  <header class="top-toolbar">
+    <h1 class="top-toolbar__title">
+      <a class="top-toolbar__title-link" href="/">Workflow</a>
+    </h1>
+    <div class="top-toolbar__view-toolbar" ui-view="view-toolbar"></div>
+    <div class="top-toolbar__user">
+      <a class="top-toolbar__user-link" href="/logout" title="Logout">@((config \ "user" \ "firstName").as [String]) @((config \ "user" \ "lastName").as [String])</a>
+    </div>
+  </header>
 
+
+  <div ui-view>
     <div class="splash__message">Loading...</div>
     <noscript class="splash__noscript"><p>Please enable JavaScript to use Workflow.</p></noscript>
   </div>
