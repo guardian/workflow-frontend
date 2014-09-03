@@ -21,11 +21,13 @@
 
 
 .top-toolbar__view-toolbar {
+  flex-grow: 1;
+  display: flex;
 }
 
 .top-toolbar__user {
   text-align: right;
-  margin: auto 10px auto auto;
+  margin: auto 10px;
 }
 
 .top-toolbar__user-link {

@@ -1,31 +1,25 @@
 
-/**
- * Top toolbar.
- */
-.top-toolbar {
-  display: flex;
-  height: 40px;
-  padding: 3px 200px 3px 0;
-  background-color: #adadad;
-}
+
 
 /* @override bootstrap */
-.top-toolbar .input-sm {
+.dashboard-toolbar .input-sm {
   height: 34px;
 }
 
-.top-toolbar__prod-office {
+.dashboard-toolbar__prod-office {
   width: 160px;
   padding: 0 10px;
+  margin: auto 0;
 }
 
-.top-toolbar__section-selector {
+.dashboard-toolbar__section-selector {
   width: 200px;
   padding: 0 10px;
+  margin: auto 0;
 }
 
-.top-toolbar__due-by-filter {
-  margin: 0 auto;
+.dashboard-toolbar__due-by-filter {
+  margin: auto;
 }
 
 

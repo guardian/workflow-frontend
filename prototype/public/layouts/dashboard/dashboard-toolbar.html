@@ -1,0 +1,41 @@
+<div class="dashboard-toolbar__prod-office">
+    <form class="form-horizontal" role="form">
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="prodOffice_dropdown">Office</label>
+            <div class="col-sm-8">
+                <select class="form-control input-sm" id="prodOffice_dropdown" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
+                    <option value="">All</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="dashboard-toolbar__section-selector">
+    <form class="form-horizontal" role="form">
+        <div class="form-group">
+            <label for="section_dropdown" class="col-sm-4 control-label">Section</label>
+            <div class="col-sm-8">
+                <select id="section_dropdown" class="form-control input-sm" ng-model="selectedSection" ng-options="s for s in sections">
+                    <option value="">All sections</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="dashboard-toolbar__due-by-filter">
+    <div ng-controller="DateFilterCtrl" class="date-filter">
+        <label class="date-filter__label">Due by</label>
+        <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="">All</button>
+            <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'today'">Today</button>
+            <button type="button" class="btn btn-default date-filter__button--optional" ng-model="selectedDate" btn-radio="'tomorrow'">Tomorrow</button>
+            <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
+            <span class="btn btn-default" title="Select date">
+                <span class="glyphicon glyphicon-calendar"></span>
+                <select ng-model="selectedDate" ng-options="date as (date | wfLocaliseDateTime | wfFormatDateTime:'ddd D MMMM') for date in dateOptions">
+                </select>
+            </span>
+        </div>
+    </div>
+</div>
