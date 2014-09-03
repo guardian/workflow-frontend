@@ -11,7 +11,7 @@
   </script>
   <link rel="stylesheet" type="text/css" href="@routes.Assets.at("layouts/global/core.css")"/>
 </head>
-<body>
+<body class="main-container">
   <header class="top-toolbar">
     <h1 class="top-toolbar__title">
       <a class="top-toolbar__title-link" href="/">Workflow</a>
@@ -23,10 +23,11 @@
   </header>
 
 
-  <div ui-view>
+  <div class="main" ui-view>
     <div class="splash__message">Loading...</div>
     <noscript class="splash__noscript"><p>Please enable JavaScript to use Workflow.</p></noscript>
   </div>
+
 
   @*** SystemJS package manager setup ***@
   <script src="@routes.Assets.at("jspm_packages/system@0.6.js")"></script>
