@@ -2,22 +2,16 @@
  * Main workflow stylesheet.
  */
 
-@import "lib/fonts/webfonts";
 @import "lib/fonts/typography";
+
+@import "layouts/global/colours";
 
 @import "layouts/dashboard/dashboard";
 
-
-// Default workflow font-size
-body {
-  @extend %fs-data-4;
-}
-
-.splash__title {
-  @extend %f-title;
-}
 
 // Legacy admin page styles...
 .admin {
     padding: 20px;
 }
+
+@import "shame";

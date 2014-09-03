@@ -1,0 +1,45 @@
+
+@import "lib/fonts/webfonts";
+@import "lib/fonts/typography";
+
+@import "colours";
+@import "top-toolbar";
+
+
+// Root font settings
+html {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 62.5%;
+  font-size: calc(1em * .625);
+}
+
+html {
+  @extend %f-data;
+}
+
+
+body {
+  @extend %fs-data-4;
+
+  color: $c-grey-700;
+
+  min-width: 1000px;
+  min-width: 100rem;
+
+  margin: 0;
+}
+
+a {
+  color: $c-blue-link;
+  text-decoration: none;
+}
+
+a:hover {
+  color: $c-blue-link;
+  text-decoration: underline;
+}
+
+.splash__message {
+  margin: 10px;
+}
