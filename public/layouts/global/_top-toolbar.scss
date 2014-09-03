@@ -1,0 +1,33 @@
+
+.top-toolbar {
+  display: flex;
+  height: 50px;
+  background-color: $c-grey-300;
+}
+
+.top-toolbar__title {
+  @extend %f-title;
+  font-size: 18px;
+  width: 160px;
+  background-color: $c-grey-400;
+  margin: 0;
+  padding: 0 10px;
+  line-height: 50px;
+}
+
+.top-toolbar__title-link {
+  color: $c-text;
+}
+
+
+.top-toolbar__view-toolbar {
+}
+
+.top-toolbar__user {
+  text-align: right;
+  margin: auto 10px auto auto;
+}
+
+.top-toolbar__user-link {
+  color: $c-text;
+}
