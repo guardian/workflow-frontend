@@ -15,6 +15,7 @@ define([
         ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'wfFiltersService','prodOfficeService', 'wfContentService', 'wfContentPollingService',
          function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService) {
 
+         $scope.composerUrl = config.composerViewContent;
          $scope.selectedStatus = wfFiltersService.get('status');
          $scope.selectedState = wfFiltersService.get('state');
          $scope.selectedSection = wfFiltersService.get('section');
