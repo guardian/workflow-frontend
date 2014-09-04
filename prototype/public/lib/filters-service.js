@@ -45,6 +45,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                     self.update('selectedDate', data);
                     $rootScope.$broadcast('getContent');
                 });
+
+                $rootScope.$on('filtersChanged.createdAt', function(event, data) {
+                    self.update('created',  data);
+                    $rootScope.$broadcast('getContent');
+                });
             }
 
             init() {
@@ -69,7 +74,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                    'content-type': params['content-type'],
                    'selectedDate': wfDateParser.parseQueryString(selectedDate),
                    'flags': this.stringToArray(params['flags']),
-                   'prodOffice': params['prodOffice']
+                   'prodOffice': params['prodOffice'],
+                   'created': params['created'],
                 };
             }
 

@@ -107,6 +107,12 @@ define([
             $scope.$emit('filtersChanged.status', $scope.selectedStatus);
         };
 
+        $scope.selectCreatedFilter = function(fromDate, untilDate) {
+            $scope.selectedCreatedFrom  = fromDate  != null ? fromDate.toISOString()  : "";
+            $scope.selectedCreatedUntil = untilDate != null ? untilDate.toISOString() : "";
+            getContent();
+        }
+
         $scope.flagActive = function(flag) {
             return $scope.flags.indexOf(flag) != -1;
         };

@@ -1,5 +1,6 @@
 package com.gu.workflow.db
 
+import play.api.Logger
 import scala.slick.driver.PostgresDriver.simple._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time._
@@ -28,17 +29,18 @@ object CommonDB {
 
       val q =
         (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
-          dueFrom.foldl[StubQuery]((q, dueFrom) => q.filter(_.due >= dueFrom)) |>
-          dueUntil.foldl[StubQuery]((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          section.foldl[StubQuery] { case (q, Section(s)) => q.filter(_.section === s)} |>
-          contentType.foldl[StubQuery] { case (q, _) => q.filter(_.contentType === contentType)} |>
-          cIds.foldl[StubQuery]((q, ids) => q.filter(_.composerId inSet ids)) |>
-          prodOffice.foldl[StubQuery]((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
+          dueFrom.foldl[StubQuery]     ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
+          dueUntil.foldl[StubQuery]    ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+          section.foldl[StubQuery]     { case (q, Section(s))  => q.filter(_.section === s) } |>
+          contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
+          cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids)) |>
+          prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
 
-      q.list.map {
-        case (pk, title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice) =>
-          Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice)
-      }
+      q.filter(s => dueDateNotExpired(s.due))
+        .list.map(row => Stub.fromStubRow(row))
+      
+
+
     }
 
   def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
@@ -79,8 +81,7 @@ object CommonDB {
   }
 
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {
-    content +=
-      ((wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name, wc.contentType, wc.commentable, wc.headline, wc.published, None, revision))
+      content += WorkflowContent.newContentRow(wc, revision)
   }
 
   def deleteContent(composerId: String) {
