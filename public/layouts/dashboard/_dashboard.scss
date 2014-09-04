@@ -19,6 +19,11 @@
 
 .content-list-column {
   overflow: auto;
+
+  // Flexbox prefixes - TODO: Autoprefixer
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
   flex-grow: 1;
 }
 
