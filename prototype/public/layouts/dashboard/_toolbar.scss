@@ -1,23 +1,99 @@
 
+$dashboard-toolbar-separator: 1px solid $c-grey-400;
 
-
-/* @override bootstrap */
-.dashboard-toolbar .input-sm {
-  height: 34px;
+// Control container partial
+%dashboard-toolbar__control {
+  padding: 0 15px;
+  margin: auto 0;
 }
 
+// Label partial
+%dashboard-toolbar__label {
+  display: inline-block;
+  font-weight: 700;
+  text-transform: uppercase;
+  position: relative;
+
+  // bootstrap override
+  margin-bottom: 0;
+}
+
+// Label partial for a select box
+%dashboard-toolbar__label--select {
+  @extend %dashboard-toolbar__label;
+
+  &:after {
+    content: " ";
+    background: url("/assets/components/icons/down-arrow.svg") right no-repeat $c-grey-200;
+    background-size: 16px;
+    width: 21px;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+  }
+}
+
+
+// Custom select box drop-down
+%dashboard-toolbar__select {
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 5px;
+  padding-right: 26px;
+  margin-left: 5px;
+  background-color: $c-green;
+  outline: none;
+  cursor: pointer;
+}
+
+
+// Production office selector
 .dashboard-toolbar__prod-office {
-  width: 160px;
-  padding: 0 10px;
-  margin: auto 0;
+  @extend %dashboard-toolbar__control;
+  border-right: $dashboard-toolbar-separator;
 }
 
-.dashboard-toolbar__section-selector {
-  width: 200px;
-  padding: 0 10px;
-  margin: auto 0;
+.dashboard-toolbar__prod-office-label {
+  @extend %dashboard-toolbar__label--select;
 }
 
+.dashboard-toolbar__prod-office-select {
+  @extend %dashboard-toolbar__select;
+}
+
+
+// Section selector
+.dashboard-toolbar__section {
+  @extend .dashboard-toolbar__prod-office; // Same styles as prod office
+}
+
+.dashboard-toolbar__section-label {
+  @extend %dashboard-toolbar__label--select;
+}
+
+.dashboard-toolbar__section-select {
+  @extend %dashboard-toolbar__select;
+}
+
+
+// Firefox select box hacks
+//   - Required as firefox still shows the "down arrow" button for a select box
+//     and cannot be overridden.
+// Note: couldn't include this rule in partials due to :-moz-any(&) causing
+//       Segmentation Fault error in lib-sass
+:-moz-any(.dashboard-toolbar__prod-office-select, .dashboard-toolbar__section-select) {
+  padding-left: 1px;
+  padding-right: 6px;
+}
+
+
+
+// Deadline filter
 .dashboard-toolbar__due-by-filter {
   margin: auto;
 }
