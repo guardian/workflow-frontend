@@ -1,15 +1,20 @@
 
 .top-toolbar {
+  // Flexbox prefixes - TODO: Autoprefixer
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
+
   height: 50px;
-  background-color: $c-grey-300;
+  background-color: $c-grey-200;
 }
 
 .top-toolbar__title {
   @extend %f-title;
   font-size: 18px;
   width: 160px;
-  background-color: $c-grey-400;
+  background-color: $c-grey-300;
   margin: 0;
   padding: 0 10px;
   line-height: 50px;
@@ -21,8 +26,17 @@
 
 
 .top-toolbar__view-toolbar {
-  flex-grow: 1;
+  // Flexbox prefixes - TODO: Autoprefixer
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
+
+  // Flexbox prefixes - TODO: Autoprefixer
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
 }
 
 .top-toolbar__user {
