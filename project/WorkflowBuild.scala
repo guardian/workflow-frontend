@@ -53,7 +53,7 @@ object WorkflowBuild extends Build {
         val sassCmd = baseDirectory(_ / "node_modules/.bin/node-sass").value
 
         for (src <- sourceFiles) {
-          val dest = src.getParentFile / src.base + ".css"
+          val dest = src.getParentFile / src.base + ".min.css"
           println()
           println("Compiling Sass source: " + src.toString)
 

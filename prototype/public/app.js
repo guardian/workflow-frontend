@@ -31,7 +31,7 @@ import 'angular-animate/angular-animate.min';
 
 // App-wide Styles
 import 'bootstrap@3.2.0/css/bootstrap.min.css!';
-import 'main.css!';
+import 'main.min.css!';
 
 
 angular.module('workflow',
