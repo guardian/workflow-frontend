@@ -26,6 +26,8 @@ object Api extends Controller with AuthActions {
     val contentType = req.getQueryString("content-type")
     val flags = req.queryString.get("flags") getOrElse Nil
     val prodOffice = req.getQueryString("prodOffice")
+    val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
+    val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
 
     val content = PostgresDB.getContent(
       section = req.getQueryString("section").map(Section(_)),
@@ -35,7 +37,9 @@ object Api extends Controller with AuthActions {
       contentType = contentType,
       published = req.getQueryString("state").map(_ == "published"),
       flags = flags,
-      prodOffice = prodOffice
+      prodOffice = prodOffice,
+      createdFrom = createdFrom,
+      createdUntil = createdUntil
     )
 
 
@@ -73,12 +77,12 @@ object Api extends Controller with AuthActions {
 
   def newStub = APIAuthAction { implicit request =>
     (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      stub <- extract[Stub](jsValue).right
-    } yield {
+       jsValue <- readJsonFromRequest(request.body).right
+       stub <- extract[Stub](jsValue).right
+     } yield {
       PostgresDB.createStub(stub)
-      NoContent
-    }).merge
+       NoContent
+     }).merge
   }
 
   def putStub(stubId: Long) = APIAuthAction { implicit request =>
@@ -200,6 +204,5 @@ object Api extends Controller with AuthActions {
         Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
     }
   }
+  
 }
-
-
