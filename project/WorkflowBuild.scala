@@ -42,29 +42,29 @@ object WorkflowBuild extends Build {
     .settings(
       sassOutputStyle := "compressed",
       sass := {
-        val sourceDir = (resourceDirectory in Assets).value
+        val log = streams.value.log
 
+        val sourceDir = (resourceDirectory in Assets).value
         val sourceFiles = ((sourceDir ** "*.scss") --- (sourceDir ** "_*.scss")).get
 
 
-        println("Compiling " + sourceFiles.length + " Sass sources...")
+        log.info("Compiling " + sourceFiles.length + " Sass sources...")
 
         // node-sass cli for nodejs lib-sass wrapper
         val sassCmd = baseDirectory(_ / "node_modules/.bin/node-sass").value
 
-        for (src <- sourceFiles) {
+        sourceFiles.flatMap(src => {
           val dest = src.getParentFile / src.base + ".min.css"
-          println()
-          println("Compiling Sass source: " + src.toString)
-
+          log.info("Compiling Sass source: " + src.toString)
 
           // sourcemap arg has to go at end
-          Seq(sassCmd.toString, "--include-path", sourceDir.toString, "--output-style", sassOutputStyle.value, src.toString, dest, "--source-map").!
-        }
+          Seq(sassCmd.toString, "--include-path", sourceDir.toString, "--output-style", sassOutputStyle.value, src.toString, dest, "--source-map").!!(log)
 
-        (sourceDir ** "*.css").get
+          // return sequence of files generated
+          Seq(file(dest), file(dest + ".map"))
+        })
       },
-      sourceGenerators in Assets += sass.taskValue
+      sourceGenerators in Assets <+= sass
     )
     .settings(
       includeFilter in gzip := "*.html" || "*.css" || "*.js",
