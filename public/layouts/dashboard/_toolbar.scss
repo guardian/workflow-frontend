@@ -39,6 +39,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 // Custom select box drop-down
 %dashboard-toolbar__select {
   color: #fff;
+  font-weight: normal;
   border: none;
   border-radius: 0;
   -webkit-appearance: none;
@@ -94,22 +95,30 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
 
 // Deadline filter
-.dashboard-toolbar__due-by-filter {
+.dashboard-toolbar__deadline {
   margin: auto;
 }
 
-
-
-.date-filter__label{
-  padding-right: 5px;
+.dashboard-toolbar__deadline-label {
+  @extend %dashboard-toolbar__label;
 }
 
-.date-filter .btn-default {
-  height: 34px;
+.dashboard-toolbar__deadline-option {
+  background: none;
+  border: 0;
+  padding: 5px;
+  outline: none;
 }
 
-@media (max-width: 1100px) {
-  .date-filter__button--optional {
-    display: none;
-  }
+.dashboard-toolbar__deadline-option--active {
+  @extend .dashboard-toolbar__deadline-option;
+  background-color: $c-green;
+  color: #fff;
 }
+
+
+// @media (max-width: 1100px) {
+//   .date-filter__button--optional {
+//     display: none;
+//   }
+// }

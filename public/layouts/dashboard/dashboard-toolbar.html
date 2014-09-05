@@ -7,6 +7,7 @@
         </label>
     </form>
 </div>
+
 <div class="dashboard-toolbar__section">
     <form>
             <label class="dashboard-toolbar__section-label">Section
@@ -17,19 +18,18 @@
     </form>
 </div>
 
-<div class="dashboard-toolbar__due-by-filter">
-    <div ng-controller="DateFilterCtrl" class="date-filter">
-        <label class="date-filter__label">Due by</label>
-        <div class="btn-group btn-group-sm">
-            <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="">All</button>
-            <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'today'">Today</button>
-            <button type="button" class="btn btn-default date-filter__button--optional" ng-model="selectedDate" btn-radio="'tomorrow'">Tomorrow</button>
-            <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
-            <span class="btn btn-default" title="Select date">
-                <span class="glyphicon glyphicon-calendar"></span>
-                <select ng-model="selectedDate" ng-options="date as (date | wfLocaliseDateTime | wfFormatDateTime:'ddd D MMMM') for date in dateOptions">
-                </select>
-            </span>
-        </div>
-    </div>
+<div class="dashboard-toolbar__deadline">
+    <form>
+        <label class="dashboard-toolbar__deadline-label">Deadline</label>
+
+        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value>All</button>
+        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="today">Today</button>
+        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="tomorrow">Tomorrow</button>
+        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="weekend">This weekend</button>
+
+        <select class="dashboard-toolbar__deadline-select" ng-model="selectedDate" ng-options="date as (date | wfLocaliseDateTime | wfFormatDateTime:'ddd D MMMM') for date in dateOptions" title="Choose date">
+            <option value="">Choose date</option>
+        </select>
+
+    </form>
 </div>
