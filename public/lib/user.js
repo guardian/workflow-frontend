@@ -37,7 +37,7 @@ angular.module('wfUser', [])
         // singleton iframe
         $sessionCheckFrame = angular.element('<iframe class="login-check__frame">');
 
-        angular.element('body').append($sessionCheckFrame);
+        angular.element($window.document.body).append($sessionCheckFrame);
       }
 
       return new Promise((resolve, reject) => {
@@ -45,12 +45,15 @@ angular.module('wfUser', [])
         var timeout;
 
         function postMessageListener(event) {
-          if (event.originalEvent.data) { // TODO: check for sessionCheck identifier in message data
+          // checks for "originalEvent" object, available when jquery is in the page
+          var eventData = event.originalEvent && event.originalEvent.data || event.data;
+
+          if (eventData) { // TODO: check for sessionCheck identifier in message data
 
             $$window.off('message', postMessageListener);
             $timeout.cancel(timeout);
 
-            resolve(event.originalEvent.data);
+            resolve(eventData);
           }
 
         }
