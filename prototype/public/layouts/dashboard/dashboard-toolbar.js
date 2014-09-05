@@ -37,6 +37,10 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService'])
 
     $scope.selectedDate = selectedDate;
 
+    $scope.deadlineSelectActive = function() {
+      return $scope.selectedDate && typeof($scope.selectedDate) != 'string';
+    };
+
     $scope.$watch('selectedDate', function() {
       $scope.$emit('filtersChanged.selectedDate', $scope.selectedDate);
     });
@@ -56,12 +60,14 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService'])
       link: function(scope, elem, attrs, ngModel) {
 
         var className = 'dashboard-toolbar__' + scope.optionName + '-option',
-            activeClass = className + '--active';
+            activeClass = className + '--active',
+
+            value = scope.value || undefined;
 
         ngModel.$render = function() {
           var newValue = ngModel.$modelValue;
 
-          if (newValue == scope.value) {
+          if (newValue == value) {
             elem.addClass(activeClass);
             elem.removeClass(className);
           } else {
@@ -71,7 +77,7 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService'])
         };
 
         elem.on('click', function(event) {
-          ngModel.$setViewValue(scope.value);
+          ngModel.$setViewValue(value);
 
           ngModel.$render();
           scope.$apply();
