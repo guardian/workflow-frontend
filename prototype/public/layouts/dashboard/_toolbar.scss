@@ -24,7 +24,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
   &:after {
     content: " ";
-    background: url("/assets/components/icons/down-arrow.svg") right no-repeat $c-grey-200;
+    background: $i-arrow-down right no-repeat $c-grey-200;
     background-size: 16px;
     width: 21px;
     position: absolute;
