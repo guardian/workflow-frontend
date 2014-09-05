@@ -17,6 +17,8 @@ import 'javascripts/services/composer-service';
 import 'javascripts/services/legal-states-service';
 import 'javascripts/services/prodoffice-service';
 
+import 'layouts/dashboard/dashboard-toolbar';
+
 import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/analytics';
@@ -37,6 +39,7 @@ angular.module('workflow',
     'ui.router',
     'ngAnimate',
     'dashboardControllers',
+    'wfDashboardToolbar',
     'wfDateService',
     'wfAnalytics',
     'workflow.services',
@@ -62,7 +65,7 @@ angular.module('workflow',
         },
         'view-toolbar': {
           templateUrl: '/assets/layouts/dashboard/dashboard-toolbar.html',
-          controller: 'DashboardCtrl'
+          controller: 'wfDashboardToolbarController'
         }
       }
 
