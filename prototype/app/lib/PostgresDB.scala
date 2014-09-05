@@ -18,14 +18,16 @@ object PostgresDB {
   val queryStringToFlag = Map("needsLegal" -> Flag.Required, "approved" -> Flag.Complete, "notRequired" -> Flag.NotRequired)
 
   def getContent(
-                  section:     Option[Section]  = None,
-                  dueFrom:     Option[DateTime] = None,
-                  dueUntil:    Option[DateTime] = None,
-                  status:      Option[Status]   = None,
-                  contentType: Option[String]   = None,
-                  published:   Option[Boolean]  = None,
-                  flags:       Seq[String]      = Nil,
-                  prodOffice:  Option[String]   = None
+                  section:      Option[Section]  = None,
+                  dueFrom:      Option[DateTime] = None,
+                  dueUntil:     Option[DateTime] = None,
+                  status:       Option[Status]   = None,
+                  contentType:  Option[String]   = None,
+                  published:    Option[Boolean]  = None,
+                  flags:        Seq[String]      = Nil,
+                  prodOffice:   Option[String]   = None,
+                  createdFrom:  Option[DateTime] = None,
+                  createdUntil: Option[DateTime] = None
                   ): List[DashboardRow] =
     DB.withTransaction { implicit session =>
 
@@ -38,7 +40,9 @@ object PostgresDB {
         dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
         dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
         section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
-        prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
+        prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
+        createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
+        createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
 
       val contentQuery =
         content |>
@@ -53,25 +57,14 @@ object PostgresDB {
       } yield (s, c)
 
 
-      query.filter { case (s, c) => displayContentItem(s,c) }.list.map {
-            case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice) ,
-            (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
-              DashboardRow(
-                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice),
-                WorkflowContent(
-                  composerId,
-                  path,
-                  headline,
-                  contentType,
-                  Some(Section(section)),
-                  Status(status),
-                  lastMod,
-                  lastModBy,
-                  commentable,
-                  published,
-                  timePublished
-                )
-              )
+      query.filter( {case (s,c) => displayContentItem(s, c) })
+           .list.map {
+            case (stubData, contentData) =>
+          val stub    = Stub.fromStubRow(stubData)
+          val content = WorkflowContent.fromContentRow(contentData).copy(
+            section = Some(Section(stub.section))
+          )
+          DashboardRow(stub, content)
       }
 
 
@@ -88,7 +81,7 @@ object PostgresDB {
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, Flag.NotRequired, stub.note, stub.prodOffice))
+      stubs += Stub.newStubRow(stub)
     }
 
 

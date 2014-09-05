@@ -13,7 +13,7 @@ dist
 /.project
 /RUNNING_PID
 /.settings
-
+conf/local.conf
 */conf/local.conf
 */conf/devtoprod.conf
 # Created by http://www.gitignore.io
