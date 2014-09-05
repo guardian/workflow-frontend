@@ -68,6 +68,15 @@
         </li>
     </ul>
 
+    <h5 class="query" data-toggle="collapse" data-target="createdAt">Creation date</h5>
+    <ul id="createdAt" class="nav nav-sidebar" ng-controller="CreatedAtFilter">
+        <li ng-repeat="cannedFilter in cannedFilters" ng-class="{active: filterIsSelected(cannedFilter)}">
+            <a href="" ng-click="filterClick(cannedFilter)">
+                {{cannedFilter.caption}}
+            </a>
+        </li>
+    </ul>
+
     <h5 class="query" data-toggle="collapse" data-target="#flags">Flags</h5>
     <ul id="flags" class="nav nav-sidebar">
         <li ng-class="{active: flagActive('needsLegal')}" >
@@ -142,6 +151,7 @@
                     <th>Section</th>
                     <th>Assigned to</th>
                     <th>Production deadline</th>
+                    <th>Created at</th>
                     <th>Status</th>
                     <th>State</th>
                     <th></th>
@@ -149,8 +159,7 @@
                 </thead>
                 <tbody>
                         <tr ng-repeat-start="status in statuses" >
-                            <td colspan="12" ng-show="contentByStatus[status]" class="status-cell" style="height: 15px;
-    padding: 5px;">{{ status }}</td>
+                            <td colspan="13" ng-show="contentByStatus[status]" class="status-cell" style="height: 15px; padding: 5px;">{{ status }}</td>
                         </tr>
                         <tr class="content-list__item-row" ng-repeat="content in contentByStatus[status] track by content.composerId" ng-controller="ContentItemCtrl" ng-click="showDetail(content)" ng-model="content" ng-class="{ 'content-list__item-row--selected': selectedContent === content }">
 
@@ -178,6 +187,7 @@
                             <td>{{content.section}}</td>
                             <td>{{content.assignee}}</td>
                             <td title="{{content.due | wfLocaliseDateTime | wfFormatDateTime:'long' }}">{{content.due | wfLocaliseDateTime | wfFormatDateTime }}</td>
+                            <td title="{{content.createdAt | wfLocaliseDateTime | wfFormatDateTime:'long' }}">{{content.createdAt | wfLocaliseDateTime | wfFormatDateTime }}</td>
                             <td><select id="selectStatus" name="selectStatus" ng-model="content.status">
                                 <option ng-repeat="s in statuses">{{ s }}</option>
                             </select></td>
