@@ -82,21 +82,9 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 }
 
 
-// Firefox select box hacks
-//   - Required as firefox still shows the "down arrow" button for a select box
-//     and cannot be overridden.
-// Note: couldn't include this rule in partials due to :-moz-any(&) causing
-//       Segmentation Fault error in lib-sass
-:-moz-any(.dashboard-toolbar__prod-office-select, .dashboard-toolbar__section-select) {
-  padding-left: 1px;
-  padding-right: 6px;
-}
-
-
-
 // Deadline filter
 .dashboard-toolbar__deadline {
-  margin: auto;
+  margin: auto 15px;
 }
 
 .dashboard-toolbar__deadline-label {
@@ -116,9 +104,36 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
   color: #fff;
 }
 
+.dashboard-toolbar__deadline-select-label {
+  @extend %dashboard-toolbar__label--select;
+}
+
+.dashboard-toolbar__deadline-select {
+  @extend %dashboard-toolbar__select;
+  background: none;
+  color: $c-text;
+}
+
+.dashboard-toolbar__deadline-select--active {
+  @extend .dashboard-toolbar__deadline-select;
+  background-color: $c-green;
+  color: #fff;
+}
+
 
 // @media (max-width: 1100px) {
 //   .date-filter__button--optional {
 //     display: none;
 //   }
 // }
+
+
+// Firefox select box hacks
+//   - Required as firefox still shows the "down arrow" button for a select box
+//     and cannot be overridden.
+// Note: couldn't include this rule in partials due to :-moz-any(&) causing
+//       Segmentation Fault error in lib-sass
+:-moz-any(.dashboard-toolbar__prod-office-select, .dashboard-toolbar__section-select, .dashboard-toolbar__deadline-select) {
+  padding-left: 1px;
+  padding-right: 6px;
+}

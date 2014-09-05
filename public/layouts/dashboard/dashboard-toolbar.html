@@ -27,9 +27,10 @@
         <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="tomorrow">Tomorrow</button>
         <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="weekend">This weekend</button>
 
-        <select class="dashboard-toolbar__deadline-select" ng-model="selectedDate" ng-options="date as (date | wfLocaliseDateTime | wfFormatDateTime:'ddd D MMMM') for date in dateOptions" title="Choose date">
-            <option value="">Choose date</option>
-        </select>
-
+        <label class="dashboard-toolbar__deadline-select-label">
+            <select ng-class="{'dashboard-toolbar__deadline-select': !deadlineSelectActive(), 'dashboard-toolbar__deadline-select--active': deadlineSelectActive()}" ng-model="selectedDate" ng-options="date as (date | wfLocaliseDateTime | wfFormatDateTime:'ddd D MMM') for date in dateOptions" title="Choose date">
+                <option value="">Choose date</option>
+            </select>
+        </label>
     </form>
 </div>
