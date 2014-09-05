@@ -41,4 +41,41 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService'])
       $scope.$emit('filtersChanged.selectedDate', $scope.selectedDate);
     });
 
+  }])
+
+  .directive('wfToolbarOption', [function() {
+    return {
+      restrict: 'A',
+      require: '^ngModel',
+      scope: {
+        ngModel: '=',
+        optionName: '@wfToolbarOption',
+        value: '@wfToolbarOptionValue'
+      },
+
+      link: function(scope, elem, attrs, ngModel) {
+
+        var className = 'dashboard-toolbar__' + scope.optionName + '-option',
+            activeClass = className + '--active';
+
+        ngModel.$render = function() {
+          var newValue = ngModel.$modelValue;
+
+          if (newValue == scope.value) {
+            elem.addClass(activeClass);
+            elem.removeClass(className);
+          } else {
+            elem.addClass(className);
+            elem.removeClass(activeClass);
+          }
+        };
+
+        elem.on('click', function(event) {
+          ngModel.$setViewValue(scope.value);
+
+          ngModel.$render();
+          scope.$apply();
+        });
+      }
+    };
   }]);
