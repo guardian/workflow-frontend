@@ -1,8 +1,8 @@
 
 $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
-// Control container partial
-%dashboard-toolbar__control {
+// Toolbar segment partial
+%dashboard-toolbar__segment {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -16,6 +16,36 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
   padding: 0 15px;
 
   border-right: $dashboard-toolbar-separator;
+}
+
+// Base Control in the toolbar
+%dashboard-toolbar--control {
+  line-height: 1em;
+}
+
+// Control in the toolbar
+%dashboard-toolbar--control--inactive {
+  @extend %dashboard-toolbar--control;
+
+  color: $c-text;
+  background-color: transparent;
+
+  &:focus,
+  &:hover {
+    background-color: $c-grey-300;
+  }
+}
+
+// Active control in the toolbar
+%dashboard-toolbar--control--active {
+  @extend %dashboard-toolbar--control;
+
+  &,
+  &:focus,
+  &:hover {
+    color: #fff;
+    background-color: $c-green;
+  }
 }
 
 // Label partial
@@ -52,8 +82,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 // Custom select box drop-down
 %dashboard-toolbar__select {
   @extend %fs-data-3;
-  line-height: 1em;
-  color: #fff;
+
   font-weight: normal;
   border: none;
   border-radius: 0;
@@ -62,15 +91,24 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
   padding: 5px;
   padding-right: 22px;
   margin-left: 5px;
-  background-color: $c-green;
   outline: none;
   cursor: pointer;
+}
+
+%dashboard-toolbar__select--inactive {
+  @extend %dashboard-toolbar--control--inactive;
+  @extend %dashboard-toolbar__select;
+}
+
+%dashboard-toolbar__select--active {
+  @extend %dashboard-toolbar--control--active;
+  @extend %dashboard-toolbar__select;
 }
 
 
 // Production office selector
 .dashboard-toolbar__prod-office {
-  @extend %dashboard-toolbar__control;
+  @extend %dashboard-toolbar__segment;
 
 }
 
@@ -79,13 +117,13 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 }
 
 .dashboard-toolbar__prod-office-select {
-  @extend %dashboard-toolbar__select;
+  @extend %dashboard-toolbar__select--active;
 }
 
 
 // Section selector
 .dashboard-toolbar__section {
-  @extend %dashboard-toolbar__control; // Same styles as prod office
+  @extend %dashboard-toolbar__segment;
 }
 
 .dashboard-toolbar__section-label {
@@ -93,13 +131,13 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 }
 
 .dashboard-toolbar__section-select {
-  @extend %dashboard-toolbar__select;
+  @extend %dashboard-toolbar__select--active;
 }
 
 
 // Deadline filter
 .dashboard-toolbar__deadline {
-  @extend %dashboard-toolbar__control;
+  @extend %dashboard-toolbar__segment;
 }
 
 .dashboard-toolbar__deadline-label {
@@ -107,11 +145,10 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
   margin-right: 5px;
 }
 
-.dashboard-toolbar__deadline-option {
-  @extend %fs-data-3;
-  line-height: 1em;
 
-  background: none;
+.dashboard-toolbar__deadline-option {
+  @extend %dashboard-toolbar--control--inactive;
+  @extend %fs-data-3;
   border: 0;
   padding: 5px;
   outline: none;
@@ -119,8 +156,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
 .dashboard-toolbar__deadline-option--active {
   @extend .dashboard-toolbar__deadline-option;
-  background-color: $c-green;
-  color: #fff;
+  @extend %dashboard-toolbar--control--active;
 }
 
 .dashboard-toolbar__deadline-select-label {
@@ -128,18 +164,15 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 }
 
 .dashboard-toolbar__deadline-select {
-  @extend %dashboard-toolbar__select;
-  background: none;
-  color: $c-text;
+  @extend %dashboard-toolbar__select--inactive;
 }
 
 .dashboard-toolbar__deadline-select--active {
-  @extend .dashboard-toolbar__deadline-select;
-  background-color: $c-green;
-  color: #fff;
+  @extend %dashboard-toolbar__select--active;
 }
 
 
+// TODO: Hide "Tomorrow" when on small widths
 // @media (max-width: 1100px) {
 //   .date-filter__button--optional {
 //     display: none;
