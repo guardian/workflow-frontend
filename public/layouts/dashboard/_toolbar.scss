@@ -3,8 +3,19 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
 // Control container partial
 %dashboard-toolbar__control {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+
+    -webkit-box-align: center;
+  -webkit-align-items: center;
+       -ms-flex-align: center;
+          align-items: center;
+
   padding: 0 15px;
-  margin: auto 0;
+
+  border-right: $dashboard-toolbar-separator;
 }
 
 // Label partial
@@ -13,6 +24,8 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
   font-weight: 700;
   text-transform: uppercase;
   position: relative;
+
+  @extend %fs-data-2;
 
   // bootstrap override
   margin-bottom: 0;
@@ -25,8 +38,8 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
   &:after {
     content: " ";
     background: $i-arrow-down right no-repeat $c-grey-200;
-    background-size: 16px;
-    width: 21px;
+    background-size: 12px;
+    width: 17px;
     position: absolute;
     height: 100%;
     top: 0;
@@ -38,6 +51,8 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
 // Custom select box drop-down
 %dashboard-toolbar__select {
+  @extend %fs-data-3;
+  line-height: 1em;
   color: #fff;
   font-weight: normal;
   border: none;
@@ -45,7 +60,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
   -webkit-appearance: none;
   -moz-appearance: none;
   padding: 5px;
-  padding-right: 26px;
+  padding-right: 22px;
   margin-left: 5px;
   background-color: $c-green;
   outline: none;
@@ -56,7 +71,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 // Production office selector
 .dashboard-toolbar__prod-office {
   @extend %dashboard-toolbar__control;
-  border-right: $dashboard-toolbar-separator;
+
 }
 
 .dashboard-toolbar__prod-office-label {
@@ -70,7 +85,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
 // Section selector
 .dashboard-toolbar__section {
-  @extend .dashboard-toolbar__prod-office; // Same styles as prod office
+  @extend %dashboard-toolbar__control; // Same styles as prod office
 }
 
 .dashboard-toolbar__section-label {
@@ -84,14 +99,18 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
 // Deadline filter
 .dashboard-toolbar__deadline {
-  margin: auto 15px;
+  @extend %dashboard-toolbar__control;
 }
 
 .dashboard-toolbar__deadline-label {
   @extend %dashboard-toolbar__label;
+  margin-right: 5px;
 }
 
 .dashboard-toolbar__deadline-option {
+  @extend %fs-data-3;
+  line-height: 1em;
+
   background: none;
   border: 0;
   padding: 5px;
@@ -135,5 +154,5 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 //       Segmentation Fault error in lib-sass
 :-moz-any(.dashboard-toolbar__prod-office-select, .dashboard-toolbar__section-select, .dashboard-toolbar__deadline-select) {
   padding-left: 1px;
-  padding-right: 6px;
+  padding-right: 2px;
 }
