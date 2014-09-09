@@ -52,7 +52,7 @@ object Application extends Controller with AuthActions {
         ),
         "statuses" -> statuses,
         "sections" -> sections,
-        "user" -> UserIdentity.fromRequest(request)
+        "user" -> request.identity.get
       )
 
       Ok(views.html.layout(title, config))
