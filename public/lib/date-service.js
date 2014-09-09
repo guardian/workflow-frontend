@@ -60,7 +60,10 @@ function getTimezoneLocaleForLocation(location) {
 }
 
 angular.module('wfDateService', ['wfLocationService'])
-  .factory('wfDateParser', ['wfLocaliseDateTimeFilter', 'wfLocationService', function(wfLocaliseDateTimeFilter, wfLocationService) {
+  .factory('wfDateParser', ['wfLocaliseDateTimeFilter', 'wfLocationService', 'wfFormatDateTimeFilter',
+        function(wfLocaliseDateTimeFilter, wfLocationService, wfFormatDateTimeFilter) {
+
+
 
     class DateParser {
 
@@ -101,6 +104,133 @@ angular.module('wfDateService', ['wfLocationService'])
 
         return parsed.format('YYYY-MM-DD HH:mm');
       }
+
+      now() {
+        return new Date();
+      }
+
+      /**
+       * Retrieve a date range between two explicit dates.
+       *
+       * @returns {{from: Date, to: Date}}
+       */
+      createRange(from, until) {
+        return {
+          from: moment(from).toDate(),
+          until: moment(until).toDate()
+        };
+      }
+
+      /**
+       * Retrieve a range from the start of a day, til the start of the next.
+       *
+       * @returns {{from: Date, to: Date}}
+       */
+      createDayRange(day) {
+        var dayStart = moment(day).startOf('day');
+
+        return this.createRange(dayStart, dayStart.clone().add(1, 'days'));
+      }
+
+      /**
+       * Parses a date range using simple natural language strings
+       * (eg: "tomorrow") and explicit standard date formatted date strings,
+       * such as in YYYY-MM-DD.
+       *
+       * @returns {{from: Date, to: Date}}
+       */
+      parseRangeFromString(input, locationKey) {
+
+        var now = wfLocaliseDateTimeFilter(this.now(), locationKey).clone();
+
+        if(!input) {
+            return {};
+        }
+        // Parses some natural language dates - doesn't use sugar as I'd like
+        // to remove it as a dependency one day as it modifies the global Date object
+        if (input == 'today') {
+          return this.createDayRange(now);
+
+        } else if (input == 'tomorrow') {
+          return this.createDayRange(now.add(1, 'days'));
+
+        } else if (input == 'weekend') {
+          var weekendStart = now.day(6).startOf('day');
+
+          return this.createRange(weekendStart, weekendStart.clone().add(2, 'days'));
+
+        } else if (input == 'yesterday') {
+
+          return this.createDayRange(now.subtract(1, 'days'));
+
+        } else if (input === 'last24') {
+
+          return this.createRange(now.clone().subtract(24, 'hours'), now);
+
+        } else if (input === 'last48') {
+
+          return this.createRange(now.clone().subtract(48, 'hours'), now);
+
+        } else {
+          var parsed = wfLocaliseDateTimeFilter(input, locationKey);
+
+          if (!parsed.isValid()) {
+            throw new Error('Could not parse date: ' + input);
+          }
+
+          return this.createDayRange(parsed);
+        }
+      }
+
+        /**
+         * Retrieve either string representation of 'day', or day object
+         *
+         * @returns {String, or <Date>}
+         */
+
+      parseQueryString(date) {
+         if(!date) return undefined;
+         if(date === 'today' || date === 'tomorrow' || date === 'weekend') {
+             return date;
+         }
+         else if(moment(date, ["YYYY-MM-DD"]).isValid()){
+             return moment(date, ["YYYY-MM-DD"]);
+         }
+      }
+
+        /**
+         * Formats date to string if passed a date object, otherwise return what is passsed
+         *
+         * @returns {String, or <Date>}
+         */
+
+      setQueryString(date) {
+        if(!date) return undefined;
+        var dateFormat = wfFormatDateTimeFilter(date, "YYYY-MM-DD");
+        if(dateFormat !== 'Invalid date') {
+            return dateFormat
+        }
+        else return date
+
+      }
+
+      /**
+       * Retrieves an Array of day starts for the localised week.
+       *
+       * @returns {Array.<Date>}
+       */
+      getDaysThisWeek(locationKey) {
+        var today = wfLocaliseDateTimeFilter(this.now(), locationKey).startOf('day'),
+
+        choices = [ moment(today.toDate()) ];
+
+        for (var i = 1; i < 7; i++) {
+          choices.push(moment(today.clone().add('days', i).toDate()));
+        }
+
+        return choices;
+      }
+
     }
 
     return new DateParser();
@@ -128,6 +258,10 @@ angular.module('wfDateService', ['wfLocationService'])
 
       if (dateFormat == 'long') {
         dateFormat = 'dddd D MMMM YYYY, HH:mm z';
+      }
+
+      if(dateFormat == 'ISO8601') {
+          return dateValue.toISOString();
       }
 
       return moment(dateValue).format(dateFormat);

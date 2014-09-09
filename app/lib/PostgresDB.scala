@@ -4,6 +4,7 @@ import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
+import play.api.libs.json.{JsObject, Writes}
 import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
@@ -14,31 +15,34 @@ object PostgresDB {
   import play.api.Play.current
   import play.api.db.slick.DB
 
-  val flagsToStubFilters = Map(
-    "needsLegal" -> {q: StubQuery => q.filter(_.needsLegal === Flag.Required)}
-  )
+  val queryStringToFlag = Map("needsLegal" -> Flag.Required, "approved" -> Flag.Complete, "notRequired" -> Flag.NotRequired)
 
   def getContent(
-                  section:     Option[Section]  = None,
-                  dueFrom:     Option[DateTime] = None,
-                  dueUntil:    Option[DateTime] = None,
-                  status:      Option[Status]   = None,
-                  contentType: Option[String]   = None,
-                  published:   Option[Boolean]  = None,
-                  flags:       Seq[String]      = Nil,
-                  prodOffice:  Option[String]   = None
+                  section:      Option[Section]  = None,
+                  dueFrom:      Option[DateTime] = None,
+                  dueUntil:     Option[DateTime] = None,
+                  status:       Option[Status]   = None,
+                  contentType:  Option[String]   = None,
+                  published:    Option[Boolean]  = None,
+                  flags:        Seq[String]      = Nil,
+                  prodOffice:   Option[String]   = None,
+                  createdFrom:  Option[DateTime] = None,
+                  createdUntil: Option[DateTime] = None
                   ): List[DashboardRow] =
     DB.withTransaction { implicit session =>
 
+      val flagFilters = flags.flatMap(queryStringToFlag.get(_)).seq
+      val flagFilterOpt = if(flagFilters.isEmpty) None else Some(flagFilters)
 
       val stubsQuery =
-          flags.foldLeft(stubs){ case(q, flag) =>
-            flagsToStubFilters.get(flag).map{ filter => filter(q)}.getOrElse(q)
-          } |>
-          dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-          dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
-          prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
+        stubs |>
+        flagFilterOpt.foldl[StubQuery]((q, filters) => q.filter(_.needsLegal inSet(filters))) |>
+        dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
+        dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+        section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
+        prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
+        createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
+        createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
 
       val contentQuery =
         content |>
@@ -48,30 +52,21 @@ object PostgresDB {
 
       val query = for {
         s <- stubsQuery
-        c <- contentQuery if s.composerId === c.composerId
+        c <- contentQuery
+        if s.composerId === c.composerId
       } yield (s, c)
 
+
       query.filter( {case (s,c) => displayContentItem(s, c) })
-           .sortBy { case (s, c) => (s.priority.desc, s.due.desc) }.list.map {
-            case ((pk, title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice) ,
-            (composerId, path, lastMod, lastModBy, status, contentType, commentable, headline, published, timePublished, _)) =>
-              DashboardRow(
-                Stub(Some(pk), title, section, due, assignee, cId, stubContentType, priority, needsLegal, note, prodOffice),
-                WorkflowContent(
-                  composerId,
-                  path,
-                  headline,
-                  contentType,
-                  Some(Section(section)),
-                  Status(status),
-                  lastMod,
-                  lastModBy,
-                  commentable,
-                  published,
-                  timePublished
-                )
-              )
+           .list.map {
+            case (stubData, contentData) =>
+          val stub    = Stub.fromStubRow(stubData)
+          val content = WorkflowContent.fromContentRow(contentData).copy(
+            section = Some(Section(stub.section))
+          )
+          DashboardRow(stub, content)
       }
+
 
     }
 
@@ -86,7 +81,7 @@ object PostgresDB {
   def createStub(stub: Stub): Unit =
     DB.withTransaction { implicit session =>
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
-      stubs += ((0, stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, Flag.NotRequired, stub.note, stub.prodOffice))
+      stubs += Stub.newStubRow(stub)
     }
 
 

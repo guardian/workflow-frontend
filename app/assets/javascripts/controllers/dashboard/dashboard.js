@@ -12,33 +12,35 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'urlParser', 'statuses', 'sections','legalStatesService', 'config', 'prodOfficeService', 'wfContentService', 'wfContentPollingService',
+        ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'wfFiltersService','prodOfficeService', 'wfContentService', 'wfContentPollingService',
+         function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService) {
 
-        function($scope, $http, urlParser, statuses, sections, legalStatesService, config, prodOfficeService, wfContentService, wfContentPollingService) {
-
-         //initialise the model from the url
-         var initialParams = urlParser.parseUrl;
-         $scope.filters = {};
-         $scope.selectedStatus = initialParams['status'];
-         $scope.selectedState = initialParams['state'];
-         $scope.selectedSection = initialParams['section'];
-         $scope.selectedProdOffice = initialParams['prodOffice'];
-         $scope.selectedContentType = initialParams['content-type'];
-         $scope.flags = initialParams['flagsModel'] || [];
+         $scope.selectedStatus = wfFiltersService.get('status');
+         $scope.selectedState = wfFiltersService.get('state');
+         $scope.selectedSection = wfFiltersService.get('section');
+         $scope.selectedContentType = wfFiltersService.get('content-type');
+         $scope.flags = wfFiltersService.get('flags');
+         $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
         var getContent = function(evt, params) {
-            var params = buildContentParams();
-            wfContentService.get(params).success(function(response){
+            var params = wfContentService.getServerParams();
+            wfContentService.get(params).then(function(response){
                 updateScopeModels(response);
-                urlParser.setUrl(params);
             });
         };
 
         $scope.$on('getContent', getContent);
         $scope.$on('changedFilters', getContent);
-        $scope.$watch('selectedContentType', getContent);
-        $scope.$watch('selectedSection', getContent);
-        $scope.$watch('selectedProdOffice', getContent);
+
+        $scope.$watch('selectedProdOffice', function(){
+            $scope.$emit('filtersChanged.prodOffice', $scope.selectedProdOffice)
+        });
+        $scope.$watch('selectedContentType', function(){
+            $scope.$emit('filtersChanged.content-type', $scope.selectedContentType);
+        });
+        $scope.$watch('selectedSection', function(){
+            $scope.$emit('filtersChanged.section', $scope.selectedSection);
+        });
 
         $scope.sections = sections;
         $scope.legalStates = legalStatesService.getLegalStates();
@@ -46,7 +48,6 @@ define([
         $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.statuses = statuses;
-
 
         // Update models in the scope when data is retrieved
         function updateScopeModels(data) {
@@ -60,10 +61,12 @@ define([
             // found will be undefined when not found -> when something is deleted.
             $scope.selectedContent = found;
           }
+
+          $scope.$apply();
         }
 
         // Poll for updates
-        var poller = new wfContentPollingService(buildContentParams);
+        var poller = new wfContentPollingService(function(){return wfContentService.getServerParams()});
 
         poller.onPoll(updateScopeModels);
 
@@ -80,21 +83,10 @@ define([
           $scope.getContentError = msg.error;
         });
 
-
-        function buildContentParams() {
-            var params = angular.copy($scope.filters);
-            params.state = $scope.selectedState;
-            params.section = $scope.selectedSection;
-            params["content-type"] = $scope.selectedContentType;
-            params.status = $scope.selectedStatus;
-            params.flags = $scope.flags;
-            params.prodOffice = $scope.selectedProdOffice;
-            return params;
-        };
-
         function groupByStatus(data) {
-            return _.groupBy(data, function(x){ return x.status; });
+           return _.groupBy(data, function(x){ return x.status; });
         }
+
 
         // content items stuff
 
@@ -103,7 +95,7 @@ define([
         };
         $scope.selectState = function(state) {
             $scope.selectedState = state;
-            getContent();
+            $scope.$emit('filtersChanged.state', $scope.selectedState);
         };
 
         $scope.statusIsSelected = function(status) {
@@ -112,8 +104,14 @@ define([
 
         $scope.selectStatus = function(status) {
             $scope.selectedStatus = status;
-            getContent();
+            $scope.$emit('filtersChanged.status', $scope.selectedStatus);
         };
+
+        $scope.selectCreatedFilter = function(fromDate, untilDate) {
+            $scope.selectedCreatedFrom  = fromDate  != null ? fromDate.toISOString()  : "";
+            $scope.selectedCreatedUntil = untilDate != null ? untilDate.toISOString() : "";
+            getContent();
+        }
 
         $scope.flagActive = function(flag) {
             return $scope.flags.indexOf(flag) != -1;
@@ -125,7 +123,7 @@ define([
             } else {
                 $scope.flags = $scope.flags.filter( function(e) { return e !== flag });
             }
-            getContent();
+            $scope.$emit('filtersChanged.flags', $scope.flags);
         };
 
         $scope.contentTypeIsSelected = function (contentType) {
