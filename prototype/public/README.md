@@ -1,8 +1,8 @@
 # Workflow Public static assets
 Assets organised as follows:
 
-	workflow
-	├── public
+    workflow
+    ├── public
     │   ├── app.js     - application bootstrap.
     │   ├── components - common self contained components sharable across multiple pages.
     │   ├── layouts    - whole page layouts (grids, templates, etc), and the core layout.
@@ -34,18 +34,19 @@ locally in development mode. Source maps are generated also.
 
 Classes should be specified in [Block Element Modifier (BEM)](http://bem.info/).
 
-	.[block]--[element]__[modifier]
+    .[block]--[element]__[modifier]
 
 General style guidelines:
 - Each element should always have a single distinct class to represent it. Avoid multiple
-classes on a single element.
-- Styles should only be applied to classes and not HTML elements. Pseudo-classes are fine.
+  classes on a single element.
+- Styles should only be applied to classes and not HTML elements. Pseudo-classes
+  and elements are fine.
 - Styles common to multiple elements should extend from a placeholder, or mixin.
 - Avoid nesting classes for specifity.
 
 Running Sass build manually:
 
-	sbt "project prototype" web-assets:sass
+    sbt "project prototype" web-assets:sass
 
 
 ## Javascript unit tests
