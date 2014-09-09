@@ -4,7 +4,7 @@
  * Extracted from https://github.com/guardian/guss-webfonts v2.1.1 for compatibility with lib-sass.
  */
 
-$fonts-base-path: "/assets/lib/fonts/";
+$fonts-base-path: "/assets/components/fonts/";
 
 @mixin gu-font-face($family, $filebase, $font-weight: 400, $font-style: normal) {
   $file-path: $fonts-base-path + $family + "/" + $filebase;
