@@ -1,6 +1,7 @@
 package models
 
 import models.Status._
+import com.gu.workflow.db.Schema
 import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -31,6 +32,8 @@ case class WorkflowContent(
 
 object WorkflowContent {
 
+  implicit val dateTimeFormat = DateFormat
+
   def fromWireStatus(wireStatus: WireStatus, stub: Stub): WorkflowContent = {
     WorkflowContent(
       wireStatus.composerId,
@@ -43,9 +46,21 @@ object WorkflowContent {
       wireStatus.user,
       commentable=wireStatus.commentable,
       published = wireStatus.published,
-      timePublished = None
+      timePublished = wireStatus.publicationDate
     )
   }
+
+  def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
+    case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
+          headline, published, timePublished, _) =>
+          WorkflowContent(
+            composerId, path, headline, contentType, None, Status(status), lastMod,
+            lastModBy, commentable, published, timePublished
+          )
+  }
+  def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
+    (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
+     wc.contentType, wc.commentable, wc.headline, wc.published, wc.timePublished, revision)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
 
@@ -56,10 +71,10 @@ object WorkflowContent {
       (__ \ "contentType").read[String] ~
       (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
       (__ \ "status").read[String].map { s => Status(s) } ~
-      (__ \ "lastModified").read[Long].map { t => new DateTime(t) } ~
+      (__ \ "lastModified").read[DateTime] ~
       (__ \ "lastModifiedBy").readNullable[String] ~
       (__ \ "commentable").read[Boolean] ~
       (__ \ "published").read[Boolean] ~
-      (__ \ "timePublished").readNullable[Long].map( _.map( t => new DateTime(t)))
+      (__ \ "timePublished").readNullable[DateTime]
       )(WorkflowContent.apply _)
 }

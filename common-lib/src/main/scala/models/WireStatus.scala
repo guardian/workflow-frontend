@@ -18,6 +18,7 @@ case class WireStatus(
                        status: Status,
                        commentable: Boolean,
                        lastMajorRevisionDate: Option[DateTime],
+                       publicationDate: Option[DateTime],
                        revision: Long
                        )
 object WireStatus {
@@ -53,7 +54,8 @@ object WireStatus {
       (__ \ "content" \ "settings" \ "commentable").readNullable[String].map {
         s => s.exists(_=="true")
       } ~
-      (__ \ "lastMajorRevisionDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
+      (__ \ "content" \ "lastMajorRevisionDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
+      (__ \ "content" \ "publicationDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
       (__ \ "content" \ "revision").read[Long]
       )(WireStatus.apply _)
 

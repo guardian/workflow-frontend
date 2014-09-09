@@ -37,10 +37,6 @@ class ComposerSqsReader extends Actor {
           content.foreach {
             case (msg, ws, c) =>
               CommonDB.createOrModifyContent(c, ws.revision)
-              if(ComposerSqsReader.setPublishedTime(ws)) {
-                val publishedTime = ws.lastMajorRevisionDate.getOrElse(ws.lastModified)
-                CommonDB.setPublishedTime(publishedTime, c.composerId)
-              }
               AWSWorkflowQueue.deleteMessage(msg)
           }
 
@@ -53,10 +49,6 @@ object ComposerSqsReader {
   def lastUpdated(): Option[DateTime] = lastTimeSuccessfullyRead.get()
   def updateLastRead(): Unit = {
     lastTimeSuccessfullyRead.set(Some(new DateTime()))
-  }
-
-  def setPublishedTime(wireStatus: WireStatus): Boolean = {
-    wireStatus.whatChanged == "published" && wireStatus.published
   }
 }
 
