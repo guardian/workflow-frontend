@@ -3,9 +3,7 @@
 # ~~~~
 
 # Application
-GET     /old                                controllers.Application.index
-GET     /dashboard                          controllers.Application.dashboard
-GET     /                                   controllers.Application.all(title = "Dashboard")
+GET     /                                   controllers.Application.index
 
 # Login
 GET        /login                           controllers.Login.login
