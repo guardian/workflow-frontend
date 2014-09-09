@@ -12,8 +12,8 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'statuses', 'legalStatesService', 'config', 'wfFiltersService','wfContentService', 'wfContentPollingService',
-         function($scope, $http, statuses, legalStatesService, config, wfFiltersService, wfContentService, wfContentPollingService) {
+        ['$scope','$http', 'statuses', 'legalStatesService', 'config', 'wfFiltersService','prodOfficeService','wfContentService', 'wfContentPollingService',
+         function($scope, $http, statuses, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService) {
 
          $scope.composerUrl = config.composerViewContent;
          $scope.selectedStatus = wfFiltersService.get('status');
@@ -39,7 +39,7 @@ define([
 
         $scope.legalStates = legalStatesService.getLegalStates();
 
-
+        $scope.prodOffices = prodOfficeService.getProdOffices();
 
         $scope.statuses = statuses;
 
