@@ -40,32 +40,34 @@ object SassTask {
     sassOutputStyle := "compressed",
     resourceManaged in sass := resourceManaged.value / "sass",
     managedResourceDirectories += (resourceManaged in sass).value,
+    includeFilter in sass := "*.scss",
+    excludeFilter in sass := "_*.scss",
+
     sass := {
       val log = streams.value.log
 
       val sourceDir = resourceDirectory.value
-      val sourceFiles = ((sourceDir ** "*.scss") --- (sourceDir ** "_*.scss")).get
+      val allSourceFiles = sourceDir ** (includeFilter in sass).value
 
       val destDir = (resourceManaged in sass).value
 
-      // Rebase sources to destDir
-      val sourceFilePairs : Seq[(File, File)] = sourceFiles pair rebase(sourceDir, destDir)
+      // Copy all scss sources to resourceManaged ( prototype/target/web/resource-managed/main/sass )
+      // Necessary to ensure generated source-map URLs are relative to their sources
+      IO.copy(allSourceFiles pair rebase(sourceDir, destDir))
+
+      val sourceFiles = (destDir ** (includeFilter in sass).value --- destDir ** (excludeFilter in sass).value).get
 
       log.info("Compiling " + sourceFiles.length + " Sass sources...")
 
       // node-sass cli for nodejs lib-sass wrapper
       val sassCmd = baseDirectory(_ / "node_modules/.bin/node-sass").value
 
-      sourceFilePairs flatMap { pair =>
-        val (src, rebased) = pair
-        val dest = rebased.getParentFile / (src.base + ".min.css")
+      sourceFiles flatMap { src =>
+        val dest = src.getParentFile / (src.base + ".min.css")
         log.info("Compiling Sass source: " + src.toString)
 
-        // Make dirs in target if necessary
-        if (! dest.exists) dest.getParentFile.mkdirs
-
         // sourcemap arg has to go at end
-        Seq(sassCmd.toString, "--include-path", sourceDir.toString, "--output-style", sassOutputStyle.value, src.toString, dest.toString, "--source-map").!!(log)
+        Seq(sassCmd.toString, "--include-path", destDir.toString, "--output-style", sassOutputStyle.value, src.toString, dest.toString, "--source-map").!!(log)
 
         // return sequence of files generated
         Seq(dest, file(dest + ".map"))
