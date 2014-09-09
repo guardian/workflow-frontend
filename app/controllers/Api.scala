@@ -14,18 +14,19 @@ import lib._
 import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
 import com.gu.workflow.db.{SectionDB, CommonDB}
+import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
 
 object Api extends Controller with PanDomainAuthActions {
 
-  implicit val jodaDateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
-
-  def content = AuthAction { implicit req =>
+  def content = APIAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
     val section = req.getQueryString("section").map(Section(_))
     val contentType = req.getQueryString("content-type")
     val flags = req.queryString.get("flags") getOrElse Nil
     val prodOffice = req.getQueryString("prodOffice")
+    val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
+    val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
 
     val content = PostgresDB.getContent(
       section = req.getQueryString("section").map(Section(_)),
@@ -35,18 +36,28 @@ object Api extends Controller with PanDomainAuthActions {
       contentType = contentType,
       published = req.getQueryString("state").map(_ == "published"),
       flags = flags,
-      prodOffice = prodOffice
+      prodOffice = prodOffice,
+      createdFrom = createdFrom,
+      createdUntil = createdUntil
     )
 
-    val stubs = CommonDB.getStubs(
-                  dueFrom = dueFrom,
-                  dueUntil = dueUntil,
-                  section = section,
-                  contentType = contentType,
-                  unlinkedOnly = true,
-                  prodOffice = prodOffice)
 
-    Ok(Json.obj("content" -> content, "stubs" -> stubs))
+    val publishedContent = content.filter(d => d.wc.status == models.Status("Final"))
+                                  .sortBy(s => (s.wc.timePublished, s.wc.lastModified))(publishedOrdering)
+    val unpublishedContent = content.filterNot(d => d.wc.status == models.Status("Final"))
+                                   .sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering)
+    
+    val sortedContent = publishedContent ::: unpublishedContent
+
+    val stubs = CommonDB.getStubs(
+      dueFrom = dueFrom,
+      dueUntil = dueUntil,
+      section = section,
+      contentType = contentType,
+      unlinkedOnly = true,
+      prodOffice = prodOffice).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
+
+    Ok(Json.obj("content" -> sortedContent, "stubs" -> stubs))
   }
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
@@ -57,75 +68,78 @@ object Api extends Controller with PanDomainAuthActions {
 
   val STUB_NOTE_MAXLEN = 500
 
-  def stubs = AuthAction { implicit req =>
+  def stubs = APIAuthAction { implicit req =>
     stubFilters.bindFromRequest.fold(
-      formWithErrors => BadRequest(formWithErrors.errorsAsJson),
-      { case (dueFrom, dueUntil) => Ok(renderJsonResponse(CommonDB.getStubs(dueFrom, dueUntil))) }
+    formWithErrors => BadRequest(formWithErrors.errorsAsJson), { case (dueFrom, dueUntil) => Ok(renderJsonResponse(CommonDB.getStubs(dueFrom, dueUntil)))}
     )
   }
 
-  def newStub = AuthAction { implicit request =>
+  def newStub = APIAuthAction { implicit request =>
+    (for {
+       jsValue <- readJsonFromRequest(request.body).right
+       stub <- extract[Stub](jsValue).right
+     } yield {
+      PostgresDB.createStub(stub)
+       NoContent
+     }).merge
+  }
+
+  def putStub(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       stub <- extract[Stub](jsValue).right
     } yield {
-      PostgresDB.createStub(stub)
+      PostgresDB.updateStub(stubId, stub)
       NoContent
     }).merge
   }
 
-  def putStub(stubId: Long) = AuthAction { implicit request =>
-    (for {
-          jsValue <- readJsonFromRequest(request.body).right
-          stub <- extract[Stub](jsValue).right
-        } yield {
-          PostgresDB.updateStub(stubId, stub)
-          NoContent
-     }).merge
-  }
-
-  def putStubAssignee(stubId: Long) = AuthAction { implicit request =>
+  def putStubAssignee(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       assignee <- extract[String](jsValue \ "data").right
     } yield {
-        val assignOpt = Some(assignee).filter(_.nonEmpty)
-        PostgresDB.updateStubWithAssignee(stubId, assignOpt)
-        NoContent
+      val assignOpt = Some(assignee).filter(_.nonEmpty)
+      PostgresDB.updateStubWithAssignee(stubId, assignOpt)
+      NoContent
     }).merge
   }
 
-  def putStubDueDate(stubId: Long) = AuthAction { implicit request =>
+  def putStubDueDate(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
     } yield {
-        val dueDate = (jsValue \ "data").asOpt[String] filter { _.length != 0 } map { new DateTime(_) }
-        PostgresDB.updateStubDueDate(stubId, dueDate)
-        NoContent
+      val dueDate = (jsValue \ "data").asOpt[String] filter {
+        _.length != 0
+      } map {
+        new DateTime(_)
+      }
+      PostgresDB.updateStubDueDate(stubId, dueDate)
+      NoContent
     }).merge
   }
 
-  def putStubNote(stubId: Long) = AuthAction { implicit request =>
+  def putStubNote(stubId: Long) = APIAuthAction { implicit request =>
     (for {
-       jsValue <- readJsonFromRequest(request.body).right
-       note    <- extract[String](jsValue \ "data")(Stub.noteReads).right
-     } yield {
-       PostgresDB.updateStubNote(stubId, note)
-       NoContent
-     }).merge
+      jsValue <- readJsonFromRequest(request.body).right
+      note <- extract[String](jsValue \ "data")(Stub.noteReads).right
+    } yield {
+      PostgresDB.updateStubNote(stubId, note)
+      NoContent
+    }).merge
   }
 
-  def putStubProdOffice(stubId: Long) = AuthAction { implicit request =>
+  def putStubProdOffice(stubId: Long) = APIAuthAction { implicit request =>
     (for {
-       jsValue    <- readJsonFromRequest(request.body).right
-       prodOffice <- extract[String](jsValue \ "data")(Stub.prodOfficeReads).right
-     } yield {
-       PostgresDB.updateStubProdOffice(stubId, prodOffice)
-       NoContent
-     }).merge
+      jsValue <- readJsonFromRequest(request.body).right
+      prodOffice <- extract[String](jsValue \ "data")(Stub.prodOfficeReads).right
+    } yield {
+      PostgresDB.updateStubProdOffice(stubId, prodOffice)
+      NoContent
+    }).merge
   }
 
-  def putContentStatus(composerId: String) = AuthAction { implicit request =>
+  def putContentStatus(composerId: String) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       status <- extract[String](jsValue \ "data").right
@@ -135,7 +149,7 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
-  def putStubLegalStatus(stubId: Long) = AuthAction { implicit request =>
+  def putStubLegalStatus(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       status <- extract[Flag](jsValue \ "data").right
@@ -145,20 +159,20 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
-  def deleteContent(composerId: String) = AuthAction {
+  def deleteContent(composerId: String) = APIAuthAction {
     CommonDB.deleteContent(composerId)
     NoContent
   }
 
-  def deleteStub(stubId: Long) = AuthAction {
+  def deleteStub(stubId: Long) = APIAuthAction {
     PostgresDB.deleteStub(stubId)
     NoContent
   }
 
 
-  def linkStub(stubId: Long, composerId: String, contentType: String) = AuthAction { req =>
+  def linkStub(stubId: Long, composerId: String, contentType: String) = APIAuthAction { req =>
 
-    if(PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
+    if (PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
 
     else {
       PostgresDB.updateStubWithComposerId(stubId, composerId, contentType)
@@ -174,8 +188,8 @@ object Api extends Controller with PanDomainAuthActions {
   /* JsError's may contain a number of different errors for differnt
    * paths. This will aggregate them into a single string */
   private def errorMsgs(error: JsError) =
-    (for((path, msgs) <- error.errors; msg <- msgs)
-     yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
+    (for ((path, msgs) <- error.errors; msg <- msgs)
+    yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
 
   /* the lone colon in the type paramater makes this a 'context'
    * variance type parameter, which causes the compiler to implicitly
@@ -184,11 +198,10 @@ object Api extends Controller with PanDomainAuthActions {
   private def extract[A: Reads](jsValue: JsValue): Either[Result, A] = {
     jsValue.validate[A] match {
       case JsSuccess(a, _) => Right(a)
-      case error @ JsError(_) =>
+      case error@JsError(_) =>
         val errMsg = errorMsgs(error)
         Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
     }
   }
+  
 }
-
-
