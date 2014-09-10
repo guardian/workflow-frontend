@@ -1,8 +1,9 @@
 package controllers
 
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonNullFormatVisitor
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsNull, JsValue, Json}
 import scala.concurrent.Future
 import com.gu.googleauth._
 import lib.PrototypeConfiguration
@@ -51,9 +52,15 @@ object Login extends Controller with AuthActions {
     )
 
   // this is the only place we use LoginAuthAction - to prevent authentication redirect loops
-  def login = LoginAuthAction { request =>
+  def login = LoginAuthAction { implicit request =>
     val error = request.flash.get("error")
-    Ok(views.html.login(error))
+
+    val user = request.identity match {
+      case None => JsNull
+      case _ => Json.toJson(request.identity.get)
+    }
+    val config = Json.obj("user" -> user)
+    Ok(views.html.login(error, config))
   }
 
   /*
