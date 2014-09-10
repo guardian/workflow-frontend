@@ -14,9 +14,9 @@ import play.api.libs.json.Json
 
 object Application extends Controller with AuthActions {
 
-  def index = all("Dashboard")
+  def index = app("Dashboard")
 
-  def all(title: String) = AuthAction.async { request =>
+  def app(title: String) = AuthAction.async { request =>
 
     for {
       statuses <- StatusDatabase.statuses
@@ -34,7 +34,7 @@ object Application extends Controller with AuthActions {
         "user" -> request.identity.get
       )
 
-      Ok(views.html.layout(title, config))
+      Ok(views.html.app(title, config))
     }
   }
 }
