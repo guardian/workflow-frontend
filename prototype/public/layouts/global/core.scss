@@ -40,3 +40,12 @@ a:hover {
 .splash__message {
   margin: 10px;
 }
+
+.login-page {
+  margin: 10px;
+}
+
+.login-page__login-button {
+  @extend %fs-data-4;
+  margin: 0;
+}

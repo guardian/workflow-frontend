@@ -1,4 +1,4 @@
-@(title: String, config: play.api.libs.json.JsObject)
+@(title: String, config: play.api.libs.json.JsObject)(content: Html)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,29 +14,18 @@
 <body class="main-container">
   <header class="top-toolbar">
     <h1 class="top-toolbar__title">
-      <a class="top-toolbar__title-link" href="/">Workflow</a>
+      <a class="top-toolbar__title-link" href="@routes.Application.index">Workflow</a>
     </h1>
     <div class="top-toolbar__view-toolbar" ui-view="view-toolbar"></div>
     <div class="top-toolbar__user">
-      <a class="top-toolbar__user-link" href="/logout" title="Logout">@((config \ "user" \ "firstName").as [String]) @((config \ "user" \ "lastName").as [String])</a>
+      @if((config \ "user").asOpt[play.api.libs.json.JsObject] == None) {
+        <a class="top-toolbar__user-link" href="@routes.Login.loginAction">Log in</a>
+      } else {
+        <a class="top-toolbar__user-link" href="@routes.Login.logout" title="Logout">@((config \ "user" \ "firstName").as [String]) @((config \ "user" \ "lastName").as [String])</a>
+      }
     </div>
   </header>
 
-
-  <div class="main" ui-view>
-    <div class="splash__message">Loading...</div>
-    <noscript class="splash__noscript"><p>Please enable JavaScript to use Workflow.</p></noscript>
-  </div>
-
-
-  @*** SystemJS package manager setup ***@
-  <script src="@routes.Assets.at("jspm_packages/system@0.6.js")"></script>
-  <script src="@routes.Assets.at("config.js")"></script>
-  <script>
-    System.import('app').catch(function(error) {
-      setTimeout(function() { throw error; }, 0);
-    });
-  </script>
-
+@content
 </body>
 </html>
