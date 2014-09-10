@@ -1,21 +1,28 @@
 /**
  * Location picker styles.
  */
+.sidebar__location-picker-menu {
+  min-width: 0;
+}
+
 
 /* Bootstrap override - hence specificity */
 .sidebar__location-picker-menu > li > a {
-  padding-right: 90px;
+  padding: 3px 70px 3px 10px;
+}
+
+.sidebar__location-picker-menuitem {
+  font-size: 12px;
 }
 
 .sidebar__location-picker-localtime,
 .sidebar__location-picker-localtime--inmenu {
-  font-size: 12px;
   color: #666;
 }
 
 .sidebar__location-picker-localtime--inmenu {
   position: relative;
-  right: -70px;
+  right: -60px;
   line-height: 1em;
-  padding-top: 5px;
+  padding-top: 3px;
 }
