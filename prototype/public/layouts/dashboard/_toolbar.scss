@@ -132,6 +132,8 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
 .dashboard-toolbar__section-select {
   @extend %dashboard-toolbar__select--active;
+  max-width: 140px;
+  text-overflow: ellipsis;
 }
 
 
