@@ -1,6 +1,5 @@
 package controllers
 
-import com.gu.googleauth.UserIdentity
 import com.gu.workflow.db.SectionDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -23,6 +22,9 @@ object Application extends Controller with AuthActions {
       sections = SectionDB.sectionList
     }
     yield {
+      val user = request.identity
+      val userJson = user.map(u => Json.toJson(u)).getOrElse(Json.obj())
+
       val config = Json.obj(
         "composer" -> Json.obj(
           "create" -> newContentUrl,
@@ -31,10 +33,10 @@ object Application extends Controller with AuthActions {
         ),
         "statuses" -> statuses,
         "sections" -> sections,
-        "user" -> request.identity.get
+        "user" -> userJson
       )
 
-      Ok(views.html.app(title, config))
+      Ok(views.html.app(title, user, config))
     }
   }
 }
