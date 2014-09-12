@@ -55,12 +55,8 @@ object Login extends Controller with AuthActions {
   def login = LoginAuthAction { implicit request =>
     val error = request.flash.get("error")
 
-    val user = request.identity match {
-      case None => JsNull
-      case _ => Json.toJson(request.identity.get)
-    }
-    val config = Json.obj("user" -> user)
-    Ok(views.html.login(error, config))
+    // no config necessary for login page
+    Ok(views.html.login(error, request.identity, Json.obj()))
   }
 
   /*

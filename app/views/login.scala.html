@@ -1,6 +1,6 @@
-@(error: Option[String] = None, config: play.api.libs.json.JsObject)
+@(error: Option[String] = None, user: Option[com.gu.googleauth.UserIdentity], config: play.api.libs.json.JsObject)
 
-@layout("Login", config) {
+@layout("Login", user, config) {
   <div class="login-page">
     @for(err <- error) {
       <p class="login-page__login-error">There was a problem logging you in: @err</p>

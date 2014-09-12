@@ -1,6 +1,6 @@
-@(title: String, config: play.api.libs.json.JsObject)
+@(title: String, user: Option[com.gu.googleauth.UserIdentity], config: play.api.libs.json.JsObject)
 
-@layout(title, config) {
+@layout(title, user, config) {
   <div class="main" ui-view>
     <div class="splash__message">Loading...</div>
     <noscript class="splash__noscript"><p>Please enable JavaScript to use Workflow.</p></noscript>
