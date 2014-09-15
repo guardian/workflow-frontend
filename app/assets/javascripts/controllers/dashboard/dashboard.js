@@ -13,7 +13,9 @@ define([
 
     dashboardControllers.controller('DashboardCtrl',
         ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'wfFiltersService','prodOfficeService', 'wfContentService', 'wfContentPollingService',
-         function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService) {
+         'wfPresenceService',
+         function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService,
+                 wfPresenceService) {
 
          $scope.selectedStatus = wfFiltersService.get('status');
          $scope.selectedState = wfFiltersService.get('state');
