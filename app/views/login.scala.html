@@ -1,0 +1,11 @@
+@(message: Option[String] = None)
+
+@main("Workflow Login") {
+@for(msg <- message) {
+<div class="alert alert-danger">
+    <p>@msg</p>
+</div>
+}
+
+<a href="@routes.Application.index()">Login</a>
+}
