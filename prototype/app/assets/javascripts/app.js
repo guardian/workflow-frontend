@@ -21,6 +21,7 @@ define([
     'lib/date-service',
     'lib/filters-service',
     'lib/analytics',
+    'lib/presence',
 
     'angular-bootstrap',
     'angular-xeditable',
