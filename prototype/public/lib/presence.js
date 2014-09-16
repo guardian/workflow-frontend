@@ -25,7 +25,13 @@ angular.module('wfPresenceService', []).
     var messageHandlers = {
       "connectionTest": function() {
         /* XXX TODO : how should I reply to this connectionTest request? */
-        console.log("recieved connection test request from server")
+        //console.log("recieved connection test request from server")
+      },
+      "subscribed": function(data) {
+        console.log("subscribed", data);
+        self.clientId = data.clientId;
+        /* XXX TODO : share the initial state, which will have been sent to us here */
+        console.log("subscribtions updated:", self.subscriptions);
       }
     }
 
