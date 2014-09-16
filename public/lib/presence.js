@@ -19,7 +19,24 @@ angular.module('wfPresenceService', []).
     }
     /* XXX temporary debugging message handler */
     _socket.onmessage = function(ev) {
-      console.log("onmessage", ev);
+      messageHandler(ev.data);
+    }
+
+    var messageHandlers = {
+      "connectionTest": function() {
+        /* XXX TODO : how should I reply to this connectionTest request? */
+        console.log("recieved connection test request from server")
+      }
+    }
+
+    function messageHandler(msgJson) {
+      var msg = JSON.parse(msgJson);
+      if(typeof messageHandlers[msg.action] === "function") {
+        messageHandlers[msg.action](msg.data);
+      } else {
+        console.log("receive unknown message action: " + msg.action);
+        $rootScope.$broadcast("presenence.error.unknownAction", msg);
+      }
     }
 
     self.person = {
