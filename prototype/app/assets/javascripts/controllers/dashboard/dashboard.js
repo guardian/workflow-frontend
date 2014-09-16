@@ -24,6 +24,8 @@ define([
          $scope.flags = wfFiltersService.get('flags');
          $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
+         $scope.presenceSubscriptions = [];
+
         var getContent = function(evt, params) {
             var params = wfContentService.getServerParams();
             wfContentService.get(params).then(function(response){
@@ -72,7 +74,14 @@ define([
         function updatePresenceSubs(data) {
           var subscriptions =
             _.map(_.flatten(_.values(data)), function (c) { return c.composerId });
-          wfPresenceService.articleSubscribe(subscriptions);
+
+          /* any new subs? */
+          var oldSubs = $scope.presenceSubscriptions;
+          if(_.difference(subscriptions, $scope.presenceSubscriptions).length > 0 ||
+               _.difference(oldSubs, subscriptions).length > 0) {
+            wfPresenceService.articleSubscribe(subscriptions);
+            $scope.presenceSubscriptions = subscriptions;
+          }
         }
 
         // Poll for updates
