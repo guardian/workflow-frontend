@@ -17,9 +17,6 @@ define([
          function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService,
                   wfPresenceService) {
 
-           console.log("wfPresenceService (from dashboard):", wfPresenceService);
-
-
          $scope.selectedStatus = wfFiltersService.get('status');
          $scope.selectedState = wfFiltersService.get('state');
          $scope.selectedSection = wfFiltersService.get('section');
