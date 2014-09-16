@@ -64,7 +64,15 @@ define([
             $scope.selectedContent = found;
           }
 
+          updatePresenceSubs($scope.contentByStatus);
+
           $scope.$apply();
+        }
+
+        function updatePresenceSubs(data) {
+          var subscriptions =
+            _.map(_.flatten(_.values(data)), function (c) { return c.composerId });
+          wfPresenceService.articleSubscribe(subscriptions);
         }
 
         // Poll for updates

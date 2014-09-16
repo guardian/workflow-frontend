@@ -6,44 +6,44 @@ angular.module('wfPresenceService', []).
     //self.endpoint = "ws://presence-Presence-OWDNPQCCLV33-1270668035.eu-west-1.elb.amazonaws.com/socket";
     self.endpoint = "ws://localhost:9000/socket";
 
-    var _socket = new WebSocket(self.endpoint);
+    var _socket = new Promise( (resolve, reject) => {
 
-    _socket.onerror   = function(ev) {
-      $rootScope.$broadcast("presence.connection.error", ev);
-    }
-    _socket.onopen = function(ev) {
+      var messageHandlers = {
+        "connectionTest": function() {
+          /* XXX TODO : how should I reply to this connectionTest request? */
+          // console.log("recieved connection test request from server")
+        },
+        "subscribed": function(data) {
+          self.clientId = data.clientId;
+          /* XXX TODO : share the initial state, which will have been sent to us here */
+        }
+      }
+
+      function messageHandler(msgJson) {
+        var msg = JSON.parse(msgJson);
+        if(typeof messageHandlers[msg.action] === "function") {
+          messageHandlers[msg.action](msg.data);
+        } else {
+          console.log("receive unknown message action: " + msg.action);
+          $rootScope.$broadcast("presenence.error.unknownAction", msg);
+        }
+      }
+
+      var s = new WebSocket(self.endpoint);
+      s.onerror   = reject;
+      s.onopen    = function () { resolve(s); }
+      s.onmessage = function(ev) { messageHandler(ev.data); }
+    });
+
+    /* XXX TODO : properly handle errors */
+    // _socket.onerror   = function(ev) {
+    //   $rootScope.$broadcast("presence.connection.error", ev);
+    // }
+
+    /* broadcast successful connection to the rest of the application */
+    _socket.then(function() {
       $rootScope.$broadcast("presence.connection.success");
-      /* XXX */
-      console.log("onopen, doing a test subscribe");
-      self.articleSubscribe("1234");
-    }
-    /* XXX temporary debugging message handler */
-    _socket.onmessage = function(ev) {
-      messageHandler(ev.data);
-    }
-
-    var messageHandlers = {
-      "connectionTest": function() {
-        /* XXX TODO : how should I reply to this connectionTest request? */
-        //console.log("recieved connection test request from server")
-      },
-      "subscribed": function(data) {
-        console.log("subscribed", data);
-        self.clientId = data.clientId;
-        /* XXX TODO : share the initial state, which will have been sent to us here */
-        console.log("subscribtions updated:", self.subscriptions);
-      }
-    }
-
-    function messageHandler(msgJson) {
-      var msg = JSON.parse(msgJson);
-      if(typeof messageHandlers[msg.action] === "function") {
-        messageHandlers[msg.action](msg.data);
-      } else {
-        console.log("receive unknown message action: " + msg.action);
-        $rootScope.$broadcast("presenence.error.unknownAction", msg);
-      }
-    }
+    });
 
     self.person = {
       firstName : "Paul",
@@ -57,24 +57,29 @@ angular.module('wfPresenceService', []).
       return { action: action, data: data };
     }
 
-    /* XXX TODO : allow submitting an array to this */
-    function makeSubscriptionRequest(articleId) {
+    function makeSubscriptionRequest(articleIds) {
       return makeRequest("subscribe", {
         "person": self.person,
-        "subscriptionIds": [articleId]
+        "subscriptionIds": articleIds
       });
     }
 
+    /* returns a promise */
     function sendJson(data) {
-      _socket.send(JSON.stringify(data));
+      return _socket.then(function(socket) {
+        socket.send(JSON.stringify(data));
+      });
     }
 
     /* provide an optional callback to execute when the message
      * arrives. Either way an event will be broadcast. */
-    self.articleSubscribe = function(articleId, cb) {
-      sendJson(makeSubscriptionRequest(articleId));
-      /* XXX TODO : decide what to do about the cb arg */
+    self.articleSubscribe = function(articleIds, cb) {
+      var ids = (typeof articleIds == "array") ? articleIds : Array(articleIds);
+      var p = sendJson(makeSubscriptionRequest(ids));
+      if(typeof cb == "function") { p.then(cb); }
     }
+
+    self.articleSubscribe("1234");
 
     return self;
 
