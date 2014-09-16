@@ -15,7 +15,10 @@ define([
         ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'wfFiltersService','prodOfficeService', 'wfContentService', 'wfContentPollingService',
          'wfPresenceService',
          function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService,
-                 wfPresenceService) {
+                  wfPresenceService) {
+
+           console.log("wfPresenceService (from dashboard):", wfPresenceService);
+
 
          $scope.selectedStatus = wfFiltersService.get('status');
          $scope.selectedState = wfFiltersService.get('state');
@@ -227,6 +230,15 @@ define([
             }
         };
 
+        $scope.presence_connection = "unknown";
+
+        $scope.$on("presence.connection.success", function () {
+          $scope.presence_connection = "success";
+        });
+
+        $scope.$on("presence.connection.error", function () {
+          $scope.presence_connection = "error";
+        });
     }]);
 
     return dashboardControllers;
