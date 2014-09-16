@@ -457,3 +457,15 @@ h5.query {
   width: 0;
   height: 0;
 }
+
+#presence-connection.unknown {
+    color: lightgrey;
+}
+
+#presence-connection.error {
+    color: red;
+}
+
+#presence-connection.success {
+    color: green;
+}
