@@ -1,11 +1,10 @@
 angular.module('wfPresenceService', []).
   factory('wfPresenceService', ['$rootScope', function($rootScope) {
 
-    console.log("wfPresenceService factory");
-
     var self = {};
 
-    self.endpoint = "ws://presence-Presence-OWDNPQCCLV33-1270668035.eu-west-1.elb.amazonaws.com/socket";
+    //self.endpoint = "ws://presence-Presence-OWDNPQCCLV33-1270668035.eu-west-1.elb.amazonaws.com/socket";
+    self.endpoint = "ws://localhost:9000/socket";
 
     var _socket = new WebSocket(self.endpoint);
 
@@ -14,28 +13,33 @@ angular.module('wfPresenceService', []).
     }
     _socket.onopen = function(ev) {
       $rootScope.$broadcast("presence.connection.success");
+      /* XXX */
+      console.log("onopen, doing a test subscribe");
+      self.articleSubscribe("1234");
     }
     /* XXX temporary debugging message handler */
     _socket.onmessage = function(ev) {
       console.log("onmessage", ev);
     }
 
-    self.browserId = "pmrtest";
-    self.name = "pmrtest";
-    self.UUId = "b3c1db8a-bc59-428e-a244-5d4ab8a5ac19";
+    self.person = {
+      firstName : "Paul",
+      lastName  : "Roberts",
+      email     : "paul.roberts@guardian.co.uk",
+      browserId : "12345",
+      googleId  : "123456"
+    };
 
-    function now() {
-      return (new Date()).getTime();
+    function makeRequest(action, data) {
+      return { action: action, data: data };
     }
 
+    /* XXX TODO : allow submitting an array to this */
     function makeSubscriptionRequest(articleId) {
-      return {
-        "browserId": self.browserId,
-        "name": self.name,
-        "UUId": self.UUId,
-        "articleId": articleId,
-        "joinedTime": now()
-      };
+      return makeRequest("subscribe", {
+        "person": self.person,
+        "subscriptionIds": [articleId]
+      });
     }
 
     function sendJson(data) {
