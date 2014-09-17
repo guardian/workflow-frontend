@@ -84,7 +84,7 @@ define([
           }
         }
 
-        // Poll for updates
+        // poll for updates
         var poller = new wfContentPollingService(function(){return wfContentService.getServerParams()});
 
         poller.onPoll(updateScopeModels);

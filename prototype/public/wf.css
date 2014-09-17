@@ -67,6 +67,24 @@ tr td {
   animation: content-list__item-row--leave-sequence 0.5s ease-out;
 }
 
+.content-list__item-presence__free {
+    color: white;
+    background-color: green;
+    padding: 5px;
+}
+
+.content-list__item-presence__entered {
+    color: white;
+    background-color: red;
+    padding: 5px;
+}
+
+.content-list__item-presence__unknown {
+    color: white;
+    background-color: grey;
+    padding: 5px;
+}
+
 @-webkit-keyframes content-list__item-row--leave-sequence {
   to { opacity: 0; }
 }
