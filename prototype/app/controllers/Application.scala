@@ -22,8 +22,7 @@ object Application extends Controller with PanDomainAuthActions {
       sections = SectionDB.sectionList
     }
     yield {
-      val user = request.identity
-      val userJson = user.map(u => Json.toJson(u)).getOrElse(Json.obj())
+      val user = request.user
 
       val config = Json.obj(
         "composer" -> Json.obj(
@@ -33,10 +32,10 @@ object Application extends Controller with PanDomainAuthActions {
         ),
         "statuses" -> statuses,
         "sections" -> sections,
-        "user" -> userJson
+        "user" -> Json.parse(user.toJson)
       )
 
-      Ok(views.html.app(title, user, config))
+      Ok(views.html.app(title, Some(user), config))
     }
   }
 }
