@@ -12,13 +12,16 @@ import 'javascripts/controllers/dashboard';
 import 'javascripts/controllers/dashboard/content-item';
 import 'javascripts/controllers/dashboard/dashboard';
 import 'javascripts/controllers/dashboard/date-filter';
+import 'javascripts/controllers/dashboard/sidebar';
 import 'javascripts/controllers/dashboard/created-at-filter';
+import 'javascripts/controllers/dashboard/content-type-filter';
 import 'javascripts/controllers/dashboard/stub-crud';
 import 'javascripts/services/composer-service';
 import 'javascripts/services/legal-states-service';
 import 'javascripts/services/prodoffice-service';
 
 import 'layouts/dashboard/dashboard-toolbar';
+import 'layouts/dashboard/dashboard-sidebar';
 
 import 'lib/date-service';
 import 'lib/filters-service';
@@ -41,6 +44,7 @@ angular.module('workflow',
     'ngAnimate',
     'dashboardControllers',
     'wfDashboardToolbar',
+    'wfDashboardSidebar',
     'wfDateService',
     'wfAnalytics',
     'workflow.services',
