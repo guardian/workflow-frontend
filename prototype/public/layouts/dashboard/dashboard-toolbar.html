@@ -1,0 +1,36 @@
+<div class="dashboard-toolbar__prod-office">
+    <form>
+        <label class="dashboard-toolbar__prod-office-label">Office
+            <select class="dashboard-toolbar__prod-office-select" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
+                <option value="">All</option>
+            </select>
+        </label>
+    </form>
+</div>
+
+<div class="dashboard-toolbar__section">
+    <form>
+        <label class="dashboard-toolbar__section-label">Section
+            <select class="dashboard-toolbar__section-select" ng-model="selectedSection" ng-options="s for s in sections">
+                <option value="">All sections</option>
+            </select>
+        </label>
+    </form>
+</div>
+
+<div class="dashboard-toolbar__deadline">
+    <form>
+        <label class="dashboard-toolbar__deadline-label">Deadline</label>
+
+        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value>All</button>
+        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="today">Today</button>
+        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="tomorrow">Tomorrow</button>
+        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="weekend">This weekend</button>
+
+        <label class="dashboard-toolbar__deadline-select-label">
+            <select ng-class="{'dashboard-toolbar__deadline-select': !deadlineSelectActive(), 'dashboard-toolbar__deadline-select--active': deadlineSelectActive()}" ng-model="selectedDate" ng-options="date as (date | wfLocaliseDateTime | wfFormatDateTime:'ddd D MMM') for date in dateOptions" title="Choose date">
+                <option value="">Choose date</option>
+            </select>
+        </label>
+    </form>
+</div>

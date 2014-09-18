@@ -11,9 +11,10 @@ Development prerequisites
   * Set your region in the AWS console (drop-down menu in the top right corner) - you probably want to choose Ireland.
   * Create your own CloudFormation stack, using the developer template in `cloudformation/dev-template.json`. NB: Enter
     a unique stack name in the "Stage" parameter, e.g. "DEV-{username}"
+
 	* Copy `prototype/conf/local-example.conf` to `prototype/conf/local.conf`
   * Copy `prole/conf/local-example.conf` to `prole/conf/local.conf`
-  * Query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values
+  * Deploy your cloud-formation script on AWS and query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values
     into `prototype/conf/local.conf` and `prole/conf/local.conf`
   * Find Google OAuth2 credentials found at https://console.developers.google.com/project/apps~gu-workflow and add these to `prototype/conf/local.conf`
   * Download our private keys from the `workflow-private` S3 bucket and put in /etc/gu/workflow-keys.conf.
