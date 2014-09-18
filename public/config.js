@@ -50,9 +50,9 @@ System.config({
     "github:components/bootstrap": "3.2.0",
     "github:components/angular-route": "1.2.0",
     "github:vitalets/angular-xeditable": "0.1.8",
-    "github:jashkenas/underscore": "1.6.0",
+    "github:jashkenas/underscore": "1.7.0",
     "npm:sugar": "1.4.1",
-    "github:moment/moment": "2.8.1",
+    "github:moment/moment": "2.8.3",
     "github:angular/bower-angular": "1.2.20",
     "github:jspm/nodelibs": "0.0.2",
     "npm:base64-js": "0.0.4",
@@ -62,11 +62,11 @@ System.config({
     "npm:inherits": "2.0.1",
     "github:components/jquery": "1.11.1",
     "github:systemjs/plugin-css": "0.1.0",
-    "github:moment/moment-timezone": "0.2.1",
-    "github:angular/bower-angular-mocks": "1.2.22",
+    "github:moment/moment-timezone": "0.2.2",
+    "github:angular/bower-angular-mocks": "1.2.25",
     "github:mixpanel/mixpanel-js": "2.2.3",
     "github:faisalman/ua-parser-js": "0.7.0",
-    "github:angular/bower-angular-animate": "1.2.22",
+    "github:angular/bower-angular-animate": "1.2.25",
     "github:angular-ui/ui-router": "0.2.11"
   }
 });

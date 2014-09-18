@@ -1,58 +1,49 @@
 /**
  * Dashboard layout styles.
  */
-
 @import "components/content-list/content-list";
 @import "components/stubs-list/stubs-list";
 @import "components/details-panel/details-panel";
-
 @import "sidebar";
 @import "toolbar";
 
-
 .stubs-column {
-  min-width: 200px;
-  max-width: 200px;
-  overflow: auto;
-  border-right: 1px solid #eee;
+    min-width: 200px;
+    max-width: 200px;
+    overflow: auto;
+    border-right: 1px solid #eee;
 }
-
 
 .content-list-column {
-  overflow: auto;
+    overflow: auto;
 
-  // Flexbox prefixes - TODO: Autoprefixer
-  -webkit-box-flex: 1;
-  -webkit-flex-grow: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
+    // Flexbox prefixes - TODO: Autoprefixer
+    -webkit-box-flex: 1;
+    -webkit-flex-grow: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
 }
-
 
 .detail-column {
-  min-width: 200px;
-  max-width: 200px;
-  background-color: #f5f5f5;
-  border-left: 1px solid #eee;
-  overflow: auto;
+    min-width: 200px;
+    max-width: 200px;
+    background-color: #f5f5f5;
+    border-left: 1px solid #eee;
+    overflow: auto;
 }
-
 
 /*
  * Global add-ons
  */
 
 .sub-header {
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
 }
-
 
 h5.query {
     font-weight: bold;
 }
-
-
 
 .btn.active {
     color: #fff;
@@ -60,17 +51,13 @@ h5.query {
     border-color: #285e8e;
 }
 
-
-
-
-
 /**
  * .session-check__frame   iframe used to re-establish the user's session.
  */
 .login-check__frame {
-  position: absolute;
-  overflow: hidden;
-  border: none;
-  width: 0;
-  height: 0;
+    position: absolute;
+    overflow: hidden;
+    border: none;
+    width: 0;
+    height: 0;
 }
