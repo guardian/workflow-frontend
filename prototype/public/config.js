@@ -9,7 +9,6 @@ System.config({
 
 System.config({
   "map": {
-    "app": "javascripts/app",
     "angular": "github:angular/bower-angular@1.2.20",
     "angular-bootstrap": "npm:angular-bootstrap@^0.11.0",
     "angular-bootstrap-datetimepicker": "github:dalelotts/angular-bootstrap-datetimepicker@0.2.4",
@@ -39,7 +38,8 @@ System.config({
     "angular-mocks": "github:angular/bower-angular-mocks@^1.2.7",
     "mixpanel": "github:mixpanel/mixpanel-js@^2.2.2",
     "ua-parser": "github:faisalman/ua-parser-js@^0.7.0",
-    "angular-animate": "github:angular/bower-angular-animate@^1.2.22"
+    "angular-animate": "github:angular/bower-angular-animate@^1.2.22",
+    "angular-ui-router": "github:angular-ui/ui-router@^0.2.11"
   }
 });
 
@@ -66,7 +66,8 @@ System.config({
     "github:angular/bower-angular-mocks": "1.2.22",
     "github:mixpanel/mixpanel-js": "2.2.3",
     "github:faisalman/ua-parser-js": "0.7.0",
-    "github:angular/bower-angular-animate": "1.2.22"
+    "github:angular/bower-angular-animate": "1.2.22",
+    "github:angular-ui/ui-router": "0.2.11"
   }
 });
 

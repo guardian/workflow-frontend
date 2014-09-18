@@ -1,12 +1,15 @@
-@(error: Option[String] = None)
+@(error: Option[String] = None, user: Option[com.gu.googleauth.UserIdentity], config: play.api.libs.json.JsObject)
 
-@main("Workflow Login") {
+@layout("Login", user, config) {
+  <div class="login-page">
     @for(err <- error) {
-        <div class="alert alert-danger">
-            <p>There was a problem logging you in: @err</p>
-        </div>
+      <p class="login-page__login-error">There was a problem logging you in: @err</p>
     }
-    <form action="@routes.Login.loginAction()" method="get">
-        <input value="Log In" type="submit" class="btn btn-primary">
+    @if((config \ "user").asOpt[play.api.libs.json.JsObject] == None) {
+      <p class="login-page__login-status">You are not logged in.</p>
+    }
+    <form action="@routes.Login.loginAction" method="get">
+      <button class="login-page__login-button" type="submit">Log in</button>
     </form>
+  </div>
 }

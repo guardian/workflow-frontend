@@ -1,0 +1,49 @@
+
+@import "components/fonts/webfonts";
+@import "components/fonts/typography";
+
+@import "colours";
+@import "top-toolbar";
+
+
+// Root font settings
+html {
+  @extend %f-data;
+  font-size: 62.5%;
+  font-size: calc(1em * .625);
+  height: 100%;
+}
+
+body {
+  @extend %fs-data-4;
+
+  color: $c-grey-700;
+
+  min-width: 1050px;
+  min-width: 105rem;
+
+  margin: 0;
+}
+
+a {
+  color: $c-blue-link;
+  text-decoration: none;
+}
+
+a:hover {
+  color: $c-blue-link;
+  text-decoration: underline;
+}
+
+.splash__message {
+  margin: 10px;
+}
+
+.login-page {
+  margin: 10px;
+}
+
+.login-page__login-button {
+  @extend %fs-data-4;
+  margin: 0;
+}
