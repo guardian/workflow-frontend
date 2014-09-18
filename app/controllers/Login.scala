@@ -3,6 +3,8 @@ package controllers
 import play.api.mvc._
 import scala.concurrent.Future
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 object Login extends Controller with PanDomainAuthActions {
 
   def oauthCallback = Action.async { implicit request =>

@@ -1,4 +1,4 @@
-@(title: String, user: Option[com.gu.googleauth.UserIdentity], config: play.api.libs.json.JsObject)(content: Html)
+@(title: String, user: Option[com.gu.pandomainauth.model.User] = None, config: play.api.libs.json.JsObject = play.api.libs.json.Json.obj())(content: Html)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +19,9 @@
     <div class="top-toolbar__view-toolbar" ui-view="view-toolbar"></div>
     <div class="top-toolbar__user">
       @if(user.isEmpty) {
-        <a class="top-toolbar__user-link" href="@routes.Login.loginAction">Log in</a>
+        <a class="top-toolbar__user-link" href="@routes.Application.index">Log in</a>
       } else {
-        <a class="top-toolbar__user-link" href="@routes.Login.logout" title="Logout">@(user.get.fullName)</a>
+        <a class="top-toolbar__user-link" href="@routes.Login.logout" title="Logout">@(user.get.firstName) @(user.get.lastName)</a>
       }
     </div>
   </header>
