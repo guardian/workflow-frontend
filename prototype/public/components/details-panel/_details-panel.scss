@@ -4,7 +4,6 @@
  * Shows extra metadata for a selected content item.
  */
 
-
 .detail-panel {
     padding: 0 20px;
 }
@@ -24,15 +23,13 @@
     margin-top: 6px;
 }
 
-
 .detail {
-  font-size: 90%;
+    font-size: 90%;
 }
 
 .detail dd {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
-
 
 /**
  * Editable Fields in Details block.
@@ -40,17 +37,17 @@
  */
 .detail__data--editable,
 .detail__data--editable-empty {
-  color: #333;
-  border-bottom: dashed 1px #333;
-  cursor: pointer;
+    color: #333;
+    border-bottom: dashed 1px #333;
+    cursor: pointer;
 }
 
 .detail__data--editable-empty {
-  font-style: italic;
+    font-style: italic;
 }
 
 .detail__data--editable:hover {
-  color: #428bca;
-  border-color: #428bca;
-  text-decoration: none;
+    color: #428bca;
+    border-color: #428bca;
+    text-decoration: none;
 }
