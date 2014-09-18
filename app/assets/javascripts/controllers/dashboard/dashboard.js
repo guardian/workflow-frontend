@@ -12,15 +12,14 @@ define([
     'use strict';
 
     dashboardControllers.controller('DashboardCtrl',
-        ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'wfFiltersService','prodOfficeService', 'wfContentService', 'wfContentPollingService',
-         function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService) {
+        ['$scope','$http', 'statuses', 'legalStatesService', 'config', 'wfFiltersService','prodOfficeService','wfContentService', 'wfContentPollingService',
+         function($scope, $http, statuses, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService) {
 
+         $scope.composerUrl = config.composerViewContent;
          $scope.selectedStatus = wfFiltersService.get('status');
          $scope.selectedState = wfFiltersService.get('state');
-         $scope.selectedSection = wfFiltersService.get('section');
          $scope.selectedContentType = wfFiltersService.get('content-type');
          $scope.flags = wfFiltersService.get('flags');
-         $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
         var getContent = function(evt, params) {
             var params = wfContentService.getServerParams();
@@ -32,17 +31,12 @@ define([
         $scope.$on('getContent', getContent);
         $scope.$on('changedFilters', getContent);
 
-        $scope.$watch('selectedProdOffice', function(){
-            $scope.$emit('filtersChanged.prodOffice', $scope.selectedProdOffice)
-        });
+
         $scope.$watch('selectedContentType', function(){
             $scope.$emit('filtersChanged.content-type', $scope.selectedContentType);
         });
-        $scope.$watch('selectedSection', function(){
-            $scope.$emit('filtersChanged.section', $scope.selectedSection);
-        });
 
-        $scope.sections = sections;
+
         $scope.legalStates = legalStatesService.getLegalStates();
 
         $scope.prodOffices = prodOfficeService.getProdOffices();
