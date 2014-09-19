@@ -23,12 +23,6 @@ define([
                 $scope.$on('getContent', getContent);
                 $scope.$on('changedFilters', getContent);
 
-
-//        $scope.$watch('selectedContentType', function(){
-//          $scope.$emit('filtersChanged.content-type', $scope.selectedContentType);
-//        });
-
-
                 $scope.legalStates = legalStatesService.getLegalStates();
 
                 $scope.prodOffices = prodOfficeService.getProdOffices();
@@ -76,10 +70,6 @@ define([
                         return x.status;
                     });
                 }
-
-//        $scope.contentTypeIsSelected = function (contentType) {
-//            return $scope.selectedContentType == contentType;
-//        };
 
                 $scope.showDetail = function (content) {
                     $scope.selectedContent = content;
@@ -144,8 +134,7 @@ define([
                             getContent();
                         });
                     }
-                    ;
-                }
+                };
 
                 // stubs stuff
 
