@@ -96,7 +96,24 @@ define([], function () {
     module.controller(
         'wfPresenceSubscription',
         [ "$scope", "wfPresenceService", function($scope, wfPresenceService) {
-            console.log("pmrLog-1; wfPresenceSubscription controller");
+
+            function getIds(content) {
+                return _.pluck(_.flatten(_.values(content)), "composerId")
+            }
+
+            function doSubscription() {
+            }
+
+            $scope.$watch(function($scope) {
+                var content = $scope["contentByStatus"];
+                return (content && getIds(content)) || [];
+            }, function (newVal, oldVal) {
+                if(newVal !== oldVal) {
+                    doSubscription(newVal);
+                }
+                console.log("pmrLog-1 -> changed", newVal, oldVal);
+            }, true);
+
         }]);
 
     module.controller('wfPresenceIndicatorController', [ "$scope", function($scope) {
