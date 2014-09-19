@@ -55,47 +55,6 @@ angular.module('wfDashboardSidebar', ['wfFiltersService'])
                 ]
             }
         ];
-
-        // content items stuff
-
-        $scope.stateIsSelected = function (state) {
-            return $scope.selectedState == state;
-        };
-        $scope.selectState = function (state) {
-            $scope.selectedState = state;
-            $scope.$emit('filtersChanged.state', $scope.selectedState);
-        };
-
-//        $scope.statusIsSelected = function (status) {
-//            return $scope.selectedStatus == status;
-//        };
-//
-//        $scope.selectStatus = function (status) {
-//            $scope.selectedStatus = status;
-//            $scope.$emit('filtersChanged.status', $scope.selectedStatus);
-//        };
-
-        $scope.selectCreatedFilter = function (fromDate, untilDate) {
-            $scope.selectedCreatedFrom = fromDate != null ? fromDate.toISOString() : "";
-            $scope.selectedCreatedUntil = untilDate != null ? untilDate.toISOString() : "";
-            getContent();
-        };
-
-        $scope.flagActive = function (flag) {
-            return $scope.flags.indexOf(flag) != -1;
-        };
-
-        $scope.toggleFlag = function (flag) {
-            if ($scope.flags.indexOf(flag) == -1) {
-                $scope.flags.push(flag);
-            } else {
-                $scope.flags = $scope.flags.filter(function (e) {
-                    return e !== flag
-                });
-            }
-            $scope.$emit('filtersChanged.flags', $scope.flags);
-        };
-
     }])
 
     .directive('wfSidebarFilter', ['wfFiltersService', function (wfFiltersService) {
@@ -107,8 +66,6 @@ angular.module('wfDashboardSidebar', ['wfFiltersService'])
             link: function ($scope, elem, attrs) {
                 $scope.defaultFilter = { caption: "All", value: null };
                 $scope.selectedFilter = wfFiltersService.get($scope.filter.namespace);
-
-                console.log($scope.selectedFilter);
 
                 if (!$scope.selectedFilter) {
                     $scope.selectedFilter = null;
