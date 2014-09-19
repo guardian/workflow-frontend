@@ -204,7 +204,7 @@
               There was a problem contacting the server, please try to <a href="javascript:window.location.reload()">reload</a> the page. If the problem continues, please contact <a href="mailto:cms.workflow@@guardian.co.uk">the Workflow team</a>.
             </div>
 
-            <table class="content-list table">
+            <table class="content-list table" ng-controller="wfPresenceSubscription">
                 <thead class="content-list__head">
                 <tr>
                     <th colspan="4"></th>
@@ -255,7 +255,9 @@
                             </select></td>
                             <td class="content-list__item-published"><p ng-show="content.published">Published<br/><span class="small">{{ content.timePublished | wfLocaliseDateTime | wfFormatDateTime:'DD MMM, HH:mm' }}</span></p>
                                 <p ng-show="!content.published">Draft</p>
-                                <p ng-class="'content-list__item-presence__' + getStatus()" ng-controller="wfPresenceIndicatorController">{{getIndicatorText()}}</p>
+                                <ul ng-controller="wfPresenceIndicatorController">
+                                    <li ng-repeat="prez in presence" ng-class="'content-list__item-presence__' + prez.status">{{prez.indicatorText}}</li>
+                                </ul>
                             </td>
                             <td><span ng-click="deleteContent(content)" class="glyphicon glyphicon-trash"></span></td>
                         </tr>
