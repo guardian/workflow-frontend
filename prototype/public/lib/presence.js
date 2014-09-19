@@ -147,11 +147,12 @@ define([], function () {
 
         function applyCurrentState(currentState) {
             if(currentState.length == 0) {
-                $scope.status = "free";
-                $scope.indicatorText = ""
+                $scope.presence = [{ status: "free", indicatorText: ""}]
             } else {
-                $scope.indicatorText = currentState[0].clientId.person.firstName;
-                $scope.status = currentState[0].clientId.status;
+                $scope.presence = _.map(currentState, function (pr) {
+                        return { indicatorText: pr.clientId.person.firstName,
+                                 status: pr.clientId.status };
+                });
             }
         }
 
