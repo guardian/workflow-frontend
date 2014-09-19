@@ -83,7 +83,19 @@ angular.module('wfDashboardSidebar', ['wfFiltersService'])
                     }
 
                     $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilter);
-                }
+                };
+
+                $scope.toggleSidebarSection = function () {
+
+                    var closedClass = 'sidebar__section--filter-list-closed';
+
+                    if (elem[0].classList.contains(closedClass)) {
+                        elem[0].classList.remove(closedClass);
+                    } else {
+                        elem[0].classList.add(closedClass);
+                    }
+
+                };
             }
         };
     }]);
