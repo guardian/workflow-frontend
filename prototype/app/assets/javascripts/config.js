@@ -5,7 +5,8 @@ define(['angular'], function (angular) {
     var $ = angular.element,
         $composerNewContent = $('link[rel="composer-newcontent"]'),
         $composerViewContent = $('link[rel="composer-viewcontent"]'),
-        $composerContentDetails = $('link[rel="composer-contentdetails"]');
+        $composerContentDetails = $('link[rel="composer-contentdetails"]'),
+        $presenceUrl = $('link[rel="presence-url"]');
 
     var mod = angular.module('workflow.config', []);
 
@@ -15,6 +16,7 @@ define(['angular'], function (angular) {
         'composerNewContent': $composerNewContent.attr('href'),
         'composerViewContent': $composerViewContent.attr('href'),
         'composerContentDetails': $composerContentDetails.attr('href'),
+        'presenceUrl': $presenceUrl.attr('href'),
         'maxNoteLength': 500
       }
     );

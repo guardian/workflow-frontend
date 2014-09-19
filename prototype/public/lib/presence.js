@@ -2,14 +2,13 @@ define([], function () {
 
     var module = angular.module('wfPresenceService', []);
 
-    module.factory('wfPresenceService', ['$rootScope', function($rootScope) {
+    module.factory('wfPresenceService', ['$rootScope', 'config', function($rootScope, config) {
 
         var $scope = $rootScope.$new();
 
         var self = {};
 
-        //self.endpoint = "ws://presence-Presence-OWDNPQCCLV33-1270668035.eu-west-1.elb.amazonaws.com/socket";
-        self.endpoint = "ws://localhost:9000/socket";
+        self.endpoint = config.presenceUrl;
 
         var messageHandlers = {
             "connectionTest": function() {
@@ -26,7 +25,6 @@ define([], function () {
                 $rootScope.$broadcast("presence.status", data);
             }
         }
-      }
 
         function messageHandler(msgJson) {
             var msg = JSON.parse(msgJson);
@@ -38,7 +36,6 @@ define([], function () {
                 $rootScope.$broadcast("presence.error.unknownAction", msg);
             }
         }
-      }
 
         var _socket = new Promise( function(resolve, reject) {
             var s = new WebSocket(self.endpoint);
