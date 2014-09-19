@@ -95,23 +95,34 @@ define([], function () {
 
     module.controller(
         'wfPresenceSubscription',
-        [ "$scope", "wfPresenceService", function($scope, wfPresenceService) {
+        [ "$scope", "$q", "wfPresenceService", function($scope, $q, wfPresenceService) {
+
+            var initialData = null;
+
+            $scope.initialData = function(id) {
+                if(initialData == null) return $q.reject("no subscription has been made yet");
+                else return initialData.promise.then(function (data) {
+                    return _.find(data, function(d) {
+                        return d.subscriptionId == id;
+                    }).currentState;
+                });
+            }
+
+            $scope.$on("presence.subscribed", function (ev, data) {
+                initialData && initialData.resolve(data.subscribedTo);
+            });
 
             function getIds(content) {
                 return _.pluck(_.flatten(_.values(content)), "composerId")
             }
 
             function doSubscription(ids) {
-                var initialData = new Promise(function (resolve, reject) {
-
-                    console.log("sending sub request");
-
-                    wfPresenceService.articleSubscribe(ids);
-                    $scope.$on("presence.subscribed", function (ev, data) {
-                        console.log("presence.subscribed", data);
-                        resolve();
-                    });
+                initialData = $q.defer();
+                initialData.promise.then(function (data) {
+                    console.log("pmrLog-1 initialData has arrived", data);
                 });
+
+                wfPresenceService.articleSubscribe(ids);
             }
 
             $scope.$watch(function($scope) {
@@ -134,15 +145,24 @@ define([], function () {
         $scope.indicatorText = "";
         $scope.status = "unknown";
 
+        function applyCurrentState(currentState) {
+            if(currentState.length == 0) {
+                $scope.status = "free";
+                $scope.indicatorText = ""
+            } else {
+                $scope.indicatorText = currentState[0].clientId.person.firstName;
+                $scope.status = currentState[0].clientId.status;
+            }
+        }
+
+        $scope.initialData(id).then(function (currentState) {
+            console.log("about to apply initial data:", currentState);
+            applyCurrentState(currentState);
+        });
+
         $scope.$on("presence.status", function(ev, data) {
             if(id === data.subscriptionId) {
-                if(data.currentState.length == 0) {
-                    $scope.status = "free";
-                    $scope.indicatorText = ""
-                } else {
-                    $scope.status = data.currentState[0].clientId.status;
-                    $scope.indicatorText = data.currentState[0].clientId.person.firstName;
-                }
+                applyCurrentState(data.currentState);
             }
             console.log("wfPresenceIndicatorController event handler", data);
         });
