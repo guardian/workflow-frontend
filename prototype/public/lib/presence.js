@@ -1,157 +1,177 @@
-define(["underscore"], function (_) {
-  var module = angular.module('wfPresenceService', []);
+define([], function () {
 
-  module.factory('wfPresenceService', ['$rootScope', function($rootScope) {
+    var module = angular.module('wfPresenceService', []);
 
-    var self = {};
+    module.factory('wfPresenceService', ['$rootScope', function($rootScope) {
 
-    var articleStates = {};
+        var $scope = $rootScope.$new();
 
-    function articleDefaultState() {
-      return { fromServer: false, currentState: [] }
-    }
+        var self = {};
 
-    function setArticleState(id, newStatus, fromServer) {
-      articleStates[id] = { fromServer: fromServer,
-                            currentSatate: newState };
-    }
+        //self.endpoint = "ws://presence-Presence-OWDNPQCCLV33-1270668035.eu-west-1.elb.amazonaws.com/socket";
+        self.endpoint = "ws://localhost:9000/socket";
 
-    self.getArticleState = function(id) {
-      if(!articleStates[id]) {
-        articleStates[id] = articleDefaultState();
-      }
-      return articleStates[id];
-    }
-
-    //self.endpoint = "ws://presence-Presence-OWDNPQCCLV33-1270668035.eu-west-1.elb.amazonaws.com/socket";
-    self.endpoint = "ws://localhost:9000/socket";
-
-    var _socket = new Promise( function(resolve, reject) {
-
-      var messageHandlers = {
-        "connectionTest": function() {
-          /* XXX TODO : how should I reply to this connectionTest request? */
-          // console.log("recieved connection test request from server")
-        },
-        "subscribed": function(data) {
-          self.clientId = data.clientId;
-          /* XXX TODO : share the initial state, which will have been sent to us here */
-        },
-        "updated": function(data) {
-          console.log("XXX PMR receiving updated message");
-          $rootScope.$broadcast("presence.status", data);
+        var messageHandlers = {
+            "connectionTest": function() {
+                /* XXX TODO : how should I reply to this connectionTest request? */
+                // console.log("recieved connection test request from server")
+            },
+            "subscribed": function(data) {
+                self.clientId = data.clientId;
+                /* XXX TODO : share the initial state, which will have been sent to us here */
+                $rootScope.$broadcast("presence.subscribed", data);
+            },
+            "updated": function(data) {
+                console.log("XXX PMR receiving updated message");
+                $rootScope.$broadcast("presence.status", data);
+            }
         }
       }
 
-      function messageHandler(msgJson) {
-        var msg = JSON.parse(msgJson);
-        console.log("PMR: messageHandler", msgJson);
-        if(typeof messageHandlers[msg.action] === "function") {
-          messageHandlers[msg.action](msg.data);
-        } else {
-          console.log("receive unknown message action: " + msg.action);
-          $rootScope.$broadcast("presence.error.unknownAction", msg);
+        function messageHandler(msgJson) {
+            var msg = JSON.parse(msgJson);
+            console.log("PMR: messageHandler", msgJson);
+            if(typeof messageHandlers[msg.action] === "function") {
+                messageHandlers[msg.action](msg.data);
+            } else {
+                console.log("receive unknown message action: " + msg.action);
+                $rootScope.$broadcast("presence.error.unknownAction", msg);
+            }
         }
       }
 
-      var s = new WebSocket(self.endpoint);
-      s.onerror   = reject;
-      s.onopen    = function () { resolve(s); }
-      s.onmessage = function(ev) { messageHandler(ev.data); }
-    });
+        var _socket = new Promise( function(resolve, reject) {
+            var s = new WebSocket(self.endpoint);
+            s.onerror   = reject;
+            s.onopen    = function () { resolve(s); }
+            s.onmessage = function(ev) { messageHandler(ev.data); }
+        });
 
-    /* XXX TODO : properly handle errors */
-    // _socket.onerror   = function(ev) {
-    //   $rootScope.$broadcast("presence.connection.error", ev);
-    // }
+        /* XXX TODO : properly handle errors */
+        // _socket.onerror   = function(ev) {
+        //   $rootScope.$broadcast("presence.connection.error", ev);
+        // }
 
-    /* broadcast successful connection to the rest of the application */
-    _socket.then(function() {
-      $rootScope.$broadcast("presence.connection.success");
-    });
+        /* broadcast successful connection to the rest of the application */
+        _socket.then(function() {
+            $rootScope.$broadcast("presence.connection.success");
+        });
 
-    self.person = {
-      firstName : "Paul",
-      lastName  : "Roberts",
-      email     : "paul.roberts@guardian.co.uk",
-      browserId : "12345",
-      googleId  : "123456"
-    };
+        self.person = {
+            firstName : "Paul",
+            lastName  : "Roberts",
+            email     : "paul.roberts@guardian.co.uk",
+            browserId : "12345",
+            googleId  : "123456"
+        };
 
-    function makeRequest(action, data) {
-      return { action: action, data: data };
-    }
+        function makeRequest(action, data) {
+            return { action: action, data: data };
+        }
 
-    function makeSubscriptionRequest(articleIds) {
-      return makeRequest("subscribe", {
-        "person": self.person,
-        "subscriptionIds": articleIds
-      });
-    }
+        function makeSubscriptionRequest(articleIds) {
+            return makeRequest("subscribe", {
+                "person": self.person,
+                "subscriptionIds": articleIds
+            });
+        }
 
-    /* returns a promise */
-    function sendJson(data) {
-      return _socket.then(function(socket) {
-        socket.send(JSON.stringify(data));
-        console.log("sending: " + JSON.stringify(data));
-      });
-    }
+        /* returns a promise */
+        function sendJson(data) {
+            return _socket.then(function(socket) {
+                socket.send(JSON.stringify(data));
+                console.log("sending: " + JSON.stringify(data));
+            });
+        }
 
-    function prepareInitialState() {
-      var promise = new Promise()
-    }
+        self.articleSubscribe = function(articleIds) {
+            var ids = (Array.isArray(articleIds)) ? articleIds : Array(articleIds);
+            var p = sendJson(makeSubscriptionRequest(ids));
+            p.then(function () { console.log("sent request: ", makeSubscriptionRequest(ids)) });
+            return p;
+        }
 
-    /* provide an optional callback to execute when the message
-     * arrives. Either way an event will be broadcast. */
-    self.articleSubscribe = function(articleIds, cb) {
-      console.log("subscribing to:", articleIds);
-      var ids = (Array.isArray(articleIds)) ? articleIds : Array(articleIds);
+        return self;
 
-      var p = sendJson(makeSubscriptionRequest(ids));
-      if(typeof cb == "function") { p.then(cb); }
-    }
+    }]);
 
-    return self;
+    module.controller(
+        'wfPresenceSubscription',
+        [ "$scope", "$q", "wfPresenceService", function($scope, $q, wfPresenceService) {
 
-  }]);
+            var initialData = null;
 
-  module.controller(
-    'wfPresenceIndicatorController',
-    [ "$scope", 'wfPresenceService', function($scope, wfPresenceService) {
+            $scope.initialData = function(id) {
+                if(initialData == null) return $q.reject("no subscription has been made yet");
+                else return initialData.promise.then(function (data) {
+                    return _.find(data, function(d) {
+                        return d.subscriptionId == id;
+                    }).currentState;
+                });
+            }
 
-    var id = $scope.content.composerId;
-    console.log("wfPresenceIndicatorController: content: ", id);
+            $scope.$on("presence.subscribed", function (ev, data) {
+                initialData && initialData.resolve(data.subscribedTo);
+            });
 
-    function getArticleState() {
-      data = wfPresenceService.getArticleState();
-      if(!data.fromServer) {
-        return { status: "unknown", indicatorText: "unknown" }
-      } else if(data.currentState.length == 0) {
-        return { status: "free",
-                 indicatorText: "free" };
-      } else {
-        return { status: data.currentState[0].clientId.status,
-                 indicatorText: data.currentState[0].clientId.person.firstName };
-      }
-    }
+            function getIds(content) {
+                return _.pluck(_.flatten(_.values(content)), "composerId")
+            }
 
-    $scope.getStatus = function () {
-      return getArticleState().status;
-    }
+            function doSubscription(ids) {
+                initialData = $q.defer();
+                initialData.promise.then(function (data) {
+                    console.log("pmrLog-1 initialData has arrived", data);
+                });
 
-    $scope.getIndicatorText = function () {
-      return getArticleState().indicatorText;
-    }
+                wfPresenceService.articleSubscribe(ids);
+            }
 
-    // $scope.$on("presence.status", function(ev, data) {
-    //   if(id === data.subscriptionId) {
+            $scope.$watch(function($scope) {
+                var content = $scope["contentByStatus"];
+                return (content && getIds(content)) || [];
+            }, function (newVal, oldVal) {
+                if(newVal !== oldVal) {
+                    doSubscription(newVal);
+                }
+                console.log("pmrLog-1 -> changed", newVal, oldVal);
+            }, true);
 
-    //   }
-    //   console.log("wfPresenceIndicatorController event handler", data);
-    // });
+        }]);
+
+    module.controller('wfPresenceIndicatorController', [ "$scope", function($scope) {
+
+        var id = $scope.content.composerId;
+        console.log("wfPresenceIndicatorController: content: ", id);
+
+        $scope.indicatorText = "";
+        $scope.status = "unknown";
+
+        function applyCurrentState(currentState) {
+            if(currentState.length == 0) {
+                $scope.presence = [{ status: "free", indicatorText: ""}]
+            } else {
+                $scope.presence = _.map(currentState, function (pr) {
+                        return { indicatorText: pr.clientId.person.firstName,
+                                 status: pr.clientId.status };
+                });
+            }
+        }
+
+        $scope.initialData(id).then(function (currentState) {
+            console.log("about to apply initial data:", currentState);
+            applyCurrentState(currentState);
+        });
+
+        $scope.$on("presence.status", function(ev, data) {
+            if(id === data.subscriptionId) {
+                applyCurrentState(data.currentState);
+            }
+            console.log("wfPresenceIndicatorController event handler", data);
+        });
 
 
-  }]);
+    }]);
 
 
 });
