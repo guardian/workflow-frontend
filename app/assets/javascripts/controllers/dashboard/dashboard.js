@@ -13,9 +13,7 @@ define([
 
     dashboardControllers.controller('DashboardCtrl',
         ['$scope','$http', 'statuses', 'sections','legalStatesService', 'config', 'wfFiltersService','prodOfficeService', 'wfContentService', 'wfContentPollingService',
-         'wfPresenceService',
-         function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService,
-                  wfPresenceService) {
+         function($scope, $http, statuses, sections, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService) {
 
          $scope.selectedStatus = wfFiltersService.get('status');
          $scope.selectedState = wfFiltersService.get('state');
@@ -66,22 +64,7 @@ define([
             $scope.selectedContent = found;
           }
 
-          updatePresenceSubs($scope.contentByStatus);
-
           $scope.$apply();
-        }
-
-        function updatePresenceSubs(data) {
-          var subscriptions =
-            _.map(_.flatten(_.values(data)), function (c) { return c.composerId });
-
-          /* any new subs? */
-          var oldSubs = $scope.presenceSubscriptions;
-          if(_.difference(subscriptions, $scope.presenceSubscriptions).length > 0 ||
-               _.difference(oldSubs, subscriptions).length > 0) {
-            wfPresenceService.articleSubscribe(subscriptions);
-            $scope.presenceSubscriptions = subscriptions;
-          }
         }
 
         // poll for updates
