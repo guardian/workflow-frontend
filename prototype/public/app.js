@@ -82,6 +82,7 @@ angular.module('workflow',
       'composerNewContent': _wfConfig.composer.create,
       'composerViewContent': _wfConfig.composer.view,
       'composerContentDetails': _wfConfig.composer.details,
+      'presenceUrl': _wfConfig.presenceUrl,
       'maxNoteLength': 500
     }
   )
