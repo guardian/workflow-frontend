@@ -149,8 +149,10 @@ define([], function () {
                 $scope.presence = [{ status: "free", indicatorText: ""}]
             } else {
                 $scope.presence = _.map(currentState, function (pr) {
-                        return { indicatorText: pr.clientId.person.firstName,
-                                 status: pr.clientId.status };
+                    var person = pr.clientId.person;
+                    return { indicatorText:
+                             (person.firstName.charAt(0) + person.lastName.charAt(0)).toUpperCase(),
+                             status: pr.clientId.status };
                 });
             }
         }
