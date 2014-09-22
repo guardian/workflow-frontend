@@ -1,12 +1,12 @@
-@(error: Option[String] = None)
+@(message: Option[String] = None)
 
-@main("Workflow Login") {
-    @for(err <- error) {
-        <div class="alert alert-danger">
-            <p>There was a problem logging you in: @err</p>
-        </div>
+@layout("Login") {
+  <div class="login-page">
+    @for(msg <- message) {
+      <p class="login-page__login-error">@msg</p>
     }
-    <form action="@routes.Login.loginAction()" method="get">
-        <input value="Log In" type="submit" class="btn btn-primary">
+    <form action="@routes.Application.index" method="get">
+      <button class="login-page__login-button" type="submit">Log in</button>
     </form>
+  </div>
 }
