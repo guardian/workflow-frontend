@@ -1,154 +1,92 @@
-@(sections: List[Section], statuses: List[Status])
-@import helper._
-@import lib.Formatting._
-@import lib.Composer._
-@import models.Status
-
-<div class="container-fluid top-control">
-    <div class="top-toolbar row header-bar">
-
-            <div class="top-toolbar__prod-office">
-                <form class="form-horizontal" role="form">
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label" for="prodOffice_dropdown">Office</label>
-                        <div class="col-sm-8">
-                            <select class="form-control input-sm" id="prodOffice_dropdown" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
-                                <option value="">All</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="top-toolbar__section-selector">
-                <form class="form-horizontal" role="form">
-                    <div class="form-group">
-                        <label for="section_dropdown" class="col-sm-4 control-label">Section</label>
-                        <div class="col-sm-8">
-                            <select id="section_dropdown" class="form-control input-sm" ng-model="selectedSection" ng-options="s for s in sections">
-                                <option value="">All sections</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="top-toolbar__due-by-filter">
-                <div ng-controller="DateFilterCtrl" class="date-filter">
-                    <label class="date-filter__label">Due by</label>
-                    <div class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="">All</button>
-                        <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'today'">Today</button>
-                        <button type="button" class="btn btn-default date-filter__button--optional" ng-model="selectedDate" btn-radio="'tomorrow'">Tomorrow</button>
-                        <button type="button" class="btn btn-default" ng-model="selectedDate" btn-radio="'weekend'">This weekend</button>
-                        <span class="btn btn-default" title="Select date">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                            <select ng-model="selectedDate" ng-options="date as (date | wfLocaliseDateTime | wfFormatDateTime:'ddd D MMMM') for date in dateOptions">
-                            </select>
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="presence-connection" ng-class="presence_connection">[WS]</div>
-
-        </div>
-
+<div class="sidebar">
+    <div class="sidebar__location-picker dropdown" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
+        <button class="dropdown-toggle btn btn-default btn-sm" type="button" id="locationDropdownButton">
+            {{ locationPicker.locations[locationPicker.locationKey].title }}
+            <span class="sidebar__location-picker-localtime">{{ locationPicker.now | wfLocaliseDateTime | wfFormatDateTime:'HH:mm' }}</span>
+            <span class="caret"></span>
+        </button>
+        <ul class="sidebar__location-picker-menu dropdown-menu" role="menu" aria-labelledby="locationDropdownButton">
+            <li ng-repeat="(key, location) in locationPicker.locations">
+                <a class="sidebar__location-picker-menuitem" role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">
+                    <span class="sidebar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfLocaliseDateTime:key | wfFormatDateTime:'HH:mm z' }}</span>
+                    {{ location.title }}
+                </a>
+            </li>
+        </ul>
     </div>
+
+
+    <h5 class="query ">Content type</h5>
+    <div class="btn-group btn-group-xs">
+        <button type="button " class="btn btn-default" title="all"
+                ng-model="selectedContentType"
+                btn-radio="">All</button>
+        <button type="button " class="btn btn-default" title="article"
+                ng-model="selectedContentType"
+                btn-radio="'article'">
+            <span class="glyphicon glyphicon-file"></span>
+        </button>
+        <button type="button " class="btn btn-default" title="liveblog"
+                ng-model="selectedContentType"
+                btn-radio="'liveblog'">
+            <span class="glyphicon glyphicon-th-list "></span>
+        </button>
+        <button type="button" class="btn btn-default" title="gallery"
+                ng-model="selectedContentType"
+                btn-radio="'gallery'">
+            <span class="glyphicon glyphicon-camera "></span>
+        </button>
+        <button type="button " class="btn btn-default" title="interactive"
+                ng-model="selectedContentType"
+                btn-radio="'interactive'">
+            <span class="glyphicon glyphicon-hand-up "></span>
+        </button>
+    </div>
+
+    <h5 class="query" data-toggle="collapse" data-target="#status">Status</h5>
+    <ul id="status" class="nav nav-sidebar">
+        <li  ng-class="{active: statusIsSelected()}">
+            <a href="" ng-click="selectStatus(null)">All</a>
+        </li>
+        <li ng-repeat="status in statuses" ng-class="{active: statusIsSelected(status)}">
+            <a href="" ng-click="selectStatus(status)" >
+                {{ status }}
+            </a>
+        </li>
+    </ul>
+
+    <h5 class="query" data-toggle="collapse" data-target="#state">State</h5>
+    <ul id="state" class="nav nav-sidebar">
+        <li ng-class="{active: stateIsSelected()}" >
+            <a href="" ng-click="selectState(null)">All</a>
+        </li>
+        <li ng-class="{active: stateIsSelected('draft')}">
+            <a href="" ng-click="selectState('draft')" >Draft</a>
+        </li>
+        <li ng-class="{active: stateIsSelected('published')}">
+            <a href="" ng-click="selectState('published')">Published</a>
+        </li>
+    </ul>
+
+    <h5 class="query" data-toggle="collapse" data-target="createdAt">Creation date</h5>
+    <ul id="createdAt" class="nav nav-sidebar" ng-controller="CreatedAtFilter">
+        <li ng-repeat="cannedFilter in cannedFilters" ng-class="{active: filterIsSelected(cannedFilter)}">
+            <a href="" ng-click="filterClick(cannedFilter)">
+                {{cannedFilter.caption}}
+            </a>
+        </li>
+    </ul>
+
+    <h5 class="query" data-toggle="collapse" data-target="#flags">Flags</h5>
+    <ul id="flags" class="nav nav-sidebar">
+        <li ng-class="{active: flagActive('needsLegal')}" >
+            <a href="" ng-click="toggleFlag('needsLegal')">Needs legal</a>
+        </li>
+    </ul>
+
 </div>
 
-<div class="container-fluid">
-    <div id="content-container" class="" >
-        <div id="sidebar-container" class="">
-            <div class="sidebar">
-                <div class="sidebar__location-picker dropdown" ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
-                    <button class="dropdown-toggle btn btn-default btn-sm" type="button" id="locationDropdownButton">
-                        {{ locationPicker.locations[locationPicker.locationKey].title }}
-                        <span class="sidebar__location-picker-localtime">{{ locationPicker.now | wfLocaliseDateTime | wfFormatDateTime:'HH:mm' }}</span>
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="sidebar__location-picker-menu dropdown-menu" role="menu" aria-labelledby="locationDropdownButton">
-                        <li ng-repeat="(key, location) in locationPicker.locations">
-                            <a class="sidebar__location-picker-menuitem" role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">
-                                <span class="sidebar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfLocaliseDateTime:key | wfFormatDateTime:'HH:mm z' }}</span>
-                                {{ location.title }}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-
-                <h5 class="query ">Content type</h5>
-                <div class="btn-group btn-group-xs">
-                    <button type="button " class="btn btn-default" title="all"
-                            ng-model="selectedContentType"
-                            btn-radio="">All</button>
-                    <button type="button " class="btn btn-default" title="article"
-                            ng-model="selectedContentType"
-                            btn-radio="'article'">
-                        <span class="glyphicon glyphicon-file"></span>
-                    </button>
-                    <button type="button " class="btn btn-default" title="liveblog"
-                            ng-model="selectedContentType"
-                            btn-radio="'liveblog'">
-                        <span class="glyphicon glyphicon-th-list "></span>
-                    </button>
-                    <button type="button" class="btn btn-default" title="gallery"
-                            ng-model="selectedContentType"
-                            btn-radio="'gallery'">
-                        <span class="glyphicon glyphicon-camera "></span>
-                    </button>
-                    <button type="button " class="btn btn-default" title="interactive"
-                            ng-model="selectedContentType"
-                            btn-radio="'interactive'">
-                        <span class="glyphicon glyphicon-hand-up "></span>
-                    </button>
-                </div>
-
-                <h5 class="query" data-toggle="collapse" data-target="#status">Status</h5>
-                <ul id="status" class="nav nav-sidebar">
-                    <li  ng-class="{active: statusIsSelected()}">
-                        <a href="" ng-click="selectStatus(null)">All</a>
-                    </li>
-                    <li ng-repeat="status in statuses" ng-class="{active: statusIsSelected(status)}">
-                        <a href="" ng-click="selectStatus(status)" >
-                            {{ status }}
-                        </a>
-                    </li>
-                </ul>
-
-                <h5 class="query" data-toggle="collapse" data-target="#state">State</h5>
-                <ul id="state" class="nav nav-sidebar">
-                    <li ng-class="{active: stateIsSelected()}" >
-                        <a href="" ng-click="selectState(null)">All</a>
-                    </li>
-                    <li ng-class="{active: stateIsSelected('draft')}">
-                        <a href="" ng-click="selectState('draft')" >Draft</a>
-                    </li>
-                    <li ng-class="{active: stateIsSelected('published')}">
-                        <a href="" ng-click="selectState('published')">Published</a>
-                    </li>
-                </ul>
-
-                <h5 class="query" data-toggle="collapse" data-target="#flags">Flags</h5>
-                <ul id="flags" class="nav nav-sidebar">
-                    <li ng-class="{active: flagActive('needsLegal')}" >
-                        <a href="" ng-click="toggleFlag('needsLegal')">Needs legal</a>
-                    </li>
-                </ul>
-
-                <h5 class="query" data-toggle="collapse" data-target="createdAt">Creation date</h5>
-                <ul id="createdAt" class="nav nav-sidebar" ng-controller="CreatedAtFilter">
-                    <li ng-repeat="cannedFilter in cannedFilters" ng-class="{active: filterIsSelected(cannedFilter)}">
-                        <a href="" ng-click="filterClick(cannedFilter)">
-                            {{cannedFilter.caption}}
-                        </a>
-                    </li>
-                </ul>
-
-            </div>
-        </div>
-
-        <div id="stubs-column" class="">
+        <div id="stubs-column" class="stubs-column">
             <h4>Stubs</h4>
             <div class="stubs-column__new-stub-wrapper">
                 <div class="stubs-column__new-stub-cta btn-group" ng-controller="NewStubDropdownCtrl" dropdown>
@@ -198,10 +136,10 @@
 
         </div>
 
-        <div id="content" class="">
+        <div class="content-list-column">
 
             <div class="alert alert-danger" ng-if="getContentError">
-              There was a problem contacting the server, please try to <a href="javascript:window.location.reload()">reload</a> the page. If the problem continues, please contact <a href="mailto:cms.workflow@@guardian.co.uk">the Workflow team</a>.
+              There was a problem contacting the server, please try to <a href="javascript:window.location.reload()">reload</a> the page. If the problem continues, please contact <a href="mailto:cms.workflow@guardian.co.uk">the Workflow team</a>.
             </div>
 
             <table class="content-list table" ng-controller="wfPresenceSubscription">
@@ -243,7 +181,7 @@
                                 <span class="glyphicon glyphicon-eye-open"  ng-show="content.needsLegal === 'REQUIRED'"></span>
                             </td>
                             <td colspan="2 ">
-                                <p><a href=@adminUrl/{{content.composerId}} target="_blank" >{{content.headline || content.workingTitle}}</a></p>
+                                <p><a href="{{ composerUrl + '/' + content.composerId }}" target="_blank" >{{content.headline || content.workingTitle}}</a></p>
                                 <p class="content-list__item-row-note" ng-show="content.note && content.note.length > 0"><span>Note:</span> {{content.note}}</p>
                             </td>
                             <td>{{content.section}}</td>
@@ -267,7 +205,7 @@
 
         </div>
 
-        <div id="detail" class="detail">
+        <div class="detail detail-column">
             <div class="detail-panel" ng-show="selectedContent">
                 <h4>Details</h4>
                 <dl>
@@ -502,6 +440,3 @@
                 </div>
             </script>
         </div>
-
-    </div>
-</div>
