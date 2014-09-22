@@ -193,8 +193,10 @@
                             </select></td>
                             <td class="content-list__item-published"><p ng-show="content.published">Published<br/><span class="small">{{ content.timePublished | wfLocaliseDateTime | wfFormatDateTime:'DD MMM, HH:mm' }}</span></p>
                                 <p ng-show="!content.published">Draft</p>
-                                <ul ng-controller="wfPresenceIndicatorController">
-                                    <li ng-repeat="prez in presence" ng-class="'content-list__item-presence__' + prez.status">{{prez.indicatorText}}</li>
+                            </td>
+                            <td>
+                                <ul ng-controller="wfPresenceIndicatorController" class="content-list__item-presence-list">
+                                    <li ng-repeat="prez in presence" ng-class="'content-list__item-presence__' + prez.status"><p class="content-list__item-presence-content">{{prez.indicatorText}}</p></li>
                                 </ul>
                             </td>
                             <td><span ng-click="deleteContent(content)" class="glyphicon glyphicon-trash"></span></td>
