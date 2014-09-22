@@ -1,4 +1,12 @@
 # Workflow Public static assets
+Assets organised as follows:
+
+    workflow
+    ├── public
+    │   ├── app.js     - application bootstrap.
+    │   ├── components - common self contained components sharable across multiple pages.
+    │   ├── layouts    - whole page layouts (grids, templates, etc), and the core layout.
+    │   ├── lib        - shared JavaScript service libraries.
 
 
 ## Package management
@@ -16,6 +24,30 @@ packages installed with `jspm`.
 
 The [jspm-cli](https://github.com/jspm/jspm-cli) tool can be used for
 including new dependencies, or upgrading packages.
+
+## Stylesheets
+Workflow uses [Sass](http://sass-lang.com) for CSS pre-processing.
+
+Stylesheets within `prototype/public/**/*.scss` will be automatically compiled
+in SBT as part of the build process when building in TeamCity or when running
+locally in development mode. Source maps are generated also.
+
+Classes should be specified in [Block Element Modifier (BEM)](http://bem.info/).
+
+    .[block]--[element]__[modifier]
+
+General style guidelines:
+- Each element should always have a single distinct class to represent it. Avoid multiple
+  classes on a single element.
+- Styles should only be applied to classes and not HTML elements. Pseudo-classes
+  and elements are fine.
+- Styles common to multiple elements should extend from a placeholder, or mixin.
+- Avoid nesting classes for specifity.
+
+Running Sass build manually:
+
+    sbt "project prototype" web-assets:sass
+
 
 ## Javascript unit tests
 - Tests written in [mocha](http://visionmedia.github.io/mocha/)

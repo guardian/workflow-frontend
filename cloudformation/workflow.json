@@ -74,6 +74,18 @@
             "Description": "Hostname of the application",
             "Type": "String",
             "Default": "https://workflow.gutools.co.uk"
+        },
+        "PandomainDomain": {
+            "Description": "master domain the app is on",
+            "Type": "String"
+        },
+        "PandomainAwsKey": {
+            "Description": "aws key for pandomain bucket access",
+            "Type": "String"
+        },
+        "PandomainAwsSecret": {
+            "Description": "aws secret for pandomain bucket access",
+            "Type": "String"
         }
     },
     "Resources": {
@@ -336,6 +348,9 @@
                         "    -e 's,@GOOGLE_CLIENT_ID@,", {"Ref": "GoogleClientId"}, ",g' \\\n",
                         "    -e 's,@GOOGLE_SECRET@,", {"Ref": "GoogleSecret"}, ",g' \\\n",
                         "    -e 's,@HOST@,", {"Ref": "Host"}, ",g' \\\n",
+                        "    -e 's,@PANDOMAIN_DOMAIN@,", {"Ref": "PandomainDomain"}, ",g' \\\n",
+                        "    -e 's,@PANDOMAIN_AWS_KEY@,", {"Ref": "PandomainAwsKey"}, ",g' \\\n",
+                        "    -e 's,@PANDOMAIN_AWS_SECRET@,", {"Ref": "PandomainAwsSecret"}, ",g' \\\n",
                         "    /etc/init/prototype.conf\n",
 
                         "start prototype\n"

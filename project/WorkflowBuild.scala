@@ -4,9 +4,8 @@ import sbt.Keys._
 import play.Play.autoImport._
 import PlayKeys._
 import com.typesafe.sbt.web._
-import com.typesafe.sbt.web.Import._
 import Dependencies._
-import com.typesafe.sbt.gzip.Import._
+
 
 object WorkflowBuild extends Build {
 
@@ -32,13 +31,13 @@ object WorkflowBuild extends Build {
                   .settings(libraryDependencies ++= awsDependencies ++ testDependencies)
                   .settings(playDefaultPort := 9091)
 
+
   lazy val root = playProject("prototype")
     .settings(
       libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
-    ).settings(
-      includeFilter in gzip := "*.html" || "*.css" || "*.js",
-      pipelineStages := Seq(gzip)
-    ).settings(playDefaultPort := 9090)
+    )
+    .settings(FrontEnd.PrototypeProject.settings: _*)
+    .settings(playDefaultPort := 9090)
 
   def project(path: String): Project =
     Project(path, file(path)).settings(commonSettings: _*)

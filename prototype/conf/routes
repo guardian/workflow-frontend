@@ -4,13 +4,10 @@
 
 # Application
 GET     /                                   controllers.Application.index
-GET     /dashboard                          controllers.Application.dashboard
 
 # Login
-GET        /login                           controllers.Login.login
+GET        /oauthCallback                   controllers.Login.oauthCallback
 GET        /login/status                    controllers.Login.status
-GET        /loginAction                     controllers.Login.loginAction
-GET        /oauth2callback                  controllers.Login.oauth2Callback
 GET        /logout                          controllers.Login.logout
 
 # API
