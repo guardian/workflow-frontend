@@ -55,7 +55,9 @@ object Api extends Controller with PanDomainAuthActions {
       section = section,
       contentType = contentType,
       unlinkedOnly = true,
-      prodOffice = prodOffice).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
+      prodOffice = prodOffice,
+      createdFrom = createdFrom,
+      createdUntil = createdUntil).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
 
     Ok(Json.obj("content" -> sortedContent, "stubs" -> stubs))
   }
