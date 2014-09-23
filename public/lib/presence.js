@@ -4,8 +4,6 @@ define([], function () {
 
     module.factory('wfPresenceService', ['$rootScope', 'config', function($rootScope, config) {
 
-        var $scope = $rootScope.$new();
-
         var self = {};
 
         self.endpoint = config.presenceUrl;
