@@ -17,6 +17,10 @@
       <a class="top-toolbar__title-link" href="@routes.Application.index">Workflow</a>
     </h1>
     <div class="top-toolbar__view-toolbar" ui-view="view-toolbar"></div>
+    <div class="top-toolbar__presence-connection" ng-controller="wfPresenceConnectionStatus">
+        <p ng-bind="connectionStatus"
+           ng-class="'top-toolbar__presence-connection-content__' + connectionStatus"></p>
+    </div>
     <div class="top-toolbar__user">
       @if(user.isEmpty) {
         <a class="top-toolbar__user-link" href="@routes.Application.index">Log in</a>

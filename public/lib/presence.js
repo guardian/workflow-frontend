@@ -37,9 +37,11 @@ define([], function () {
 
         var _socket = new Promise( function(resolve, reject) {
             var s = new WebSocket(self.endpoint);
-            s.onerror   = reject;
-            s.onopen    = function () { resolve(s); }
-            s.onmessage = function(ev) { messageHandler(ev.data); }
+            s.onerror   = function () { reject(); $rootScope.$broadcast("presence.connection.error"); };
+            s.onopen    = function () { resolve(s); };
+            /* XX TODO -> attempt to reopen the connection */
+            s.onclose   = function () { $rootScope.$broadcast("presence.connection.closed"); };
+            s.onmessage = function(ev) { messageHandler(ev.data); };
         });
 
         /* XXX TODO : properly handle errors */
@@ -89,6 +91,23 @@ define([], function () {
         return self;
 
     }]);
+
+    module.controller(
+        'wfPresenceConnectionStatus',
+        [ "$scope", "wfPresenceService", function($scope, wfPresenceService) {
+            $scope.connectionStatus = "PRE";
+
+            $scope.$on("presence.connection.success", function () {
+                $scope.connectionStatus = "OK";
+            });
+            $scope.$on("presence.connection.error", function () {
+                $scope.connectionStatus = "ERROR";
+            });
+
+            $scope.$on("presence.connection.closed", function () {
+                $scope.connectionStatus = "CLOSED";
+            });
+        }]);
 
     module.controller(
         'wfPresenceSubscription',
