@@ -148,12 +148,15 @@ define([], function () {
             if(currentState.length == 0) {
                 $scope.presence = [{ status: "free", indicatorText: ""}]
             } else {
-                $scope.presence = _.map(currentState, function (pr) {
-                    var person = pr.clientId.person;
-                    return { indicatorText:
-                             (person.firstName.charAt(0) + person.lastName.charAt(0)).toUpperCase(),
-                             status: pr.clientId.status };
-                });
+
+                $scope.presence = _.map(
+                    _.uniq(currentState, false, function(s) { return s.clientId.person.email }),
+                    function (pr) {
+                        var person = pr.clientId.person;
+                        return { indicatorText:
+                                 (person.firstName.charAt(0) + person.lastName.charAt(0)).toUpperCase(),
+                                 status: pr.clientId.status };
+                    });
             }
         }
 
