@@ -8,6 +8,13 @@ define([], function () {
 
         self.endpoint = config.presenceUrl;
 
+        function broadcast(name, data) {
+            /* use apply to make it take effect straight away */
+            $rootScope.$apply(function () {
+                $rootScope.$broadcast(name, data);
+            });
+        }
+
         var messageHandlers = {
             "connectionTest": function() {
                 /* XXX TODO : how should I reply to this connectionTest request? */
@@ -15,11 +22,11 @@ define([], function () {
             },
             "subscribed": function(data) {
                 self.clientId = data.clientId;
-                $rootScope.$broadcast("presence.subscribed", data);
+                broadcast("presence.subscribed", data);
             },
             "updated": function(data) {
                 console.log("XXX PMR receiving updated message");
-                $rootScope.$broadcast("presence.status", data);
+                broadcast("presence.status", data);
             }
         }
 
@@ -30,7 +37,7 @@ define([], function () {
                 messageHandlers[msg.action](msg.data);
             } else {
                 console.log("receive unknown message action: " + msg.action);
-                $rootScope.$broadcast("presence.error.unknownAction", msg);
+                broadcast("presence.error.unknownAction", msg);
             }
         }
 
@@ -41,14 +48,18 @@ define([], function () {
                 var s = new WebSocket(self.endpoint);
                 s.onerror   = function () {
                     reject();
-                    $rootScope.$broadcast("presence.connection.error");
+                    broadcast("presence.connection.error");
                 };
                 s.onopen    = function () {
                     resolve(s);
-                    $rootScope.$broadcast("presence.connection.success");
+                    broadcast("presence.connection.success");
                 };
-                s.onclose   = function () { $rootScope.$broadcast("presence.connection.closed"); };
-                s.onmessage = function(ev) { messageHandler(ev.data); };
+                s.onclose   = function () {
+                    broadcast("presence.connection.closed");
+                };
+                s.onmessage = function(ev) {
+                    messageHandler(ev.data);
+                };
             });
             return _socket;
         }
