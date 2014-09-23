@@ -181,6 +181,12 @@ object Api extends Controller with PanDomainAuthActions {
 
   }
 
+  def statusus = APIAuthAction.async { implicit req =>
+    for(statuses <- StatusDatabase.statuses) yield {
+      Ok(renderJsonResponse(statuses))
+    }
+  }
+
   private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
     requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
   }
