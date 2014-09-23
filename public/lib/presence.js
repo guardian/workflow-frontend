@@ -15,7 +15,6 @@ define([], function () {
             },
             "subscribed": function(data) {
                 self.clientId = data.clientId;
-                /* XXX TODO : share the initial state, which will have been sent to us here */
                 $rootScope.$broadcast("presence.subscribed", data);
             },
             "updated": function(data) {
@@ -35,24 +34,24 @@ define([], function () {
             }
         }
 
-        var _socket = new Promise( function(resolve, reject) {
-            var s = new WebSocket(self.endpoint);
-            s.onerror   = function () { reject(); $rootScope.$broadcast("presence.connection.error"); };
-            s.onopen    = function () { resolve(s); };
-            /* XX TODO -> attempt to reopen the connection */
-            s.onclose   = function () { $rootScope.$broadcast("presence.connection.closed"); };
-            s.onmessage = function(ev) { messageHandler(ev.data); };
-        });
+        var _socket = Promise.reject("not yet connected");
 
-        /* XXX TODO : properly handle errors */
-        // _socket.onerror   = function(ev) {
-        //   $rootScope.$broadcast("presence.connection.error", ev);
-        // }
-
-        /* broadcast successful connection to the rest of the application */
-        _socket.then(function() {
-            $rootScope.$broadcast("presence.connection.success");
-        });
+        function doConnection() {
+            _socket = new Promise( function(resolve, reject) {
+                var s = new WebSocket(self.endpoint);
+                s.onerror   = function () {
+                    reject();
+                    $rootScope.$broadcast("presence.connection.error");
+                };
+                s.onopen    = function () {
+                    resolve(s);
+                    $rootScope.$broadcast("presence.connection.success");
+                };
+                s.onclose   = function () { $rootScope.$broadcast("presence.connection.closed"); };
+                s.onmessage = function(ev) { messageHandler(ev.data); };
+            });
+            return _socket;
+        }
 
         self.person = {
             firstName : "Paul",
@@ -87,6 +86,11 @@ define([], function () {
             p.then(function () { console.log("sent request: ", makeSubscriptionRequest(ids)) });
             return p;
         }
+
+        doConnection();
+
+        $rootScope.$on("presence.connection.closed", doConnection);
+        $rootScope.$on("presence.connection.error",  doConnection);
 
         return self;
 
