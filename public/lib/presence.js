@@ -171,10 +171,6 @@ define([], function () {
     module.controller('wfPresenceIndicatorController', [ "$scope", function($scope) {
 
         var id = $scope.content.composerId;
-        console.log("wfPresenceIndicatorController: content: ", id);
-
-        $scope.indicatorText = "";
-        $scope.status = "unknown";
 
         function applyCurrentState(currentState) {
             if(currentState.length == 0) {
@@ -187,6 +183,8 @@ define([], function () {
                         var person = pr.clientId.person;
                         return { indicatorText:
                                  (person.firstName.charAt(0) + person.lastName.charAt(0)).toUpperCase(),
+                                 longText: [person.firstName, person.lastName].join(" "),
+                                 email: person.email,
                                  status: pr.clientId.status };
                     });
             }
