@@ -34,6 +34,7 @@ a:hover {
     width: 100%;
     height: 26px;
     float: left;
+    cursor: pointer;
 }
 
 .content-list__item-presence__entered {
@@ -59,4 +60,10 @@ a:hover {
     font-size: 13px;
     line-height: 1.2;
     margin: 0px;
+}
+
+.content-list__item-presence-link,
+.content-list__item-presence-link:hover {
+    color: inherit;
+    text-decoration: none;
 }
