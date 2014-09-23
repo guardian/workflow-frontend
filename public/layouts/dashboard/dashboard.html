@@ -196,7 +196,15 @@
                             </td>
                             <td>
                                 <ul ng-controller="wfPresenceIndicatorController" class="content-list__item-presence-list">
-                                    <li ng-repeat="prez in presence" ng-class="'content-list__item-presence__' + prez.status"><p class="content-list__item-presence-content">{{prez.indicatorText}}</p></li>
+                                    <li ng-repeat="prez in presence"
+                                        ng-class="'content-list__item-presence__' + prez.status">
+                                        <p href="mailto:{{prez.email}}"
+                                           class="content-list__item-presence-content"
+                                           title="{{prez.longText}}">
+                                            <a class="content-list__item-presence-link"
+                                               href="mailto:{{prez.email}}">{{prez.indicatorText}}</a>
+                                        </p>
+                                    </li>
                                 </ul>
                             </td>
                             <td><span ng-click="deleteContent(content)" class="glyphicon glyphicon-trash"></span></td>
