@@ -44,6 +44,7 @@ define([], function () {
         var _socket = Promise.reject("not yet connected");
 
         function doConnection() {
+            console.log("doConnection, attempting connection");
             _socket = new Promise( function(resolve, reject) {
                 var s = new WebSocket(self.endpoint);
                 s.onerror   = function () {
@@ -172,6 +173,9 @@ define([], function () {
 
         var id = $scope.content.composerId;
 
+        // XXX TODO factor this logic out so that the knowledge of the
+        // format of the data from prez is in one place
+
         function applyCurrentState(currentState) {
             if(currentState.length == 0) {
                 $scope.presence = [{ status: "free", indicatorText: ""}]
@@ -185,13 +189,13 @@ define([], function () {
                                  (person.firstName.charAt(0) + person.lastName.charAt(0)).toUpperCase(),
                                  longText: [person.firstName, person.lastName].join(" "),
                                  email: person.email,
-                                 status: pr.clientId.status };
+                                 status: "present" };
                     });
             }
         }
 
         $scope.initialData(id).then(function (currentState) {
-            console.log("about to apply initial data:", currentState);
+            console.log("about to apply initial data to [" + id + "]:", currentState);
             applyCurrentState(currentState);
         });
 
