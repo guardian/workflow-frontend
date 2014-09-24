@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.mvc.{AnyContent, Result, Controller}
+import play.api.mvc._
 import play.api.libs.json._
 
 import lib.Responses._
@@ -15,6 +15,24 @@ import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
 import com.gu.workflow.db.{SectionDB, CommonDB}
 import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
+
+import scala.concurrent.Future
+
+case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
+
+  def apply(request: Request[A]): Future[Result] = {
+
+    val headers = request.headers.get("Origin").map { origin =>
+      if(origins.contains(origin)) {
+        List("Access-Control-Allow-Origin" -> origin, "Access-Control-Allow-Credentials" -> "true")
+      } else { Nil }
+    }
+
+    action(request).map(_.withHeaders(headers.getOrElse(Nil) :_*))
+  }
+
+  lazy val parser = action.parser
+}
 
 object Api extends Controller with PanDomainAuthActions {
 
@@ -181,9 +199,11 @@ object Api extends Controller with PanDomainAuthActions {
 
   }
 
-  def statusus = APIAuthAction.async { implicit req =>
-    for(statuses <- StatusDatabase.statuses) yield {
-      Ok(renderJsonResponse(statuses))
+  def statusus = CORSable("https://composer.local.dev-gutools.co.uk") {
+    APIAuthAction.async { implicit req =>
+      for(statuses <- StatusDatabase.statuses) yield {
+        Ok(renderJsonResponse(statuses))
+      }
     }
   }
 
