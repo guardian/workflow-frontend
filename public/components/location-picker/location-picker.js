@@ -9,7 +9,6 @@ import angular from 'angular';
 import 'lib/date-service';
 import 'lib/location-service';
 
-import './location-picker.css!';
 
 angular.module('wfLocationPicker', ['wfLocationService', 'wfDateService'])
   .controller('wfLocationPickerController', ['$scope', '$rootScope', '$timeout', 'wfLocationService', function($scope, $rootScope, $timeout, wfLocationService) {
