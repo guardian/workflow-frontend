@@ -17,7 +17,7 @@ angular.module('wfLocalStorageAdapter', [])
              * @throws {Error} If localStorage is unavailable.
              * @return {String}
              */
-                get(key, prefix = DEFAULT_PREFIX) {
+            get(key, prefix = DEFAULT_PREFIX) {
                 return window.localStorage.getItem(prefix + key);
             }
 
@@ -25,7 +25,7 @@ angular.module('wfLocalStorageAdapter', [])
              * Retrieve and parse JSON stringified object from local storage.
              * @return {Object}
              */
-                getObject(key, prefix) {
+            getObject(key, prefix) {
                 var raw = this.get(key, prefix);
 
                 if (!raw) {
@@ -39,7 +39,7 @@ angular.module('wfLocalStorageAdapter', [])
              * Store a value in localStorage.
              * @throws {Error} If localStorage is unavailable or full.
              */
-                set(key, value, prefix = DEFAULT_PREFIX) {
+            set(key, value, prefix = DEFAULT_PREFIX) {
                 if (typeof(value) == 'object') {
                     value = JSON.stringify(value);
                 }
