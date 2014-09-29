@@ -12,7 +12,9 @@ GET        /logout                          controllers.Login.logout
 
 # API
 GET     /api/content                        controllers.Api.content
+GET     /api/content/:composerId            controllers.Api.getContentbyId(composerId: String)
 PUT     /api/content/:composerId/status     controllers.Api.putContentStatus(composerId: String)
+OPTIONS /api/content/:composerId/status     controllers.Api.allowCORSAccess(methods = "PUT", composerId: String)
 DELETE  /api/content/:composerId            controllers.Api.deleteContent(composerId: String)
 
 GET     /api/stubs                          controllers.Api.stubs

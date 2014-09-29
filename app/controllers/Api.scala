@@ -36,6 +36,15 @@ case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
 
 object Api extends Controller with PanDomainAuthActions {
 
+  def allowCORSAccess(methods: String, args: Any*) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+
+    APIAuthAction { implicit req =>
+      val requestedHeaders = req.headers("Access-Control-Request-Headers")
+
+      NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
+    }
+  }
+
   def content = APIAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
@@ -79,6 +88,14 @@ object Api extends Controller with PanDomainAuthActions {
 
     Ok(Json.obj("content" -> sortedContent, "stubs" -> stubs))
   }
+
+  def getContentbyId(composerId: String) =
+    CORSable(PrototypeConfiguration.apply.composerUrl) {
+      APIAuthAction { implicit req =>
+        val data = PostgresDB.getContentByComposerId(composerId)
+        data.map{s => Ok(renderJsonResponse(s))}.getOrElse(NotFound)
+      }
+    }
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   val iso8601DateTimeNoMillis = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -159,7 +176,7 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
-  def putContentStatus(composerId: String) = APIAuthAction { implicit request =>
+  def putContentStatus(composerId: String) = CORSable("https://composer.local.dev-gutools.co.uk") {APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       status <- extract[String](jsValue \ "data").right
@@ -167,6 +184,7 @@ object Api extends Controller with PanDomainAuthActions {
       PostgresDB.updateContentStatus(status, composerId)
       NoContent
     }).merge
+  }
   }
 
   def putStubLegalStatus(stubId: Long) = APIAuthAction { implicit request =>
@@ -201,7 +219,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   }
 
-  def statusus = CORSable("https://composer.local.dev-gutools.co.uk") {
+  def statusus = CORSable(PrototypeConfiguration.apply.composerUrl) {
     APIAuthAction.async { implicit req =>
       for(statuses <- StatusDatabase.statuses) yield {
         Ok(renderJsonResponse(statuses))
