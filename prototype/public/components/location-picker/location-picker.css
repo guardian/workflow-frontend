@@ -1,28 +1,44 @@
 /**
  * Location picker styles.
  */
+.sidebar__location-picker {
+    margin-top: 5px;
+    position: relative;
+}
+
+.sidebar__location-picker-button {
+    border: 0;
+    border-top: 1px solid #dcdcdc;
+    display: block;
+    padding: 6px 5px 6px 23px;
+    text-align: left;
+    font-size: 13px;
+    width: 100%;
+    background: none;
+}
+
 .sidebar__location-picker-menu {
-  min-width: 0;
+    min-width: 0;
 }
 
 
 /* Bootstrap override - hence specificity */
 .sidebar__location-picker-menu > li > a {
-  padding: 3px 70px 3px 10px;
+    padding: 3px 70px 3px 10px;
 }
 
 .sidebar__location-picker-menuitem {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 .sidebar__location-picker-localtime,
 .sidebar__location-picker-localtime--inmenu {
-  color: #666;
+    color: #666;
 }
 
 .sidebar__location-picker-localtime--inmenu {
-  position: relative;
-  right: -60px;
-  line-height: 1em;
-  padding-top: 3px;
+    position: relative;
+    right: -60px;
+    line-height: 1em;
+    padding-top: 3px;
 }
