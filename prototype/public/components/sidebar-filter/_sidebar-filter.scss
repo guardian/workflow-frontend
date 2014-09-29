@@ -15,14 +15,14 @@
 .sidebar__section {
   .sidebar__header {
     background-color: $c-grey-300;
-    height: 35px;
+    height: 28px;
     border-top: 1px solid #ffffff;
     .sidebar__heading {
       @extend %sidebar__header-select-icon;
-      @extend %fs-data-2;
+      @extend %fs-data-1;
       text-transform: uppercase;
       display: inline-block;
-      padding: 10px 0 10px 5px;
+      padding: 6px 0 8px 5px;
       margin: 0;
       cursor: pointer;
     }
@@ -35,7 +35,7 @@
       height: 100%;
       > a {
         height: 100%;
-        padding: 10px 12px;
+        padding: 6px 12px;
       }
     }
   }
@@ -54,7 +54,7 @@
   }
 
   .sidebar__filter {
-    padding: 3px 0 3px 25px;
+    padding: 1px 0px 1px 18px;
     border-bottom: 1px solid $c-grey-300;
     &:last-child {
       border-bottom: 0;
