@@ -12,7 +12,7 @@ import lib._
 import models.{Status => WorkflowStatus, Section}
 
 
-object Admin extends Controller with AuthActions {
+object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
 

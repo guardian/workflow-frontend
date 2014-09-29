@@ -63,10 +63,10 @@ System.config({
     "github:components/jquery": "1.11.1",
     "github:systemjs/plugin-css": "0.1.0",
     "github:moment/moment-timezone": "0.2.2",
-    "github:angular/bower-angular-mocks": "1.2.24",
+    "github:angular/bower-angular-mocks": "1.2.25",
     "github:mixpanel/mixpanel-js": "2.2.3",
     "github:faisalman/ua-parser-js": "0.7.0",
-    "github:angular/bower-angular-animate": "1.2.24",
+    "github:angular/bower-angular-animate": "1.2.25",
     "github:angular-ui/ui-router": "0.2.11"
   }
 });
