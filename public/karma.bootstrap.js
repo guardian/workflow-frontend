@@ -5,14 +5,14 @@
  * Mocking libs are available globally for all test specs.
  */
 
-before(function(done) {
-  System.import('angular-mocks')
+before(function (done) {
+    System.import('angular-mocks')
 
-    .then(function() {
-      console.log('Bootstrapped Angular mocks');
+        .then(function () {
+            console.log('Bootstrapped Angular mocks');
 
-      done();
+            done();
 
-    }).catch(done);
+        }).catch(done);
 
 });

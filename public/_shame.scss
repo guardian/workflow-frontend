@@ -2,19 +2,18 @@
  * Shame file - for temporary hacks, "quick fixes", nasty overrides.
  */
 
-
 // Temporary bootstrap overrides - remove once bootstrap is out
 body {
-  @extend %f-data;
-  @extend %fs-data-4;
+    @extend %f-data;
+    @extend %fs-data-4;
 }
 
 a {
-  color: $c-blue-link;
-  text-decoration: none;
+    color: $c-blue-link;
+    text-decoration: none;
 }
 
 a:hover {
-  color: $c-blue-link;
-  text-decoration: underline;
+    color: $c-blue-link;
+    text-decoration: underline;
 }
