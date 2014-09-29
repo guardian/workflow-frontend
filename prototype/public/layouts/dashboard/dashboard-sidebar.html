@@ -3,7 +3,7 @@
 </div>
 
 <div class="sidebar__location-picker dropup" dropdown ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
-    <button class="sidebar__location-picker-button dropdown-toggle" type="button" id="locationDropdownButton">
+    <button class="sidebar__location-picker-button dropdown-toggle" type="button" id="locationDropdownButton" title="Select your timezone">
         {{ locationPicker.locations[locationPicker.locationKey].title }}
         <span class="sidebar__location-picker-localtime">{{ locationPicker.now | wfLocaliseDateTime | wfFormatDateTime:'HH:mm' }}</span>
         <span class="caret"></span>
