@@ -21,7 +21,9 @@ object CommonDB {
                 composerId: Set[String] = Set.empty,
                 contentType: Option[String] = None,
                 unlinkedOnly: Boolean = false,
-                prodOffice: Option[String] = None
+                prodOffice: Option[String] = None,
+                createdFrom: Option[DateTime] = None,
+                createdUntil: Option[DateTime] = None
                 ): List[Stub] =
     DB.withTransaction { implicit session =>
 
@@ -34,11 +36,13 @@ object CommonDB {
           section.foldl[StubQuery]     { case (q, Section(s))  => q.filter(_.section === s) } |>
           contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
           cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids)) |>
-          prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice))
+          prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
+          createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
+          createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
 
       q.filter(s => dueDateNotExpired(s.due))
         .list.map(row => Stub.fromStubRow(row))
-      
+
 
 
     }
