@@ -1,10 +1,10 @@
-@(user: String)
+@(userJson: String)
 <!DOCTYPE html>
 <html>
 <head lang="en">
   <meta charset="UTF-8">
   <title></title>
-    <script>(this.parent || this.opener).postMessage(@Html(user), '*');</script>
+    <script>(this.parent || this.opener).postMessage(@Html(userJson), '*');</script>
 </head>
 <body>
 You are logged in.
