@@ -67,7 +67,7 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
                  * @param {Object} params
                  * @returns {Promise}
                  */
-                    get(params) {
+                get(params) {
                     return httpRequest({
                         method: 'GET',
                         url: '/api/content',
@@ -82,8 +82,7 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
                  * @param {Object} params
                  * @returns {Object}
                  */
-
-                    getServerParams() {
+                getServerParams() {
                     var modelParams = wfFiltersService.getAll();
 
                     var selectedDate = modelParams['selectedDate'];
@@ -114,9 +113,9 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
 
         }])
 
-/**
- * Content polling service.
- */
+    /**
+     * Content polling service.
+     */
     .factory('wfContentPollingService', ['$http', '$timeout', '$rootScope', 'wfContentService', function ($http, $timeout, $rootScope, wfContentService) {
 
         var POLLING_DELAY = 5000;
@@ -153,7 +152,7 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
              *                                  cater for changes in filters.
              * @param {function} callback called on each successful polled reponse.
              */
-                startPolling() {
+            startPolling() {
                 var tick = (function () {
                     wfContentService.get(this._paramsProvider())
                         .then(this._callback)

@@ -74,7 +74,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  *
                  * @return {Date}
                  */
-                    parseDate(input, locationKey) {
+                parseDate(input, locationKey) {
                     return wfLocaliseDateTimeFilter(
                         this.normaliseDateString(input, locationKey),
                         locationKey
@@ -85,7 +85,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  * Normalises a date input string to YYYY-MM-DD HH:mm, accepting
                  * natural language inputs such as "today", "tuesday next week 18:00"
                  */
-                    normaliseDateString(input, locationKey) {
+                normaliseDateString(input, locationKey) {
                     locationKey = locationKey || wfLocationService.getLocationKey();
 
                     var parsed;
@@ -113,7 +113,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  *
                  * @returns {{from: Date, to: Date}}
                  */
-                    createRange(from, until) {
+                createRange(from, until) {
                     return {
                         from: moment(from).toDate(),
                         until: moment(until).toDate()
@@ -125,7 +125,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  *
                  * @returns {{from: Date, to: Date}}
                  */
-                    createDayRange(day) {
+                createDayRange(day) {
                     var dayStart = moment(day).startOf('day');
 
                     return this.createRange(dayStart, dayStart.clone().add(1, 'days'));
@@ -138,7 +138,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  *
                  * @returns {{from: Date, to: Date}}
                  */
-                    parseRangeFromString(input, locationKey) {
+                parseRangeFromString(input, locationKey) {
 
                     var now = wfLocaliseDateTimeFilter(this.now(), locationKey).clone();
 
@@ -186,8 +186,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  *
                  * @returns {String, or <Date>}
                  */
-
-                    parseQueryString(date) {
+                parseQueryString(date) {
                     if (!date) return undefined;
                     if (date === 'today' || date === 'tomorrow' || date === 'weekend') {
                         return date;
@@ -202,8 +201,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  *
                  * @returns {String, or <Date>}
                  */
-
-                    setQueryString(date) {
+                setQueryString(date) {
                     if (!date) return undefined;
                     var dateFormat = wfFormatDateTimeFilter(date, "YYYY-MM-DD");
                     if (dateFormat !== 'Invalid date') {
@@ -218,7 +216,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  *
                  * @returns {Array.<Date>}
                  */
-                    getDaysThisWeek(locationKey) {
+                getDaysThisWeek(locationKey) {
                     var today = wfLocaliseDateTimeFilter(this.now(), locationKey).startOf('day'),
 
                         choices = [ moment(today.toDate()) ];
@@ -236,10 +234,10 @@ angular.module('wfDateService', ['wfLocationService'])
 
         }])
 
-/**
- * Localises a date input value to the specified value.
- * @return {moment}
- */
+    /**
+     * Localises a date input value to the specified value.
+     * @return {moment}
+     */
     .filter('wfLocaliseDateTime', ['wfLocationService', function (wfLocationService) {
         return function (dateValue, location) {
             if (!dateValue) {

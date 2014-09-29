@@ -30,7 +30,7 @@ angular.module('wfSettingsService', ['wfLocalStorageAdapter'])
             /**
              * Set a setting. Persists in browser localStorage.
              */
-                set(key, value) {
+            set(key, value) {
                 this._settings[key] = value;
 
                 try {

@@ -32,7 +32,7 @@ angular.module('wfLocationService', ['wfSettingsService'])
             /**
              * Retrieves the user location from settings and/or validate the input locationKey.
              */
-                getLocationKey(locationKey) {
+            getLocationKey(locationKey) {
                 locationKey = locationKey || wfSettingsService.get(SETTING_LOCATION_KEY) || this.guessLocation();
 
                 if (!this.isValidLocation(locationKey)) {
@@ -55,7 +55,7 @@ angular.module('wfLocationService', ['wfSettingsService'])
              * Guess the user's location from their local timezone.
              * Logic ported from composer / swells.
              */
-                guessLocation(date) {
+            guessLocation(date) {
                 var offset = moment(date).zone();
                 // offset to be applied to now in minutes to get to UTC
                 // I.E if now is UTC +0100 offset is -60
