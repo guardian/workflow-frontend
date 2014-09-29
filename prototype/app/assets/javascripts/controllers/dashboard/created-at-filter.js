@@ -1,8 +1,8 @@
-define(['../dashboard'], function(dashboardControllers) {
+define(['../dashboard'], function (dashboardControllers) {
 
     'use strict';
 
-    dashboardControllers.controller('CreatedAtFilter', ['$scope', function($scope) {
+    dashboardControllers.controller('CreatedAtFilter', ['$scope', function ($scope) {
         $scope.cannedFilters = [
             { caption: "Any", value: null },
             { caption: "Yesterday", value: "yesterday" },
@@ -13,12 +13,12 @@ define(['../dashboard'], function(dashboardControllers) {
 
         $scope.selectedFilter = null;
 
-        $scope.filterIsSelected = function(filter) {
+        $scope.filterIsSelected = function (filter) {
             return (filter != null && filter.value === $scope.selectedFilter);
         }
 
-        $scope.filterClick = function(filter) {
-            if($scope.filterIsSelected(filter)) {
+        $scope.filterClick = function (filter) {
+            if ($scope.filterIsSelected(filter)) {
                 $scope.selectedFilter = null;
             } else {
                 $scope.selectedFilter = filter.value;

@@ -10,7 +10,3 @@ insert_final_newline = true
 
 [*.scala]
 indent_size = 2
-
-[*.scss]
-indent_style = space
-indent_size = 2
