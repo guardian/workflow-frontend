@@ -7,14 +7,15 @@
 }
 
 .sidebar__location-picker-button {
+    @extend %fs-data-3;
     border: 0;
-    border-top: 1px solid #dcdcdc;
+    border-top: 1px solid $c-grey-300;
     display: block;
     padding: 6px 5px 6px 23px;
     text-align: left;
-    font-size: 13px;
     width: 100%;
-    background: none;
+    background: $i-arrow-up right center / 12px no-repeat;
+    background-origin: content-box;
 }
 
 .sidebar__location-picker-menu {

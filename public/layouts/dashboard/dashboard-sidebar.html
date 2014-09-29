@@ -6,7 +6,6 @@
     <button class="sidebar__location-picker-button dropdown-toggle" type="button" id="locationDropdownButton" title="Select your timezone">
         {{ locationPicker.locations[locationPicker.locationKey].title }}
         <span class="sidebar__location-picker-localtime">{{ locationPicker.now | wfLocaliseDateTime | wfFormatDateTime:'HH:mm' }}</span>
-        <span class="caret"></span>
     </button>
     <ul class="sidebar__location-picker-menu dropdown-menu" role="menu" aria-labelledby="locationDropdownButton">
         <li ng-repeat="(key, location) in locationPicker.locations">
