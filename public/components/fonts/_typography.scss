@@ -5,44 +5,44 @@
  */
 
 @mixin font-size($size, $line-height) {
-  font-size: 0px + $size;
-  font-size: 0rem + $size / 10;
-  line-height: 0px + $line-height;
-  line-height: 0rem + $line-height / 10;
+    font-size: 0px + $size;
+    font-size: 0rem + $size / 10;
+    line-height: 0px + $line-height;
+    line-height: 0rem + $line-height / 10;
 }
 
 %f-title {
-  font-family: "GuardianTitlepieceWeb", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+    font-family: "GuardianTitlepieceWeb", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 %f-data {
-  font-family: "GuardianAgateSans1Web", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-family: "GuardianAgateSans1Web", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
 // Partials for font-sizes
 // fs = font scale
 %fs-data-1 {
-  @include font-size(11, 14);
+    @include font-size(11, 14);
 }
 
 %fs-data-2 {
-  @include font-size(12, 14);
+    @include font-size(12, 14);
 }
 
 %fs-data-3 {
-  @include font-size(13, 16);
+    @include font-size(13, 16);
 }
 
 %fs-data-4 {
-  @include font-size(14, 18);
+    @include font-size(14, 18);
 }
 
 %fs-data-5 {
-  @include font-size(16, 20);
+    @include font-size(16, 20);
 }
 
 %fs-data-6 {
-  @include font-size(18, 22);
+    @include font-size(18, 22);
 }

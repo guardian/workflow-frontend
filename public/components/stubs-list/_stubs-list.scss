@@ -5,23 +5,23 @@
  */
 
 .stubs-column h4 {
-  font-size : 1.2em;
-  margin: 10px 0 0;
-  padding: 0 10px 10px 10px;
-  border-bottom : 2px solid #eee;
+    font-size: 1.2em;
+    margin: 10px 0 0;
+    padding: 0 10px 10px 10px;
+    border-bottom: 2px solid #eee;
 }
 
 .stubs-column__new-stub-wrapper {
-  border-bottom: 1px solid #eee;
-  margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
 }
 
 .stubs-column__new-stub-cta {
-  margin: 10px;
+    margin: 10px;
 }
 
 .stubs-column__new-stub-cta-label {
-  margin-left: 10px;
+    margin-left: 10px;
 }
 
 .stub ul {
@@ -36,51 +36,75 @@
 }
 
 .stubs-column__stub {
-  overflow: hidden;
+    overflow: hidden;
 }
-
 
 .stubs-column__stub.ng-enter {
-  -webkit-animation: stubs-column__stub--enter-sequence 2s ease-out;
-  animation: stubs-column__stub--enter-sequence 2s ease-out;
-}
-@-webkit-keyframes stubs-column__stub--enter-sequence {
-  0% { background: #fcf8e3; opacity: 0; max-height: 0; }
-  50% { background: #fcf8e3; opacity: 1; max-height: 500px; }
-}
-@keyframes stubs-column__stub--enter-sequence {
-  0% { background: #fcf8e3; opacity: 0; max-height: 0; }
-  50% { background: #fcf8e3; opacity: 1; max-height: 500px; }
+    -webkit-animation: stubs-column__stub--enter-sequence 2s ease-out;
+    animation: stubs-column__stub--enter-sequence 2s ease-out;
 }
 
+@-webkit-keyframes stubs-column__stub--enter-sequence {
+    0% {
+        background: #fcf8e3;
+        opacity: 0;
+        max-height: 0;
+    }
+    50% {
+        background: #fcf8e3;
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+@keyframes stubs-column__stub--enter-sequence {
+    0% {
+        background: #fcf8e3;
+        opacity: 0;
+        max-height: 0;
+    }
+    50% {
+        background: #fcf8e3;
+        opacity: 1;
+        max-height: 500px;
+    }
+}
 
 .stubs-column__stub.ng-leave {
-  -webkit-animation: stubs-column__stub--leave-sequence 0.5s ease-out;
-  animation: stubs-column__stub--leave-sequence 0.5s ease-out;
+    -webkit-animation: stubs-column__stub--leave-sequence 0.5s ease-out;
+    animation: stubs-column__stub--leave-sequence 0.5s ease-out;
 }
 
 @-webkit-keyframes stubs-column__stub--leave-sequence {
-  from { max-height: 200px; }
-  to { opacity: 0; max-height: 0; }
+    from {
+        max-height: 200px;
+    }
+    to {
+        opacity: 0;
+        max-height: 0;
+    }
 }
 
 @keyframes stubs-column__stub--leave-sequence {
-  from { max-height: 200px; }
-  to { opacity: 0; max-height: 0; }
+    from {
+        max-height: 200px;
+    }
+    to {
+        opacity: 0;
+        max-height: 0;
+    }
 }
 
-.secondary-info{
+.secondary-info {
     font-size: 85%;
     color: #666;
     line-height: 1em;
 }
 
-
 .trash-right {
     float: right;
     margin-right: 6px;
 }
-
 
 .stub-controls {
     padding-top: 5px;
