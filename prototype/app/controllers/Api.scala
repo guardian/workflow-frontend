@@ -14,10 +14,9 @@ import lib._
 import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
 import com.gu.workflow.db.{SectionDB, CommonDB}
-
 import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
 
-object Api extends Controller with AuthActions {
+object Api extends Controller with PanDomainAuthActions {
 
   def content = APIAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
@@ -56,7 +55,9 @@ object Api extends Controller with AuthActions {
       section = section,
       contentType = contentType,
       unlinkedOnly = true,
-      prodOffice = prodOffice).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
+      prodOffice = prodOffice,
+      createdFrom = createdFrom,
+      createdUntil = createdUntil).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
 
     Ok(Json.obj("content" -> sortedContent, "stubs" -> stubs))
   }
