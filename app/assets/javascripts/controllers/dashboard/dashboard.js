@@ -20,6 +20,7 @@ define([
                     });
                 };
 
+
                 $scope.$on('getContent', getContent);
                 $scope.$on('changedFilters', getContent);
 
@@ -137,7 +138,6 @@ define([
                 };
 
                 // stubs stuff
-
                 $scope.$on('newStubButtonClicked', function (event, contentType) {
                     $scope.$broadcast('newStub', contentType);
                 });

@@ -4,7 +4,7 @@ import moment from 'moment';
 import './date-service';
 
 angular.module('wfFiltersService', ['wfDateService'])
-       .factory('wfFiltersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter',
+    .factory('wfFiltersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter',
         function($rootScope, $location, wfDateParser, wfFormatDateTimeFilter) {
 
         class FiltersService
@@ -57,7 +57,7 @@ angular.module('wfFiltersService', ['wfDateService'])
             }
 
             stringToArray(value) {
-                if(value) return value.split(",");
+                if (value) return value.split(",");
                 else return [];
             }
 
@@ -82,8 +82,9 @@ angular.module('wfFiltersService', ['wfDateService'])
                 };
             }
 
+
             update(key, value) {
-                if(key === 'selectedDate')  {
+                if (key === 'selectedDate') {
                     var dateStr = wfDateParser.setQueryString(value);
                     this.filters[key] = dateStr;
                     $location.search(key, dateStr);
@@ -94,7 +95,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                 }
             }
 
-            get(key){
+            get(key) {
                 return this.filters[key];
             }
 
@@ -109,6 +110,6 @@ angular.module('wfFiltersService', ['wfDateService'])
 
     }])
 
-    .run(['wfFiltersService', function(wfFiltersService){
+    .run(['wfFiltersService', function (wfFiltersService) {
         wfFiltersService.init();
     }]);

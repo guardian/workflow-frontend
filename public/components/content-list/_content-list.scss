@@ -37,39 +37,55 @@ tr td {
 }
 
 .content-list__item-published {
-  width: 85px;
+    width: 85px;
 }
 
 .content-list__item-row--selected {
-  background-color: #f9f9f9;
+    background-color: #f9f9f9;
 }
-
 
 .content-list__item-row.ng-enter {
-  -webkit-animation: content-list__item-row--enter-sequence 2s ease-out;
-  animation: content-list__item-row--enter-sequence 2s ease-out;
-}
-@-webkit-keyframes content-list__item-row--enter-sequence {
-  0% { background: #fcf8e3; opacity: 0; }
-  50% { background: #fcf8e3; opacity: 1; }
-}
-@keyframes content-list__item-row--enter-sequence {
-  0% { background: #fcf8e3; opacity: 0; }
-  50% { background: #fcf8e3; opacity: 1; }
+    -webkit-animation: content-list__item-row--enter-sequence 2s ease-out;
+    animation: content-list__item-row--enter-sequence 2s ease-out;
 }
 
+@-webkit-keyframes content-list__item-row--enter-sequence {
+    0% {
+        background: #fcf8e3;
+        opacity: 0;
+    }
+    50% {
+        background: #fcf8e3;
+        opacity: 1;
+    }
+}
+
+@keyframes content-list__item-row--enter-sequence {
+    0% {
+        background: #fcf8e3;
+        opacity: 0;
+    }
+    50% {
+        background: #fcf8e3;
+        opacity: 1;
+    }
+}
 
 .content-list__item-row.ng-leave {
-  -webkit-animation: content-list__item-row--leave-sequence 0.5s ease-out;
-  animation: content-list__item-row--leave-sequence 0.5s ease-out;
+    -webkit-animation: content-list__item-row--leave-sequence 0.5s ease-out;
+    animation: content-list__item-row--leave-sequence 0.5s ease-out;
 }
 
 @-webkit-keyframes content-list__item-row--leave-sequence {
-  to { opacity: 0; }
+    to {
+        opacity: 0;
+    }
 }
 
 @keyframes content-list__item-row--leave-sequence {
-  to { opacity: 0; }
+    to {
+        opacity: 0;
+    }
 }
 
 .status-cell {

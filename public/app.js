@@ -36,66 +36,66 @@ import 'main.min.css!';
 
 
 angular.module('workflow',
-  [
-    'ui.router',
-    'ngAnimate',
-    'dashboardControllers',
-    'wfDashboardToolbar',
-    'wfDashboardSidebar',
-    'wfDateService',
-    'wfAnalytics',
-    'workflow.services',
-    'workflow.directives',
-    'workflow.controllers',
-    'composerService',
-    'legalStatesService',
-    'prodOfficeService',
-    'wfFiltersService',
-    'xeditable'
-  ])
+    [
+        'ui.router',
+        'ngAnimate',
+        'dashboardControllers',
+        'wfDashboardToolbar',
+        'wfDashboardSidebar',
+        'wfDateService',
+        'wfAnalytics',
+        'workflow.services',
+        'workflow.directives',
+        'workflow.controllers',
+        'composerService',
+        'legalStatesService',
+        'prodOfficeService',
+        'wfFiltersService',
+        'xeditable'
+    ])
 
-  .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
-    // TODO: remember user's state and redirect there on default '' route
-    $urlRouterProvider.when('', '/dashboard');
+    .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+        // TODO: remember user's state and redirect there on default '' route
+        $urlRouterProvider.when('', '/dashboard');
 
-    $stateProvider.state('dashboard', {
-      url: '/dashboard',
-      views: {
-        '': {
-          templateUrl: '/assets/layouts/dashboard/dashboard.html',
-          controller: 'DashboardCtrl'
-        },
-        'view-toolbar': {
-          templateUrl: '/assets/layouts/dashboard/dashboard-toolbar.html',
-          controller: 'wfDashboardToolbarController'
+        $stateProvider.state('dashboard', {
+            url: '/dashboard',
+            views: {
+                '': {
+                    templateUrl: '/assets/layouts/dashboard/dashboard.html',
+                    controller: 'DashboardCtrl'
+                },
+                'view-toolbar': {
+                    templateUrl: '/assets/layouts/dashboard/dashboard-toolbar.html',
+                    controller: 'wfDashboardToolbarController'
+                }
+            }
+
+        });
+
+    }])
+
+
+    // Global config
+    .constant(
+        'config',
+        {
+            'composerNewContent': _wfConfig.composer.create,
+            'composerViewContent': _wfConfig.composer.view,
+            'composerContentDetails': _wfConfig.composer.details,
+            'maxNoteLength': 500
         }
-      }
+    )
+    .constant({ 'statuses': _wfConfig.statuses })
+    .constant({ 'sections': _wfConfig.sections })
 
+    // XEditable options, TODO: mode out to dashboard controller somewhere...
+    .run(function (editableOptions) {
+        editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
     });
-
-  }])
-
-
-  // Global config
-  .constant(
-    'config',
-    {
-      'composerNewContent': _wfConfig.composer.create,
-      'composerViewContent': _wfConfig.composer.view,
-      'composerContentDetails': _wfConfig.composer.details,
-      'maxNoteLength': 500
-    }
-  )
-  .constant({ 'statuses': _wfConfig.statuses })
-  .constant({ 'sections': _wfConfig.sections })
-
-  // XEditable options, TODO: mode out to dashboard controller somewhere...
-  .run(function(editableOptions) {
-      editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
-  });
 
 
 // Bootstrap App
-angular.element(document).ready(function() {
-  angular.bootstrap(document, ['workflow']);
+angular.element(document).ready(function () {
+    angular.bootstrap(document, ['workflow']);
 });
