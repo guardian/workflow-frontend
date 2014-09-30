@@ -75,6 +75,34 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
                     });
                 }
 
+                /**
+                 * Async update a field for a piece of content.
+                 *
+                 * @param {String} stubId
+                 * @param {String} field
+                 * @param {mixed} data
+                 */
+                update(stubId, field, data) {
+                    return httpRequest({
+                        method: 'PUT',
+                        url: '/api/stubs/' + stubId + '/' + field,
+                        data: { data: data }
+                    };
+                }
+
+                /**
+                 * Async deletes content.
+                 *
+                 * @param {String} stubId ID of stub to delete.
+                 * @returns {Promise}
+                 */
+                remove(stubId) {
+                    return httpRequest({
+                        method: 'DELETE',
+                        url: '/api/stubs/' + stubId
+                    });
+                }
+
 
                 /**
                  * Formats model params into params to send to server.
