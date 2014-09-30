@@ -3,45 +3,16 @@
 
 .sidebar {
     min-width: 160px;
-    padding: 20px;
     background-color: #f5f5f5;
     border-right: 1px solid #eee;
     overflow-x: hidden;
     overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
 }
 
-/* Sidebar navigation */
-.nav-sidebar {
-    margin-right: -21px; /* 20px padding + 1px border */
-    margin-bottom: 20px;
-    margin-left: -20px;
-}
-
-.nav-sidebar > li > a {
-    padding: 3px 20px 3px 30px;
-
-}
-
-div.col-md-2.sidebar div.btn-group.btn-group-xs {
-    padding-left: 10px;
-}
->>>>>>> master
-
-  display: flex;
-  flex-direction: column;
-}
-
-<<<<<<< HEAD
 .sidebar-filters {
-  flex-grow: 1;
-  flex-shrink: 0;
-=======
-.nav-sidebar > .active > a {
-    color: #fff;
-    background-color: #428bca;
-}
-
-.sidebar__location-picker {
-    margin-bottom: 20px;
->>>>>>> master
+    flex-grow: 1;
+    flex-shrink: 0;
 }
