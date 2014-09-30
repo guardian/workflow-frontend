@@ -38,7 +38,7 @@ Running the application
 ### Nginx
 
 To run correctly in standalone mode we run behind nginx, This can be installed as follows (you may have done
-this already if you work with identity, r2 or similar):
+this already if you work with composer, identity, r2 or similar):
 
 1. Install nginx:
   * *Linux:*   ```sudo apt-get install nginx```
@@ -52,9 +52,13 @@ this already if you work with identity, r2 or similar):
 `include sites-enabled/*;`
   * you may also want to disable the default server on 8080
 
-4. Run:
+4. Get the [dev-nginx](https://github.com/guardian/dev-nginx) repo checked out on your machine
 
-    ./nginx/setup.sh
+5. Set up certs if you've not already done so (see dev-nginx readme)
+ 
+6. Configure the composer route in nginx
+
+    sudo <path_of_dev-nginx>/setup-app.rb <path_of_workflowt>/nginx/nginx-mapping.yml
 
 ### the apps
 
