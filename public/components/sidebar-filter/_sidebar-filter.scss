@@ -84,4 +84,8 @@
       max-height: 0;
     }
   }
+
+  &:last-child .sidebar__filter {
+    border-bottom: 1px solid $c-grey-300;
+  }
 }
