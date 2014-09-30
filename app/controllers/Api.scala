@@ -156,14 +156,16 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
-  def putStubNote(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      note <- extract[String](jsValue \ "data")(Stub.noteReads).right
-    } yield {
-      PostgresDB.updateStubNote(stubId, note)
-      NoContent
-    }).merge
+  def putStubNote(stubId: Long) = CORSable("https://composer.local.dev-gutools.co.uk") {
+    APIAuthAction { implicit request =>
+      (for {
+        jsValue <- readJsonFromRequest(request.body).right
+        note <- extract[String](jsValue \ "data")(Stub.noteReads).right
+      } yield {
+        PostgresDB.updateStubNote(stubId, note)
+        NoContent
+      }).merge
+    }
   }
 
   def putStubProdOffice(stubId: Long) = APIAuthAction { implicit request =>
@@ -176,15 +178,16 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
-  def putContentStatus(composerId: String) = CORSable("https://composer.local.dev-gutools.co.uk") {APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      status <- extract[String](jsValue \ "data").right
-    } yield {
-      PostgresDB.updateContentStatus(status, composerId)
-      NoContent
-    }).merge
-  }
+  def putContentStatus(composerId: String) = CORSable("https://composer.local.dev-gutools.co.uk") {
+    APIAuthAction { implicit request =>
+      (for {
+        jsValue <- readJsonFromRequest(request.body).right
+        status <- extract[String](jsValue \ "data").right
+      } yield {
+        PostgresDB.updateContentStatus(status, composerId)
+        NoContent
+      }).merge
+    }
   }
 
   def putStubLegalStatus(stubId: Long) = APIAuthAction { implicit request =>
