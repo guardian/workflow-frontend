@@ -1,5 +1,6 @@
 <div class="sidebar" ng-include="'/assets/layouts/dashboard/dashboard-sidebar.html'" ng-controller="wfDashboardSidebarController"></div>
 
+<!--
 <div id="stubs-column" class="stubs-column">
     <h4>Stubs</h4>
 
@@ -53,7 +54,9 @@
     </div>
 
 </div>
+-->
 
+<!--
 <div class="content-list-column">
 
     <div class="alert alert-danger" ng-if="getContentError">
@@ -131,6 +134,10 @@
         </tbody>
     </table>
 
+</div>
+-->
+
+<div class="content-list-column" ng-include="'/assets/components/content-list/content-list.html'" ng-controller="wfContentListController">
 </div>
 
 <div class="detail detail-column">
