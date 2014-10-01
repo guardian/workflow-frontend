@@ -12,13 +12,13 @@ import 'javascripts/controllers/dashboard';
 import 'javascripts/controllers/dashboard/content-item';
 import 'javascripts/controllers/dashboard/dashboard';
 import 'javascripts/controllers/dashboard/date-filter';
-import 'javascripts/controllers/dashboard/created-at-filter';
 import 'javascripts/controllers/dashboard/stub-crud';
 import 'javascripts/services/composer-service';
 import 'javascripts/services/legal-states-service';
 import 'javascripts/services/prodoffice-service';
 
 import 'layouts/dashboard/dashboard-toolbar';
+import 'layouts/dashboard/dashboard-sidebar';
 
 import 'lib/date-service';
 import 'lib/filters-service';
@@ -41,6 +41,7 @@ angular.module('workflow',
         'ngAnimate',
         'dashboardControllers',
         'wfDashboardToolbar',
+        'wfDashboardSidebar',
         'wfDateService',
         'wfAnalytics',
         'workflow.services',
@@ -77,14 +78,14 @@ angular.module('workflow',
 
     // Global config
     .constant(
-    'config',
-    {
-        'composerNewContent': _wfConfig.composer.create,
-        'composerViewContent': _wfConfig.composer.view,
-        'composerContentDetails': _wfConfig.composer.details,
-        'maxNoteLength': 500
-    }
-)
+        'config',
+        {
+            'composerNewContent': _wfConfig.composer.create,
+            'composerViewContent': _wfConfig.composer.view,
+            'composerContentDetails': _wfConfig.composer.details,
+            'maxNoteLength': 500
+        }
+    )
     .constant({ 'statuses': _wfConfig.statuses })
     .constant({ 'sections': _wfConfig.sections })
 

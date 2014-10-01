@@ -11,10 +11,7 @@ define([
             function ($scope, $http, statuses, legalStatesService, config, wfFiltersService, prodOfficeService, wfContentService, wfContentPollingService) {
 
                 $scope.composerUrl = config.composerViewContent;
-                $scope.selectedStatus = wfFiltersService.get('status');
-                $scope.selectedState = wfFiltersService.get('state');
-                $scope.selectedContentType = wfFiltersService.get('content-type');
-                $scope.flags = wfFiltersService.get('flags');
+
 
                 var getContent = function (evt, params) {
                     var params = wfContentService.getServerParams();
@@ -23,14 +20,9 @@ define([
                     });
                 };
 
+
                 $scope.$on('getContent', getContent);
                 $scope.$on('changedFilters', getContent);
-
-
-                $scope.$watch('selectedContentType', function () {
-                    $scope.$emit('filtersChanged.content-type', $scope.selectedContentType);
-                });
-
 
                 $scope.legalStates = legalStatesService.getLegalStates();
 
@@ -79,51 +71,6 @@ define([
                         return x.status;
                     });
                 }
-
-
-                // content items stuff
-
-                $scope.stateIsSelected = function (state) {
-                    return $scope.selectedState == state;
-                };
-                $scope.selectState = function (state) {
-                    $scope.selectedState = state;
-                    $scope.$emit('filtersChanged.state', $scope.selectedState);
-                };
-
-                $scope.statusIsSelected = function (status) {
-                    return $scope.selectedStatus == status;
-                };
-
-                $scope.selectStatus = function (status) {
-                    $scope.selectedStatus = status;
-                    $scope.$emit('filtersChanged.status', $scope.selectedStatus);
-                };
-
-                $scope.selectCreatedFilter = function (fromDate, untilDate) {
-                    $scope.selectedCreatedFrom = fromDate != null ? fromDate.toISOString() : "";
-                    $scope.selectedCreatedUntil = untilDate != null ? untilDate.toISOString() : "";
-                    getContent();
-                }
-
-                $scope.flagActive = function (flag) {
-                    return $scope.flags.indexOf(flag) != -1;
-                };
-
-                $scope.toggleFlag = function (flag) {
-                    if ($scope.flags.indexOf(flag) == -1) {
-                        $scope.flags.push(flag);
-                    } else {
-                        $scope.flags = $scope.flags.filter(function (e) {
-                            return e !== flag
-                        });
-                    }
-                    $scope.$emit('filtersChanged.flags', $scope.flags);
-                };
-
-                $scope.contentTypeIsSelected = function (contentType) {
-                    return $scope.selectedContentType == contentType;
-                };
 
                 $scope.showDetail = function (content) {
                     $scope.selectedContent = content;
@@ -188,11 +135,9 @@ define([
                             getContent();
                         });
                     }
-                    ;
-                }
+                };
 
                 // stubs stuff
-
                 $scope.$on('newStubButtonClicked', function (event, contentType) {
                     $scope.$broadcast('newStub', contentType);
                 });
