@@ -87,7 +87,7 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
                         method: 'PUT',
                         url: '/api/stubs/' + stubId + '/' + field,
                         data: { data: data }
-                    };
+                    });
                 }
 
                 /**
