@@ -1,0 +1,57 @@
+
+<div class="alert alert-danger" ng-if="getContentError">
+    There was a problem contacting the server, please try to
+    <a href="javascript:window.location.reload()">reload</a> the page. If the problem continues, please contact
+    <a href="mailto:cms.workflow@guardian.co.uk">the Workflow team</a>.
+</div>
+
+<table class="content-list">
+    <thead class="content-list-head">
+        <tr class="content-list-head__row">
+            <th class="content-list-head__heading--group" colspan="4"></th>
+            <th class="content-list-head__heading">Working title / Headline</span></th>
+            <th class="content-list-head__heading--presence" title="Presence">Presence</th>
+            <th class="content-list-head__heading--assigned" title="Assigned to">Assigned to</th>
+            <th class="content-list-head__heading">Deadline</th>
+            <th class="content-list-head__heading">Created</th>
+            <th class="content-list-head__heading">Section</th>
+            <th class="content-list-head__heading">Legal</th>
+            <th class="content-list-head__heading">Status</th>
+            <th class="content-list-head__heading">Notes</th>
+            <th class="content-list-head__heading">Open in</th>
+            <th class="content-list-head__heading">State</th>
+        </tr>
+    </thead>
+    <tbody ng-repeat="group in content">
+        <tr class="content-list__group-heading-row">
+            <th class="content-list__group-heading" scope="rowgroup" colspan="15">
+                <a class="content-list__group-heading-link" ng-click="">{{ group.name }} <span class="content-list__group-heading-count">{{ group.items.length }}</span></a>
+            </th>
+        </tr>
+        <tr ng-repeat="contentItem in group.items track by contentItem.id" ng-click="selectedItem = contentItem">
+            <td class="content-list-item__priority--{{ contentItem.priority }}" title="{{ contentItem.priority }}"></td>
+            <td class="content-list-item__comments--{{ contentItem.comments }}" title="Comments {{ contentItem.comments }}"></td>
+            <td class="content-list-item__main-image--{{ contentItem.mainImage }}" title="Main image"></td>
+            <td class="content-list-item__content-type--{{ contentItem.contentType }}" title="{ contentItem.contentType }}"></td>
+            <th class="content-list-item__title--{{ showHeadline ? 'headline' : 'working' }}" scope="row">
+                <a href="{{ contentItem.links.edit.href }}">{{ showHeadline ? contentItem.headline : contentItem.workingTitle }}</a>
+            </th>
+            <td class="content-list-item__presence">PZ</td>
+            <td class="content-list-item__assignee" title="{{ contentItem.assigneeFull }}">{{ contentItem.assignee }}</td>
+            <td class="content-list-item__deadline" title="{{ contentItem.deadlineFull }}">{{ contentItem.deadline }}</td>
+            <td class="content-list-item__created" title="{{ contentItem.createdFull }}">{{ contentItem.created }}</td>
+            <td class="content-list-item__section">{{ contentItem.section }}</td>
+            <td class="content-list-item__legal">Legal</td>
+            <td class="content-list-item__status">
+                <select ng-model="contentItem.status" ng-options="status for status in statusValues">
+                </select>
+            </td>
+            <td class="content-list-item__notes">Notes</td>
+            <td class="content-list-item__links">Open in...</td>
+            <td class="content-list-item__state">
+                {{ contentItem.publishedState }}
+                <div class="small" ng-show="contentItem.published">{{ contentItem.timePublished }}</div>
+            </td>
+        </tr>
+    </tbody>
+</table>
