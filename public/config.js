@@ -39,7 +39,9 @@ System.config({
     "mixpanel": "github:mixpanel/mixpanel-js@^2.2.2",
     "ua-parser": "github:faisalman/ua-parser-js@^0.7.0",
     "angular-animate": "github:angular/bower-angular-animate@^1.2.22",
-    "angular-ui-router": "github:angular-ui/ui-router@^0.2.11"
+    "angular-ui-router": "github:angular-ui/ui-router@^0.2.11",
+    "lodash": "npm:lodash-node@^2.4.1",
+    "npm:lodash-node@2.4.1": {}
   }
 });
 
@@ -67,7 +69,8 @@ System.config({
     "github:mixpanel/mixpanel-js": "2.2.3",
     "github:faisalman/ua-parser-js": "0.7.0",
     "github:angular/bower-angular-animate": "1.2.25",
-    "github:angular-ui/ui-router": "0.2.11"
+    "github:angular-ui/ui-router": "0.2.11",
+    "npm:lodash-node": "2.4.1"
   }
 });
 
