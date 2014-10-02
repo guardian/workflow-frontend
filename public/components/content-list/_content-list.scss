@@ -55,8 +55,15 @@
 }
 
 
-%content-list-item__icon {
-    width: 20px;
+.content-list-item {
+    border-bottom: 1px solid $c-grey-300;
+}
+
+
+.content-list-item__icon {
+    display: inline-block;
+    width: 16px;
+    margin: 0 5px;
 }
 
 .content-list-item__priority--normal {
@@ -74,6 +81,18 @@
 .content-list-item__content-type-article {
     @extend %content-list-item__icon;
 }
+
+.content-list-item__title--working::before {
+    content: "WT:";
+    color: $c-grey-400;
+    font-weight: normal;
+}
+
+.content-list-item__title--working,
+.content-list-item__title--headline {
+    padding: 10px 5px;
+}
+
 
 /*
 // TODO: BEMify properly
