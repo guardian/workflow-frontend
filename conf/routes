@@ -25,6 +25,7 @@ PUT     /api/stubs/:stubId/dueDate          controllers.Api.putStubDueDate(stubI
 PUT     /api/stubs/:stubId/note             controllers.Api.putStubNote(stubId: Long)
 OPTIONS /api/stubs/:stubId/note             controllers.Api.allowCORSAccess(methods = "PUT", stubId: String)
 PUT     /api/stubs/:stubId/needsLegal       controllers.Api.putStubLegalStatus(stubId: Long)
+OPTIONS /api/stubs/:stubId/needsLegal       controllers.Api.allowCORSAccess(methods = "PUT", stubId: String)
 PUT     /api/stubs/:stubId/prodOffice       controllers.Api.putStubProdOffice(stubId: Long)
 DELETE  /api/stubs/:stubId                  controllers.Api.deleteStub(stubId: Long)
 POST    /api/stubs/:stubId                  controllers.Api.linkStub(stubId: Long, composerId: String, contentType: String)

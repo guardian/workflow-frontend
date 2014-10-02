@@ -156,7 +156,7 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
-  def putStubNote(stubId: Long) = CORSable("https://composer.local.dev-gutools.co.uk") {
+  def putStubNote(stubId: Long) = CORSable(PrototypeConfiguration.apply.composerUrl) {
     APIAuthAction { implicit request =>
       (for {
         jsValue <- readJsonFromRequest(request.body).right
@@ -178,7 +178,7 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
-  def putContentStatus(composerId: String) = CORSable("https://composer.local.dev-gutools.co.uk") {
+  def putContentStatus(composerId: String) = CORSable(PrototypeConfiguration.apply.composerUrl) {
     APIAuthAction { implicit request =>
       (for {
         jsValue <- readJsonFromRequest(request.body).right
@@ -190,14 +190,16 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubLegalStatus(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      status <- extract[Flag](jsValue \ "data").right
-    } yield {
-      PostgresDB.updateStubLegalStatus(stubId, status)
-      NoContent
-    }).merge
+  def putStubLegalStatus(stubId: Long) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+    APIAuthAction { implicit request =>
+      (for {
+        jsValue <- readJsonFromRequest(request.body).right
+        status <- extract[Flag](jsValue \ "data").right
+      } yield {
+        PostgresDB.updateStubLegalStatus(stubId, status)
+        NoContent
+      }).merge
+    }
   }
 
   def deleteContent(composerId: String) = APIAuthAction {
