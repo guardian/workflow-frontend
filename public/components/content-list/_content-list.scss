@@ -61,10 +61,10 @@
 
 
 .content-list-item__icon {
-    display: inline-block;
-    width: 16px;
-    margin: 0 5px;
+    width: 26px;
+    padding: 10px 5px;
 }
+
 
 .content-list-item__priority--normal {
     @extend %content-list-item__icon;
