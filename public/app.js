@@ -18,6 +18,7 @@ import 'javascripts/services/legal-states-service';
 import 'javascripts/services/prodoffice-service';
 
 import 'components/content-list/content-list';
+import 'components/icons/icons';
 
 import 'layouts/dashboard/dashboard-toolbar';
 import 'layouts/dashboard/dashboard-sidebar';
@@ -44,6 +45,7 @@ angular.module('workflow',
         'dashboardControllers',
         'wfDashboardToolbar',
         'wfDashboardSidebar',
+        'wfIcons',
         'wfContentList',
         'wfDateService',
         'wfAnalytics',
