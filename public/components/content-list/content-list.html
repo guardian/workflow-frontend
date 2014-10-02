@@ -18,13 +18,13 @@
             <th class="content-list-head__heading">Legal</th>
             <th class="content-list-head__heading">Status</th>
             <th class="content-list-head__heading">Notes</th>
-            <th class="content-list-head__heading">Open in</th>
+            <th class="content-list-head__heading" colspan="4">Open in</th>
             <th class="content-list-head__heading">State</th>
         </tr>
     </thead>
     <tbody ng-repeat="group in content">
         <tr class="content-list__group-heading-row">
-            <th class="content-list__group-heading" scope="rowgroup" colspan="15">
+            <th class="content-list__group-heading" scope="rowgroup" colspan="18">
                 <a class="content-list__group-heading-link" ng-click="">{{ group.name }} <span class="content-list__group-heading-count">{{ group.items.length }}</span></a>
             </th>
         </tr>
@@ -42,7 +42,7 @@
                 <i wf-icon="{{ contentItem.contentType }}"/>
             </td>
             <th class="content-list-item__title--{{ showHeadline ? 'headline' : 'working' }}" scope="row">
-                <a href="{{ contentItem.links.edit.href }}">{{ showHeadline ? contentItem.headline : contentItem.workingTitle }}</a>
+                <a href="{{ contentItem.links.viewInComposer }}">{{ showHeadline ? contentItem.headline : contentItem.workingTitle }}</a>
             </th>
             <td class="content-list-item__presence">PZ</td>
             <td class="content-list-item__assignee" title="{{ contentItem.assigneeFull }}">{{ contentItem.assignee }}</td>
@@ -54,8 +54,27 @@
                 <select ng-model="contentItem.status" ng-options="status for status in statusValues">
                 </select>
             </td>
-            <td class="content-list-item__notes">Notes</td>
-            <td class="content-list-item__links">Open in...</td>
+            <td class="content-list-item__notes">{{ contentItem.note }}</td>
+            <td class="content-list-item__icon">
+                <a href="{{ contentItem.links.composer }}">
+                    <i wf-icon="composer"></i>
+                </a>
+            </td>
+            <td class="content-list-item__icon">
+                <a href="{{ contentItem.links.preview }}">
+                    <i wf-icon="preview"></i>
+                </a>
+            </td>
+            <td class="content-list-item__icon">
+                <a href="{{ contentItem.links.live }}">
+                    <i wf-icon="live-site"></i>
+                </a>
+            </td>
+            <td class="content-list-item__icon">
+                <a href="{{ contentItem.links.ophan }}">
+                    <i wf-icon="ophan"></i>
+                </a>
+            </td>
             <td class="content-list-item__state">
                 {{ contentItem.publishedState }}
                 <div class="small" ng-show="contentItem.published">{{ contentItem.timePublished }}</div>
