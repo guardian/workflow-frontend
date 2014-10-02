@@ -18,9 +18,9 @@ angular.module('wfContentList', ['wfContentService'])
 function wfContentItemParser(config) {
     function getPriorityString(priorityValue) {
         if (priorityValue == 1) {
-            return "high";
+            return "urgent";
         } else if (priorityValue == 2) {
-            return "highest";
+            return "very-urgent";
         }
         return "normal";
     }
@@ -45,7 +45,10 @@ function wfContentItemParser(config) {
             this.workingTitle = item.workingTitle;
 
             this.priority = getPriorityString(item.priority);
-            this.comments = item.commentable ? 'enabled' : 'disabled';
+            this.comments = item.commentable ? 'active' : 'inactive';
+
+            // TODO: pull main image from composer
+            this.mainImage = false ? 'active' : 'inactive';
 
             this.asignee = item.asignee;
             this.contentType = item.contentType;
