@@ -10,6 +10,11 @@ import 'lib/date-service';
 // Groupby
 // sort by
 
+var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=',
+    PREVIEW_PATH = 'http://preview.gutools.co.uk/global/',
+    LIVE_PATH = 'http://www.theguardian.com/';
+
+
 angular.module('wfContentList', ['wfContentService', 'wfDateService'])
     .service('wfContentItemParser', ['config', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
     .controller('wfContentListController', ['$scope', 'statuses', 'wfContentService', 'wfContentItemParser', wfContentListController])
@@ -33,7 +38,12 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
     class ContentItemLinks {
         constructor(item) {
             if (item.composerId) {
-                this.viewInComposer = config.composerViewContent + '/' + item.composerId;
+                this.composer = config.composerViewContent + '/' + item.composerId;
+                this.preview = PREVIEW_PATH + item.composerId;
+            }
+            if (item.published && item.path) {
+                this.live = LIVE_PATH + item.path;
+                this.ophan = OPHAN_PATH + item.path;
             }
         }
     }
@@ -60,6 +70,7 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
             this.status = item.status;
             this.section = item.section;
             this.needsLegal = item.needsLegal;
+            this.note = item.note;
 
             // TODO date formatting / localisation
             this.deadline = formatAndLocaliseDate(item.due, 'ddd DD MMM HH:mm');
@@ -67,7 +78,7 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
             this.created = formatAndLocaliseDate(item.createdAt, 'ddd DD MMM HH:mm');
             this.createdFull = formatAndLocaliseDate(item.createdAt, 'long');
 
-            this.publishedState = item.published ? 'Published' : 'Draft';
+            this.publishedState = item.published ? 'Published' : '';
             this.publishedTime = item.timePublished && item.timePublished
 
             this.links = new ContentItemLinks(item);
