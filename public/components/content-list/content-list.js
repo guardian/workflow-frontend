@@ -5,17 +5,18 @@ import angular from 'angular';
 import _ from 'lodash';
 
 import 'lib/content-service';
+import 'lib/date-service';
 
 // Groupby
 // sort by
 
-angular.module('wfContentList', ['wfContentService'])
-    .service('wfContentItemParser', ['config', wfContentItemParser])
+angular.module('wfContentList', ['wfContentService', 'wfDateService'])
+    .service('wfContentItemParser', ['config', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
     .controller('wfContentListController', ['$scope', 'statuses', 'wfContentService', 'wfContentItemParser', wfContentListController])
 
 
 
-function wfContentItemParser(config) {
+function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
     function getPriorityString(priorityValue) {
         if (priorityValue == 1) {
             return "urgent";
@@ -23,6 +24,10 @@ function wfContentItemParser(config) {
             return "very-urgent";
         }
         return "normal";
+    }
+
+    function formatAndLocaliseDate(dateValue, dateFormat) {
+        return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(dateValue), dateFormat);
     }
 
     class ContentItemLinks {
@@ -57,7 +62,11 @@ function wfContentItemParser(config) {
             this.needsLegal = item.needsLegal;
 
             // TODO date formatting / localisation
-            this.deadline = item.due;
+            this.deadline = formatAndLocaliseDate(item.due, 'ddd DD MMM HH:mm');
+            this.deadlineFull = formatAndLocaliseDate(item.due, 'long');
+            this.created = formatAndLocaliseDate(item.createdAt, 'ddd DD MMM HH:mm');
+            this.createdFull = formatAndLocaliseDate(item.createdAt, 'long');
+
             this.publishedState = item.published ? 'Published' : 'Draft';
             this.publishedTime = item.timePublished && item.timePublished
 
