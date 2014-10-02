@@ -29,17 +29,17 @@
             </th>
         </tr>
         <tr class="content-list-item" ng-repeat="contentItem in group.items track by contentItem.id" ng-click="selectedItem = contentItem">
-            <td title="Priority: {{ contentItem.priority }}">
-                <i class="content-list-item__icon" wf-icon="priority-{{ contentItem.priority }}" ng-show="contentItem.priority !== 'normal'"/>
+            <td class="content-list-item__icon" title="Priority: {{ contentItem.priority }}">
+                <i wf-icon="priority-{{ contentItem.priority }}" ng-show="contentItem.priority !== 'normal'"/>
             </td>
-            <td title="Comments: {{ contentItem.comments }}">
-                <i class="content-list-item__icon" wf-icon="comments-{{ contentItem.comments }}"/>
+            <td class="content-list-item__icon" title="Comments: {{ contentItem.comments }}">
+                <i wf-icon="comments-{{ contentItem.comments }}"/>
             </td>
-            <td title="Main image: {{ contentItem.mainImage }}">
-                <i class="content-list-item__icon" wf-icon="main-image-{{ contentItem.mainImage }}"/>
+            <td class="content-list-item__icon" title="Main image: {{ contentItem.mainImage }}">
+                <i wf-icon="main-image-{{ contentItem.mainImage }}"/>
             </td>
-            <td title="{{ contentItem.contentType }}">
-                <i class="content-list-item__icon" wf-icon="{{ contentItem.contentType }}"/>
+            <td class="content-list-item__icon" title="{{ contentItem.contentType }}">
+                <i wf-icon="{{ contentItem.contentType }}"/>
             </td>
             <th class="content-list-item__title--{{ showHeadline ? 'headline' : 'working' }}" scope="row">
                 <a href="{{ contentItem.links.edit.href }}">{{ showHeadline ? contentItem.headline : contentItem.workingTitle }}</a>
