@@ -24,7 +24,7 @@
             &--titles,
             &--group,
             &--presence,
-            &--assigned,
+            &--assignee,
             &--office,
             &--deadline,
             &--created,
@@ -39,6 +39,30 @@
 
                 font-weight: bold;
                 text-align: left;
+            }
+
+            &--presence,
+            &--assignee,
+            &--office {
+                text-align: center;
+                width: 45px;
+            }
+
+            &-icon {
+                &--presence,
+                &--assignee {
+                    display: inline-block;
+                }
+
+                &--presence {
+                    width: 20px;
+                    height: 20px;
+                    margin-top: 1px;
+                }
+                &--assignee {
+                    width: 16px;
+                    height: 16px;
+                }
             }
         }
     }
@@ -94,16 +118,35 @@
                 height: 16px;
             }
 
+            &--assignee,
+            &--presence {
+                display: inline-block;
+                border-radius: 50%;
+                width: 22px;
+                height: 22px;
+                line-height: 22px;
+                text-align: center;
+                text-transform: uppercase;
+            }
+
+            &--assignee {
+                background-color: $c-grey-300;
+            }
+
+            &--presence {
+                background-color: #474D80;
+                color: #fff;
+            }
+
             // Production office icons
             &--office {
                 &-au,
                 &-us,
                 &-uk {
-                    font-size: 11px;
-                    line-height: 15px;
+                    line-height: 16px;
                     display: inline-block;
                     text-align: center;
-                    width: 16px;
+                    width: 22px;
                 }
 
                 &-au {
@@ -162,6 +205,12 @@
             &--ophan,
             &--published-state {
                 @extend %content-list__field-padding;
+            }
+
+            &--presence,
+            &--assignee,
+            &--office {
+                text-align: center;
             }
         }
     }
