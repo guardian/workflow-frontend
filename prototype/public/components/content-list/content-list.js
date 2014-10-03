@@ -109,6 +109,12 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
 
     this.showHeadline = false;
 
+    this.legalValues = [
+        { name: '', value: 'NA' },
+        { name: 'Check it', value: 'REQUIRED' },
+        { name: 'Approved', value: 'COMPLETE'}
+    ];
+
     var params = wfContentService.getServerParams();
     wfContentService.get(params).then(function (data) {
 
