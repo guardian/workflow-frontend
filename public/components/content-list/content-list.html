@@ -33,7 +33,7 @@
                 <a class="content-list__group-heading-link" ng-click="">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></a>
             </th>
         </tr>
-        <tr class="content-list-item" ng-repeat="contentItem in group.items track by contentItem.id" ng-click="selectedItem = contentItem">
+        <tr class="content-list-item" ng-repeat="contentItem in group.items track by contentItem.id" ng-click="contentList.selectItem(contentItem)" ng-class="{ 'content-list-item--selected': contentList.selectedItem === contentItem }">
             <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priorityTitle }}">
                 <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority }}" ng-show="contentItem.priority !== 'normal'"/>
             </td>
