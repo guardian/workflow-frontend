@@ -25,13 +25,14 @@
             &--group,
             &--presence,
             &--assigned,
+            &--office,
             &--deadline,
             &--created,
             &--section,
             &--legal,
             &--status,
             &--notes,
-            &--links
+            &--links,
             &--published-state {
                 @extend %content-list__field-padding;
                 @extend %fs-data-3;
@@ -88,9 +89,37 @@
             &--preview,
             &--live,
             &--ophan {
-                @extend %content-list__field-padding;
-                width: 26px;
-                height: 36px;
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+            }
+
+            // Production office icons
+            &--office {
+                &-au,
+                &-us,
+                &-uk {
+                    font-size: 11px;
+                    line-height: 15px;
+                    display: inline-block;
+                    text-align: center;
+                    width: 16px;
+                }
+
+                &-au {
+                    background-color: #FCD116;
+                    color: #008751;
+                }
+
+                &-us {
+                    background-color: #B22234;
+                    color: #fff;
+                }
+
+                &-uk {
+                    background-color: #002366;
+                    color: #fff;
+                }
             }
         }
 
@@ -112,16 +141,25 @@
         }
 
         &__field {
+            &--priority,
+            &--comments,
+            &--main-image,
+            &--content-type,
             &--working-title,
             &--headline,
             &--presence,
             &--assignee,
+            &--office,
             &--deadline,
             &--created,
             &--section,
             &--legal,
             &--status,
             &--notes,
+            &--composer,
+            &--preview,
+            &--live,
+            &--ophan,
             &--published-state {
                 @extend %content-list__field-padding;
             }
