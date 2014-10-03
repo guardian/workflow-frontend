@@ -54,10 +54,13 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
         }
 
         update(item) {
+
+            // TODO: Stubs have a different structure to content items
+
             this.id = item.id || item.stubId;
 
             this.headline = item.headline;
-            this.workingTitle = item.workingTitle;
+            this.workingTitle = item.workingTitle || item.title;
 
             this.priority = getPriorityString(item.priority);
             this.comments = item.commentable ? 'active' : 'inactive';
@@ -67,7 +70,7 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
 
             this.asignee = item.asignee;
             this.contentType = item.contentType;
-            this.status = item.status;
+            this.status = item.status || 'stub';
             this.section = item.section;
             this.needsLegal = item.needsLegal;
             this.note = item.note;
@@ -94,7 +97,6 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
 
 
 function wfContentListController($scope, statuses, wfContentService, wfContentItemParser) {
-    console.log('wfContentListController!');
 
     $scope.statusValues = statuses;
 
@@ -102,11 +104,24 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
 
     var params = wfContentService.getServerParams();
     wfContentService.get(params).then(function (data) {
-        console.log('wfContentItemParser.parse', wfContentItemParser, wfContentItemParser.parse);
-        var content = data.content.map(wfContentItemParser.parse);
-        console.log('content', content);
+
+        // TODO stubs and content are separate structures in the API response
+        //      make this a single list of content with consistent structure in the API
+        var content = data.stubs.concat(data.content).map(wfContentItemParser.parse);
+
+
+
         var grouped = _.groupBy(content, 'status');
-        $scope.content = statuses.map(function(status) { return { name: status, items: grouped[status]}; });
+        $scope.content = ['stub'].concat(statuses).map(function(status) {
+            // TODO: status is currently stored as presentation text, eg: "Writers"
+            //       should be stored as an enum and transformed to presentation text
+            //       here in the front-end
+            return {
+                name: status,
+                title: status == 'stub' ? 'Newslist' : status,
+                items: grouped[status]
+            };
+        });
     });
 }
 
