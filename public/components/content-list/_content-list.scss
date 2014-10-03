@@ -83,10 +83,22 @@
     @extend %content-list-item__icon;
 }
 
-.content-list-item__title--working::before {
-    content: "WT:";
+
+.content-list-item__headline-toggle {
+    float: left;
     color: $c-grey-400;
     font-weight: normal;
+    margin-right: 5px;
+
+    // bootstrap override, TODO remove
+    &[title] {
+        border: none;
+        cursor: pointer;
+    }
+
+    &::after {
+        content: ':';
+    }
 }
 
 .content-list-item__title--working,
