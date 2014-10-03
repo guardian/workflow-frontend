@@ -35,6 +35,10 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
         return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(dateValue), dateFormat);
     }
 
+    function toTitleCase(str) {
+        return str.replace(/\b\w/g, function (txt) { return txt.toUpperCase(); });
+    }
+
     class ContentItemLinks {
         constructor(item) {
             if (item.composerId) {
@@ -63,6 +67,8 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
             this.workingTitle = item.workingTitle || item.title;
 
             this.priority = getPriorityString(item.priority);
+            this.priorityTitle = toTitleCase(this.priority);
+
             this.comments = item.commentable ? 'active' : 'inactive';
 
             // TODO: pull main image from composer
@@ -70,6 +76,7 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
 
             this.asignee = item.asignee;
             this.contentType = item.contentType;
+            this.contentTypeTitle = toTitleCase(item.contentType);
             this.status = item.status || 'stub';
             this.section = item.section;
             this.needsLegal = item.needsLegal;
@@ -100,7 +107,7 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
 
     $scope.statusValues = statuses;
 
-    $scope.showHeadline = false;
+    this.showHeadline = false;
 
     var params = wfContentService.getServerParams();
     wfContentService.get(params).then(function (data) {

@@ -29,7 +29,7 @@
             </th>
         </tr>
         <tr class="content-list-item" ng-repeat="contentItem in group.items track by contentItem.id" ng-click="selectedItem = contentItem">
-            <td class="content-list-item__icon" title="Priority: {{ contentItem.priority }}">
+            <td class="content-list-item__icon" title="Priority: {{ contentItem.priorityTitle }}">
                 <i wf-icon="priority-{{ contentItem.priority }}" ng-show="contentItem.priority !== 'normal'"/>
             </td>
             <td class="content-list-item__icon" title="Comments: {{ contentItem.comments }}">
@@ -38,11 +38,12 @@
             <td class="content-list-item__icon" title="Main image: {{ contentItem.mainImage }}">
                 <i wf-icon="main-image-{{ contentItem.mainImage }}"/>
             </td>
-            <td class="content-list-item__icon" title="{{ contentItem.contentType }}">
+            <td class="content-list-item__icon" title="{{ contentItem.contentTypeTitle }}">
                 <i wf-icon="{{ contentItem.contentType }}"/>
             </td>
-            <th class="content-list-item__title--{{ showHeadline ? 'headline' : 'working' }}" scope="row">
-                <a href="{{ contentItem.links.viewInComposer }}">{{ showHeadline ? contentItem.headline : contentItem.workingTitle }}</a>
+            <th class="content-list-item__title--{{ contentList.showHeadline ? 'headline' : 'working' }}" scope="row" title="Working title: {{ contentItem.workingTitle }}{{ contentItem.headline ? '&#10;Headline: ' + contentItem.headline : '' }}">
+                <abbr class="content-list-item__headline-toggle" title="{{ contentList.showHeadline && contentItem.headline ? 'Headline' : 'Working title'}}. (Click to toggle Headlines)" ng-click="contentList.showHeadline = !contentList.showHeadline">{{ contentList.showHeadline && contentItem.headline ? 'HL' : 'WT'  }}</abbr>
+                <a href="{{ contentItem.links.composer }}">{{ contentList.showHeadline && contentItem.headline ? contentItem.headline : contentItem.workingTitle }}</a>
             </th>
             <td class="content-list-item__presence">PZ</td>
             <td class="content-list-item__assignee" title="{{ contentItem.assigneeFull }}">{{ contentItem.assignee }}</td>
