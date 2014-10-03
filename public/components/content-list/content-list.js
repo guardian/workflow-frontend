@@ -35,6 +35,16 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
         return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(dateValue), dateFormat);
     }
 
+    function getFullOfficeString(office) {
+        var offices = {
+            'AU': 'Australia',
+            'US': 'United States of America',
+            'UK': 'United Kingdom of Great Britain & Ireland'
+        };
+
+        return offices[office];
+    }
+
     function toTitleCase(str) {
         return str.replace(/\b\w/g, function (txt) { return txt.toUpperCase(); });
     }
@@ -77,6 +87,8 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
             this.asignee = item.asignee;
             this.contentType = item.contentType;
             this.contentTypeTitle = toTitleCase(item.contentType);
+            this.office = item.prodOffice;
+            this.officeTitle = getFullOfficeString(item.prodOffice);
             this.status = item.status || 'stub';
             this.section = item.section;
             this.needsLegal = item.needsLegal;
