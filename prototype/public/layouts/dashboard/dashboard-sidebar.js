@@ -23,10 +23,10 @@ angular.module('wfDashboardSidebar', ['wfFiltersService'])
                 title: 'Content',
                 namespace: 'content-type',
                 filterOptions: [
-                    { caption: 'Article', value: 'article', icon: 'file' },
-                    { caption: 'Liveblog', value: 'liveblog', icon: 'th-list' },
-                    { caption: 'Gallery', value: 'gallery', icon: 'camera' },
-                    { caption: 'Interactive', value: 'interactive', icon: 'hand-up' }
+                    { caption: 'Article', value: 'article', icon: 'article' },
+                    { caption: 'Liveblog', value: 'liveblog', icon: 'liveblog' },
+                    { caption: 'Gallery', value: 'gallery', icon: 'gallery' },
+                    { caption: 'Interactive', value: 'interactive', icon: 'interactive' }
                 ]
             },
             {

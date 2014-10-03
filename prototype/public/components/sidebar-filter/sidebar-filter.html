@@ -9,7 +9,8 @@
     <ul id="type" class="sidebar__filter-list">
         <li ng-repeat="filterOption in filter.filterOptions" ng-class="{'sidebar__filter--active': filterIsSelected(filterOption)}" class="sidebar__filter">
             <a href="" ng-click="filterClick(filterOption)">
-                <span ng-if="filterOption.icon" class="glyphicon sidebar__filter-icon glyphicon-{{filterOption.icon}}"></span>{{filterOption.caption}}
+                <i class="sidebar__filter-icon" ng-if="filterOption.icon" wf-icon="{{filterOption.icon}}"></i>
+                {{filterOption.caption}}
             </a>
         </li>
     </ul>
