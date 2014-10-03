@@ -50,7 +50,9 @@
             <td class="content-list-item__field--deadline" title="{{ contentItem.deadlineFull }}">{{ contentItem.deadline }}</td>
             <td class="content-list-item__field--created" title="{{ contentItem.createdFull }}">{{ contentItem.created }}</td>
             <td class="content-list-item__field--section">{{ contentItem.section }}</td>
-            <td class="content-list-item__field--legal">Legal</td>
+            <td class="content-list-item__field--legal">
+                <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in contentList.legalValues"></select>
+            </td>
             <td class="content-list-item__field--status">
                 <select ng-model="contentItem.status" ng-options="status for status in statusValues">
                 </select>
