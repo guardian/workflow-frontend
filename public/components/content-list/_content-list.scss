@@ -104,6 +104,10 @@
     &-item {
         border-bottom: 1px solid $c-grey-300;
 
+        &--selected {
+            background-color: $c-grey-300;
+        }
+
         &__icon {
             &--priority,
             &--comments,

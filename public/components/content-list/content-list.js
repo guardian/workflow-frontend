@@ -127,6 +127,10 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
         { name: 'Approved', value: 'COMPLETE'}
     ];
 
+    this.selectItem = function(contentItem) {
+        this.selectedItem = contentItem;
+    };
+
     var params = wfContentService.getServerParams();
     wfContentService.get(params).then(function (data) {
 
