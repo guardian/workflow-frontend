@@ -84,7 +84,7 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
             // TODO: pull main image from composer
             this.mainImage = false ? 'active' : 'inactive';
 
-            this.asignee = item.asignee;
+            this.assignee = item.assignee;
             this.contentType = item.contentType;
             this.contentTypeTitle = toTitleCase(item.contentType);
             this.office = item.prodOffice;
