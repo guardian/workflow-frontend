@@ -9,17 +9,17 @@
     <thead class="content-list-head">
         <tr class="content-list-head__row">
             <th class="content-list-head__heading--group" colspan="4"></th>
-            <th class="content-list-head__heading">Working title / Headline</span></th>
+            <th class="content-list-head__heading--titles">Working title / Headline</span></th>
             <th class="content-list-head__heading--presence" title="In use by">In use by</th>
             <th class="content-list-head__heading--assigned" title="Assigned to">Assigned to</th>
-            <th class="content-list-head__heading">Deadline</th>
-            <th class="content-list-head__heading">Created</th>
-            <th class="content-list-head__heading">Section</th>
-            <th class="content-list-head__heading">Legal</th>
-            <th class="content-list-head__heading">Status</th>
-            <th class="content-list-head__heading">Notes</th>
-            <th class="content-list-head__heading" colspan="4">Open in</th>
-            <th class="content-list-head__heading">State</th>
+            <th class="content-list-head__heading--deadline">Deadline</th>
+            <th class="content-list-head__heading--created">Created</th>
+            <th class="content-list-head__heading--section">Section</th>
+            <th class="content-list-head__heading--legal">Legal</th>
+            <th class="content-list-head__heading--status">Status</th>
+            <th class="content-list-head__heading--notes">Notes</th>
+            <th class="content-list-head__heading--links" colspan="4">Open in</th>
+            <th class="content-list-head__heading--published-state">State</th>
         </tr>
     </thead>
     <tbody ng-repeat="group in content">
@@ -29,54 +29,54 @@
             </th>
         </tr>
         <tr class="content-list-item" ng-repeat="contentItem in group.items track by contentItem.id" ng-click="selectedItem = contentItem">
-            <td class="content-list-item__icon" title="Priority: {{ contentItem.priorityTitle }}">
+            <td class="content-list-item__icon--priority" title="Priority: {{ contentItem.priorityTitle }}">
                 <i wf-icon="priority-{{ contentItem.priority }}" ng-show="contentItem.priority !== 'normal'"/>
             </td>
-            <td class="content-list-item__icon" title="Comments: {{ contentItem.comments }}">
+            <td class="content-list-item__icon--comments" title="Comments: {{ contentItem.comments }}">
                 <i wf-icon="comments-{{ contentItem.comments }}"/>
             </td>
-            <td class="content-list-item__icon" title="Main image: {{ contentItem.mainImage }}">
+            <td class="content-list-item__icon--main-image" title="Main image: {{ contentItem.mainImage }}">
                 <i wf-icon="main-image-{{ contentItem.mainImage }}"/>
             </td>
-            <td class="content-list-item__icon" title="{{ contentItem.contentTypeTitle }}">
+            <td class="content-list-item__icon--content-type" title="{{ contentItem.contentTypeTitle }}">
                 <i wf-icon="{{ contentItem.contentType }}"/>
             </td>
-            <th class="content-list-item__title--{{ contentList.showHeadline ? 'headline' : 'working' }}" scope="row" title="Working title: {{ contentItem.workingTitle }}{{ contentItem.headline ? '&#10;Headline: ' + contentItem.headline : '' }}">
+            <th class="content-list-item__field--{{ contentList.showHeadline ? 'headline' : 'working-title' }}" scope="row" title="Working title: {{ contentItem.workingTitle }}{{ contentItem.headline ? '&#10;Headline: ' + contentItem.headline : '' }}">
                 <abbr class="content-list-item__headline-toggle" title="{{ contentList.showHeadline && contentItem.headline ? 'Headline' : 'Working title'}}. (Click to toggle Headlines)" ng-click="contentList.showHeadline = !contentList.showHeadline">{{ contentList.showHeadline && contentItem.headline ? 'HL' : 'WT'  }}</abbr>
                 <a href="{{ contentItem.links.composer }}">{{ contentList.showHeadline && contentItem.headline ? contentItem.headline : contentItem.workingTitle }}</a>
             </th>
-            <td class="content-list-item__presence">PZ</td>
-            <td class="content-list-item__assignee" title="{{ contentItem.assigneeFull }}">{{ contentItem.assignee }}</td>
-            <td class="content-list-item__deadline" title="{{ contentItem.deadlineFull }}">{{ contentItem.deadline }}</td>
-            <td class="content-list-item__created" title="{{ contentItem.createdFull }}">{{ contentItem.created }}</td>
-            <td class="content-list-item__section">{{ contentItem.section }}</td>
-            <td class="content-list-item__legal">Legal</td>
-            <td class="content-list-item__status">
+            <td class="content-list-item__field--presence">PZ</td>
+            <td class="content-list-item__field--assignee" title="{{ contentItem.assigneeFull }}">{{ contentItem.assignee }}</td>
+            <td class="content-list-item__field--deadline" title="{{ contentItem.deadlineFull }}">{{ contentItem.deadline }}</td>
+            <td class="content-list-item__field--created" title="{{ contentItem.createdFull }}">{{ contentItem.created }}</td>
+            <td class="content-list-item__field--section">{{ contentItem.section }}</td>
+            <td class="content-list-item__field--legal">Legal</td>
+            <td class="content-list-item__field--status">
                 <select ng-model="contentItem.status" ng-options="status for status in statusValues">
                 </select>
             </td>
-            <td class="content-list-item__notes">{{ contentItem.note }}</td>
-            <td class="content-list-item__icon">
+            <td class="content-list-item__field--notes">{{ contentItem.note }}</td>
+            <td class="content-list-item__icon--composer">
                 <a href="{{ contentItem.links.composer }}">
                     <i wf-icon="composer"></i>
                 </a>
             </td>
-            <td class="content-list-item__icon">
+            <td class="content-list-item__icon--preview">
                 <a href="{{ contentItem.links.preview }}">
                     <i wf-icon="preview"></i>
                 </a>
             </td>
-            <td class="content-list-item__icon">
+            <td class="content-list-item__icon--live">
                 <a href="{{ contentItem.links.live }}">
                     <i wf-icon="live-site"></i>
                 </a>
             </td>
-            <td class="content-list-item__icon">
+            <td class="content-list-item__icon--ophan">
                 <a href="{{ contentItem.links.ophan }}">
                     <i wf-icon="ophan"></i>
                 </a>
             </td>
-            <td class="content-list-item__state">
+            <td class="content-list-item__field--published-state">
                 {{ contentItem.publishedState }}
                 <div class="small" ng-show="contentItem.published">{{ contentItem.timePublished }}</div>
             </td>
