@@ -4,7 +4,7 @@ import moment from 'moment';
 import './date-service';
 
 angular.module('wfFiltersService', ['wfDateService'])
-       .factory('wfFiltersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter',
+    .factory('wfFiltersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter',
         function($rootScope, $location, wfDateParser, wfFormatDateTimeFilter) {
 
         class FiltersService
@@ -46,7 +46,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
-                $rootScope.$on('filtersChanged.createdAt', function(event, data) {
+                $rootScope.$on('filtersChanged.created', function(event, data) {
                     self.update('created',  data);
                     $rootScope.$broadcast('getContent');
                 });
@@ -57,7 +57,7 @@ angular.module('wfFiltersService', ['wfDateService'])
             }
 
             stringToArray(value) {
-                if(value) return value.split(",");
+                if (value) return value.split(",");
                 else return [];
             }
 
@@ -73,14 +73,18 @@ angular.module('wfFiltersService', ['wfDateService'])
                    'section': params['section'],
                    'content-type': params['content-type'],
                    'selectedDate': wfDateParser.parseQueryString(selectedDate),
-                   'flags': this.stringToArray(params['flags']),
+                   'flags': (function (that) {
+                       var a = that.stringToArray(params['flags']);
+                       return a.length > 0 ? a : undefined;
+                   })(this),
                    'prodOffice': params['prodOffice'],
-                   'created': params['created'],
+                   'created': params['created']
                 };
             }
 
+
             update(key, value) {
-                if(key === 'selectedDate')  {
+                if (key === 'selectedDate') {
                     var dateStr = wfDateParser.setQueryString(value);
                     this.filters[key] = dateStr;
                     $location.search(key, dateStr);
@@ -91,7 +95,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                 }
             }
 
-            get(key){
+            get(key) {
                 return this.filters[key];
             }
 
@@ -106,6 +110,6 @@ angular.module('wfFiltersService', ['wfDateService'])
 
     }])
 
-    .run(['wfFiltersService', function(wfFiltersService){
+    .run(['wfFiltersService', function (wfFiltersService) {
         wfFiltersService.init();
     }]);

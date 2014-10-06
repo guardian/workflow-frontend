@@ -1,10 +1,7 @@
 define([
     'angular',
     '../dashboard'
-], function (
-    angular,
-    dashboardControllers
-    ) {
+], function (angular, dashboardControllers) {
     'use strict';
 
     dashboardControllers.controller('NewStubDropdownCtrl', ['$scope', function ($scope) {
@@ -32,16 +29,16 @@ define([
         }
 
         // Watch changes to dueText
-        $scope.$watch('stub.dueText', function() {
+        $scope.$watch('stub.dueText', function () {
             $scope.dueTextChanged();
         });
 
 
-        $scope.onDatePicked = function(newDate, oldDate) {
+        $scope.onDatePicked = function (newDate, oldDate) {
             $scope.stub.dueText = moment(newDate).format("D MMM YYYY, HH:mm");
         };
 
-        $scope.dueTextChanged = function() {
+        $scope.dueTextChanged = function () {
             if (!$scope.stub.dueText) { // set to none when empty
                 $scope.stub.due = null;
                 return;
@@ -87,15 +84,15 @@ define([
         '$q',
         'config',
         'prodOfficeService',
-        function($scope, $modal, $http, $q, config, prodOffice){
+        function ($scope, $modal, $http, $q, config, prodOffice) {
 
             var composerNewContent = config['composerNewContent'];
 
-            $scope.$on('editStub', function(event, stub) {
+            $scope.$on('editStub', function (event, stub) {
                 open(stub);
             });
 
-            $scope.$on('newStub', function(event, contentType) {
+            $scope.$on('newStub', function (event, contentType) {
                 var stub = {
                     contentType: contentType || 'article',
                     section: $scope.selectedSection || 'Technology',
@@ -116,7 +113,7 @@ define([
                         stub: function () {
                             return stub;
                         },
-                        addToComposer: function() {
+                        addToComposer: function () {
                             return addToComposer;
                         }
                     }
@@ -130,16 +127,16 @@ define([
                     function callComposer(addToComposer) {
                         var deferred = $q.defer();
                         var type = stub.contentType;
-                        if(addToComposer) {
+                        if (addToComposer) {
                             $http({
                                 method: 'POST',
                                 url: composerNewContent,
                                 params: {'type': type},
                                 withCredentials: true
-                            }).then(function(response){
+                            }).then(function (response) {
                                 var composerId = response.data.data.id;
                                 deferred.resolve(composerId);
-                            },function(response){
+                            }, function (response) {
                                 deferred.reject(response);
                             });
                         }
@@ -149,7 +146,7 @@ define([
                         return deferred.promise;
                     }
 
-                    callComposer(addToComposer).then(function(composerId) {
+                    callComposer(addToComposer).then(function (composerId) {
                         newStub.composerId = composerId;
                         var response;
                         if (newStub.id === undefined) {
@@ -166,7 +163,7 @@ define([
                                 data: newStub
                             });
                         }
-                        response.success(function(){
+                        response.success(function () {
                             // emit event
                             //   stubs with ids are being edited and not new
                             var eventName = (stub.id) ? 'stub.edited' : 'stub.created';
@@ -183,7 +180,7 @@ define([
     // composer import control
     // stub create and edit
 
-     var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService, composerService, prodOfficeService) {
+    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService, composerService, prodOfficeService) {
 
         $scope.stub = stub;
 
@@ -191,10 +188,10 @@ define([
 
         $scope.disabled = $scope.stub.composerId !== undefined;
 
-        $scope.composerUrlChanged = function() {
+        $scope.composerUrlChanged = function () {
             composerService.getComposerContent($scope.formData.composerUrl).then(
-                function(content) {
-                    if(content) {
+                function (content) {
+                    if (content) {
                         $scope.stub.composerId = content.id;
                         $scope.stub.contentType = content.type;
                         $scope.stub.title = content.headline;
@@ -209,16 +206,16 @@ define([
 
 
         // Watch changes to dueText
-        $scope.$watch('formData.dueText', function() {
+        $scope.$watch('formData.dueText', function () {
             $scope.dueTextChanged();
         });
 
 
-        $scope.onDatePicked = function(newDate, oldDate) {
+        $scope.onDatePicked = function (newDate, oldDate) {
             $scope.formData.dueText = moment(newDate).format("D MMM YYYY, HH:mm");
         };
 
-        $scope.dueTextChanged = function() {
+        $scope.dueTextChanged = function () {
             if (!$scope.formData.dueText) { // set to none when empty
                 $scope.stub.due = null;
                 return;
@@ -263,9 +260,9 @@ define([
         '$q',
         'config',
         'prodOfficeService',
-        function($scope, $modal, $http, $q, config, prodOfficeService){
+        function ($scope, $modal, $http, $q, config, prodOfficeService) {
 
-            $scope.$on('composerImport', function(event) {
+            $scope.$on('composerImport', function (event) {
                 var stub = {
                     section: $scope.selectedSection || 'Technology',
                     prodOffice: prodOfficeService.getDefaultOffice(),
@@ -281,7 +278,7 @@ define([
                     controller: ComposerImportModalInstanceCtrl,
                     windowClass: 'stubModal',
                     resolve: {
-                        stub: function(){
+                        stub: function () {
                             return stub;
                         }
                     }
@@ -294,14 +291,14 @@ define([
                     var newStub = angular.copy(stub);
 
                     var response = $http({
-                            method: 'POST',
-                            url: '/api/stubs',
-                            data: newStub
-                        }).success(function(){
-                            $scope.$emit('content.imported', { 'content': newStub });
+                        method: 'POST',
+                        url: '/api/stubs',
+                        data: newStub
+                    }).success(function () {
+                        $scope.$emit('content.imported', { 'content': newStub });
 
-                            $scope.$emit('getContent');
-                        });
+                        $scope.$emit('getContent');
+                    });
                 });
             };
         }]);
@@ -320,15 +317,15 @@ define([
         };
     };
 
-    dashboardControllers.controller('ComposerModalInstanceCtrl', ['$scope','$modalInstance','stub', ComposerModalInstanceCtrl]);
+    dashboardControllers.controller('ComposerModalInstanceCtrl', ['$scope', '$modalInstance', 'stub', ComposerModalInstanceCtrl]);
 
     dashboardControllers.controller('ComposerModalCtrl', ['$scope',
         '$modal',
         '$http',
-        'config', function($scope, $modal, $http, config){
+        'config', function ($scope, $modal, $http, config) {
 
 
-            $scope.$on('addToComposer', function(event, stub){
+            $scope.$on('addToComposer', function (event, stub) {
                 open(stub);
             });
 
@@ -351,17 +348,17 @@ define([
                         url: composerNewContent,
                         params: {'type': type},
                         withCredentials: true
-                    }).success(function(data){
+                    }).success(function (data) {
                         var composerId = data.data.id;
                         $http({
                             method: 'POST',
                             url: '/api/stubs/' + stub.id,
                             params: {'composerId': composerId, 'contentType': type}
-                        }).success(function(){
+                        }).success(function () {
                             $scope.$emit('content.statusChanged', {
-                              content: stub,
-                              status: 'Writers',
-                              oldStatus: 'Stub'
+                                content: stub,
+                                status: 'Writers',
+                                oldStatus: 'Stub'
                             });
 
                             $scope.$emit('getContent');
