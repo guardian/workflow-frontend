@@ -30,16 +30,12 @@
     // Table header
     &-head {
         &__row {
-            border-top: 5px solid #fff;
-            background-color: $c-grey-200;
         }
 
         &__heading {
 
             &--titles,
             &--group,
-            &--presence,
-            &--assignee,
             &--office,
             &--deadline,
             &--created,
@@ -50,7 +46,7 @@
             &--links,
             &--published-state {
                 @extend %content-list__field-padding;
-                @extend %fs-data-3;
+                @extend %fs-data-2;
 
                 font-weight: bold;
                 text-align: left;
@@ -87,11 +83,12 @@
     &__group-heading {
 
         &-row {
-            background-color: $c-grey-200;
+            background-color: $c-grey-150;
             border-top: 1px solid $c-grey-300;
         }
 
         &-link {
+            @extend %fs-data-2;
             background-color: $c-grey-300;
             color: inherit;
             font-weight: bold;
