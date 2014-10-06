@@ -2,13 +2,13 @@
     <div class="sidebar__header">
         <h5 class="query sidebar__heading" data-toggle="collapse" data-target="#type" ng-click="toggleSidebarSection()">{{ filter.title }}</h5>
         <div ng-class="{'sidebar__filter--active': filterIsSelected(defaultFilter)}" class="sidebar__filter sidebar__filter--default">
-            <a href="" ng-click="filterClick(defaultFilter)">{{defaultFilter.caption}}</a>
+            <a href="" class="sidebar__filter-link" ng-click="filterClick(defaultFilter)">{{defaultFilter.caption}}</a>
         </div>
     </div>
 
     <ul id="type" class="sidebar__filter-list">
         <li ng-repeat="filterOption in filter.filterOptions" ng-class="{'sidebar__filter--active': filterIsSelected(filterOption)}" class="sidebar__filter">
-            <a href="" ng-click="filterClick(filterOption)">
+            <a href="" class="sidebar__filter-link" ng-click="filterClick(filterOption)">
                 <span ng-if="filterOption.icon" class="glyphicon sidebar__filter-icon glyphicon-{{filterOption.icon}}"></span>{{filterOption.caption}}
             </a>
         </li>
