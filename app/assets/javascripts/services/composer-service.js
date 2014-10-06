@@ -1,10 +1,10 @@
-define(['angular'], function(angular) {
+define(['angular'], function (angular) {
     'use strict';
 
     var sectionsService = angular.module('composerService', []);
 
     sectionsService.factory('composerService',
-        ['$http', '$q', 'config', function($http, $q, config) {
+        ['$http', '$q', 'config', function ($http, $q, config) {
 
             var composerContentFetch = config['composerContentDetails'];
 
@@ -14,7 +14,7 @@ define(['angular'], function(angular) {
             }
 
             function getComposerContent(url) {
-                if(url) {
+                if (url) {
                     return $http({
                         method: 'GET',
                         url: composerContentFetch + parseComposerId(url),

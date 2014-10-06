@@ -1,0 +1,45 @@
+/**
+ * Location picker styles.
+ */
+.sidebar__location-picker {
+    margin-top: 10px;
+    position: relative;
+}
+
+.sidebar__location-picker-button {
+    @extend %fs-data-3;
+    border: 0;
+    border-top: 1px solid $c-grey-300;
+    display: block;
+    padding: 6px 5px 6px 23px;
+    text-align: left;
+    width: 100%;
+    background: $i-arrow-up right center / 12px no-repeat;
+    background-origin: content-box;
+}
+
+.sidebar__location-picker-menu {
+    min-width: 0;
+}
+
+
+/* Bootstrap override - hence specificity */
+.sidebar__location-picker-menu > li > a {
+    padding: 3px 70px 3px 10px;
+}
+
+.sidebar__location-picker-menuitem {
+    font-size: 12px;
+}
+
+.sidebar__location-picker-localtime,
+.sidebar__location-picker-localtime--inmenu {
+    color: #666;
+}
+
+.sidebar__location-picker-localtime--inmenu {
+    position: relative;
+    right: -60px;
+    line-height: 1em;
+    padding-top: 3px;
+}
