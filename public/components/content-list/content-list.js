@@ -79,10 +79,12 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
             this.priority = getPriorityString(item.priority);
             this.priorityTitle = toTitleCase(this.priority);
 
-            this.comments = item.commentable ? 'active' : 'inactive';
+            this.hasComments = item.commentable;
+            this.commentsTitle = item.commentable ? 'on' : 'off';
 
             // TODO: pull main image from composer
-            this.mainImage = false ? 'active' : 'inactive';
+            this.hasMainImage = false;
+            this.mainImageTitle = 'Main image (Coming soon)';
 
             this.assignee = item.assignee;
             this.contentType = item.contentType;
