@@ -12,6 +12,16 @@
 .content-list {
     width: 100%;
 
+
+    // Pseudo-cells for inner-borders published/embargoed/taken-down content
+    tr::after,
+    tr::before {
+        content: ' ';
+        display: table-cell;
+        width: 7px;
+    }
+
+
     // Table header
     &-head {
         &__row {
@@ -107,6 +117,18 @@
         &--selected {
             background-color: $c-grey-300;
         }
+
+        &--published {
+            @extend .content-list-item;
+            background-color: $c-light-green;
+
+            &::after,
+            &::before {
+                background-color: $c-green;
+            }
+        }
+
+
 
         &__icon {
             &--priority,
@@ -215,6 +237,25 @@
             &--assignee,
             &--office {
                 text-align: center;
+            }
+
+            &--notes {
+                @extend %fs-data-1;
+            }
+
+            &-supl--published-state {
+                @extend %fs-data-1;
+                color: $c-grey-600;
+            }
+
+            // First column
+            &--priority {
+                padding-left: 10px;
+            }
+
+            // Last column
+            &--published-state {
+                padding-right: 10px;
             }
         }
     }
