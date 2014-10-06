@@ -9,6 +9,11 @@
     padding: 10px 5px;
 }
 
+// Bootstrap override - TODO: remove
+.content-list, .content-list * {
+    box-sizing: content-box;
+}
+
 .content-list {
     width: 100%;
 
@@ -55,7 +60,7 @@
             &--assignee,
             &--office {
                 text-align: center;
-                width: 45px;
+                padding: 10px;
             }
 
             &-icon {
@@ -224,12 +229,11 @@
             &--section,
             &--legal,
             &--status,
-            &--notes,
             &--composer,
             &--preview,
             &--live,
-            &--ophan,
-            &--published-state {
+            &--ophan {
+                @extend %fs-data-3;
                 @extend %content-list__field-padding;
             }
 
@@ -239,13 +243,20 @@
                 text-align: center;
             }
 
+            &--deadline,
+            &--created {
+                white-space: nowrap;
+            }
+
             &--notes {
                 @extend %fs-data-1;
+                @extend %content-list__field-padding;
             }
 
             &-supl--published-state {
                 @extend %fs-data-1;
                 color: $c-grey-600;
+                white-space: nowrap;
             }
 
             // First column
@@ -255,7 +266,7 @@
 
             // Last column
             &--published-state {
-                padding-right: 10px;
+                padding: 5px;
             }
         }
     }
