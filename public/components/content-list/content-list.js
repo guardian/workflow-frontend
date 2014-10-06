@@ -100,8 +100,9 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
             this.created = formatAndLocaliseDate(item.createdAt, 'ddd DD MMM HH:mm');
             this.createdFull = formatAndLocaliseDate(item.createdAt, 'long');
 
+            this.isPublished = item.published;
             this.publishedState = item.published ? 'Published' : '';
-            this.publishedTime = item.timePublished && item.timePublished
+            this.publishedTime = item.timePublished && formatAndLocaliseDate(item.timePublished, 'ddd DD MMM HH:mm');
 
             this.links = new ContentItemLinks(item);
             this.item = item;
@@ -153,6 +154,7 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
         });
     });
 }
+
 
 /*
     var getContent = function (evt, params) {
