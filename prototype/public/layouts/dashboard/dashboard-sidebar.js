@@ -87,12 +87,24 @@ angular.module('wfDashboardSidebar', ['wfFiltersService'])
 
                 $scope.toggleSidebarSection = function () {
 
-                    var closedClass = 'sidebar__section--filter-list-closed';
+                    // TODO: Refactor...
 
-                    if (elem[0].classList.contains(closedClass)) {
-                        elem[0].classList.remove(closedClass);
+                    var list = elem[0].querySelector('.sidebar__filter-list');
+
+                    if (elem[0].getAttribute('data-list-height') == null) {
+                        elem[0].setAttribute('data-list-height', list.offsetHeight);
+                        list.style.maxHeight = elem[0].getAttribute('data-list-height') + 'px';
+                    }
+
+                    if (elem[0].getAttribute('data-is-open') == 'true') {
+                        elem[0].setAttribute('data-is-open', 'false');
+                        setTimeout(function () { // Ensure that the max-height style has been set before setting it to 0 to ensure animation triggers...
+                            list.style.maxHeight = '0px';
+                        }, 0);
+
                     } else {
-                        elem[0].classList.add(closedClass);
+                        elem[0].setAttribute('data-is-open', 'true');
+                        list.style.maxHeight = elem[0].getAttribute('data-list-height') + 'px';
                     }
 
                 };
