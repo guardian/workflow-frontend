@@ -38,11 +38,11 @@
             <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priorityTitle }}">
                 <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority }}" ng-show="contentItem.priority !== 'normal'"/>
             </td>
-            <td class="content-list-item__field--comments" title="Comments: {{ contentItem.comments }}">
-                <i class="content-list-item__icon--comments" wf-icon="comments-{{ contentItem.comments }}"/>
+            <td class="content-list-item__field--comments" title="Comments: {{ contentItem.commentsTitle }}">
+                <i class="content-list-item__icon--comments" wf-icon="comments" wf-icon-active="contentItem.hasComments"/>
             </td>
-            <td class="content-list-item__field--main-image" title="Main image: {{ contentItem.mainImage }}">
-                <i class="content-list-item__icon--main-image" wf-icon="main-image-{{ contentItem.mainImage }}"/>
+            <td class="content-list-item__field--main-image" title="{{ contentItem.mainImageTitle }}">
+                <i class="content-list-item__icon--main-image" wf-icon="main-image" wf-icon-active="contentItem.hasMainImage"/>
             </td>
             <td class="content-list-item__field--content-type" title="{{ contentItem.contentTypeTitle }}">
                 <i class="content-list-item__icon--content-type" wf-icon="{{ contentItem.contentType }}"/>
@@ -70,26 +70,38 @@
                 <select ng-model="contentItem.status" ng-options="status for status in statusValues">
                 </select>
             </td>
-            <td class="content-list-item__field--notes">{{ contentItem.note }}</td>
+            <td class="content-list-item__field--notes" title="Note">{{ contentItem.note }}</td>
             <td class="content-list-item__field--composer">
-                <a href="{{ contentItem.links.composer }}">
+                <a href="{{ contentItem.links.composer }}" title="View in Composer (opens in new window)" target="_blank" ng-if="contentItem.links.composer">
                     <i class="content-list-item__icon--composer" wf-icon="composer"></i>
                 </a>
+                <span ng-if="!contentItem.links.composer"  title="View in Composer (unavailable)">
+                    <i class="content-list-item__icon--composer" wf-icon="composer" wf-icon-active="false"></i>
+                </span>
             </td>
             <td class="content-list-item__field--preview">
-                <a href="{{ contentItem.links.preview }}">
+                <a href="{{ contentItem.links.preview }}" title="Preview (opens in new window)" target="_blank" ng-if="contentItem.links.preview">
                     <i class="content-list-item__icon--preview" wf-icon="preview"></i>
                 </a>
+                <span ng-if="!contentItem.links.preview"  title="Preview (unavailable)">
+                    <i class="content-list-item__icon--preview" wf-icon="preview" wf-icon-active="false"></i>
+                </span>
             </td>
             <td class="content-list-item__field--live">
-                <a href="{{ contentItem.links.live }}">
+                <a href="{{ contentItem.links.live }}" title="View on Live site (opens in new window)" target="_blank" ng-if="contentItem.links.live">
                     <i class="content-list-item__icon--live" wf-icon="live-site"></i>
                 </a>
+                <span ng-if="!contentItem.links.live"  title="View on Live site (unavailable)">
+                    <i class="content-list-item__icon--live" wf-icon="live-site" wf-icon-active="false"></i>
+                </span>
             </td>
             <td class="content-list-item__field--ophan">
-                <a href="{{ contentItem.links.ophan }}">
+                <a href="{{ contentItem.links.ophan }}" title="View in Ophan (opens in new window)" target="_blank" ng-if="contentItem.links.ophan">
                     <i class="content-list-item__icon--ophan" wf-icon="ophan"></i>
                 </a>
+                <span ng-if="!contentItem.links.ophan"  title="View in Ophan (unavailable)">
+                    <i class="content-list-item__icon--ophan" wf-icon="ophan" wf-icon-active="false"></i>
+                </span>
             </td>
             <td class="content-list-item__field--published-state">
                 {{ contentItem.publishedState }}
