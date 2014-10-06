@@ -6,7 +6,19 @@ define([], function () {
 
         var self = {};
 
-        self.endpoint = config.presenceUrl;
+        var connId = (function() {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            }
+            return function() {
+                return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                    s4() + '-' + s4() + s4() + s4();
+            };
+        })()();
+
+        self.endpoint = config.presenceUrl + "/" + connId;
 
         function broadcast(name, data) {
             /* use apply to make it take effect straight away */
