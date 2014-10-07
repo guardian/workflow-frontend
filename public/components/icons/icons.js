@@ -11,7 +11,7 @@ function wfIconDirective() {
 
     return {
         restrict: 'A',
-        template: '<img src="{{ iconUrl }}" class="wf-icon"/>',
+        template: '<img ng-src="{{ iconUrl }}" class="wf-icon"/>',
         scope: {
             wfIcon: '@',
             wfIconActive: '=' // boolean
