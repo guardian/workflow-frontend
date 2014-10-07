@@ -9,7 +9,12 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         restrict: 'E',
         replace: true,
         templateUrl: '/assets/components/sidebar-filter/sidebar-filter.html',
+        scope: {
+            filter: '=wfFilter',
+            listIsOpen: '@wfListIsOpen'
+        },
         link: function ($scope, elem, attrs) {
+
             $scope.defaultFilter = { caption: "All", value: null };
             $scope.selectedFilter = wfFiltersService.get($scope.filter.namespace);
 
@@ -32,25 +37,22 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             };
 
             $scope.toggleSidebarSection = function () {
+                $scope.list = $scope.list || elem[0].querySelector('.sidebar__filter-list');
 
-                // TODO: Refactor...
-
-                var list = elem[0].querySelector('.sidebar__filter-list');
-
-                if (elem[0].getAttribute('data-list-height') == null) {
-                    elem[0].setAttribute('data-list-height', list.offsetHeight);
-                    list.style.maxHeight = elem[0].getAttribute('data-list-height') + 'px';
+                if (!$scope.listHeight) {
+                    $scope.listHeight = $scope.list.offsetHeight;
+                    $scope.list.style.maxHeight = $scope.listHeight + 'px';
                 }
 
-                if (elem[0].getAttribute('data-is-open') == 'true') {
-                    elem[0].setAttribute('data-is-open', 'false');
+                if ($scope.listIsOpen) {
+                    $scope.listIsOpen = false;
                     setTimeout(function () { // Ensure that the max-height style has been set before setting it to 0 to ensure animation triggers...
-                        list.style.maxHeight = '0px';
+                        $scope.list.style.maxHeight = '0px';
                     }, 0);
 
                 } else {
-                    elem[0].setAttribute('data-is-open', 'true');
-                    list.style.maxHeight = elem[0].getAttribute('data-list-height') + 'px';
+                    $scope.listIsOpen = true;
+                    $scope.list.style.maxHeight = $scope.listHeight + 'px';
                 }
 
             };
