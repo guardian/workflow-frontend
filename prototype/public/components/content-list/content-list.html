@@ -67,7 +67,7 @@
                 <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in contentList.legalValues"></select>
             </td>
             <td class="content-list-item__field--status">
-                <select ng-model="contentItem.status" ng-options="status for status in statusValues">
+                <select ng-model="contentItem.status" ng-options="status for status in statusValues" wf-content-item-update-action="status">
                 </select>
             </td>
             <td class="content-list-item__field--notes" title="Note">{{ contentItem.note }}</td>
