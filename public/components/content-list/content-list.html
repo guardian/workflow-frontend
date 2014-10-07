@@ -27,7 +27,7 @@
             <th class="content-list-head__heading--published-state">State</th>
         </tr>
     </thead>
-    <tbody ng-repeat="group in content">
+    <tbody ng-repeat="group in content track by group.name">
         <tr class="content-list__group-heading-row">
             <th class="content-list__group-heading" scope="rowgroup" colspan="19">
                 <a class="content-list__group-heading-link" ng-click="">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></a>
