@@ -85,7 +85,7 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
                 update(stubId, field, data) {
                     return httpRequest({
                         method: 'PUT',
-                        url: '/api/stubs/' + stubId + '/' + field,
+                        url: '/api/content/' + stubId + '/' + field,
                         data: { data: data }
                     });
                 }
