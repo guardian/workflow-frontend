@@ -2,7 +2,7 @@
 'use strict';
 
 import angular from 'angular';
-import _ from 'lodash';
+import groupBy from 'lodash/modern/collections/groupBy';
 
 import 'lib/content-service';
 import 'lib/date-service';
@@ -18,7 +18,7 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=',
 angular.module('wfContentList', ['wfContentService', 'wfDateService'])
     .service('wfContentItemParser', ['config', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
     .controller('wfContentListController', ['$scope', 'statuses', 'wfContentService', 'wfContentItemParser', wfContentListController])
-
+    .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective);
 
 
 function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
@@ -72,6 +72,7 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
             // TODO: Stubs have a different structure to content items
 
             this.id = item.id || item.stubId;
+            this.composerId = item.composerId;
 
             this.headline = item.headline;
             this.workingTitle = item.workingTitle || item.title;
@@ -130,32 +131,89 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
         { name: 'Approved', value: 'COMPLETE'}
     ];
 
-    this.selectItem = function(contentItem) {
+    this.selectItem = (contentItem) => {
         this.selectedItem = contentItem;
     };
 
-    var params = wfContentService.getServerParams();
-    wfContentService.get(params).then(function (data) {
+    this.refresh = () => {
+        var params = wfContentService.getServerParams();
+        wfContentService.get(params).then((data) => {
 
-        // TODO stubs and content are separate structures in the API response
-        //      make this a single list of content with consistent structure in the API
-        var content = data.stubs.concat(data.content).map(wfContentItemParser.parse);
+            // TODO stubs and content are separate structures in the API response
+            //      make this a single list of content with consistent structure in the API
+            var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
+                grouped = groupBy(content, 'status');
 
+            $scope.content = ['stub'].concat(statuses).map((status) => {
+                // TODO: status is currently stored as presentation text, eg: "Writers"
+                //       should be stored as an enum and transformed to presentation text
+                //       here in the front-end
+                return {
+                    name: status,
+                    title: status == 'stub' ? 'Newslist' : status,
+                    items: grouped[status]
+                };
+            });
 
-
-        var grouped = _.groupBy(content, 'status');
-        $scope.content = ['stub'].concat(statuses).map(function(status) {
-            // TODO: status is currently stored as presentation text, eg: "Writers"
-            //       should be stored as an enum and transformed to presentation text
-            //       here in the front-end
-            return {
-                name: status,
-                title: status == 'stub' ? 'Newslist' : status,
-                items: grouped[status]
-            };
+            $scope.$apply();
         });
+    };
+
+    this.refresh();
+
+
+    $scope.$on('contentItem.update', ($event, msg) => {
+
+        var id = msg.contentItem.composerId,
+            field;
+
+        // generally there'll only be one field to update, but iterate just incase
+        // TODO: if multiple fields need updating, do it in a single API call
+        for (field in msg.data) {
+            wfContentService.update(id, field, msg.data[field]).then(() => {
+                $scope.$emit('contentItem.updated', {
+                    'contentItem': msg.contentItem,
+                    'field': field
+                });
+
+                this.refresh();
+            });
+        }
+
     });
 }
+
+/**
+ * Attribute directive: wf-content-item-update-action
+ *
+ * Listens to when an ng-model changes on the same control, then
+ * emits the action as an event to be captured in a controller elsewhere.
+ */
+function wfContentItemUpdateActionDirective() {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: ($scope, $element, $attrs, ngModel) => {
+
+            ngModel.$viewChangeListeners.push(() => {
+
+                var field = $attrs.wfContentItemUpdateAction;
+
+                var msg = {
+                    contentItem: $scope.contentItem,
+                    data: {
+                        [ field ]: ngModel.$modelValue
+                    },
+                    source: ngModel
+                };
+
+                $scope.$emit('contentItem.update', msg);
+            });
+
+        }
+    };
+}
+
 
 
 /*
