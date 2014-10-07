@@ -4,6 +4,8 @@
  * Shows all content items in a table.
  */
 
+$content-list-icon-size: 14px;
+
 // Global padding for cells
 %content-list__field-padding {
     padding: 10px 5px;
@@ -71,8 +73,8 @@
                     margin-top: 1px;
                 }
                 &--assignee {
-                    width: 14px;
-                    height: 14px;
+                    width: $content-list-icon-size;
+                    height: $content-list-icon-size;
                 }
             }
         }
@@ -142,8 +144,8 @@
             &--live,
             &--ophan {
                 display: inline-block;
-                width: 14px;
-                height: 14px;
+                width: $content-list-icon-size;
+                height: $content-list-icon-size;
             }
 
             &--assignee,
@@ -232,6 +234,18 @@
             &--ophan {
                 @extend %fs-data-3;
                 @extend %content-list__field-padding;
+            }
+
+            // icon fields
+            &--priority,
+            &--comments,
+            &--main-image,
+            &--content-type,
+            &--composer,
+            &--preview,
+            &--live,
+            &--ophan {
+                width: $content-list-icon-size;
             }
 
             &--presence,
