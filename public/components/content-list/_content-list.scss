@@ -6,6 +6,11 @@
 
 $content-list-icon-size: 14px;
 
+@mixin keyframes($name) {
+    @-webkit-keyframes #{$name} { @content }
+    @keyframes #{$name} { @content }
+}
+
 // Global padding for cells
 %content-list__field-padding {
     padding: 10px 5px;
@@ -87,6 +92,7 @@ $content-list-icon-size: 14px;
         &-row {
             background-color: $c-grey-150;
             border-top: 1px solid $c-grey-300;
+            border-bottom: 1px solid $c-grey-300;
         }
 
         &-link {
@@ -130,6 +136,18 @@ $content-list-icon-size: 14px;
             &::before {
                 background-color: $c-green;
             }
+        }
+
+
+
+        &.ng-enter {
+            -webkit-animation: content-list-item--enter-sequence 2s ease-out;
+            animation: content-list-item--enter-sequence 2s ease-out;
+        }
+
+        &.ng-leave {
+            -webkit-animation: content-list-item--leave-sequence 0.5s ease-out;
+            animation: content-list-item--leave-sequence 0.5s ease-out;
         }
 
 
@@ -284,59 +302,9 @@ $content-list-icon-size: 14px;
 }
 
 
-
-
-
-
-
-
-/*
-// TODO: BEMify properly
-td.wf-table-heading {
-    font-weight: bold;
-}
-
-.content-list__head {
-    color: #fff;
-    background-color: #666;
-    font-size: 75%;
-    letter-spacing: 0.5px;
-}
-
-tr.wf-table-grouping td {
-    color: black;
-    background-color: #F5F5F5;
-    font-size: 75%;
-    letter-spacing: 0.5px;
-}
-
-tr td {
-    font-size: 90%;
-}
-
-.content-list__item-row-note {
-    font-size: 80%;
-    font-style: italic;
-    max-width: 250px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.content-list__item-published {
-    width: 85px;
-}
-
-.content-list__item-row--selected {
-    background-color: #f9f9f9;
-}
-
-.content-list__item-row.ng-enter {
-    -webkit-animation: content-list__item-row--enter-sequence 2s ease-out;
-    animation: content-list__item-row--enter-sequence 2s ease-out;
-}
-
-@-webkit-keyframes content-list__item-row--enter-sequence {
+// Transition keyframes for changing content in the list
+@include keyframes(content-list-item--enter-sequence) {
+    // TODO: use proper pallete colours
     0% {
         background: #fcf8e3;
         opacity: 0;
@@ -347,35 +315,8 @@ tr td {
     }
 }
 
-@keyframes content-list__item-row--enter-sequence {
-    0% {
-        background: #fcf8e3;
-        opacity: 0;
-    }
-    50% {
-        background: #fcf8e3;
-        opacity: 1;
-    }
-}
-
-.content-list__item-row.ng-leave {
-    -webkit-animation: content-list__item-row--leave-sequence 0.5s ease-out;
-    animation: content-list__item-row--leave-sequence 0.5s ease-out;
-}
-
-@-webkit-keyframes content-list__item-row--leave-sequence {
+@include keyframes(content-list-item--leave-sequence) {
     to {
         opacity: 0;
     }
 }
-
-@keyframes content-list__item-row--leave-sequence {
-    to {
-        opacity: 0;
-    }
-}
-
-.status-cell {
-    background-color: #F0F8FF;
-}
-*/

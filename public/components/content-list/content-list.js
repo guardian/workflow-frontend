@@ -149,7 +149,7 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
                 //       should be stored as an enum and transformed to presentation text
                 //       here in the front-end
                 return {
-                    name: status,
+                    name: status.toLowerCase(),
                     title: status == 'stub' ? 'Newslist' : status,
                     items: grouped[status]
                 };
