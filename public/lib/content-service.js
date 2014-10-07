@@ -11,7 +11,7 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
              * Wraps all requests to handle when user sessions become invalid after an hour.
              *
              * @param  {object=} options Angular $http options for the call.
-             * @return {Promise}
+             * @return {Promise} (ES6 promise not a Angular "promise")
              */
             function httpRequest(options = {}) {
 
@@ -78,15 +78,24 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
                 /**
                  * Async update a field for a piece of content.
                  *
-                 * @param {String} stubId
+                 * Adapter for both content and stubs APIs.
+                 * TODO normalise to single API.
+                 *
+                 * @param {Object} contentItem
                  * @param {String} field
                  * @param {mixed} data
+                 *
+                 * @returns {Promise}
                  */
-                update(stubId, field, data) {
+                updateField(contentItem, field, data) {
+                    var isStatusUpdate = field === 'status',
+                        endpoint = isStatusUpdate ? '/api/content/' : '/api/stubs/',
+                        contentId = isStatusUpdate ? contentItem.composerId : contentItem.id || contentItem.stubId;
+
                     return httpRequest({
                         method: 'PUT',
-                        url: '/api/content/' + stubId + '/' + field,
-                        data: { data: data }
+                        url: endpoint + contentId + '/' + field,
+                        data: { 'data': data }
                     });
                 }
 
