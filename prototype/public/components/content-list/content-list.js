@@ -164,13 +164,10 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
 
     $scope.$on('contentItem.update', ($event, msg) => {
 
-        var id = msg.contentItem.composerId,
-            field;
-
         // generally there'll only be one field to update, but iterate just incase
         // TODO: if multiple fields need updating, do it in a single API call
-        for (field in msg.data) {
-            wfContentService.update(id, field, msg.data[field]).then(() => {
+        for (var field in msg.data) {
+            wfContentService.updateField(msg.contentItem, field, msg.data[field]).then(() => {
                 $scope.$emit('contentItem.updated', {
                     'contentItem': msg.contentItem,
                     'field': field
