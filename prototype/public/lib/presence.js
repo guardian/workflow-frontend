@@ -44,14 +44,13 @@ define([], function () {
                 broadcast("presence.subscribed", data);
             },
             "updated": function(data) {
-                console.log("XXX PMR receiving updated message");
                 broadcast("presence.status", data);
             }
         }
 
         function messageHandler(msgJson) {
             var msg = JSON.parse(msgJson);
-            console.log("PMR: messageHandler", msgJson);
+            //console.log("PMR: messageHandler", msgJson);
             if(typeof messageHandlers[msg.action] === "function") {
                 messageHandlers[msg.action](msg.data);
             } else {
@@ -63,7 +62,6 @@ define([], function () {
         var _socket = Promise.reject("not yet connected");
 
         function doConnection() {
-            console.log("doConnection, attempting connection");
             _socket = new Promise( function(resolve, reject) {
                 var s = new WebSocket(self.endpoint);
                 s.onerror   = function () {
@@ -107,14 +105,14 @@ define([], function () {
         function sendJson(data) {
             return _socket.then(function(socket) {
                 socket.send(JSON.stringify(data));
-                console.log("sending: " + JSON.stringify(data));
+                //console.log("sending: " + JSON.stringify(data));
             });
         }
 
         self.articleSubscribe = function(articleIds) {
             var ids = (Array.isArray(articleIds)) ? articleIds : Array(articleIds);
             var p = sendJson(makeSubscriptionRequest(ids));
-            p.then(function () { console.log("sent request: ", makeSubscriptionRequest(ids)) });
+            //p.then(function () { console.log("sent request: ", makeSubscriptionRequest(ids)) });
             return p;
         }
 
@@ -174,6 +172,7 @@ define([], function () {
             }
 
             wfPresenceService.whenEnabled.then(function() {
+                //console.log("setting up subscription event");
                 $scope.presenceEnabled = true;
 
                 $scope.$on("presence.subscribed", function (ev, data) {
@@ -187,7 +186,6 @@ define([], function () {
                     if(newVal !== oldVal) {
                         doSubscription(newVal);
                     }
-                    console.log("pmrLog-1 -> changed", newVal, oldVal);
                 }, true);
             });
 
@@ -197,10 +195,6 @@ define([], function () {
 
             function doSubscription(ids) {
                 initialData = $q.defer();
-                initialData.promise.then(function (data) {
-                    console.log("pmrLog-1 initialData has arrived", data);
-                });
-
                 wfPresenceService.articleSubscribe(ids);
             }
 
@@ -234,7 +228,6 @@ define([], function () {
         }
 
         $scope.initialData(id).then(function (currentState) {
-            console.log("about to apply initial data to [" + id + "]:", currentState);
             applyCurrentState(currentState);
         });
 
@@ -242,7 +235,6 @@ define([], function () {
             if(id === data.subscriptionId) {
                 applyCurrentState(data.currentState);
             }
-            console.log("wfPresenceIndicatorController event handler", data);
         });
 
 
