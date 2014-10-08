@@ -180,7 +180,7 @@ define([
     // composer import control
     // stub create and edit
 
-    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService, composerService, prodOfficeService) {
+    var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService, wfComposerService, prodOfficeService) {
 
         $scope.stub = stub;
 
@@ -189,7 +189,7 @@ define([
         $scope.disabled = $scope.stub.composerId !== undefined;
 
         $scope.composerUrlChanged = function () {
-            composerService.getComposerContent($scope.formData.composerUrl).then(
+            wfComposerService.getComposerContent($scope.formData.composerUrl).then(
                 function (content) {
                     if (content) {
                         $scope.stub.composerId = content.id;
@@ -250,7 +250,7 @@ define([
         'stub',
         'sections',
         'legalStatesService',
-        'composerService',
+        'wfComposerService',
         'prodOfficeService',
         ComposerImportModalInstanceCtrl]);
 
