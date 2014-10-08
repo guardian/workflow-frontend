@@ -2,7 +2,7 @@ define([], function () {
 
     var module = angular.module('wfPresenceService', []);
 
-    module.factory('wfPresenceService', ['$rootScope', '$q', 'config', 'wfFeatureSwitches', function($rootScope, $q, config, wfFeatureSwitches) {
+    module.factory('wfPresenceService', ['$rootScope', '$q', 'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $q, config, wfFeatureSwitches, wfUser) {
 
         var self = {};
 
@@ -76,6 +76,7 @@ define([], function () {
                     broadcast("presence.connection.closed");
                 };
                 s.onmessage = function(ev) {
+                    //console.log("MESSAGE: ", ev.data);
                     messageHandler(ev.data);
                 };
             });
@@ -83,11 +84,11 @@ define([], function () {
         }
 
         self.person = {
-            firstName : "Paul",
-            lastName  : "Roberts",
-            email     : "paul.roberts@guardian.co.uk",
-            browserId : "12345",
-            googleId  : "123456"
+            firstName : wfUser.firstName,
+            lastName  : wfUser.lastName,
+            email     : wfUser.email,
+            browserId : navigator.userAgent,
+            googleId  : "00000" // required but not used
         };
 
         function makeRequest(action, data) {
