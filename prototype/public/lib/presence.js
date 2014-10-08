@@ -1,4 +1,4 @@
-define([], function () {
+define(["node-uuid"], function (uuid) {
 
     var module = angular.module('wfPresenceService', []);
 
@@ -13,19 +13,9 @@ define([], function () {
           console.log("error: " + err);
         });
 
-        var connId = (function() {
-            function s4() {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
-            }
-            return function() {
-                return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-                    s4() + '-' + s4() + s4() + s4();
-            };
-        })()();
+        self.connId = uuid();
 
-        self.endpoint = config.presenceUrl + "/" + connId;
+        self.endpoint = config.presenceUrl + "/" + self.connId;
 
         function broadcast(name, data) {
             /* use apply to make it take effect straight away */
