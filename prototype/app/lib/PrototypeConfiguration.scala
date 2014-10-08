@@ -7,6 +7,8 @@ case class PrototypeConfiguration(composerUrl: String, googleClientId: String, g
 
 object PrototypeConfiguration {
 
+  lazy val cached = apply
+
   def apply: PrototypeConfiguration = {
       val configEit = (for {
         composerUrl <- Config.getConfigString("composer.url").right
