@@ -207,6 +207,9 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
         poller.stopPolling();
     });
 
+
+    // TODO: use more specific event names to trigger a refresh, eg: filterChanged, contentImported
+    $scope.$on('getContent', this.poller.refresh.bind(this.poller));
 }
 
 /**
