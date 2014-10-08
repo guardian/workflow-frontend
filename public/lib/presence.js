@@ -40,7 +40,7 @@ define(["node-uuid"], function (uuid) {
 
         function messageHandler(msgJson) {
             var msg = JSON.parse(msgJson);
-            //console.log("PMR: messageHandler", msgJson);
+            //console.log("messageHandler", msgJson);
             if(typeof messageHandlers[msg.action] === "function") {
                 messageHandlers[msg.action](msg.data);
             } else {
