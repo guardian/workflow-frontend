@@ -2,7 +2,8 @@
 'use strict';
 
 import angular from 'angular';
-import groupBy from 'lodash/modern/collections/groupBy';
+import _groupBy from 'lodash/modern/collections/groupBy';
+import _find from 'lodash/modern/collections/find';
 
 import 'lib/content-service';
 import 'lib/date-service';
@@ -17,7 +18,7 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=',
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService'])
     .service('wfContentItemParser', ['config', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
-    .controller('wfContentListController', ['$scope', 'statuses', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', wfContentListController])
+    .controller('wfContentListController', ['$scope', '$log', 'statuses', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective);
 
 
@@ -119,7 +120,7 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
 
 
 
-function wfContentListController($scope, statuses, wfContentService, wfContentPollingService, wfContentItemParser) {
+function wfContentListController($scope, $log, statuses, wfContentService, wfContentPollingService, wfContentItemParser) {
 
     $scope.statusValues = statuses;
 
@@ -142,7 +143,7 @@ function wfContentListController($scope, statuses, wfContentService, wfContentPo
         // TODO stubs and content are separate structures in the API response
         //      make this a single list of content with consistent structure in the API
         var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
-            grouped = groupBy(content, 'status');
+            grouped = _groupBy(content, 'status');
 
         $scope.content = ['stub'].concat(statuses).map((status) => {
             // TODO: status is currently stored as presentation text, eg: "Writers"
@@ -155,6 +156,11 @@ function wfContentListController($scope, statuses, wfContentService, wfContentPo
             };
         });
 
+        // update selectedItem as objects are now !==
+        if (this.selectedItem) {
+            this.selectedItem = _find(content, { id: this.selectedItem.id });
+        }
+
         $scope.refreshContentError = false;
 
         $scope.$apply();
@@ -162,6 +168,7 @@ function wfContentListController($scope, statuses, wfContentService, wfContentPo
 
 
     this.renderError = (err) => {
+        $log.error('Error rendering content: ' + err);
         $scope.refreshContentError = err;
 
         $scope.$apply();
