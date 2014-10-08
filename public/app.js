@@ -13,7 +13,6 @@ import 'javascripts/controllers/dashboard/content-item';
 import 'javascripts/controllers/dashboard/dashboard';
 import 'javascripts/controllers/dashboard/date-filter';
 import 'javascripts/controllers/dashboard/stub-crud';
-import 'javascripts/services/composer-service';
 import 'javascripts/services/legal-states-service';
 import 'javascripts/services/prodoffice-service';
 
@@ -52,7 +51,6 @@ angular.module('workflow',
         'workflow.services',
         'workflow.directives',
         'workflow.controllers',
-        'composerService',
         'legalStatesService',
         'prodOfficeService',
         'wfFiltersService',
