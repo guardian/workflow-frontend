@@ -62,7 +62,7 @@
         <a href="mailto:cms.workflow@guardian.co.uk">the Workflow team</a>.
     </div>
 
-    <table class="content-list table">
+    <table class="content-list table" ng-controller="wfPresenceSubscription">
         <thead class="content-list__head">
         <tr>
             <th colspan="4"></th>
@@ -124,6 +124,20 @@
             </p>
 
                 <p ng-show="!content.published">Draft</p>
+            </td>
+            <td>
+                <ul ng-controller="wfPresenceIndicatorController" ng-show="presenceEnabled"
+                    class="content-list__item-presence-list">
+                    <li ng-repeat="prez in presence"
+                        ng-class="'content-list__item-presence__' + prez.status">
+                        <p href="mailto:{{prez.email}}"
+                           class="content-list__item-presence-content"
+                           title="{{prez.longText}}">
+                            <a class="content-list__item-presence-link"
+                               href="mailto:{{prez.email}}">{{prez.indicatorText}}</a>
+                        </p>
+                    </li>
+                </ul>
             </td>
             <td><span ng-click="deleteContent(content)" class="glyphicon glyphicon-trash"></span></td>
         </tr>
