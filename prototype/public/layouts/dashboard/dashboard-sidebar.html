@@ -1,5 +1,5 @@
 <div class="sidebar-filters">
-    <wf-sidebar-filter ng-repeat="filter in filters"></wf-sidebar-filter>
+    <wf-sidebar-filter ng-repeat="filter in filters" wf-filter="filter" wf-list-is-open="true"></wf-sidebar-filter>
 </div>
 
 <div class="sidebar__location-picker dropup" dropdown ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
