@@ -42,14 +42,12 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 if (!$scope.listHeight) {
                     $scope.listHeight = $scope.list.offsetHeight;
                     $scope.list.style.maxHeight = $scope.listHeight + 'px';
+                    getComputedStyle($scope.list).maxHeight; // Force reflow in FF & IE
                 }
 
                 if ($scope.listIsOpen) {
                     $scope.listIsOpen = false;
-                    setTimeout(function () { // Ensure that the max-height style has been set before setting it to 0 to ensure animation triggers...
-                        $scope.list.style.maxHeight = '0px';
-                    }, 0);
-
+                    $scope.list.style.maxHeight = '0px';
                 } else {
                     $scope.listIsOpen = true;
                     $scope.list.style.maxHeight = $scope.listHeight + 'px';
