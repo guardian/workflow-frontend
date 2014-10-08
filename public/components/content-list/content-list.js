@@ -17,7 +17,7 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=',
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService'])
     .service('wfContentItemParser', ['config', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
-    .controller('wfContentListController', ['$scope', 'statuses', 'wfContentService', 'wfContentItemParser', wfContentListController])
+    .controller('wfContentListController', ['$scope', 'statuses', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective);
 
 
@@ -119,7 +119,7 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
 
 
 
-function wfContentListController($scope, statuses, wfContentService, wfContentItemParser) {
+function wfContentListController($scope, statuses, wfContentService, wfContentPollingService, wfContentItemParser) {
 
     $scope.statusValues = statuses;
 
@@ -135,31 +135,37 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
         this.selectedItem = contentItem;
     };
 
-    this.refresh = () => {
-        var params = wfContentService.getServerParams();
-        wfContentService.get(params).then((data) => {
 
-            // TODO stubs and content are separate structures in the API response
-            //      make this a single list of content with consistent structure in the API
-            var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
-                grouped = groupBy(content, 'status');
+    this.render = (response) => {
+        var data = response.data;
 
-            $scope.content = ['stub'].concat(statuses).map((status) => {
-                // TODO: status is currently stored as presentation text, eg: "Writers"
-                //       should be stored as an enum and transformed to presentation text
-                //       here in the front-end
-                return {
-                    name: status.toLowerCase(),
-                    title: status == 'stub' ? 'Newslist' : status,
-                    items: grouped[status]
-                };
-            });
+        // TODO stubs and content are separate structures in the API response
+        //      make this a single list of content with consistent structure in the API
+        var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
+            grouped = groupBy(content, 'status');
 
-            $scope.$apply();
+        $scope.content = ['stub'].concat(statuses).map((status) => {
+            // TODO: status is currently stored as presentation text, eg: "Writers"
+            //       should be stored as an enum and transformed to presentation text
+            //       here in the front-end
+            return {
+                name: status.toLowerCase(),
+                title: status == 'stub' ? 'Newslist' : status,
+                items: grouped[status]
+            };
         });
+
+        $scope.refreshContentError = false;
+
+        $scope.$apply();
     };
 
-    this.refresh();
+
+    this.renderError = (err) => {
+        $scope.refreshContentError = err;
+
+        $scope.$apply();
+    };
 
 
     $scope.$on('contentItem.update', ($event, msg) => {
@@ -173,11 +179,27 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
                     'field': field
                 });
 
-                this.refresh();
+                this.poller.refresh();
             });
         }
 
     });
+
+
+    // Start polling
+    var poller = this.poller = new wfContentPollingService(function () {
+        return wfContentService.getServerParams()
+    });
+
+    poller.onPoll(this.render);
+    poller.onError(this.renderError);
+
+    poller.startPolling();
+
+    $scope.$on('destroy', function () {
+        poller.stopPolling();
+    });
+
 }
 
 /**
@@ -210,45 +232,3 @@ function wfContentItemUpdateActionDirective() {
         }
     };
 }
-
-
-
-/*
-    var getContent = function (evt, params) {
-        var params = wfContentService.getServerParams();
-        wfContentService.get(params).then(function (response) {
-            updateScopeModels(response);
-        });
-    };
-
-    function updateScopeModels(data) {
-        $scope.contentItems = data.content;
-        $scope.stubs = data.stubs;
-        $scope.contentByStatus = groupByStatus(data.content);
-
-        if ($scope.selectedContent) {
-            var found = _.findWhere(data.content, { composerId: $scope.selectedContent.composerId });
-
-            // found will be undefined when not found -> when something is deleted.
-            $scope.selectedContent = found;
-        }
-
-        $scope.$apply();
-    }
-*/
-/*
-    // Poll for updates
-    var poller = new wfContentPollingService(function () {
-        return wfContentService.getServerParams()
-    });
-
-    poller.onPoll(updateScopeModels);
-
-    poller.startPolling();
-
-    $scope.$on('destroy', function () {
-        poller.stopPolling();
-    });
-
-    // end polling logic
-*/

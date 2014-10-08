@@ -58,6 +58,7 @@ angular.module('wfUser', [])
 
                 }
 
+
                 $$window.on('message', postMessageListener);
 
 
@@ -66,7 +67,7 @@ angular.module('wfUser', [])
 
                     $$window.off('message', postMessageListener);
 
-                    reject(new Error('Timeout loading URL in iframe: ' + url));
+                    reject(new Error('Timeout loading URL in iframe: ' + SESSION_CHECK_URL));
 
                 }, 3000);
 
