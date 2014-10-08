@@ -1,0 +1,4 @@
+name: workflow
+mappings:
+  - prefix: workflow
+    port: 9090

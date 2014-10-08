@@ -1,10 +1,10 @@
-define(['angular'], function(angular) {
+define(['angular'], function (angular) {
     'use strict';
 
     var legalStatesService = angular.module('legalStatesService', []);
 
     legalStatesService.factory('legalStatesService',
-        [function() {
+        [function () {
 
             function getLegalStates() {
                 return [

@@ -1,18 +1,18 @@
-define(['angular'], function(angular) {
+define(['angular'], function (angular) {
     'use strict';
 
     var prodOfficeService = angular.module('prodOfficeService', ['wfLocationService']);
 
     prodOfficeService.factory('prodOfficeService',
-        ['$rootScope', 'wfLocationService', function($rootScope, wfLocationService) {
+        ['$rootScope', 'wfLocationService', function ($rootScope, wfLocationService) {
 
             /* mapping from city (as returned by getLocationKey()) to
              * office */
             var tz_office = {
-                "NYC"     : "US",
-                "SYD"     : "AU",
-                "LON"     : "UK",
-                "default" : "UK"
+                "NYC": "US",
+                "SYD": "AU",
+                "LON": "UK",
+                "default": "UK"
             }
 
             function officeToTimezone(office) {
@@ -36,15 +36,15 @@ define(['angular'], function(angular) {
 
             var prodOffices = {
                 getProdOffices: getProdOffices,
-                getDefaultOffice:  getDefaultOffice
+                getDefaultOffice: getDefaultOffice
             };
 
-            $rootScope.$on('location:change', function(ev, newValue, oldValue) {
+            $rootScope.$on('location:change', function (ev, newValue, oldValue) {
                 curDefaultOffice = officeToTimezone(newValue);
             })
 
             return prodOffices;
         }]);
 
-   return prodOfficeService;
+    return prodOfficeService;
 });
