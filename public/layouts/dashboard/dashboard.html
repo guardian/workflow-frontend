@@ -195,7 +195,8 @@
                                 <p ng-show="!content.published">Draft</p>
                             </td>
                             <td>
-                                <ul ng-controller="wfPresenceIndicatorController" class="content-list__item-presence-list">
+                                <ul ng-controller="wfPresenceIndicatorController" ng-show="presenceEnabled"
+                                    class="content-list__item-presence-list">
                                     <li ng-repeat="prez in presence"
                                         ng-class="'content-list__item-presence__' + prez.status">
                                         <p href="mailto:{{prez.email}}"

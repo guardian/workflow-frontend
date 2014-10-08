@@ -23,6 +23,7 @@ import 'layouts/dashboard/dashboard-toolbar';
 import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/analytics';
+import 'lib/feature-switches';
 
 // 3rd party libs
 import 'angular-ui-router';
@@ -50,6 +51,7 @@ angular.module('workflow',
     'legalStatesService',
     'prodOfficeService',
     'wfFiltersService',
+    'wfFeatureSwitches',
     'xeditable'
   ])
 

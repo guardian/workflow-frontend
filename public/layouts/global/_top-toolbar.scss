@@ -59,6 +59,13 @@
   opacity: 0.5;
 }
 
+.top-toolbar__presence-connection-content__DISABLED {
+  @extend .top-toolbar__presence-connection-content;
+  background-color: red;
+  opacity: 0.1;
+  display: none;
+}
+
 .top-toolbar__presence-connection-content__ERROR {
   @extend .top-toolbar__presence-connection-content;
   background-color: red;
