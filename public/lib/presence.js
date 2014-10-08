@@ -2,9 +2,16 @@ define([], function () {
 
     var module = angular.module('wfPresenceService', []);
 
-    module.factory('wfPresenceService', ['$rootScope', 'config', function($rootScope, config) {
+    module.factory('wfPresenceService', ['$rootScope', '$q', 'config', 'wfFeatureSwitches', function($rootScope, $q, config, wfFeatureSwitches) {
 
         var self = {};
+
+        self.whenEnabled = wfFeatureSwitches.getSwitch("presence-indicator").then(function (value) {
+          if(value) true
+          else reject("presence disabled");
+        }, function(err) {
+          console.log("error: " + err);
+        });
 
         var connId = (function() {
             function s4() {
@@ -111,10 +118,16 @@ define([], function () {
             return p;
         }
 
-        doConnection();
+        self.whenEnabled.then(function() {
+            console.log("presence is enabled... attempting connection")
+            doConnection();
 
-        $rootScope.$on("presence.connection.closed", doConnection);
-        $rootScope.$on("presence.connection.error",  doConnection);
+            $rootScope.$on("presence.connection.closed", doConnection);
+            $rootScope.$on("presence.connection.error",  doConnection);
+
+        }, function() {
+            console.log("presence is disabled");
+        })
 
         return self;
 
@@ -123,17 +136,23 @@ define([], function () {
     module.controller(
         'wfPresenceConnectionStatus',
         [ "$scope", "wfPresenceService", function($scope, wfPresenceService) {
-            $scope.connectionStatus = "PRE";
+            $scope.presenceEnabled = false
+            $scope.connectionStatus = "DISABLED";
 
-            $scope.$on("presence.connection.success", function () {
-                $scope.connectionStatus = "OK";
-            });
-            $scope.$on("presence.connection.error", function () {
-                $scope.connectionStatus = "ERROR";
-            });
+            wfPresenceService.whenEnabled.then(function () {
+                $scope.presenceEnabled = true;
+                $scope.connectionStatus = "PRE";
 
-            $scope.$on("presence.connection.closed", function () {
-                $scope.connectionStatus = "CLOSED";
+                $scope.$on("presence.connection.success", function () {
+                    $scope.connectionStatus = "OK";
+                });
+                $scope.$on("presence.connection.error", function () {
+                    $scope.connectionStatus = "ERROR";
+                });
+
+                $scope.$on("presence.connection.closed", function () {
+                    $scope.connectionStatus = "CLOSED";
+                });
             });
         }]);
 
@@ -142,6 +161,8 @@ define([], function () {
         [ "$scope", "$q", "wfPresenceService", function($scope, $q, wfPresenceService) {
 
             var initialData = null;
+
+            $scope.presenceEnabled = false;
 
             $scope.initialData = function(id) {
                 if(initialData == null) return $q.reject("no subscription has been made yet");
@@ -152,8 +173,22 @@ define([], function () {
                 });
             }
 
-            $scope.$on("presence.subscribed", function (ev, data) {
-                initialData && initialData.resolve(data.subscribedTo);
+            wfPresenceService.whenEnabled.then(function() {
+                $scope.presenceEnabled = true;
+
+                $scope.$on("presence.subscribed", function (ev, data) {
+                    initialData && initialData.resolve(data.subscribedTo);
+                });
+
+                $scope.$watch(function($scope) {
+                    var content = $scope["contentByStatus"];
+                    return (content && getIds(content)) || [];
+                }, function (newVal, oldVal) {
+                    if(newVal !== oldVal) {
+                        doSubscription(newVal);
+                    }
+                    console.log("pmrLog-1 -> changed", newVal, oldVal);
+                }, true);
             });
 
             function getIds(content) {
@@ -169,19 +204,12 @@ define([], function () {
                 wfPresenceService.articleSubscribe(ids);
             }
 
-            $scope.$watch(function($scope) {
-                var content = $scope["contentByStatus"];
-                return (content && getIds(content)) || [];
-            }, function (newVal, oldVal) {
-                if(newVal !== oldVal) {
-                    doSubscription(newVal);
-                }
-                console.log("pmrLog-1 -> changed", newVal, oldVal);
-            }, true);
 
         }]);
 
     module.controller('wfPresenceIndicatorController', [ "$scope", function($scope) {
+
+        if(!$scope.presenceEnabled) return;
 
         var id = $scope.content.composerId;
 
@@ -192,7 +220,6 @@ define([], function () {
             if(currentState.length == 0) {
                 $scope.presence = [{ status: "free", indicatorText: ""}]
             } else {
-
                 $scope.presence = _.map(
                     _.uniq(currentState, false, function(s) { return s.clientId.person.email }),
                     function (pr) {
