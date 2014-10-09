@@ -17,12 +17,12 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=',
 
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService'])
-    .service('wfContentItemParser', ['config', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
+    .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
     .controller('wfContentListController', ['$scope', '$log', 'statuses', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective);
 
 
-function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
+function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
     function getPriorityString(priorityValue) {
         if (priorityValue == 1) {
             return "urgent";
@@ -49,6 +49,9 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
     function toTitleCase(str) {
         return str.replace(/\b\w/g, function (txt) { return txt.toUpperCase(); });
     }
+
+    var newslistStatusValues = [ { label: 'Newslist', value: 'stub'}, { label: 'Writers', value: 'writers' } ],
+        contentStatusValues = statuses.map( (status) => { return { label: status, value: status } });
 
     class ContentItemLinks {
         constructor(item) {
@@ -93,7 +96,10 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
             this.contentTypeTitle = toTitleCase(item.contentType);
             this.office = item.prodOffice;
             this.officeTitle = getFullOfficeString(item.prodOffice);
+
             this.status = item.status || 'stub';
+            this.statusValues = this.status === 'stub' ? newslistStatusValues : contentStatusValues;
+
             this.section = item.section;
             this.needsLegal = item.needsLegal;
             this.note = item.note;
@@ -121,8 +127,6 @@ function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeF
 
 
 function wfContentListController($scope, $log, statuses, wfContentService, wfContentPollingService, wfContentItemParser) {
-
-    $scope.statusValues = statuses;
 
     this.showHeadline = false;
 
