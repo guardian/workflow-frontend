@@ -58,29 +58,29 @@
   opacity: 0.5;
 }
 
-.top-toolbar__presence-connection-content__DISABLED {
+.top-toolbar__presence-connection-content--DISABLED {
   @extend .top-toolbar__presence-connection-content;
   background-color: red;
   opacity: 0.1;
   display: none;
 }
 
-.top-toolbar__presence-connection-content__ERROR {
+.top-toolbar__presence-connection-content--ERROR {
   @extend .top-toolbar__presence-connection-content;
   background-color: red;
 }
 
-.top-toolbar__presence-connection-content__PRE {
+.top-toolbar__presence-connection-content--PRE {
   @extend .top-toolbar__presence-connection-content;
   background-color: grey;
 }
 
-.top-toolbar__presence-connection-content__OK {
+.top-toolbar__presence-connection-content--OK {
   @extend .top-toolbar__presence-connection-content;
   background-color: green;
 }
 
-.top-toolbar__presence-connection-content__CLOSED {
+.top-toolbar__presence-connection-content--CLOSED {
   @extend .top-toolbar__presence-connection-content;
   background-color: pink;
 }

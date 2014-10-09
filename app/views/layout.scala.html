@@ -19,7 +19,7 @@
     <div class="top-toolbar__view-toolbar" ui-view="view-toolbar"></div>
     <div class="top-toolbar__presence-connection" ng-controller="wfPresenceConnectionStatus">
         <p ng-bind="connectionStatus"
-           ng-class="'top-toolbar__presence-connection-content__' + connectionStatus"></p>
+           class="top-toolbar__presence-connection-content--{{connectionStatus}}"></p>
     </div>
     <div class="top-toolbar__user">
       @if(user.isEmpty) {
