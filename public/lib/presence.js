@@ -1,4 +1,4 @@
-define(["node-uuid"], function (uuid) {
+define(["node-uuid", "underscore"], function (uuid, _) {
 
     var module = angular.module('wfPresenceService', []);
 
@@ -7,7 +7,7 @@ define(["node-uuid"], function (uuid) {
         var self = {};
 
         self.whenEnabled = wfFeatureSwitches.getSwitch("presence-indicator").then(function (value) {
-          if(value) true
+          if(value) return true
           else reject("presence disabled");
         }, function(err) {
           console.log("error: " + err);
@@ -156,9 +156,11 @@ define(["node-uuid"], function (uuid) {
             $scope.initialData = function(id) {
                 if(initialData == null) return $q.reject("no subscription has been made yet");
                 else return initialData.promise.then(function (data) {
-                    return _.find(data, function(d) {
+                    var found = _.find(data, function(d) {
                         return d.subscriptionId == id;
-                    }).currentState;
+                    });
+                    if(!found) return $q.reject("unknown ID: [" + id + "]");
+                    else return found.currentState;
                 });
             }
 
@@ -192,44 +194,51 @@ define(["node-uuid"], function (uuid) {
 
         }]);
 
-    module.controller('wfPresenceIndicatorController', [ "$scope", function($scope) {
+    module.directive('wfPresenceIndicators', [ function() {
+        return {
+            restrict: 'E',
+            templateUrl: "/assets/components/presence-indicator/presence-indicators.html",
+            scope: {
+                id: "=presenceId",
+                getInitialData: "&initialData",
+                enabled: "="
+            },
+            link: function($scope) {
 
-        if(!$scope.presenceEnabled) return;
+                // XXX TODO factor this logic out so that the knowledge of the
+                // format of the data from prez is in one place
 
-        var id = $scope.content.composerId;
+                function applyCurrentState(currentState) {
+                    if(currentState.length == 0) {
+                        $scope.presences = [{ status: "free", indicatorText: ""}]
+                    } else {
+                        $scope.presences = _.map(
+                            _.uniq(currentState, false, function(s) { return s.clientId.person.email }),
+                            function (pr) {
+                                var person = pr.clientId.person;
+                                return { indicatorText:
+                                         (person.firstName.charAt(0) + person.lastName.charAt(0)).toUpperCase(),
+                                         longText: [person.firstName, person.lastName].join(" "),
+                                         email: person.email,
+                                         status: "present" };
+                            });
+                    }
+                }
 
-        // XXX TODO factor this logic out so that the knowledge of the
-        // format of the data from prez is in one place
-
-        function applyCurrentState(currentState) {
-            if(currentState.length == 0) {
-                $scope.presence = [{ status: "free", indicatorText: ""}]
-            } else {
-                $scope.presence = _.map(
-                    _.uniq(currentState, false, function(s) { return s.clientId.person.email }),
-                    function (pr) {
-                        var person = pr.clientId.person;
-                        return { indicatorText:
-                                 (person.firstName.charAt(0) + person.lastName.charAt(0)).toUpperCase(),
-                                 longText: [person.firstName, person.lastName].join(" "),
-                                 email: person.email,
-                                 status: "present" };
+                if($scope.enabled) {
+                    $scope.getInitialData().then(function (currentState) {
+                        applyCurrentState(currentState);
+                    }, function (err) {
+                        console.log("Error getting initial data:", err);
                     });
+
+                    $scope.$on("presence.status", function(ev, data) {
+                        if($scope.id === data.subscriptionId) {
+                            applyCurrentState(data.currentState);
+                        }
+                    });
+                }
             }
         }
-
-        $scope.initialData(id).then(function (currentState) {
-            applyCurrentState(currentState);
-        });
-
-        $scope.$on("presence.status", function(ev, data) {
-            if(id === data.subscriptionId) {
-                applyCurrentState(data.currentState);
-            }
-        });
-
-
     }]);
-
-
 });
