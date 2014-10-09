@@ -27,6 +27,10 @@ tr td {
     font-size: 90%;
 }
 
+.content-list a:visited {
+  color: $c-grey-500;
+}
+
 .content-list__item-row-note {
     font-size: 80%;
     font-style: italic;
