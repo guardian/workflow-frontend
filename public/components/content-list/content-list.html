@@ -54,23 +54,23 @@
             <td class="content-list-item__field--presence">
                 <span class="content-list-item__icon--presence">PZ</span>
             </td>
-            <td class="content-list-item__field--assignee" title="{{ contentItem.assigneeFull }}">
+            <td class="content-list-item__field--assignee" title="Assignee: {{ contentItem.assigneeFull }}">
                 <span class="content-list-item__icon--assignee" ng-if="contentItem.assignee">{{ contentItem.assignee }}</span>
             </td>
-            <td class="content-list-item__field--office" title="{{ contentItem.officeTitle }}">
+            <td class="content-list-item__field--office" title="Production Office: {{ contentItem.officeTitle }}">
                 <span class="content-list-item__icon--office-{{ contentItem.office.toLowerCase() }}">{{ contentItem.office }}</span>
             </td>
-            <td class="content-list-item__field--deadline" title="{{ contentItem.deadlineFull }}">{{ contentItem.deadline }}</td>
-            <td class="content-list-item__field--created" title="{{ contentItem.createdFull }}">{{ contentItem.created }}</td>
-            <td class="content-list-item__field--section">{{ contentItem.section }}</td>
-            <td class="content-list-item__field--legal">
+            <td class="content-list-item__field--deadline" title="Deadline: {{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'long' }}">{{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}</td>
+            <td class="content-list-item__field--created" title="Date created: {{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'long'}}">{{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}</td>
+            <td class="content-list-item__field--section" title="Section: {{ contentItem.section }}">{{ contentItem.section }}</td>
+            <td class="content-list-item__field--legal" title="Needs legal">
                 <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in contentList.legalValues" wf-content-item-update-action="needsLegal"></select>
             </td>
-            <td class="content-list-item__field--status">
+            <td class="content-list-item__field--status" title="Status">
                 <select ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
                 </select>
             </td>
-            <td class="content-list-item__field--notes" title="Note">{{ contentItem.note }}</td>
+            <td class="content-list-item__field--notes" title="Note: {{ contentItem.note }}">{{ contentItem.note }}</td>
             <td class="content-list-item__field--composer">
                 <a href="{{ contentItem.links.composer }}" title="View in Composer (opens in new window)" target="_blank" ng-if="contentItem.links.composer">
                     <i class="content-list-item__icon--composer" wf-icon="composer"></i>
@@ -105,7 +105,7 @@
             </td>
             <td class="content-list-item__field--published-state">
                 {{ contentItem.publishedState }}
-                <div class="content-list-item__field-supl--published-state" ng-if="contentItem.isPublished">{{ contentItem.publishedTime }}</div>
+                <div class="content-list-item__field-supl--published-state" ng-if="contentItem.isPublished">{{ contentItem.publishedTime | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}</div>
             </td>
         </tr>
     </tbody>
