@@ -38,9 +38,8 @@ object Api extends Controller with PanDomainAuthActions {
 
   def allowCORSAccess(methods: String, args: Any*) = CORSable(PrototypeConfiguration.apply.composerUrl) {
 
-    APIAuthAction { implicit req =>
+    Action { implicit req =>
       val requestedHeaders = req.headers("Access-Control-Request-Headers")
-
       NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
     }
   }
