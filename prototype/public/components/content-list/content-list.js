@@ -50,7 +50,11 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
         return str.replace(/\b\w/g, function (txt) { return txt.toUpperCase(); });
     }
 
-    var newslistStatusValues = [ { label: 'Newslist', value: 'stub'}, { label: 'Writers', value: 'writers' } ],
+    function toInitials(str) {
+        return str.replace(/^(\w)\w*?\b.*?\b(?:(\w)\w*?)?$/, '$1$2');
+    }
+
+    var newslistStatusValues = [ { label: 'News list', value: 'stub'}, { label: 'Writers', value: 'writers' } ],
         contentStatusValues = statuses.map( (status) => { return { label: status, value: status } });
 
     class ContentItemLinks {
@@ -84,14 +88,16 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.priority = getPriorityString(item.priority);
             this.priorityTitle = toTitleCase(this.priority);
 
-            this.hasComments = item.commentable;
-            this.commentsTitle = item.commentable ? 'on' : 'off';
+            this.hasComments = !!item.commentable;
+            this.commentsTitle = this.hasComments ? 'on' : 'off';
 
             // TODO: pull main image from composer
             this.hasMainImage = false;
             this.mainImageTitle = 'Main image (Coming soon)';
 
-            this.assignee = item.assignee;
+            this.assignee = item.assignee && toInitials(item.assignee) || '';
+            this.assigneeFull = item.assignee || 'unassigned';
+
             this.contentType = item.contentType;
             this.contentTypeTitle = toTitleCase(item.contentType);
             this.office = item.prodOffice;
@@ -104,15 +110,12 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.needsLegal = item.needsLegal;
             this.note = item.note;
 
-            // TODO date formatting / localisation
-            this.deadline = formatAndLocaliseDate(item.due, 'ddd DD MMM HH:mm');
-            this.deadlineFull = formatAndLocaliseDate(item.due, 'long');
-            this.created = formatAndLocaliseDate(item.createdAt, 'ddd DD MMM HH:mm');
-            this.createdFull = formatAndLocaliseDate(item.createdAt, 'long');
+            this.deadline = item.due;
+            this.created = item.createdAt;
 
             this.isPublished = item.published;
-            this.publishedState = item.published ? 'Published' : '';
-            this.publishedTime = item.timePublished && formatAndLocaliseDate(item.timePublished, 'ddd DD MMM HH:mm');
+            this.publishedState = item.published ? 'Published' : ''; // TODO: Taken down, Embargoed
+            this.publishedTime = item.timePublished;
 
             this.links = new ContentItemLinks(item);
             this.item = item;
@@ -155,7 +158,7 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
             //       here in the front-end
             return {
                 name: status.toLowerCase(),
-                title: status == 'stub' ? 'Newslist' : status,
+                title: status == 'stub' ? 'News list' : status,
                 items: grouped[status]
             };
         });
