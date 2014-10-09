@@ -1,7 +1,9 @@
 
 import angular from 'angular';
 
-angular.module('wfDashboard', [])
+import 'components/stub-modal/stub-modal';
+
+angular.module('wfDashboard', ['wfStubModal'])
     .controller('wfDashboardController', [wfDashboardController]);
 
 

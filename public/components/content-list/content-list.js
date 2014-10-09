@@ -133,6 +133,14 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
 
     this.showHeadline = false;
 
+    this.newItem = function () {
+        $scope.$emit('newStub');
+    };
+
+    this.importItem = function () {
+        $scope.$emit('composerImport');
+    }
+
     this.legalValues = [
         { name: '', value: 'NA' },
         { name: 'Check it', value: 'REQUIRED' },
