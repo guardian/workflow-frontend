@@ -1,9 +1,11 @@
 import angular from 'angular';
 
 angular.module('wfComposerService', [])
-    .service('wfComposerService', ['$http', '$q', 'config', wfComposerService]);
+    .service('wfComposerService', ['$http', '$q', 'config', 'wfHttpSessionService', wfComposerService]);
 
-function wfComposerService($http, $q, config) {
+function wfComposerService($http, $q, config, wfHttpSessionService) {
+
+    var request = wfHttpSessionService.request;
 
     var composerContentFetch = config['composerContentDetails'];
 
@@ -42,7 +44,20 @@ function wfComposerService($http, $q, config) {
     };
 
 
+
+
+
     this.getComposerContent = getComposerContent;
+
+
+    this.create = function createInComposer(type) {
+        return request({
+            method: 'POST',
+            url: config.composerNewContent,
+            params: { 'type': type },
+            withCredentials: true
+        });
+    };
 
 }
 

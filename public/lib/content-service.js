@@ -1,12 +1,13 @@
 import angular from 'angular';
 
+import 'lib/composer-service';
 import 'lib/http-session-service';
 import 'lib/user';
 import 'lib/visibility-service';
 
-angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService',
-        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService) {
+angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService'])
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService) {
 
             var httpRequest = wfHttpSessionService.request;
 
@@ -28,6 +29,31 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
 
                 /**
+                 * Async creates a stub in workflow.
+                 */
+                create(stubData) {
+                    return httpRequest({
+                        method: 'POST',
+                        url: '/api/stubs',
+                        data: stubData
+                    });
+                }
+
+
+                /**
+                 * Creates a draft in Composer from a Stub. Effectively moving
+                 * it to "Writers" status.
+                 */
+                createInComposer(stub) {
+                    return wfComposerService.create(stub.contentType).then( (response) => {
+                        var composerId = response.data.data.id;
+
+                        return this.updateComposerId(stub.id, composerId, stub.contentType);
+                    });
+                }
+
+
+                /**
                  * Async update a field for a piece of content.
                  *
                  * Adapter for both content and stubs APIs.
@@ -40,14 +66,46 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * @returns {Promise}
                  */
                 updateField(contentItem, field, data) {
-                    var isStatusUpdate = field === 'status',
-                        endpoint = isStatusUpdate ? '/api/content/' : '/api/stubs/',
-                        contentId = isStatusUpdate ? contentItem.composerId : contentItem.id || contentItem.stubId;
+                    if (field === 'status') {
+                        return this.updateStatus(contentItem, data);
+                    }
+
+                    var contentId = contentItem.id || contentItem.stubId;
+
+                    // TODO: create a generic PATCH / PUT API
+                    return httpRequest({
+                        method: 'PUT',
+                        url: '/api/stubs/' + contentId + '/' + field,
+                        data: { 'data': data }
+                    });
+                }
+
+
+                /**
+                 * Updates the status of a Content Item or a Stub. If contentItem
+                 * is a Stub, a draft will be created moving it to "Writers" status.
+                 */
+                updateStatus(contentItem, data) {
+                    if (!contentItem.composerId) { // its a stub
+                        return this.createInComposer(contentItem);
+                    }
 
                     return httpRequest({
                         method: 'PUT',
-                        url: endpoint + contentId + '/' + field,
+                        url: '/api/content/' + contentItem.composerId + '/status',
                         data: { 'data': data }
+                    });
+                }
+
+
+                /**
+                 * Link existing stub to composer article.
+                 */
+                updateComposerId(stubId, composerId, contentType) {
+                    return httpRequest({
+                        method: 'POST', // TODO: update to PATCH method
+                        url: '/api/stubs/' + stubId,
+                        params: { 'composerId': composerId, 'contentType': contentType }
                     });
                 }
 
