@@ -52,7 +52,7 @@
             </td>
             <th class="content-list-item__field--{{ contentList.showHeadline ? 'headline' : 'working-title' }}" scope="row" title="Working title: {{ contentItem.workingTitle }}{{ contentItem.headline ? '&#10;Headline: ' + contentItem.headline : '' }}">
                 <abbr class="content-list-item__headline-toggle" title="{{ contentList.showHeadline && contentItem.headline ? 'Headline' : 'Working title'}}. (Click to toggle Headlines)" ng-click="contentList.showHeadline = !contentList.showHeadline">{{ contentList.showHeadline && contentItem.headline ? 'HL' : 'WT'  }}</abbr>
-                <a href="{{ contentItem.links.composer }}">{{ contentList.showHeadline && contentItem.headline ? contentItem.headline : contentItem.workingTitle }}</a>
+                <a ng-href="{{ contentItem.links.composer }}" ng-click="contentList.editItem(contentItem)" target="_blank">{{ contentList.showHeadline && contentItem.headline ? contentItem.headline : contentItem.workingTitle }}</a>
             </th>
             <td class="content-list-item__field--presence">
                 <span class="content-list-item__icon--presence">PZ</span>
