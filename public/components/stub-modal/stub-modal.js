@@ -3,6 +3,8 @@ import angular from 'angular';
 
 import 'angular-bootstrap';
 
+import 'components/date-time-picker/date-time-picker';
+
 import 'lib/content-service';
 import 'lib/legal-states-service';
 import 'lib/prodoffice-service';
@@ -14,51 +16,19 @@ function StubModalInstanceCtrl($scope, $modalInstance, stub, sections, legalStat
 
     $scope.stub = stub;
 
-    $scope.disabled = stub.composerId !== undefined;
-
-
-    // Set dueText field content on init
-    if (stub.due) {
-        stub.dueText = moment(stub.due).format("D MMM YYYY, HH:mm");
-    }
-
-    // Watch changes to dueText
-    $scope.$watch('stub.dueText', function () {
-        $scope.dueTextChanged();
-    });
-
-
-    $scope.onDatePicked = function (newDate, oldDate) {
-        $scope.stub.dueText = moment(newDate).format("D MMM YYYY, HH:mm");
-    };
-
-    $scope.dueTextChanged = function () {
-        if (!$scope.stub.dueText) { // set to none when empty
-            $scope.stub.due = null;
-            return;
-        }
-
-        var due;
-        try {
-            due = Date.create($scope.stub.dueText).toISOString();
-            $scope.stub.due = due;
-        }
-        catch (e) {
-            delete $scope.stub.due;
-        }
-    };
+    $scope.disabled = !!stub.composerId;
 
     $scope.sections = sections;
     $scope.legalStates = legalStatesService.getLegalStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
 
     $scope.ok = function (addToComposer) {
-        delete $scope.stub.dueText;
         $modalInstance.close({
             addToComposer: addToComposer,
             stub: $scope.stub
         });
     };
+
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
