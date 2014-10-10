@@ -119,6 +119,25 @@ $content-list-icon-size: 14px;
         }
     }
 
+    &__button {
+        &-icon {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-right: 5px;
+        }
+
+        &--new,
+        &--import {
+            margin-left: 10px;
+            padding: 0 5px;
+            background-color: $c-grey-300;
+            font-weight: normal;
+            line-height: 28px;
+            border: none;
+        }
+    }
+
 
     // Individual content item rows
     &-item {
