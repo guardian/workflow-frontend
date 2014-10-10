@@ -123,6 +123,7 @@ $content-list-icon-size: 14px;
     // Individual content item rows
     &-item {
         border-bottom: 1px solid $c-grey-300;
+        cursor: pointer;
 
         &--selected {
             background-color: $c-grey-300;
