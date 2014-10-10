@@ -159,10 +159,10 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             $scope.presenceEnabled = false;
 
             $scope.initialData = function(id) {
-                if(initialData == null) return $q.reject("no subscription has been made yet");
+                if(initialData === null) return $q.reject("no subscription has been made yet");
                 else return initialData.promise.then(function (data) {
                     var found = _.find(data, function(d) {
-                        return d.subscriptionId == id;
+                        return d.subscriptionId === id;
                     });
                     if(!found) return $q.reject("unknown ID: [" + id + "]");
                     else return found.currentState;
@@ -210,7 +210,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             link: function($scope) {
 
                 function applyCurrentState(currentState) {
-                    if(currentState.length == 0) {
+                    if(currentState.length === 0) {
                         $scope.presences = [{ status: "free", indicatorText: ""}]
                     } else {
                         $scope.presences = _.map(
