@@ -10,7 +10,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
           if(value) return true
           else reject("presence disabled");
         }, function(err) {
-          console.log("error: " + err);
+          $log.error("error: " + err);
         });
 
         self.connId = uuid();
@@ -68,7 +68,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
                     broadcast("presence.connection.closed");
                 };
                 s.onmessage = function(ev) {
-                    //console.log("MESSAGE: ", ev.data);
+                    $log.debug("Presence message: ", ev.data);
                     messageHandler(ev.data);
                 };
             });
@@ -98,26 +98,24 @@ define(["node-uuid", "underscore"], function (uuid, _) {
         function sendJson(data) {
             return _socket.then(function(socket) {
                 socket.send(JSON.stringify(data));
-                //console.log("sending: " + JSON.stringify(data));
             });
         }
 
         self.articleSubscribe = function(articleIds) {
             var ids = (Array.isArray(articleIds)) ? articleIds : Array(articleIds);
             var p = sendJson(makeSubscriptionRequest(ids));
-            //p.then(function () { console.log("sent request: ", makeSubscriptionRequest(ids)) });
             return p;
         }
 
         self.whenEnabled.then(function() {
-            console.log("presence is enabled... attempting connection")
+            $log.info("presence is enabled... attempting connection")
             doConnection();
 
             $rootScope.$on("presence.connection.closed", doConnection);
             $rootScope.$on("presence.connection.error",  doConnection);
 
         }, function() {
-            console.log("presence is disabled");
+            $log.info("presence is disabled");
         })
 
         return self;
@@ -172,7 +170,6 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             }
 
             wfPresenceService.whenEnabled.then(function() {
-                //console.log("setting up subscription event");
                 $scope.presenceEnabled = true;
 
                 $scope.$on("presence.subscribed", function (ev, data) {
@@ -212,9 +209,6 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             },
             link: function($scope) {
 
-                // XXX TODO factor this logic out so that the knowledge of the
-                // format of the data from prez is in one place
-
                 function applyCurrentState(currentState) {
                     if(currentState.length == 0) {
                         $scope.presences = [{ status: "free", indicatorText: ""}]
@@ -236,7 +230,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
                     $scope.getInitialData().then(function (currentState) {
                         applyCurrentState(currentState);
                     }, function (err) {
-                        console.log("Error getting initial data:", err);
+                        $log.error("Error getting initial data:", err);
                     });
 
                     $scope.$on("presence.status", function(ev, data) {
