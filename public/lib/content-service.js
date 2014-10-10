@@ -31,7 +31,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 /**
                  * Async creates a stub in workflow.
                  */
-                create(stubData) {
+                createStub(stubData) {
                     return httpRequest({
                         method: 'POST',
                         url: '/api/stubs',
@@ -43,12 +43,35 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 /**
                  * Creates a draft in Composer from a Stub. Effectively moving
                  * it to "Writers" status.
+                 * Also will create the stub if it doesn't have an id.
                  */
                 createInComposer(stub) {
                     return wfComposerService.create(stub.contentType).then( (response) => {
+
                         var composerId = response.data.data.id;
 
-                        return this.updateComposerId(stub.id, composerId, stub.contentType);
+                        stub.composerId = composerId;
+console.log('created!', stub);
+                        if (stub.id) {
+                            return this.updateStub(stub);
+                            // return this.updateComposerId(stub.id, composerId, stub.contentType);
+
+                        } else {
+                            return this.createStub(stub);
+                        }
+                    });
+                }
+
+
+                /**
+                 * Updates an existing stub by overwriting its fields via PUT.
+                 */
+                updateStub(stub) {
+                    console.log('updateStub', stub);
+                    return httpRequest({
+                        method: 'PUT',
+                        url: '/api/stubs/' + stub.id,
+                        data: stub
                     });
                 }
 
