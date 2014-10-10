@@ -122,28 +122,33 @@ define(["node-uuid", "underscore"], function (uuid, _) {
 
     }]);
 
-    module.controller(
+    module.directive(
         'wfPresenceConnectionStatus',
-        [ "$scope", "wfPresenceService", function($scope, wfPresenceService) {
-            $scope.presenceEnabled = false
-            $scope.connectionStatus = "DISABLED";
+        function () {
+            return {
+                template: "<p>{{connectionStatus | uppercase}}</p>",
+                controller: ['$scope', 'wfPresenceService', function($scope, wfPresenceService) {
+                    $scope.presenceEnabled = false
+                    $scope.connectionStatus = "disabled";
 
-            wfPresenceService.whenEnabled.then(function () {
-                $scope.presenceEnabled = true;
-                $scope.connectionStatus = "PRE";
+                    wfPresenceService.whenEnabled.then(function () {
+                        $scope.presenceEnabled = true;
+                        $scope.connectionStatus = "pre";
 
-                $scope.$on("presence.connection.success", function () {
-                    $scope.connectionStatus = "OK";
-                });
-                $scope.$on("presence.connection.error", function () {
-                    $scope.connectionStatus = "ERROR";
-                });
+                        $scope.$on("presence.connection.success", function () {
+                            $scope.connectionStatus = "ok";
+                        });
+                        $scope.$on("presence.connection.error", function () {
+                            $scope.connectionStatus = "error";
+                        });
 
-                $scope.$on("presence.connection.closed", function () {
-                    $scope.connectionStatus = "CLOSED";
-                });
-            });
-        }]);
+                        $scope.$on("presence.connection.closed", function () {
+                            $scope.connectionStatus = "closed";
+                        });
+                    });
+                }]
+            }
+        });
 
     module.controller(
         'wfPresenceSubscription',
