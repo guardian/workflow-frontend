@@ -3,24 +3,14 @@ import angular from 'angular';
 
 import 'angular-bootstrap';
 
+import 'lib/content-service';
 import 'lib/legal-states-service';
 import 'lib/prodoffice-service';
 
-    // dashboardControllers.controller('NewStubDropdownCtrl', ['$scope', function ($scope) {
-    //     $scope.newStub = function (contentType) {
-    //         $scope.$emit('newStubButtonClicked', contentType);
-    //     };
 
-    //     $scope.importFromComposer = function () {
-    //         $scope.$emit('importFromComposerButtonClicked');
-    //     };
-    // }]);
+var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService']);
 
-    // stub create and edit
-
-var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfProdOfficeService']);
-
-var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService, wfProdOfficeService) {
+function StubModalInstanceCtrl($scope, $modalInstance, stub, sections, legalStatesService, wfProdOfficeService) {
 
     $scope.stub = stub;
 
@@ -73,7 +63,7 @@ var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, le
         $modalInstance.dismiss('cancel');
     };
 
-};
+}
 
 wfStubModal.controller('StubModalInstanceCtrl', ['$scope',
     '$modalInstance',
@@ -84,13 +74,11 @@ wfStubModal.controller('StubModalInstanceCtrl', ['$scope',
 
 wfStubModal.run(['$rootScope',
     '$modal',
-    '$http',
-    '$q',
-    'config',
+    '$log',
+    'wfContentService',
     'wfProdOfficeService',
-    function ($rootScope, $modal, $http, $q, config, prodOffice) {
+    function ($rootScope, $modal, $log, wfContentService, wfProdOfficeService) {
         var $scope = $rootScope;
-        var composerNewContent = config['composerNewContent'];
 
         $scope.$on('stub:edit', function (event, stub) {
             open(stub);
@@ -102,7 +90,7 @@ wfStubModal.run(['$rootScope',
                 section: $scope.selectedSection || 'Technology',
                 priority: 0,
                 needsLegal: 'NA',
-                prodOffice: prodOffice.getDefaultOffice()
+                prodOffice: wfProdOfficeService.getDefaultOffice()
             };
             open(stub);
         });
@@ -116,9 +104,6 @@ wfStubModal.run(['$rootScope',
                 resolve: {
                     stub: function () {
                         return stub;
-                    },
-                    addToComposer: function () {
-                        return addToComposer;
                     }
                 }
             });
@@ -127,57 +112,32 @@ wfStubModal.run(['$rootScope',
                 var stub = modalCloseResult.stub;
                 var newStub = angular.copy(stub);
                 var addToComposer = modalCloseResult.addToComposer;
+                var isEdit = !!stub.id;
 
-                function callComposer(addToComposer) {
-                    var deferred = $q.defer();
-                    var type = stub.contentType;
-                    if (addToComposer) {
-                        $http({
-                            method: 'POST',
-                            url: composerNewContent,
-                            params: {'type': type},
-                            withCredentials: true
-                        }).then(function (response) {
-                            var composerId = response.data.data.id;
-                            deferred.resolve(composerId);
-                        }, function (response) {
-                            deferred.reject(response);
-                        });
-                    }
-                    else {
-                        deferred.resolve(null);
-                    }
-                    return deferred.promise;
+
+                var promise;
+                if (addToComposer) {
+                    promise = wfContentService.createInComposer(newStub);
+
+                } else if (newStub.id) {
+                    promise = wfContentService.updateStub(newStub);
+
+                } else {
+                    promise = wfContentService.createStub(newStub);
                 }
 
-                callComposer(addToComposer).then(function (composerId) {
-                    newStub.composerId = composerId;
-                    var response;
-                    if (newStub.id === undefined) {
-                        response = $http({
-                            method: 'POST',
-                            url: '/api/stubs',
-                            data: newStub
-                        });
-                    }
-                    else {
-                        response = $http({
-                            method: 'PUT',
-                            url: '/api/stubs/' + stub.id,
-                            data: newStub
-                        });
-                    }
-                    response.success(function () {
-                        // emit event
-                        //   stubs with ids are being edited and not new
-                        var eventName = (stub.id) ? 'stub.edited' : 'stub.created';
+                promise.then(() => {
+                    $rootScope.$broadcast('getContent');
 
-                        $scope.$emit(eventName, { 'content': newStub });
+                    var eventName = isEdit ? 'stub.edited' : 'stub.created';
+                    $rootScope.$broadcast(eventName, { 'content': newStub });
 
-                        $scope.$emit('getContent');
-                    });
+                }, (err) => {
+                    $log.error((isEdit ? 'Edit' : 'Create') + ' stub failed: ' + err);
                 });
+
             });
+
         }
     }]);
 
