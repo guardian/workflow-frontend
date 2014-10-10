@@ -23,6 +23,8 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService'])
 
 
 function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
+    /*jshint validthis:true */
+
     function getPriorityString(priorityValue) {
         if (priorityValue == 1) {
             return "urgent";
@@ -55,7 +57,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
     }
 
     var newslistStatusValues = [ { label: 'News list', value: 'stub'}, { label: 'Writers', value: 'writers' } ],
-        contentStatusValues = statuses.map( (status) => { return { label: status, value: status } });
+        contentStatusValues = statuses.map( (status) => { return { label: status, value: status }; });
 
     class ContentItemLinks {
         constructor(item) {
@@ -131,15 +133,22 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 
 function wfContentListController($scope, $log, statuses, wfContentService, wfContentPollingService, wfContentItemParser) {
 
+    /*jshint validthis:true */
+
     this.showHeadline = false;
 
     this.newItem = function () {
-        $scope.$emit('newStub');
+        $scope.$emit('stub:create');
     };
 
     this.importItem = function () {
-        $scope.$emit('composerImport');
-    }
+        $scope.$emit('content:import');
+    };
+
+    this.editItem = (contentItem) => {
+        var prefix = (contentItem.status === 'stub') ? 'stub' : 'content';
+        $scope.$emit(prefix + ':edit', contentItem.item);
+    };
 
     this.legalValues = [
         { name: '', value: 'NA' },
@@ -210,7 +219,7 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
 
     // Start polling
     var poller = this.poller = new wfContentPollingService(function () {
-        return wfContentService.getServerParams()
+        return wfContentService.getServerParams();
     });
 
     poller.onPoll(this.render);
@@ -245,11 +254,11 @@ function wfContentItemUpdateActionDirective() {
 
                 var msg = {
                     contentItem: $scope.contentItem,
-                    data: {
-                        [ field ]: ngModel.$modelValue
-                    },
+                    data: {},
                     source: ngModel
                 };
+
+                msg.data[field] = ngModel.$modelValue;
 
                 $scope.$emit('contentItem.update', msg);
             });

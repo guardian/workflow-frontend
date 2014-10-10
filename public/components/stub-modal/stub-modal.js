@@ -18,7 +18,7 @@ import 'lib/prodoffice-service';
 
     // stub create and edit
 
-var module = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfProdOfficeService']);
+var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfProdOfficeService']);
 
 var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, legalStatesService, wfProdOfficeService) {
 
@@ -75,14 +75,14 @@ var StubModalInstanceCtrl = function ($scope, $modalInstance, stub, sections, le
 
 };
 
-module.controller('StubModalInstanceCtrl', ['$scope',
+wfStubModal.controller('StubModalInstanceCtrl', ['$scope',
     '$modalInstance',
     'stub',
     'sections',
     'legalStatesService',
     StubModalInstanceCtrl]);
 
-module.run(['$rootScope',
+wfStubModal.run(['$rootScope',
     '$modal',
     '$http',
     '$q',
@@ -92,11 +92,11 @@ module.run(['$rootScope',
         var $scope = $rootScope;
         var composerNewContent = config['composerNewContent'];
 
-        $scope.$on('editStub', function (event, stub) {
+        $scope.$on('stub:edit', function (event, stub) {
             open(stub);
         });
 
-        $scope.$on('newStub', function (event, contentType) {
+        $scope.$on('stub:create', function (event, contentType) {
             var stub = {
                 contentType: contentType || 'article',
                 section: $scope.selectedSection || 'Technology',
@@ -178,7 +178,7 @@ module.run(['$rootScope',
                     });
                 });
             });
-        };
+        }
     }]);
 
 // composer import control
@@ -249,7 +249,7 @@ var ComposerImportModalInstanceCtrl = function ($scope, $modalInstance, stub, se
     };
 };
 
-module.controller('ComposerImportModalInstanceCtrl', ['$scope',
+wfStubModal.controller('ComposerImportModalInstanceCtrl', ['$scope',
     '$modalInstance',
     'stub',
     'sections',
@@ -258,7 +258,7 @@ module.controller('ComposerImportModalInstanceCtrl', ['$scope',
     'wfProdOfficeService',
     ComposerImportModalInstanceCtrl]);
 
-module.run(['$rootScope',
+wfStubModal.run(['$rootScope',
     '$modal',
     '$http',
     '$q',
@@ -266,7 +266,7 @@ module.run(['$rootScope',
     'wfProdOfficeService',
     function ($rootScope, $modal, $http, $q, config, wfProdOfficeService) {
         var $scope = $rootScope;
-        $scope.$on('composerImport', function (event) {
+        $scope.$on('content:import', function (event) {
             var stub = {
                 section: $scope.selectedSection || 'Technology',
                 prodOffice: wfProdOfficeService.getDefaultOffice(),
@@ -304,7 +304,7 @@ module.run(['$rootScope',
                     $scope.$emit('getContent');
                 });
             });
-        };
+        }
     }]);
 
     // add to composer modal
