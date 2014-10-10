@@ -159,15 +159,20 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             $scope.presenceEnabled = false;
 
             $scope.initialData = function(id) {
-                if(initialData === null) return $q.reject("no subscription has been made yet");
-                else return initialData.promise.then(function (data) {
-                    var found = _.find(data, function(d) {
-                        return d.subscriptionId === id;
+                if(initialData === null) {
+                    return $q.reject("no subscription has been made yet");
+                } else {
+                    return initialData.promise.then(function (data) {
+                        var found = _.find(data, function(d) {
+                            return d.subscriptionId === id;
+                        });
+                        if(!found) {
+                            return $q.reject("unknown ID: [" + id + "]");
+                        } else {
+                            return found.currentState;
+                        }
                     });
-                    if(!found) return $q.reject("unknown ID: [" + id + "]");
-                    else return found.currentState;
-                });
-            }
+                }
 
             wfPresenceService.whenEnabled.then(function() {
                 $scope.presenceEnabled = true;
