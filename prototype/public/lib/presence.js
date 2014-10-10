@@ -123,17 +123,17 @@ define(["node-uuid", "underscore"], function (uuid, _) {
     }]);
 
     module.directive(
-        'wfPresenceConnectionStatus',
-        function () {
+        'wfPresenceConnectionStatus', ['wfPresenceService',
+        function (wfPresenceService) {
             return {
-                template: "<p>{{connectionStatus | uppercase}}</p>",
-                controller: ['$scope', 'wfPresenceService', function($scope, wfPresenceService) {
-                    $scope.presenceEnabled = false
+                link: function($scope, element) {
+
+                    $scope.presenceEnabled = false;
                     $scope.connectionStatus = "disabled";
 
                     wfPresenceService.whenEnabled.then(function () {
                         $scope.presenceEnabled = true;
-                        $scope.connectionStatus = "pre";
+                        $scope.connectionStatus = "connecting";
 
                         $scope.$on("presence.connection.success", function () {
                             $scope.connectionStatus = "ok";
@@ -146,9 +146,9 @@ define(["node-uuid", "underscore"], function (uuid, _) {
                             $scope.connectionStatus = "closed";
                         });
                     });
-                }]
+                }
             }
-        });
+        }]);
 
     module.controller(
         'wfPresenceSubscription',
