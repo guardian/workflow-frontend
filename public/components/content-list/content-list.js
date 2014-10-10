@@ -192,7 +192,7 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
 
 
     this.renderError = (err) => {
-        $log.error('Error rendering content: ' + err);
+        $log.error('Error rendering content: ' + (err.message || JSON.stringify(err)));
         $scope.refreshContentError = err;
 
         $scope.$apply();
@@ -204,13 +204,16 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
         // generally there'll only be one field to update, but iterate just incase
         // TODO: if multiple fields need updating, do it in a single API call
         for (var field in msg.data) {
-            wfContentService.updateField(msg.contentItem, field, msg.data[field]).then(() => {
+            wfContentService.updateField(msg.contentItem.item, field, msg.data[field]).then(() => {
                 $scope.$emit('contentItem.updated', {
                     'contentItem': msg.contentItem,
                     'field': field
                 });
 
                 this.poller.refresh();
+
+            }, (err) => {
+                this.renderError(err);
             });
         }
 
