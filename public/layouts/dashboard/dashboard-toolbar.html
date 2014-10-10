@@ -34,5 +34,10 @@
         </label>
     </form>
 </div>
-
-<div class="dashboard-toolbar__presence-connection-status" wf-presence-connection-status></div>
+<div wf-presence-connection-status class="dashboard-toolbar__presence-connection-status"
+     ng-show="presenceEnabled">
+    <span class="dashboard-toolbar__presence-connection-status-label">Presence</span>
+    <span class="dashboard-toolbar__presence-connection-status-indicator--{{connectionStatus}}">
+        {{connectionStatus | uppercase}}
+    </span>
+</div>
