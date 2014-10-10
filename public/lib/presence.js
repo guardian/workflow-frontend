@@ -2,7 +2,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
 
     var module = angular.module('wfPresenceService', []);
 
-    module.factory('wfPresenceService', ['$rootScope', '$q', 'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $q, config, wfFeatureSwitches, wfUser) {
+    module.factory('wfPresenceService', ['$rootScope', '$q', '$log',  'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $q, $log, config, wfFeatureSwitches, wfUser) {
 
         var self = {};
 
@@ -27,7 +27,6 @@ define(["node-uuid", "underscore"], function (uuid, _) {
         var messageHandlers = {
             "connectionTest": function() {
                 /* XXX TODO : how should I reply to this connectionTest request? */
-                // console.log("recieved connection test request from server")
             },
             "subscribed": function(data) {
                 self.clientId = data.clientId;
@@ -40,13 +39,16 @@ define(["node-uuid", "underscore"], function (uuid, _) {
 
         function messageHandler(msgJson) {
             var msg = JSON.parse(msgJson);
-            //console.log("messageHandler", msgJson);
-            if(typeof messageHandlers[msg.action] === "function") {
-                messageHandlers[msg.action](msg.data);
-            } else {
-                console.log("receive unknown message action: " + msg.action);
+
+            if(typeof messageHandlers[msg.action] !== "function") {
+
+                $log.error("received unknown message action: " + msg.action);
+
                 broadcast("presence.error.unknownAction", msg);
+                return;
             }
+
+            messageHandlers[msg.action](msg.data);
         }
 
         var _socket = Promise.reject("not yet connected");
