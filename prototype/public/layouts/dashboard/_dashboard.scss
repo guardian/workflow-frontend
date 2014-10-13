@@ -2,6 +2,7 @@
  * Dashboard layout styles.
  */
 @import "components/content-list/content-list";
+@import "components/content-list-draw/content-list-draw";
 @import "components/stubs-list/stubs-list";
 @import "components/details-panel/details-panel";
 @import "sidebar";
@@ -16,6 +17,8 @@
 
 .content-list-column {
     overflow: auto;
+
+    overflow-y: scroll;
 
     // Flexbox prefixes - TODO: Autoprefixer
     -webkit-box-flex: 1;

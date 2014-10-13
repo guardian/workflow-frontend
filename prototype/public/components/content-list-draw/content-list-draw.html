@@ -1,0 +1,156 @@
+<tr class="content-list-draw content-list-draw--hidden">
+    <td colspan="100" class="content-list-draw__full-width">
+
+        <div class="content-list-draw__container"><!-- div for animation -->
+            <div class="content-list-draw__container-inner"><!-- div for padding/spacing -->
+                <ul class="draw__column">
+                    <li class="draw__section">
+                        <span class="draw__section-title">Priority</span>
+                        <span class="draw__section-data-row">{{ contentItemView.priorityTitle }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Production deadline</span>
+                        <span class="draw__section-data-row">{{ contentItemView.deadlineFull }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Scheduled</span>
+                        <span class="draw__section-data-row">{{ contentItemView.scheduled }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Last modified</span>
+                        <span class="draw__section-data-row">{{ contentItemView.item.lastModified }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">First published</span>
+                        <span class="draw__section-data-row">{{ contentItemView.firstPublishedTime }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Last published</span>
+                        <span class="draw__section-data-row">{{ contentItemView.publishedTime }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Note</span>
+                        <span class="draw__section-data-row">{{ contentItemView.note }}</span>
+                    </li>
+                </ul>
+
+                <ul class="draw__column">
+                    <li class="draw__section">
+                        <span class="draw__section-title">Status</span>
+                        <select ng-model="contentItemView.status" ng-options="status for status in statusValues" wf-content-item-update-action="status">
+                        </select>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">State</span>
+                        <span class="draw__section-data-row">{{ contentItemView.state }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Office</span>
+                        <span class="draw__section-data-row">{{ contentItemView.office }}</span>
+                        <!-- <select ng-model="contentItemView.office" ng-options="office for offices in officeValues" wf-content-item-update-action="office"></select> -->
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">In use by</span>
+                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-data-row">{{ contentItemView.assignee }}</span>
+                    </li>
+                </ul>
+
+                <ul class="draw__column">
+                    <li class="draw__section">
+                        <span class="draw__section-title">Section</span>
+                        <span class="draw__section-data-row">{{ contentItemView.section }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Content type</span>
+                        <span class="draw__section-data-row">{{ contentItemView.contentTypeTitle }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Comments</span>
+                        <span class="draw__section-data-row">{{ contentItemView.commentsTitle }}</span>
+                        <span class="draw__section-data-row">{{ contentItemView.hasComments }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Guardian Witness</span>
+                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Feature</span>
+                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Legal status</span>
+                        <select ng-model="contentItemView.needsLegal" ng-options="ls.value as ls.name for ls in contentList.legalValues" wf-content-item-update-action="needsLegal"></select>
+                    </li>
+                </ul>
+
+                <ul class="draw__column--wide">
+                    <li class="draw__section">
+                        <span class="draw__section-title">Working title</span>
+                        <span class="draw__section-data-row">{{ contentItemView.workingTitle }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Headline</span>
+                        <span class="draw__section-data-row">{{ contentItemView.headline }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">URL</span>
+                    <span ng-repeat="link in contentItemView.links" class="draw__section-data-row"><a href="{{ link }}">{{
+                        link }}</a></span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Standfirst</span>
+                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Trail text</span>
+                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Tags</span>
+                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                </ul>
+
+                <ul class="draw__column">
+                    <li class="draw__section">
+                        <span class="draw__section-title">Main image</span>
+                    <span class="draw__section-data-row">
+                        <img src="" alt=""/>
+                    </span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Caption</span>
+                        <span class="draw__section-data-row">{{ contentItemView.mainImageTitle }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Alt text</span>
+                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Trail picture</span>
+                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                </ul>
+
+                <ul class="draw__column--control">
+                    <li class="draw__control">
+                        <button ng-click="hide()">Close</button>
+                    </li>
+                    <li class="draw__control">
+                        apply
+                    </li>
+                    <li class="draw__control">
+                        delete
+                    </li>
+                    <li class="draw__control--foot">
+                        <span class="draw__section-title">Open in</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </td>
+</tr>
