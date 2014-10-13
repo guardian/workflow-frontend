@@ -1,0 +1,78 @@
+.content-list .content-list-draw {
+    overflow: hidden;
+    &::before, &::after {
+        display: none;
+        content: none;
+        width: 0;
+    }
+}
+
+.content-list-draw__full-width {
+    vertical-align: top;
+}
+
+.content-list-draw__container {
+    overflow: hidden;
+    height: 340px;
+    background-color: $c-grey-100;
+    -webkit-transition: height 0.5s ease-in-out;
+    -moz-transition: height 0.5s ease-in-out;
+    -ms-transition: height 0.5s ease-in-out;
+    -o-transition: height 0.5s ease-in-out;
+    transition: height 0.5s ease-in-out;
+}
+
+.content-list .content-list-draw--hidden .content-list-draw__container {
+    height: 0;
+}
+
+.content-list-draw__container-inner {
+    //padding: 12px;
+    display: flex;
+}
+
+.draw__column {
+    flex: 1 0 0;
+    margin: 0;
+    list-style: none;
+    display: inline-block;
+    vertical-align: top;
+    padding: 12px 0 0 12px;
+    &:last-child {
+        margin-right: 0;
+    }
+}
+
+.draw__column--wide {
+    @extend .draw__column;
+    flex: 3 0 0;
+}
+
+.draw__column--control {
+    @extend .draw__column;
+    flex: 0.5 0 0;
+    border-left: 1px solid $c-grey-400;
+    padding: 0 0 0 12px;
+    margin: 12px 0 0 12px;
+}
+
+.draw__section {
+    padding: 2px 0 12px 0;
+    border-top: 1px solid $c-grey-300;
+}
+
+.draw__section-title {
+    @extend %fs-data-2;
+    font-weight: bold;
+    display: block;
+    padding: 2px 0;
+}
+
+.draw__section-data-row {
+    @extend %fs-data-2;
+    display: block;
+}
+
+.draw__section-data-row--coming-soon {
+    color: $c-grey-400;
+}
