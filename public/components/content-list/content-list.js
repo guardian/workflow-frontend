@@ -60,7 +60,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
     }
 
     var newslistStatusValues = [ { label: 'News list', value: 'Stub'}, { label: 'Writers', value: 'writers' } ],
-        contentStatusValues = statuses.map( (status) => { return { label: status, value: status }; });
+        contentStatusValues = statuses.filter((status) => status !== 'Stub').map( (status) => { return { label: status, value: status }; });
 
     class ContentItemLinks {
         constructor(item) {
