@@ -59,7 +59,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
         return str.replace(/^(\w)\w*?\b.*?\b(?:(\w)\w*?)?$/, '$1$2');
     }
 
-    var newslistStatusValues = [ { label: 'News list', value: 'stub'}, { label: 'Writers', value: 'writers' } ],
+    var newslistStatusValues = [ { label: 'News list', value: 'Stub'}, { label: 'Writers', value: 'writers' } ],
         contentStatusValues = statuses.map( (status) => { return { label: status, value: status }; });
 
     class ContentItemLinks {
@@ -108,8 +108,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.office = item.prodOffice;
             this.officeTitle = getFullOfficeString(item.prodOffice);
 
-            this.status = item.status || 'stub';
-            this.statusValues = this.status === 'stub' ? newslistStatusValues : contentStatusValues;
+            this.status = item.status || 'Stub';
+            this.statusValues = this.status === 'Stub' ? newslistStatusValues : contentStatusValues;
 
             this.section = item.section;
             this.needsLegal = item.needsLegal;
@@ -159,29 +159,6 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
         { name: 'Approved', value: 'COMPLETE'}
     ];
 
-    this.refresh = () => {
-        var params = wfContentService.getServerParams();
-        wfContentService.get(params).then((data) => {
-
-            // TODO stubs and content are separate structures in the API response
-            //      make this a single list of content with consistent structure in the API
-            var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
-                grouped = groupBy(content, 'status');
-
-            $scope.content = ['stub'].concat(statuses).map((status) => {
-                // TODO: status is currently stored as presentation text, eg: "Writers"
-                //       should be stored as an enum and transformed to presentation text
-                //       here in the front-end
-                return {
-                    name: status.toLowerCase(),
-                    title: status == 'stub' ? 'Newslist' : status,
-                    items: grouped[status]
-                };
-            });
-        });
-    };
-
-
 
     this.render = (response) => {
         var data = response.data;
@@ -191,13 +168,13 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
         var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
             grouped = _groupBy(content, 'status');
 
-        $scope.content = ['stub'].concat(statuses).map((status) => {
+        $scope.content = statuses.map((status) => {
             // TODO: status is currently stored as presentation text, eg: "Writers"
             //       should be stored as an enum and transformed to presentation text
             //       here in the front-end
             return {
                 name: status.toLowerCase(),
-                title: status == 'stub' ? 'News list' : status,
+                title: status == 'Stub' ? 'News list' : status,
                 items: grouped[status]
             };
         });
