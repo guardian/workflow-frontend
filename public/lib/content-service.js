@@ -51,7 +51,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         var composerId = response.data.data.id;
 
                         stub.composerId = composerId;
-console.log('created!', stub);
+
                         if (stub.id) {
                             return this.updateStub(stub);
                             // return this.updateComposerId(stub.id, composerId, stub.contentType);
@@ -67,7 +67,6 @@ console.log('created!', stub);
                  * Updates an existing stub by overwriting its fields via PUT.
                  */
                 updateStub(stub) {
-                    console.log('updateStub', stub);
                     return httpRequest({
                         method: 'PUT',
                         url: '/api/stubs/' + stub.id,
