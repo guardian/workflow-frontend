@@ -2,7 +2,7 @@ define([], function () {
 
     var module = angular.module('wfFeatureSwitches', []);
 
-    module.factory('wfFeatureSwitches', ['config', '$http', '$q', function(config, $http, $q) {
+    module.factory('wfFeatureSwitches', ['config', '$http', function(config, $http) {
         var self = {}
 
         // dummy switches - eventually this will come from the server
