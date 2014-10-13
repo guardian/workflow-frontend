@@ -12,7 +12,7 @@ var wfContentListItem = function ($rootScope) {
         link: function ($scope, elem, attrs) {
 
             $scope.selectItem = (contentItem) => {
-                $rootScope.$emit('contentItem.select', contentItem, elem, $scope.contentList);
+                $rootScope.$emit('contentItem.select', contentItem, elem);
             };
 
 //            attrs.$observe('contentItem', function(contentItem) {

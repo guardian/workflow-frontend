@@ -6,71 +6,74 @@
                 <ul class="draw__column">
                     <li class="draw__section">
                         <span class="draw__section-title">Priority</span>
-                        <span class="draw__section-data-row">{{ contentItemView.priorityTitle }}</span>
+                        <span class="draw__section-data-row">{{ contentItem.priorityTitle }}</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Production deadline</span>
-                        <span class="draw__section-data-row">{{ contentItemView.deadlineFull }}</span>
+
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'draw__section-data-row--editable': contentItem.deadline, 'draw__section-data-row--editable-empty': !contentItem.deadline }" title="{{ (contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'long') || '' }}">
+                                {{ (contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime) || 'Add deadline' }}
+                            </span>
+
+                        <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
+                            <div wf-date-time-picker ng-model="contentItem.deadline" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="updateDeadline(); dateTimeEdit = false" wf-small="true"></div>
+                        </form>
+
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Scheduled</span>
-                        <span class="draw__section-data-row">{{ contentItemView.scheduled }}</span>
+                        <span class="draw__section-data-row">{{ contentItem.scheduled }}</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Last modified</span>
-                        <span class="draw__section-data-row">{{ contentItemView.item.lastModified }}</span>
+                        <span class="draw__section-data-row">{{ (contentItem.lastModified | wfLocaliseDateTime | wfFormatDateTime) || "-" }}</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">First published</span>
-                        <span class="draw__section-data-row">{{ contentItemView.firstPublishedTime }}</span>
+                        <span class="draw__section-data-row">{{ contentItem.firstPublishedTime || '-' }}</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Last published</span>
-                        <span class="draw__section-data-row">{{ contentItemView.publishedTime }}</span>
-                    </li>
-                    <li class="draw__section">
-                        <span class="draw__section-title">Note</span>
-                        <span class="draw__section-data-row">{{ contentItemView.note }}</span>
+                        <span class="draw__section-data-row">{{ contentItem.publishedTime || '-' }}</span>
                     </li>
                 </ul>
 
                 <ul class="draw__column">
                     <li class="draw__section">
                         <span class="draw__section-title">Status</span>
-                        <select ng-model="contentItemView.status" ng-options="status for status in statusValues" wf-content-item-update-action="status">
+                        <select ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
                         </select>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">State</span>
-                        <span class="draw__section-data-row">{{ contentItemView.state }}</span>
+                        <span class="draw__section-data-row">{{ contentItem.state || '-' }}</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Office</span>
-                        <span class="draw__section-data-row">{{ contentItemView.office }}</span>
-                        <!-- <select ng-model="contentItemView.office" ng-options="office for offices in officeValues" wf-content-item-update-action="office"></select> -->
+                        <select ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices"></select>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">In use by</span>
                         <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
                     </li>
                     <li class="draw__section">
-                        <span class="draw__section-data-row">{{ contentItemView.assignee }}</span>
+                        <span class="draw__section-title">Assigned to</span>
+                        <span class="detail__data--editable" editable-text="contentItem.assignee" buttons="no" onbeforesave="updateAssignee($data)">{{ contentItem.assignee || "None" }}</span>
                     </li>
                 </ul>
 
                 <ul class="draw__column">
                     <li class="draw__section">
                         <span class="draw__section-title">Section</span>
-                        <span class="draw__section-data-row">{{ contentItemView.section }}</span>
+                        <span class="draw__section-data-row">{{ contentItem.section }}</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Content type</span>
-                        <span class="draw__section-data-row">{{ contentItemView.contentTypeTitle }}</span>
+                        <span class="draw__section-data-row">{{ contentItem.contentTypeTitle }}</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Comments</span>
-                        <span class="draw__section-data-row">{{ contentItemView.commentsTitle }}</span>
-                        <span class="draw__section-data-row">{{ contentItemView.hasComments }}</span>
+                        <span class="draw__section-data-row">{{ contentItem.commentsTitle }}</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Guardian Witness</span>
@@ -82,23 +85,48 @@
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Legal status</span>
-                        <select ng-model="contentItemView.needsLegal" ng-options="ls.value as ls.name for ls in contentList.legalValues" wf-content-item-update-action="needsLegal"></select>
+                        <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
                     </li>
                 </ul>
 
                 <ul class="draw__column--wide">
                     <li class="draw__section">
                         <span class="draw__section-title">Working title</span>
-                        <span class="draw__section-data-row">{{ contentItemView.workingTitle }}</span>
+                        <span class="draw__section-data-row">{{ contentItem.workingTitle || '-' }}</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Headline</span>
-                        <span class="draw__section-data-row">{{ contentItemView.headline }}</span>
+                        <span class="draw__section-data-row">{{ contentItem.headline || '-' }}</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">URL</span>
-                    <span ng-repeat="link in contentItemView.links" class="draw__section-data-row"><a href="{{ link }}">{{
+                    <span ng-repeat="link in contentItem.links" class="draw__section-data-row"><a href="{{ link }}">{{
                         link }}</a></span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Note</span>
+                        <span class="draw__section-data-row--editable" editable-textarea="contentItem.note" onbeforesave="updateNote($data)">{{ contentItem.note || 'Add note' }}</span>
+                    </li>
+                </ul>
+
+                <ul class="draw__column">
+                    <li class="draw__section">
+                        <span class="draw__section-title">Main image</span>
+                    <span class="draw__section-data-row">
+                        <img src="" alt=""/>
+                    </span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Caption</span>
+                        <span class="draw__section-data-row">{{ contentItem.mainImageTitle }}</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Alt text</span>
+                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="draw__section">
+                        <span class="draw__section-title">Trail picture</span>
+                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
                     </li>
                     <li class="draw__section">
                         <span class="draw__section-title">Standfirst</span>
@@ -114,41 +142,17 @@
                     </li>
                 </ul>
 
-                <ul class="draw__column">
-                    <li class="draw__section">
-                        <span class="draw__section-title">Main image</span>
-                    <span class="draw__section-data-row">
-                        <img src="" alt=""/>
-                    </span>
-                    </li>
-                    <li class="draw__section">
-                        <span class="draw__section-title">Caption</span>
-                        <span class="draw__section-data-row">{{ contentItemView.mainImageTitle }}</span>
-                    </li>
-                    <li class="draw__section">
-                        <span class="draw__section-title">Alt text</span>
-                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
-                    </li>
-                    <li class="draw__section">
-                        <span class="draw__section-title">Trail picture</span>
-                        <span class="draw__section-data-row draw__section-data-row--coming-soon">Coming soon...</span>
-                    </li>
-                </ul>
-
                 <ul class="draw__column--control">
                     <li class="draw__control">
-                        <button ng-click="hide()">Close</button>
+                        <span class="draw__section-data-row draw__control-item" ng-click="hide()">
+                            <i class="content-list-item__icon--composer" wf-icon="cross"></i>
+                            Close details
+                        </span>
                     </li>
                     <li class="draw__control">
-                        apply
+                        <span class="draw__section-data-row draw__control-item" ng-click="deleteContentItem()"><span class="glyphicon glyphicon-trash"></span>Delete from workflow</span>
                     </li>
-                    <li class="draw__control">
-                        delete
-                    </li>
-                    <li class="draw__control--foot">
-                        <span class="draw__section-title">Open in</span>
-                    </li>
-                </ul>
+                 </ul>
             </div>
         </div>
 

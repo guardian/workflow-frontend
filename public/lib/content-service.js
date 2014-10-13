@@ -51,7 +51,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         var composerId = response.data.data.id;
 
                         stub.composerId = composerId;
-console.log('created!', stub);
+
                         if (stub.id) {
                             return this.updateStub(stub);
                             // return this.updateComposerId(stub.id, composerId, stub.contentType);

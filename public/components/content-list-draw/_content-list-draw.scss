@@ -7,13 +7,17 @@
     }
 }
 
+.content-list-draw * {
+    box-sizing: border-box;
+}
+
 .content-list-draw__full-width {
     vertical-align: top;
 }
 
 .content-list-draw__container {
     overflow: hidden;
-    height: 340px;
+    height: 380px;
     background-color: $c-grey-100;
     -webkit-transition: height 0.5s ease-in-out;
     -moz-transition: height 0.5s ease-in-out;
@@ -27,7 +31,6 @@
 }
 
 .content-list-draw__container-inner {
-    //padding: 12px;
     display: flex;
 }
 
@@ -56,8 +59,15 @@
     margin: 12px 0 0 12px;
 }
 
+.draw__control {
+    padding: 2px 12px 12px 0;
+    .draw__control-item {
+        cursor: pointer;
+    }
+}
+
 .draw__section {
-    padding: 2px 0 12px 0;
+    @extend .draw__control;
     border-top: 1px solid $c-grey-300;
 }
 
@@ -71,8 +81,47 @@
 .draw__section-data-row {
     @extend %fs-data-2;
     display: block;
+    .glyphicon,
+    .content-list-item__icon--composer {
+        margin-right: 4px;
+    }
+}
+
+.draw__section-data-row--editable {
+    @extend .draw__section-data-row;
+    border-bottom: dashed 1px #333;
+    display: inline;
+}
+
+.draw__section-data-row--editable-empty {
+    @extend .draw__section-data-row--editable;
 }
 
 .draw__section-data-row--coming-soon {
     color: $c-grey-400;
 }
+
+.editable-wrap { // TODO: Restyle editable inputs + controls
+    width: 100%;
+
+    .editable-controls { width: 100% }
+
+    .editable-input {
+        width: 100%;
+        margin: 6px 0;
+    }
+
+    .editable-buttons .btn {
+        margin-right: 6px;
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.content-list-draw .date-time-picker__group .dropdown-menu {
+    left: 0;
+    right: auto;
+    min-width: 200px;
+}
+
