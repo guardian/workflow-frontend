@@ -56,6 +56,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
     }
 
     function toInitials(str) {
+        if (str.length <= 2) { return str; }
         return str.replace(/^(\w)\w*?\b.*?\b(?:(\w)\w*?)?$/, '$1$2');
     }
 

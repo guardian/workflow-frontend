@@ -13,7 +13,7 @@ $content-list-icon-size: 14px;
 
 // Global padding for cells
 %content-list__field-padding {
-    padding: 10px 5px;
+    padding: 10px 10px;
 }
 
 // Bootstrap override - TODO: remove
@@ -59,10 +59,14 @@ $content-list-icon-size: 14px;
             }
 
             &--presence,
+            &--assignee {
+                padding: 10px;
+            }
+
+            &--presence,
             &--assignee,
             &--office {
                 text-align: center;
-                padding: 10px;
             }
 
             &-icon {
@@ -282,13 +286,36 @@ $content-list-icon-size: 14px;
             &--preview,
             &--live,
             &--ophan {
+                padding: 10px 5px;
                 width: $content-list-icon-size;
             }
 
             &--presence,
             &--assignee,
             &--office {
+                padding: 10px 5px;
                 text-align: center;
+            }
+
+            &--presence,
+            &--assignee,
+            &--office {
+                width: 30px;
+            }
+
+            &--deadline,
+            &--created,
+            &--legal {
+                width: 100px;
+            }
+
+            &--status {
+                width: 80px;
+            }
+
+            &--section {
+                width: 80px;
+                padding: 5px 10px;
             }
 
             &--deadline,
@@ -298,7 +325,8 @@ $content-list-icon-size: 14px;
 
             &--notes {
                 @extend %fs-data-1;
-                @extend %content-list__field-padding;
+                padding: 2px 10px;
+                width: 120px;
             }
 
             &-supl--published-state {
@@ -314,7 +342,8 @@ $content-list-icon-size: 14px;
 
             // Last column
             &--published-state {
-                padding: 5px;
+                width: 80px;
+                padding: 5px 10px;
             }
         }
     }
