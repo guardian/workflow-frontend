@@ -34,7 +34,7 @@ object Api extends Controller with PanDomainAuthActions {
         section = req.getQueryString("section").map(Section(_)),
         dueFrom = dueFrom,
         dueUntil = dueUntil,
-        status = req.getQueryString("status").flatMap(StatusDatabase.find),
+        status = status,
         contentType = contentType,
         published = req.getQueryString("state").map(_ == "published"),
         flags = flags,
