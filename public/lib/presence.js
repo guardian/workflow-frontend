@@ -2,7 +2,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
 
     var module = angular.module('wfPresenceService', []);
 
-    module.factory('wfPresenceService', ['$rootScope', '$q', '$log',  'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $q, $log, config, wfFeatureSwitches, wfUser) {
+    module.factory('wfPresenceService', ['$rootScope', '$log',  'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $log, config, wfFeatureSwitches, wfUser) {
 
         var self = {};
 
@@ -152,34 +152,31 @@ define(["node-uuid", "underscore"], function (uuid, _) {
 
     module.controller(
         'wfPresenceSubscription',
-        [ "$scope", "$q", "wfPresenceService", function($scope, $q, wfPresenceService) {
+        [ "$scope", "wfPresenceService", function($scope, wfPresenceService) {
 
-            var initialData = null;
+            var initialData = new Promise(function(resolve, reject) {
+                reject("no subscription request made");
+            });
 
             $scope.presenceEnabled = false;
 
             $scope.initialData = function(id) {
-                if(initialData === null) {
-                    return $q.reject("no subscription has been made yet");
-                } else {
-                    return initialData.promise.then(function (data) {
+                return initialData.then(function (data) {
+                    return new Promise(function(resolve, reject) {
                         var found = _.find(data, function(d) {
                             return d.subscriptionId === id;
                         });
                         if(!found) {
-                            return $q.reject("unknown ID: [" + id + "]");
+                            reject("unknown ID: [" + id + "]");
                         } else {
-                            return found.currentState;
+                            resolve(found.currentState);
                         }
                     });
-                }
+                });
+            }
 
             wfPresenceService.whenEnabled.then(function() {
                 $scope.presenceEnabled = true;
-
-                $scope.$on("presence.subscribed", function (ev, data) {
-                    initialData && initialData.resolve(data.subscribedTo);
-                });
 
                 $scope.$watch(function($scope) {
                     var content = $scope["contentByStatus"];
@@ -195,12 +192,31 @@ define(["node-uuid", "underscore"], function (uuid, _) {
                 return _.pluck(_.flatten(_.values(content)), "composerId")
             }
 
+            var deRegisterPreviousSubscribe = angular.noop;
+
             function doSubscription(ids) {
-                initialData = $q.defer();
+                deRegisterPreviousSubscribe();
+
+                // set up a promise that will wait for the event to be
+                // transmitted from the wfPresenceService and return
+                // the results.
+                initialData = new Promise(function(resolve, reject) {
+                    // $on will return a function that can be used
+                    // later to deregister the listener
+                    var removeListener = $scope.$on("presence.subscribed", function (ev, data) {
+                        resolve(data.subscribedTo);
+                    });
+                    deRegisterPreviousSubscribe = function() {
+                        // first tell anyone waiting on this listener
+                        // that it was cancelled.
+                        reject("replace with new subscribe request");
+                        // then call the deRegister function that $on
+                        // gave us.
+                        removeListener();
+                    }
+                });
                 wfPresenceService.articleSubscribe(ids);
             }
-
-
         }]);
 
     module.directive('wfPresenceIndicators', [ function() {
