@@ -22,7 +22,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService'])
     .controller('wfContentListController', ['$scope', '$log', 'statuses', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
-    .directive('wfContentListDraw', ['$rootScope', wfContentListDraw]);
+    .directive('wfContentListDraw', ['$rootScope', 'config', 'wfContentService', 'wfProdOfficeService', wfContentListDraw]);
 
 
 function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
@@ -115,8 +115,10 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.needsLegal = item.needsLegal;
             this.note = item.note;
 
+            // TODO: Decide if this is due or deadline
             this.deadline = item.due;
             this.created = item.createdAt;
+            this.lastModified = item.lastModified;
 
             this.isPublished = item.published;
             this.publishedState = item.published ? 'Published' : ''; // TODO: Taken down, Embargoed
@@ -185,7 +187,7 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
 
     this.render = (response) => {
         var data = response.data;
-
+;
         // TODO stubs and content are separate structures in the API response
         //      make this a single list of content with consistent structure in the API
         var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
