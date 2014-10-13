@@ -1,63 +1,15 @@
 import angular from 'angular';
+
+import 'lib/composer-service';
+import 'lib/http-session-service';
 import 'lib/user';
 import 'lib/visibility-service';
 
-angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser'])
-    .factory('wfContentService', ['$http', '$timeout', '$rootScope', '$log', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfUserSession',
-        function ($http, $timeout, $rootScope, $log, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfUserSession) {
+angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService'])
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService) {
 
-            /**
-             * Make a http request to the Workflow Content API.
-             * Wraps all requests to handle when user sessions become invalid after an hour.
-             *
-             * @param  {object=} options Angular $http options for the call.
-             * @return {Promise} (ES6 promise not a Angular "promise")
-             */
-            function httpRequest(options = {}) {
-
-                return new Promise((resolve, reject) => {
-
-                    $http(options)
-                        // $http "Promise.success" is part of angular's API, "then" has a different syntax!
-                        .success(resolve)
-                        .catch(function (err) {
-
-                            // Check whether session has become invalid
-                            if (err && (err.status === 401 || err.status === 419)) {
-                                $log.info('Invalid session, attempting to re-establish');
-
-                                wfUserSession.reEstablishSession().then(
-                                    function (data) {
-                                        $log.info('Session re-established');
-
-                                        // Try the request again
-                                        return httpRequest(options);
-                                    },
-
-                                    function (err) {
-                                        $log.error('Could not re-establish session: ' + err);
-
-                                        // TODO: make event more generic for catch all
-                                        $rootScope.$apply(function () {
-                                            $rootScope.$broadcast('getContent.failed', { error: err });
-                                        });
-
-                                        reject('Could not re-establish session: ' + err);
-                                    }
-                                ).then(resolve, reject);
-
-                            } else {
-                                // TODO: make event more generic for catch all
-                                $rootScope.$broadcast('getContent.failed', { error: err });
-
-                                reject(err);
-                            }
-                        });
-
-                });
-
-            }
-
+            var httpRequest = wfHttpSessionService.request;
 
             class ContentService {
 
@@ -75,6 +27,55 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
                     });
                 }
 
+
+                /**
+                 * Async creates a stub in workflow.
+                 */
+                createStub(stubData) {
+                    return httpRequest({
+                        method: 'POST',
+                        url: '/api/stubs',
+                        data: stubData
+                    });
+                }
+
+
+                /**
+                 * Creates a draft in Composer from a Stub. Effectively moving
+                 * it to "Writers" status.
+                 * Also will create the stub if it doesn't have an id.
+                 */
+                createInComposer(stub) {
+                    return wfComposerService.create(stub.contentType).then( (response) => {
+
+                        var composerId = response.data.data.id;
+
+                        stub.composerId = composerId;
+console.log('created!', stub);
+                        if (stub.id) {
+                            return this.updateStub(stub);
+                            // return this.updateComposerId(stub.id, composerId, stub.contentType);
+
+                        } else {
+                            return this.createStub(stub);
+                        }
+                    });
+                }
+
+
+                /**
+                 * Updates an existing stub by overwriting its fields via PUT.
+                 */
+                updateStub(stub) {
+                    console.log('updateStub', stub);
+                    return httpRequest({
+                        method: 'PUT',
+                        url: '/api/stubs/' + stub.id,
+                        data: stub
+                    });
+                }
+
+
                 /**
                  * Async update a field for a piece of content.
                  *
@@ -88,14 +89,46 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
                  * @returns {Promise}
                  */
                 updateField(contentItem, field, data) {
-                    var isStatusUpdate = field === 'status',
-                        endpoint = isStatusUpdate ? '/api/content/' : '/api/stubs/',
-                        contentId = isStatusUpdate ? contentItem.composerId : contentItem.id || contentItem.stubId;
+                    if (field === 'status') {
+                        return this.updateStatus(contentItem, data);
+                    }
+
+                    var contentId = contentItem.id || contentItem.stubId;
+
+                    // TODO: create a generic PATCH / PUT API
+                    return httpRequest({
+                        method: 'PUT',
+                        url: '/api/stubs/' + contentId + '/' + field,
+                        data: { 'data': data }
+                    });
+                }
+
+
+                /**
+                 * Updates the status of a Content Item or a Stub. If contentItem
+                 * is a Stub, a draft will be created moving it to "Writers" status.
+                 */
+                updateStatus(contentItem, data) {
+                    if (!contentItem.composerId) { // its a stub
+                        return this.createInComposer(contentItem);
+                    }
 
                     return httpRequest({
                         method: 'PUT',
-                        url: endpoint + contentId + '/' + field,
+                        url: '/api/content/' + contentItem.composerId + '/status',
                         data: { 'data': data }
+                    });
+                }
+
+
+                /**
+                 * Link existing stub to composer article.
+                 */
+                updateComposerId(stubId, composerId, contentType) {
+                    return httpRequest({
+                        method: 'POST', // TODO: update to PATCH method
+                        url: '/api/stubs/' + stubId,
+                        params: { 'composerId': composerId, 'contentType': contentType }
                     });
                 }
 
@@ -152,6 +185,8 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
 
     /**
      * Content polling service.
+     *
+     * TODO: replace with an event stream
      */
     .factory('wfContentPollingService', ['$http', '$timeout', '$rootScope', 'wfContentService', function ($http, $timeout, $rootScope, wfContentService) {
 
@@ -159,6 +194,11 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
 
         class ContentPollingService {
 
+            /**
+             * @param {function} paramsProvider used to retrieve filter params for the scope
+             *                                  at the instant the next poll occurs. Necessary to
+             *                                  cater for changes in filters.
+             */
             constructor(paramsProvider) {
                 this._paramsProvider = paramsProvider;
 
@@ -181,32 +221,41 @@ angular.module('wfContentService', ['wfVisibilityService', 'wfDateService', 'wfF
                 this._callback = callback;
             }
 
-            /**
-             * Start polling for updates.
-             *
-             * @param {function} paramsProvider used to retrieve filter params for the scope
-             *                                  at the instant the next poll occurs. Necessary to
-             *                                  cater for changes in filters.
-             * @param {function} callback called on each successful polled reponse.
-             */
-            startPolling() {
-                var tick = (function () {
-                    wfContentService.get(this._paramsProvider())
-                        .then(this._callback)
-                        .then((function () { // finally
-                            this._timer = $timeout(tick, POLLING_DELAY);
-                        }).bind(this));
-
-                }).bind(this);
-
-                tick();
+            onError(callback) {
+                this._errorCallback = callback;
             }
+
+
+            startPolling() {
+                this.refresh();
+            }
+
 
             stopPolling() {
                 if (this._timer) {
                     $timeout.cancel(this._timer);
                     this._timer = false;
                 }
+            }
+
+
+            /**
+             * Forces a poll to the server to refresh data. Resets the poll
+             * timer for the next subsequent poll.
+             */
+            refresh() {
+                this.stopPolling();
+
+                wfContentService.get(this._paramsProvider())
+                    .then(this._callback)
+                    .then( () => {
+                        this._timer = $timeout(this.refresh.bind(this), POLLING_DELAY);
+                    })
+                    .catch((err) => {
+                        if (this._errorCallback) {
+                            this._errorCallback(err);
+                        }
+                    });
             }
         }
 

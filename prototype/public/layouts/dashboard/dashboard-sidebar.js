@@ -2,9 +2,13 @@ import angular from 'angular';
 
 import 'lib/date-service';
 import 'lib/filters-service';
+import 'lib/prodoffice-service';
+import 'components/location-picker/location-picker';
 
-angular.module('wfDashboardSidebar', ['wfFiltersService'])
-    .controller('wfDashboardSidebarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'prodOfficeService', 'sections', function ($scope, wfFiltersService, prodOfficeService, sections) {
+angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfProdOfficeService', 'wfLocationPicker'])
+    .controller('wfDashboardSidebarController', ['$scope', 'statuses', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'sections', function ($scope, statuses, wfFiltersService, prodOfficeService, sections) {
+
+        $scope.statuses = statuses;
 
         $scope.filters = [
             {

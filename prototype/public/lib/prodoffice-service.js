@@ -1,9 +1,9 @@
 define(['angular'], function (angular) {
     'use strict';
 
-    var prodOfficeService = angular.module('prodOfficeService', ['wfLocationService']);
+    var prodOfficeService = angular.module('wfProdOfficeService', ['wfLocationService']);
 
-    prodOfficeService.factory('prodOfficeService',
+    prodOfficeService.factory('wfProdOfficeService',
         ['$rootScope', 'wfLocationService', function ($rootScope, wfLocationService) {
 
             /* mapping from city (as returned by getLocationKey()) to
