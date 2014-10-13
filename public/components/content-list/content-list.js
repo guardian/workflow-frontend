@@ -6,6 +6,8 @@ import groupBy from 'lodash/modern/collections/groupBy';
 
 import 'lib/content-service';
 import 'lib/date-service';
+import { wfContentListItem } from 'components/content-list-item/content-list-item';
+import { wfContentListDraw } from 'components/content-list-draw/content-list-draw';
 
 // Groupby
 // sort by
@@ -14,11 +16,12 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=',
     PREVIEW_PATH = 'http://preview.gutools.co.uk/global/',
     LIVE_PATH = 'http://www.theguardian.com/';
 
-
 angular.module('wfContentList', ['wfContentService', 'wfDateService'])
     .service('wfContentItemParser', ['config', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
     .controller('wfContentListController', ['$scope', 'statuses', 'wfContentService', 'wfContentItemParser', wfContentListController])
-    .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective);
+    .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
+    .directive('wfContentListItem', ['$rootScope', wfContentListItem])
+    .directive('wfContentListDraw', ['$rootScope', wfContentListDraw]);
 
 
 function wfContentItemParser(config, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
@@ -130,10 +133,6 @@ function wfContentListController($scope, statuses, wfContentService, wfContentIt
         { name: 'Check it', value: 'REQUIRED' },
         { name: 'Approved', value: 'COMPLETE'}
     ];
-
-    this.selectItem = (contentItem) => {
-        this.selectedItem = contentItem;
-    };
 
     this.refresh = () => {
         var params = wfContentService.getServerParams();
