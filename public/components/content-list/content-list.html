@@ -1,5 +1,5 @@
 
-<div class="alert alert-danger" ng-if="getContentError">
+<div class="alert alert-danger" ng-if="refreshContentError">
     There was a problem contacting the server, please try to
     <a href="javascript:window.location.reload()">reload</a> the page. If the problem continues, please contact
     <a href="mailto:cms.workflow@guardian.co.uk">the Workflow team</a>.
@@ -31,6 +31,8 @@
         <tr class="content-list__group-heading-row">
             <th class="content-list__group-heading" scope="rowgroup" colspan="19">
                 <a class="content-list__group-heading-link" ng-click="">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></a>
+                <button class="content-list__button--new" ng-click="contentList.newItem()" ng-if="group.name === 'stub'"><i class="content-list__button-icon" wf-icon="pen"></i>New Stub</button>
+                <button class="content-list__button--import" ng-click="contentList.importItem()" ng-if="group.name === 'stub'"><i class="content-list__button-icon" wf-icon="pen"></i>Import from Composer</button>
             </th>
         </tr>
 
