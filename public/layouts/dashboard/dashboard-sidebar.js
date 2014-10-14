@@ -14,14 +14,12 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfProdOfficeService',
             {
                 title: 'Status',
                 namespace: 'status',
-                filterOptions: (function (s) {
-                    return s.map(function (v, i) {
-                        return {
-                            caption: v,
-                            value: v // TODO: normalise this to lower case...
-                        };
-                    });
-                })($scope.statuses)
+                filterOptions: statuses.map((status) => {
+                    return {
+                        caption: status === 'Stub' ? 'News list' : status,
+                        value: status
+                    };
+                })
             },
             {
                 title: 'Content',
