@@ -13,7 +13,7 @@ import { wfContentListDraw } from 'components/content-list-draw/content-list-dra
 // Groupby
 // sort by
 
-var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=',
+var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/',
     PREVIEW_PATH = 'http://preview.gutools.co.uk/',
     LIVE_PATH = 'http://www.theguardian.com/';
 
@@ -67,6 +67,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
         constructor(item) {
             if (item.composerId) {
                 this.composer = config.composerViewContent + '/' + item.composerId;
+            }
+            if (item.path) {
                 this.preview = PREVIEW_PATH + item.path;
             }
             if (item.published && item.path) {
