@@ -99,7 +99,7 @@ $content-list-icon-size: 14px;
         }
 
         &-link {
-            @extend %fs-data-2;
+            @extend %fs-data-3;
             background-color: $c-grey-300;
             color: inherit;
             font-weight: bold;
@@ -122,6 +122,7 @@ $content-list-icon-size: 14px;
         }
     }
 
+
     &__button {
         &-icon {
             display: inline-block;
@@ -132,6 +133,8 @@ $content-list-icon-size: 14px;
 
         &--new,
         &--import {
+            @extend %fs-data-3;
+
             margin-left: 10px;
             padding: 0 5px;
             background-color: $c-grey-300;
