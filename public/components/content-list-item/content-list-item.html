@@ -24,7 +24,7 @@
     <td class="content-list-item__field--office" title="Production Office: {{ contentItem.officeTitle }}">
         <span class="content-list-item__icon--office-{{ contentItem.office.toLowerCase() }}">{{ contentItem.office }}</span>
     </td>
-    <td class="content-list-item__field--deadline" title="Deadline: {{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'long' }}">{{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}</td>
+    <td class="content-list-item__field--deadline" title="Deadline: {{ (contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'long') || 'none' }}">{{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}</td>
     <td class="content-list-item__field--created" title="Date created: {{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'long'}}">{{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}</td>
     <td class="content-list-item__field--section" title="Section: {{ contentItem.section }}">{{ contentItem.section }}</td>
     <td class="content-list-item__field--legal" title="Needs legal">
@@ -34,7 +34,7 @@
         <select ng-click="$event.stopPropagation()" ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
         </select>
     </td>
-    <td class="content-list-item__field--notes" title="Note: {{ contentItem.note }}">{{ contentItem.note }}</td>
+    <td class="content-list-item__field--notes" title="Note: {{ contentItem.note || 'none' }}">{{ contentItem.note }}</td>
     <td class="content-list-item__field--composer">
         <a href="{{ contentItem.links.composer }}" title="View in Composer (opens in new window)" target="_blank" ng-if="contentItem.links.composer">
             <i class="content-list-item__icon--composer" wf-icon="composer"></i>
@@ -67,7 +67,7 @@
                     <i class="content-list-item__icon--ophan" wf-icon="ophan" wf-icon-active="false"></i>
                 </span>
     </td>
-    <td class="content-list-item__field--published-state">
+    <td class="content-list-item__field--published-state" title="Published state: {{ contentItem.publishedState || 'Draft' }}{{ contentItem.publishedTime && ' on ' + (contentItem.publishedTime | wfLocaliseDateTime | wfFormatDateTime:'long') }}">
         {{ contentItem.publishedState }}
         <div class="content-list-item__field-supl--published-state" ng-if="contentItem.isPublished">{{ contentItem.publishedTime | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}</div>
     </td>
