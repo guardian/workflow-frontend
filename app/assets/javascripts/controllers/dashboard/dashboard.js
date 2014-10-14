@@ -12,6 +12,7 @@ define([
 
                 $scope.composerUrl = config.composerViewContent;
 
+                $scope.presenceSubscriptions = [];
 
                 var getContent = function (evt, params) {
                     var params = wfContentService.getServerParams();
@@ -144,6 +145,16 @@ define([
 
                 $scope.$on('importFromComposerButtonClicked', function (event) {
                     $scope.$broadcast('composerImport');
+                });
+
+                $scope.presence_connection = "unknown";
+
+                $scope.$on("presence.connection.success", function () {
+                    $scope.presence_connection = "success";
+                });
+
+                $scope.$on("presence.connection.error", function () {
+                    $scope.presence_connection = "error";
                 });
 
                 $scope.editStub = function (stub) {
