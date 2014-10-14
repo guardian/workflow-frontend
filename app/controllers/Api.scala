@@ -27,39 +27,55 @@ object Api extends Controller with PanDomainAuthActions {
     val prodOffice = req.getQueryString("prodOffice")
     val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
     val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
+    val status = req.getQueryString("status").flatMap(StatusDatabase.find)
 
-    val content = PostgresDB.getContent(
-      section = req.getQueryString("section").map(Section(_)),
-      dueFrom = dueFrom,
-      dueUntil = dueUntil,
-      status = req.getQueryString("status").flatMap(StatusDatabase.find),
-      contentType = contentType,
-      published = req.getQueryString("state").map(_ == "published"),
-      flags = flags,
-      prodOffice = prodOffice,
-      createdFrom = createdFrom,
-      createdUntil = createdUntil
-    )
+    def getContent = {
+      val content = PostgresDB.getContent(
+        section = req.getQueryString("section").map(Section(_)),
+        dueFrom = dueFrom,
+        dueUntil = dueUntil,
+        status = status,
+        contentType = contentType,
+        published = req.getQueryString("state").map(_ == "published"),
+        flags = flags,
+        prodOffice = prodOffice,
+        createdFrom = createdFrom,
+        createdUntil = createdUntil
+      )
 
 
-    val publishedContent = content.filter(d => d.wc.status == models.Status("Final"))
-                                  .sortBy(s => (s.wc.timePublished, s.wc.lastModified))(publishedOrdering)
-    val unpublishedContent = content.filterNot(d => d.wc.status == models.Status("Final"))
-                                   .sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering)
-    
-    val sortedContent = publishedContent ::: unpublishedContent
+      val publishedContent = content.filter(d => d.wc.status == models.Status("Final"))
+        .sortBy(s => (s.wc.timePublished, s.wc.lastModified))(publishedOrdering)
+      val unpublishedContent = content.filterNot(d => d.wc.status == models.Status("Final"))
+        .sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering)
 
-    val stubs = CommonDB.getStubs(
-      dueFrom = dueFrom,
-      dueUntil = dueUntil,
-      section = section,
-      contentType = contentType,
-      unlinkedOnly = true,
-      prodOffice = prodOffice,
-      createdFrom = createdFrom,
-      createdUntil = createdUntil).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
+      publishedContent ::: unpublishedContent
+    }
 
-    Ok(Json.obj("content" -> sortedContent, "stubs" -> stubs))
+    def getStubs = {
+      CommonDB.getStubs(
+        dueFrom = dueFrom,
+        dueUntil = dueUntil,
+        section = section,
+        contentType = contentType,
+        unlinkedOnly = true,
+        prodOffice = prodOffice,
+        createdFrom = createdFrom,
+        createdUntil = createdUntil).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
+    }
+
+    val stubs = status match {
+      case Some(models.Status("Stub")) | None => getStubs
+      case _ => Nil
+    }
+
+    val content = status match {
+      case Some(models.Status("Stub")) => Nil
+      case _ => getContent
+    }
+
+
+    Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
