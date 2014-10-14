@@ -38,8 +38,15 @@ System.config({
     "angular-mocks": "github:angular/bower-angular-mocks@^1.2.7",
     "mixpanel": "github:mixpanel/mixpanel-js@^2.2.2",
     "ua-parser": "github:faisalman/ua-parser-js@^0.7.0",
-    "angular-animate": "github:angular/bower-angular-animate@^1.2.22",
-    "angular-ui-router": "github:angular-ui/ui-router@^0.2.11"
+    "angular-animate": "github:angular/bower-angular-animate@1.2.22",
+    "angular-ui-router": "github:angular-ui/ui-router@^0.2.11",
+    "github:jspm/nodelibs@0.0.3": {
+      "Base64": "npm:Base64@0.2",
+      "base64-js": "npm:base64-js@0.0",
+      "ieee754": "npm:ieee754@^1.1.1",
+      "inherits": "npm:inherits@^2.0.1",
+      "json": "github:systemjs/plugin-json@master"
+    }
   }
 });
 
@@ -63,10 +70,10 @@ System.config({
     "github:components/jquery": "1.11.1",
     "github:systemjs/plugin-css": "0.1.0",
     "github:moment/moment-timezone": "0.2.2",
-    "github:angular/bower-angular-mocks": "1.2.25",
+    "github:angular/bower-angular-mocks": "1.3.0",
     "github:mixpanel/mixpanel-js": "2.2.3",
     "github:faisalman/ua-parser-js": "0.7.0",
-    "github:angular/bower-angular-animate": "1.2.25",
+    "github:angular/bower-angular-animate": "1.2.22",
     "github:angular-ui/ui-router": "0.2.11"
   }
 });

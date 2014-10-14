@@ -4,7 +4,6 @@
   "author": "Guardian Digital CMS team",
   "private": true,
   "registry": "jspm",
-  "directories": {},
   "dependencies": {
     "angular": "1.2.20",
     "angular-bootstrap": "npm:angular-bootstrap@^0.11.0",
@@ -17,12 +16,12 @@
     "underscore": "github:jashkenas/underscore@^1.6.0",
     "css": "^0.1.0",
     "json": "master",
-    "angular-mocks": "github:angular/bower-angular-mocks@^1.2.7",
+    "angular-mocks": "^1.2.7",
     "moment-timezone": "github:moment/moment-timezone@^0.2.1",
     "moment": "^2.8.1",
     "mixpanel": "github:mixpanel/mixpanel-js@^2.2.2",
     "ua-parser": "github:faisalman/ua-parser-js@^0.7.0",
-    "angular-ui-router": "github:angular-ui/ui-router@^0.2.11",
-    "angular-animate": "github:angular/bower-angular-animate@1.2.22"
+    "angular-ui-router": "^0.2.11",
+    "angular-animate": "1.2.22"
   }
 }
