@@ -1,0 +1,161 @@
+<tr class="content-list-drawer content-list-drawer--hidden">
+    <td colspan="100" class="content-list-drawer__full-width">
+
+        <div class="content-list-drawer__container"><!-- div for animation -->
+            <div class="content-list-drawer__container-inner"><!-- div for padding/spacing -->
+                <ul class="drawer__column">
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Priority</span>
+                        <span class="drawer__section-data-row">{{ contentItem.priorityTitle }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Production deadline</span>
+
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.deadline, 'drawer__section-data-row--editable-empty': !contentItem.deadline }" title="{{ (contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'long') || '' }}">
+                                {{ (contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime) || 'Add deadline' }}
+                            </span>
+
+                        <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
+                            <div wf-date-time-picker ng-model="contentItem.deadline" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="updateDeadline(); dateTimeEdit = false" wf-small="true"></div>
+                        </form>
+
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Scheduled</span>
+                        <span class="drawer__section-data-row">{{ contentItem.scheduled }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Last modified</span>
+                        <span class="drawer__section-data-row">{{ (contentItem.lastModified | wfLocaliseDateTime | wfFormatDateTime) || "-" }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">First published</span>
+                        <span class="drawer__section-data-row">{{ contentItem.firstPublishedTime || '-' }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Last published</span>
+                        <span class="drawer__section-data-row">{{ contentItem.publishedTime || '-' }}</span>
+                    </li>
+                </ul>
+
+                <ul class="drawer__column">
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Status</span>
+                        <select ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
+                        </select>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">State</span>
+                        <span class="drawer__section-data-row">{{ contentItem.state || '-' }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Office</span>
+                        <select ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices"></select>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">In use by</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Assigned to</span>
+                        <span class="detail__data--editable" editable-text="contentItem.assignee" buttons="no" onbeforesave="updateAssignee($data)">{{ contentItem.assignee || "None" }}</span>
+                    </li>
+                </ul>
+
+                <ul class="drawer__column">
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Section</span>
+                        <span class="drawer__section-data-row">{{ contentItem.section }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Content type</span>
+                        <span class="drawer__section-data-row">{{ contentItem.contentTypeTitle }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Comments</span>
+                        <span class="drawer__section-data-row">{{ contentItem.commentsTitle }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Guardian Witness</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Feature</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Legal status</span>
+                        <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
+                    </li>
+                </ul>
+
+                <ul class="drawer__column--wide">
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Working title</span>
+                        <span class="drawer__section-data-row">{{ contentItem.workingTitle || '-' }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Headline</span>
+                        <span class="drawer__section-data-row">{{ contentItem.headline || '-' }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">URL</span>
+                        <span class="drawer__section-data-row" ng-if="contentItem.path">
+                            <a href="{{ contentItem.links.live || contentItem.links.preview || contentItem.links.composer }}">{{ contentItem.path }}</a>
+                        </span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Note</span>
+                        <span class="drawer__section-data-row--editable" editable-textarea="contentItem.note" onbeforesave="updateNote($data)">{{ contentItem.note || 'Add note' }}</span>
+                    </li>
+                </ul>
+
+                <ul class="drawer__column">
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Main image</span>
+                    <span class="drawer__section-data-row">
+                        <img src="" alt=""/>
+                    </span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Caption</span>
+                        <span class="drawer__section-data-row">{{ contentItem.mainImageTitle }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Alt text</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Trail picture</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Standfirst</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Trail text</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Tags</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                </ul>
+
+                <ul class="drawer__column--control">
+                    <li class="drawer__control">
+                        <span class="drawer__section-data-row drawer__control-item" ng-click="contentListDrawerController.hide()">
+                            <i class="content-list-item__icon--composer" wf-icon="cross"></i>
+                            Close details
+                        </span>
+                    </li>
+                    <li class="drawer__control">
+                        <span class="drawer__section-data-row drawer__control-item" ng-click="deleteContentItem()"><span class="glyphicon glyphicon-trash"></span>Delete from workflow</span>
+                    </li>
+                 </ul>
+            </div>
+        </div>
+
+    </td>
+</tr>

@@ -8,7 +8,7 @@ import _find from 'lodash/modern/collections/find';
 import 'lib/content-service';
 import 'lib/date-service';
 import { wfContentListItem } from 'components/content-list-item/content-list-item';
-import { wfContentListDraw } from 'components/content-list-draw/content-list-draw';
+import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
 
 // Groupby
 // sort by
@@ -22,7 +22,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService'])
     .controller('wfContentListController', ['$scope', '$log', 'statuses', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
-    .directive('wfContentListDraw', ['$rootScope', 'config', 'wfContentService', 'wfProdOfficeService', wfContentListDraw]);
+    .directive('wfContentListDrawer', ['$rootScope', 'config', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
 
 
 function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
@@ -125,6 +125,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.publishedTime = item.timePublished;
 
             this.links = new ContentItemLinks(item);
+            this.path = item.path;
+
             this.item = item;
         }
     }
