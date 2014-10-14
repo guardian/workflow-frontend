@@ -1,4 +1,4 @@
-.content-list .content-list-draw {
+.content-list .content-list-drawer { // over qualified to ensure overide
     overflow: hidden;
     &::before, &::after {
         display: none;
@@ -7,15 +7,15 @@
     }
 }
 
-.content-list-draw * {
+.content-list-drawer * {
     box-sizing: border-box;
 }
 
-.content-list-draw__full-width {
+.content-list-drawer__full-width {
     vertical-align: top;
 }
 
-.content-list-draw__container {
+.content-list-drawer__container {
     overflow: hidden;
     height: 380px;
     background-color: $c-grey-100;
@@ -26,15 +26,15 @@
     transition: height 0.5s ease-in-out;
 }
 
-.content-list .content-list-draw--hidden .content-list-draw__container {
+.content-list .content-list-drawer--hidden .content-list-drawer__container {
     height: 0;
 }
 
-.content-list-draw__container-inner {
+.content-list-drawer__container-inner {
     display: flex;
 }
 
-.draw__column {
+.drawer__column {
     flex: 1 0 0;
     margin: 0;
     list-style: none;
@@ -46,39 +46,39 @@
     }
 }
 
-.draw__column--wide {
-    @extend .draw__column;
+.drawer__column--wide {
+    @extend .drawer__column;
     flex: 3 0 0;
 }
 
-.draw__column--control {
-    @extend .draw__column;
+.drawer__column--control {
+    @extend .drawer__column;
     flex: 0.5 0 0;
     border-left: 1px solid $c-grey-400;
     padding: 0 0 0 12px;
     margin: 12px 0 0 12px;
 }
 
-.draw__control {
+.drawer__control {
     padding: 2px 12px 12px 0;
-    .draw__control-item {
+    .drawer__control-item {
         cursor: pointer;
     }
 }
 
-.draw__section {
-    @extend .draw__control;
+.drawer__section {
+    @extend .drawer__control;
     border-top: 1px solid $c-grey-300;
 }
 
-.draw__section-title {
+.drawer__section-title {
     @extend %fs-data-2;
     font-weight: bold;
     display: block;
     padding: 2px 0;
 }
 
-.draw__section-data-row {
+.drawer__section-data-row {
     @extend %fs-data-2;
     display: block;
     .glyphicon,
@@ -87,17 +87,17 @@
     }
 }
 
-.draw__section-data-row--editable {
-    @extend .draw__section-data-row;
+.drawer__section-data-row--editable {
+    @extend .drawer__section-data-row;
     border-bottom: dashed 1px #333;
     display: inline;
 }
 
-.draw__section-data-row--editable-empty {
-    @extend .draw__section-data-row--editable;
+.drawer__section-data-row--editable-empty {
+    @extend .drawer__section-data-row--editable;
 }
 
-.draw__section-data-row--coming-soon {
+.drawer__section-data-row--coming-soon {
     color: $c-grey-400;
 }
 
@@ -119,7 +119,11 @@
     }
 }
 
-.content-list-draw .date-time-picker__group .dropdown-menu {
+.editable-hide {
+    display: none;
+}
+
+.content-list-drawer .date-time-picker__group .dropdown-menu {
     left: 0;
     right: auto;
     min-width: 200px;
