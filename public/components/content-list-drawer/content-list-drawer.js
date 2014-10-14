@@ -1,23 +1,61 @@
-var wfContentListDraw = function ($rootScope, config, contentService, prodOfficeService) {
+/**
+ * Directive for handling logic around the contentItemRow details drawer.
+ *
+ * Allows the drawer to be shown and hidden in the appropriate places aswell as allowing the editing of some fields.
+ *
+ * @param $rootScope
+ * @param config
+ * @param contentService
+ * @param prodOfficeService
+ */
+var wfContentListDrawer = function ($rootScope, config, contentService, prodOfficeService) {
     return {
         restrict: 'A',
         replace: true,
-        templateUrl: '/assets/components/content-list-draw/content-list-draw.html',
+        templateUrl: '/assets/components/content-list-drawer/content-list-drawer.html',
         scope: {
             contentList: '=',
             legalValues: '=',
             statusValues: '='
         },
-        link: function ($scope, elem, attrs) {
+        controllerAs: 'contentListDrawerController',
+        controller: function ($scope, $element) {
 
             var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
-                hiddenClass = 'content-list-draw--hidden';
+                hiddenClass = 'content-list-drawer--hidden';
+
+            /**
+             * Hide the drawer from view using css3 transition and remove the selected class form the row.
+             * Accessible on $scope for use on 'hide' button in drawer
+             */
+            this.hide = function () {
+
+                $element.one(transitionEndEvents,() => {
+                    $scope.contentList.selectedItem = null;
+                    $scope.$apply();
+                });
+                $element.addClass(hiddenClass);
+            };
+        },
+        link: function ($scope, elem, attrs, contentListDrawerController) {
+
+            var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
+                hiddenClass = 'content-list-drawer--hidden';
 
             $scope.prodOffices = prodOfficeService.getProdOffices();
 
+            /**
+             * Show the content details drawer after moving it to a new position,
+             * use a timeout to allow the browser to reflow styles ensuring
+             * that the css animation triggers.
+             *
+             * @param {Object} contentItem
+             * @param {Object} contentListItemElement - JQL wrapped DOM node
+             */
             function show (contentItem, contentListItemElement) {
+
                 contentListItemElement.after(elem);
-                setTimeout(function () { // wait for reflow
+                setTimeout(() => { // wait for reflow
                     $scope.contentItem = contentItem;
                     $scope.contentList.selectedItem = contentItem;
                     $scope.$apply();
@@ -25,42 +63,54 @@ var wfContentListDraw = function ($rootScope, config, contentService, prodOffice
                 }, 1);
             }
 
-            $scope.hide = function () {
-                elem.one(transitionEndEvents, function () {
-                    $scope.contentList.selectedItem = null;
-                    $scope.$apply();
-                });
-                elem.addClass(hiddenClass);
-            };
-
+            /**
+             * Listen for event triggered by click in external contentItemRow directive to show or hide drawer
+             */
             $rootScope.$on('contentItem.select', ($event, contentItem, contentListItemElement) => {
-
-                console.log(contentItem);
 
                 if ($scope.contentList.selectedItem !== contentItem) { // open
                     if (!elem.hasClass(hiddenClass)) {
                         elem.addClass(hiddenClass);
-                        elem.one(transitionEndEvents, function () {
+                        elem.one(transitionEndEvents, () => {
                             show(contentItem, contentListItemElement);
                         });
                     } else {
                         show(contentItem, contentListItemElement);
                     }
                 } else { // close
-                    $scope.hide();
+                    contentListDrawerController.hide();
                 }
-
             });
 
-            // Update functions
+            /**
+             * Ensure the drawer state is representative if a contentItem changes status
+             */
+            $rootScope.$on('contentItem.updated', ($event, eventData) => {
+
+                if (eventData.contentItem === $scope.contentItem && eventData.field === 'status') {
+                    $scope.contentItem = null;
+                    $scope.contentList.selectedItem = null;
+                    elem.addClass(hiddenClass);
+                    $scope.apply();
+                }
+            });
+
+            /**
+             * Update functions for editable fields.
+             * Uses the contentService to persist updated data.
+             *
+             * TODO: Refactor in to generic update function once more fields become editable
+             */
 
             $scope.updateNote = function (note) {
+
                 if (note.length > config.maxNoteLength) return "Note too long";
                 contentService.updateField($scope.contentItem, "note", note)
                     .then($scope.apply, errorMessage);
             };
 
             $scope.updateOffice = function (office) {
+
                 contentService.updateField($scope.contentItem, "prodOffice", office)
                     .then($scope.apply, errorMessage);
             };
@@ -83,11 +133,13 @@ var wfContentListDraw = function ($rootScope, config, contentService, prodOffice
             };
 
             $scope.updateAssignee = function (assignee) {
+
                 contentService.updateField($scope.contentItem, "assignee", assignee)
                     .then($scope.apply, errorMessage);
             };
 
             $scope.deleteContentItem = function () {
+
                 contentService.remove($scope.contentItem.id)
                     .then($scope.apply, errorMessage);
             };
@@ -100,4 +152,4 @@ var wfContentListDraw = function ($rootScope, config, contentService, prodOffice
     };
 };
 
-export {wfContentListDraw}
+export { wfContentListDrawer }

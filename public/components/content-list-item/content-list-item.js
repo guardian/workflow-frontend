@@ -1,3 +1,7 @@
+/**
+ * Directive allowing the contentListItems to interact with the details drawer
+ * @param $rootScope
+ */
 var wfContentListItem = function ($rootScope) {
     return {
         restrict: 'A',
@@ -11,20 +15,14 @@ var wfContentListItem = function ($rootScope) {
         },
         link: function ($scope, elem, attrs) {
 
+            /**
+             * Emit an event telling the details drawer to move itself to this element, update and display.
+             * @param {Object} contentItem - this contentItem
+             */
             $scope.selectItem = (contentItem) => {
+
                 $rootScope.$emit('contentItem.select', contentItem, elem);
             };
-
-//            attrs.$observe('contentItem', function(contentItem) {
-//                $scope.contentItem = contentItem;
-//            });
-
-//            $scope.$on('contentItem.select', ($event, contentItemView) => {
-//                $scope.contentItemView = contentItemView;
-//
-//                console.log($event, elem)
-//
-//            });
 
         }
     };
