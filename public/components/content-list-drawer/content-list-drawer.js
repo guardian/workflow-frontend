@@ -5,14 +5,20 @@
  *
  * @param $rootScope
  * @param config
+ * @param $timeout
  * @param contentService
  * @param prodOfficeService
  */
-var wfContentListDrawer = function ($rootScope, config, contentService, prodOfficeService) {
+var wfContentListDrawer = function ($rootScope, config, $timeout, contentService, prodOfficeService) {
+
+    var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
+        hiddenClass = 'content-list-drawer--hidden';
+
     return {
         restrict: 'A',
         replace: true,
         templateUrl: '/assets/components/content-list-drawer/content-list-drawer.html',
+        priority: 1001,
         scope: {
             contentList: '=',
             legalValues: '=',
@@ -20,9 +26,6 @@ var wfContentListDrawer = function ($rootScope, config, contentService, prodOffi
         },
         controllerAs: 'contentListDrawerController',
         controller: function ($scope, $element) {
-
-            var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
-                hiddenClass = 'content-list-drawer--hidden';
 
             /**
              * Hide the drawer from view using css3 transition and remove the selected class form the row.
@@ -39,8 +42,7 @@ var wfContentListDrawer = function ($rootScope, config, contentService, prodOffi
         },
         link: function ($scope, elem, attrs, contentListDrawerController) {
 
-            var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
-                hiddenClass = 'content-list-drawer--hidden';
+            var $parent = elem.parent(); // Store parent location for holding unbound elem
 
             $scope.prodOffices = prodOfficeService.getProdOffices();
 
@@ -55,10 +57,9 @@ var wfContentListDrawer = function ($rootScope, config, contentService, prodOffi
             function show (contentItem, contentListItemElement) {
 
                 contentListItemElement.after(elem);
-                setTimeout(() => { // wait for reflow
+                $timeout(() => { // wait for reflow
                     $scope.contentItem = contentItem;
                     $scope.contentList.selectedItem = contentItem;
-                    $scope.$apply();
                     elem.removeClass(hiddenClass);
                 }, 1);
             }
@@ -85,13 +86,18 @@ var wfContentListDrawer = function ($rootScope, config, contentService, prodOffi
             /**
              * Ensure the drawer state is representative if a contentItem changes status
              */
-            $rootScope.$on('contentItem.updated', ($event, eventData) => {
+            $rootScope.$on('contentItem.update', ($event, eventData) => {
 
-                if (eventData.contentItem === $scope.contentItem && eventData.field === 'status') {
-                    $scope.contentItem = null;
-                    $scope.contentList.selectedItem = null;
+                if (eventData.contentItem === $scope.contentItem && eventData.data.hasOwnProperty('status')) {
+
+                    // Move element out of ng-repeat list so it doesn't get removed and unbound
                     elem.addClass(hiddenClass);
-                    $scope.apply();
+                    $parent.append(elem);
+
+                    $timeout(() => { // Reset local state on next digest cycle
+                        $scope.contentItem = null;
+                        $scope.contentList.selectedItem = null;
+                    }, 1);
                 }
             });
 

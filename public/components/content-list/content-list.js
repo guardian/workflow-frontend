@@ -22,7 +22,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService'])
     .controller('wfContentListController', ['$scope', '$log', 'statuses', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
 
 
 function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
@@ -211,6 +211,7 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
         // TODO: if multiple fields need updating, do it in a single API call
         for (var field in msg.data) {
             wfContentService.updateField(msg.contentItem.item, field, msg.data[field]).then(() => {
+
                 $scope.$emit('contentItem.updated', {
                     'contentItem': msg.contentItem,
                     'field': field
