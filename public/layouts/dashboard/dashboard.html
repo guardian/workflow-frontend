@@ -65,7 +65,7 @@
         <a href="mailto:cms.workflow@guardian.co.uk">the Workflow team</a>.
     </div>
 
-    <table class="content-list table">
+    <table class="content-list table" ng-controller="wfPresenceSubscription">
         <thead class="content-list__head">
         <tr>
             <th colspan="4"></th>
@@ -128,6 +128,12 @@
 
                 <p ng-show="!content.published">Draft</p>
             </td>
+            <td>
+                <wf-presence-indicators  enabled="presenceEnabled"
+                                         presence-id="content.composerId"
+                                         initial-data="initialData(content.composerId)">
+                </wf-presence-indicators>
+            </td>
             <td><span ng-click="deleteContent(content)" class="glyphicon glyphicon-trash"></span></td>
         </tr>
         <tr ng-repeat-end></tr>
@@ -149,9 +155,7 @@
             <dd ng-hide="selectedContent.headline"><em>No headline set</em></dd>
             <dt>Working title</dt>
             <dd>{{ selectedContent.workingTitle }}</dd>
-
         </dl>
-
         <div ng-show="selectedContent.published">
             <h5>View in Ophan</h5>
             <a href="http://dashboard.ophan.co.uk/summary?path=/{{ selectedContent.path }}" target="_blank">

@@ -32,6 +32,7 @@ object Application extends Controller with PanDomainAuthActions {
         ),
         "statuses" -> statuses,
         "sections" -> sections,
+        "presenceUrl" -> PrototypeConfiguration.cached.presenceUrl,
         "user" -> Json.parse(user.toJson)
       )
 
