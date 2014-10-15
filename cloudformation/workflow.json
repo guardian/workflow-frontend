@@ -43,6 +43,11 @@
             "Type": "String",
             "Default": "https://composer.gutools.co.uk"
         },
+        "PresenceUrl": {
+            "Description": "The url for the presence service",
+            "Type": "String",
+            "Default": "wss://presence.gutools.co.uk/socket"
+        },
         "DBPort": {
             "Description": "Port number for the database instance",
             "Type": "String",
@@ -342,6 +347,7 @@
 
                         "sed -i \\\n",
                         "    -e 's,@COMPOSER_URL@,", {"Ref": "ComposerUrl"}, ",g' \\\n",
+                        "    -e 's,@PRESENCE_URL@,", {"Ref": "PresenceUrl"}, ",g' \\\n",
                         "    -e 's,@DB_URL@,jdbc:postgresql://", { "Fn::GetAtt": [ "PostgresInstance", "Endpoint.Address" ] }, ":", {"Ref":"DBPort"}, "/workflow,g' \\\n",
                         "    -e 's,@DB_USER@,", {"Ref": "DBUser"}, ",g' \\\n",
                         "    -e 's,@DB_PASSWORD@,", {"Ref": "DBPassword"}, ",g' \\\n",

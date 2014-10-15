@@ -4,8 +4,9 @@ import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import 'components/location-picker/location-picker';
+import 'components/sidebar-filter/sidebar-filter';
 
-angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfProdOfficeService', 'wfLocationPicker'])
+angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wfProdOfficeService', 'wfLocationPicker'])
     .controller('wfDashboardSidebarController', ['$scope', 'statuses', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'sections', function ($scope, statuses, wfFiltersService, prodOfficeService, sections) {
 
         $scope.statuses = statuses;
@@ -57,47 +58,4 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfProdOfficeService',
                 ]
             }
         ];
-    }])
-
-    .directive('wfSidebarFilter', ['wfFiltersService', function (wfFiltersService) {
-
-        return {
-            restrict: 'E',
-            replace: true,
-            templateUrl: '/assets/components/sidebar-filter/sidebar-filter.html',
-            link: function ($scope, elem, attrs) {
-                $scope.defaultFilter = { caption: "All", value: null };
-                $scope.selectedFilter = wfFiltersService.get($scope.filter.namespace);
-
-                if (!$scope.selectedFilter) {
-                    $scope.selectedFilter = null;
-                }
-
-                $scope.filterIsSelected = function(filter) {
-                    return (filter != null && filter.value === $scope.selectedFilter);
-                };
-
-                $scope.filterClick = function(filter) {
-                    if($scope.filterIsSelected(filter)) {
-                        $scope.selectedFilter = null;
-                    } else {
-                        $scope.selectedFilter = filter.value;
-                    }
-
-                    $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilter);
-                };
-
-                $scope.toggleSidebarSection = function () {
-
-                    var closedClass = 'sidebar__section--filter-list-closed';
-
-                    if (elem[0].classList.contains(closedClass)) {
-                        elem[0].classList.remove(closedClass);
-                    } else {
-                        elem[0].classList.add(closedClass);
-                    }
-
-                };
-            }
-        };
     }]);

@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.mvc.{AnyContent, Result, Controller}
+import play.api.mvc._
 import play.api.libs.json._
 
 import lib.Responses._
@@ -16,7 +16,33 @@ import org.joda.time.DateTime
 import com.gu.workflow.db.{SectionDB, CommonDB}
 import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
 
+import scala.concurrent.Future
+
+case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
+
+  def apply(request: Request[A]): Future[Result] = {
+
+    val headers = request.headers.get("Origin").map { origin =>
+      if(origins.contains(origin)) {
+        List("Access-Control-Allow-Origin" -> origin, "Access-Control-Allow-Credentials" -> "true")
+      } else { Nil }
+    }
+
+    action(request).map(_.withHeaders(headers.getOrElse(Nil) :_*))
+  }
+
+  lazy val parser = action.parser
+}
+
 object Api extends Controller with PanDomainAuthActions {
+
+  def allowCORSAccess(methods: String, args: Any*) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+
+    Action { implicit req =>
+      val requestedHeaders = req.headers("Access-Control-Request-Headers")
+      NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
+    }
+  }
 
   def content = APIAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
@@ -78,6 +104,14 @@ object Api extends Controller with PanDomainAuthActions {
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
 
+  def getContentbyId(composerId: String) =
+    CORSable(PrototypeConfiguration.apply.composerUrl) {
+      APIAuthAction { implicit req =>
+        val data = PostgresDB.getContentByComposerId(composerId)
+        data.map{s => Ok(renderJsonResponse(s))}.getOrElse(NotFound)
+      }
+    }
+
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   val iso8601DateTimeNoMillis = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
 
@@ -137,14 +171,16 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
-  def putStubNote(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      note <- extract[String](jsValue \ "data")(Stub.noteReads).right
-    } yield {
-      PostgresDB.updateStubNote(stubId, note)
-      NoContent
-    }).merge
+  def putStubNote(stubId: Long) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+    APIAuthAction { implicit request =>
+      (for {
+        jsValue <- readJsonFromRequest(request.body).right
+        note <- extract[String](jsValue \ "data")(Stub.noteReads).right
+      } yield {
+        PostgresDB.updateStubNote(stubId, note)
+        NoContent
+      }).merge
+    }
   }
 
   def putStubProdOffice(stubId: Long) = APIAuthAction { implicit request =>
@@ -157,24 +193,28 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
-  def putContentStatus(composerId: String) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      status <- extract[String](jsValue \ "data").right
-    } yield {
-      PostgresDB.updateContentStatus(status, composerId)
-      NoContent
-    }).merge
+  def putContentStatus(composerId: String) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+    APIAuthAction { implicit request =>
+      (for {
+        jsValue <- readJsonFromRequest(request.body).right
+        status <- extract[String](jsValue \ "data").right
+      } yield {
+        PostgresDB.updateContentStatus(status, composerId)
+        NoContent
+      }).merge
+    }
   }
 
-  def putStubLegalStatus(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      status <- extract[Flag](jsValue \ "data").right
-    } yield {
-      PostgresDB.updateStubLegalStatus(stubId, status)
-      NoContent
-    }).merge
+  def putStubLegalStatus(stubId: Long) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+    APIAuthAction { implicit request =>
+      (for {
+        jsValue <- readJsonFromRequest(request.body).right
+        status <- extract[Flag](jsValue \ "data").right
+      } yield {
+        PostgresDB.updateStubLegalStatus(stubId, status)
+        NoContent
+      }).merge
+    }
   }
 
   def deleteContent(composerId: String) = APIAuthAction {
@@ -197,6 +237,14 @@ object Api extends Controller with PanDomainAuthActions {
       NoContent
     }
 
+  }
+
+  def statusus = CORSable(PrototypeConfiguration.apply.composerUrl) {
+    APIAuthAction.async { implicit req =>
+      for(statuses <- StatusDatabase.statuses) yield {
+        Ok(renderJsonResponse(statuses))
+      }
+    }
   }
 
   private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
