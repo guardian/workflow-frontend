@@ -167,6 +167,41 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     @extend %dashboard-toolbar__select--active;
 }
 
+.dashboard-toolbar__presence-connection-status {
+    @extend %dashboard-toolbar__segment;
+}
+
+.dashboard-toolbar__presence-connection-status-label {
+    @extend %dashboard-toolbar__label;
+}
+
+%dashboard-toolbar__presence-connection-status-indicator {
+    @extend %dashboard-toolbar--control;
+    padding: 5px;
+    margin:  5px;
+}
+
+.dashboard-toolbar__presence-connection-status-indicator--connecting {
+    @extend %dashboard-toolbar__presence-connection-status-indicator;
+    color: $c-grey-500;
+}
+
+.dashboard-toolbar__presence-connection-status-indicator--disabled {
+    @extend %dashboard-toolbar__presence-connection-status-indicator;
+    color: $c-grey-500;
+}
+
+.dashboard-toolbar__presence-connection-status-indicator--error,
+.dashboard-toolbar__presence-connection-status-indicator--closed {
+    @extend %dashboard-toolbar__presence-connection-status-indicator;
+    color: $c-red;
+}
+
+.dashboard-toolbar__presence-connection-status-indicator--ok {
+    @extend %dashboard-toolbar__presence-connection-status-indicator;
+    color: $c-green;
+}
+
 // TODO: Hide "Tomorrow" when on small widths
 // @media (max-width: 1100px) {
 //   .date-filter__button--optional {

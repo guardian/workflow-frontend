@@ -84,6 +84,24 @@ object PostgresDB {
       stubs += Stub.newStubRow(stub)
     }
 
+  def getContentByComposerId(composerId: String): Option[DashboardRow] = {
+    DB.withTransaction { implicit session =>
+
+      val query = for {
+        s <- stubs.filter(_.composerId === composerId)
+        c <- content
+        if s.composerId === c.composerId
+      } yield (s, c)
+
+      query.firstOption map {case (stubData, contentData) =>
+        val stub    = Stub.fromStubRow(stubData)
+        val content = WorkflowContent.fromContentRow(contentData).copy(
+          section = Some(Section(stub.section))
+        )
+        DashboardRow(stub, content)
+      }
+    }
+  }
 
   def updateStub(id: Long, stub: Stub) {
     DB.withTransaction { implicit session =>

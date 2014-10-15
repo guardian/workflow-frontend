@@ -23,5 +23,6 @@
     "ua-parser": "github:faisalman/ua-parser-js@^0.7.0",
     "angular-ui-router": "^0.2.11",
     "angular-animate": "1.2.22"
+    "node-uuid": "npm:uuid-v4.js@^1.0.2"
   }
 }

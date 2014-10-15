@@ -56,7 +56,7 @@ this already if you work with composer, identity, r2 or similar):
 
 5. Set up certs if you've not already done so (see dev-nginx readme)
  
-6. Configure the composer route in nginx
+6. Configure the workflow route in nginx
 
     sudo <path_of_dev-nginx>/setup-app.rb <path_of_workflowt>/nginx/nginx-mapping.yml
 

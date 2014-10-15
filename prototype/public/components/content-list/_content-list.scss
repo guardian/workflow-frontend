@@ -1,4 +1,4 @@
-/**
+ /**
  * Content-list styles.
  *
  * Shows all content items in a table.
@@ -78,6 +78,53 @@ tr td {
 .content-list__item-row.ng-leave {
     -webkit-animation: content-list__item-row--leave-sequence 0.5s ease-out;
     animation: content-list__item-row--leave-sequence 0.5s ease-out;
+}
+
+.content-list__item-presence-list {
+    float: left;
+    list-style-type: none;
+    padding: 0;
+    width: 26px;
+}
+
+.content-list__item-presence {
+    border-radius: 50%;
+    border: 1px solid black;
+    width: 100%;
+    height: 26px;
+    float: left;
+    cursor: pointer;
+}
+
+.content-list__item-presence__present {
+    @extend .content-list__item-presence;
+}
+
+.content-list__item-presence__unknown {
+    @extend .content-list__item-presence;
+    background-color: lightgrey;
+    color: white;
+}
+
+.content-list__item-presence__free {
+    @extend .content-list__item-presence;
+    display: none;
+}
+
+.content-list__item-presence-content {
+    height: 100%;
+    width: 100%;
+    padding: 5px 1px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.2;
+    margin: 0px;
+}
+
+.content-list__item-presence-link,
+.content-list__item-presence-link:hover {
+    color: inherit;
+    text-decoration: none;
 }
 
 @-webkit-keyframes content-list__item-row--leave-sequence {
