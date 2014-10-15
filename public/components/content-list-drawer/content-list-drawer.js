@@ -3,6 +3,8 @@
  *
  * Allows the drawer to be shown and hidden in the appropriate places aswell as allowing the editing of some fields.
  *
+ * TODO: Try and move away from $timeouts to trigger scope update
+ *
  * @param $rootScope
  * @param config
  * @param $timeout
@@ -102,25 +104,45 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
             });
 
             /**
-             * Update functions for editable fields.
-             * Uses the contentService to persist updated data.
+             * Send event to the contentList controller and analytics to persist and record
+             * scope changed value from non-standard scope updates (ng xeditable and datepicker...)
              *
-             * TODO: Refactor in to generic update function once more fields become editable
+             * TODO: Don't do this...
+             * @param {String} field field to be updated
+             * @param {String} value new value to be persisted
+             * @param {String} oldValue old value to be recorded
              */
+            function updateField (field, value, oldValue) { // Send to analytics
 
-            $scope.updateNote = function (note) {
+                var msg = {
+                    contentItem: $scope.contentItem,
+                    data: {},
+                    oldValues: {}
+                };
 
-                if (note.length > config.maxNoteLength) return "Note too long";
-                contentService.updateField($scope.contentItem, "note", note)
-                    .then($scope.apply, errorMessage);
+                msg.data[field] = value;
+                msg.oldValues[field] = oldValue;
+
+                $scope.$emit('contentItem.update', msg);
+            }
+
+            $scope.onBeforeSaveNote = function (note) {
+
+                if (note.length > config.maxNoteLength) {
+                    return "Note too long";
+                } else {
+                    updateField("note", note, $scope.contentItem.note);
+                }
             };
 
-            $scope.updateOffice = function (office) {
+            $scope.onBeforeSaveAssignee = function (assignee) {
 
-                contentService.updateField($scope.contentItem, "prodOffice", office)
-                    .then($scope.apply, errorMessage);
+                updateField("assignee", assignee, $scope.contentItem.assignee);
             };
 
+            /**
+             * Update the deadline manually using value from datepicker
+             */
             $scope.updateDeadline = function () {
 
                 var content = $scope.contentItem,
@@ -138,12 +160,10 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
                     .then($scope.apply, errorMessage);
             };
 
-            $scope.updateAssignee = function (assignee) {
-
-                contentService.updateField($scope.contentItem, "assignee", assignee)
-                    .then($scope.apply, errorMessage);
-            };
-
+            /**
+             * Delete manually as no event or tracking yet
+             * TODO: Set up tracking for delete
+             */
             $scope.deleteContentItem = function () {
 
                 contentService.remove($scope.contentItem.id)
