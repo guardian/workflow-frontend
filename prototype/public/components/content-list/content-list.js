@@ -169,7 +169,7 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
 
     this.render = (response) => {
         var data = response.data;
-;
+
         // TODO stubs and content are separate structures in the API response
         //      make this a single list of content with consistent structure in the API
         var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
@@ -214,7 +214,9 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
 
                 $scope.$emit('contentItem.updated', {
                     'contentItem': msg.contentItem,
-                    'field': field
+                    'field': field,
+                    'data': msg.data,
+                    'oldValues': msg.oldValues
                 });
 
                 this.poller.refresh();
@@ -258,17 +260,26 @@ function wfContentItemUpdateActionDirective() {
         require: 'ngModel',
         link: ($scope, $element, $attrs, ngModel) => {
 
-            ngModel.$viewChangeListeners.push(() => {
+            var oldModelValue;
 
+            var $setter = ngModel.$setViewValue;
+            ngModel.$setViewValue = function() {
+                oldModelValue = ngModel.$modelValue;
+                $setter.apply(this, arguments);
+            };
+
+            ngModel.$viewChangeListeners.push(() => {
                 var field = $attrs.wfContentItemUpdateAction;
 
                 var msg = {
                     contentItem: $scope.contentItem,
                     data: {},
+                    oldValues: {},
                     source: ngModel
                 };
 
                 msg.data[field] = ngModel.$modelValue;
+                msg.oldValues[field] = oldModelValue;
 
                 $scope.$emit('contentItem.update', msg);
             });
