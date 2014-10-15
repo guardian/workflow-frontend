@@ -130,7 +130,7 @@ wfStubModal.run(['$rootScope',
 
                     var eventSuffix = mode == 'create' ? 'created' : mode + 'ed',
                         eventName = 'stub.' + eventSuffix;
-                    $rootScope.$broadcast(eventName, { 'content': stub });
+                    $rootScope.$broadcast(eventName, { 'contentItem': stub });
 
                     $rootScope.$broadcast('getContent');
 
