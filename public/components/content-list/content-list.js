@@ -48,8 +48,10 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
 
 
     // Watch composer contentIds for Presence
-    $scope.$watch('contentIds', (newIds) => {
-        wfPresenceService.subscribe(newIds);
+    $scope.$watch('contentIds', (newIds, oldIds) => {
+        if (newIds !== oldIds) {  // guards against initial render when newIds === oldIds === undefined
+            wfPresenceService.subscribe(newIds);
+        }
     }, true);
 
 
