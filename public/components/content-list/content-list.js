@@ -47,7 +47,6 @@ function wfContentListController($scope, $log, statuses, sections, wfContentServ
     ];
 
     this.sections = sections;
-console.log(sections);
 
     // Watch composer contentIds for Presence
     $scope.$watch('contentIds', (newIds) => {

@@ -3,51 +3,52 @@
 # ~~~~
 
 # Application
-GET           /                                      controllers.Application.index
+GET            /                                      controllers.Application.index
 
 # Login
-GET           /oauthCallback                         controllers.Login.oauthCallback
-GET           /login/status                          controllers.Login.status
-GET           /logout                                controllers.Login.logout
+GET            /oauthCallback                         controllers.Login.oauthCallback
+GET            /login/status                          controllers.Login.status
+GET            /logout                                controllers.Login.logout
 
 # API
 
-GET     /api/content                        controllers.Api.content
-GET     /api/content/:composerId            controllers.Api.getContentbyId(composerId: String)
-PUT     /api/content/:composerId/status     controllers.Api.putContentStatus(composerId: String)
-OPTIONS /api/content/:composerId/status     controllers.Api.allowCORSAccess(methods = "PUT", composerId: String)
-DELETE  /api/content/:composerId            controllers.Api.deleteContent(composerId: String)
+GET            /api/content                           controllers.Api.content
+GET            /api/content/:composerId               controllers.Api.getContentbyId(composerId: String)
+PUT            /api/content/:composerId/status        controllers.Api.putContentStatus(composerId: String)
+OPTIONS        /api/content/:composerId/status        controllers.Api.allowCORSAccess(methods = "PUT", composerId: String)
+DELETE         /api/content/:composerId               controllers.Api.deleteContent(composerId: String)
 
-GET     /api/stubs                          controllers.Api.stubs
-POST    /api/stubs                          controllers.Api.newStub
-PUT     /api/stubs/:stubId                  controllers.Api.putStub(stubId: Long)
-PUT     /api/stubs/:stubId/assignee         controllers.Api.putStubAssignee(stubId: Long)
-PUT     /api/stubs/:stubId/dueDate          controllers.Api.putStubDueDate(stubId: Long)
-PUT     /api/stubs/:stubId/note             controllers.Api.putStubNote(stubId: Long)
-OPTIONS /api/stubs/:stubId/note             controllers.Api.allowCORSAccess(methods = "PUT", stubId: String)
-PUT     /api/stubs/:stubId/needsLegal       controllers.Api.putStubLegalStatus(stubId: Long)
-OPTIONS /api/stubs/:stubId/needsLegal       controllers.Api.allowCORSAccess(methods = "PUT", stubId: String)
-PUT     /api/stubs/:stubId/prodOffice       controllers.Api.putStubProdOffice(stubId: Long)
-PUT     /api/stubs/:stubId/section             controllers.Api.putStubSection(stubId: Long)
-DELETE  /api/stubs/:stubId                  controllers.Api.deleteStub(stubId: Long)
-POST    /api/stubs/:stubId                  controllers.Api.linkStub(stubId: Long, composerId: String, contentType: String)
+GET            /api/stubs                             controllers.Api.stubs
+POST           /api/stubs                             controllers.Api.newStub
+PUT            /api/stubs/:stubId                     controllers.Api.putStub(stubId: Long)
+PUT            /api/stubs/:stubId/assignee            controllers.Api.putStubAssignee(stubId: Long)
+PUT            /api/stubs/:stubId/dueDate             controllers.Api.putStubDueDate(stubId: Long)
+PUT            /api/stubs/:stubId/note                controllers.Api.putStubNote(stubId: Long)
+OPTIONS        /api/stubs/:stubId/note                controllers.Api.allowCORSAccess(methods = "PUT", stubId: String)
+PUT            /api/stubs/:stubId/needsLegal          controllers.Api.putStubLegalStatus(stubId: Long)
+OPTIONS        /api/stubs/:stubId/needsLegal          controllers.Api.allowCORSAccess(methods = "PUT", stubId: String)
+PUT            /api/stubs/:stubId/prodOffice          controllers.Api.putStubProdOffice(stubId: Long)
+PUT            /api/stubs/:stubId/section             controllers.Api.putStubSection(stubId: Long)
+PUT            /api/stubs/:stubId/workingTitle        controllers.Api.putStubWorkingTitle(stubId: Long)
+DELETE         /api/stubs/:stubId                     controllers.Api.deleteStub(stubId: Long)
+POST           /api/stubs/:stubId                     controllers.Api.linkStub(stubId: Long, composerId: String, contentType: String)
 
-GET     /api/statuses                       controllers.Api.statusus
+GET            /api/statuses                          controllers.Api.statusus
 
 # Admin
-GET           /admin/                                controllers.Admin.index
-GET           /admin/sections                        controllers.Admin.sections
-POST          /admin/sections/add                    controllers.Admin.addSection
-POST          /admin/sections/remove                 controllers.Admin.removeSection
+GET            /admin/                                controllers.Admin.index
+GET            /admin/sections                        controllers.Admin.sections
+POST           /admin/sections/add                    controllers.Admin.addSection
+POST           /admin/sections/remove                 controllers.Admin.removeSection
 
-GET           /admin/status                          controllers.Admin.status
-POST          /admin/status/add                      controllers.Admin.addStatus
-POST          /admin/status/remove                   controllers.Admin.removeStatus
-POST          /admin/status/moveUp                   controllers.Admin.moveStatusUp
-POST          /admin/status/moveDown                 controllers.Admin.moveStatusDown
+GET            /admin/status                          controllers.Admin.status
+POST           /admin/status/add                      controllers.Admin.addStatus
+POST           /admin/status/remove                   controllers.Admin.removeStatus
+POST           /admin/status/moveUp                   controllers.Admin.moveStatusUp
+POST           /admin/status/moveDown                 controllers.Admin.moveStatusDown
 
 # Management
-GET           /management/healthcheck                controllers.Management.healthCheck
+GET            /management/healthcheck                controllers.Management.healthCheck
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                          controllers.Assets.at(path="/public", file)
+GET            /assets/*file                          controllers.Assets.at(path="/public", file)

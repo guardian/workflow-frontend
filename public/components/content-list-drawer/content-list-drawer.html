@@ -92,7 +92,7 @@
                 <ul class="drawer__column--wide">
                     <li class="drawer__section">
                         <span class="drawer__section-title">Working title</span>
-                        <span class="drawer__section-data-row">{{ contentItem.workingTitle || '-' }}</span>
+                        <span class="drawer__section-data-row--editable" editable-text="contentItem.workingTitle" buttons="no" onbeforesave="onBeforeSaveWorkingTitle($data)">{{ contentItem.workingTitle || '-' }}</span>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Headline</span>
