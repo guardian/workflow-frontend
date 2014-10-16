@@ -7,7 +7,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
         var self = {};
 
         self.whenEnabled = wfFeatureSwitches.getSwitch("presence-indicator").then(function (value) {
-          if(value) return true
+          if(value) return true;
           else reject("presence disabled");
         }, function(err) {
           $log.error("error: " + err);
@@ -35,7 +35,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             "updated": function(data) {
                 broadcast("presence.status", data);
             }
-        }
+        };
 
         function messageHandler(msgJson) {
             var msg = JSON.parse(msgJson);
@@ -105,10 +105,10 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             var ids = (Array.isArray(articleIds)) ? articleIds : Array(articleIds);
             var p = sendJson(makeSubscriptionRequest(ids));
             return p;
-        }
+        };
 
         self.whenEnabled.then(function() {
-            $log.info("presence is enabled... attempting connection")
+            $log.info("presence is enabled... attempting connection");
             doConnection();
 
             $rootScope.$on("presence.connection.closed", doConnection);
@@ -116,7 +116,60 @@ define(["node-uuid", "underscore"], function (uuid, _) {
 
         }, function() {
             $log.info("presence is disabled");
-        })
+        });
+
+
+        // Initial data var/function moved from wfPresenceSubscription controller
+        // FIXME should this be onConnection?
+        var initialData = new Promise(function(resolve, reject) {
+            reject("no subscription request made");
+        });
+
+        self.initialData = function(id) {
+            return self.whenEnabled.then(initialData).then(function (data) {
+                return new Promise(function(resolve, reject) {
+                    var found = _.find(data, function(d) {
+                        return d.subscriptionId === id;
+                    });
+                    if(!found) {
+                        reject("unknown ID: [" + id + "]");
+                    } else {
+                        resolve(found.currentState);
+                    }
+                });
+            });
+        };
+
+
+        // Subscribe var/function moved from wfPresenceSubscription controller
+        var deRegisterPreviousSubscribe = angular.noop;
+
+        self.subscribe = function(composerIds) {
+            return self.whenEnabled.then(function() {
+                deRegisterPreviousSubscribe();
+
+                // set up a promise that will wait for the event to be
+                // transmitted from the wfPresenceService and return
+                // the results.
+                initialData = new Promise(function(resolve, reject) {
+                    // $on will return a function that can be used
+                    // later to deregister the listener
+                    var removeListener = $scope.$on("presence.subscribed", function (ev, data) {
+                        resolve(data.subscribedTo);
+                    });
+                    deRegisterPreviousSubscribe = function() {
+                        // first tell anyone waiting on this listener
+                        // that it was cancelled.
+                        reject("replace with new subscribe request");
+                        // then call the deRegister function that $on
+                        // gave us.
+                        removeListener();
+                    };
+                });
+                wfPresenceService.articleSubscribe(ids);
+            });
+
+        };
 
         return self;
 
@@ -147,95 +200,26 @@ define(["node-uuid", "underscore"], function (uuid, _) {
                         });
                     });
                 }
-            }
+            };
         }]);
 
-    module.controller(
-        'wfPresenceSubscription',
-        [ "$scope", "wfPresenceService", function($scope, wfPresenceService) {
 
-            var initialData = new Promise(function(resolve, reject) {
-                reject("no subscription request made");
-            });
+    module.directive('wfPresenceIndicators', ['$rootScope', 'wfPresenceService', function($rootScope, wfPresenceService) {
 
-            $scope.presenceEnabled = false;
-
-            $scope.initialData = function(id) {
-                return initialData.then(function (data) {
-                    return new Promise(function(resolve, reject) {
-                        var found = _.find(data, function(d) {
-                            return d.subscriptionId === id;
-                        });
-                        if(!found) {
-                            reject("unknown ID: [" + id + "]");
-                        } else {
-                            resolve(found.currentState);
-                        }
-                    });
-                });
-            }
-
-            wfPresenceService.whenEnabled.then(function() {
-                $scope.presenceEnabled = true;
-
-                $scope.$watch(function($scope) {
-                    var content = $scope["contentByStatus"];
-                    return (content && getIds(content)) || [];
-                }, function (newVal, oldVal) {
-                    if(newVal !== oldVal) {
-                        doSubscription(newVal);
-                    }
-                }, true);
-            });
-
-            function getIds(content) {
-                return _.pluck(_.flatten(_.values(content)), "composerId")
-            }
-
-            var deRegisterPreviousSubscribe = angular.noop;
-
-            function doSubscription(ids) {
-                deRegisterPreviousSubscribe();
-
-                // set up a promise that will wait for the event to be
-                // transmitted from the wfPresenceService and return
-                // the results.
-                initialData = new Promise(function(resolve, reject) {
-                    // $on will return a function that can be used
-                    // later to deregister the listener
-                    var removeListener = $scope.$on("presence.subscribed", function (ev, data) {
-                        resolve(data.subscribedTo);
-                    });
-                    deRegisterPreviousSubscribe = function() {
-                        // first tell anyone waiting on this listener
-                        // that it was cancelled.
-                        reject("replace with new subscribe request");
-                        // then call the deRegister function that $on
-                        // gave us.
-                        removeListener();
-                    }
-                });
-                wfPresenceService.articleSubscribe(ids);
-            }
-        }]);
-
-    module.directive('wfPresenceIndicators', [ function() {
         return {
             restrict: 'E',
             templateUrl: "/assets/components/presence-indicator/presence-indicators.html",
             scope: {
-                id: "=presenceId",
-                getInitialData: "&initialData",
-                enabled: "="
+                id: "=presenceId"
             },
             link: function($scope) {
 
                 function applyCurrentState(currentState) {
                     if(currentState.length === 0) {
-                        $scope.presences = [{ status: "free", indicatorText: ""}]
+                        $scope.presences = [{ status: "free", indicatorText: ""}];
                     } else {
                         $scope.presences = _.map(
-                            _.uniq(currentState, false, function(s) { return s.clientId.person.email }),
+                            _.uniq(currentState, false, function(s) { return s.clientId.person.email; }),
                             function (pr) {
                                 var person = pr.clientId.person;
                                 return { indicatorText:
@@ -247,20 +231,18 @@ define(["node-uuid", "underscore"], function (uuid, _) {
                     }
                 }
 
-                if($scope.enabled) {
-                    $scope.getInitialData().then(function (currentState) {
-                        applyCurrentState(currentState);
-                    }, function (err) {
-                        $log.error("Error getting initial data:", err);
-                    });
+                wfPresenceService.initialData().then(function (currentState) {
+                    applyCurrentState(currentState);
+                }, function (err) {
+                    $log.error("Error getting initial data:", err);
+                });
 
-                    $scope.$on("presence.status", function(ev, data) {
-                        if($scope.id === data.subscriptionId) {
-                            applyCurrentState(data.currentState);
-                        }
-                    });
-                }
+                $scope.$on("presence.status", function(ev, data) {
+                    if($scope.id === data.subscriptionId) {
+                        applyCurrentState(data.currentState);
+                    }
+                });
             }
-        }
+        };
     }]);
 });

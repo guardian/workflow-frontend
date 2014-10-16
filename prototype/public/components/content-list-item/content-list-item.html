@@ -18,7 +18,10 @@
             contentList.showHeadline && contentItem.headline ? contentItem.headline : contentItem.workingTitle }}</a>
     </th>
     <td class="content-list-item__field--presence">
-        <span class="content-list-item__icon--presence">PZ</span>
+        <span class="content-list-item__icon--presence">
+            <wf-presence-indicators presence-id="contentItem.composerId">
+            </wf-presence-indicators>
+        </span>
     </td>
     <td class="content-list-item__field--assignee" title="Assignee: {{ contentItem.assigneeFull }}">
         <span class="content-list-item__icon--assignee" ng-if="contentItem.assignee">{{ contentItem.assignee }}</span>
