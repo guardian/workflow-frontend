@@ -1,0 +1,265 @@
+// Styles for Individual content item rows
+
+// Imported from components/content-list/_content-list.scss
+
+@mixin keyframes($name) {
+    @-webkit-keyframes #{$name} { @content }
+    @keyframes #{$name} { @content }
+}
+
+
+.content-list-item {
+    border-bottom: 1px solid $c-grey-300;
+    cursor: pointer;
+
+    &--selected {
+        background-color: $c-grey-300;
+    }
+
+    &--published {
+        @extend .content-list-item;
+        background-color: $c-light-green;
+
+        &::after,
+        &::before {
+            background-color: $c-green;
+        }
+    }
+
+
+
+    &.ng-enter {
+        -webkit-animation: content-list-item--enter-sequence 2s ease-out;
+        animation: content-list-item--enter-sequence 2s ease-out;
+    }
+
+    &.ng-leave {
+        -webkit-animation: content-list-item--leave-sequence 0.5s ease-out;
+        animation: content-list-item--leave-sequence 0.5s ease-out;
+    }
+
+
+
+    &__icon {
+        &--priority,
+        &--comments,
+        &--main-image,
+        &--content-type,
+        &--composer,
+        &--preview,
+        &--live,
+        &--ophan {
+            display: inline-block;
+            width: $content-list-icon-size;
+            height: $content-list-icon-size;
+        }
+
+        &--assignee,
+        &--presence {
+            display: inline-block;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        &--assignee {
+            background-color: $c-grey-300;
+        }
+
+        &--presence {
+            background-color: #474D80;
+            color: #fff;
+
+            &:hover {
+                color: #fff;
+                text-decoration: none;
+            }
+        }
+
+        // Production office icons
+        &--office {
+            &-au,
+            &-us,
+            &-uk {
+                line-height: 16px;
+                display: inline-block;
+                text-align: center;
+                width: 22px;
+            }
+
+            &-au {
+                background-color: #FCD116;
+                color: #008751;
+            }
+
+            &-us {
+                background-color: #B22234;
+                color: #fff;
+            }
+
+            &-uk {
+                background-color: #002366;
+                color: #fff;
+            }
+        }
+    }
+
+    // Styles for presence indicators
+    &__presence {
+        display: inline-block;
+
+        &-list {
+            margin: 0;
+            padding: 0;
+        }
+
+
+        &--present,
+        &--unknown {
+            @extend .content-list-item__presence;
+        }
+
+        &--unknown {
+            background-color: lightgrey;
+            color: white;
+        }
+
+        &--free {
+            display: none;
+        }
+
+    }
+
+    &__headline-toggle {
+        float: left;
+        color: $c-grey-400;
+        font-weight: normal;
+        margin-right: 5px;
+
+        // bootstrap override, TODO remove
+        &[title] {
+            border: none;
+            cursor: pointer;
+        }
+
+        &::after {
+            content: ':';
+        }
+    }
+
+    &__field {
+        &--priority,
+        &--comments,
+        &--main-image,
+        &--content-type,
+        &--working-title,
+        &--headline,
+        &--presence,
+        &--assignee,
+        &--office,
+        &--deadline,
+        &--created,
+        &--section,
+        &--legal,
+        &--status,
+        &--composer,
+        &--preview,
+        &--live,
+        &--ophan {
+            @extend %fs-data-3;
+            @extend %content-list__field-padding;
+        }
+
+        // icon fields
+        &--priority,
+        &--comments,
+        &--main-image,
+        &--content-type,
+        &--composer,
+        &--preview,
+        &--live,
+        &--ophan {
+            padding: 10px 5px;
+            width: $content-list-icon-size;
+        }
+
+        &--presence,
+        &--assignee,
+        &--office {
+            padding: 10px 5px;
+            text-align: center;
+        }
+
+        &--presence,
+        &--assignee,
+        &--office {
+            width: 30px;
+        }
+
+        &--deadline,
+        &--created,
+        &--legal {
+            width: 100px;
+        }
+
+        &--status {
+            width: 80px;
+        }
+
+        &--section {
+            width: 80px;
+            padding: 5px 10px;
+        }
+
+        &--deadline,
+        &--created {
+            white-space: nowrap;
+        }
+
+        &--notes {
+            @extend %fs-data-1;
+            padding: 2px 10px;
+            width: 120px;
+        }
+
+        &-supl--published-state {
+            @extend %fs-data-1;
+            color: $c-grey-600;
+            white-space: nowrap;
+        }
+
+        // First column
+        &--priority {
+            padding-left: 10px;
+        }
+
+        // Last column
+        &--published-state {
+            width: 80px;
+            padding: 5px 10px;
+        }
+    }
+}
+
+
+// Transition keyframes for changing content in the list
+@include keyframes(content-list-item--enter-sequence) {
+    // TODO: use proper pallete colours
+    0% {
+        background: #fcf8e3;
+        opacity: 0;
+    }
+    50% {
+        background: #fcf8e3;
+        opacity: 1;
+    }
+}
+
+@include keyframes(content-list-item--leave-sequence) {
+    to {
+        opacity: 0;
+    }
+}
