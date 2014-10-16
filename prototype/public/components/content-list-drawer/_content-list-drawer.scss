@@ -72,14 +72,14 @@
 }
 
 .drawer__section-title {
-    @extend %fs-data-2;
+    @extend %fs-data-3;
     font-weight: bold;
     display: block;
     padding: 2px 0;
 }
 
 .drawer__section-data-row {
-    @extend %fs-data-2;
+    @extend %fs-data-3;
     display: block;
     .glyphicon,
     .content-list-item__icon--composer {
