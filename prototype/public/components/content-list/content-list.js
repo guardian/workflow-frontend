@@ -36,7 +36,7 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
     };
 
     this.editItem = (contentItem) => {
-        var prefix = (contentItem.status === 'stub') ? 'stub' : 'content';
+        var prefix = (contentItem.status === 'Stub') ? 'stub' : 'content';
         $scope.$emit(prefix + ':edit', contentItem.item);
     };
 

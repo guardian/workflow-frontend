@@ -70,6 +70,11 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
              * Listen for event triggered by click in external contentItemRow directive to show or hide drawer
              */
             $rootScope.$on('contentItem.select', ($event, contentItem, contentListItemElement) => {
+                if (contentItem.status === 'Stub') {
+                    $scope.$emit('stub:edit', contentItem.item);
+                    return;
+                }
+
 
                 if ($scope.contentList.selectedItem !== contentItem) { // open
                     if (!elem.hasClass(hiddenClass)) {
