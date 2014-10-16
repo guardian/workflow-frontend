@@ -48,7 +48,9 @@ System.config({
       "ieee754": "npm:ieee754@^1.1.1",
       "inherits": "npm:inherits@^2.0.1",
       "json": "github:systemjs/plugin-json@master"
-    }
+    },
+    "node-uuid": "npm:uuid-v4.js@^1.0.2",
+    "npm:uuid-v4.js@1.0.2": {}
   }
 });
 
@@ -77,7 +79,8 @@ System.config({
     "github:faisalman/ua-parser-js": "0.7.0",
     "npm:lodash-node": "2.4.1",
     "github:angular/bower-angular-animate": "1.2.22",
-    "github:angular-ui/ui-router": "0.2.11"
+    "github:angular-ui/ui-router": "0.2.11",
+    "npm:uuid-v4.js": "1.0.2"
   }
 });
 
