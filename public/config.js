@@ -49,8 +49,7 @@ System.config({
       "inherits": "npm:inherits@^2.0.1",
       "json": "github:systemjs/plugin-json@master"
     },
-    "node-uuid": "npm:uuid-v4.js@^1.0.2",
-    "npm:uuid-v4.js@1.0.2": {}
+    "node-uuid": "npm:uuid-v4.js@^1.0.2"
   }
 });
 
