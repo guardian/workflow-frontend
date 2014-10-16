@@ -142,7 +142,7 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
 
             $scope.onBeforeSaveAssignee = function (assignee) {
 
-                updateField("assignee", assignee, $scope.contentItem.assignee);
+                updateField("assignee", assignee, $scope.contentItem.item.assignee);
             };
 
             /**
@@ -154,25 +154,26 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
                     parsedDate,
                     requestData;
 
-                if (content.deadline) { // TODO: See content-list.js:118
-                    parsedDate = moment(content.deadline);
+                if (content.item.due) { // TODO: See content-list.js:118
+                    parsedDate = moment(content.item.due);
                     if (parsedDate.isValid()) {
                         requestData = parsedDate.toISOString();
                     }
                 }
 
-                contentService.updateField($scope.contentItem, "dueDate", requestData)
-                    .then($scope.apply, errorMessage);
+                updateField("dueDate", requestData);
+                $scope.$apply();
             };
 
             /**
              * Delete manually as no event or tracking yet
-             * TODO: Set up tracking for delete
              */
             $scope.deleteContentItem = function () {
-
                 contentService.remove($scope.contentItem.id)
-                    .then($scope.apply, errorMessage);
+                    .then(() => {
+                        $scope.$emit('content.deleted', { contentItem: $scope.contentItem });
+                        $scope.$apply();
+                    }, errorMessage);
             };
 
             function errorMessage () {
@@ -183,4 +184,4 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
     };
 };
 
-export { wfContentListDrawer }
+export { wfContentListDrawer };
