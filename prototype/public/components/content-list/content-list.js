@@ -15,13 +15,13 @@ import { wfContentListDrawer } from 'components/content-list-drawer/content-list
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
-    .controller('wfContentListController', ['$scope', '$log', 'statuses', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
+    .controller('wfContentListController', ['$scope', '$log', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
 
 
-function wfContentListController($scope, $log, statuses, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService) {
+function wfContentListController($scope, $log, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService) {
 
     /*jshint validthis:true */
 
@@ -46,6 +46,8 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
         { name: 'Approved', value: 'COMPLETE'}
     ];
 
+    this.sections = sections;
+console.log(sections);
 
     // Watch composer contentIds for Presence
     $scope.$watch('contentIds', (newIds) => {
