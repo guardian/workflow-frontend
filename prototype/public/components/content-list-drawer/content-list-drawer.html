@@ -11,12 +11,12 @@
                     <li class="drawer__section">
                         <span class="drawer__section-title">Production deadline</span>
 
-                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.deadline, 'drawer__section-data-row--editable-empty': !contentItem.deadline }" title="{{ (contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'long') || '' }}">
-                                {{ (contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime) || 'Add deadline' }}
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.item.due, 'drawer__section-data-row--editable-empty': !contentItem.item.due }" title="{{ (contentItem.item.due | wfLocaliseDateTime | wfFormatDateTime:'long') || '' }}">
+                                {{ (contentItem.item.due | wfLocaliseDateTime | wfFormatDateTime) || 'Add deadline' }}
                             </span>
 
                         <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
-                            <div wf-date-time-picker ng-model="contentItem.deadline" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="updateDeadline(); dateTimeEdit = false" wf-small="true"></div>
+                            <div wf-date-time-picker ng-model="contentItem.item.due" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="updateDeadline(); dateTimeEdit = false" wf-small="true"></div>
                         </form>
 
                     </li>
@@ -58,7 +58,7 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Assigned to</span>
-                        <span class="drawer__section-data-row--editable" editable-text="contentItem.assignee" buttons="no" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.assignee || "None" }}</span>
+                        <span class="drawer__section-data-row--editable" editable-text="contentItem.item.assignee" buttons="no" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.item.assignee || "None" }}</span>
                     </li>
                 </ul>
 
