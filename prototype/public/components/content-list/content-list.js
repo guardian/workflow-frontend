@@ -7,6 +7,7 @@ import _find from 'lodash/modern/collections/find';
 
 import 'lib/content-service';
 import 'lib/date-service';
+import 'lib/presence';
 import { wfContentListItem } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
 
@@ -17,9 +18,9 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/',
     PREVIEW_PATH = 'http://preview.gutools.co.uk/',
     LIVE_PATH = 'http://www.theguardian.com/';
 
-angular.module('wfContentList', ['wfContentService', 'wfDateService'])
+angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfPresenceService'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
-    .controller('wfContentListController', ['$scope', '$log', 'statuses', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', wfContentListController])
+    .controller('wfContentListController', ['$scope', '$log', 'statuses', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
@@ -141,7 +142,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 
 
 
-function wfContentListController($scope, $log, statuses, wfContentService, wfContentPollingService, wfContentItemParser) {
+function wfContentListController($scope, $log, statuses, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService) {
 
     /*jshint validthis:true */
 
@@ -167,6 +168,12 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
     ];
 
 
+    // Watch composer contentIds for Presence
+    $scope.$watch('contentIds', (newIds) => {
+        wfPresenceService.subscribe(newIds);
+    }, true);
+
+
     this.render = (response) => {
         var data = response.data;
 
@@ -186,12 +193,16 @@ function wfContentListController($scope, $log, statuses, wfContentService, wfCon
             };
         });
 
+        $scope.contentIds = data.content.map((content) => content.composerId);
+
         // update selectedItem as objects are now !==
         if (this.selectedItem) {
             this.selectedItem = _find(content, { id: this.selectedItem.id });
         }
 
         $scope.refreshContentError = false;
+
+        $scope.$emit('content.render', $scope.content);
 
         $scope.$apply();
     };
