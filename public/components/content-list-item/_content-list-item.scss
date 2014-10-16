@@ -1,7 +1,5 @@
 // Styles for Individual content item rows
 
-// Imported from components/content-list/_content-list.scss
-
 @mixin keyframes($name) {
     @-webkit-keyframes #{$name} { @content }
     @keyframes #{$name} { @content }
