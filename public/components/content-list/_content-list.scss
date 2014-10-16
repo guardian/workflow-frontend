@@ -214,6 +214,11 @@ $content-list-icon-size: 14px;
             &--presence {
                 background-color: #474D80;
                 color: #fff;
+
+                &:hover {
+                    color: #fff;
+                    text-decoration: none;
+                }
             }
 
             // Production office icons
@@ -242,6 +247,32 @@ $content-list-icon-size: 14px;
                     color: #fff;
                 }
             }
+        }
+
+        // Styles for presence indicators
+        &__presence {
+            display: inline-block;
+
+            &-list {
+                margin: 0;
+                padding: 0;
+            }
+
+
+            &--present,
+            &--unknown {
+                @extend .content-list-item__presence;
+            }
+
+            &--unknown {
+                background-color: lightgrey;
+                color: white;
+            }
+
+            &--free {
+                display: none;
+            }
+
         }
 
         &__headline-toggle {
@@ -374,52 +405,4 @@ $content-list-icon-size: 14px;
     to {
         opacity: 0;
     }
-}
-
-
-.content-list__item-presence-list {
-    float: left;
-    list-style-type: none;
-    padding: 0;
-    width: 26px;
-}
-
-.content-list__item-presence {
-    border-radius: 50%;
-    border: 1px solid black;
-    width: 100%;
-    height: 26px;
-    float: left;
-    cursor: pointer;
-}
-
-.content-list__item-presence__present {
-    @extend .content-list__item-presence;
-}
-
-.content-list__item-presence__unknown {
-    @extend .content-list__item-presence;
-    background-color: lightgrey;
-    color: white;
-}
-
-.content-list__item-presence__free {
-    @extend .content-list__item-presence;
-    display: none;
-}
-
-.content-list__item-presence-content {
-    height: 100%;
-    width: 100%;
-    padding: 5px 1px;
-    text-align: center;
-    font-size: 13px;
-    line-height: 1.2;
-    margin: 0px;
-}
-
-.content-list__item-presence-link,
-.content-list__item-presence-link:hover {
-    color: inherit;
-    text-decoration: none;
 }
