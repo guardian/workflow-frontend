@@ -1,0 +1,7 @@
+<ul class="content-list-item__presence-list">
+    <li ng-repeat="presence in presences"
+        ng-class="'content-list-item__presence--' + presence.status" title="{{presence.longText}}">
+        <a class="content-list-item__icon--presence"
+           href="mailto:{{ presence.email }}">{{ presence.indicatorText }}</a>
+    </li>
+</ul>

@@ -26,6 +26,7 @@ import 'layouts/dashboard/dashboard-sidebar';
 import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/analytics';
+import 'lib/feature-switches';
 
 // 3rd party libs
 import 'angular-ui-router';
@@ -56,6 +57,7 @@ angular.module('workflow',
         // 'legalStatesService',
         // 'prodOfficeService',
         'wfFiltersService',
+        'wfFeatureSwitches',
         'xeditable'
     ])
 
@@ -88,6 +90,7 @@ angular.module('workflow',
             'composerNewContent': _wfConfig.composer.create,
             'composerViewContent': _wfConfig.composer.view,
             'composerContentDetails': _wfConfig.composer.details,
+            'presenceUrl': _wfConfig.presenceUrl,
             'maxNoteLength': 500
         }
     )
@@ -98,7 +101,6 @@ angular.module('workflow',
     .run(function (editableOptions) {
         editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
     });
-
 
 // Bootstrap App
 angular.element(document).ready(function () {

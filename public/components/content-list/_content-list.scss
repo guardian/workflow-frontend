@@ -1,4 +1,4 @@
-/**
+ /**
  * Content-list styles.
  *
  * Shows all content items in a table.
@@ -19,6 +19,10 @@ $content-list-icon-size: 14px;
 // Bootstrap override - TODO: remove
 .content-list, .content-list * {
     box-sizing: content-box;
+}
+
+.content-list a:visited {
+  color: $c-grey-500;
 }
 
 .content-list {
@@ -210,6 +214,11 @@ $content-list-icon-size: 14px;
             &--presence {
                 background-color: #474D80;
                 color: #fff;
+
+                &:hover {
+                    color: #fff;
+                    text-decoration: none;
+                }
             }
 
             // Production office icons
@@ -238,6 +247,32 @@ $content-list-icon-size: 14px;
                     color: #fff;
                 }
             }
+        }
+
+        // Styles for presence indicators
+        &__presence {
+            display: inline-block;
+
+            &-list {
+                margin: 0;
+                padding: 0;
+            }
+
+
+            &--present,
+            &--unknown {
+                @extend .content-list-item__presence;
+            }
+
+            &--unknown {
+                background-color: lightgrey;
+                color: white;
+            }
+
+            &--free {
+                display: none;
+            }
+
         }
 
         &__headline-toggle {
