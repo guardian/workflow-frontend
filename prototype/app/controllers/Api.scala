@@ -205,6 +205,16 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
+  def putStubSection(stubId: Long) = APIAuthAction { implicit request =>
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+      section <- extract[String](jsValue \ "data")(Stub.sectionReads).right
+    } yield {
+      PostgresDB.updateStubSection(stubId, section)
+      NoContent
+    }).merge
+  }
+
   def putStubLegalStatus(stubId: Long) = CORSable(PrototypeConfiguration.apply.composerUrl) {
     APIAuthAction { implicit request =>
       (for {
@@ -269,5 +279,5 @@ object Api extends Controller with PanDomainAuthActions {
         Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
     }
   }
-  
+
 }

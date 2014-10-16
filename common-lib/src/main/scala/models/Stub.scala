@@ -27,6 +27,7 @@ object Stub {
 
   implicit val prodOfficeReads = maxLength[String](20)
   implicit val noteReads =  maxLength[String](500)
+  implicit val sectionReads = maxLength[String](50)
 
   implicit val jsonReads: Reads[Stub] =( (__ \ "id").readNullable[Long] and
                             (__ \ "title").read[String] and
