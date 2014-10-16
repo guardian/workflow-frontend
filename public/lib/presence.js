@@ -101,7 +101,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             });
         }
 
-        self.articleSubscribe = function (articleIds) {console.log('articleSubscribe', articleIds);
+        self.articleSubscribe = function (articleIds) {
             var ids = (Array.isArray(articleIds)) ? articleIds : Array(articleIds);
             var p = sendJson(makeSubscriptionRequest(ids));
             return p;
