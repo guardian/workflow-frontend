@@ -16,9 +16,25 @@ function wfIconDirective() {
             wfIcon: '@',
             wfIconActive: '=' // boolean
         },
-        controller: function($scope) {
+        link: function($scope) {
             var urlPostfix = $scope.wfIconActive !== false ? 'active' : 'inactive';
-            $scope.iconUrl = ICON_FILE + '#' + $scope.wfIcon + '-' + urlPostfix;
+
+            function getIconUrl () {
+              return ICON_FILE + '#' + $scope.wfIcon + '-' + urlPostfix;
+            }
+
+            $scope.iconUrl = getIconUrl();
+
+            var currentIcon = $scope.wfIcon;
+
+            $scope.$watch('wfIcon', function () {
+                if (currentIcon !== $scope.wfIcon) { // TODO: Better way of stopping all icon directives being notified
+                    currentIcon = $scope.wfIcon;
+                    $scope.iconUrl = getIconUrl();
+                }
+            });
+
+
         }
     };
 

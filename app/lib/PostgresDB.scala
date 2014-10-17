@@ -182,6 +182,15 @@ object PostgresDB {
     }
   }
 
+  def updateStubPriority(id: Long, priority: Int): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.priority)
+        .update(priority)
+    }
+  }
+
   def updateStubLegalStatus(id: Long, status: Flag): Int = {
     DB.withTransaction { implicit session =>
       stubs
