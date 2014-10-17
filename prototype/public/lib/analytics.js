@@ -147,7 +147,7 @@ angular.module('wfAnalytics', ['wfUser'])
 
         // Track deletion of content
         $rootScope.$on('content.deleted', (event, data) => {
-            track('Content deleted', data);
+            track('Content deleted', data.contentItem);
         });
 
         // TODO Things to track:
