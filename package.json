@@ -5,7 +5,7 @@
   "private": true,
   "devDependencies": {
     "chai": "^1.9.1",
-    "jspm": "^0.6.5",
+    "jspm": "0.7.3",
     "karma": "^0.12.21",
     "karma-chai": "^0.1.0",
     "karma-cli": "0.0.4",

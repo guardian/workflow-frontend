@@ -49,7 +49,8 @@ System.config({
       "inherits": "npm:inherits@^2.0.1",
       "json": "github:systemjs/plugin-json@master"
     },
-    "node-uuid": "npm:uuid-v4.js@^1.0.2"
+    "node-uuid": "npm:uuid-v4.js@^1.0.2",
+    "npm:uuid-v4.js@1.0.2": {}
   }
 });
 
@@ -64,7 +65,7 @@ System.config({
     "npm:sugar": "1.4.1",
     "github:moment/moment": "2.8.3",
     "github:angular/bower-angular": "1.2.20",
-    "github:jspm/nodelibs": "0.0.2",
+    "github:jspm/nodelibs": "0.0.3",
     "npm:base64-js": "0.0.4",
     "npm:ieee754": "1.1.3",
     "npm:Base64": "0.2.1",
@@ -75,7 +76,7 @@ System.config({
     "github:moment/moment-timezone": "0.2.2",
     "github:angular/bower-angular-mocks": "1.3.0",
     "github:mixpanel/mixpanel-js": "2.2.3",
-    "github:faisalman/ua-parser-js": "0.7.0",
+    "github:faisalman/ua-parser-js": "0.7.1",
     "npm:lodash-node": "2.4.1",
     "github:angular/bower-angular-animate": "1.2.22",
     "github:angular-ui/ui-router": "0.2.11",
