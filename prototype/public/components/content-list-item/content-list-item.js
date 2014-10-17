@@ -6,15 +6,6 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/',
 function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
     /*jshint validthis:true */
 
-    function getPriorityString(priorityValue) {
-        if (priorityValue == 1) {
-            return "urgent";
-        } else if (priorityValue == 2) {
-            return "very-urgent";
-        }
-        return "normal";
-    }
-
     function formatAndLocaliseDate(dateValue, dateFormat) {
         return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(dateValue), dateFormat);
     }
@@ -71,8 +62,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.headline = item.headline;
             this.workingTitle = item.workingTitle || item.title;
 
-            this.priority = getPriorityString(item.priority);
-            this.priorityTitle = toTitleCase(this.priority);
+            this.priority = item.priority;
+            //this.priorityTitle = toTitleCase(this.priority);
 
             this.hasComments = !!item.commentable;
             this.commentsTitle = this.hasComments ? 'on' : 'off';
@@ -189,5 +180,15 @@ function wfContentItemUpdateActionDirective() {
     };
 }
 
+function wfGetPriorityStringFilter () {
+    return function (priorityValue) {
+        if (priorityValue == 1) {
+            return "urgent";
+        } else if (priorityValue == 2) {
+            return "very-urgent";
+        }
+        return "normal";
+    };
+}
 
-export { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective };
+export { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter };

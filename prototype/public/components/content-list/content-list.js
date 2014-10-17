@@ -9,12 +9,13 @@ import 'lib/content-service';
 import 'lib/date-service';
 import 'lib/presence';
 import 'lib/prodoffice-service';
-import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective } from 'components/content-list-item/content-list-item';
+import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
 
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
+    .filter('getPriorityString', wfGetPriorityStringFilter)
     .controller('wfContentListController', ['$scope', '$log', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
@@ -47,6 +48,12 @@ function wfContentListController($scope, $log, statuses, sections, wfContentServ
     ];
 
     this.sections = sections;
+
+    this.priorities = [
+        { name: 'Normal', value: 0 },
+        { name: 'Urgent', value: 1 },
+        { name: 'Very-Urgent', value: 2 }
+    ];
 
     // Watch composer contentIds for Presence
     $scope.$watch('contentIds', (newIds) => {

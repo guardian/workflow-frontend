@@ -225,6 +225,16 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
+  def putStubPriority(stubId: Long) = APIAuthAction { implicit request =>
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+      priority <- extract[Int](jsValue \ "data").right
+    } yield {
+      PostgresDB.updateStubPriority(stubId, priority)
+      NoContent
+    }).merge
+  }
+
   def putStubLegalStatus(stubId: Long) = CORSable(PrototypeConfiguration.apply.composerUrl) {
     APIAuthAction { implicit request =>
       (for {
