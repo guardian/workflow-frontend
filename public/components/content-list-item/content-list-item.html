@@ -1,6 +1,6 @@
 <tr class="content-list-item" ng-click="selectItem(contentItem)" ng-class="{ 'content-list-item--selected': contentList.selectedItem === contentItem, 'content-list-item--published': contentItem.isPublished }">
-    <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priorityTitle }}">
-        <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority }}" ng-show="contentItem.priority !== 'normal'"/>
+    <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priority | getPriorityString }}">
+        <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority | getPriorityString }}" ng-show="contentItem.priority !== 0"/>
     </td>
     <td class="content-list-item__field--comments" title="Comments: {{ contentItem.commentsTitle }}">
         <i class="content-list-item__icon--comments" wf-icon="comments" wf-icon-active="contentItem.hasComments"/>

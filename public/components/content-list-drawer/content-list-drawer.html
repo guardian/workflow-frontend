@@ -6,7 +6,7 @@
                 <ul class="drawer__column">
                     <li class="drawer__section">
                         <span class="drawer__section-title">Priority</span>
-                        <span class="drawer__section-data-row">{{ contentItem.priorityTitle }}</span>
+                        <select ng-model="contentItem.priority" ng-options="p.value as p.name for p in contentList.priorities" wf-content-item-update-action="priority"></select>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Production deadline</span>
