@@ -11,7 +11,7 @@
  * @param contentService
  * @param prodOfficeService
  */
-var wfContentListDrawer = function ($rootScope, config, $timeout, contentService, prodOfficeService) {
+var wfContentListDrawer = function ($rootScope, config, $timeout, $window, contentService, prodOfficeService) {
 
     var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
         hiddenClass = 'content-list-drawer--hidden';
@@ -59,11 +59,13 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
             function show (contentItem, contentListItemElement) {
 
                 contentListItemElement.after(elem);
-                $timeout(() => { // wait for reflow
-                    $scope.contentItem = contentItem;
-                    $scope.contentList.selectedItem = contentItem;
-                    elem.removeClass(hiddenClass);
-                }, 1);
+
+                $scope.contentItem = contentItem;
+                $scope.contentList.selectedItem = contentItem;
+
+                var w = $window.getComputedStyle(elem[0], null).width; // force reflow styles
+
+                elem.removeClass(hiddenClass);
             }
 
             /**
