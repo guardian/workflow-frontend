@@ -11,7 +11,7 @@
  * @param contentService
  * @param prodOfficeService
  */
-var wfContentListDrawer = function ($rootScope, config, $timeout, contentService, prodOfficeService) {
+var wfContentListDrawer = function ($rootScope, config, $timeout, $window, contentService, prodOfficeService) {
 
     var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
         hiddenClass = 'content-list-drawer--hidden';
@@ -59,11 +59,13 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
             function show (contentItem, contentListItemElement) {
 
                 contentListItemElement.after(elem);
-                $timeout(() => { // wait for reflow
-                    $scope.contentItem = contentItem;
-                    $scope.contentList.selectedItem = contentItem;
-                    elem.removeClass(hiddenClass);
-                }, 1);
+
+                $scope.contentItem = contentItem;
+                $scope.contentList.selectedItem = contentItem;
+
+                var w = $window.getComputedStyle(elem[0], null).width; // force reflow styles
+
+                elem.removeClass(hiddenClass);
             }
 
             /**
@@ -142,7 +144,7 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
 
             $scope.onBeforeSaveAssignee = function (assignee) {
 
-                updateField("assignee", assignee, $scope.contentItem.assignee);
+                updateField("assignee", assignee, $scope.contentItem.item.assignee);
             };
 
             $scope.onBeforeSaveWorkingTitle = function (workingTitle) {
@@ -158,25 +160,26 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
                     parsedDate,
                     requestData;
 
-                if (content.deadline) { // TODO: See content-list.js:118
-                    parsedDate = moment(content.deadline);
+                if (content.item.due) { // TODO: See content-list.js:118
+                    parsedDate = moment(content.item.due);
                     if (parsedDate.isValid()) {
                         requestData = parsedDate.toISOString();
                     }
                 }
 
-                contentService.updateField($scope.contentItem, "dueDate", requestData)
-                    .then($scope.apply, errorMessage);
+                updateField("dueDate", requestData);
+                $scope.$apply();
             };
 
             /**
              * Delete manually as no event or tracking yet
-             * TODO: Set up tracking for delete
              */
             $scope.deleteContentItem = function () {
-
                 contentService.remove($scope.contentItem.id)
-                    .then($scope.apply, errorMessage);
+                    .then(() => {
+                        $scope.$emit('content.deleted', { contentItem: $scope.contentItem });
+                        $scope.$apply();
+                    }, errorMessage);
             };
 
             function errorMessage () {
@@ -187,4 +190,4 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, contentService
     };
 };
 
-export { wfContentListDrawer }
+export { wfContentListDrawer };

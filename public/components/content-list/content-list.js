@@ -19,7 +19,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .controller('wfContentListController', ['$scope', '$log', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
 
 
 function wfContentListController($scope, $log, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService) {
@@ -56,8 +56,10 @@ function wfContentListController($scope, $log, statuses, sections, wfContentServ
     ];
 
     // Watch composer contentIds for Presence
-    $scope.$watch('contentIds', (newIds) => {
-        wfPresenceService.subscribe(newIds);
+    $scope.$watch('contentIds', (newIds, oldIds) => {
+        if (newIds !== oldIds) {  // guards against initial render when newIds === oldIds === undefined
+            wfPresenceService.subscribe(newIds);
+        }
     }, true);
 
 

@@ -101,7 +101,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             });
         }
 
-        self.articleSubscribe = function(articleIds) {
+        self.articleSubscribe = function (articleIds) {
             var ids = (Array.isArray(articleIds)) ? articleIds : Array(articleIds);
             var p = sendJson(makeSubscriptionRequest(ids));
             return p;
@@ -166,7 +166,9 @@ define(["node-uuid", "underscore"], function (uuid, _) {
                         removeListener();
                     };
                 });
-                wfPresenceService.articleSubscribe(ids);
+
+                self.articleSubscribe(composerIds);
+
             });
 
         };
@@ -231,17 +233,19 @@ define(["node-uuid", "underscore"], function (uuid, _) {
                     }
                 }
 
-                wfPresenceService.initialData().then(function (currentState) {
-                    applyCurrentState(currentState);
-                }, function (err) {
-                    $log.error("Error getting initial data:", err);
-                });
+                if ($scope.id) {
+                    wfPresenceService.initialData($scope.id).then(function (currentState) {
+                        applyCurrentState(currentState);
+                    }, function (err) {
+                        $log.error("Error getting initial data:", err);
+                    });
 
-                $scope.$on("presence.status", function(ev, data) {
-                    if($scope.id === data.subscriptionId) {
-                        applyCurrentState(data.currentState);
-                    }
-                });
+                    $scope.$on("presence.status", function(ev, data) {
+                        if($scope.id === data.subscriptionId) {
+                            applyCurrentState(data.currentState);
+                        }
+                    });
+                }
             }
         };
     }]);
