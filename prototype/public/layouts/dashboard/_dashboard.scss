@@ -2,53 +2,23 @@
  * Dashboard layout styles.
  */
 @import "components/content-list/content-list";
+@import "components/content-list-item/content-list-item";
+@import "components/content-list-drawer/content-list-drawer";
 @import "components/stubs-list/stubs-list";
 @import "components/details-panel/details-panel";
 @import "sidebar";
 @import "toolbar";
 
-.stubs-column {
-    min-width: 200px;
-    max-width: 200px;
-    overflow: auto;
-    border-right: 1px solid #eee;
-}
-
 .content-list-column {
     overflow: auto;
+
+    overflow-y: scroll;
 
     // Flexbox prefixes - TODO: Autoprefixer
     -webkit-box-flex: 1;
     -webkit-flex-grow: 1;
     -ms-flex-positive: 1;
     flex-grow: 1;
-}
-
-.detail-column {
-    min-width: 200px;
-    max-width: 200px;
-    background-color: #f5f5f5;
-    border-left: 1px solid #eee;
-    overflow: auto;
-}
-
-/*
- * Global add-ons
- */
-
-.sub-header {
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-h5.query {
-    font-weight: bold;
-}
-
-.btn.active {
-    color: #fff;
-    background-color: #3276b1;
-    border-color: #285e8e;
 }
 
 /**

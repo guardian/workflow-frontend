@@ -2,9 +2,11 @@ import angular from 'angular';
 
 import 'lib/date-service';
 import 'lib/filters-service';
+import 'lib/prodoffice-service';
+import 'lib/presence';
 
-angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService'])
-    .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'prodOfficeService', 'sections', function ($scope, wfFiltersService, wfDateParser, prodOfficeService, sections) {
+angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPresenceService', 'wfProdOfficeService'])
+    .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'sections', function ($scope, wfFiltersService, wfDateParser, prodOfficeService, sections) {
 
         $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 

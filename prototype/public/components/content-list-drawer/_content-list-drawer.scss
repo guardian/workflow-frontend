@@ -1,0 +1,131 @@
+.content-list .content-list-drawer { // over qualified to ensure overide
+    overflow: hidden;
+    &::before, &::after {
+        display: none;
+        content: none;
+        width: 0;
+    }
+}
+
+.content-list-drawer * {
+    box-sizing: border-box;
+}
+
+.content-list-drawer__full-width {
+    vertical-align: top;
+}
+
+.content-list-drawer__container {
+    overflow: hidden;
+    height: 380px;
+    background-color: $c-grey-100;
+    -webkit-transition: height 0.5s ease-in-out;
+    -moz-transition: height 0.5s ease-in-out;
+    -ms-transition: height 0.5s ease-in-out;
+    -o-transition: height 0.5s ease-in-out;
+    transition: height 0.5s ease-in-out;
+}
+
+.content-list .content-list-drawer--hidden .content-list-drawer__container {
+    height: 0;
+}
+
+.content-list-drawer__container-inner {
+    display: flex;
+}
+
+.drawer__column {
+    flex: 1 0 0;
+    margin: 0;
+    list-style: none;
+    display: inline-block;
+    vertical-align: top;
+    padding: 12px 0 0 12px;
+    &:last-child {
+        margin-right: 0;
+    }
+}
+
+.drawer__column--wide {
+    @extend .drawer__column;
+    flex: 3 0 0;
+}
+
+.drawer__column--control {
+    @extend .drawer__column;
+    flex: 0.5 0 0;
+    border-left: 1px solid $c-grey-400;
+    padding: 0 0 0 12px;
+    margin: 12px 0 0 12px;
+}
+
+.drawer__control {
+    padding: 2px 12px 12px 0;
+    .drawer__control-item {
+        cursor: pointer;
+    }
+}
+
+.drawer__section {
+    @extend .drawer__control;
+    border-top: 1px solid $c-grey-300;
+}
+
+.drawer__section-title {
+    @extend %fs-data-3;
+    font-weight: bold;
+    display: block;
+    padding: 2px 0;
+}
+
+.drawer__section-data-row {
+    @extend %fs-data-3;
+    display: block;
+    .glyphicon,
+    .content-list-item__icon--composer {
+        margin-right: 4px;
+    }
+}
+
+.drawer__section-data-row--editable {
+    @extend .drawer__section-data-row;
+    border-bottom: dashed 1px #333;
+    display: inline;
+}
+
+.drawer__section-data-row--editable-empty {
+    @extend .drawer__section-data-row--editable;
+}
+
+.drawer__section-data-row--coming-soon {
+    color: $c-grey-400;
+}
+
+.editable-wrap { // TODO: Restyle editable inputs + controls
+    width: 100%;
+
+    .editable-controls { width: 100% }
+
+    .editable-input {
+        width: 100%;
+        margin: 6px 0;
+    }
+
+    .editable-buttons .btn {
+        margin-right: 6px;
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.editable-hide {
+    display: none;
+}
+
+.content-list-drawer .date-time-picker__group .dropdown-menu {
+    left: 0;
+    right: auto;
+    min-width: 200px;
+}
+

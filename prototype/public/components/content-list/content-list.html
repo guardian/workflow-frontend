@@ -1,0 +1,47 @@
+
+<div class="alert alert-danger" ng-if="refreshContentError">
+    There was a problem contacting the server, please try to
+    <a href="javascript:window.location.reload()">reload</a> the page. If the problem continues, please contact
+    <a href="mailto:cms.workflow@guardian.co.uk">the Workflow team</a>.
+</div>
+
+<table class="content-list">
+    <thead class="content-list-head">
+        <tr class="content-list-head__row">
+            <th class="content-list-head__heading--group" colspan="4"></th>
+            <th class="content-list-head__heading--titles">Working title / Headline</span></th>
+            <th class="content-list-head__heading--presence" title="In use by (Coming soon)">
+                <i class="content-list-head__heading-icon--presence" wf-icon="presence"/>
+            </th>
+            <th class="content-list-head__heading--assignee" title="Assigned to">
+                <i class="content-list-head__heading-icon--assignee" wf-icon="assigned-to"/>
+            </th>
+            <th class="content-list-head__heading--office" title="Production office">Office</th>
+            <th class="content-list-head__heading--deadline">Deadline</th>
+            <th class="content-list-head__heading--created">Created</th>
+            <th class="content-list-head__heading--section">Section</th>
+            <th class="content-list-head__heading--legal">Legal</th>
+            <th class="content-list-head__heading--status">Status</th>
+            <th class="content-list-head__heading--notes">Notes</th>
+            <th class="content-list-head__heading--links" colspan="4">Open in</th>
+            <th class="content-list-head__heading--published-state">State</th>
+        </tr>
+    </thead>
+    <tbody ng-repeat="group in content track by group.name">
+        <tr class="content-list__group-heading-row">
+            <th class="content-list__group-heading" scope="rowgroup" colspan="19">
+                <span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span>
+                <button class="content-list__button--new" ng-click="contentList.newItem()" ng-if="group.name === 'stub'"><i class="content-list__button-icon" wf-icon="pen"></i>New Stub</button>
+                <button class="content-list__button--import" ng-click="contentList.importItem()" ng-if="group.name === 'stub'"><i class="content-list__button-icon" wf-icon="pen"></i>Import from Composer</button>
+            </th>
+        </tr>
+
+        <tr wf-content-list-item ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues"></tr>
+
+    </tbody>
+
+    <tbody class="content-list-draw__dock">
+        <tr wf-content-list-drawer ng-model="contentItem" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues"></tr>
+    </tbody>
+
+</table>

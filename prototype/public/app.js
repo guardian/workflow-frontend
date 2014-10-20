@@ -5,18 +5,21 @@
 import angular from 'angular';
 
 // Legacy:
-import 'javascripts/services';
-import 'javascripts/directives';
-import 'javascripts/controllers';
-import 'javascripts/controllers/dashboard';
-import 'javascripts/controllers/dashboard/content-item';
-import 'javascripts/controllers/dashboard/dashboard';
-import 'javascripts/controllers/dashboard/date-filter';
-import 'javascripts/controllers/dashboard/stub-crud';
-import 'javascripts/services/composer-service';
-import 'javascripts/services/legal-states-service';
-import 'javascripts/services/prodoffice-service';
+// import 'javascripts/services';
+// import 'javascripts/directives';
+// import 'javascripts/controllers';
+// import 'javascripts/controllers/dashboard';
+// import 'javascripts/controllers/dashboard/content-item';
+// import 'javascripts/controllers/dashboard/dashboard';
+// import 'javascripts/controllers/dashboard/date-filter';
+// import 'javascripts/controllers/dashboard/stub-crud';
+// import 'javascripts/services/legal-states-service';
+// import 'javascripts/services/prodoffice-service';
 
+import 'components/content-list/content-list';
+import 'components/icons/icons';
+
+import 'layouts/dashboard/dashboard';
 import 'layouts/dashboard/dashboard-toolbar';
 import 'layouts/dashboard/dashboard-sidebar';
 
@@ -40,17 +43,19 @@ angular.module('workflow',
     [
         'ui.router',
         'ngAnimate',
-        'dashboardControllers',
+        // 'dashboardControllers',
+        'wfDashboard',
         'wfDashboardToolbar',
         'wfDashboardSidebar',
+        'wfIcons',
+        'wfContentList',
         'wfDateService',
         'wfAnalytics',
-        'workflow.services',
-        'workflow.directives',
-        'workflow.controllers',
-        'composerService',
-        'legalStatesService',
-        'prodOfficeService',
+        // 'workflow.services',
+        // 'workflow.directives',
+        // 'workflow.controllers',
+        // 'legalStatesService',
+        // 'prodOfficeService',
         'wfFiltersService',
         'wfFeatureSwitches',
         'xeditable'
@@ -65,7 +70,7 @@ angular.module('workflow',
             views: {
                 '': {
                     templateUrl: '/assets/layouts/dashboard/dashboard.html',
-                    controller: 'DashboardCtrl'
+                    controller: 'wfDashboardController'
                 },
                 'view-toolbar': {
                     templateUrl: '/assets/layouts/dashboard/dashboard-toolbar.html',

@@ -38,6 +38,8 @@ System.config({
     "angular-mocks": "github:angular/bower-angular-mocks@^1.2.7",
     "mixpanel": "github:mixpanel/mixpanel-js@^2.2.2",
     "ua-parser": "github:faisalman/ua-parser-js@^0.7.0",
+    "lodash": "npm:lodash-node@^2.4.1",
+    "npm:lodash-node@2.4.1": {},
     "angular-animate": "github:angular/bower-angular-animate@1.2.22",
     "angular-ui-router": "github:angular-ui/ui-router@^0.2.11",
     "github:jspm/nodelibs@0.0.3": {
@@ -74,6 +76,7 @@ System.config({
     "github:angular/bower-angular-mocks": "1.3.0",
     "github:mixpanel/mixpanel-js": "2.2.3",
     "github:faisalman/ua-parser-js": "0.7.0",
+    "npm:lodash-node": "2.4.1",
     "github:angular/bower-angular-animate": "1.2.22",
     "github:angular-ui/ui-router": "0.2.11",
     "npm:uuid-v4.js": "1.0.2"
