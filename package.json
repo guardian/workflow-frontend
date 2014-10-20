@@ -5,7 +5,7 @@
   "private": true,
   "devDependencies": {
     "chai": "^1.9.1",
-    "jspm": "0.7.3",
+    "jspm": "^0.8.0-beta.7",
     "karma": "^0.12.21",
     "karma-chai": "^0.1.0",
     "karma-cli": "0.0.4",
@@ -18,10 +18,8 @@
   "jspm": {
     "name": "workflow",
     "main": "app.js",
-    "configFile": "public/config.js",
     "directories": {
-      "baseURL": "public",
-      "jspmPackages": "public/jspm_packages"
+      "baseURL": "public"
     },
     "dependencies": {
       "angular": "1.2.20",
