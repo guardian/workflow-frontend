@@ -18,6 +18,7 @@
   "jspm": {
     "name": "workflow",
     "main": "app.js",
+    "configFile": "public/config.js",
     "directories": {
       "baseURL": "public"
     },
