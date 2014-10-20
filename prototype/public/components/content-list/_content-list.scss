@@ -94,24 +94,24 @@ $content-list-icon-size: 14px;
     &__group-heading {
 
         &-row {
-            background-color: $c-grey-150;
-            border-top: 1px solid $c-grey-300;
-            border-bottom: 1px solid $c-grey-300;
+            background-color: $c-grey-200;
+            border-top: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
         }
 
         &-link {
             @extend %fs-data-3;
-            background-color: $c-grey-300;
-            color: inherit;
+            background-color: $c-grey-500;
+            color: #ffffff;
             font-weight: bold;
             text-transform: uppercase;
             display: inline-block;
-            margin-left: 10px;
+            margin-left: 2px;
             line-height: 28px;
             padding: 0 10px;
 
             &:hover {
-                color: inherit;
+                color: #ffffff;
                 text-decoration: none;
                 // cursor: pointer; TODO: Make sections collapseable
             }
@@ -136,12 +136,13 @@ $content-list-icon-size: 14px;
         &--import {
             @extend %fs-data-3;
 
-            margin-left: 10px;
-            padding: 0 5px;
-            background-color: $c-grey-300;
+            margin-left: 5px;
+            padding: 0 10px;
+            background-color: $c-grey-200;
             font-weight: normal;
             line-height: 28px;
             border: none;
+            border-right: 1px solid #ffffff;
         }
     }
 
