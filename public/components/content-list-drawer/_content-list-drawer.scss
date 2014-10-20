@@ -32,6 +32,7 @@
 
 .content-list-drawer__container-inner {
     display: flex;
+    height: 100%;
 }
 
 .drawer__column {
@@ -53,18 +54,21 @@
 
 .drawer__column--control {
     @extend .drawer__column;
-    flex: 0.5 0 0;
+    flex: 0.8 0 0;
     border-left: 1px solid $c-grey-400;
-    padding: 0 0 0 12px;
-    margin: 12px 0 0 12px;
+    padding: 0;
+    margin: 0 0 0 12px;
 }
 
 .drawer__control {
-    padding: 2px 12px 12px 0;
+    padding: 12px;
+    border-bottom: 1px solid $c-grey-400;
+
     .drawer__control-item {
         cursor: pointer;
         position: relative;
         padding: 0 0 0 18px;
+        word-wrap: break-word;
         .drawer__control-item-icon {
             position: absolute;
             top: 1px;
@@ -74,7 +78,8 @@
 }
 
 .drawer__section {
-    @extend .drawer__control;
+    padding: 2px 12px 12px 0;
+    border: none;
     border-top: 1px solid $c-grey-300;
 }
 
