@@ -63,7 +63,6 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.workingTitle = item.workingTitle || item.title;
 
             this.priority = item.priority;
-            //this.priorityTitle = toTitleCase(this.priority);
 
             this.hasComments = !!item.commentable;
             this.commentsTitle = this.hasComments ? 'on' : 'off';
