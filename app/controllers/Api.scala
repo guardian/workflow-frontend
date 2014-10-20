@@ -218,7 +218,7 @@ object Api extends Controller with PanDomainAuthActions {
   def putStubWorkingTitle(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
-      workingTitle <- extract[String](jsValue \ "data")(Stub.sectionReads).right
+      workingTitle <- extract[String](jsValue \ "data")(Stub.workingTitleReads).right
     } yield {
       PostgresDB.updateStubWorkingTitle(stubId, workingTitle)
       NoContent
