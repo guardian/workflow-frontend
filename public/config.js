@@ -3,7 +3,8 @@ System.config({
   "paths": {
     "*": "*.js",
     "npm:*": "jspm_packages/npm/*.js",
-    "github:*": "jspm_packages/github/*.js"
+    "github:*": "jspm_packages/github/*.js",
+    "jspm:*": "jspm_packages/jspm/*.js"
   }
 });
 
@@ -50,7 +51,23 @@ System.config({
       "json": "github:systemjs/plugin-json@master"
     },
     "node-uuid": "npm:uuid-v4.js@^1.0.2",
-    "npm:uuid-v4.js@1.0.2": {}
+    "npm:uuid-v4.js@1.0.2": {},
+    "npm:ripemd160@0.2.0": {},
+    "npm:pbkdf2-compat@2.0.1": {},
+    "npm:sha.js@2.2.6": {
+      "json": "npm:json@^9.0.1"
+    },
+    "github:jspm/nodelibs@0.0.5": {
+      "Base64": "npm:Base64@^0.2.0",
+      "base64-js": "npm:base64-js@^0.0.4",
+      "ieee754": "npm:ieee754@^1.1.1",
+      "inherits": "npm:inherits@^2.0.1",
+      "pbkdf2-compat": "npm:pbkdf2-compat@^2.0.1",
+      "ripemd160": "npm:ripemd160@^0.2.0",
+      "sha.js": "npm:sha.js@^2.2.6",
+      "json": "github:systemjs/plugin-json@^0.1.0"
+    },
+    "npm:json@9.0.1": {}
   }
 });
 
@@ -65,11 +82,14 @@ System.config({
     "npm:sugar": "1.4.1",
     "github:moment/moment": "2.8.3",
     "github:angular/bower-angular": "1.2.20",
-    "github:jspm/nodelibs": "0.0.3",
+    "github:jspm/nodelibs": "0.0.5",
     "npm:base64-js": "0.0.4",
     "npm:ieee754": "1.1.3",
     "npm:Base64": "0.2.1",
-    "github:systemjs/plugin-json": "master",
+    "github:systemjs/plugin-json": [
+      "master",
+      "0.1.0"
+    ],
     "npm:inherits": "2.0.1",
     "github:components/jquery": "1.11.1",
     "github:systemjs/plugin-css": "0.1.0",
@@ -80,7 +100,11 @@ System.config({
     "npm:lodash-node": "2.4.1",
     "github:angular/bower-angular-animate": "1.2.22",
     "github:angular-ui/ui-router": "0.2.11",
-    "npm:uuid-v4.js": "1.0.2"
+    "npm:uuid-v4.js": "1.0.2",
+    "npm:pbkdf2-compat": "2.0.1",
+    "npm:ripemd160": "0.2.0",
+    "npm:sha.js": "2.2.6",
+    "npm:json": "9.0.1"
   }
 });
 
