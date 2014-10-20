@@ -164,6 +164,33 @@ object PostgresDB {
     }
   }
 
+  def updateStubSection(id: Long, section: String): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.section)
+        .update(section)
+    }
+  }
+
+  def updateStubWorkingTitle(id: Long, workingTitle: String): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.workingTitle)
+        .update(workingTitle)
+    }
+  }
+
+  def updateStubPriority(id: Long, priority: Int): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.priority)
+        .update(priority)
+    }
+  }
+
   def updateStubLegalStatus(id: Long, status: Flag): Int = {
     DB.withTransaction { implicit session =>
       stubs

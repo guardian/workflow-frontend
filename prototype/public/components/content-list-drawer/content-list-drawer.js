@@ -147,6 +147,10 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                 updateField("assignee", assignee, $scope.contentItem.item.assignee);
             };
 
+            $scope.onBeforeSaveWorkingTitle = function (workingTitle) {
+                updateField("workingTitle", workingTitle, $scope.contentItem.workingTitle);
+            };
+
             /**
              * Update the deadline manually using value from datepicker
              */

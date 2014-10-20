@@ -1,6 +1,6 @@
 <tr class="content-list-item" ng-click="selectItem(contentItem)" ng-class="{ 'content-list-item--selected': contentList.selectedItem === contentItem, 'content-list-item--published': contentItem.isPublished }">
-    <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priorityTitle }}">
-        <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority }}" ng-show="contentItem.priority !== 'normal'"/>
+    <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priority | getPriorityString }}">
+        <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority | getPriorityString }}" ng-show="contentItem.priority !== 0"/>
     </td>
     <td class="content-list-item__field--comments" title="Comments: {{ contentItem.commentsTitle }}">
         <i class="content-list-item__icon--comments" wf-icon="comments" wf-icon-active="contentItem.hasComments"/>
@@ -33,7 +33,9 @@
     <td class="content-list-item__field--created" title="Date created: {{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'long'}}">
         {{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
     </td>
-    <td class="content-list-item__field--section" title="Section: {{ contentItem.section }}">{{ contentItem.section }}
+    <td class="content-list-item__field--section" title="Section">
+        <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="ls for ls in contentList.sections" wf-content-item-update-action="section"></select>
+    </td>
     </td>
     <td class="content-list-item__field--legal" title="Needs legal">
         <select ng-click="$event.stopPropagation()" ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in contentList.legalValues" wf-content-item-update-action="needsLegal"></select>

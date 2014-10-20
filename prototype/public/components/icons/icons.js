@@ -11,14 +11,15 @@ function wfIconDirective() {
 
     return {
         restrict: 'A',
-        template: '<img ng-src="{{ iconUrl }}" class="wf-icon"/>',
+        template: '<img ng-src="{{ iconUrl() }}" class="wf-icon"/>',
         scope: {
             wfIcon: '@',
             wfIconActive: '=' // boolean
         },
-        controller: function($scope) {
+        link: function($scope) {
             var urlPostfix = $scope.wfIconActive !== false ? 'active' : 'inactive';
-            $scope.iconUrl = ICON_FILE + '#' + $scope.wfIcon + '-' + urlPostfix;
+
+            $scope.iconUrl = () => ICON_FILE + '#' + $scope.wfIcon + '-' + urlPostfix;
         }
     };
 
