@@ -63,6 +63,13 @@
     padding: 2px 12px 12px 0;
     .drawer__control-item {
         cursor: pointer;
+        position: relative;
+        padding: 0 0 0 18px;
+        .drawer__control-item-icon {
+            position: absolute;
+            top: 1px;
+            left: 0;
+        }
     }
 }
 
