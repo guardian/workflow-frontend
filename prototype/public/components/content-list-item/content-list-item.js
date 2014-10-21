@@ -14,7 +14,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
         var offices = {
             'AU': 'Australia',
             'US': 'United States of America',
-            'UK': 'United Kingdom of Great Britain & Ireland'
+            'UK': 'United Kingdom'
         };
 
         return offices[office];
