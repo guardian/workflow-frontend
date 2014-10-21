@@ -9,12 +9,25 @@
 %sidebar__header-select-icon {
     &:before {
         content: " ";
-        background: $i-arrow-down right no-repeat $c-grey-300;
+        background: $i-arrow-down right no-repeat transparent;
         background-size: 12px;
         width: 13px;
         height: 12px;
         display: inline-block;
-        margin-right: 5px;
+        margin: 0 5px 0 0;
+        position: relative;
+        top: 2px;
+
+        -webkit-transition: transform 0.25s ease-in-out;
+        -moz-transition: transform 0.25s ease-in-out;
+        -ms-transition: transform 0.25s ease-in-out;
+        -o-transition: transform 0.25s ease-in-out;
+        transition: transform 0.25s ease-in-out;
+
+        transform: rotate(0deg);
+    }
+    &:hover:before {
+        transform: rotate(-90deg);
     }
 }
 
@@ -25,12 +38,17 @@
     .sidebar__heading {
         @extend %sidebar__header-select-icon;
         @extend %fs-data-1;
+        background-color: $c-grey-300;
         text-transform: uppercase;
         display: inline-block;
-        padding: 6px 0 8px 5px;
+        padding: 6px 0 5px 5px;
         font-weight: bold;
         margin: 0;
         cursor: pointer;
+        width: 141px;
+        &:hover {
+            background-color: darken($c-grey-300, 20%);
+        }
     }
 }
 
@@ -49,7 +67,7 @@
 /* A sidebar filter block ---------------------- */
 
 .sidebar__filter {
-    padding: 1px 0px 1px 18px;
+    //padding: 1px 0px 1px 18px;
     border-bottom: 1px solid $c-grey-300;
     &:last-child {
         border-bottom: 0;
@@ -57,8 +75,19 @@
     .sidebar__filter-link {
         @extend %fs-data-3;
         color: $c-text;
-        padding: 5px;
-        display: inline-block;
+        background-color: #f5f5f5;
+        padding: 6px 0 6px 18px;
+        display: block;
+        width: 100%;
+
+        &:hover {
+            text-decoration: none;
+            background-color: darken(#f5f5f5, 20%);
+            img {
+                filter: url(/assets/components/icons/icons.svg#gallery-active-hover);
+            }
+        }
+
     }
     .sidebar__filter-icon {
         display: inline-block;
