@@ -1,4 +1,4 @@
-define(["node-uuid", "underscore"], function (uuid, _) {
+define(["presence-client", "underscore"], function (presenceClient, _) {
 
     var module = angular.module('wfPresenceService', []);
 
@@ -7,15 +7,13 @@ define(["node-uuid", "underscore"], function (uuid, _) {
         var self = {};
 
         self.whenEnabled = wfFeatureSwitches.getSwitch("presence-indicator").then(function (value) {
-          if(value) return true;
-          else reject("presence disabled");
+            if(value) return true;
+            else reject("presence disabled");
         }, function(err) {
-          $log.error("error: " + err);
+            $log.error("error: " + err);
         });
 
-        self.connId = uuid();
-
-        self.endpoint = config.presenceUrl + "/" + self.connId;
+        self.endpoint = config.presenceUrl;
 
         function broadcast(name, data) {
             /* use apply to make it take effect straight away */
@@ -25,11 +23,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
         }
 
         var messageHandlers = {
-            "connectionTest": function() {
-                /* XXX TODO : how should I reply to this connectionTest request? */
-            },
             "subscribed": function(data) {
-                self.clientId = data.clientId;
                 broadcast("presence.subscribed", data);
             },
             "updated": function(data) {
@@ -37,43 +31,7 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             }
         };
 
-        function messageHandler(msgJson) {
-            var msg = JSON.parse(msgJson);
-
-            if(typeof messageHandlers[msg.action] !== "function") {
-
-                $log.error("received unknown message action: " + msg.action);
-
-                broadcast("presence.error.unknownAction", msg);
-                return;
-            }
-
-            messageHandlers[msg.action](msg.data);
-        }
-
-        var _socket = Promise.reject("not yet connected");
-
-        function doConnection() {
-            _socket = new Promise( function(resolve, reject) {
-                var s = new WebSocket(self.endpoint);
-                s.onerror   = function () {
-                    reject();
-                    broadcast("presence.connection.error");
-                };
-                s.onopen    = function () {
-                    resolve(s);
-                    broadcast("presence.connection.success");
-                };
-                s.onclose   = function () {
-                    broadcast("presence.connection.closed");
-                };
-                s.onmessage = function(ev) {
-                    $log.debug("Presence message: ", ev.data);
-                    messageHandler(ev.data);
-                };
-            });
-            return _socket;
-        }
+        var presence = Promise.reject("not yet connected");
 
         self.person = {
             firstName : wfUser.firstName,
@@ -83,41 +41,21 @@ define(["node-uuid", "underscore"], function (uuid, _) {
             googleId  : "00000" // required but not used
         };
 
-        function makeRequest(action, data) {
-            return { action: action, data: data };
-        }
-
-        function makeSubscriptionRequest(articleIds) {
-            return makeRequest("subscribe", {
-                "person": self.person,
-                "subscriptionIds": articleIds
-            });
-        }
-
-        /* returns a promise */
-        function sendJson(data) {
-            return _socket.then(function(socket) {
-                socket.send(JSON.stringify(data));
-            });
-        }
-
         self.articleSubscribe = function (articleIds) {
             var ids = (Array.isArray(articleIds)) ? articleIds : Array(articleIds);
             var p = sendJson(makeSubscriptionRequest(ids));
             return p;
         };
 
+        // INITIATE the connection if presence is enabled
         self.whenEnabled.then(function() {
-            $log.info("presence is enabled... attempting connection");
-            doConnection();
-
-            $rootScope.$on("presence.connection.closed", doConnection);
-            $rootScope.$on("presence.connection.error",  doConnection);
-
+            presence = presenceClient(self.endpoint).startConnection();
+            presence.then((p) => {
+                broadcast("presence.connection.success", p.url);
+            });
         }, function() {
             $log.info("presence is disabled");
         });
-
 
         // Initial data var/function moved from wfPresenceSubscription controller
         // FIXME should this be onConnection?
@@ -190,11 +128,13 @@ define(["node-uuid", "underscore"], function (uuid, _) {
                         $scope.presenceEnabled = true;
                         $scope.connectionStatus = "connecting";
 
-                        $scope.$on("presence.connection.success", function () {
+                        $scope.$on("presence.connection.success", function (ev, data) {
                             $scope.connectionStatus = "ok";
+                            $scope.connectionMessage = "Connected to: " + data;
                         });
-                        $scope.$on("presence.connection.error", function () {
+                        $scope.$on("presence.connection.error", function (err) {
                             $scope.connectionStatus = "error";
+                            $scope.connectionMessage = err;
                         });
 
                         $scope.$on("presence.connection.closed", function () {
