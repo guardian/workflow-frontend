@@ -19,6 +19,7 @@ object PostgresDB {
 
   def getContent(
                   section:      Option[Section]  = None,
+                  desk:         Option[Desk]     = None,
                   dueFrom:      Option[DateTime] = None,
                   dueUntil:     Option[DateTime] = None,
                   status:       Option[Status]   = None,
