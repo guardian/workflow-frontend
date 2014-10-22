@@ -23,11 +23,11 @@ define(["presence-client", "underscore"], function (presenceClient, _) {
         }
 
         var messageHandlers = {
-            "visitor-list-updated": function(msg) {
-                broadcast("presence.status", msg.data);
-            },
             "visitor-list-subscribe": function(msg) {
                 broadcast("presence.subscribed", msg.data);
+            },
+            "visitor-list-updated": function(msg) {
+                broadcast("presence.status", msg.currentState);
             }
         };
 
