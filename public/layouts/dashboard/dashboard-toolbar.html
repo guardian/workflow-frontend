@@ -35,7 +35,7 @@
     </form>
 </div>
 <div wf-presence-connection-status class="dashboard-toolbar__presence-connection-status"
-     ng-show="presenceEnabled">
+     ng-show="presenceEnabled" title="{{connectionMessage}}">
     <span class="dashboard-toolbar__presence-connection-status-label">Presence</span>
     <span class="dashboard-toolbar__presence-connection-status-indicator--{{connectionStatus}}">
         {{connectionStatus | uppercase}}

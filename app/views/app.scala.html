@@ -15,5 +15,10 @@
     System.import('app').catch(function(error) {
         setTimeout(function() { throw error; }, 0);
     });
+/* TODO read this from the config instead of hard-coding it */
+    System.config({
+    "map": {"presence-client":
+    "https://presence.local.dev-gutools.co.uk/static/presence-client"}
+    });
   </script>
 }
