@@ -31,31 +31,37 @@ define(["presence-client", "underscore"], function (presenceClient, _) {
             }
         };
 
-        var presence = Promise.reject("not yet connected");
-
-        self.person = {
-            firstName : wfUser.firstName,
-            lastName  : wfUser.lastName,
-            email     : wfUser.email,
-            browserId : navigator.userAgent,
-            googleId  : "00000" // required but not used
-        };
-
-        self.articleSubscribe = function (articleIds) {
-            var ids = (Array.isArray(articleIds)) ? articleIds : Array(articleIds);
-            var p = sendJson(makeSubscriptionRequest(ids));
-            return p;
-        };
+        // this is required, and passed to the presence client
+        // library, and should return a promise which points to the
+        // current user
+        function getUser() {
+            return new Promise((resolve) => resolve({
+                firstName : wfUser.firstName,
+                lastName  : wfUser.lastName,
+                email     : wfUser.email,
+            }));
+        }
 
         // INITIATE the connection if presence is enabled
-        self.whenEnabled.then(function() {
-            presence = presenceClient(self.endpoint).startConnection();
-            presence.then((p) => {
-                broadcast("presence.connection.success", p.url);
-            });
-        }, function() {
-            $log.info("presence is disabled");
-        });
+        var presence =
+            self.whenEnabled.then(
+                () => presenceClient(self.endpoint, getUser)
+                    .startConnection()
+                    .then((p) => {
+                        broadcast("presence.connection.success", p.url);
+                        return p;
+                    }),
+                () => {
+                    var msg = "presence is disabled";
+                    $log.info(msg);
+                    return msg;
+                });
+
+
+        self.articleSubscribe = function (articleIds) {
+            return presence.then((p) => p.subscribe(articleIds),
+                                 (err) => console.log("subscribe request failed", err));
+        };
 
         // Initial data var/function moved from wfPresenceSubscription controller
         // FIXME should this be onConnection?
