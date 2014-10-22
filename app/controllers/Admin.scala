@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.db.SectionDB
+import com.gu.workflow.db.{DeskDB, SectionDB}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -9,7 +9,7 @@ import play.api.mvc._
 import play.api.data.Form
 
 import lib._
-import models.{Status => WorkflowStatus, Section}
+import models.{Status => WorkflowStatus, Section, Desk}
 
 
 object Admin extends Controller with PanDomainAuthActions {
@@ -17,7 +17,10 @@ object Admin extends Controller with PanDomainAuthActions {
   import play.api.data.Forms._
 
   def index = AuthAction {
-    Redirect(routes.Admin.sections)
+    val sections = SectionDB.sectionList
+    val desks = DeskDB.deskList
+
+    Ok(views.html.adminConsole(sections, addSectionForm, desks, addDeskForm))
   }
 
   val addSectionForm = Form(
@@ -26,17 +29,27 @@ object Admin extends Controller with PanDomainAuthActions {
     )(Section.apply)(Section.unapply)
   )
 
+  val addDeskForm = Form(
+    mapping(
+      "name" -> nonEmptyText
+    )(Desk.apply)(Desk.unapply)
+  )
+
+
+  /*
+    SECTION routes
+   */
+
   def sections = AuthAction {
-    val sections = SectionDB.sectionList
-    Ok(views.html.sections(sections, addSectionForm))
+    Redirect(routes.Admin.index)
   }
 
   def addSection = AuthAction { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to add section"),
       section => {
-         SectionDB.upsert(section)
-         Redirect(routes.Admin.sections)
+        SectionDB.upsert(section)
+        Redirect(routes.Admin.sections)
       }
     )
   }
@@ -46,6 +59,34 @@ object Admin extends Controller with PanDomainAuthActions {
       formWithErrors => BadRequest("failed to remove section"),
       section => {
         SectionDB.remove(section)
+        NoContent
+      }
+    )
+  }
+
+  /*
+    DESK routes
+   */
+
+  def desks = AuthAction {
+    Redirect(routes.Admin.index)
+  }
+
+  def addDesk = AuthAction { implicit request =>
+    addDeskForm.bindFromRequest.fold(
+      formWithErrors => BadRequest("failed to add desk"),
+      desk => {
+        DeskDB.upsert(desk)
+        Redirect(routes.Admin.sections)
+      }
+    )
+  }
+
+  def removeDesk = AuthAction { implicit request =>
+    addDeskForm.bindFromRequest.fold(
+      formWithErrors => BadRequest("failed to remove desk"),
+      desk => {
+        DeskDB.remove(desk)
         NoContent
       }
     )
