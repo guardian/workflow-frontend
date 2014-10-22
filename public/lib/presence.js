@@ -23,13 +23,19 @@ define(["presence-client", "underscore"], function (presenceClient, _) {
         }
 
         var messageHandlers = {
-            "subscribed": function(data) {
-                broadcast("presence.subscribed", data);
+            "visitor-list-updated": function(msg) {
+                broadcast("presence.status", msg.data);
             },
-            "updated": function(data) {
-                broadcast("presence.status", data);
+            "visitor-list-subscribe": function(msg) {
+                broadcast("presence.subscribed", msg.data);
             }
         };
+
+        function addHandlers(presence, handlers) {
+            _.forEach(_.keys(handlers), (eventName) => {
+                presence.register(eventName, handlers[eventName]);
+            });
+        }
 
         // this is required, and passed to the presence client
         // library, and should return a promise which points to the
@@ -48,6 +54,7 @@ define(["presence-client", "underscore"], function (presenceClient, _) {
                 () => presenceClient(self.endpoint, getUser)
                     .startConnection()
                     .then((p) => {
+                        addHandlers(p, messageHandlers);
                         broadcast("presence.connection.success", p.url);
                         return p;
                     }),
@@ -70,7 +77,7 @@ define(["presence-client", "underscore"], function (presenceClient, _) {
         });
 
         self.initialData = function(id) {
-            return self.whenEnabled.then(initialData).then(function (data) {
+            return initialData.then(function (data) {
                 return new Promise(function(resolve, reject) {
                     var found = _.find(data, function(d) {
                         return d.subscriptionId === id;
@@ -90,6 +97,7 @@ define(["presence-client", "underscore"], function (presenceClient, _) {
 
         self.subscribe = function(composerIds) {
             return self.whenEnabled.then(function() {
+
                 deRegisterPreviousSubscribe();
 
                 // set up a promise that will wait for the event to be
@@ -98,7 +106,7 @@ define(["presence-client", "underscore"], function (presenceClient, _) {
                 initialData = new Promise(function(resolve, reject) {
                     // $on will return a function that can be used
                     // later to deregister the listener
-                    var removeListener = $scope.$on("presence.subscribed", function (ev, data) {
+                    var removeListener = $rootScope.$on("presence.subscribed", function (ev, data) {
                         resolve(data.subscribedTo);
                     });
                     deRegisterPreviousSubscribe = function() {
