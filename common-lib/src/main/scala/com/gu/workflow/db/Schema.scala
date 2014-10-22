@@ -81,14 +81,23 @@ object Schema {
     def * = (pk, section)
   }
 
+  case class DBDesk(tag: Tag) extends Table[SectionRow](tag, "desk") {
+    def pk      = column [Long]     ("pk", O.PrimaryKey, O.AutoInc)
+    def desk = column [String]   ("desk")
+    def * = (pk, desk)
+  }
+
   type StubQuery = Query[DBStub, StubRow]
   type ContentQuery = Query[DBContent, ContentRow]
   type SectionQuery = Query[DBSection, SectionRow]
+  type DeskQuery = Query[DBDesk, SectionRow]
 
   val stubs: StubQuery = TableQuery(DBStub)
   val content: ContentQuery = TableQuery(DBContent)
 
   val sections: SectionQuery = TableQuery(DBSection)
+
+  val desks: DeskQuery = TableQuery(DBDesk)
 
   implicit lazy val flagColumnType = MappedColumnType.base[Flag, String] (
     f => f.toString,

@@ -1,0 +1,78 @@
+@(sections: List[Section], addSectionForm: Form[Section], desks: List[Desk], addDeskForm: Form[Desk])
+
+@import helper._
+
+@admin("sections") {
+
+<div class="row">
+    <div class="col-md-6">
+        <h1>Current Sections</h1>
+        <ul class="list-unstyled" >
+            @for(section <- sections) {
+            <li>
+                <a href class="label label-danger remove" data-type="section" data-name="@{section.name}">x</a>
+                @{section.name}
+            </li>
+            }
+        </ul>
+
+        <div class="form">
+            <h3>Add a new section</h3>
+            @form(action=routes.Admin.addSection){
+                @inputText(addSectionForm("name"))
+                <input type="submit" value="Add">
+                }
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+        <h1>Current Desks</h1>
+        <ul class="list-unstyled" >
+        @for(desk <- desks) {
+            <li>
+                <a href class="label label-danger remove" data-type="desk" data-name="@{desk.name}">x</a>
+                @{desk.name}
+            </li>
+        }
+        </ul>
+
+        <div class="form">
+            <h3>Add a new desk</h3>
+            @form(action=routes.Admin.addDesk){
+                @inputText(addDeskForm("name"))
+                <input type="submit" value="Add">
+                }
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $('.remove').on('click', function (event) {
+        var type = $(event.target).data('type');
+        var name = $(event.target).data('name');
+
+        var routes = {
+            section: "@routes.Admin.removeSection",
+            desk: "@routes.Admin.removeDesk"
+        };
+
+        var route = routes[type];
+
+        if(window.confirm("Do you want to delete the "+type+" \"" + name +"\"?")) {
+            $.ajax({
+                type: "POST",
+                url: route,
+                data: {name: name},
+                success: function() {
+                    $(event.target).parent().remove();
+                }
+            });
+        }
+
+    });
+
+</script>
+
+}
