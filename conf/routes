@@ -37,14 +37,14 @@ POST           /api/stubs/:stubId                     controllers.Api.linkStub(s
 GET            /api/statuses                          controllers.Api.statusus
 
 # Admin
-GET            /admin                                 controllers.Admin.index
-GET            /admin/sections                        controllers.Admin.sections
+GET            /admin                                 controllers.Admin.index(selectedDesk: Option[Long])
 POST           /admin/sections/add                    controllers.Admin.addSection
 POST           /admin/sections/remove                 controllers.Admin.removeSection
 
-GET            /admin/desks                           controllers.Admin.desks
 POST           /admin/desks/add                       controllers.Admin.addDesk
 POST           /admin/desks/remove                    controllers.Admin.removeDesk
+
+POST           /admin/assign                          controllers.Admin.assignSectionToDesk
 
 GET            /admin/status                          controllers.Admin.status
 POST           /admin/status/add                      controllers.Admin.addStatus

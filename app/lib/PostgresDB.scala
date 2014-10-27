@@ -40,7 +40,7 @@ object PostgresDB {
         flagFilterOpt.foldl[StubQuery]((q, filters) => q.filter(_.needsLegal inSet(filters))) |>
         dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
         dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-        section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
+        section.foldl[StubQuery]  { case (q, Section(name, selected, id))  => q.filter(_.section === name) } |>
         prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
         createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
         createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
