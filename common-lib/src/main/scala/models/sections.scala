@@ -3,7 +3,7 @@ package models
 import play.api.libs.json._
 
 
-case class Section(name: String) {
+case class Section(name: String, selected: Boolean = false, id: Long = 0) {
   override def toString = name
 }
 

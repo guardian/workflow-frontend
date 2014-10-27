@@ -3,8 +3,12 @@ package models
 import play.api.libs.json._
 
 
-case class Desk(name: String) {
+case class Desk(name: String, selected: Boolean = false, id: Long = 0) extends Ordered[Desk] {
   override def toString = name
+
+  import scala.math.Ordered.orderingToOrdered
+
+  def compare(that: Desk) = this.name.compareTo(that.name)
 }
 
 object Desk {
