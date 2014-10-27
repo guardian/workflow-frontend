@@ -1,38 +1,19 @@
-@(sections: List[Section], addSectionForm: Form[Section], desks: List[Desk], addDeskForm: Form[Desk])
+@(sections: List[Section], addSectionForm: Form[Section], desks: List[Desk], addDeskForm: Form[Desk], selectedDesk: Desk)
 
 @import helper._
 
 @admin("sections") {
 
 <div class="row">
-    <div class="col-md-6">
-        <h1>Current Sections</h1>
-        <ul class="list-unstyled" >
-            @for(section <- sections) {
-            <li>
-                <a href class="label label-danger remove" data-type="section" data-name="@{section.name}">x</a>
-                @{section.name}
-            </li>
-            }
-        </ul>
-
-        <div class="form">
-            <h3>Add a new section</h3>
-            @form(action=routes.Admin.addSection){
-                @inputText(addSectionForm("name"))
-                <input type="submit" value="Add">
-                }
-        </div>
-
-    </div>
 
     <div class="col-md-6">
         <h1>Current Desks</h1>
-        <ul class="list-unstyled" >
+        <ul class="list-unstyled list-group" >
+
         @for(desk <- desks) {
-            <li>
+            <li class="list-group-item @if(desk.selected){list-group-item-info}">
                 <a href class="label label-danger remove" data-type="desk" data-name="@{desk.name}">x</a>
-                @{desk.name}
+                <a href="@{routes.Admin.index(Some(desk.id))}">@{desk.name}</a>
             </li>
         }
         </ul>
@@ -41,11 +22,45 @@
             <h3>Add a new desk</h3>
             @form(action=routes.Admin.addDesk){
                 @inputText(addDeskForm("name"))
+                <input type="hidden" name="id" value="0">
+                <input type="hidden" name="selected" value="false">
                 <input type="submit" value="Add">
-                }
+            }
         </div>
 
     </div>
+
+    <div class="col-md-6">
+        <h1>Available Sections</h1>
+        @form(action=routes.Admin.assignSectionToDesk){
+
+            <input type="hidden" name="desk" value="@selectedDesk.id"/>
+
+            <ul class="list-unstyled list-group">
+                @for((section, index) <- sections.zipWithIndex) {
+                    <li class="list-group-item @if(section.selected){list-group-item-info}">
+                    <a href class="label label-danger remove" data-type="section" data-name="@{section.name}">x</a>
+                    @{section.name}
+                    <input type="checkbox" name="sections[@index]" value="@{section.id}" @if(section.selected){checked="checked"}>
+                </li>
+                }
+            </ul>
+
+            <input type="submit" value="Assign to Desk '@selectedDesk.name'"/>
+        }
+
+        <div class="form">
+            <h3>Add a new section</h3>
+            @form(action=routes.Admin.addSection){
+                @inputText(addSectionForm("name"))
+                <input type="hidden" name="id" value="0">
+                <input type="hidden" name="selected" value="false">
+                <input type="submit" value="Add">
+            }
+        </div>
+
+    </div>
+
 </div>
 
 <script>

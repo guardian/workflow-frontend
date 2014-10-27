@@ -11,45 +11,81 @@ import play.api.data.Form
 import lib._
 import models.{Status => WorkflowStatus, Section, Desk}
 
+import play.api.Logger
 
 object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
 
-  def index = AuthAction {
-    val sections = SectionDB.sectionList
-    val desks = DeskDB.deskList
+  def index(selectedDeskIdOption: Option[Long]) = AuthAction {
 
-    Ok(views.html.adminConsole(sections, addSectionForm, desks, addDeskForm))
+    val selectedDeskId = selectedDeskIdOption.getOrElse(0)
+    val deskList = DeskDB.deskList
+    val selectedDesk = deskList.find((desk) => selectedDeskId == desk.id).getOrElse(Desk("", false))
+
+    val mappedDesks = deskList.map((desk) => {
+      if (desk.id == selectedDeskId) {
+        desk.copy(name = desk.name, selected = true)
+      } else {
+        desk
+      }
+    })
+
+    // show sections based on currently selected desk
+    val sections = if (selectedDeskIdOption.isEmpty) {
+      SectionDB.sectionList
+    } else {
+      DeskDB.getRelatedSections(selectedDesk)
+    }
+
+    Ok(views.html.adminConsole(sections.sortBy(_.name), addSectionForm, mappedDesks.sortBy(_.name), addDeskForm, selectedDesk))
   }
 
   val addSectionForm = Form(
     mapping(
-      "name" -> nonEmptyText
+      "name" -> nonEmptyText,
+      "selected" -> boolean,
+      "id" -> longNumber
     )(Section.apply)(Section.unapply)
   )
 
   val addDeskForm = Form(
     mapping(
-      "name" -> nonEmptyText
+      "name" -> nonEmptyText,
+      "selected" -> boolean,
+      "id" -> longNumber
     )(Desk.apply)(Desk.unapply)
   )
 
+  case class assignSectionToDeskFormData(desk: Long, sections: List[String])
+
+  val assignSectionToDeskForm = Form(
+    mapping(
+      "desk" -> longNumber,
+      "sections" -> list(text)
+    )(assignSectionToDeskFormData.apply)(assignSectionToDeskFormData.unapply)
+  )
+
+  def assignSectionToDesk = AuthAction { implicit request =>
+    assignSectionToDeskForm.bindFromRequest.fold(
+      formWithErrors => BadRequest("failed to update section assignments"),
+      sectionAssignment => {
+        DeskDB.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
+        Redirect(routes.Admin.index(Some(sectionAssignment.desk)))
+      }
+    )
+  }
 
   /*
     SECTION routes
    */
-
-  def sections = AuthAction {
-    Redirect(routes.Admin.index)
-  }
 
   def addSection = AuthAction { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to add section"),
       section => {
         SectionDB.upsert(section)
-        Redirect(routes.Admin.sections)
+        Redirect(routes.Admin.index(None))
       }
     )
   }
@@ -68,16 +104,12 @@ object Admin extends Controller with PanDomainAuthActions {
     DESK routes
    */
 
-  def desks = AuthAction {
-    Redirect(routes.Admin.index)
-  }
-
   def addDesk = AuthAction { implicit request =>
     addDeskForm.bindFromRequest.fold(
-      formWithErrors => BadRequest("failed to add desk"),
+      formWithErrors => BadRequest(s"failed to add desk ${formWithErrors.errors}"),
       desk => {
         DeskDB.upsert(desk)
-        Redirect(routes.Admin.sections)
+        Redirect(routes.Admin.index(None))
       }
     )
   }
