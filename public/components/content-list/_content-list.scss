@@ -140,13 +140,14 @@ $content-list-icon-size: 14px;
         &--import {
             @extend %fs-data-3;
 
-            margin-left: 5px;
+            /* margin-left: 5px; */
             padding: 0 10px;
-            background-color: $c-grey-200;
+            background-color: $c-bluegrey;
             font-weight: normal;
             line-height: 28px;
             border: none;
-            border-right: 1px solid #ffffff;
+            /* border-right: 1px solid #ffffff; */
+            color: $c-grey-700;
         }
     }
 
