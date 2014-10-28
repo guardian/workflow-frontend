@@ -24,6 +24,8 @@ $content-list-icon-size: 14px;
 
 .content-list {
     width: 100%;
+    margin: 5px;
+    border: 1px solid $c-grey-300;
 
     // Pseudo-cells for inner-borders published/embargoed/taken-down content
     tr::after,
