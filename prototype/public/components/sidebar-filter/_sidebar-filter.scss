@@ -45,7 +45,7 @@
         font-weight: bold;
         margin: 0;
         cursor: pointer;
-        width: 141px;
+        width: 117px;
         &:hover {
             background-color: darken($c-grey-300, 20%);
         }
@@ -67,7 +67,7 @@
 /* A sidebar filter block ---------------------- */
 
 .sidebar__filter {
-    padding: 1px 0px 1px 18px;
+    //padding: 1px 0px 1px 18px;
     &:last-child {
         border-bottom: 0;
     }
@@ -75,7 +75,7 @@
         @extend %fs-data-2;
         color: $c-text;
         background-color: #f5f5f5;
-        padding: 6px 0 6px 18px;
+        padding: 7px 0 7px 23px;
         display: block;
         width: 100%;
 
