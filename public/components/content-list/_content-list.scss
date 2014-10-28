@@ -97,21 +97,22 @@ $content-list-icon-size: 14px;
     &__group-heading {
 
         &-row {
-            background-color: $c-grey-200;
-            border-top: 1px solid #ffffff;
+            background-color: $c-grey-100;
+            border-top: 1px solid $c-grey-300;
             border-bottom: 1px solid #ffffff;
         }
 
         &-link {
             @extend %fs-data-3;
-            background-color: $c-grey-500;
-            color: #ffffff;
+            background-color: $c-bluegrey;
+            color: $c-grey-700;
             font-weight: bold;
             text-transform: uppercase;
             display: inline-block;
-            margin-left: 2px;
+            /* margin-left: 2px; */
             line-height: 28px;
             padding: 0 10px;
+            min-width: 80px;
 
             &:hover {
                 color: #ffffff;
