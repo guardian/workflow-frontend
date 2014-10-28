@@ -42,8 +42,8 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     &,
     &:focus,
     &:hover {
-        color: #fff;
-        background-color: $c-green;
+        color: $c-text;
+        background-color: $c-bluegrey;
     }
 }
 
