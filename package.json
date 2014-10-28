@@ -5,7 +5,7 @@
   "private": true,
   "devDependencies": {
     "chai": "^1.9.1",
-    "jspm": "^0.6.5",
+    "jspm": "0.8.1",
     "karma": "^0.12.21",
     "karma-chai": "^0.1.0",
     "karma-cli": "0.0.4",
@@ -14,6 +14,35 @@
     "karma-sinon": "^1.0.3",
     "node-sass": "0.9.3",
     "sinon": "^1.10.3"
+  },
+  "jspm": {
+    "name": "workflow",
+    "main": "app.js",
+    "directories": {
+      "baseURL": "public"
+    },
+    "dependencies": {
+      "angular": "1.2.20",
+      "angular-animate": "1.2.22",
+      "angular-bootstrap": "npm:angular-bootstrap@0.11.0",
+      "angular-bootstrap-datetimepicker": "github:dalelotts/angular-bootstrap-datetimepicker@0.2.4",
+      "angular-mocks": "1.2.7",
+      "angular-route": "github:components/angular-route@1.2.0",
+      "angular-ui-router": "0.2.11",
+      "angular-xeditable": "github:vitalets/angular-xeditable@0.1.8",
+      "bootstrap": "github:components/bootstrap@3.2.0",
+      "css": "0.1.0",
+      "jquery": "1.11.1",
+      "json": "0.1.0",
+      "lodash": "2.4.1",
+      "mixpanel": "github:mixpanel/mixpanel-js@2.2.3",
+      "moment": "2.8.3",
+      "moment-timezone": "github:moment/moment-timezone@0.2.3",
+      "node-uuid": "npm:uuid-v4.js@1.0.2",
+      "sugar": "npm:sugar@1.4.1",
+      "ua-parser": "github:faisalman/ua-parser-js@0.7.1",
+      "underscore": "github:jashkenas/underscore@1.7.0"
+    }
   },
   "repository": {
     "type": "git",
