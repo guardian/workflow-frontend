@@ -33,6 +33,7 @@
 .content-list-drawer__container-inner {
     display: flex;
     height: 100%;
+    border: 3px solid $c-grey-300;
 }
 
 .drawer__column {
