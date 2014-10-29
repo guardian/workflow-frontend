@@ -2,7 +2,7 @@
 
 .sidebar__section {
     &:last-child .sidebar__filter-list .sidebar__filter {
-        /* border-bottom: 1px solid $c-grey-300; */
+        border-bottom: 1px solid $c-grey-200;
     }
 }
 
@@ -70,6 +70,7 @@
 
 .sidebar__filter {
     //padding: 1px 0px 1px 18px;
+    border-bottom: 1px solid $c-grey-200;
     &:last-child {
         border-bottom: 0;
     }
