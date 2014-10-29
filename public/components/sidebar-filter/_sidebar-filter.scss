@@ -61,7 +61,7 @@
     -moz-transition: max-height .75s;
     -ms-transition: max-height .75s;
     -o-transition: max-height .75s;
-    transition: max-height .75s;
+    transition: max-height .35s ease-in-out;
 }
 
 /* A sidebar filter block ---------------------- */
