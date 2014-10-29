@@ -36,7 +36,16 @@ class ComposerSqsReader extends Actor {
           AWSWorkflowQueue.deleteMessages(irrelevantMsgs)
           content.foreach {
             case (msg, ws, c) =>
-              CommonDB.createOrModifyContent(c, ws.revision)
+             /* Flexible content maintains two stores of data for each content item, live and draft.
+             * When an article is UNPUBLISHED, the feed sends notifications of updates to both draft and live,
+             * and these are in sync with each other
+             * When an artilce is PUBLISHED, the feed sends notifications only of live changes (ie only launched changes).
+             * We may in the future want to store a copy of live and draft, and display unpublished changes to the user.
+             * For now, if we restrict listening to just the 'live' changes we can keep our datastore consistent.
+             */
+            if(ws.updateType=="live") {
+                CommonDB.createOrModifyContent(c, ws.revision)
+              }
               AWSWorkflowQueue.deleteMessage(msg)
           }
 
