@@ -157,10 +157,7 @@
         &--working-title,
         &--headline,
         &--presence,
-        &--assignee,
         &--office,
-        &--deadline,
-        &--created,
         &--section,
         &--legal,
         &--status,
@@ -174,7 +171,15 @@
         
         // smaller font size for date and time
         &--deadline,
-        &--created,{
+        &--created {
+            @extend %fs-data-2;
+            @extend %content-list__field-padding;
+        }
+        
+        // smaller font size for assignee
+        &--deadline,
+        &--created,
+        &--assignee {
             @extend %fs-data-2;
         }
         
