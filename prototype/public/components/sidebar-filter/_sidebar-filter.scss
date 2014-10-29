@@ -35,6 +35,8 @@
     background-color: $c-grey-300;
     height: 28px;
     border-top: 1px solid #ffffff;
+    width: 160px;
+    
     .sidebar__heading {
         @extend %sidebar__header-select-icon;
         @extend %fs-data-1;
@@ -45,9 +47,9 @@
         font-weight: bold;
         margin: 0;
         cursor: pointer;
-        width: 117px;
+        width: 118px;
         &:hover {
-            background-color: darken($c-grey-300, 20%);
+            background-color: darken($c-grey-300, 15%);
         }
     }
 }
