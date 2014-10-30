@@ -11,8 +11,6 @@ import play.api.data.Form
 import lib._
 import models.{Status => WorkflowStatus, Section, Desk}
 
-import play.api.Logger
-
 object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
@@ -35,7 +33,7 @@ object Admin extends Controller with PanDomainAuthActions {
     val sections = if (selectedDeskIdOption.isEmpty) {
       SectionDB.sectionList
     } else {
-      DeskDB.getRelatedSections(selectedDesk)
+      DeskDB.getSectionsWithRelation(selectedDesk)
     }
 
     Ok(views.html.adminConsole(sections.sortBy(_.name), addSectionForm, mappedDesks.sortBy(_.name), addDeskForm, selectedDesk))

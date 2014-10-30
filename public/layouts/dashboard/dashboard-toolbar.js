@@ -6,24 +6,55 @@ import 'lib/prodoffice-service';
 import 'lib/presence';
 
 angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPresenceService', 'wfProdOfficeService'])
-    .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'sections', function ($scope, wfFiltersService, wfDateParser, prodOfficeService, sections) {
+    .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'sections', 'desks','sectionsInDesks', function ($scope, wfFiltersService, wfDateParser, prodOfficeService, sections, desks, sectionsInDesks) {
 
         $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
         $scope.prodOffices = prodOfficeService.getProdOffices();
 
-
-        $scope.selectedSection = wfFiltersService.get('section');
-        $scope.sections = sections;
-
         $scope.$watch('selectedProdOffice', function () {
             $scope.$emit('filtersChanged.prodOffice', $scope.selectedProdOffice);
         });
+
+        // Sections =============================
+
+        $scope.selectedSection = sections.filter((el) => el.id === parseInt(wfFiltersService.get('section'), 10))[0];
+        $scope.sections = sections;
 
         $scope.$watch('selectedSection', function () {
             $scope.$emit('filtersChanged.section', $scope.selectedSection);
         });
 
+        // Desks ================================
+
+        $scope.selectedDesk = desks.filter((el) => el.id === parseInt(wfFiltersService.get('desk'), 10))[0];
+        $scope.desks = desks;
+
+        $scope.$watch('selectedDesk', function () {
+            if ($scope.selectedDesk && $scope.selectedDesk.id) {
+
+                $scope.$emit('filtersChanged.desk', $scope.selectedDesk.id);
+            }
+        });
+
+        $scope.$on('filtersChanged.desk', function ($event, deskId) {
+            var sectionsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
+            if (sectionsInThisDesk.length) {
+                $scope.selectedSections = sectionsInThisDesk[0].sectionIds;
+                $scope.sections = $scope.sections.map((section) => {
+                    section.selected = $scope.selectedSections.indexOf(section.id) !== -1;
+                    return section;
+                }).sort((a, b) => {
+                    if (!a.selected && b.selected) {
+                        return 1;
+                    } else if (a.selected && !b.selected) {
+                        return -1;
+                    } else {
+                        return a.name > b.name; // alphabetise
+                    }
+                });
+            }
+        });
 
         $scope.dateOptions = wfDateParser.getDaysThisWeek();
         var selectedDate = wfFiltersService.get('selectedDate');
@@ -85,4 +116,40 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
                 });
             }
         };
+    }])
+
+    .directive('wfToolbarSectionsDropdown', [function () {
+        return {
+            restrict: 'A',
+            require: '^ngModel',
+            scope: {
+                ngModel: ''
+            },
+
+            link: function ($scope, $elem, attrs, ngModel) {
+
+
+                $scope.toggleDropdown
+
+
+                $scope.$on('filtersChanged.desk', function ($event, deskId) {
+                    var sectionsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
+                    if (sectionsInThisDesk.length) {
+                        $scope.selectedSections = sectionsInThisDesk[0].sectionIds;
+                        $scope.sections = $scope.sections.map((section) => {
+                            section.selected = $scope.selectedSections.indexOf(section.id) !== -1;
+                            return section;
+                        }).sort((a, b) => {
+                            if (!a.selected && b.selected) {
+                                return 1;
+                            } else if (a.selected && !b.selected) {
+                                return -1;
+                            } else {
+                                return a.name > b.name; // alphabetise
+                            }
+                        });
+                    }
+                });
+            }
+        }
     }]);
