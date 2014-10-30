@@ -2,8 +2,15 @@ package com.gu.workflow.db
 
 import com.gu.workflow.db.Schema._
 import models.{Section, Desk}
+import play.api.libs.json.Json
 import scala.slick.driver.PostgresDriver.simple._
 
+
+case class SectionsInDeskMapping (deskId: Long, sectionIds: List[Long])
+
+object SectionsInDeskMapping {
+  implicit val sectionsinDeskJSONFormat = Json.format[SectionsInDeskMapping]
+}
 
 object DeskDB {
 
@@ -12,31 +19,39 @@ object DeskDB {
 
   def deskList: List[Desk] = {
     DB.withTransaction { implicit session =>
-      desks.list().map( {case (pk, name) => Desk(name, false, pk)})
+      desks.list().map( {case (pk, name) => Desk(name, selected = false, pk)})
     }
   }
 
-  def getRelatedSections(desk: Desk): List[Section] = {
+  def getSectionsInDesks: List[SectionsInDeskMapping] = {
+    DB.withTransaction { implicit session =>
+      desks.list().map({
+        case (pk, name) => {
+          SectionsInDeskMapping(pk,
+            getSectionsWithRelation(Desk(name, selected = false, pk))
+              .filter(section => section.selected)
+              .map(section => section.id)
+          )
+        }
+      })
+    }
+  }
+
+  def getSectionsWithRelation(desk: Desk): List[Section] = {
     DB.withTransaction { implicit session =>
 
       val listOfSectionIdsInDesk = deskSectionMapping.filter(_.desk_id === desk.id).run
 
-      val listOfSections = sections.list()
-
-//      listOfSections.filter((section) => listOfSectionIdsInDesk.contains(section._2)).map({
-//        case (pk, name) => Section(name, true, pk)
-//      })
-
-      listOfSections.map({
+      sections.list().map({
 
         case (pk, name) if listOfSectionIdsInDesk.exists({
 
           case (`pk`, _) => true
           case _ => false
 
-        }) => Section(name, true, pk)
+        }) => Section(name, selected = true, pk)
 
-        case (pk, name) => Section(name, false, pk)
+        case (pk, name) => Section(name, selected = false, pk)
 
       })
 
@@ -45,6 +60,8 @@ object DeskDB {
 
   def assignSectionsToDesk(deskId: Long, sectionIds: List[Long]) = {
     DB.withTransaction { implicit session =>
+
+      // TODO: Better way of approaching this with 1 DB call?
 
       val mappingForDeskId = deskSectionMapping.filter(mapping => mapping.desk_id === deskId)
 

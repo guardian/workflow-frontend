@@ -21,6 +21,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('filtersChanged.desk', function(event, data) {
+                    self.update('desk', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
                 $rootScope.$on('filtersChanged.section', function(event, data) {
                     self.update('section', data);
                     $rootScope.$broadcast('getContent');
@@ -70,6 +75,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                 this.filters = {
                    'status': params['status'],
                    'state': params['state'],
+                   'desk': params['desk'],
                    'section': params['section'],
                    'content-type': params['content-type'],
                    'selectedDate': wfDateParser.parseQueryString(selectedDate),

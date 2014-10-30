@@ -93,6 +93,75 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     cursor: pointer;
 }
 
+.dashboard-toolbar__dropdown {
+    position: absolute;
+    z-index: 1;
+    width: calc(100% + 2px);
+    top : 100%;
+    left: -1px;
+    background-color: #ccc;
+}
+
+.dashboard-toolbar__section--dropdown {
+    padding: 0;
+}
+
+.dashboard-toolbar__section-dropdown-button {
+    border: none;
+    background-color: #ededed;
+    padding: 0 15px;
+    height: 50px;
+    position: relative;
+    z-index: 2;
+
+    .dashboard-toolbar__section-select {
+        display: inline-block;
+        text-transform: none;
+    }
+
+}
+
+.section-list {
+    background-color: #f5f5f5;
+    border: 1px solid #bdbdbd;
+    border-top: none;
+    box-shadow: 2px 1px 5px #dcdcdc;
+}
+
+.section-list--hidden {display: none;}
+
+.section-list__item {
+    padding: 7px 0 7px 15px;
+    border-bottom: 1px solid #dcdcdc;
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.section-list__item-label {
+    margin: 0;
+}
+
+.section-list__item-title {
+    @extend %fs-data-2;
+    font-weight: normal;
+    margin-left: 4px;
+}
+
+.section-list__item--active {
+    background-color: #dee2e3;
+    border-right: 3px solid #00adee;
+    .section-list__item-title {
+        font-weight: 900;
+    }
+}
+
+//.section-list__item--pre-selected {
+//    &:last-child {
+//        border-bottom: 3px solid #898989;
+//    }
+//}
+
 %dashboard-toolbar__select--inactive {
     @extend %dashboard-toolbar--control--inactive;
     @extend %dashboard-toolbar__select;
@@ -120,6 +189,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 // Section selector
 .dashboard-toolbar__section {
     @extend %dashboard-toolbar__segment;
+    position: relative;
 }
 
 .dashboard-toolbar__section-label {

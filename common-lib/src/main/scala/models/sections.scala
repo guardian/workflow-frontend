@@ -12,7 +12,5 @@ object Section {
     def reads(jsValue: JsValue) = (jsValue \ "tag" \ "section" \ "name").validate[String].map(Section(_))
   }
 
-  implicit val section: Writes[Section] = new Writes[Section] {
-    def writes(section: Section): JsValue = JsString(section.name)
-  }
+  implicit val section = Json.format[Section]
 }

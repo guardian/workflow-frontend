@@ -1,6 +1,7 @@
 package controllers
 
 import com.gu.workflow.db.SectionDB
+import com.gu.workflow.db.DeskDB
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,7 +20,9 @@ object Application extends Controller with PanDomainAuthActions {
 
     for {
       statuses <- StatusDatabase.statuses
-      sections = SectionDB.sectionList
+      sections = SectionDB.sectionList.sortBy(_.name)
+      desks = DeskDB.deskList.sortBy(_.name)
+      sectionsInDesks = DeskDB.getSectionsInDesks
     }
     yield {
       val user = request.user
@@ -31,7 +34,9 @@ object Application extends Controller with PanDomainAuthActions {
           "details" -> contentDetails
         ),
         "statuses" -> statuses,
+        "desks"    -> desks,
         "sections" -> sections,
+        "sectionsInDesks" -> sectionsInDesks,
         "presenceUrl" -> PrototypeConfiguration.cached.presenceUrl,
         "user" -> Json.parse(user.toJson)
       )
