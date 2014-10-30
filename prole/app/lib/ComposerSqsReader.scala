@@ -17,7 +17,7 @@ class ComposerSqsReader extends Actor {
   def receive = {
     case PollMessages =>
       try { processMessages } 
-      catch { case e: Exception => reschedule }
+      catch { case e: Exception => Logger.error("error polling for messages, recheduling", e); reschedule }
   }
 
   private def reschedule() {
