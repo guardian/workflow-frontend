@@ -60,6 +60,7 @@
         </div>
     </div>
     <div class="modal-footer" ng-if="mode !== 'import'">
+        <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="delete()">Delete</button>
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         <button type="button" class="btn btn-default" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid">
             Create in Composer
