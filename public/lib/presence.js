@@ -40,18 +40,22 @@ define(["presence-client", "underscore"], function (presenceClient, _) {
         // this is required, and passed to the presence client
         // library, and should return a promise which points to the
         // current user
-        function getUser() {
-            return new Promise((resolve) => resolve({
-                firstName : wfUser.firstName,
-                lastName  : wfUser.lastName,
-                email     : wfUser.email,
-            }));
+//        function getUser() {
+//            return new Promise((resolve) => resolve({
+//                firstName : wfUser.firstName,
+//                lastName  : wfUser.lastName,
+//                email     : wfUser.email,
+//            }));
+//        }
+        var person = {
+            firstName : wfUser.firstName,
+            lastName  : wfUser.lastName,
+            email     : wfUser.email
         }
-
         // INITIATE the connection if presence is enabled
         var presence =
             self.whenEnabled.then(
-                () => presenceClient(self.endpoint, getUser)
+                () => presenceClient(self.endpoint, person)
                     .startConnection()
                     .then((p) => {
                         addHandlers(p, messageHandlers);
