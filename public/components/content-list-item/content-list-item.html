@@ -34,7 +34,7 @@
         {{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
     </td>
     <td class="content-list-item__field--section" title="Section">
-        <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="ls for ls in contentList.sections" wf-content-item-update-action="section"></select>
+        {{ contentItem.section || 'No section' }}
     </td>
     </td>
     <td class="content-list-item__field--legal" title="Needs legal">
