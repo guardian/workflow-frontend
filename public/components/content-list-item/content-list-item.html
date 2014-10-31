@@ -30,9 +30,6 @@
     <td class="content-list-item__field--deadline" title="Deadline: {{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'long' }}">
         {{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
     </td>
-    <td class="content-list-item__field--created" title="Date created: {{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'long'}}">
-        {{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
-    </td>
     <td class="content-list-item__field--section" title="Section">
         <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="ls for ls in contentList.sections" wf-content-item-update-action="section"></select>
     </td>
