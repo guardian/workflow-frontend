@@ -52,14 +52,14 @@ module.factory('wfPresenceService', ['$rootScope', '$log',  'config', 'wfFeature
                                 .startConnection()
                                 .then((p) => {
                                     addHandlers(p, messageHandlers);
+                                    p.onConnectionError(function () {
+                                        broadcast("presence.connection.error", "Lost connection to " + p.url);
+                                    });
                                     broadcast("presence.connection.success", p.url);
                                     return p;
                                 }),
-            () => {
-                var msg = "presence is disabled";
-                $log.info(msg);
-                return msg;
-            }).catch((err)=>{
+            () => $log.info("presence is disabled"))
+            .catch((err)=>{
                 $log.error(err);
             });
 
