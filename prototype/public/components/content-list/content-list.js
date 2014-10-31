@@ -2,8 +2,7 @@
 'use strict';
 
 import angular from 'angular';
-import _groupBy from 'lodash/modern/collections/groupBy';
-import _find from 'lodash/modern/collections/find';
+import _ from 'lodash';
 
 import 'lib/content-service';
 import 'lib/date-service';
@@ -69,7 +68,7 @@ function wfContentListController($scope, $log, statuses, sections, wfContentServ
         // TODO stubs and content are separate structures in the API response
         //      make this a single list of content with consistent structure in the API
         var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
-            grouped = _groupBy(content, 'status');
+            grouped = _.groupBy(content, 'status');
 
         $scope.content = statuses.map((status) => {
             // TODO: status is currently stored as presentation text, eg: "Writers"
@@ -86,7 +85,7 @@ function wfContentListController($scope, $log, statuses, sections, wfContentServ
 
         // update selectedItem as objects are now !==
         if (this.selectedItem) {
-            this.selectedItem = _find(content, { id: this.selectedItem.id });
+            this.selectedItem = _.find(content, { id: this.selectedItem.id });
         }
 
         $scope.refreshContentError = false;
