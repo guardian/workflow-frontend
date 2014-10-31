@@ -15,10 +15,10 @@
     System.import('app').catch(function(error) {
         setTimeout(function() { throw error; }, 0);
     });
+   System.import('presence-client')
 /* TODO read this from the config instead of hard-coding it */
     System.config({
-    "map": {"presence-client":
-    "https://presence.local.dev-gutools.co.uk/assets/presence-client"}
+    "map": {"presence-client":_wfConfig.presenceClientLib}
     });
   </script>
 }
