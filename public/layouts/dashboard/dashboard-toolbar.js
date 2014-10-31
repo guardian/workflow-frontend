@@ -6,7 +6,7 @@ import 'lib/prodoffice-service';
 import 'lib/presence';
 
 angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPresenceService', 'wfProdOfficeService'])
-    .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'sections', 'desks','sectionsInDesks', function ($scope, wfFiltersService, wfDateParser, prodOfficeService, sections, desks, sectionsInDesks) {
+    .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'desks', 'sections', function ($scope, wfFiltersService, wfDateParser, prodOfficeService,  desks, sections) {
 
         $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
@@ -16,19 +16,15 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
             $scope.$emit('filtersChanged.prodOffice', $scope.selectedProdOffice);
         });
 
-        // Sections =============================
-
-        $scope.selectedSection = sections.filter((el) => el.id === parseInt(wfFiltersService.get('section'), 10))[0];
-        $scope.sections = sections;
-
-        $scope.$watch('selectedSection', function () {
-            $scope.$emit('filtersChanged.section', $scope.selectedSection);
-        });
-
         // Desks ================================
 
         $scope.selectedDesk = desks.filter((el) => el.id === parseInt(wfFiltersService.get('desk'), 10))[0];
         $scope.desks = desks;
+        $scope.desks.unshift({
+            name: 'Custom',
+            id: 0,
+            selected: false
+        });
 
         $scope.$watch('selectedDesk', function () {
             if ($scope.selectedDesk && $scope.selectedDesk.id) {
@@ -37,24 +33,10 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
             }
         });
 
-        $scope.$on('filtersChanged.desk', function ($event, deskId) {
-            var sectionsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
-            if (sectionsInThisDesk.length) {
-                $scope.selectedSections = sectionsInThisDesk[0].sectionIds;
-                $scope.sections = $scope.sections.map((section) => {
-                    section.selected = $scope.selectedSections.indexOf(section.id) !== -1;
-                    return section;
-                }).sort((a, b) => {
-                    if (!a.selected && b.selected) {
-                        return 1;
-                    } else if (a.selected && !b.selected) {
-                        return -1;
-                    } else {
-                        return a.name > b.name; // alphabetise
-                    }
-                });
-            }
-        });
+        // Sections =============================
+
+        $scope.selectedSections = sections.filter((el) => el.id === parseInt(wfFiltersService.get('section'), 10))[0];
+        $scope.sections = sections;
 
         $scope.dateOptions = wfDateParser.getDaysThisWeek();
         var selectedDate = wfFiltersService.get('selectedDate');
@@ -118,21 +100,59 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
         };
     }])
 
-    .directive('wfToolbarSectionsDropdown', [function () {
+    .directive('wfToolbarSectionsDropdown', ['wfFiltersService', '$rootScope', 'sectionsInDesks', function (wfFiltersService, $rootScope, sectionsInDesks) { //  wf-toolbar-sections-dropdown
         return {
             restrict: 'A',
             require: '^ngModel',
             scope: {
-                ngModel: ''
+                ngModel: '=',
+                sections: '=',
+                selectedDesk: '='
             },
+            link: function ($scope, $element, attrs, ngModel) {
 
-            link: function ($scope, $elem, attrs, ngModel) {
+                var sectionListElem = $element[0].querySelector('.section-list'),
+                    button = $element.find('button'),
+                    buttonTitle = $element[0].querySelector('.dashboard-toolbar__section-select'),
+                    sectionlistHiddenClass = 'section-list--hidden';
 
+                button.on('click', function (event) {
+                    event.stopPropagation();
+                    if (sectionListElem.classList.contains(sectionlistHiddenClass)) {
+                        sectionListElem.classList.remove(sectionlistHiddenClass);
 
-                $scope.toggleDropdown
+                        var handler;
+                        handler = function (event) {
+                            if (event.target !== sectionListElem && !sectionListElem.contains(event.target)) {
+                                sectionListElem.classList.add(sectionlistHiddenClass);
+                                document.removeEventListener('click',handler);
+                            }
+                        };
 
+                        // open
+                        document.addEventListener('click', handler)
 
-                $scope.$on('filtersChanged.desk', function ($event, deskId) {
+                    } else {
+                        sectionListElem.classList.add(sectionlistHiddenClass);
+                    }
+                });
+
+                function updateNameTo (sections) {
+                    var names = [];
+
+                    sections.forEach((section) => {
+                        if (section.selected) {
+                            names.push(section.name.substr(0, 3));
+                        }
+                    });
+
+                    var str = names.join(', ');
+
+                    return str.length > 20 ? str.substr(0, 17) + '…' : str;
+                }
+
+                $rootScope.$on('filtersChanged.desk', function ($event, deskId) {
+
                     var sectionsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
                     if (sectionsInThisDesk.length) {
                         $scope.selectedSections = sectionsInThisDesk[0].sectionIds;
@@ -148,7 +168,13 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
                                 return a.name > b.name; // alphabetise
                             }
                         });
+                        buttonTitle.innerHTML = updateNameTo($scope.sections);
                     }
+                });
+
+                $scope.$watch(ngModel, function () {
+                    console.log('change?');
+                    $scope.$emit('filtersChanged.section', $scope.selectedSections);
                 });
             }
         }

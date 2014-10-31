@@ -18,9 +18,9 @@
     </form>
 </div>
 
-<div class="dashboard-toolbar__section dashboard-toolbar__section--dropdown" wfToolbarSectionsDropdown>
+<div class="dashboard-toolbar__section dashboard-toolbar__section--dropdown" wf-toolbar-sections-dropdown ng-model="selectedSections" sections="sections" selectedDesk>
 
-    <button class="dashboard-toolbar__section-dropdown-button">
+    <button class="dashboard-toolbar__section-dropdown-button" ng-click="toggleDropdown();">
         <div class="dashboard-toolbar__section-label">Section
             <div class="dashboard-toolbar__section-select" >All sections</div>
         </div>
