@@ -66,8 +66,14 @@ define(["presence-client", "underscore"], function (presenceClient, _) {
 
 
         self.articleSubscribe = function (articleIds) {
-            return presence.then((p) => p.subscribe(articleIds),
-                                 (err) => console.log("subscribe request failed", err));
+            var p = presence.then((p) => p.subscribe(articleIds).catch(
+                function(){
+                    $log.error("could not subscribe to presence ", p.url);
+                    broadcast("presence.connection.error");
+            }));
+            console.log(p)
+
+            return p
         };
 
         // Initial data var/function moved from wfPresenceSubscription controller
