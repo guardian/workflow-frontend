@@ -65,7 +65,7 @@
                 <ul class="drawer__column">
                     <li class="drawer__section">
                         <span class="drawer__section-title">Section</span>
-                        <span class="drawer__section-data-row">{{ contentItem.section }}</span>
+                        <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="ls for ls in contentList.sections" wf-content-item-update-action="section"></select>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Content type</span>
