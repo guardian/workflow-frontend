@@ -119,6 +119,9 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
         text-transform: none;
     }
 
+    &:focus {
+        outline:0;
+    }
 }
 
 .section-list {
@@ -126,9 +129,17 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     border: 1px solid #bdbdbd;
     border-top: none;
     box-shadow: 2px 1px 5px #dcdcdc;
+    opacity: 1;
+    -webkit-transition: opacity .35 ease-in-out;
+    -moz-transition: opacity .35 ease-in-out;
+    -ms-transition: opacity .35 ease-in-out;
+    -o-transition: opacity .35 ease-in-out;
+    transition: opacity .35 ease-in-out;
 }
 
-.section-list--hidden {display: none;}
+.section-list--hidden {
+    opacity: 0;
+}
 
 .section-list__item {
     padding: 7px 0 7px 15px;
