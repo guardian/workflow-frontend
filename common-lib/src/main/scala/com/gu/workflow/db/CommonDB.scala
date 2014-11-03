@@ -47,6 +47,10 @@ object CommonDB {
 
     }
 
+  def getStubForComposerId(composerId: String): Option[Stub] = DB.withTransaction { implicit session =>
+    stubs.filter(_.composerId === composerId).firstOption.map(Stub.fromStubRow(_))
+  }
+
   def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
 
   def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
