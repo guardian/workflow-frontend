@@ -1,7 +1,2 @@
 # --- !Ups
-
-insert into section (section) values ('Developer-Blog');
-
-# --- !Downs
-
-delete from section where section in ('Developer-Blog');
+ALTER TABLE CONTENT ALTER COLUMN headline SET DATA TYPE varchar(300);

@@ -99,6 +99,10 @@
     }
 }
 
+.drawer__section-control {
+    max-width: 100%;
+}
+
 .drawer__section-data-row--editable {
     @extend .drawer__section-data-row;
     border-bottom: dashed 1px #333;
