@@ -1,46 +1,54 @@
 package lib
 
-import scala.concurrent.Future
+import scala.annotation.tailrec
+import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.language.postfixOps
+import java.util.concurrent.atomic.AtomicReference
+import org.joda.time.DateTime
 import akka.actor.Actor
 import play.api.libs.json.{JsError, JsSuccess}
 import play.api.Logger
-import com.gu.workflow.syntax.TraverseSyntax._
 import com.gu.workflow.db.CommonDB
-import models.{WireStatus, WorkflowContent}
-import java.util.concurrent.atomic.AtomicReference
-import org.joda.time.DateTime
+import models.WorkflowContent
 
 class ComposerSqsReader extends Actor {
 
   def receive = {
+    case PollMessages =>
+      try { processMessages } 
+      catch { case e: Exception => Logger.error("error polling for messages, recheduling", e); reschedule }
+  }
 
-    case SqsReader =>
+  private def reschedule() {
+    context.system.scheduler.scheduleOnce(1 second, self, PollMessages)
+  }
 
-      for {
-          messages <- AWSWorkflowQueue.getMessages(10)
-          _ = ComposerSqsReader.updateLastRead()
-          if messages.nonEmpty
-          wireStatuses = messages.flatMap { msg => AWSWorkflowQueue.toWireStatus(msg).fold(
-            error => { Logger.error(s"$error"); None },
-            wirestatus => Some(msg, wirestatus)
-          )}
-          stubs = CommonDB.getStubs(composerId = wireStatuses.map(_._2.composerId).toSet)
-          composerIds = stubs.flatMap(_.composerId)
-          irrelevantMsgs = wireStatuses.collect { case (msg, ws) if !composerIds.contains(ws.composerId) => msg }
-          content = wireStatuses.flatMap { case (msg, ws) => stubs.find(_.composerId == Some(ws.composerId))
-                                                             .map(stub => (msg, ws, WorkflowContent.fromWireStatus(ws, stub)))
-                                         }
-      }
-      {
-          AWSWorkflowQueue.deleteMessages(irrelevantMsgs)
-          content.foreach {
-            case (msg, ws, c) =>
-              CommonDB.createOrModifyContent(c, ws.revision)
-              AWSWorkflowQueue.deleteMessage(msg)
+  override def postRestart(reason: Throwable) { reschedule }
+
+  @tailrec
+  private def processMessages {
+    for(
+      message <- AWSWorkflowQueue.getMessages(messageCount = 1, waitTimeSeconds = 1)
+    ) {
+      ComposerSqsReader.updateLastRead()
+      
+      AWSWorkflowQueue.toWireStatus(message) match {
+        case JsError(e) => Logger.error(s"error parsing wirestatus: $e")
+        case JsSuccess(recievedStatus, _) => {
+          CommonDB.getStubForComposerId(recievedStatus.composerId) match {
+            case Some(stub) => {
+              val content = WorkflowContent.fromWireStatus(recievedStatus, stub)
+              CommonDB.createOrModifyContent(content, recievedStatus.revision)
+            }
+            case None => Logger.trace("update to non tracked content recieved, ignoring") // this is where we could start tracking content automatically
           }
-
+        }
       }
+
+      AWSWorkflowQueue.deleteMessage(message)
+    }
+    processMessages
   }
 }
 
@@ -52,4 +60,4 @@ object ComposerSqsReader {
   }
 }
 
-case object SqsReader
+case object PollMessages
