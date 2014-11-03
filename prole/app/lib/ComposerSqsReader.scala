@@ -1,5 +1,7 @@
 package lib
 
+import java.sql.SQLException
+
 import scala.annotation.tailrec
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,8 +40,14 @@ class ComposerSqsReader extends Actor {
         case JsSuccess(recievedStatus, _) => {
           CommonDB.getStubForComposerId(recievedStatus.composerId) match {
             case Some(stub) => {
-              val content = WorkflowContent.fromWireStatus(recievedStatus, stub)
-              CommonDB.createOrModifyContent(content, recievedStatus.revision)
+              try {
+                val content = WorkflowContent.fromWireStatus(recievedStatus, stub)
+                CommonDB.createOrModifyContent(content, recievedStatus.revision)
+              } catch {
+                // this clause logs failed writes and swallows the message. if the database is dead then the
+                // CommonDB.getStubForComposerId call will fail and the exception propagate up to the retry loop
+                case sqle: SQLException => Logger.error(s"unable to write status: $recievedStatus", sqle)
+              }
             }
             case None => CloudWatch.recordUntrackedContentMessage; Logger.trace("update to non tracked content recieved, ignoring") // this is where we could start tracking content automatically
           }
