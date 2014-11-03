@@ -34,15 +34,16 @@ class ComposerSqsReader extends Actor {
       ComposerSqsReader.updateLastRead()
       
       AWSWorkflowQueue.toWireStatus(message) match {
-        case JsError(e) => Logger.error(s"error parsing wirestatus: $e")
+        case JsError(e) => Logger.error(s"error parsing wirestatus: $e"); CloudWatch.recordMessageError
         case JsSuccess(recievedStatus, _) => {
           CommonDB.getStubForComposerId(recievedStatus.composerId) match {
             case Some(stub) => {
               val content = WorkflowContent.fromWireStatus(recievedStatus, stub)
               CommonDB.createOrModifyContent(content, recievedStatus.revision)
             }
-            case None => Logger.trace("update to non tracked content recieved, ignoring") // this is where we could start tracking content automatically
+            case None => CloudWatch.recordUntrackedContentMessage; Logger.trace("update to non tracked content recieved, ignoring") // this is where we could start tracking content automatically
           }
+          CloudWatch.recordMessageProcessed
         }
       }
 
