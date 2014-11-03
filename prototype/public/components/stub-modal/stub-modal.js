@@ -14,7 +14,7 @@ import 'lib/prodoffice-service';
 
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService']);
 
-function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService) {
+function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService) {
 
     $scope.mode = mode;
     $scope.modalTitle = ({
@@ -59,6 +59,19 @@ function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, leg
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
+
+    $scope.delete = function () {
+        wfContentService.remove($scope.stub.id)
+            .then(() => {
+                $scope.$emit('content.deleted', { contentItem: $scope.stub });
+                $scope.$apply();
+                $modalInstance.dismiss('cancel');
+            }, function () {
+                if (console && console.error) { // placeholder for sentry
+                    console.error(arguments);
+                }
+            });
+    }
 
 }
 
