@@ -24,9 +24,6 @@
         -o-transition: transform 0.25s ease-in-out;
         transition: transform 0.25s ease-in-out;
 
-        transform: rotate(0deg);
-    }
-    &:hover:before {
         transform: rotate(-90deg);
     }
 }
@@ -36,7 +33,13 @@
     height: 28px;
     border-top: 1px solid #ffffff;
     width: 160px;
-    
+
+    &.sidebar__header--open {
+      .sidebar__heading:before {
+        transform: rotate(0deg);
+      }
+    }
+
     .sidebar__heading {
         @extend %sidebar__header-select-icon;
         @extend %fs-data-1;
