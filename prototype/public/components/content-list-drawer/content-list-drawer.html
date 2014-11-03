@@ -6,7 +6,7 @@
                 <ul class="drawer__column">
                     <li class="drawer__section">
                         <span class="drawer__section-title">Priority</span>
-                        <select ng-model="contentItem.priority" ng-options="p.value as p.name for p in contentList.priorities" wf-content-item-update-action="priority"></select>
+                        <select class="drawer__section-control" ng-model="contentItem.priority" ng-options="p.value as p.name for p in contentList.priorities" wf-content-item-update-action="priority"></select>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Production deadline</span>
@@ -41,7 +41,7 @@
                 <ul class="drawer__column">
                     <li class="drawer__section">
                         <span class="drawer__section-title">Status</span>
-                        <select ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
+                        <select class="drawer__section-control" ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
                         </select>
                     </li>
                     <li class="drawer__section">
@@ -50,7 +50,7 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Office</span>
-                        <select ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices" wf-content-item-update-action="prodOffice"></select>
+                        <select  class="drawer__section-control" ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices" wf-content-item-update-action="prodOffice"></select>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">In use by</span>
@@ -65,7 +65,7 @@
                 <ul class="drawer__column">
                     <li class="drawer__section">
                         <span class="drawer__section-title">Section</span>
-                        <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="ls for ls in contentList.sections" wf-content-item-update-action="section"></select>
+                        <select class="drawer__section-control" ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="ls for ls in contentList.sections" wf-content-item-update-action="section"></select>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Content type</span>
@@ -85,7 +85,7 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Legal status</span>
-                        <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
+                        <select class="drawer__section-control" ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
                     </li>
                 </ul>
 
