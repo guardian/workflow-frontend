@@ -33,10 +33,6 @@
     <td class="content-list-item__field--section" title="Section">
         {{ contentItem.section || 'No section' }}
     </td>
-    </td>
-    <td class="content-list-item__field--legal" title="Needs legal">
-        <select ng-click="$event.stopPropagation()" ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in contentList.legalValues" wf-content-item-update-action="needsLegal"></select>
-    </td>
     <td class="content-list-item__field--status" title="Status">
         <select ng-click="$event.stopPropagation()" ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
         </select>
