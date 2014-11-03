@@ -153,6 +153,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 .dashboard-toolbar__deadline-option--active {
     @extend .dashboard-toolbar__deadline-option;
     @extend %dashboard-toolbar--control--active;
+    border-bottom: 3px solid $c-highlight-blue;
 }
 
 .dashboard-toolbar__deadline-select-label {
