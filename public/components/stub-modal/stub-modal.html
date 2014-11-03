@@ -36,9 +36,15 @@
                 <select id="stub_legal" name="needsLegal" ng-model="stub.needsLegal" ng-options="ls.value as ls.name for ls in legalStates"></select>
             </div>
         </div>
-        <div class="form-group">
-            <label for="stub_assignee">Assign to</label>
-            <input type="text" ng-model="stub.assignee" id="stub_assignee" name="assignee" value="" class="form-control">
+        <div class="form-horizontal">
+            <div class="form-group col-xs-6">
+                <label for="stub_assignee">Assign to</label>
+                <input type="text" ng-model="stub.assignee" id="stub_assignee" name="assignee" value="" class="form-control">
+            </div>
+            <div class="form-group pull-right col-xs-6">
+                <label for="stub_note">Note</label>
+                <input type="text" ng-model="stub.note" id="stub_note" name="note" value="" class="form-control" maxlength="500">
+            </div>
         </div>
         <div class="form-group clearfix">
             <div class="pull-left">
@@ -60,6 +66,7 @@
         </div>
     </div>
     <div class="modal-footer" ng-if="mode !== 'import'">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" ng-click="delete()" ng-if="stub.id">Delete</button>
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         <button type="button" class="btn btn-default" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid">
             Create in Composer
