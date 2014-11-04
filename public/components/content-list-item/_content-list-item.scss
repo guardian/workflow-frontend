@@ -7,6 +7,10 @@
 
 
 .content-list-item {
+    span {
+      cursor: default;
+    }
+
     border-bottom: 1px solid $c-grey-200;
     cursor: pointer;
 
