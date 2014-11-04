@@ -69,7 +69,7 @@ trait AwsInstanceTags {
 
   lazy val ec2Client = {
     val client = new AmazonEC2Client(AWSCreds.basic)
-    client.setEndpoint("sqs.eu-west-1.amazonaws.com")
+    client.setEndpoint("ec2.eu-west-1.amazonaws.com")
     client
   }
 
@@ -94,7 +94,7 @@ object CloudWatch extends AwsInstanceTags {
 
   lazy val cloudwatchClient = {
     val client = new AmazonCloudWatchAsyncClient(AWSCreds.basic)
-    client.setEndpoint("sqs.eu-west-1.amazonaws.com")
+    client.setEndpoint("monitoring.eu-west-1.amazonaws.com")
     client
   }
 
