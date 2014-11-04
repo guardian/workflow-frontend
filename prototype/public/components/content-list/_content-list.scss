@@ -6,13 +6,11 @@
 
 $content-list-icon-size: 14px;
 
-
 // Global padding for cells
 %content-list__field-padding {
     padding: 10px 10px;
 }
 
-// Bootstrap override - TODO: remove
 .content-list, .content-list * {
     box-sizing: content-box;
 }
@@ -39,7 +37,6 @@ $content-list-icon-size: 14px;
             &--notes,
             &--links,
             &--published-state {
-                /* @extend %content-list__field-padding; */
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 
@@ -49,12 +46,6 @@ $content-list-icon-size: 14px;
 
             &--presence,
             &--assignee {
-                /* padding: 10px; */
-            }
-
-            &--presence,
-            &--assignee,
-            /*  &--office */ {
                 text-align: center;
                 padding: 5px 5px 5px 0;
             }
@@ -91,12 +82,12 @@ $content-list-icon-size: 14px;
 
         &-link {
             @extend %fs-data-3;
+
             background-color: $c-bluegrey;
             color: $c-grey-700;
             font-weight: bold;
             text-transform: uppercase;
             display: inline-block;
-            /* margin-left: 2px; */
             line-height: 28px;
             padding: 0 10px;
             min-width: 80px;
@@ -104,7 +95,6 @@ $content-list-icon-size: 14px;
             &:hover {
                 color: #ffffff;
                 text-decoration: none;
-                // cursor: pointer; TODO: Make sections collapseable
             }
         }
 
@@ -127,13 +117,11 @@ $content-list-icon-size: 14px;
         &--import {
             @extend %fs-data-3;
 
-            /* margin-left: 5px; */
             padding: 0 10px;
             background-color: $c-bluegrey;
             font-weight: normal;
             line-height: 28px;
             border: none;
-            /* border-right: 1px solid #ffffff; */
             color: $c-grey-700;
         }
     }
