@@ -77,7 +77,8 @@ trait AwsInstanceTags {
     instanceId.flatMap { id =>
       val tagsResult = ec2Client.describeTags(
         new DescribeTagsRequest().withFilters(
-          new Filter("instance").withValues(id),
+          new Filter("resource-type").withValues("instance"),
+          new Filter("resource-id").withValues(id),
           new Filter("key").withValues(tagName)
         )
       )
