@@ -1,7 +1,7 @@
 import _ from "underscore"
 var module = angular.module('wfPresenceService', []);
 
-module.factory('wfPresenceService', ['$rootScope', '$log',  'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $log, config, wfFeatureSwitches, wfUser) {
+module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $log, config, wfFeatureSwitches, wfUser) {
 
     var self = {};
 
@@ -45,24 +45,26 @@ module.factory('wfPresenceService', ['$rootScope', '$log',  'config', 'wfFeature
         email     : wfUser.email
     }
     // INITIATE the connection if presence is enabled
-    var presence =
-        //make a call to system.js to get the library
-        self.whenEnabled.then(() => System.import('presence-client')).then(
-            (presenceClient) => presenceClient(self.endpoint, person)
-                                .startConnection()
+    var presence = self.whenEnabled.then(()=>System.import('presence-client')).then(
+                    (presenceClient) => {
+                        var client = presenceClient(self.endpoint, person);
+                            client.on('open', () => broadcast("presence.connection.open"));
+                            client.startConnection()
                                 .then((p) => {
                                     addHandlers(p, messageHandlers);
                                     p.onConnectionError(function () {
                                         broadcast("presence.connection.error", "Lost connection to " + p.url);
                                     });
                                     broadcast("presence.connection.success", p.url);
-                                    return p;
-                                }),
-            () => $log.info("presence is disabled"))
-            .catch((err)=>{
-                $log.error(err);
-            });
-
+                                })
+                            return client;
+                    },
+                    () => {
+                        $log.info("presence is disabled");
+                        broadcast("presence.connection.error", "Could not get access to the library ");
+                    }).catch((err)=>{
+                        $log.error(err);
+                    });
 
     self.articleSubscribe = function (articleIds) {
         var p = presence.then((p) => p.subscribe(articleIds).catch(
