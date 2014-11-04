@@ -119,9 +119,9 @@ object CloudWatch extends AwsInstanceTags {
     ) {
       Logger.info(s"Tracking app metrics...$app $stage")
       Akka.system.scheduler.scheduleOnce(
-        delay = 0.seconds,
+        delay = 1 minute,
         receiver = Akka.system.actorOf(Props(new CloudWatchReportActor(app, stage))),
-        message = PollMessages
+        message = ReportMetrics
       )
     }
   }
@@ -167,7 +167,7 @@ object CloudWatch extends AwsInstanceTags {
     }
 
     private def reschedule() {
-      context.system.scheduler.scheduleOnce(1 minute, self, PollMessages)
+      context.system.scheduler.scheduleOnce(1 minute, self, ReportMetrics)
     }
 
     override def postRestart(reason: Throwable) { reschedule }
