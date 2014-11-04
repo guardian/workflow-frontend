@@ -7,7 +7,7 @@
 }
 
 %sidebar__header-select-icon {
-    &:before {
+    &::before {
         content: " ";
         background: $i-arrow-down right no-repeat transparent;
         background-size: 12px;
@@ -23,8 +23,6 @@
         -ms-transition: transform 0.25s ease-in-out;
         -o-transition: transform 0.25s ease-in-out;
         transition: transform 0.25s ease-in-out;
-
-        transform: rotate(-90deg);
     }
 }
 
@@ -33,12 +31,6 @@
     height: 28px;
     border-top: 1px solid #ffffff;
     width: 160px;
-
-    &.sidebar__header--open {
-      .sidebar__heading:before {
-        transform: rotate(0deg);
-      }
-    }
 
     .sidebar__heading {
         @extend %sidebar__header-select-icon;
@@ -51,6 +43,14 @@
         margin: 0;
         cursor: pointer;
         width: 118px;
+
+        &::before {
+            transform: rotate(-90deg);
+        }
+        &--open::before {
+            transform: rotate(0deg);
+        }
+
         &:hover {
             background-color: darken($c-grey-300, 15%);
         }
