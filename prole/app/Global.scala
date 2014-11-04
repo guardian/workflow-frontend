@@ -1,6 +1,6 @@
 import akka.actor.Props
 import java.util.TimeZone
-import lib.{ProleConfiguration, PollMessages, ComposerSqsReader}
+import lib.{CloudWatch, ProleConfiguration, PollMessages, ComposerSqsReader}
 import play.api.libs.concurrent.Akka
 import play.api.{Application, GlobalSettings, Logger}
 
@@ -34,6 +34,8 @@ object Global extends GlobalSettings {
       receiver = Akka.system.actorOf(Props[ComposerSqsReader]),
       message = PollMessages
     )
+
+    CloudWatch.start
 
     // prod this to make it load initial state.
     //SectionDatabase.sectionList

@@ -46,7 +46,7 @@ class ComposerSqsReader extends Actor {
               } catch {
                 // this clause logs failed writes and swallows the message. if the database is dead then the
                 // CommonDB.getStubForComposerId call will fail and the exception propagate up to the retry loop
-                case sqle: SQLException => Logger.error(s"unable to write status: $recievedStatus", sqle)
+                case sqle: SQLException => Logger.error(s"unable to write status: $recievedStatus", sqle); CloudWatch.recordMessageError
               }
             }
             case None => CloudWatch.recordUntrackedContentMessage; Logger.trace("update to non tracked content recieved, ignoring") // this is where we could start tracking content automatically
