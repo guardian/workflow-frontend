@@ -17,14 +17,8 @@
     &--published {
         @extend .content-list-item;
         background-color: $c-light-green;
-
-        &::after,
-        &::before {
-            background-color: $c-green;
-        }
+        border-left: 7px solid $c-green;
     }
-
-
 
     &.ng-enter {
         -webkit-animation: content-list-item--enter-sequence 2s ease-out;
