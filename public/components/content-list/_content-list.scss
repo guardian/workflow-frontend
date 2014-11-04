@@ -21,19 +21,9 @@ $content-list-icon-size: 14px;
   color: $c-grey-500;
 }
 
-
 .content-list {
     width: 100%;
-    border: 5px solid $c-grey-100;
-
-    // Pseudo-cells for inner-borders published/embargoed/taken-down content
-    tr::after,
-    tr::before {
-        content: ' ';
-        display: table-cell;
-        width: 7px;
-    }
-
+    border: 5px 5px 5px 0px solid $c-grey-100;
 
     // Table header
     &-head {
