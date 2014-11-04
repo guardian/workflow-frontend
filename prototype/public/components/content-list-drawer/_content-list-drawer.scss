@@ -84,6 +84,9 @@
     padding: 2px 12px 12px 0;
     border: none;
     border-top: 1px solid $c-grey-300;
+    &:first-child {
+        border-top: 0px
+    }
 }
 
 .drawer__section-title {
