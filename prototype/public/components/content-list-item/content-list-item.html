@@ -46,7 +46,7 @@
         <a href="{{ contentItem.links.composer }}" title="View in Composer (opens in new window)" target="_blank" ng-if="contentItem.links.composer">
             <i class="content-list-item__icon--composer" wf-icon="composer"></i>
         </a>
-                <span ng-if="!contentItem.links.composer" title="View in Composer (unavailable)">
+                <span ng-if="!contentItem.links.composer" title="View in Composer (unavailable)" class="content-list-item__icon--inactive">
                     <i class="content-list-item__icon--composer" wf-icon="composer" wf-icon-active="false"></i>
                 </span>
     </td>
@@ -54,7 +54,7 @@
         <a href="{{ contentItem.links.preview }}" title="Preview (opens in new window)" target="_blank" ng-if="contentItem.links.preview">
             <i class="content-list-item__icon--preview" wf-icon="preview"></i>
         </a>
-                <span ng-if="!contentItem.links.preview" title="Preview (unavailable)">
+                <span ng-if="!contentItem.links.preview" title="Preview (unavailable)" class="content-list-item__icon--inactive">
                     <i class="content-list-item__icon--preview" wf-icon="preview" wf-icon-active="false"></i>
                 </span>
     </td>
@@ -62,7 +62,7 @@
         <a href="{{ contentItem.links.live }}" title="View on Live site (opens in new window)" target="_blank" ng-if="contentItem.links.live">
             <i class="content-list-item__icon--live" wf-icon="live-site"></i>
         </a>
-                <span ng-if="!contentItem.links.live" title="View on Live site (unavailable)">
+                <span ng-if="!contentItem.links.live" title="View on Live site (unavailable)" class="content-list-item__icon--inactive">
                     <i class="content-list-item__icon--live" wf-icon="live-site" wf-icon-active="false"></i>
                 </span>
     </td>
@@ -70,7 +70,7 @@
         <a href="{{ contentItem.links.ophan }}" title="View in Ophan (opens in new window)" target="_blank" ng-if="contentItem.links.ophan">
             <i class="content-list-item__icon--ophan" wf-icon="ophan"></i>
         </a>
-                <span ng-if="!contentItem.links.ophan" title="View in Ophan (unavailable)">
+                <span ng-if="!contentItem.links.ophan" title="View in Ophan (unavailable)" class="content-list-item__icon--inactive">
                     <i class="content-list-item__icon--ophan" wf-icon="ophan" wf-icon-active="false"></i>
                 </span>
     </td>
