@@ -28,24 +28,16 @@ object AWSWorkflowQueue {
 
   lazy val queueUrl = ProleConfiguration.apply.flexNotificationsQ
 
-  def getMessages(messageCount: Int): Future[List[Message]] = Future {
+  def getMessages(messageCount: Int = 1, waitTimeSeconds: Int = 1): List[Message] = {
     sqsClient.receiveMessage(
-      new ReceiveMessageRequest(queueUrl).withMaxNumberOfMessages(messageCount)
+      new ReceiveMessageRequest(queueUrl).withWaitTimeSeconds(1).withMaxNumberOfMessages(messageCount)
     ).getMessages.asScala.toList
   }
 
-  def deleteMessage(message: Message): Future[Unit] = Future {
+  def deleteMessage(message: Message) {
     sqsClient.deleteMessage(
       new DeleteMessageRequest(queueUrl, message.getReceiptHandle)
     )
-  }
-
-  def deleteMessages(messages: List[Message]) = Future {
-    sqsClient.deleteMessageBatch(queueUrl,  messages.map(msgEntry(_)).asJava)
-  }
-
-  def msgEntry(message: Message): DeleteMessageBatchRequestEntry = {
-    new DeleteMessageBatchRequestEntry(message.getMessageId, message.getReceiptHandle)
   }
 
   def toWireStatus(awsMsg: Message): JsResult[WireStatus] = {
@@ -53,6 +45,5 @@ object AWSWorkflowQueue {
     (body \ "Message").validate[String].flatMap { msg =>
       Json.parse(msg).validate[WireStatus]
     }
-
   }
 }
