@@ -156,7 +156,6 @@
         &--headline,
         &--presence,
         &--office,
-        &--section,
         &--legal,
         &--status,
         &--composer,
@@ -167,9 +166,10 @@
             @extend %content-list__field-padding;
         }
         
-        // smaller font size for date and time
+        // smaller font size for date, time and sections
         &--deadline,
-        &--created {
+        &--created
+        &--section {
             @extend %fs-data-2;
             @extend %content-list__field-padding;
         }
