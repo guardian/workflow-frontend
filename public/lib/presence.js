@@ -48,16 +48,16 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     var presence = self.whenEnabled.then(()=>System.import('presence-client')).then(
                     (presenceClient) => {
                         var client = presenceClient(self.endpoint, person);
-                            client.on('open', () => broadcast("presence.connection.open"));
-                            client.startConnection()
-                                .then((p) => {
-                                    addHandlers(p, messageHandlers);
-                                    p.onConnectionError(function () {
-                                        broadcast("presence.connection.error", "Lost connection to " + p.url);
-                                    });
-                                    broadcast("presence.connection.success", p.url);
-                                })
-                            return client;
+                            client.on('connection.open', () => {
+                                console.log('connection is open');
+                                broadcast("presence.connection.success", client.url);
+                                addHandlers(client, messageHandlers);
+                            });
+                            client.on('connection.error', () => {
+                                broadcast("presence.connection.error", client.url);
+                            });
+                            client.startConnection();
+                        return client;
                     },
                     () => {
                         $log.info("presence is disabled");
