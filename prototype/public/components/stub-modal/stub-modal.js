@@ -141,8 +141,13 @@ wfStubModal.run(['$rootScope',
 
                 promise.then(() => {
 
-                    var eventSuffix = mode == 'create' ? 'created' : mode + 'ed',
-                        eventName = 'stub.' + eventSuffix;
+                    // Map modal mode to event name
+                    var eventName = ({
+                        'create': 'stub.created',
+                        'edit': 'stub.edited',
+                        'import': 'content.imported'
+                    }[mode]);
+
                     $rootScope.$broadcast(eventName, { 'contentItem': stub });
 
                     $rootScope.$broadcast('getContent');
