@@ -61,7 +61,7 @@ function wfContentListController($scope, $log, statuses, sections, wfContentServ
         }
     }, true);
 
-    $scope.$on('presence.connection.open', function(){
+    $scope.$on('presence.connection.success', function(){
         wfPresenceService.subscribe($scope.contentIds);
     });
 
