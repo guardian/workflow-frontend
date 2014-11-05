@@ -118,11 +118,12 @@ $content-list-icon-size: 14px;
             @extend %fs-data-3;
 
             padding: 0 10px;
-            background-color: $c-bluegrey;
+            background-color: $c-grey-100;
             font-weight: normal;
             line-height: 28px;
             border: none;
             color: $c-grey-700;
+            border-right:1px solid $c-grey-300;
         }
     }
 
