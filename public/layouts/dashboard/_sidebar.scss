@@ -1,9 +1,11 @@
+$sidebarWidth: 130px;
+
 @import "components/sidebar-filter/sidebar-filter";
 @import "components/location-picker/location-picker";
 
 .sidebar {
-    width: 130px;
-    min-width: 130px;
+    width: $sidebarWidth;
+    min-width: $sidebarWidth;
     background-color: #f5f5f5;
     border-right: 1px solid $c-grey-400;
     overflow-x: hidden;
