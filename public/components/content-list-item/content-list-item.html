@@ -31,7 +31,7 @@
         {{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
     </td>
     <td class="content-list-item__field--section" title="Section">
-        {{ contentItem.section || 'No section' }}
+        {{ contentItem.section.name || 'No section' }}
     </td>
     </td>
     <td class="content-list-item__field--legal" title="Needs legal">

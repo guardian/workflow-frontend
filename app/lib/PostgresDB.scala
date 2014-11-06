@@ -62,9 +62,10 @@ object PostgresDB {
            .list.map {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
-          val content = WorkflowContent.fromContentRow(contentData).copy(
-            section = Some(Section(stub.section))
-          )
+          val content = WorkflowContent.fromContentRow(contentData)
+//          val content = WorkflowContent.fromContentRow(contentData).copy(
+//            section = Some(Section(stub.section, true, 99))
+//          )
           DashboardRow(stub, content)
       }
 
