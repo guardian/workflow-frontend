@@ -37,7 +37,7 @@ class ComposerSqsReader extends Actor {
       ComposerSqsReader.updateLastRead()
       
       AWSWorkflowQueue.toWireStatus(message) match {
-        case JsError(e) => Logger.error(s"error parsing wirestatus: $e")
+        case JsError(e) => Logger.error(s"error parsing wirestatus: $e"); CloudWatch.recordMessageError
         case JsSuccess(recievedStatus, _) => {
           CommonDB.getStubForComposerId(recievedStatus.composerId) match {
             case Some(stub) => {
@@ -49,11 +49,12 @@ class ComposerSqsReader extends Actor {
               } catch {
                 // this clause logs failed writes and swallows the message. if the database is dead then the
                 // CommonDB.getStubForComposerId call will fail and the exception propagate up to the retry loop
-                case sqle: SQLException => Logger.error(s"unable to write status: $recievedStatus", sqle)
+                case sqle: SQLException => Logger.error(s"unable to write status: $recievedStatus", sqle); CloudWatch.recordMessageError
               }
             }
-            case None => Logger.trace("update to non tracked content recieved, ignoring") // this is where we could start tracking content automatically
+            case None => CloudWatch.recordUntrackedContentMessage; Logger.trace("update to non tracked content recieved, ignoring") // this is where we could start tracking content automatically
           }
+          CloudWatch.recordMessageProcessed
         }
       }
 
