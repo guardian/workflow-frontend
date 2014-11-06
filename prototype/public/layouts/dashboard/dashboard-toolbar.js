@@ -173,7 +173,6 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
                 });
 
                 $scope.$watch(ngModel, function () {
-                    console.log('change?');
                     $scope.$emit('filtersChanged.section', $scope.selectedSections);
                 });
             }
