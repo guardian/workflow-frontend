@@ -26,6 +26,7 @@ class ComposerSqsReader extends Actor {
     context.system.scheduler.scheduleOnce(1 second, self, PollMessages)
   }
 
+
   override def postRestart(reason: Throwable) { reschedule }
 
   @tailrec
@@ -42,7 +43,9 @@ class ComposerSqsReader extends Actor {
             case Some(stub) => {
               try {
                 val content = WorkflowContent.fromWireStatus(recievedStatus, stub)
-                CommonDB.createOrModifyContent(content, recievedStatus.revision)
+                if(recievedStatus.updateType=="live") {
+                  CommonDB.createOrModifyContent(content, recievedStatus.revision)
+                }
               } catch {
                 // this clause logs failed writes and swallows the message. if the database is dead then the
                 // CommonDB.getStubForComposerId call will fail and the exception propagate up to the retry loop
