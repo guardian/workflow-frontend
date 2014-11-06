@@ -25,8 +25,13 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
     }
 
     function toInitials(str) {
-        if (str.length <= 2) { return str; }
-        return str.replace(/^(\w)\w*?\b.*?\b(?:(\w)\w*?)?$/, '$1$2');
+        if (str.length <= 3) { return str; }
+        var initials = str.match(/\b(\w)/g).join('');
+
+        // If we have more than 3 initials choose the first 2 and the last
+        if (initials.length > 3) { initials = initials.slice(0,2) + initials.slice(-1); }
+
+        return initials;
     }
 
     var newslistStatusValues = [ { label: 'News list', value: 'Stub'}, { label: 'Writers', value: 'writers' } ],

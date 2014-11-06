@@ -115,8 +115,8 @@
                 "DBName": "workflow",
                 "Engine": "postgres",
                 "EngineVersion": "9.3.3",
-                "MasterUsername": "master",
-                "MasterUserPassword": "setup123",
+                "MasterUsername": "USERNAME_HERE",
+                "MasterUserPassword": "PASSWORD_HERE",
                 "MultiAZ": true,
                 "Port": { "Ref": "DBPort" },
                 "Tags": [
