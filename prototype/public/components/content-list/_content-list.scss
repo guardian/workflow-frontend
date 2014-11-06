@@ -75,7 +75,7 @@ $content-list-icon-size: 14px;
     &__group-heading {
 
         &-row {
-            background-color: $c-grey-100;
+            background-color:  $c-bluegrey;
             border-top: 1px solid $c-grey-300;
             border-bottom: 1px solid #ffffff;
         }
@@ -88,12 +88,12 @@ $content-list-icon-size: 14px;
             font-weight: bold;
             text-transform: uppercase;
             display: inline-block;
-            line-height: 28px;
+            line-height: 20px;
             padding: 0 10px;
             min-width: 80px;
 
             &:hover {
-                color: #ffffff;
+                color: $c-grey-700;
                 text-decoration: none;
             }
         }
@@ -108,8 +108,8 @@ $content-list-icon-size: 14px;
     &__button {
         &-icon {
             display: inline-block;
-            width: 14px;
-            height: 14px;
+            width: 9px;
+            height: 9px;
             margin-right: 5px;
         }
 
@@ -120,8 +120,11 @@ $content-list-icon-size: 14px;
             padding: 0 10px;
             background-color: $c-bluegrey;
             font-weight: normal;
-            line-height: 28px;
-            border: none;
+            line-height: 21px;
+            border-top: none;
+            border-bottom: none;
+            border-left: 1px solid $c-grey-400;
+            border-rigth 1px solid $c-grey-400;
             color: $c-grey-700;
         }
     }
