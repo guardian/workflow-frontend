@@ -42,8 +42,8 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     &,
     &:focus,
     &:hover {
-        color: #fff;
-        background-color: $c-green;
+        color: $c-text;
+        background-color: $c-bluegrey;
     }
 }
 
@@ -54,7 +54,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     text-transform: uppercase;
     position: relative;
 
-    @extend %fs-data-2;
+    @extend %fs-data-1;
 
     // bootstrap override
     margin-bottom: 0;
@@ -86,8 +86,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     border-radius: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
-    padding: 5px;
-    padding-right: 22px;
+    padding: 16px 34px 17px 18px;
     margin-left: 5px;
     outline: none;
     cursor: pointer;
@@ -227,13 +226,14 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     @extend %dashboard-toolbar--control--inactive;
     @extend %fs-data-3;
     border: 0;
-    padding: 5px;
+    padding: 18px;
     outline: none;
 }
 
 .dashboard-toolbar__deadline-option--active {
     @extend .dashboard-toolbar__deadline-option;
     @extend %dashboard-toolbar--control--active;
+    border-bottom: 3px solid $c-highlight-blue;
 }
 
 .dashboard-toolbar__deadline-select-label {
