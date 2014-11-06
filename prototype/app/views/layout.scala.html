@@ -17,7 +17,15 @@
       <a class="top-toolbar__title-link" href="@routes.Application.index">Workflow</a>
     </h1>
     <div class="top-toolbar__view-toolbar" ui-view="view-toolbar"></div>
-    <div class="top-toolbar__user" ui-view="view-user"></div>
+    <div class="top-toolbar__user" ui-view="view-user">
+        <noscript class="logout__noscript">
+            @if(user.isEmpty) {
+                <a class="top-toolbar__user-link" href="@routes.Application.index">Log in</a>
+            } else {
+                <a class="top-toolbar__user-link" href="@routes.Login.logout" title="Logout">Logout</a>
+            } 
+        </noscript>
+    </div>
   </header>
 
 @content
