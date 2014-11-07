@@ -11,29 +11,14 @@
 <div class="dashboard-toolbar__section">
     <form>
         <label class="dashboard-toolbar__section-label">Desk
-            <select class="dashboard-toolbar__section-select" ng-model="selectedDesk" ng-options="d as d.name for d in desks">
+            <select class="dashboard-toolbar__desk-select" ng-model="selectedDesk" ng-options="d as d.name for d in desks">
                 <option value="">All desks</option>
             </select>
         </label>
     </form>
 </div>
 
-<div class="dashboard-toolbar__section dashboard-toolbar__section--dropdown" wf-toolbar-sections-dropdown ng-model="selectedSections" sections="sections" selectedDesk>
-
-    <button class="dashboard-toolbar__section-dropdown-button" ng-click="toggleDropdown();">
-        <div class="dashboard-toolbar__section-label">Section
-            <div class="dashboard-toolbar__section-select" >All sections</div>
-        </div>
-    </button>
-
-    <ul class="dashboard-toolbar__dropdown section-list list-unstyled section-list--hidden">
-        <li class="section-list__item" ng-model="selectedSections" ng-repeat="s in sections" ng-class="{'section-list__item--active': s.selected, 'section-list__item--pre-selected': s.selected}">
-            <label class="section-list__item-label" for="{{ s.id }}">
-                <input class="section-list__chk" type="checkbox" ng-model="s.selected" id="{{ s.id }}" name="{{ s.id }}" value="{{ s.id }}"/><span class="section-list__item-title">{{ s.name }}</span>
-            </label>
-        </li>
-    </ul>
-</div>
+<div wf-toolbar-sections-dropdown ng-model="selectedSections" sections="sections" selectedDesk="selectedDesk"></div>
 
 <div class="dashboard-toolbar__deadline">
     <form>
