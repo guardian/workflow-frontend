@@ -7,24 +7,22 @@
 
 
 .content-list-item {
-    border-bottom: 1px solid $c-grey-300;
+    .content-list-item__icon--inactive {
+      cursor: default;
+    }
+
+    border-bottom: 1px solid $c-grey-200;
     cursor: pointer;
 
     &--selected {
-        background-color: $c-grey-300;
+        background-color: $c-grey-200;
     }
 
     &--published {
         @extend .content-list-item;
         background-color: $c-light-green;
-
-        &::after,
-        &::before {
-            background-color: $c-green;
-        }
+        border-left: 7px solid $c-green;
     }
-
-
 
     &.ng-enter {
         -webkit-animation: content-list-item--enter-sequence 2s ease-out;
@@ -136,6 +134,7 @@
         color: $c-grey-400;
         font-weight: normal;
         margin-right: 5px;
+        margin-left: 5px;
 
         // bootstrap override, TODO remove
         &[title] {
@@ -156,10 +155,7 @@
         &--working-title,
         &--headline,
         &--presence,
-        &--assignee,
         &--office,
-        &--deadline,
-        &--created,
         &--section,
         &--legal,
         &--status,
@@ -170,7 +166,21 @@
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
-
+        
+        // smaller font size for date and time
+        &--deadline,
+        &--created {
+            @extend %fs-data-2;
+            @extend %content-list__field-padding;
+        }
+        
+        // smaller font size for assignee
+        &--deadline,
+        &--created,
+        &--assignee {
+            @extend %fs-data-2;
+        }
+        
         // icon fields
         &--priority,
         &--comments,

@@ -33,6 +33,7 @@
 .content-list-drawer__container-inner {
     display: flex;
     height: 100%;
+    border: 3px solid $c-grey-200;
 }
 
 .drawer__column {
@@ -55,19 +56,21 @@
 .drawer__column--control {
     @extend .drawer__column;
     flex: 0.8 0 0;
-    border-left: 1px solid $c-grey-400;
+    border-left: 1px solid #fff;
     padding: 0;
     margin: 0 0 0 12px;
+    background: $c-grey-200;
+    border-top: 1px solid #fff;
 }
 
 .drawer__control {
     padding: 12px;
-    border-bottom: 1px solid $c-grey-400;
+    border-bottom: 1px solid $c-grey-300;
 
     .drawer__control-item {
         cursor: pointer;
         position: relative;
-        padding: 0 0 0 18px;
+        padding: 2px 0 0 22px;
         word-wrap: break-word;
         .drawer__control-item-icon {
             position: absolute;
@@ -81,6 +84,9 @@
     padding: 2px 12px 12px 0;
     border: none;
     border-top: 1px solid $c-grey-300;
+    &:first-child {
+        border-top: 0px
+    }
 }
 
 .drawer__section-title {
@@ -93,10 +99,15 @@
 .drawer__section-data-row {
     @extend %fs-data-3;
     display: block;
+    text-transform: capitalize;
     .glyphicon,
     .content-list-item__icon--composer {
         margin-right: 4px;
     }
+}
+
+.drawer__section-control {
+    max-width: 100%;
 }
 
 .drawer__section-data-row--editable {
