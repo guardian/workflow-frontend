@@ -20,6 +20,7 @@ import 'components/content-list/content-list';
 import 'components/icons/icons';
 
 import 'layouts/dashboard/dashboard';
+import 'layouts/dashboard/dashboard-user';
 import 'layouts/dashboard/dashboard-toolbar';
 import 'layouts/dashboard/dashboard-sidebar';
 
@@ -38,29 +39,22 @@ import 'angular-animate/angular-animate.min';
 import 'bootstrap@3.2.0/css/bootstrap.min.css!';
 import 'main.min.css!';
 
-
 angular.module('workflow',
     [
         'ui.router',
         'ngAnimate',
-        // 'dashboardControllers',
         'wfDashboard',
+        'wfDashboardUser',
         'wfDashboardToolbar',
         'wfDashboardSidebar',
         'wfIcons',
         'wfContentList',
         'wfDateService',
         'wfAnalytics',
-        // 'workflow.services',
-        // 'workflow.directives',
-        // 'workflow.controllers',
-        // 'legalStatesService',
-        // 'prodOfficeService',
         'wfFiltersService',
         'wfFeatureSwitches',
         'xeditable'
     ])
-
     .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
         // TODO: remember user's state and redirect there on default '' route
         $urlRouterProvider.when('', '/dashboard');
@@ -75,9 +69,12 @@ angular.module('workflow',
                 'view-toolbar': {
                     templateUrl: '/assets/layouts/dashboard/dashboard-toolbar.html',
                     controller: 'wfDashboardToolbarController'
+                },
+                'view-user': {
+                    templateUrl: '/assets/layouts/dashboard/dashboard-user.html',
+                    controller: 'wfDashboardUserController'
                 }
             }
-
         });
 
     }])
