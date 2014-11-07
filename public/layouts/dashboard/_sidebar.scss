@@ -4,7 +4,6 @@ $sidebarWidth: 130px;
 @import "components/location-picker/location-picker";
 
 .sidebar {
-    width: $sidebarWidth;
     min-width: $sidebarWidth;
     background-color: #f5f5f5;
     border-right: 1px solid $c-grey-400;
