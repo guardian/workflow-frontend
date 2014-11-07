@@ -1,9 +1,3 @@
-.dashboard-toolbar__section-select {
-    @extend %dashboard-toolbar__select--active;
-    max-width: 140px;
-    text-overflow: ellipsis;
-}
-
 // Custom select box drop-down
 %dashboard-toolbar__select {
     @extend %fs-data-3;
@@ -19,6 +13,12 @@
     cursor: pointer;
 }
 
+.dashboard-toolbar__section--dropdown {
+    padding: 0;
+    flex: 2;
+    max-width: 300px;
+}
+
 .dashboard-toolbar__dropdown {
     position: absolute;
     z-index: 1;
@@ -28,10 +28,6 @@
     background-color: #ccc;
 }
 
-.dashboard-toolbar__section--dropdown {
-    padding: 0;
-}
-
 .dashboard-toolbar__section-dropdown-button {
     border: none;
     background-color: #ededed;
@@ -39,17 +35,39 @@
     height: 100%;
     position: relative;
     z-index: 2;
-//    width: 270px;
-
-    .dashboard-toolbar__section-select {
-        display: inline-block;
-        text-transform: none;
-    }
+    width: 100%;
 
     &:focus {
         outline:0;
     }
 }
+
+.dashboard-toolbar__section-label {
+    width: 100%;
+    display: inline-flex;
+}
+
+.dashboard-toolbar__section-label-text {
+    display: inline-block;
+    height: 46px;
+    line-height: 46px;
+}
+
+.dashboard-toolbar__section-select {
+    flex: 1;
+    display: inline-block;
+    text-transform: none;
+    margin-left: 7px;
+}
+
+.dashboard-toolbar__section-select-text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    white-space: nowrap;
+}
+
 
 .section-list {
     background-color: #f5f5f5;
