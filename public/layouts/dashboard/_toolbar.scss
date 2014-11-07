@@ -107,12 +107,20 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     position: relative;
 }
 
+.dashboard-toolbar__section-select {
+    @extend %dashboard-toolbar__select--active;
+}
+
 .dashboard-toolbar__section-label {
     @extend %dashboard-toolbar__label--select;
 }
 
 .dashboard-toolbar__desk-select {
     @extend %dashboard-toolbar__select--active;
+}
+
+.dashboard-toolbar__desk-label {
+    @extend %dashboard-toolbar__label--select;
 }
 
 // Deadline filter
