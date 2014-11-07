@@ -79,7 +79,11 @@
             $.ajax({
                 type: "POST",
                 url: route,
-                data: {name: name},
+                data: {
+                    name: name,
+                    id: 0,
+                    selected: false
+                },
                 success: function() {
                     $(event.target).parent().remove();
                 }
