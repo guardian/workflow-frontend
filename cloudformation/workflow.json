@@ -21,12 +21,12 @@
         "ImageIdInstanceStorage": {
             "Description": "AMI id for instances with instance storage.",
             "Type": "String",
-            "Default": "ami-3b69b84c"
+            "Default": "ami-7aa8080d"
         },
         "ImageIdEBSStorage": {
             "Description": "AMI id for instances with ebs storage.",
             "Type": "String",
-            "Default": "ami-fd6cbd8a"
+            "Default": "ami-f4b11183"
         },
         "FCMetadataTopic": {
             "Description": "ARN of the topic for Flexible Content metadata events",
@@ -327,7 +327,8 @@
                         "#!/bin/bash -ev\n",
 
                         "apt-get -y update\n",
-                        "apt-get -y install language-pack-en openjdk-7-jre-headless\n",
+                        "locale-gen en_GB.UTF-8\n",
+                        "apt-get -y install openjdk-7-jre-headless\n",
                         "apt-get -y install python-setuptools\n",
                         "apt-get -y install unzip\n",
                         "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz","\n",
@@ -419,7 +420,8 @@
                         "#!/bin/bash -ev\n",
 
                         "apt-get -y update\n",
-                        "apt-get -y install language-pack-en openjdk-7-jre-headless\n",
+                        "locale-gen en_GB.UTF-8\n",
+                        "apt-get -y install openjdk-7-jre-headless\n",
                         "apt-get -y install python-setuptools\n",
                         "apt-get -y install unzip\n",
                         "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz","\n",
@@ -526,6 +528,10 @@
                             {
                                 "Effect": "Allow",
                                 "Action": ["sqs:DeleteMessage", "sqs:ReceiveMessage"],
+                                "Resource": "*"
+                            },{
+                                "Effect": "Allow",
+                                "Action": ["ec2:DescribeTags", "cloudwatch:PutMetricData"],
                                 "Resource": "*"
                             }
                         ]
