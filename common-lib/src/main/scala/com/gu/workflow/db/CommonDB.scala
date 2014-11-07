@@ -17,7 +17,7 @@ object CommonDB {
   def getStubs(
                 dueFrom: Option[DateTime] = None,
                 dueUntil: Option[DateTime] = None,
-                section: Option[Section] = None,
+                section: Option[List[Section]] = None,
                 composerId: Set[String] = Set.empty,
                 contentType: Option[String] = None,
                 unlinkedOnly: Boolean = false,
@@ -33,7 +33,7 @@ object CommonDB {
         (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
           dueFrom.foldl[StubQuery]     ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
           dueUntil.foldl[StubQuery]    ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          section.foldl[StubQuery]     { case (q, Section(name, selected, id))  => q.filter(_.section === name) } |>
+          section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>
           contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
           cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids)) |>
           prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
