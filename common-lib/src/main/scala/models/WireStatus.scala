@@ -5,8 +5,7 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 
-case class WireStatus(
-                       composerId: String,
+case class WireStatus(composerId: String,
                        path: Option[String],
                        headline: Option[String],
                        `type`: String,
@@ -19,7 +18,8 @@ case class WireStatus(
                        commentable: Boolean,
                        lastMajorRevisionDate: Option[DateTime],
                        publicationDate: Option[DateTime],
-                       revision: Long
+                       revision: Long,
+                       updateType: String
                        )
 object WireStatus {
 
@@ -56,7 +56,8 @@ object WireStatus {
       } ~
       (__ \ "content" \ "lastMajorRevisionDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
       (__ \ "content" \ "publicationDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
-      (__ \ "content" \ "revision").read[Long]
+      (__ \ "content" \ "revision").read[Long] ~
+      (__ \ "content" \ "updateType").read[String]
       )(WireStatus.apply _)
 
 }
