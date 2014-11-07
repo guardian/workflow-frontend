@@ -1,6 +1,6 @@
 import akka.actor.Props
 import java.util.TimeZone
-import lib.{ProleConfiguration, SqsReader, ComposerSqsReader}
+import lib.{CloudWatch, ProleConfiguration, PollMessages, ComposerSqsReader}
 import play.api.libs.concurrent.Akka
 import play.api.{Application, GlobalSettings, Logger}
 
@@ -29,12 +29,13 @@ object Global extends GlobalSettings {
     import scala.concurrent.duration._
 
     Logger.info("Consuming notifications...")
-    Akka.system.scheduler.schedule(
-      initialDelay = 0.seconds,
-      interval = 3.seconds,
+    Akka.system.scheduler.scheduleOnce(
+      delay = 0.seconds,
       receiver = Akka.system.actorOf(Props[ComposerSqsReader]),
-      message = SqsReader
+      message = PollMessages
     )
+
+    CloudWatch.start
 
     // prod this to make it load initial state.
     //SectionDatabase.sectionList

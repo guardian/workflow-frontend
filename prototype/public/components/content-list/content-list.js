@@ -18,7 +18,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .controller('wfContentListController', ['$scope', '$log', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$log', '$window', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
 
 
 function wfContentListController($scope, $log, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService) {
@@ -127,6 +127,10 @@ function wfContentListController($scope, $log, statuses, sections, wfContentServ
             });
         }
 
+    });
+
+    $scope.$on('content.deleted', ($event, msg) => {
+        this.poller.refresh();
     });
 
 

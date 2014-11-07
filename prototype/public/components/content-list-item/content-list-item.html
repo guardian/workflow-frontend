@@ -11,7 +11,7 @@
     <td class="content-list-item__field--content-type" title="{{ contentItem.contentTypeTitle }}">
         <i class="content-list-item__icon--content-type" wf-icon="{{ contentItem.contentType }}"/>
     </td>
-    <th class="content-list-item__field--{{ contentList.showHeadline ? 'headline' : 'working-title' }}" scope="row" title="Working title: {{ contentItem.workingTitle }}{{ contentItem.headline ? '&#10;Headline: ' + contentItem.headline : '' }}">
+    <th class="content-list-item__field--{{ contentList.showHeadline ? 'headline' : 'working-title' }}" scope="row" title="Working title: {{ contentItem.workingTitle }}{{ contentItem.headline ? '&#10;&#10;Headline: ' + contentItem.headline : '' }}">
         <abbr class="content-list-item__headline-toggle" title="{{ contentList.showHeadline && contentItem.headline ? 'Headline' : 'Working title'}}. (Click to toggle Headlines)" ng-click="contentList.showHeadline = !contentList.showHeadline; $event.stopPropagation()">{{
             contentList.showHeadline && contentItem.headline ? 'HL' : 'WT' }}</abbr>
         <a ng-href="{{ contentItem.links.composer }}" ng-click="contentList.editItem(contentItem); $event.stopPropagation()" target="_blank">{{
@@ -30,15 +30,8 @@
     <td class="content-list-item__field--deadline" title="Deadline: {{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'long' }}">
         {{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
     </td>
-    <td class="content-list-item__field--created" title="Date created: {{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'long'}}">
-        {{ contentItem.created | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
-    </td>
     <td class="content-list-item__field--section" title="Section">
-        <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="ls for ls in contentList.sections" wf-content-item-update-action="section"></select>
-    </td>
-    </td>
-    <td class="content-list-item__field--legal" title="Needs legal">
-        <select ng-click="$event.stopPropagation()" ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in contentList.legalValues" wf-content-item-update-action="needsLegal"></select>
+        {{ contentItem.section || 'No section' }}
     </td>
     <td class="content-list-item__field--status" title="Status">
         <select ng-click="$event.stopPropagation()" ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
@@ -49,7 +42,7 @@
         <a href="{{ contentItem.links.composer }}" title="View in Composer (opens in new window)" target="_blank" ng-if="contentItem.links.composer">
             <i class="content-list-item__icon--composer" wf-icon="composer"></i>
         </a>
-                <span ng-if="!contentItem.links.composer" title="View in Composer (unavailable)">
+                <span ng-if="!contentItem.links.composer" title="View in Composer (unavailable)" class="content-list-item__icon--inactive">
                     <i class="content-list-item__icon--composer" wf-icon="composer" wf-icon-active="false"></i>
                 </span>
     </td>
@@ -57,7 +50,7 @@
         <a href="{{ contentItem.links.preview }}" title="Preview (opens in new window)" target="_blank" ng-if="contentItem.links.preview">
             <i class="content-list-item__icon--preview" wf-icon="preview"></i>
         </a>
-                <span ng-if="!contentItem.links.preview" title="Preview (unavailable)">
+                <span ng-if="!contentItem.links.preview" title="Preview (unavailable)" class="content-list-item__icon--inactive">
                     <i class="content-list-item__icon--preview" wf-icon="preview" wf-icon-active="false"></i>
                 </span>
     </td>
@@ -65,7 +58,7 @@
         <a href="{{ contentItem.links.live }}" title="View on Live site (opens in new window)" target="_blank" ng-if="contentItem.links.live">
             <i class="content-list-item__icon--live" wf-icon="live-site"></i>
         </a>
-                <span ng-if="!contentItem.links.live" title="View on Live site (unavailable)">
+                <span ng-if="!contentItem.links.live" title="View on Live site (unavailable)" class="content-list-item__icon--inactive">
                     <i class="content-list-item__icon--live" wf-icon="live-site" wf-icon-active="false"></i>
                 </span>
     </td>
@@ -73,7 +66,7 @@
         <a href="{{ contentItem.links.ophan }}" title="View in Ophan (opens in new window)" target="_blank" ng-if="contentItem.links.ophan">
             <i class="content-list-item__icon--ophan" wf-icon="ophan"></i>
         </a>
-                <span ng-if="!contentItem.links.ophan" title="View in Ophan (unavailable)">
+                <span ng-if="!contentItem.links.ophan" title="View in Ophan (unavailable)" class="content-list-item__icon--inactive">
                     <i class="content-list-item__icon--ophan" wf-icon="ophan" wf-icon-active="false"></i>
                 </span>
     </td>

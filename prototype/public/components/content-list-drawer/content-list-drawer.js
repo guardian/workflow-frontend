@@ -11,7 +11,7 @@
  * @param contentService
  * @param prodOfficeService
  */
-var wfContentListDrawer = function ($rootScope, config, $timeout, $window, contentService, prodOfficeService) {
+var wfContentListDrawer = function ($rootScope, config, $timeout, $log, $window, contentService, prodOfficeService) {
 
     var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
         hiddenClass = 'content-list-drawer--hidden';
@@ -57,7 +57,6 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
              * @param {Object} contentListItemElement - JQL wrapped DOM node
              */
             function show (contentItem, contentListItemElement) {
-
                 contentListItemElement.after(elem);
 
                 $scope.contentItem = contentItem;
@@ -76,7 +75,6 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                     $scope.$emit('stub:edit', contentItem.item);
                     return;
                 }
-
 
                 if ($scope.contentList.selectedItem !== contentItem) { // open
                     if (!elem.hasClass(hiddenClass)) {
@@ -175,15 +173,21 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
              * Delete manually as no event or tracking yet
              */
             $scope.deleteContentItem = function () {
+
                 contentService.remove($scope.contentItem.id)
                     .then(() => {
+
+                        // Hide drawer and put it back under $parent so bindings remain
+                        elem.addClass(hiddenClass);
+                        $parent.append(elem);
+
                         $scope.$emit('content.deleted', { contentItem: $scope.contentItem });
                         $scope.$apply();
                     }, errorMessage);
             };
 
-            function errorMessage () {
-                // TODO: Generic error message
+            function errorMessage(err) {
+                $log.error('Error deleting content: ' + err.message || err);
             }
 
         }

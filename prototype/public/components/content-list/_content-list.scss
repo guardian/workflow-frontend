@@ -6,33 +6,18 @@
 
 $content-list-icon-size: 14px;
 
-
 // Global padding for cells
 %content-list__field-padding {
     padding: 10px 10px;
 }
 
-// Bootstrap override - TODO: remove
 .content-list, .content-list * {
     box-sizing: content-box;
 }
 
-.content-list a:visited {
-  color: $c-grey-500;
-}
-
-
 .content-list {
     width: 100%;
-
-    // Pseudo-cells for inner-borders published/embargoed/taken-down content
-    tr::after,
-    tr::before {
-        content: ' ';
-        display: table-cell;
-        width: 7px;
-    }
-
+    border: 5px 5px 5px 0px solid $c-grey-100;
 
     // Table header
     &-head {
@@ -52,7 +37,7 @@ $content-list-icon-size: 14px;
             &--notes,
             &--links,
             &--published-state {
-                @extend %content-list__field-padding;
+                padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 
                 font-weight: bold;
@@ -61,13 +46,8 @@ $content-list-icon-size: 14px;
 
             &--presence,
             &--assignee {
-                padding: 10px;
-            }
-
-            &--presence,
-            &--assignee,
-            &--office {
                 text-align: center;
+                padding: 5px 5px 5px 0;
             }
 
             &-icon {
@@ -79,11 +59,12 @@ $content-list-icon-size: 14px;
                 &--presence {
                     width: 18px;
                     height: 18px;
-                    margin-top: 1px;
+                    margin-top: 3px;
                 }
                 &--assignee {
                     width: $content-list-icon-size;
                     height: $content-list-icon-size;
+                    margin-top: 3px;
                 }
             }
         }
@@ -94,26 +75,26 @@ $content-list-icon-size: 14px;
     &__group-heading {
 
         &-row {
-            background-color: $c-grey-200;
-            border-top: 1px solid #ffffff;
+            background-color: $c-grey-100;
+            border-top: 1px solid $c-grey-300;
             border-bottom: 1px solid #ffffff;
         }
 
         &-link {
             @extend %fs-data-3;
-            background-color: $c-grey-500;
-            color: #ffffff;
+
+            background-color: $c-bluegrey;
+            color: $c-grey-700;
             font-weight: bold;
             text-transform: uppercase;
             display: inline-block;
-            margin-left: 2px;
             line-height: 28px;
             padding: 0 10px;
+            min-width: 80px;
 
             &:hover {
                 color: #ffffff;
                 text-decoration: none;
-                // cursor: pointer; TODO: Make sections collapseable
             }
         }
 
@@ -136,13 +117,12 @@ $content-list-icon-size: 14px;
         &--import {
             @extend %fs-data-3;
 
-            margin-left: 5px;
             padding: 0 10px;
-            background-color: $c-grey-200;
+            background-color: $c-bluegrey;
             font-weight: normal;
             line-height: 28px;
             border: none;
-            border-right: 1px solid #ffffff;
+            color: $c-grey-700;
         }
     }
 
