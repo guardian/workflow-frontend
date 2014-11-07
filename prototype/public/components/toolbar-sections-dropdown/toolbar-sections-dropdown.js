@@ -14,7 +14,7 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
 
             var sectionListElem = $element[0].querySelector('.section-list'),
                 button = $element.find('button'),
-                buttonTitle = $element[0].querySelector('.dashboard-toolbar__section-select'),
+                buttonTitle = $element[0].querySelector('.dashboard-toolbar__section-select-text'),
                 sectionlistHiddenClass = 'section-list--hidden';
 
             button.on('click', function (event) {
@@ -46,7 +46,8 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
                     }
                 });
                 var str = names.join(', ');
-                return str.length > 10 ? str.substr(0, 7) + '…' : str;
+                if (!str.length) str = "All sections";
+                return str;
             }
 
             function updateSections (selectedSections) {
@@ -91,7 +92,9 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
             });
 
             $scope.checkboxUpdate = function () {
-                $scope.$emit('filtersChanged.section', buildSelectedSections());
+                var selectedSections = buildSelectedSections();
+                $scope.$emit('filtersChanged.section', selectedSections);
+                buttonTitle.innerHTML = updateNameTo($scope.sections);
             };
 
             $scope.$watch(ngModel, function () {
