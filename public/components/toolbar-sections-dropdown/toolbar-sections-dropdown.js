@@ -15,17 +15,20 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
             var sectionListElem = $element[0].querySelector('.section-list'),
                 button = $element.find('button'),
                 buttonTitle = $element[0].querySelector('.dashboard-toolbar__section-select-text'),
-                sectionlistHiddenClass = 'section-list--hidden';
+                sectionListHiddenClass = 'section-list--hidden';
 
+            /**
+             * When the dropdown button is clicked; display the dropdown menu and bind event to hide the menu
+             */
             button.on('click', function (event) {
                 event.stopPropagation();
-                if (sectionListElem.classList.contains(sectionlistHiddenClass)) {
-                    sectionListElem.classList.remove(sectionlistHiddenClass);
+                if (sectionListElem.classList.contains(sectionListHiddenClass)) {
+                    sectionListElem.classList.remove(sectionListHiddenClass);
 
                     var handler;
                     handler = function (event) {
                         if (event.target !== sectionListElem && !sectionListElem.contains(event.target)) {
-                            sectionListElem.classList.add(sectionlistHiddenClass);
+                            sectionListElem.classList.add(sectionListHiddenClass);
                             document.removeEventListener('click', handler);
                         }
                     };
@@ -34,10 +37,37 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
                     document.addEventListener('click', handler)
 
                 } else {
-                    sectionListElem.classList.add(sectionlistHiddenClass);
+                    sectionListElem.classList.add(sectionListHiddenClass);
                 }
             });
 
+            /**
+             * Given an Array of selected section IDs return an Array of Section objects with
+             * the selected property set accordingly
+             * @param selectedSections Array of section IDs eg: [12, 8, 3, 2]
+             * @returns {Array} An Array of Section objects
+             */
+            function updateSections (selectedSections) {
+                return $scope.sections.map((section) => {
+                    section.selected = selectedSections.indexOf(section.id) !== -1;
+                    return section;
+                }).sort((a, b) => {
+                    if (!a.selected && b.selected) { // Selected at the top
+                        return 1;
+                    } else if (a.selected && !b.selected) { // Unselected below
+                        return -1;
+                    } else {
+                        return a.name > b.name; // Both in Alphabetic order
+                    }
+                });
+            }
+
+            /**
+             * Take an array of section objects and return a String listing the first 3 letters
+             * of each selected section name
+             * @param sections Array of Section objects
+             * @returns {string}
+             */
             function updateNameTo(sections) {
                 var names = [];
                 sections.forEach((section) => {
@@ -45,26 +75,17 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
                         names.push(section.name.substr(0, 3));
                     }
                 });
-                var str = names.join(', ');
-                if (!str.length) str = "All sections";
-                return str;
+                if (names.length) {
+                    return names.join(', ');
+                } else {
+                    return 'All sections';
+                }
             }
 
-            function updateSections (selectedSections) {
-                $scope.sections = $scope.sections.map((section) => {
-                    section.selected = selectedSections.indexOf(section.id) !== -1;
-                    return section;
-                }).sort((a, b) => {
-                    if (!a.selected && b.selected) {
-                        return 1;
-                    } else if (a.selected && !b.selected) {
-                        return -1;
-                    } else {
-                        return a.name > b.name; // alphabetise
-                    }
-                });
-            }
-
+            /**
+             * Return an Array of section names for checked checkboxes in the section menu
+             * @returns {Array}
+             */
             function buildSelectedSections () {
                 $scope.checkBoxes = $scope.checkBoxes || $element[0].querySelectorAll('.section-list__chk');
                 var selectedSections = [];
@@ -76,10 +97,13 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
                 return selectedSections;
             }
 
+            /**
+             * When a desk is selected; update the list of section checkboxes and the section button text accordingly
+             */
             $rootScope.$on('filtersChanged.desk', function ($event, deskId) {
                 var sectionsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
                 if (sectionsInThisDesk.length) {
-                    updateSections(sectionsInThisDesk[0].sectionIds);
+                    $scope.sections = updateSections(sectionsInThisDesk[0].sectionIds);
                     buttonTitle.innerHTML = updateNameTo($scope.sections);
                     if (sectionsInThisDesk[0].sectionIds.length) {
                         var selectedSectionNamesArray = $scope.sections
@@ -91,14 +115,20 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
                 }
             });
 
+            /**
+             * When a checkbox is toggled; Update the content, desk dropdown and section button text accordingly
+             */
             $scope.checkboxUpdate = function () {
                 var selectedSections = buildSelectedSections();
                 $scope.$emit('filtersChanged.section', selectedSections);
                 buttonTitle.innerHTML = updateNameTo($scope.sections);
             };
 
+            /**
+             * When the model (selectedSections) is changed; update the sections and button text accordingly
+             */
             $scope.$watch(ngModel, function () {
-                updateSections(ngModel.$modelValue.map((el) => el.id));
+                $scope.sections = updateSections(ngModel.$modelValue.map((el) => el.id));
                 buttonTitle.innerHTML = updateNameTo($scope.sections);
             });
         }

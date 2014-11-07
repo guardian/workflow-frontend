@@ -31,7 +31,8 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
         // Desks ================================
 
         /**
-         * Update the selected desk scope variable based on wether a supplied array of selected sections matches any of the desk configurations
+         * Update the selected desk scope variable based on wether a supplied array of selected sections matches any of
+         * the desk configurations
          * @param selectedSections Array of sections eg: ["Environment", "Money", "News", "Technology"]
          */
         function updateSelectedDeskBasedOnSections (selectedSections) {
