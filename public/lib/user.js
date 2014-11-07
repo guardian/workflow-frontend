@@ -17,7 +17,13 @@ angular.module('wfUser', [])
 
     // TODO: convert wfUser to a class/function as user may change
     .factory('wfUser', [function () {
-        return window._wfConfig.user || {};
+        var user = window._wfConfig.user;
+        if (!user) return {};
+        
+        // Decorate user object
+        user.displayName = user.firstName + " " + user.lastName; 
+
+        return user; 
     }])
 
 
