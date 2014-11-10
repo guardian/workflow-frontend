@@ -8,7 +8,7 @@ $content-list-icon-size: 14px;
 
 // Global padding for cells
 %content-list__field-padding {
-    padding: 10px 10px;
+    padding: 10px 5px;
 }
 
 .content-list, .content-list * {
@@ -82,11 +82,10 @@ $content-list-icon-size: 14px;
 
         &-link {
             @extend %fs-data-3;
-
+            text-transform: uppercase;
             background-color: $c-bluegrey;
             color: $c-grey-700;
             font-weight: bold;
-            text-transform: uppercase;
             display: inline-block;
             line-height: 20px;
             padding: 0 10px;
@@ -118,7 +117,7 @@ $content-list-icon-size: 14px;
             @extend %fs-data-3;
 
             padding: 0 10px;
-            background-color: $c-bluegrey;
+            background-color: $c-grey-100;
             font-weight: normal;
             line-height: 21px;
             border-top: none;
@@ -126,6 +125,7 @@ $content-list-icon-size: 14px;
             border-left: 1px solid $c-grey-400;
             border-right: 1px solid $c-grey-400;
             color: $c-grey-700;
+            border-right:1px solid $c-grey-300;
         }
     }
 
