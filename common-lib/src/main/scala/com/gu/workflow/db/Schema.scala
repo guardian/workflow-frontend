@@ -52,7 +52,8 @@ object Schema {
       Option[String],  // headline
       Boolean,         // published
       Option[DateTime],// timePublished
-      Option[Long]     // revision
+      Option[Long],    // revision
+      Option[String]   // storyBundleId
     )
 
   case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
@@ -67,7 +68,8 @@ object Schema {
     def published      = column [Boolean]           ("published")
     def timePublished  = column [Option[DateTime]]  ("time_published")
     def revision       = column [Option[Long]]      ("revision")
-    def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published, timePublished, revision)
+    def storyBundleId  = column [Option[String]]    ("storybundleid")
+    def * = (composerId, path, lastModified, lastModifiedBy, status, contentType, commentable, headline, published, timePublished, revision, storyBundleId)
   }
 
   type SectionRow = (

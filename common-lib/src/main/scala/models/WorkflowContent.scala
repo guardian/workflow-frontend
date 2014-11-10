@@ -17,7 +17,8 @@ case class WorkflowContent(
                             lastModifiedBy: Option[String],
                             commentable: Boolean,
                             published: Boolean,
-                            timePublished: Option[DateTime]
+                            timePublished: Option[DateTime],
+                            storyBundleId: Option[String]
                             ) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
@@ -46,21 +47,22 @@ object WorkflowContent {
       wireStatus.user,
       commentable=wireStatus.commentable,
       published = wireStatus.published,
-      timePublished = wireStatus.publicationDate
+      timePublished = wireStatus.publicationDate,
+      storyBundleId = wireStatus.storyBundleId
     )
   }
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
-          headline, published, timePublished, _) =>
+          headline, published, timePublished, _, storyBundleId) =>
           WorkflowContent(
             composerId, path, headline, contentType, None, Status(status), lastMod,
-            lastModBy, commentable, published, timePublished
+            lastModBy, commentable, published, timePublished, storyBundleId
           )
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
     (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
-     wc.contentType, wc.commentable, wc.headline, wc.published, wc.timePublished, revision)
+     wc.contentType, wc.commentable, wc.headline, wc.published, wc.timePublished, revision, wc.storyBundleId)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
 
@@ -75,6 +77,7 @@ object WorkflowContent {
       (__ \ "lastModifiedBy").readNullable[String] ~
       (__ \ "commentable").read[Boolean] ~
       (__ \ "published").read[Boolean] ~
-      (__ \ "timePublished").readNullable[DateTime]
+      (__ \ "timePublished").readNullable[DateTime] ~
+      (__ \ "storyBundleId").readNullable[String]
       )(WorkflowContent.apply _)
 }
