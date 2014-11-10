@@ -69,12 +69,9 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
              * @returns {string}
              */
             function updateNameTo(sections) {
-                var names = [];
-                sections.forEach((section) => {
-                    if (section.selected) {
-                        names.push(section.name.substr(0, 3));
-                    }
-                });
+                var names = sections.filter((section) => section.selected)
+                    .map((section) => section.name.substr(0, 3));
+
                 if (names.length) {
                     return names.join(', ');
                 } else {
