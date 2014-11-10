@@ -82,7 +82,7 @@ $content-list-icon-size: 14px;
 
         &-link {
             @extend %fs-data-3;
-
+            text-transform: uppercase;
             background-color: $c-bluegrey;
             color: $c-grey-700;
             font-weight: bold;
