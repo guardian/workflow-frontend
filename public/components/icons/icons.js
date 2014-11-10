@@ -14,12 +14,24 @@ function wfIconDirective() {
         template: '<img ng-src="{{ iconUrl() }}" class="wf-icon"/>',
         scope: {
             wfIcon: '@',
-            wfIconActive: '=' // boolean
+            wfIconActive: '=', // boolean
+            wfIconDark: '=' //boolean
         },
         link: function($scope) {
-            var urlPostfix = $scope.wfIconActive !== false ? 'active' : 'inactive';
+            $scope.iconUrl = () => { 
+                var postFixOptions = [
+                    $scope.wfIconActive !== false ? 'active' : 'inactive',
+                    $scope.wfIconDark === true ? 'dark-bg' : ''
+                ];
 
-            $scope.iconUrl = () => ICON_FILE + '#' + $scope.wfIcon + '-' + urlPostfix;
+                var urlPostfix = postFixOptions.map(function(postFixOption) {
+                    return postFixOption == '' ? '' : '-' + postFixOption; 
+                }).reduce(function(previous, current, i, a) {
+                    return previous + current;
+                });
+                
+                return ICON_FILE + '#' + $scope.wfIcon + urlPostfix;
+            }
         }
     };
 
