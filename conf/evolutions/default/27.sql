@@ -1,0 +1,2 @@
+# --- !Ups
+ALTER TABLE CONTENT ADD COLUMN storyBundleId VARCHAR(100) 
