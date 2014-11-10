@@ -161,22 +161,15 @@
         &--composer,
         &--preview,
         &--live,
-        &--ophan {
+        &--ophan,
+        &--deadline,
+        &--created,
+        &--section {
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
         
-        // smaller font size for date, time and sections
-        &--deadline,
-        &--created
-        &--section {
-            @extend %fs-data-2;
-            @extend %content-list__field-padding;
-        }
-        
         // smaller font size for assignee
-        &--deadline,
-        &--created,
         &--assignee {
             @extend %fs-data-2;
         }
