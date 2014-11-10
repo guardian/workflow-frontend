@@ -63,7 +63,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                         $log.info("presence is disabled");
                         broadcast("presence.connection.error", "Could not get access to the library ");
                     }).catch((err)=>{
-                        $log.error(err);
+                        $log.error("error starting presence", err);
                     });
 
     self.articleSubscribe = function (articleIds) {
