@@ -25,12 +25,12 @@
     width: calc(100% + 2px);
     top : 100%;
     left: -1px;
-    background-color: #ccc;
+    background-color: #cccccc;
 }
 
 .dashboard-toolbar__section-dropdown-button {
     border: none;
-    background-color: #ededed;
+    background-color: $c-grey-200;
     padding: 0 15px;
     height: 100%;
     position: relative;
@@ -69,10 +69,10 @@
 }
 
 .section-list {
-    background-color: #f5f5f5;
-    border: 1px solid #bdbdbd;
+    background-color: $c-grey-170;
+    border: 1px solid $c-grey-400;
     border-top: none;
-    box-shadow: 2px 1px 5px #dcdcdc;
+    box-shadow: 2px 1px 5px $c-grey-300;
     display: block;
     -webkit-transition: opacity .35 ease-in-out;
     -moz-transition: opacity .35 ease-in-out;
@@ -87,8 +87,8 @@
 
 .section-list__item {
     padding: 7px 0 7px 15px;
-    background-color: #ededed;
-    border-top: 1px solid #dcdcdc;
+    background-color: $c-grey-200;
+    border-top: 1px solid $c-grey-300;
     &:last-child {
         border-bottom: none;
     }
@@ -105,8 +105,8 @@
 }
 
 .section-list__item--active {
-    background-color: #dee2e3;
-    border-right: 3px solid #00adee;
+    background-color: $c-bluegrey;
+    border-right: 3px solid $c-highlight-blue;
     .section-list__item-title {
         font-weight: 900;
     }
