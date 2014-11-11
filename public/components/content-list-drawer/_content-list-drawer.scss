@@ -67,7 +67,15 @@
     padding: 12px;
     border-bottom: 1px solid $c-grey-300;
 
+    &--confirm {
+        color: white;
+        background-color: $c-red;
+    }
+
     .drawer__control-item {
+        &--delete {
+            height: 50px;
+        }
         cursor: pointer;
         position: relative;
         padding: 2px 0 0 22px;
