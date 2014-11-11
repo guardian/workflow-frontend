@@ -34,7 +34,6 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $log, $window,
              * Accessible on $scope for use on 'hide' button in drawer
              */
             this.hide = function () {
-
                 $element.one(transitionEndEvents,() => {
                     $scope.contentList.selectedItem = null;
                     $scope.$apply();
@@ -71,6 +70,8 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $log, $window,
              * Listen for event triggered by click in external contentItemRow directive to show or hide drawer
              */
             $rootScope.$on('contentItem.select', ($event, contentItem, contentListItemElement) => {
+                $scope.awaitingDeleteConfirmation = false;
+
                 if (contentItem.status === 'Stub') {
                     $scope.$emit('stub:edit', contentItem.item);
                     return;
@@ -172,7 +173,9 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $log, $window,
             /**
              * Delete manually as no event or tracking yet
              */
+            $scope.awaitingDeleteConfirmation = false;
             $scope.deleteContentItem = function () {
+                if(!$scope.awaitingDeleteConfirmation) { $scope.awaitingDeleteConfirmation = true; return; } 
 
                 contentService.remove($scope.contentItem.id)
                     .then(() => {

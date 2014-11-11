@@ -12,6 +12,9 @@
   <script src="@routes.Assets.at("config.js")"></script>
   <script>
     System.config({ 'baseURL': './assets' });
+    System.config({
+        "map": {"presence-client":_wfConfig.presenceClientLib}
+    });
     System.import('app').catch(function(error) {
         setTimeout(function() { throw error; }, 0);
     });

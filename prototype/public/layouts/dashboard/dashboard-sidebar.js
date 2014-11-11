@@ -33,7 +33,7 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
                 ]
             },
             {
-                title: 'Creation date',
+                title: 'Created',
                 namespace: 'created',
                 filterOptions: [
                     { caption: 'Yesterday', value: 'yesterday' },
