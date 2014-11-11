@@ -29,7 +29,7 @@ object Admin extends Controller with PanDomainAuthActions {
     selectedDeskOption match {
       case Some(selectedDesk) => { // If we have a selected desk then show the desk as selected and the related sections
 
-        val mappedDesks = deskList.map((desk) => {
+        val mappedDesks = deskList.map((desk) => { // We want the selected desk to show as selected in the list of desks
           if (desk.id == selectedDesk.id) {
             desk.copy(name = desk.name, selected = true)
           } else {
