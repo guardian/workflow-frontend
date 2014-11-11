@@ -13,6 +13,7 @@
 
     border-bottom: 1px solid $c-grey-200;
     cursor: pointer;
+    vertical-align: baseline;
 
     &--selected {
         background-color: $c-grey-200;
@@ -134,7 +135,6 @@
         color: $c-grey-400;
         font-weight: normal;
         margin-right: 5px;
-        margin-left: 5px;
 
         // bootstrap override, TODO remove
         &[title] {
@@ -156,27 +156,20 @@
         &--headline,
         &--presence,
         &--office,
-        &--section,
         &--legal,
         &--status,
         &--composer,
         &--preview,
         &--live,
-        &--ophan {
+        &--ophan,
+        &--deadline,
+        &--created,
+        &--section {
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
         
-        // smaller font size for date and time
-        &--deadline,
-        &--created {
-            @extend %fs-data-2;
-            @extend %content-list__field-padding;
-        }
-        
         // smaller font size for assignee
-        &--deadline,
-        &--created,
         &--assignee {
             @extend %fs-data-2;
         }
