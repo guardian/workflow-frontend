@@ -470,6 +470,9 @@
                         "    -e 's,@DB_PASSWORD@,", {"Ref": "DBPassword"}, ",g' \\\n",
                         "    /etc/init/prole.conf\n",
 
+                        "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py","\n",
+                        {"Fn::Join": [" ", ["python awslogs-agent-setup.py -nr", { "Ref": "AWS::Region" }, "-c /home/workflow/prole/conf/logger.conf" ]]},"\n",
+
                         "start prole\n"
                     ]]
 
