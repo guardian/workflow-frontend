@@ -80,14 +80,14 @@
     .sidebar__filter-link {
         @extend %fs-data-2;
         color: $c-text;
-        background-color: #f5f5f5;
+        background-color: $c-grey-170;
         padding: 7px 0 7px 23px;
         display: block;
         width: 100%;
 
         &:hover {
             text-decoration: none;
-            background-color: darken(#f5f5f5, 15%);
+            background-color: darken($c-grey-170, 15%);
             img {
                 -webkit-filter: url(/assets/components/icons/icons.svg#gallery-active-hover);
                 -moz-filter: url(/assets/components/icons/icons.svg#gallery-active-hover);

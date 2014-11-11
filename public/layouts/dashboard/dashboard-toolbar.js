@@ -50,12 +50,11 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
             }
         }
 
-        $scope.desks = desks;
-        $scope.desks.unshift({
+        $scope.desks = [{
             name: 'Custom',
             id: 0,
             selected: false
-        });
+        }].concat(desks);
 
         $scope.$watch('selectedDesk', function () {
             if ($scope.selectedDesk && $scope.selectedDesk.id) {
