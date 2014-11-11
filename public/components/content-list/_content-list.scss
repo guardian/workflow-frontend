@@ -117,15 +117,14 @@ $content-list-icon-size: 14px;
             @extend %fs-data-3;
 
             padding: 0 10px;
-            background-color: $c-grey-100;
+            background-color: $c-bluegrey;
             font-weight: normal;
             line-height: 21px;
             border-top: none;
             border-bottom: none;
             border-left: 1px solid $c-grey-400;
-            border-right: 1px solid $c-grey-400;
+            border-right: 1px solid $c-bluegrey;
             color: $c-grey-700;
-            border-right:1px solid $c-grey-300;
         }
     }
 
