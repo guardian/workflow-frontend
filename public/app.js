@@ -94,7 +94,6 @@ angular.module('workflow',
     .constant({ 'statuses': _wfConfig.statuses })
     .constant({ 'sections': _wfConfig.sections })
     .constant({ 'desks': _wfConfig.desks })
-    .constant({ 'desks': _wfConfig.desks })
     .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
 
     // XEditable options, TODO: mode out to dashboard controller somewhere...
