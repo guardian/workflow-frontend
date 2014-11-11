@@ -17,26 +17,45 @@ object Admin extends Controller with PanDomainAuthActions {
 
   def index(selectedDeskIdOption: Option[Long]) = AuthAction {
 
-    val selectedDeskId = selectedDeskIdOption.getOrElse(0)
     val deskList = DeskDB.deskList
-    val selectedDesk = deskList.find((desk) => selectedDeskId == desk.id).getOrElse(Desk("", false))
 
-    val mappedDesks = deskList.map((desk) => {
-      if (desk.id == selectedDeskId) {
-        desk.copy(name = desk.name, selected = true)
-      } else {
-        desk
-      }
-    })
-
-    // show sections based on currently selected desk
-    val sections = if (selectedDeskIdOption.isEmpty) {
-      SectionDB.sectionList
-    } else {
-      DeskDB.getSectionsWithRelation(selectedDesk)
+    val selectedDeskOption = for {
+      selectedDeskId <- selectedDeskIdOption
+      selectedDesk <- deskList.find((desk) => selectedDeskId == desk.id)
+    } yield {
+      selectedDesk
     }
 
-    Ok(views.html.adminConsole(sections.sortBy(_.name), addSectionForm, mappedDesks.sortBy(_.name), addDeskForm, selectedDesk))
+    selectedDeskOption match {
+      case Some(selectedDesk) => { // If we have a selected desk then show the desk as selected and the related sections
+
+        val mappedDesks = deskList.map((desk) => {
+          if (desk.id == selectedDesk.id) {
+            desk.copy(name = desk.name, selected = true)
+          } else {
+            desk
+          }
+        })
+
+        Ok(
+          views.html.adminConsole(
+            DeskDB.getSectionsWithRelation(selectedDesk).sortBy(_.name),
+            addSectionForm,
+            mappedDesks.sortBy(_.name),
+            addDeskForm,
+            Some(selectedDesk))
+        )
+      }
+      case None => Ok( // No desk, just show list of desks and sections
+        views.html.adminConsole(
+          SectionDB.sectionList.sortBy(_.name),
+          addSectionForm,
+          deskList.sortBy(_.name),
+          addDeskForm,
+          None)
+      )
+    }
+
   }
 
   val addSectionForm = Form(
