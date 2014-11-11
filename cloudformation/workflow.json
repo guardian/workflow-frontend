@@ -121,18 +121,31 @@
                     } ]
                 },
                 "Path": "/",
-                "Policies": [ {
-                    "PolicyName": "root",
-                    "PolicyDocument": {
-                        "Statement": [
-                            {
+                "Policies": [
+                    {
+                        "PolicyName": "root",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [ "s3:GetObject" ],
+                                    "Resource": [ "arn:aws:s3:::workflow-dist/*", "arn:aws:s3:::workflow-private/*" ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "PolicyName": "PushLogs",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [{
                                 "Effect": "Allow",
-                                "Action": [ "s3:GetObject" ],
-                                "Resource": [ "arn:aws:s3:::workflow-dist/*", "arn:aws:s3:::workflow-private/*" ]
-                            }
-                        ]
+                                "Action": ["logs:*"],
+                                "Resource": ["arn:aws:logs:*:*:*"]
+                            }]
+                        }
                     }
-                } ]
+                ]
             }
         },
 
@@ -365,6 +378,9 @@
                         "    -e 's,@PANDOMAIN_AWS_KEY@,", {"Ref": "PandomainAwsKey"}, ",g' \\\n",
                         "    -e 's,@PANDOMAIN_AWS_SECRET@,", {"Ref": "PandomainAwsSecret"}, ",g' \\\n",
                         "    /etc/init/prototype.conf\n",
+
+                        "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py","\n",
+                        {"Fn::Join": [" ", ["python awslogs-agent-setup.py -nr", { "Ref": "AWS::Region" }, "-c /home/workflow/prototype/conf/logger.conf" ]]},"\n",
 
                         "start prototype\n"
                     ]]
