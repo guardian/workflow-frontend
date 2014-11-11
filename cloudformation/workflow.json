@@ -51,7 +51,7 @@
         "PresenceClientLib": {
             "Description": "Hosted client lib for presence lib",
             "Type": "String",
-             "Description": "https://presence.gutools.co.uk/assets/presence-client/1.1/lib.js"
+             "Default": "https://presence.gutools.co.uk/assets/presence-client/1.1/lib"
         },
         "DBPort": {
             "Description": "Port number for the database instance",
