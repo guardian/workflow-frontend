@@ -86,7 +86,6 @@
 }
 
 .section-list__item {
-    padding: 7px 0 7px 15px;
     background-color: $c-grey-200;
     border-top: 1px solid $c-grey-300;
     &:last-child {
@@ -96,6 +95,9 @@
 
 .section-list__item-label {
     margin: 0;
+    padding: 7px 0 7px 15px;
+    width: 100%;
+    cursor: pointer;
 }
 
 .section-list__item-title {
