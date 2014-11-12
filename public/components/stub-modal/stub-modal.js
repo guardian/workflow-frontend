@@ -40,6 +40,7 @@ function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, leg
                     $scope.stub.composerId = composerContent.id;
                     $scope.stub.contentType = composerContent.type;
                     $scope.stub.title = composerContent.headline;
+                    $scope.stub.activeInInCopy = composerContent.activeInInCopy;
                 } else {
                     $scope.stub.composerId = null;
                     $scope.stub.contentType = null;
@@ -136,7 +137,8 @@ wfStubModal.run(['$rootScope',
                     promise = wfContentService.updateStub(stub);
 
                 } else {
-                    promise = wfContentService.createStub(stub);
+                    promise = wfContentService.createStub(stub,
+                                                          stub.activeInInCopy);
                 }
 
                 promise.then(() => {
