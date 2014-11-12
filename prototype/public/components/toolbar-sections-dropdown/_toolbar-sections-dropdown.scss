@@ -22,9 +22,9 @@
 .dashboard-toolbar__dropdown {
     position: absolute;
     z-index: 1;
-    width: calc(100% + 2px);
+    width: calc(100% + 2px); // Menu takes width of parent, +2 accounts for border of parent
     top : 100%;
-    left: -1px;
+    left: -1px; // centers menu wrt parent+parent border
     background-color: #cccccc;
 }
 
