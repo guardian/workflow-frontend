@@ -10,7 +10,7 @@
         "Stage": {
             "Description": "Environment name",
             "Type": "String",
-            "AllowedValues": ["CODE", "TEST", "PROD"],
+            "AllowedValues": ["CODE", "RELEASE", "PROD"],
             "Default": "PROD"
         },
         "SSLCertificateId": {
@@ -51,7 +51,7 @@
         "PresenceClientLib": {
             "Description": "Hosted client lib for presence lib",
             "Type": "String",
-             "Description": "https://presence.gutools.co.uk/assets/presence-client/1.1/lib.js"
+             "Default": "https://presence.gutools.co.uk/assets/presence-client/1.1/lib"
         },
         "DBPort": {
             "Description": "Port number for the database instance",
@@ -121,18 +121,31 @@
                     } ]
                 },
                 "Path": "/",
-                "Policies": [ {
-                    "PolicyName": "root",
-                    "PolicyDocument": {
-                        "Statement": [
-                            {
+                "Policies": [
+                    {
+                        "PolicyName": "root",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [ "s3:GetObject" ],
+                                    "Resource": [ "arn:aws:s3:::workflow-dist/*", "arn:aws:s3:::workflow-private/*" ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "PolicyName": "PushLogs",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [{
                                 "Effect": "Allow",
-                                "Action": [ "s3:GetObject" ],
-                                "Resource": [ "arn:aws:s3:::workflow-dist/*", "arn:aws:s3:::workflow-private/*" ]
-                            }
-                        ]
+                                "Action": ["logs:*"],
+                                "Resource": ["arn:aws:logs:*:*:*"]
+                            }]
+                        }
                     }
-                } ]
+                ]
             }
         },
 
@@ -366,6 +379,9 @@
                         "    -e 's,@PANDOMAIN_AWS_SECRET@,", {"Ref": "PandomainAwsSecret"}, ",g' \\\n",
                         "    /etc/init/prototype.conf\n",
 
+                        "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py","\n",
+                        {"Fn::Join": [" ", ["python awslogs-agent-setup.py -nr", { "Ref": "AWS::Region" }, "-c /home/workflow/prototype/conf/logger.conf" ]]},"\n",
+
                         "start prototype\n"
                     ]]
 
@@ -453,6 +469,9 @@
                         "    -e 's,@DB_USER@,", {"Ref": "DBUser"}, ",g' \\\n",
                         "    -e 's,@DB_PASSWORD@,", {"Ref": "DBPassword"}, ",g' \\\n",
                         "    /etc/init/prole.conf\n",
+
+                        "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py","\n",
+                        {"Fn::Join": [" ", ["python awslogs-agent-setup.py -nr", { "Ref": "AWS::Region" }, "-c /home/workflow/prole/conf/logger.conf" ]]},"\n",
 
                         "start prole\n"
                     ]]
