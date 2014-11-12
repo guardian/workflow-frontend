@@ -13,7 +13,7 @@ var env = {
 
     'workflow.gutools.co.uk': {
         'sentry': {
-            'url': 'something else'
+            'url': 'https://c1747e2a3b9542b18e1bef52c45c05c6@app.getsentry.com/33134'
         }
     }
 };
