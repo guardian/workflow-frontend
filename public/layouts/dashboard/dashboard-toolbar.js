@@ -36,6 +36,11 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
          * @param selectedSections Array of sections eg: ["Environment", "Money", "News", "Technology"]
          */
         function updateSelectedDeskBasedOnSections (selectedSections) {
+
+            if (selectedSections.length === 0) {
+                return null;
+            }
+
             var selectedSectionIds = $scope.sections.filter((el) => selectedSections.indexOf(el.name) != -1).map((el) => el.id);
             var selectedSectionsInDesksOption = sectionsInDesks.filter((el) => // Dirty Array comparison
                     el.sectionIds.every((e) => selectedSectionIds.indexOf(e) != -1) && // Has every element the other has
@@ -60,6 +65,8 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
             if ($scope.selectedDesk && $scope.selectedDesk.id) {
 
                 $scope.$emit('filtersChanged.desk', $scope.selectedDesk.id);
+            } else if ($scope.selectedDesk == null) { // 'All desks'
+                $scope.$emit('filtersChanged.desk', -1);
             }
         });
 
