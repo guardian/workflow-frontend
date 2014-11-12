@@ -70,7 +70,7 @@ object PostgresDB {
 
     }
 
-  private def ensureContentExistsWithId(composerId: String, contentType: String)(implicit session: Session) {
+  private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
       content +=
@@ -86,13 +86,13 @@ object PostgresDB {
         None,
         None,
         None,
-        false))
+        activeInInCopy))
     }
   }
 
-  def createStub(stub: Stub): Unit =
+  def createStub(stub: Stub, activeInInCopy: Boolean = false): Unit =
     DB.withTransaction { implicit session =>
-      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
+      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article"), activeInInCopy))
       stubs += Stub.newStubRow(stub)
     }
 
