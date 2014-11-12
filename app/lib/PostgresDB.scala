@@ -74,7 +74,18 @@ object PostgresDB {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
       content +=
-        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false, None, None))
+      ((composerId,
+        None,
+        new DateTime,
+        None,
+        Status.Writers.name,
+        contentType,
+        false,
+        None,
+        false,
+        None,
+        None,
+        None))
     }
   }
 
