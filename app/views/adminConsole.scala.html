@@ -84,8 +84,9 @@
 
 </div>
 
-<script>
+<script type="application/javascript">
     $('.remove').on('click', function (event) {
+        event.preventDefault();
         var type = $(event.target).data('type');
         var name = $(event.target).data('name');
 
@@ -98,7 +99,7 @@
 
         if(window.confirm("Do you want to delete the "+type+" \"" + name +"\"?")) {
             $.ajax({
-                type: "POST",
+                type: "DELETE",
                 url: route,
                 data: {
                     name: name,

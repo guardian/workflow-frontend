@@ -38,11 +38,12 @@ GET            /api/statuses                          controllers.Api.statusus
 
 # Admin
 GET            /admin                                 controllers.Admin.index(selectedDesk: Option[Long])
-POST           /admin/sections/add                    controllers.Admin.addSection
-POST           /admin/sections/remove                 controllers.Admin.removeSection
 
-POST           /admin/desks/add                       controllers.Admin.addDesk
-POST           /admin/desks/remove                    controllers.Admin.removeDesk
+POST           /admin/sections                        controllers.Admin.addSection
+DELETE         /admin/sections                        controllers.Admin.removeSection
+
+POST           /admin/desks                           controllers.Admin.addDesk
+DELETE         /admin/desks                           controllers.Admin.removeDesk
 
 POST           /admin/assign                          controllers.Admin.assignSectionToDesk
 
