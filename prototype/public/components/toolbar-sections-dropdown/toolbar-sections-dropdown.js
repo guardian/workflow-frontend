@@ -98,16 +98,23 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
              * When a desk is selected; update the list of section checkboxes and the section button text accordingly
              */
             $rootScope.$on('filtersChanged.desk', function ($event, deskId) {
-                var sectionsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
-                if (sectionsInThisDesk.length) {
-                    $scope.sections = updateSections(sectionsInThisDesk[0].sectionIds);
-                    buttonTitle.innerHTML = updateNameTo($scope.sections);
-                    if (sectionsInThisDesk[0].sectionIds.length) {
-                        var selectedSectionNamesArray = $scope.sections
-                                                            .filter((el) => sectionsInThisDesk[0].sectionIds.indexOf(el.id) != -1)
-                                                            .map((el) => el.name);
 
-                        $scope.$emit('filtersChanged.section', selectedSectionNamesArray);
+                if (deskId === -1) {
+                    $scope.$emit('filtersChanged.section', []);
+                    $scope.sections = updateSections([]);
+                    buttonTitle.innerHTML = updateNameTo($scope.sections);
+                } else {
+                    var sectionsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
+                    if (sectionsInThisDesk.length) {
+                        $scope.sections = updateSections(sectionsInThisDesk[0].sectionIds);
+                        buttonTitle.innerHTML = updateNameTo($scope.sections);
+                        if (sectionsInThisDesk[0].sectionIds.length) {
+                            var selectedSectionNamesArray = $scope.sections
+                                .filter((el) => sectionsInThisDesk[0].sectionIds.indexOf(el.id) != -1)
+                                .map((el) => el.name);
+
+                            $scope.$emit('filtersChanged.section', selectedSectionNamesArray);
+                        }
                     }
                 }
             });
