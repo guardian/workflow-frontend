@@ -125,7 +125,11 @@ function wfContentListController($scope, statuses, sections, wfContentService, w
                 this.poller.refresh();
 
             }, (err) => {
-                this.renderError(err);
+                $scope.refreshContentError = err;
+
+                $scope.$apply(() => {
+                    throw new Error('Error updating content: ' + (err.message || err));
+                });
             });
         }
 
