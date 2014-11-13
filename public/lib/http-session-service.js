@@ -77,7 +77,7 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
             err.statusText || 'Unknown',
             'from',
             requestConfig.method || '',
-            (requestConfig.url || '') + (requestParams.length > 0 ? '?' + requestParams.join('&') : '')
+            (requestConfig.url || '') + (requestParams && requestParams.length > 0 ? '?' + requestParams.join('&') : '')
 
         ].join(' '));
 
