@@ -175,7 +175,7 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $log, $window,
              */
             $scope.awaitingDeleteConfirmation = false;
             $scope.deleteContentItem = function () {
-                if(!$scope.awaitingDeleteConfirmation) { $scope.awaitingDeleteConfirmation = true; return; } 
+                if(!$scope.awaitingDeleteConfirmation) { $scope.awaitingDeleteConfirmation = true; return; }
 
                 contentService.remove($scope.contentItem.id)
                     .then(() => {
@@ -191,6 +191,9 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $log, $window,
 
             function errorMessage(err) {
                 $log.error('Error deleting content: ' + err.message || err);
+
+                $scope.$apply(() => { throw err; });
+
             }
 
         }
