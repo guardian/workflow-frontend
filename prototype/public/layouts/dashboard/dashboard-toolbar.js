@@ -4,25 +4,78 @@ import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import 'lib/presence';
+import { wfToolbarSectionsDropdown } from 'components/toolbar-sections-dropdown/toolbar-sections-dropdown';
 
 angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPresenceService', 'wfProdOfficeService'])
-    .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'sections', function ($scope, wfFiltersService, wfDateParser, prodOfficeService, sections) {
+    .directive('wfToolbarSectionsDropdown', ['wfFiltersService', '$rootScope', 'sectionsInDesks', wfToolbarSectionsDropdown])
+    .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'desks', 'sections', 'sectionsInDesks', function ($scope, wfFiltersService, wfDateParser, prodOfficeService,  desks, sections, sectionsInDesks) {
 
         $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
         $scope.prodOffices = prodOfficeService.getProdOffices();
 
-
-        $scope.selectedSection = wfFiltersService.get('section');
-        $scope.sections = sections;
-
         $scope.$watch('selectedProdOffice', function () {
             $scope.$emit('filtersChanged.prodOffice', $scope.selectedProdOffice);
         });
 
-        $scope.$watch('selectedSection', function () {
-            $scope.$emit('filtersChanged.section', $scope.selectedSection);
+        // Sections =============================
+
+        $scope.selectedSections = (function buildSelectedSections () {
+            var sectionsString = wfFiltersService.get('section');
+            var sectionsStringArray = sectionsString ? sectionsString.split(',') : [];
+            return sections.filter((el) => sectionsStringArray.indexOf(el.name) != -1);
+        })();
+
+        $scope.sections = sections;
+
+        // Desks ================================
+
+        /**
+         * Update the selected desk scope variable based on wether a supplied array of selected sections matches any of
+         * the desk configurations
+         * @param selectedSections Array of sections eg: ["Environment", "Money", "News", "Technology"]
+         */
+        function updateSelectedDeskBasedOnSections (selectedSections) {
+
+            if (selectedSections.length === 0) {
+                return null;
+            }
+
+            var selectedSectionIds = $scope.sections.filter((el) => selectedSections.indexOf(el.name) != -1).map((el) => el.id);
+            var selectedSectionsInDesksOption = sectionsInDesks.filter((el) => // Dirty Array comparison
+                    el.sectionIds.every((e) => selectedSectionIds.indexOf(e) != -1) && // Has every element the other has
+                    el.sectionIds.length === selectedSectionIds.length // same length
+            );
+            if (selectedSectionsInDesksOption.length) {
+                // Found a matching desk
+                return $scope.desks.filter((el) => el.id == selectedSectionsInDesksOption[0].deskId)[0];
+            } else {
+                // Custom cofiguration -> selectedDesk = 'Custom'
+                return $scope.desks[0];
+            }
+        }
+
+        $scope.desks = [{
+            name: 'Custom',
+            id: 0,
+            selected: false
+        }].concat(desks);
+
+        $scope.$watch('selectedDesk', function () {
+            if ($scope.selectedDesk && $scope.selectedDesk.id) {
+
+                $scope.$emit('filtersChanged.desk', $scope.selectedDesk.id);
+            } else if ($scope.selectedDesk == null) { // 'All desks'
+                $scope.$emit('filtersChanged.desk', -1);
+            }
         });
+
+        $scope.$on('filtersChanged.section', function ($event, selectedSections) { // If selected sections are changed see if they constitute a desk or not
+            $scope.selectedDesk = updateSelectedDeskBasedOnSections(selectedSections);
+        });
+
+        $scope.selectedDesk = updateSelectedDeskBasedOnSections($scope.selectedSections.map((el) => el.name));
+
 
 
         $scope.dateOptions = wfDateParser.getDaysThisWeek();

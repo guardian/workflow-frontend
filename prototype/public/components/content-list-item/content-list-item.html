@@ -31,7 +31,7 @@
         {{ contentItem.deadline | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
     </td>
     <td class="content-list-item__field--section" title="Section">
-        {{ contentItem.section || 'No section' }}
+        {{ contentItem.section.name || 'No section' }}
     </td>
     <td class="content-list-item__field--status" title="Status">
         <select ng-click="$event.stopPropagation()" ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
