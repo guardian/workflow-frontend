@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.db.SectionDB
+import com.gu.workflow.db.{SectionDeskMappingDB, SectionDB, DeskDB}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -10,7 +10,6 @@ import lib.Composer._
 import play.api.mvc._
 import play.api.libs.json.Json
 
-
 object Application extends Controller with PanDomainAuthActions {
 
   def index = app("Dashboard")
@@ -19,7 +18,9 @@ object Application extends Controller with PanDomainAuthActions {
 
     for {
       statuses <- StatusDatabase.statuses
-      sections = SectionDB.sectionList
+      sections = SectionDB.sectionList.sortBy(_.name)
+      desks = DeskDB.deskList.sortBy(_.name)
+      sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
     }
     yield {
       val user = request.user
@@ -31,7 +32,9 @@ object Application extends Controller with PanDomainAuthActions {
           "details" -> contentDetails
         ),
         "statuses" -> statuses,
+        "desks"    -> desks,
         "sections" -> sections,
+        "sectionsInDesks" -> sectionsInDesks, // TODO: Combine desks & sectionsInDesks
         "presenceUrl" -> PrototypeConfiguration.cached.presenceUrl,
         "presenceClientLib" -> PrototypeConfiguration.cached.presenceClientLib,
         "user" -> Json.parse(user.toJson)

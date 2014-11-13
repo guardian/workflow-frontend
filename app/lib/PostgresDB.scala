@@ -18,7 +18,8 @@ object PostgresDB {
   val queryStringToFlag = Map("needsLegal" -> Flag.Required, "approved" -> Flag.Complete, "notRequired" -> Flag.NotRequired)
 
   def getContent(
-                  section:      Option[Section]  = None,
+                  section:      Option[List[Section]]  = None,
+                  desk:         Option[Desk]     = None,
                   dueFrom:      Option[DateTime] = None,
                   dueUntil:     Option[DateTime] = None,
                   status:       Option[Status]   = None,
@@ -39,7 +40,7 @@ object PostgresDB {
         flagFilterOpt.foldl[StubQuery]((q, filters) => q.filter(_.needsLegal inSet(filters))) |>
         dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
         dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-        section.foldl[StubQuery]  { case (q, Section(s))  => q.filter(_.section === s) } |>
+        section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>
         prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
         createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
         createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
@@ -61,9 +62,7 @@ object PostgresDB {
            .list.map {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
-          val content = WorkflowContent.fromContentRow(contentData).copy(
-            section = Some(Section(stub.section))
-          )
+          val content = WorkflowContent.fromContentRow(contentData)
           DashboardRow(stub, content)
       }
 
