@@ -60,6 +60,13 @@
                         <span class="drawer__section-title">Assigned to</span>
                         <span class="drawer__section-data-row--editable" editable-text="contentItem.item.assignee" buttons="no" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.item.assignee || "None" }}</span>
                     </li>
+<!-- InCopyExample
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">InCopy status</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Story Bundle ID: {{ contentItem.item.storyBundleId }}</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Active in InCopy: {{ contentItem.item.activeInInCopy }}</span>
+                    </li>
+-->
                 </ul>
 
                 <ul class="drawer__column">
