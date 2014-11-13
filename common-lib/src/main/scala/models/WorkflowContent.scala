@@ -50,8 +50,6 @@ object WorkflowContent {
       published = wireStatus.published,
       timePublished = wireStatus.publicationDate,
       storyBundleId = wireStatus.storyBundleId,
-// XXX TODO -> do we want to read activeInInCopy from the wire, or can
-// we just ignore it assuming it will never change?
       false
     )
   }
