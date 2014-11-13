@@ -12,7 +12,7 @@
 
         @for(desk <- desks) {
             <li class="list-group-item @if(desk.selected){list-group-item-info}">
-                <a href class="label label-danger remove" data-type="desk" data-name="@{desk.name}">x</a>
+                <a href class="label label-danger remove" data-type="desk" data-name="@{desk.name}" data-id="@{desk.id}">x</a>
                 <a href="@{routes.Admin.index(Some(desk.id))}">@{desk.name}</a>
             </li>
         }
@@ -42,7 +42,7 @@
                     <ul class="list-unstyled list-group">
                     @for((section, index) <- sections.zipWithIndex) {
                         <li class="list-group-item @if(section.selected){list-group-item-info}">
-                            <a href class="label label-danger remove" data-type="section" data-name="@{section.name}">x</a>
+                            <a href class="label label-danger remove" data-type="section" data-name="@{section.name}" data-id="@{section.id}">x</a>
                             @{section.name}
                             <input type="checkbox" name="sections[@index]" value="@{section.id}" @if(section.selected){checked="checked"}>
                         </li>
@@ -59,7 +59,7 @@
                 <ul class="list-unstyled list-group">
                 @for((section, index) <- sections.zipWithIndex) {
                     <li class="list-group-item @if(section.selected){list-group-item-info}">
-                        <a href class="label label-danger remove" data-type="section" data-name="@{section.name}">x</a>
+                        <a href class="label label-danger remove" data-type="section" data-name="@{section.name}" data-id="@{section.id}">x</a>
                         @{section.name}
                         <input type="checkbox" name="sections[@index]" value="@{section.id}" @if(section.selected){checked="checked"}>
                     </li>
@@ -87,8 +87,9 @@
 <script type="application/javascript">
     $('.remove').on('click', function (event) {
         event.preventDefault();
-        var type = $(event.target).data('type');
-        var name = $(event.target).data('name');
+        var type    = $(event.target).data('type');
+        var name    = $(event.target).data('name');
+        var id      = $(event.target).data('id');
 
         var routes = {
             section: "@routes.Admin.removeSection",
@@ -103,11 +104,14 @@
                 url: route,
                 data: {
                     name: name,
-                    id: 0,
+                    id: id,
                     selected: false
                 },
                 success: function() {
                     $(event.target).parent().remove();
+                    if (type == 'desk') {
+                        window.location = '/admin';
+                    }
                 }
             });
         }
