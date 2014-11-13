@@ -4,7 +4,7 @@ import angular from 'angular';
 import 'lib/user';
 
 angular.module('wfHttpSessionService', [])
-    .service('wfHttpSessionService', ['$http', '$q', '$log', 'wfUserSession', wfHttpSessionService])
+    .service('wfHttpSessionService', ['$http', '$q', '$log', 'wfUserSession', wfHttpSessionService]);
 
 function wfHttpSessionService($http, $q, $log, wfUserSession) {
 
@@ -44,13 +44,46 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
                         ).then(resolve, reject);
 
                     } else {
-                        reject(err);
+                        reject(buildHttpError(err));
                     }
 
                 });
 
         });
 
+    }
+
+
+    /**
+     * Turn a angular http error into a proper JS error for logging.
+     */
+    function buildHttpError(err) {
+
+        if (err instanceof Error) {
+            return err;
+        }
+
+        var requestConfig = err.config || {},
+
+        requestParams = requestConfig.params &&
+            Object.keys(requestConfig.params)
+                .filter((param, idx, params) => requestConfig.params[param] !== undefined && requestConfig.params[param] !== null)
+                .map((param) => `${param}=${requestConfig.params[param]}`),
+
+
+        error = new Error([
+            'Request error:',
+            err.status || '?',
+            err.statusText || 'Unknown',
+            'from',
+            requestConfig.method || '',
+            (requestConfig.url || '') + (requestParams.length > 0 ? '?' + requestParams.join('&') : '')
+
+        ].join(' '));
+
+        // TODO extras for sentry logging
+
+        return error;
     }
 
 
