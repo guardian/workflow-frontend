@@ -84,7 +84,7 @@ angular.module('wfFiltersService', ['wfDateService'])
 
 
             update(key, value) {
-                if (value === undefined || value.length === 0) { // empty String or Array
+                if (value !== null && (value === undefined || value.length === 0)) { // empty String or Array
                     value = null; // Remove query param
                 }
 
