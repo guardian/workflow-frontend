@@ -103,7 +103,10 @@ function wfContentListController($scope, $log, statuses, sections, wfContentServ
         $log.error('Error rendering content: ' + (err.message || JSON.stringify(err)));
         $scope.refreshContentError = err;
 
-        $scope.$apply();
+        $scope.$apply(() => {
+            throw err;
+        });
+
     };
 
 
