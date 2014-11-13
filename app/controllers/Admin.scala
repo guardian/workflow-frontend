@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.db.{DeskDB, SectionDB}
+import com.gu.workflow.db.{DeskDB, SectionDB, SectionDeskMappingDB}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -36,7 +36,7 @@ object Admin extends Controller with PanDomainAuthActions {
     }.getOrElse(deskList)
 
     val sectionList = selectedDeskOption.map { selectedDesk =>
-      DeskDB.getSectionsWithRelation(selectedDesk)
+      SectionDeskMappingDB.getSectionsWithRelation(selectedDesk)
     }.getOrElse(SectionDB.sectionList)
 
     Ok(
@@ -78,7 +78,7 @@ object Admin extends Controller with PanDomainAuthActions {
     assignSectionToDeskForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to update section assignments"),
       sectionAssignment => {
-        DeskDB.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
+        SectionDeskMappingDB.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
         Redirect(routes.Admin.index(Some(sectionAssignment.desk)))
       }
     )
@@ -102,6 +102,7 @@ object Admin extends Controller with PanDomainAuthActions {
     addSectionForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to remove section"),
       section => {
+        SectionDeskMappingDB.removeSectionMappings(section)
         SectionDB.remove(section)
         NoContent
       }
@@ -126,6 +127,7 @@ object Admin extends Controller with PanDomainAuthActions {
     addDeskForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to remove desk"),
       desk => {
+        SectionDeskMappingDB.removeDeskMappings(desk)
         DeskDB.remove(desk)
         NoContent
       }

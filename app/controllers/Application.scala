@@ -1,7 +1,6 @@
 package controllers
 
-import com.gu.workflow.db.SectionDB
-import com.gu.workflow.db.DeskDB
+import com.gu.workflow.db.{SectionDeskMappingDB, SectionDB, DeskDB}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -10,7 +9,6 @@ import lib.Composer._
 
 import play.api.mvc._
 import play.api.libs.json.Json
-
 
 object Application extends Controller with PanDomainAuthActions {
 
@@ -22,7 +20,7 @@ object Application extends Controller with PanDomainAuthActions {
       statuses <- StatusDatabase.statuses
       sections = SectionDB.sectionList.sortBy(_.name)
       desks = DeskDB.deskList.sortBy(_.name)
-      sectionsInDesks = DeskDB.getSectionsInDesks
+      sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
     }
     yield {
       val user = request.user
