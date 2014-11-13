@@ -11,7 +11,7 @@
  * @param contentService
  * @param prodOfficeService
  */
-var wfContentListDrawer = function ($rootScope, config, $timeout, $log, $window, contentService, prodOfficeService) {
+var wfContentListDrawer = function ($rootScope, config, $timeout, $window, contentService, prodOfficeService) {
 
     var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
         hiddenClass = 'content-list-drawer--hidden';
@@ -190,9 +190,7 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $log, $window,
             };
 
             function errorMessage(err) {
-                $log.error('Error deleting content: ' + err.message || err);
-
-                $scope.$apply(() => { throw err; });
+                $scope.$apply(() => { throw new Error('Error deleting content: ' + (err.message || err)); });
 
             }
 
