@@ -143,6 +143,10 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                     catch (err) {
                         if (updateOn != 'default') {
                             $log.error('Error parsing date: ', err);
+
+                            // FIXME: report error (for sentry) but do not throw it.
+                            //        previous logic ignores error, needs to be handled properly.
+                            if (window.onerror) { window.onerror(err); }
                         }
                     }
                 }
