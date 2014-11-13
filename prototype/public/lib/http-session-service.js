@@ -36,8 +36,6 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
                             },
 
                             (err) => {
-                                $log.error('Could not re-establish session: ' + err);
-
                                 throw new Error('Could not re-establish session: ' + err);
                             }
 
