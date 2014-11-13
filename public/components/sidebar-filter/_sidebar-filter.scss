@@ -30,7 +30,7 @@
     background-color: $c-grey-300;
     height: 28px;
     border-top: 1px solid #ffffff;
-    
+
     &:hover {
         background-color: darken($c-grey-300, 15%);
     }
@@ -78,13 +78,13 @@
     .sidebar__filter-link {
         @extend %fs-data-3;
         color: $c-text;
-        background-color: #f5f5f5;
+        background-color: $c-grey-170;
         padding: 7px 0 7px 23px;
         display: block;
         width: 100%;
         &:hover {
             text-decoration: none;
-            background-color: darken(#f5f5f5, 15%);
+            background-color: darken($c-grey-170, 15%);
         }
     }
     .sidebar__filter-icon {

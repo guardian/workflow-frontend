@@ -3,7 +3,7 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/',
     PREVIEW_PATH = 'http://preview.gutools.co.uk/',
     LIVE_PATH = 'http://www.theguardian.com/';
 
-function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
+function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter, sections) {
     /*jshint validthis:true */
 
     function formatAndLocaliseDate(dateValue, dateFormat) {
@@ -87,7 +87,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.status = item.status || 'Stub';
             this.statusValues = this.status === 'Stub' ? newslistStatusValues : contentStatusValues;
 
-            this.section = item.section;
+            this.section = sections.filter((section) => section.name === item.section)[0]; // Get section object
             this.needsLegal = item.needsLegal;
             this.note = item.note;
 
