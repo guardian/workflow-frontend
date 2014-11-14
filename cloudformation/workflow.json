@@ -380,7 +380,7 @@
                         "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py","\n",
                         {"Fn::Join": [" ", ["python awslogs-agent-setup.py -nr", { "Ref": "AWS::Region" }, "-c /home/workflow/prototype/conf/logger.conf" ]]},"\n",
 
-                        "start prototype\n"
+                        "start prototype -D\n"
                     ]]
 
                 }}
