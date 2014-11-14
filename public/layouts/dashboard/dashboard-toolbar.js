@@ -14,8 +14,10 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
         $scope.prodOffices = prodOfficeService.getProdOffices();
 
-        $scope.$watch('selectedProdOffice', function () {
-            $scope.$emit('filtersChanged.prodOffice', $scope.selectedProdOffice);
+        $scope.$watch('selectedProdOffice', function (newValue, oldValue) {
+            if (newValue !== oldValue) {  // Prevents fire change event on init
+                $scope.$emit('filtersChanged.prodOffice', $scope.selectedProdOffice);
+            }
         });
 
         // Sections =============================
@@ -95,8 +97,10 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
             return $scope.selectedDate && typeof($scope.selectedDate) != 'string';
         };
 
-        $scope.$watch('selectedDate', function () {
-            $scope.$emit('filtersChanged.selectedDate', $scope.selectedDate);
+        $scope.$watch('selectedDate', function (newValue, oldValue) {
+            if (newValue !== oldValue) {  // Prevents fire change event on init
+                $scope.$emit('filtersChanged.selectedDate', $scope.selectedDate);
+            }
         });
 
     }])
