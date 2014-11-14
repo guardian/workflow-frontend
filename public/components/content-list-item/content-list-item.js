@@ -103,6 +103,12 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.links = new ContentItemLinks(item);
             this.path = item.path;
 
+            this.isActiveInInCopy = item.activeInInCopy;
+            this.storyBundleId = item.storyBundleId;
+
+            this.isActiveInInCopy = true;
+            this.storyBundleId = "12345678";
+
             this.item = item;
         }
     }
