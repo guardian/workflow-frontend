@@ -361,6 +361,7 @@
 
                         "chown -R workflow /home/workflow\n",
                         "chgrp -R workflow /home/workflow\n",
+                        "stage=",{ "Ref": "Stage" },"| tr '[:upper:]' '[:lower:]\n",
 
                         "sed -i \\\n",
                         "    -e 's,@COMPOSER_URL@,", {"Ref": "ComposerUrl"}, ",g' \\\n",
@@ -380,7 +381,7 @@
                         "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py","\n",
                         {"Fn::Join": [" ", ["python awslogs-agent-setup.py -nr", { "Ref": "AWS::Region" }, "-c /home/workflow/prototype/conf/logger.conf" ]]},"\n",
 
-                        "start prototype -D\n"
+                        "start prototype -Dconfig.resource=application.$stage.conf\n"
                     ]]
 
                 }}
