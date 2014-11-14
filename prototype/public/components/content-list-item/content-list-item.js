@@ -87,7 +87,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.status = item.status || 'Stub';
             this.statusValues = this.status === 'Stub' ? newslistStatusValues : contentStatusValues;
 
-            this.section = sections.filter((section) => section.name === item.section)[0]; // Get section object
+            item.section = sections.filter((section) => section.name === item.section)[0]; // Get section object
+            this.section = item.section;
             this.needsLegal = item.needsLegal;
             this.note = item.note;
 
