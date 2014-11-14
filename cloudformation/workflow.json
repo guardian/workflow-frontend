@@ -361,7 +361,6 @@
 
                         "chown -R workflow /home/workflow\n",
                         "chgrp -R workflow /home/workflow\n",
-                        "stage=",{ "Ref": "Stage" },"| tr '[:upper:]' '[:lower:]\n",
 
                         "sed -i \\\n",
                         "    -e 's,@COMPOSER_URL@,", {"Ref": "ComposerUrl"}, ",g' \\\n",
@@ -376,12 +375,13 @@
                         "    -e 's,@PANDOMAIN_DOMAIN@,", {"Ref": "PandomainDomain"}, ",g' \\\n",
                         "    -e 's,@PANDOMAIN_AWS_KEY@,", {"Ref": "PandomainAwsKey"}, ",g' \\\n",
                         "    -e 's,@PANDOMAIN_AWS_SECRET@,", {"Ref": "PandomainAwsSecret"}, ",g' \\\n",
+                        "    -e 's,@STAGE@,", { "Ref": "Stage" },"| tr '[:upper:]' '[:lower:]", ",g' \\\n",
                         "    /etc/init/prototype.conf\n",
 
                         "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py","\n",
                         {"Fn::Join": [" ", ["python awslogs-agent-setup.py -nr", { "Ref": "AWS::Region" }, "-c /home/workflow/prototype/conf/logger.conf" ]]},"\n",
 
-                        "start prototype -Dconfig.resource=application.$stage.conf\n"
+                        "start prototype -D\n"
                     ]]
 
                 }}
