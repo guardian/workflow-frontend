@@ -14,8 +14,8 @@ dist
 /RUNNING_PID
 /.settings
 conf/local.conf
-*/conf/local.conf
-*/conf/devtoprod.conf
+*/conf/application.local.conf
+*/conf/application.devtoprod.conf
 # Created by http://www.gitignore.io
 
 ### Scala ###
