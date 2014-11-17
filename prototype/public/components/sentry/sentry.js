@@ -8,7 +8,7 @@
  */
 
 
-import raven from 'raven-js/dist/raven.min';
+import raven from 'raven-js';
 import angular from 'angular';
 
 import 'raven-js/plugins/angular';
