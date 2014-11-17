@@ -66,12 +66,10 @@ function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, leg
                 $scope.$emit('content.deleted', { contentItem: $scope.stub });
                 $scope.$apply();
                 $modalInstance.dismiss('cancel');
-            }, function () {
-                if (console && console.error) { // placeholder for sentry
-                    console.error(arguments);
-                }
+            }, function (err) {
+                $scope.$apply(() => { throw err; });
             });
-    }
+    };
 
 }
 
@@ -158,7 +156,7 @@ wfStubModal.run(['$rootScope',
                     $rootScope.$broadcast('getContent');
 
                 }, (err) => {
-                    $log.error('Stub ' + mode + ' failed: ' + (err.message || JSON.stringify(err)));
+                    $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
                 });
 
             });

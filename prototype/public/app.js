@@ -16,6 +16,10 @@ import angular from 'angular';
 // import 'javascripts/services/legal-states-service';
 // import 'javascripts/services/prodoffice-service';
 
+import { getEnvironment } from 'environment';
+
+import 'components/sentry/sentry';
+
 import 'components/content-list/content-list';
 import 'components/icons/icons';
 
@@ -43,6 +47,7 @@ angular.module('workflow',
     [
         'ui.router',
         'ngAnimate',
+        'wfSentry',
         'wfDashboard',
         'wfDashboardUser',
         'wfDashboardToolbar',
@@ -79,6 +84,8 @@ angular.module('workflow',
 
     }])
 
+    // Environment specific globals
+    .constant('wfEnvironment', getEnvironment())
 
     // Global config
     .constant(
