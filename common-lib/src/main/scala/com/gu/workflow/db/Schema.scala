@@ -75,20 +75,44 @@ object Schema {
       String //section
     )
 
+  type deskSectionMappingRow = (
+      Long, // Section pk
+      Long  // Desk pk
+    )
+
   case class DBSection(tag: Tag) extends Table[SectionRow](tag, "section") {
     def pk      = column [Long]     ("pk", O.PrimaryKey, O.AutoInc)
     def section = column [String]   ("section")
     def * = (pk, section)
   }
 
+  case class DBDesk(tag: Tag) extends Table[SectionRow](tag, "desk") {
+    def pk      = column [Long]     ("pk", O.PrimaryKey, O.AutoInc)
+    def desk = column [String]   ("desk")
+    def * = (pk, desk)
+  }
+
+  case class DBDeskSectionMapping(tag: Tag) extends Table[deskSectionMappingRow](tag, "section_desk_mapping") {
+    def desk_id = column [Long] ("desk_id")
+    def section_id = column [Long] ("section_id")
+    def * = (section_id, desk_id)
+  }
+
   type StubQuery = Query[DBStub, StubRow]
   type ContentQuery = Query[DBContent, ContentRow]
   type SectionQuery = Query[DBSection, SectionRow]
+  type DeskQuery = Query[DBDesk, SectionRow]
+
+  type DeskSectionMappingQuery = Query[DBDeskSectionMapping, deskSectionMappingRow]
 
   val stubs: StubQuery = TableQuery(DBStub)
   val content: ContentQuery = TableQuery(DBContent)
 
   val sections: SectionQuery = TableQuery(DBSection)
+
+  val desks: DeskQuery = TableQuery(DBDesk)
+
+  val deskSectionMapping: DeskSectionMappingQuery = TableQuery(DBDeskSectionMapping)
 
   implicit lazy val flagColumnType = MappedColumnType.base[Flag, String] (
     f => f.toString,
