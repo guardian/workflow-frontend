@@ -79,10 +79,15 @@ wfStubModal.run(['$rootScope',
     'wfContentService',
     'wfFiltersService',
     'wfProdOfficeService',
-    function ($rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService) {
+    'sections',
+    function ($rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, sections) {
 
         function currentFilteredSection() {
             return wfFiltersService.get('section');
+        }
+
+        function getSectionFromSections(sectionName) {
+            return sections.filter((section) => section.name === sectionName)[0];
         }
 
         $rootScope.$on('stub:edit', function (event, stub) {
@@ -92,7 +97,7 @@ wfStubModal.run(['$rootScope',
         $rootScope.$on('stub:create', function (event) {
             var stub = {
                 contentType: 'article',
-                section: currentFilteredSection() || 'Technology',
+                section: getSectionFromSections(currentFilteredSection() || 'Technology'),
                 priority: 0,
                 needsLegal: 'NA',
                 prodOffice: wfProdOfficeService.getDefaultOffice()
@@ -102,7 +107,7 @@ wfStubModal.run(['$rootScope',
 
         $rootScope.$on('content:import', function (event) {
             var stub = {
-                section: currentFilteredSection() || 'Technology',
+                section: getSectionFromSections(currentFilteredSection() || 'Technology'),
                 priority: 0,
                 needsLegal: 'NA',
                 prodOffice: wfProdOfficeService.getDefaultOffice()
