@@ -66,12 +66,10 @@ function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, leg
                 $scope.$emit('content.deleted', { contentItem: $scope.stub });
                 $scope.$apply();
                 $modalInstance.dismiss('cancel');
-            }, function () {
-                if (console && console.error) { // placeholder for sentry
-                    console.error(arguments);
-                }
+            }, function (err) {
+                $scope.$apply(() => { throw err; });
             });
-    }
+    };
 
 }
 
@@ -81,10 +79,15 @@ wfStubModal.run(['$rootScope',
     'wfContentService',
     'wfFiltersService',
     'wfProdOfficeService',
-    function ($rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService) {
+    'sections',
+    function ($rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, sections) {
 
         function currentFilteredSection() {
             return wfFiltersService.get('section');
+        }
+
+        function getSectionFromSections(sectionName) {
+            return sections.filter((section) => section.name === sectionName)[0];
         }
 
         $rootScope.$on('stub:edit', function (event, stub) {
@@ -94,7 +97,7 @@ wfStubModal.run(['$rootScope',
         $rootScope.$on('stub:create', function (event) {
             var stub = {
                 contentType: 'article',
-                section: currentFilteredSection() || 'Technology',
+                section: getSectionFromSections(currentFilteredSection() || 'Technology'),
                 priority: 0,
                 needsLegal: 'NA',
                 prodOffice: wfProdOfficeService.getDefaultOffice()
@@ -104,7 +107,7 @@ wfStubModal.run(['$rootScope',
 
         $rootScope.$on('content:import', function (event) {
             var stub = {
-                section: currentFilteredSection() || 'Technology',
+                section: getSectionFromSections(currentFilteredSection() || 'Technology'),
                 priority: 0,
                 needsLegal: 'NA',
                 prodOffice: wfProdOfficeService.getDefaultOffice()
@@ -153,7 +156,7 @@ wfStubModal.run(['$rootScope',
                     $rootScope.$broadcast('getContent');
 
                 }, (err) => {
-                    $log.error('Stub ' + mode + ' failed: ' + (err.message || JSON.stringify(err)));
+                    $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
                 });
 
             });
