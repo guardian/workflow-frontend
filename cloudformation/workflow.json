@@ -128,8 +128,8 @@
                             "Statement": [
                                 {
                                     "Effect": "Allow",
-                                    "Action": [ "s3:GetObject" ],
-                                    "Resource": [ "arn:aws:s3:::workflow-dist/*", "arn:aws:s3:::workflow-private/*" ]
+                                    "Action": [ "s3:*" ],
+                                    "Resource": [ "arn:aws:s3:::workflow-dist/*", "arn:aws:s3:::workflow-private/*", "arn:aws:s3:::workflow-logs/*" ]
                                 }
                             ]
                         }
@@ -251,6 +251,12 @@
                     "UnhealthyThreshold": "2",
                     "Interval": "10",
                     "Timeout": "5"
+                },
+                "AccessLoggingPolicy": {
+                    "EmitInterval": 5,
+                    "Enabled": true,
+                    "S3BucketName":  "workflow-logs",
+                    "S3BucketPrefix": {"Ref":"Stage"}
                 }
             }
         },
