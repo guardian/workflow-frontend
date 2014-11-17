@@ -128,8 +128,8 @@
                             "Statement": [
                                 {
                                     "Effect": "Allow",
-                                    "Action": [ "s3:*" ],
-                                    "Resource": [ "arn:aws:s3:::workflow-dist/*", "arn:aws:s3:::workflow-private/*", "arn:aws:s3:::workflow-logs/*" ]
+                                    "Action": [ "s3:GetObject" ],
+                                    "Resource": [ "arn:aws:s3:::workflow-dist/*", "arn:aws:s3:::workflow-private/*" ]
                                 }
                             ]
                         }
