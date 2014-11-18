@@ -1,4 +1,10 @@
 // Styles for presence indicators
+
+$rightIconOffset: 14px;
+$iconsToStack: 5;
+$iconAnimationTransTime: 0.5s;
+$iconAnimationEasingFunction: ease-in-out;
+
 .content-list-item__presence {
     display: inline-block;
 
@@ -8,7 +14,7 @@
         position: absolute;
         z-index: 1;
         top: 0;
-        left: 0;
+        right: 0;
         height: 100%;
         width: 100%;
     }
@@ -29,17 +35,32 @@
     }
 
     &--present {
-        position: absolute;
-        top: 5px;
-        left: 0;
 
-        @for $i from 1 to 4 {
+        position: absolute;
+        top: 8px;
+        right: $rightIconOffset;
+
+        -webkit-transition: right $iconAnimationTransTime $iconAnimationEasingFunction;
+        -moz-transition: right $iconAnimationTransTime $iconAnimationEasingFunction;
+        -ms-transition: right $iconAnimationTransTime $iconAnimationEasingFunction;
+        -o-transition: right $iconAnimationTransTime $iconAnimationEasingFunction;
+        transition: right $iconAnimationTransTime $iconAnimationEasingFunction;
+
+        .content-list-item__icon--presence {
+            -webkit-transition: color $iconAnimationTransTime, background-color $iconAnimationTransTime $iconAnimationEasingFunction;
+            -moz-transition: color $iconAnimationTransTime, background-color $iconAnimationTransTime $iconAnimationEasingFunction;
+            -ms-transition: color $iconAnimationTransTime, background-color $iconAnimationTransTime $iconAnimationEasingFunction;
+            -o-transition: color $iconAnimationTransTime, background-color $iconAnimationTransTime $iconAnimationEasingFunction;
+            transition: color $iconAnimationTransTime, background-color $iconAnimationTransTime $iconAnimationEasingFunction;
+        }
+
+        @for $i from 1 to $iconsToStack {
             &:nth-child(#{$i+1}) {
-                left: $i*4px;
+                right: ($i * -4) + $rightIconOffset;
                 z-index: $i*-1;
                 .content-list-item__icon--presence {
                     background-color: lighten(#474D80, $i*14%);
-                    color: transparent;
+                    color: rgba(255, 255, 255, 0);
                 }
             }
         }
@@ -51,16 +72,30 @@
 .content-list-item__presence-list {
     &:hover {
         .content-list-item__presence--present {
-            @for $i from 1 to 4 {
+            @for $i from 1 to $iconsToStack+99 {
                 &:nth-child(#{$i+1}) {
-                    left: $i*-24px;
+                    right: $i*24px + $rightIconOffset;
                     z-index: $i*-1;
                     .content-list-item__icon--presence {
                         background-color: #474D80;
-                        color: #ffffff;
+                        color: rgba(255, 255, 255, 1);
                     }
                 }
             }
         }
+
+//        .content-list-item__presence--present:last-child {
+//            &::before {
+//                content: " ";
+//                position: absolute;
+//                top: 0;
+//                left: 0;
+//                background-color: red;
+//                display: block;
+//                width: 100%;
+//                height: 100%;
+//
+//            }
+//        }
     }
 }
