@@ -16,9 +16,20 @@
     &--inactive {
         @extend .wf-icon;
 
-        fill: #DCDCDC;
+        fill: $c-grey-300;
+    }
+
+    &-type {
+        &--priority-urgent {
+            fill: $c-yellow;
+        }
+
+        &--priority-very-urgent {
+            fill: $c-red;
+        }
     }
 }
 
+// TODO: Move css that references these to use new linked svg icons
 $i-arrow-down: url("/assets/components/icons/src/arrow-down.svg");
 $i-arrow-up: url("/assets/components/icons/src/arrow-up.svg");
