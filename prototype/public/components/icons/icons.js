@@ -29,8 +29,7 @@ function wfIconDirective() {
         restrict: 'A',
         scope: {
             wfIcon: '@',
-            wfIconActive: '=', // boolean
-            wfIconDark: '=' //boolean
+            wfIconActive: '=' // boolean
         },
         link: function($scope, $element) {
 
@@ -54,8 +53,6 @@ function wfIconDirective() {
                 useElem.setAttributeNS(XLINK_NS, 'href', '#icon-' + newValue);
                 updateIconClass();
             });
-
-            // TODO: dark background icons
 
         }
     };
