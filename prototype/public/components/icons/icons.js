@@ -35,33 +35,28 @@ function wfIconDirective() {
         link: function($scope, $element) {
 
             var iconElem = document.createElementNS(SVG_NS, 'svg');
-            // iconElem.setAttribute('class', 'wf-icon');
             iconElem.setAttribute('viewBox', '0 0 128 128');
 
             var useElem = iconElem.appendChild(document.createElementNS(SVG_NS, 'use'));
-            useElem.setAttributeNS(XLINK_NS, 'href', '#icon-' + $scope.wfIcon);
-
 
             $element.append(iconElem);
 
-            $scope.$watch('wfIconActive', (newValue, oldValue) => {
-                iconElem.setAttribute('class', 'wf-icon--' + (newValue !== false ? 'active' : 'inactive'));
+            function updateIconClass() {
+                iconElem.setAttribute('class', [
+                    'wf-icon--' + ($scope.wfIconActive !== false ? 'active' : 'inactive'),
+                    'wf-icon-type--' + $scope.wfIcon
+                ].join(' '));
+            }
+
+            $scope.$watch('wfIconActive', updateIconClass);
+
+            $scope.$watch('wfIcon', (newValue, oldValue) => {
+                useElem.setAttributeNS(XLINK_NS, 'href', '#icon-' + newValue);
+                updateIconClass();
             });
 
-            // $scope.iconUrl = () => {
-            //     var postFixOptions = [
-            //         $scope.wfIconActive !== false ? 'active' : 'inactive',
-            //         $scope.wfIconDark === true ? 'dark-bg' : ''
-            //     ];
+            // TODO: dark background icons
 
-            //     var urlPostfix = postFixOptions.map(function(postFixOption) {
-            //         return postFixOption == '' ? '' : '-' + postFixOption;
-            //     }).reduce(function(previous, current, i, a) {
-            //         return previous + current;
-            //     });
-
-            //     return ICON_DIR + ICON_FILE + '#' + $scope.wfIcon + urlPostfix;
-            // };
         }
     };
 
