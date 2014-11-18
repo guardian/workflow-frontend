@@ -71,6 +71,19 @@ object CommonDB {
       (lastModifiedWithinWeek || c.lastModified.isNull || dueDateInFuture || c.timePublished.isNull))
   }
 
+  def hideContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
+    c.published && c.timePublished < DateTime.now().minusDays(1)
+  }
+
+  def showContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
+    def draftContent =  !c.published
+    def publishedWithinLastDay = c.published && c.timePublished > DateTime.now().minusDays(1)
+    def publishedLastModified = c.published && c.timePublished.isNull && c.lastModified > DateTime.now().minusDays(1)
+    def onHold = c.status === Status("Hold").name
+
+    draftContent || publishedWithinLastDay  || onHold
+  }
+
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
     DB.withTransaction { implicit session =>
       val contentExists = content.filter(_.composerId === wc.composerId).exists.run
