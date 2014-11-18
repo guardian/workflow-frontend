@@ -7,6 +7,7 @@ import org.joda.time._
 import com.gu.workflow.syntax._
 import models._
 import com.gu.workflow.db.Schema._
+import scala.language.postfixOps
 
 
 object CommonDB {
@@ -42,9 +43,6 @@ object CommonDB {
 
       q.filter(s => dueDateNotExpired(s.due))
         .list.map(row => Stub.fromStubRow(row))
-
-
-
     }
 
   def getStubForComposerId(composerId: String): Option[Stub] = DB.withTransaction { implicit session =>
@@ -96,6 +94,17 @@ object CommonDB {
     DB.withTransaction { implicit session =>
       content.filter(_.composerId === composerId).delete
       stubs.filter(_.composerId === composerId).delete
+    }
+  }
+
+  //some way of recursing this
+  def publishedWithNoPublicationDate: List[WorkflowContent] = {
+    DB.withTransaction { implicit session =>
+      content
+        .filter(_.timePublished isNull)
+        .filter(_.published === true)
+        .take(10)
+        .list.map(row => WorkflowContent.fromContentRow(row))
     }
   }
 }
