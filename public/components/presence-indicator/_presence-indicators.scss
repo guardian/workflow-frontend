@@ -1,0 +1,66 @@
+// Styles for presence indicators
+.content-list-item__presence {
+    display: inline-block;
+
+    &-list {
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+
+    &--present,
+    &--unknown {
+        @extend .content-list-item__presence;
+    }
+
+    &--unknown {
+        background-color: lightgrey;
+        color: white;
+    }
+
+    &--free {
+        display: none;
+    }
+
+    &--present {
+        position: absolute;
+        top: 5px;
+        left: 0;
+
+        @for $i from 1 to 4 {
+            &:nth-child(#{$i+1}) {
+                left: $i*4px;
+                z-index: $i*-1;
+                .content-list-item__icon--presence {
+                    background-color: lighten(#474D80, $i*14%);
+                    color: transparent;
+                }
+            }
+        }
+
+    }
+
+}
+
+.content-list-item__presence-list {
+    &:hover {
+        .content-list-item__presence--present {
+            @for $i from 1 to 4 {
+                &:nth-child(#{$i+1}) {
+                    left: $i*-24px;
+                    z-index: $i*-1;
+                    .content-list-item__icon--presence {
+                        background-color: #474D80;
+                        color: #ffffff;
+                    }
+                }
+            }
+        }
+    }
+}
