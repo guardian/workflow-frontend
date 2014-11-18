@@ -1,3 +1,25 @@
+/**
+ * Icon directive that inserts SVG elements which reuse paths from a single
+ * SVG sprite injected into the bottom of the document head.
+ *
+ * Usage:
+ *     <i wf-icon="example" />
+ *
+ * Appends SVG:
+ *     <svg class="wf-icon--active wf-icon-type--example" viewBox="0 0 128 128">
+ *         <use xlink:href="#icon-article"></use>
+ *     </svg>
+ *
+ * Icon Sprite file:
+ *     <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+ *         <defs>
+ *             <g id="icon-arrow-down">
+ *                 <path d="..." />
+ *             </g>
+ *         </defs>
+ *     </svg>
+ */
+
 
 import angular from 'angular';
 
@@ -14,7 +36,7 @@ angular.module('wfIcons', [])
     .directive('wfIcon', wfIconDirective);
 
 
-// Async loads the icon file
+// Async loads the icon sprite file
 function wfIconInit() {
     System.import(ICON_FILE + '!text').then((iconSprite) => {
         angular.element(document.head).append(iconSprite);
@@ -33,6 +55,9 @@ function wfIconDirective() {
         },
         link: function($scope, $element) {
 
+            // Create the icon element
+            //   Needs to be created this way with explicit Namespace as Angular
+            //   template creates HTML nodes rather than SVG.
             var iconElem = document.createElementNS(SVG_NS, 'svg');
             iconElem.setAttribute('viewBox', '0 0 128 128');
 
