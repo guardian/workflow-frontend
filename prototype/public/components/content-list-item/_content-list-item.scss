@@ -128,7 +128,6 @@
         &--content-type,
         &--working-title,
         &--headline,
-        &--presence,
         &--office,
         &--legal,
         &--status,
@@ -143,8 +142,9 @@
             @extend %content-list__field-padding;
         }
 
-        // smaller font size for assignee
-        &--assignee {
+        // smaller font size for assignee & presence
+        &--assignee,
+        &--presence {
             @extend %fs-data-2;
         }
 
