@@ -7,6 +7,8 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     display: -ms-flexbox;
     display: flex;
 
+    flex: 0 0 auto;
+
     -webkit-box-align: center;
     -webkit-align-items: center;
     -ms-flex-align: center;
@@ -77,21 +79,6 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     }
 }
 
-// Custom select box drop-down
-%dashboard-toolbar__select {
-    @extend %fs-data-3;
-
-    font-weight: normal;
-    border: none;
-    border-radius: 0;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    padding: 16px 34px 17px 18px;
-    margin-left: 5px;
-    outline: none;
-    cursor: pointer;
-}
-
 %dashboard-toolbar__select--inactive {
     @extend %dashboard-toolbar--control--inactive;
     @extend %dashboard-toolbar__select;
@@ -119,16 +106,23 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 // Section selector
 .dashboard-toolbar__section {
     @extend %dashboard-toolbar__segment;
+    position: relative;
+}
+
+.dashboard-toolbar__section-select {
+    @extend %dashboard-toolbar__select--active;
 }
 
 .dashboard-toolbar__section-label {
     @extend %dashboard-toolbar__label--select;
 }
 
-.dashboard-toolbar__section-select {
+.dashboard-toolbar__desk-select {
     @extend %dashboard-toolbar__select--active;
-    max-width: 140px;
-    text-overflow: ellipsis;
+}
+
+.dashboard-toolbar__desk-label {
+    @extend %dashboard-toolbar__label--select;
 }
 
 // Deadline filter
