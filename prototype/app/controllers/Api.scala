@@ -47,7 +47,7 @@ object Api extends Controller with PanDomainAuthActions {
   def content = APIAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
-    val section = req.getQueryString("section").map(Section(_))
+    val sections = req.getQueryString("section").map(_.split(",").toList.map(Section(_))) // "Section1,Section2,..,SectionN" -> List(Section("Section1"), .., Section("SectionN"))
     val contentType = req.getQueryString("content-type")
     val flags = req.queryString.get("flags") getOrElse Nil
     val prodOffice = req.getQueryString("prodOffice")
@@ -57,7 +57,7 @@ object Api extends Controller with PanDomainAuthActions {
 
     def getContent = {
       val content = PostgresDB.getContent(
-        section = req.getQueryString("section").map(Section(_)),
+        section = sections,
         dueFrom = dueFrom,
         dueUntil = dueUntil,
         status = status,
@@ -82,7 +82,7 @@ object Api extends Controller with PanDomainAuthActions {
       CommonDB.getStubs(
         dueFrom = dueFrom,
         dueUntil = dueUntil,
-        section = section,
+        section = sections,
         contentType = contentType,
         unlinkedOnly = true,
         prodOffice = prodOffice,
@@ -208,7 +208,7 @@ object Api extends Controller with PanDomainAuthActions {
   def putStubSection(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
-      section <- extract[String](jsValue \ "data")(Stub.sectionReads).right
+      section <- extract[String](jsValue \ "data" \ "name")(Stub.sectionReads).right
     } yield {
       PostgresDB.updateStubSection(stubId, section)
       NoContent

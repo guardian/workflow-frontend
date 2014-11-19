@@ -11,7 +11,7 @@ object SectionDB {
 
   def sectionList: List[Section] = {
     DB.withTransaction { implicit session =>
-      sections.list().map( {case (pk, name) => Section(name)})
+      sections.list().map( {case (pk, name) => Section(name, selected = false, pk)})
     }
   }
 

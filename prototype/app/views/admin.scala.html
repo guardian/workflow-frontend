@@ -5,12 +5,14 @@
 <div class="admin">
     <div class="row">
         <ul class="nav nav-tabs">
-            <li @if(tab == "sections"){class="active"} ><a href="@routes.Admin.sections">Sections</a></li>
+            <li @if(tab == "sections"){class="active"} ><a href="@routes.Admin.index(None)">Admin Home</a></li>
             <li @if(tab == "status"){class="active"} ><a href="@routes.Admin.status">Statuses</a></li>
             <li @if(tab == "more"){class="active"} ><a href="#">More...</a></li>
         </ul>
     </div>
-    @content
+    <div class="container-fluid">
+        @content
+    </div>
 </div>
 
 

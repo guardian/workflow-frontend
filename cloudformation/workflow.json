@@ -251,15 +251,19 @@
                     "UnhealthyThreshold": "2",
                     "Interval": "10",
                     "Timeout": "5"
+                },
+                "AccessLoggingPolicy": {
+                    "EmitInterval": 5,
+                    "Enabled": true,
+                    "S3BucketName":  "workflow-logs",
+                    "S3BucketPrefix": {"Ref":"Stage"}
                 }
             }
         },
         "PrototypeAutoscalingGroup": {
             "Type": "AWS::AutoScaling::AutoScalingGroup",
             "Properties": {
-                "AvailabilityZones": {
-                    "Fn::GetAZs": ""
-                },
+                "AvailabilityZones": [ "eu-west-1a", "eu-west-1b" ],
                 "LaunchConfigurationName": { "Ref": "PrototypeLaunchConfig" },
                 "MinSize": "2",
                 "MaxSize": "4",
@@ -363,7 +367,7 @@
 
                         "chown -R workflow /home/workflow\n",
                         "chgrp -R workflow /home/workflow\n",
-
+                        "stage=$(echo ", { "Ref": "Stage" }, "| tr '[:upper:]' '[:lower:]')\n",
                         "sed -i \\\n",
                         "    -e 's,@COMPOSER_URL@,", {"Ref": "ComposerUrl"}, ",g' \\\n",
                         "    -e 's,@PRESENCE_URL@,", {"Ref": "PresenceUrl"}, ",g' \\\n",
@@ -377,6 +381,7 @@
                         "    -e 's,@PANDOMAIN_DOMAIN@,", {"Ref": "PandomainDomain"}, ",g' \\\n",
                         "    -e 's,@PANDOMAIN_AWS_KEY@,", {"Ref": "PandomainAwsKey"}, ",g' \\\n",
                         "    -e 's,@PANDOMAIN_AWS_SECRET@,", {"Ref": "PandomainAwsSecret"}, ",g' \\\n",
+                        "    -e 's,@STAGE@,'$stage',g' \\\n",
                         "    /etc/init/prototype.conf\n",
 
                         "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py","\n",
