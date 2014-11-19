@@ -251,6 +251,12 @@
                     "UnhealthyThreshold": "2",
                     "Interval": "10",
                     "Timeout": "5"
+                },
+                "AccessLoggingPolicy": {
+                    "EmitInterval": 5,
+                    "Enabled": true,
+                    "S3BucketName":  "workflow-logs",
+                    "S3BucketPrefix": {"Ref":"Stage"}
                 }
             }
         },

@@ -32,7 +32,7 @@ object Stub {
 
   implicit val jsonReads: Reads[Stub] =( (__ \ "id").readNullable[Long] and
                             (__ \ "title").read[String] and
-                            (__ \ "section").read[String] and
+                            (__ \ "section" \ "name").read[String] and
                             (__ \ "due").readNullable[DateTime] and
                             (__ \ "assignee").readNullable[String] and
                             (__ \ "composerId").readNullable[String] and
