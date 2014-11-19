@@ -220,4 +220,13 @@ object PostgresDB {
       q.update(status)
     }
   }
+
+  def updateContent(composerId: String, pub: PublishedData) = {
+    DB.withTransaction { implicit session =>
+      val q = for {
+        wc <- content if wc.composerId === composerId
+      } yield (wc.published, wc.timePublished)
+      q.update(pub.published, pub.publishedTime)
+    }
+  }
 }

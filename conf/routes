@@ -36,6 +36,8 @@ POST           /api/stubs/:stubId                     controllers.Api.linkStub(s
 
 GET            /api/statuses                          controllers.Api.statusus
 
+GET             /api/syncComposer                     controllers.Api.syncComposer
+
 # Admin
 GET            /admin                                 controllers.Admin.index(selectedDesk: Option[Long])
 

@@ -1,8 +1,11 @@
 import java.util.TimeZone
+import play.api.libs.concurrent.Akka
 import play.api.mvc.WithFilters
 import play.api.{Logger, GlobalSettings, Application}
-import lib.{PrototypeConfiguration, RedirectToHTTPSFilter}
-
+import lib.{SyncComposer, ComposerQuery, PrototypeConfiguration, RedirectToHTTPSFilter}
+import scala.concurrent.duration._
+import akka.actor.Props
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
 
@@ -22,6 +25,12 @@ object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
     Logger.info("successfully loaded configuration variables")
   }
 
+//  import play.api.Play.current
+//  Akka.system.scheduler.scheduleOnce(
+//    delay = 0.seconds,
+//    receiver = Akka.system.actorOf(Props[SyncComposer]),
+//    message = ComposerQuery
+//  )
 
 
 }
