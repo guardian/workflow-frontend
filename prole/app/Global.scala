@@ -37,11 +37,7 @@ object Global extends GlobalSettings {
 
     CloudWatch.start
 
-    Akka.system.scheduler.scheduleOnce(
-      delay = 0.seconds,
-      receiver = Akka.system.actorOf(Props[SyncComposer]),
-      message = ComposerQuery
-    )
+
 
     // prod this to make it load initial state.
     //SectionDatabase.sectionList
