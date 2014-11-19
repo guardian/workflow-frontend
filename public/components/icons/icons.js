@@ -7,13 +7,13 @@
  *
  * Appends SVG:
  *     <svg class="wf-icon--active wf-icon-type--example" viewBox="0 0 128 128">
- *         <use xlink:href="#icon-article"></use>
+ *         <use xlink:href="#icon-example"></use>
  *     </svg>
  *
  * Icon Sprite file:
  *     <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
  *         <defs>
- *             <g id="icon-arrow-down">
+ *             <g id="example">
  *                 <path d="..." />
  *             </g>
  *         </defs>
