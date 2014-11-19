@@ -17,8 +17,8 @@
     <td class="content-list-item__field--main-image" title="{{ contentItem.mainImageTitle }}">
         <i class="content-list-item__icon--main-image" wf-icon="main-image" wf-icon-active="contentItem.hasMainImage"/>
     </td>
-    <td class="content-list-item__field--incopy" title="InCopy">
-        <i class="content-list-item__icon--incopy" wf-icon="incopy" wf-icon-active="false"/>
+    <td class="content-list-item__field--incopy" title="{{ contentItem.incopyTitle }}">
+        <i class="content-list-item__icon--incopy" wf-icon="incopy" wf-icon-active="contentItem.linkedWithIncopy"/>
     </td>
     <td class="content-list-item__field--presence">
         <wf-presence-indicators presence-id="contentItem.composerId">

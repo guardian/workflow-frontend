@@ -106,9 +106,12 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 
             this.isActiveInInCopy = item.activeInInCopy;
             this.storyBundleId = item.storyBundleId;
-
-            this.isActiveInInCopy = true;
-            this.storyBundleId = "12345678";
+            /* it may be linked with InCopy but owned by composer */
+            this.linkedWithIncopy = (typeof item.storyBundleId === "string" &&
+                                     item.storyBundleId.length > 0);
+            this.incopyTitle = this.linkedWithIncopy ?
+                'Linked with InCopy Story Bundle ' + this.storyBundleId :
+                'Not linked with InCopy';
 
             this.item = item;
         }
