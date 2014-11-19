@@ -30,9 +30,6 @@ function wfIconDirective() {
                     return previous + current;
                 });
                 var url = ICON_FILE + '#' + $scope.wfIcon + urlPostfix;
-
-                console.log("icon: " + $scope.wfIcon + " => " + url);
-                
                 return url;
             }
         }
