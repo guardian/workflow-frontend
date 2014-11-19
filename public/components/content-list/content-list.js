@@ -13,15 +13,15 @@ import { wfContentListDrawer } from 'components/content-list-drawer/content-list
 
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService'])
-    .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', wfContentItemParser])
+    .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
-    .controller('wfContentListController', ['$scope', '$log', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
+    .controller('wfContentListController', ['$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$log', '$window', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
 
 
-function wfContentListController($scope, $log, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService) {
+function wfContentListController($scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService) {
 
     /*jshint validthis:true */
 
@@ -100,10 +100,12 @@ function wfContentListController($scope, $log, statuses, sections, wfContentServ
 
 
     this.renderError = (err) => {
-        $log.error('Error rendering content: ' + (err.message || JSON.stringify(err)));
         $scope.refreshContentError = err;
 
-        $scope.$apply();
+        $scope.$apply(() => {
+            throw new Error('Error rendering content: ' + (err.message || err));
+        });
+
     };
 
 
@@ -123,7 +125,11 @@ function wfContentListController($scope, $log, statuses, sections, wfContentServ
                 this.poller.refresh();
 
             }, (err) => {
-                this.renderError(err);
+                $scope.refreshContentError = err;
+
+                $scope.$apply(() => {
+                    throw new Error('Error updating content: ' + (err.message || err));
+                });
             });
         }
 
