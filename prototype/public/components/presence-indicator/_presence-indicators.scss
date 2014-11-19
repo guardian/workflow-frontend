@@ -38,7 +38,11 @@ $iconAnimationEasingFunction: ease-in-out;
         display: none;
     }
 
-    &--present {
+}
+
+.content-list-item__presence-list {
+
+    .content-list-item__presence--present {
         position: absolute;
         top: 8px;
         right: $rightIconOffset;
@@ -59,20 +63,50 @@ $iconAnimationEasingFunction: ease-in-out;
                 }
             }
         }
-
     }
 
+    &:hover .content-list-item__presence--present {
+        @for $i from 1 to $iconsToStack + 50 {
+            // ensure all icons shown when expanded
+            &:nth-child(#{$i+1}) {
+                right: ($i * $iconExpandIntervalDistance) + $rightIconOffset;
+                z-index: $i*-1;
+                .content-list-item__icon--presence {
+                    background-color: #474D80;
+                    color: rgba(255, 255, 255, 1);
+                    @include box-shadow(0px 0px 4px 1px #ffffff);
+                }
+            }
+        }
+    }
 }
 
-.content-list-item__presence-list:hover .content-list-item__presence--present {
-    @for $i from 1 to $iconsToStack + 50 { // ensure all icons shown when expanded
-        &:nth-child(#{$i+1}) {
-            right: ($i * $iconExpandIntervalDistance) + $rightIconOffset;
-            z-index: $i*-1;
-            .content-list-item__icon--presence {
-                background-color: #474D80;
-                color: rgba(255, 255, 255, 1);
-                @include box-shadow(0px 0px 4px 1px #ffffff);
+// Presence in the drawer
+
+.content-list-item__presence-list--drawer {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+
+    .content-list-item__presence--present {
+        position: static;
+        display: inline-block;
+        .content-list-item__icon--presence {
+            width: auto;
+            height: auto;
+            text-transform: none;
+            @extend %fs-data-2;
+            @include border-radius(50px);
+            padding: 0 6px;
+            line-height: 16px;
+            margin: 1px 0;
+            border: 1px solid transparent;
+
+            &:hover {
+                background-color: #ffffff;
+                border: 1px solid #474D80;
+                color: #474D80;
             }
         }
     }
