@@ -24,7 +24,7 @@
 import angular from 'angular';
 
 // Path to aggregated icons
-var ICON_FILE = 'components/icons/icons.svg';
+var ICON_FILE = '/assets/components/icons/icons.svg';
 
 // SVG Namespace
 var SVG_NS = 'http://www.w3.org/2000/svg';
@@ -32,16 +32,39 @@ var XLINK_NS = 'http://www.w3.org/1999/xlink';
 
 
 angular.module('wfIcons', [])
-    .run(wfIconInit)
+    .run(['$http', wfIconInit])
     .directive('wfIcon', wfIconDirective);
 
 
 // Async loads the icon sprite file
-function wfIconInit() {
-    System.import(ICON_FILE + '!text').then((iconSprite) => {
-        angular.element(document.head).append(iconSprite);
+function wfIconInit($http) {
+    $http({
+        method: 'GET',
+        url: ICON_FILE,
+        responseType: 'text'
+    })
 
-    }, (err) => { window.onerror(err); });
+    .then((response) => {
+
+        if (response.data && response.data.indexOf('<svg') !== 0) {
+            throw new Error('Unexpected response for icon sprite: ' + response.data);
+        }
+
+        angular.element(document.head).append(response.data);
+
+    })
+
+    .catch((err) => {
+        throw new Error([
+            'Could not load icon sprite: ',
+            err.status || '?',
+            err.statusText || 'Unknown',
+            'from',
+            err.config && err.config.method || '',
+            err.config && err.config.url || ''
+
+        ].join(' '));
+    });
 }
 
 
