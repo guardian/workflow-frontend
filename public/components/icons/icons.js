@@ -29,8 +29,11 @@ function wfIconDirective() {
                 }).reduce(function(previous, current, i, a) {
                     return previous + current;
                 });
+                var url = ICON_FILE + '#' + $scope.wfIcon + urlPostfix;
+
+                console.log("icon: " + $scope.wfIcon + " => " + url);
                 
-                return ICON_FILE + '#' + $scope.wfIcon + urlPostfix;
+                return url;
             }
         }
     };
