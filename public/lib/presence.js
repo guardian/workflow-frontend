@@ -5,11 +5,16 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 
     var self = {};
 
-    self.whenEnabled = wfFeatureSwitches.getSwitch("presence-indicator").then(function (value) {
-        if(value) return true;
-        else reject("presence disabled");
-    }, function(err) {
-        $log.error("error: " + err);
+//    Save this code for when feature switched are implemented.
+//    self.whenEnabled = wfFeatureSwitches.getSwitch("presence-indicator").then(function (value) {
+//        if(value) return true;
+//        else reject("presence disabled");
+//    }, function(err) {
+//        $log.error("error: " + err);
+//    });
+
+    self.whenEnabled = new Promise((resolve, reject) => {
+       resolve(true);
     });
 
     self.endpoint = config.presenceUrl;
@@ -43,13 +48,12 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         firstName : wfUser.firstName,
         lastName  : wfUser.lastName,
         email     : wfUser.email
-    }
+    };
     // INITIATE the connection if presence is enabled
     var presence = self.whenEnabled.then(()=>System.import('presence-client')).then(
                     (presenceClient) => {
                         var client = presenceClient(self.endpoint, person);
                             client.on('connection.open', () => {
-                                console.log('connection is open');
                                 broadcast("presence.connection.success", client.url);
                                 addHandlers(client, messageHandlers);
                             });
