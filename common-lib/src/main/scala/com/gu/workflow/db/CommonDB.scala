@@ -41,42 +41,16 @@ object CommonDB {
           createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
           createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
 
-      q.filter(s => dueDateNotExpired(s.due))
-        .list.map(row => Stub.fromStubRow(row))
+      q.list.map(row => Stub.fromStubRow(row))
     }
 
   def getStubForComposerId(composerId: String): Option[Stub] = DB.withTransaction { implicit session =>
     stubs.filter(_.composerId === composerId).firstOption.map(Stub.fromStubRow(_))
   }
 
-  def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
-
-  def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
-    withinDisplayTime(s, c) ||
-      //or item has a status of hold
-      c.status === Status("Hold").name
-  }
-
-  def withinDisplayTime(s: Schema.DBStub, c: Schema.DBContent) = {
-    def publishedWithinLastDay = c.timePublished > DateTime.now().minusDays(1)
-    def dueDateWithinLastWeek = s.due > DateTime.now().minusDays(7)
-    def lastModifiedWithinWeek = c.lastModified > DateTime.now().minusDays(7)
-    def dueDateInFuture = s.due > DateTime.now()
-    //content item has been published within last 24 hours
-    ((publishedWithinLastDay || c.timePublished.isNull) &&
-
-      (dueDateWithinLastWeek || s.due.isNull) &&
-      (lastModifiedWithinWeek || c.lastModified.isNull || dueDateInFuture || c.timePublished.isNull))
-  }
-
-  def hideContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
-    c.published && c.timePublished < DateTime.now().minusDays(1)
-  }
-
   def showContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
     def draftContent =  !c.published
     def publishedWithinLastDay = c.published && c.timePublished > DateTime.now().minusDays(1)
-    def publishedLastModified = c.published && c.timePublished.isNull && c.lastModified > DateTime.now().minusDays(1)
     def onHold = c.status === Status("Hold").name
 
     draftContent || publishedWithinLastDay  || onHold
@@ -110,14 +84,4 @@ object CommonDB {
     }
   }
 
-  //some way of recursing this
-  def publishedWithNoPublicationDate: List[WorkflowContent] = {
-    DB.withTransaction { implicit session =>
-      content
-        .filter(_.timePublished isNull)
-        .filter(_.published === true)
-        .take(10)
-        .list.map(row => WorkflowContent.fromContentRow(row))
-    }
-  }
 }
