@@ -1,0 +1,4 @@
+
+dependencies:
+  pre:
+    - ./prototype/setup.sh
