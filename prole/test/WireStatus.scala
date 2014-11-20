@@ -34,8 +34,8 @@ class WireStatusModelSpec extends FunSuite with ShouldMatchers with ResourcesHel
     ws.tagSections should equal (Nil)
     ws.commentable should equal (false)
     ws.published should equal (true)
-    ws.lastMajorRevisionDate should equal (Some(new DateTime("2014-07-02T14:18:58.687Z")))
-    ws.publicationDate should equal (Some(new DateTime("2014-07-02T14:18:58.687Z")))
+    ws.lastMajorRevisionDate should equal (Some(new DateTime("2014-07-02T13:18:58.687Z")))
+    ws.publicationDate should equal (Some(new DateTime("2014-07-02T13:18:58.687Z")))
     ws.revision should equal (3)
   }
 }
