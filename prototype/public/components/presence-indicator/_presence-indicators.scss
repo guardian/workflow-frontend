@@ -58,7 +58,7 @@ $iconAnimationEasingFunction: ease-in-out;
                 right: ($i * -4) + $rightIconOffset;
                 z-index: $i*-1;
                 .content-list-item__icon--presence {
-                    background-color: lighten(#474D80, $i*$stackColorLightenIncrement);
+                    background-color: lighten($c-presence-purple, $i*$stackColorLightenIncrement);
                     color: rgba(255, 255, 255, 0);
                 }
             }
@@ -72,7 +72,7 @@ $iconAnimationEasingFunction: ease-in-out;
                 right: ($i * $iconExpandIntervalDistance) + $rightIconOffset;
                 z-index: $i*-1;
                 .content-list-item__icon--presence {
-                    background-color: #474D80;
+                    background-color: $c-presence-purple;
                     color: rgba(255, 255, 255, 1);
                     @include box-shadow(0px 0px 4px 1px #ffffff);
                 }
@@ -105,8 +105,8 @@ $iconAnimationEasingFunction: ease-in-out;
 
             &:hover {
                 background-color: #ffffff;
-                border: 1px solid #474D80;
-                color: #474D80;
+                border: 1px solid $c-presence-purple;
+                color: $c-presence-purple;
             }
         }
     }
