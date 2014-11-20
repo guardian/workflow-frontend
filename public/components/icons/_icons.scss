@@ -7,7 +7,7 @@
     height: 100%;
     vertical-align: middle;
 
-    fill: #666;
+    fill: $c-grey-600;
 
     &--active {
         @extend .wf-icon;
