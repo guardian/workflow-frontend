@@ -61,10 +61,10 @@
                         <span class="drawer__section-data-row--editable" editable-text="contentItem.item.assignee" buttons="no" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.item.assignee || "None" }}</span>
                     </li>
 
-                    <li class="drawer__section" ng-switch on="contentItem.isActiveInInCopy">
-                        <span class="drawer__section-title">InCopy ID</span>
-                        <span class="drawer__section-data-row" ng-switch-when="false">Not active in inCopy</span>
-                        <span class="drawer__section-data-row" ng-switch-when="true">{{ contentItem.storyBundleId }}</span>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">InCopy</span>
+                        <span class="drawer__section-data-row">{{ contentItem.incopyTitle }}</span>
+                        <span class="drawer__section-data-row" ng-if="contentItem.isOwnedByInCopy"><i>Locked</i></span>
                     </li>
 
                 </ul>
@@ -161,6 +161,12 @@
                     <span class="drawer__section-data-row drawer__control-item drawer__control-item--delete" ng-click="deleteContentItem()">
                         <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete" wf-icon-dark="awaitingDeleteConfirmation"></i>
                             {{ awaitingDeleteConfirmation ? 'Delete' : 'Delete from workflow' }}
+                        </span>
+                    </li>
+                    <li class="drawer__control">
+                        <span class="drawer__section-data-row drawer__control-item drawer__control-item--delete" ng-click="sendContentItemToInCopy()">
+                            <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="incopy"></i>
+                            {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
                         </span>
                     </li>
                  </ul>
