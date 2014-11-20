@@ -50,7 +50,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                     (presenceClient) => {
                         var client = presenceClient(self.endpoint, person);
                             client.on('connection.open', () => {
-                                console.log('connection is open');
+                                $log.info("presence connection open");
                                 broadcast("presence.connection.success", client.url);
                                 addHandlers(client, messageHandlers);
                             });
