@@ -1,6 +1,6 @@
 <ul ng-class="'content-list-item__presence-list' + (inDrawer ? '--drawer' : '')">
 
-    <span ng-show="!presences.length && inDrawer" class="drawer__section-data-row drawer__section-data-row--coming-soon">Nobody</span>
+    <span ng-show="(!presences.length || presences.length === 0) && inDrawer" class="drawer__section-data-row drawer__section-data-row--coming-soon">Nobody</span>
 
     <li ng-repeat="presence in presences"
         ng-class="'content-list-item__presence--' + presence.status">
