@@ -2,12 +2,6 @@
     <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priority | getPriorityString }}">
         <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority | getPriorityString }}" ng-show="contentItem.priority !== 0"/>
     </td>
-    <td class="content-list-item__field--comments" title="Comments: {{ contentItem.commentsTitle }}">
-        <i class="content-list-item__icon--comments" wf-icon="comments" wf-icon-active="contentItem.hasComments"/>
-    </td>
-    <td class="content-list-item__field--main-image" title="{{ contentItem.mainImageTitle }}">
-        <i class="content-list-item__icon--main-image" wf-icon="main-image" wf-icon-active="contentItem.hasMainImage"/>
-    </td>
     <td class="content-list-item__field--content-type" title="{{ contentItem.contentTypeTitle }}">
         <i class="content-list-item__icon--content-type" wf-icon="{{ contentItem.contentType }}"/>
     </td>
@@ -17,6 +11,15 @@
         <a ng-href="{{ contentItem.links.composer }}" ng-click="contentList.editItem(contentItem); $event.stopPropagation()" target="_blank">{{
             contentList.showHeadline && contentItem.headline ? contentItem.headline : contentItem.workingTitle }}</a>
     </th>
+    <td class="content-list-item__field--comments" title="Comments: {{ contentItem.commentsTitle }}">
+        <i class="content-list-item__icon--comments" wf-icon="comments" wf-icon-active="contentItem.hasComments"/>
+    </td>
+    <td class="content-list-item__field--main-image" title="{{ contentItem.mainImageTitle }}">
+        <i class="content-list-item__icon--main-image" wf-icon="main-image" wf-icon-active="contentItem.hasMainImage"/>
+    </td>
+    <td class="content-list-item__field--incopy" title="{{ contentItem.incopyTitle }}">
+        <i class="content-list-item__icon--incopy" wf-icon="incopy" wf-icon-active="contentItem.linkedWithIncopy"/>
+    </td>
     <td class="content-list-item__field--presence">
         <wf-presence-indicators presence-id="contentItem.composerId">
         </wf-presence-indicators>

@@ -45,7 +45,8 @@
         &--composer,
         &--preview,
         &--live,
-        &--ophan {
+        &--ophan,
+        &--incopy {
             display: inline-block;
             width: $content-list-icon-size;
             height: $content-list-icon-size;
@@ -164,7 +165,8 @@
         &--ophan,
         &--deadline,
         &--created,
-        &--section {
+        &--section,
+        &--incopy {
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
@@ -182,7 +184,8 @@
         &--composer,
         &--preview,
         &--live,
-        &--ophan {
+        &--ophan,
+        &--incopy {
             padding: 10px 5px;
             width: $content-list-icon-size;
         }

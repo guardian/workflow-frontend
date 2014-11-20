@@ -189,6 +189,10 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                     }, errorMessage);
             };
 
+            $scope.sendContentItemToInCopy = function () {
+                $scope.contentItem.linkedWithInCopy = !$scope.contentItem.linkedWithInCopy;
+            }
+
             function errorMessage(err) {
                 $scope.$apply(() => { throw new Error('Error deleting content: ' + (err.message || err)); });
 

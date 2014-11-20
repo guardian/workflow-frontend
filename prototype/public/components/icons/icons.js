@@ -29,8 +29,8 @@ function wfIconDirective() {
                 }).reduce(function(previous, current, i, a) {
                     return previous + current;
                 });
-                
-                return ICON_FILE + '#' + $scope.wfIcon + urlPostfix;
+                var url = ICON_FILE + '#' + $scope.wfIcon + urlPostfix;
+                return url;
             }
         }
     };

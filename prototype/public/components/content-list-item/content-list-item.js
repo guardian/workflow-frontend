@@ -104,11 +104,14 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.links = new ContentItemLinks(item);
             this.path = item.path;
 
-            this.isActiveInInCopy = item.activeInInCopy;
+            this.isOwnedByInCopy = item.activeInInCopy;
             this.storyBundleId = item.storyBundleId;
-
-            this.isActiveInInCopy = true;
-            this.storyBundleId = "12345678";
+            /* it may be linked with InCopy but owned by composer */
+            this.linkedWithIncopy = (typeof item.storyBundleId === "string" &&
+                                     item.storyBundleId.length > 0);
+            this.incopyTitle = this.linkedWithIncopy ?
+                'Linked with InCopy Story Bundle ' + this.storyBundleId :
+                'Not linked with InCopy';
 
             this.item = item;
         }
@@ -136,7 +139,6 @@ var wfContentListItem = function ($rootScope) {
             statusValues: '='
         },
         link: function ($scope, elem, attrs) {
-
             /**
              * Emit an event telling the details drawer to move itself to this element, update and display.
              * @param {Object} contentItem - this contentItem
