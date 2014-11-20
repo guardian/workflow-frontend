@@ -13,9 +13,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 //        $log.error("error: " + err);
 //    });
 
-    self.whenEnabled = new Promise((resolve, reject) => {
-       resolve(true);
-    });
+    self.whenEnabled = Promise.resolve(true);
 
     self.endpoint = config.presenceUrl;
 
