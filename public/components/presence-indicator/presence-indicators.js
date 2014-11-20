@@ -1,4 +1,4 @@
-var wfPresenceIndicatorsDirective = function ($rootScope, wfPresenceService) {
+function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService) {
 
     return {
         restrict: 'E',
@@ -7,15 +7,15 @@ var wfPresenceIndicatorsDirective = function ($rootScope, wfPresenceService) {
             id: "=presenceId",
             inDrawer: "=inDrawer"
         },
-        link: function($scope) {
+        link: ($scope) => {
 
             function applyCurrentState(currentState) {
                 if(currentState.length === 0) {
                     $scope.presences = [{ status: "free", indicatorText: ""}];
                 } else {
                     $scope.presences = _.map(
-                        _.uniq(currentState, false, function(s) { return s.clientId.person.email; }),
-                        function (pr) {
+                        _.uniq(currentState, false, (s) => { return s.clientId.person.email; }),
+                        (pr) => {
                             var person = pr.clientId.person;
                             return { indicatorText:
                                 (person.firstName.charAt(0) + person.lastName.charAt(0)).toUpperCase(),
@@ -26,14 +26,14 @@ var wfPresenceIndicatorsDirective = function ($rootScope, wfPresenceService) {
                 }
             }
 
-            $scope.$watch("id", function (newValue, oldValue) {
-                wfPresenceService.initialData(newValue).then(function (currentState) {
+            $scope.$watch("id", (newValue, oldValue) => {
+                wfPresenceService.initialData(newValue).then((currentState) => {
                     applyCurrentState(currentState);
-                }, function (err) {
+                }, (err) => {
                     $log.error("Error getting initial data:", err);
                 });
 
-                $scope.$on("presence.status", function(ev, data) {
+                $scope.$on("presence.status", (ev, data) => {
                     if(newValue === data.subscriptionId) {
                         applyCurrentState(data.currentState);
                     }
@@ -41,6 +41,6 @@ var wfPresenceIndicatorsDirective = function ($rootScope, wfPresenceService) {
             });
         }
     };
-};
+}
 
 export { wfPresenceIndicatorsDirective };
