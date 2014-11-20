@@ -135,35 +135,4 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 
 }]);
 
-module.directive(
-    'wfPresenceConnectionStatus', ['wfPresenceService',
-    function (wfPresenceService) {
-        return {
-            link: function($scope, element) {
-
-                $scope.presenceEnabled = false;
-                $scope.connectionStatus = "disabled";
-
-                wfPresenceService.whenEnabled.then(function () {
-                    $scope.presenceEnabled = true;
-                    $scope.connectionStatus = "connecting";
-
-                    $scope.$on("presence.connection.success", function (ev, data) {
-                        $scope.connectionStatus = "ok";
-                        $scope.connectionMessage = "Connected to: " + data;
-                    });
-                    $scope.$on("presence.connection.error", function (err) {
-                        $scope.connectionStatus = "error";
-                        $scope.connectionMessage = err;
-                    });
-
-                    $scope.$on("presence.connection.closed", function () {
-                        $scope.connectionStatus = "closed";
-                    });
-                });
-            }
-        };
-    }]);
-
-
 module.directive('wfPresenceIndicators', ['$rootScope', 'wfPresenceService', wfPresenceIndicatorsDirective]);
