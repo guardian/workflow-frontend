@@ -26,21 +26,21 @@ var wfPresenceIndicatorsDirective = function ($rootScope, wfPresenceService) {
                 }
             }
 
-            if ($scope.id) {
-                wfPresenceService.initialData($scope.id).then(function (currentState) {
+            $scope.$watch("id", function (newValue, oldValue) {
+                wfPresenceService.initialData(newValue).then(function (currentState) {
                     applyCurrentState(currentState);
                 }, function (err) {
                     $log.error("Error getting initial data:", err);
                 });
 
                 $scope.$on("presence.status", function(ev, data) {
-                    if($scope.id === data.subscriptionId) {
+                    if(newValue === data.subscriptionId) {
                         applyCurrentState(data.currentState);
                     }
                 });
-            }
+            });
         }
     };
-}
+};
 
 export { wfPresenceIndicatorsDirective };
