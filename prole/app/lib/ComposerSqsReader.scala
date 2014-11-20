@@ -12,7 +12,13 @@ import akka.actor.Actor
 import play.api.libs.json.{JsError, JsSuccess}
 import play.api.Logger
 import com.gu.workflow.db.CommonDB
-import models.{WorkflowContent, WireStatus, LifecycleEvent, WorkflowNotification}
+import models.{
+  WorkflowContent, 
+  WireStatus, 
+  LifecycleEvent, 
+  WorkflowNotification,
+  Stub
+}
 
 
 class ComposerSqsReader extends Actor {
@@ -49,31 +55,50 @@ class ComposerSqsReader extends Actor {
     processMessages
   }
 
+  private def recordWriteStatusError(s: WireStatus, sqle: SQLException): Unit = {
+    CloudWatch.recordMessageError
+    Logger.error(s"unable to write status: $s", sqle)
+  }
+
+  private def recordLifecycleEventError(e: LifecycleEvent, sqle: SQLException): Unit = {
+    CloudWatch.recordMessageError
+    Logger.error(s"unable to perform lifecycle event $e", sqle)
+  }
+
+  private def recordUntrackedContent: Unit = {
+    CloudWatch.recordUntrackedContentMessage
+    Logger.trace("update to non tracked content recieved, ignoring") 
+  }
+
+  private def stub(id: String): Option[Stub] = {
+    // CommonDB.getStubForComposerId exception will propogate up
+    val stub = CommonDB.getStubForComposerId(id)
+    if(stub.isEmpty) recordUntrackedContent
+
+    stub
+  }
+
   private def processLifecycleEvent(event: LifecycleEvent) = {
-    println("----=== processLifecycleEvent ===----")
+    stub(event.composerId).fold()( stub => {
+      try {
+        CommonDB.deleteContent(event.composerId)
+      } catch {
+        case sqle: SQLException => recordLifecycleEventError(event, sqle)
+      }
+    })
   }
 
   private def processWireStatus(status: WireStatus) = {
-    // CommonDB.getStubForComposerId exception will propogate up 
-    CommonDB.getStubForComposerId(status.composerId) match {
-      case Some(stub) => {
-        try {
-          val content = WorkflowContent.fromWireStatus(status, stub)
-          if(status.updateType=="live") {
-            CommonDB.createOrModifyContent(content, status.revision)
-          }
-        } catch {
-          case sqle: SQLException => {
-            Logger.error(s"unable to write status: $status", sqle)
-            CloudWatch.recordMessageError
-          }
+    stub(status.composerId).fold()( stub =>
+      try {
+        val content = WorkflowContent.fromWireStatus(status, stub)
+        if(status.updateType=="live") {
+          CommonDB.createOrModifyContent(content, status.revision)
         }
+      } catch {
+        case sqle: SQLException => recordWriteStatusError(status, sqle)
       }
-      case None => {
-        CloudWatch.recordUntrackedContentMessage
-        Logger.trace("update to non tracked content recieved, ignoring") 
-      }
-    }
+    )
   }
 }
 
