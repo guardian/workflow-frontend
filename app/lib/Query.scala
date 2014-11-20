@@ -20,3 +20,39 @@ case class WfQuery(
   prodOffice    : Seq[String]      = Nil,
   creationTimes : Seq[WfQueryTime] = Nil
 )
+
+object WfQuery {
+  def optToSeq[A](o: Option[A]): Seq[A] =
+    o map (List(_)) getOrElse Nil
+
+  def dateTimeToQueryTime(from: Option[DateTime], until: Option[DateTime]) =
+    (from, until) match {
+      case (None, None)  => Nil
+      case (from, until) => List(WfQueryTime(from, until))
+    }
+
+  def fromOptions(
+    section:      Option[List[Section]]  = None,
+    desk:         Option[Desk]     = None,
+    dueFrom:      Option[DateTime] = None,
+    dueUntil:     Option[DateTime] = None,
+    status:       Option[Status]   = None,
+    contentType:  Option[String]   = None,
+    published:    Option[Boolean]  = None,
+    flags:        Seq[String]      = Nil,
+    prodOffice:   Option[String]   = None,
+    createdFrom:  Option[DateTime] = None,
+                  createdUntil: Option[DateTime] = None
+  ): WfQuery = WfQuery(
+    section getOrElse Nil,
+    optToSeq(desk),
+    dateTimeToQueryTime(dueFrom, dueUntil),
+    optToSeq(status),
+    optToSeq(contentType),
+    published,
+    flags,
+    optToSeq(prodOffice),
+    dateTimeToQueryTime(createdFrom, createdUntil)
+  )
+
+}
