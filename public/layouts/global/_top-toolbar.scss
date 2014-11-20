@@ -16,6 +16,7 @@
     @extend %f-title;
     font-size: 18px;
     width: 130px;
+    min-width: 130px;
     background-color: $c-grey-300;
     margin: 0;
     padding: 0 10px;
@@ -38,6 +39,8 @@
     -webkit-flex-grow: 1;
     -ms-flex-positive: 1;
     flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis: 1084px;
 }
 
 .top-toolbar__user {
@@ -47,4 +50,5 @@
 
 .top-toolbar__user-link {
     color: $c-text;
+    white-space: nowrap;
 }
