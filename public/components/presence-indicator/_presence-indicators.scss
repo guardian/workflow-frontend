@@ -54,7 +54,7 @@ $iconAnimationEasingFunction: ease-in-out;
         }
 
         @for $i from 1 to $iconsToStack {
-            &:nth-child(#{$i+1}) {
+            &:nth-of-type(#{$i+1}) {
                 right: ($i * -4) + $rightIconOffset;
                 z-index: $i*-1;
                 .content-list-item__icon--presence {
@@ -68,7 +68,7 @@ $iconAnimationEasingFunction: ease-in-out;
     &:hover .content-list-item__presence--present {
         @for $i from 1 to $iconsToStack + 50 {
             // ensure all icons shown when expanded
-            &:nth-child(#{$i+1}) {
+            &:nth-of-type(#{$i+1}) {
                 right: ($i * $iconExpandIntervalDistance) + $rightIconOffset;
                 z-index: $i*-1;
                 .content-list-item__icon--presence {
