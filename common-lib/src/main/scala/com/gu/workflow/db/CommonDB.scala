@@ -51,6 +51,10 @@ object CommonDB {
     stubs.filter(_.composerId === composerId).firstOption.map(Stub.fromStubRow(_))
   }
 
+  def getContentForComposerId(composerId: String): Option[WorkflowContent] = DB.withTransaction { implicit session =>
+    content.filter(_.composerId === composerId).firstOption.map(WorkflowContent.fromContentRow(_))
+  }
+
   def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
 
   def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
@@ -92,7 +96,16 @@ object CommonDB {
       content += WorkflowContent.newContentRow(wc, revision)
   }
 
-  def deleteContent(composerId: String) {
+  def takeDownContent(composerId: String) = { 
+    DB.withTransaction { implicit session =>
+      content
+        .filter(_.composerId === composerId)
+        .map(c => c.takenDown)
+        .update(true)
+    }
+  }
+
+  def deleteContent(composerId: String) = {
     DB.withTransaction { implicit session =>
       content.filter(_.composerId === composerId).delete
       stubs.filter(_.composerId === composerId).delete
