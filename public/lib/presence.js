@@ -81,16 +81,25 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     self.articleSubscribe = function (articleIds) {
         var p = presence.then((p) => p.subscribe(articleIds).catch(
             function(){
-                $log.error("could not subscribe to presence ", p.url);
+                $log.error("could not subscribe to presence", p.url, arguments);
                 broadcast("presence.connection.error");
         }));
         return p
     };
 
+    // if a request for initial data is made before 
+    var onSubscribe = [];
+    $rootScope.$on("presence.subscribed", function (ev, data) {
+        var cbs = onSubscribe;
+        onSubscribe = [];
+        console.log("PMR calling " + cbs.length + " cbs");
+        cbs.forEach((cb) => cb(data.subscribedTo));
+    });
+                   
     // Initial data var/function moved from wfPresenceSubscription controller
     // FIXME should this be onConnection?
-    var initialData = new Promise(function(resolve, reject) {
-        reject("no subscription request made");
+    var initialData = new Promise((resolve, reject) => {
+        initialDataRequests.push(resolve);
     });
 
     self.initialData = function(id) {
@@ -108,36 +117,18 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         });
     };
 
-
     // Subscribe var/function moved from wfPresenceSubscription controller
     var deRegisterPreviousSubscribe = angular.noop;
 
     self.subscribe = function(composerIds) {
+        console.log("PMR subscribing to", composerIds);
         return self.whenEnabled.then(function() {
-
-            deRegisterPreviousSubscribe();
 
             // set up a promise that will wait for the event to be
             // transmitted from the wfPresenceService and return
             // the results.
-            initialData = new Promise(function(resolve, reject) {
-                // $on will return a function that can be used
-                // later to deregister the listener
-                var removeListener = $rootScope.$on("presence.subscribed", function (ev, data) {
-                    resolve(data.subscribedTo);
-                });
-                deRegisterPreviousSubscribe = function() {
-                    // first tell anyone waiting on this listener
-                    // that it was cancelled.
-                    reject("replaced with new subscribe request");
-                    // then call the deRegister function that $on
-                    // gave us.
-                    removeListener();
-                };
-            });
-
+            initialData = new Promise((resolve, reject) => onSubscribe.push(resolve));
             self.articleSubscribe(composerIds);
-
         });
 
     };
