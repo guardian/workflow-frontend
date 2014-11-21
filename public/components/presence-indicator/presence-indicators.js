@@ -1,4 +1,4 @@
-function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService) {
+function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService, $log) {
 
     return {
         restrict: 'E',
