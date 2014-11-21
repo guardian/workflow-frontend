@@ -27,7 +27,11 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService, $log) {
             }
 
             $scope.$watch("id", (newValue, oldValue) => {
+                // may be undefined
+                if(!newValue) return;
+                console.log("PMR - attempting to get initialData");
                 wfPresenceService.initialData(newValue).then((currentState) => {
+                    console.log("PMR - got initialData");
                     applyCurrentState(currentState);
                 }, (err) => {
                     $log.error("Error getting initial data:", err);
