@@ -78,12 +78,17 @@ class ComposerSqsReader extends Actor {
     stub
   }
 
-  private def processLifecycleEvent(event: LifecycleEvent) = {
-    stub(event.composerId).map { stub => {
+  private def processLifecycleEvent(e: LifecycleEvent) = {
+    stub(e.composerId).map { stub => {
       try {
-        CommonDB.deleteContent(event.composerId)
+        e.event match {
+          case "delete" => {
+            CommonDB.deleteContent(e.composerId) 
+            Logger.error(s"content deleted successfully: ${e.composerId}")
+          }
+        }
       } catch {
-        case sqle: SQLException => recordLifecycleEventError(event, sqle)
+        case sqle: SQLException => recordLifecycleEventError(e, sqle)
       }
     }}
   }
