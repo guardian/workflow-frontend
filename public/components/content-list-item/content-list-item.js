@@ -112,7 +112,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
         lifecycleState(item) {
             // Highest priority at the top!
             var states = [
-                { "display": "Taken down", "active": item.takenDown, "time": undefined },
+                { "display": "Taken down", "active": item.takenDown, "time": item.timeTakenDown},
                 { "display": "Embargoed", "active": false, "time": undefined },
                 { "display": "Published", "active": item.published, "time": item.timePublished},
                 { "display": "", "active": true, "time": undefined} // Base state
