@@ -618,7 +618,7 @@
                 "AllocatedStorage": "5",
                 "AutoMinorVersionUpgrade": true,
                 "BackupRetentionPeriod": "1",
-                "DBInstanceClass": "db.t1.micro",
+                "DBInstanceClass": "db.t2.small",
                 "DBInstanceIdentifier": { "Fn::Join": ["-", ["workflow", { "Ref" :"Stage" }]] },
                 "DBName": "workflow",
                 "Engine": "postgres",
