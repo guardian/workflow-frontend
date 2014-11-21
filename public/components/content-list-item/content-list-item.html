@@ -2,7 +2,7 @@
     ng-class="
     { 
         'content-list-item--selected': contentList.selectedItem === contentItem, 
-        'content-list-item--published': contentItem.isPublished,
+        'content-list-item--published': contentItem.isPublished && !contentItem.isTakenDown,
         'content-list-item--takendown': contentItem.isTakenDown 
     }">
     <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priority | getPriorityString }}">
