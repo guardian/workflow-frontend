@@ -96,12 +96,12 @@ object CommonDB {
       content += WorkflowContent.newContentRow(wc, revision)
   }
 
-  def takeDownContent(composerId: String) = { 
+  def takeDownContent(composerId: String, t: Option[DateTime]) = { 
     DB.withTransaction { implicit session =>
       content
         .filter(_.composerId === composerId)
-        .map(c => c.takenDown)
-        .update(true)
+        .map(c => (c.takenDown, c.timeTakenDown))
+        .update((true, t))
     }
   }
 
