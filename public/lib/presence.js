@@ -89,48 +89,12 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         return p
     };
 
-    // if a request for initial data is made before 
-    var onSubscribe = [];
-    $rootScope.$on("presence.subscribed", function (ev, data) {
-        var cbs = onSubscribe;
-        onSubscribe = [];
-        console.log("PMR calling " + cbs.length + " cbs");
-        cbs.forEach((cb) => cb(data.subscribedTo));
-    });
-                   
-    // Initial data var/function moved from wfPresenceSubscription controller
-    // FIXME should this be onConnection?
-    var initialData = new Promise((resolve, reject) => {
-        initialDataRequests.push(resolve);
-    });
-
-    self.initialData = function(id) {
-        return initialData.then(function (data) {
-            return new Promise(function(resolve, reject) {
-                var found = _.find(data, function(d) {
-                    return d.subscriptionId === id;
-                });
-                if(!found) {
-                    reject("unknown ID: [" + id + "]");
-                } else {
-                    resolve(found.currentState);
-                }
-            });
-        });
-    };
-
     // Subscribe var/function moved from wfPresenceSubscription controller
     var deRegisterPreviousSubscribe = angular.noop;
 
     self.subscribe = function(composerIds) {
-        console.log("PMR subscribing to", composerIds);
         return self.whenEnabled.then(function() {
-
-            // set up a promise that will wait for the event to be
-            // transmitted from the wfPresenceService and return
-            // the results.
-            initialData = new Promise((resolve, reject) => onSubscribe.push(resolve));
-            self.articleSubscribe(composerIds);
+            return self.articleSubscribe(composerIds);
         });
 
     };
