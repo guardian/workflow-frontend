@@ -79,17 +79,17 @@ class ComposerSqsReader extends Actor {
   }
 
   private def processLifecycleEvent(event: LifecycleEvent) = {
-    stub(event.composerId).fold()( stub => {
+    stub(event.composerId).map { stub => {
       try {
         CommonDB.deleteContent(event.composerId)
       } catch {
         case sqle: SQLException => recordLifecycleEventError(event, sqle)
       }
-    })
+    }}
   }
 
   private def processWireStatus(status: WireStatus) = {
-    stub(status.composerId).fold()( stub =>
+    stub(status.composerId).map { stub =>
       try {
         val content = WorkflowContent.fromWireStatus(status, stub)
         if(status.updateType=="live") {
@@ -98,7 +98,7 @@ class ComposerSqsReader extends Actor {
       } catch {
         case sqle: SQLException => recordWriteStatusError(status, sqle)
       }
-    )
+    }
   }
 }
 
