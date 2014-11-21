@@ -146,4 +146,5 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 
 }]);
 
-module.directive('wfPresenceIndicators', ['$rootScope', 'wfPresenceService', wfPresenceIndicatorsDirective]);
+module.directive('wfPresenceIndicators', ['$rootScope', 'wfPresenceService', '$log',
+                                          wfPresenceIndicatorsDirective]);
