@@ -46,26 +46,30 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         email     : wfUser.email
     }
     // INITIATE the connection if presence is enabled
-    var presence = self.whenEnabled.then(()=>System.import('presence-client')).then(
-                    (presenceClient) => {
-                        var client = presenceClient(self.endpoint, person);
-                            client.on('connection.open', () => {
-                                $log.info("presence connection open");
-                                broadcast("presence.connection.success", client.url);
-                                addHandlers(client, messageHandlers);
-                            });
-                            client.on('connection.error', () => {
-                                broadcast("presence.connection.error", client.url);
-                            });
-                            client.startConnection();
-                        return client;
-                    },
-                    () => {
-                        $log.info("presence is disabled");
-                        broadcast("presence.connection.error", "Could not get access to the library ");
-                    }).catch((err)=>{
-                        $log.error("error starting presence", err);
-                    });
+    var presence = self.whenEnabled.then(
+        // 1. Is presence enabled?
+        ()=>System.import('presence-client'),
+        ()=>$log.info("presence is disabled")
+    ).then(
+        // 2. Have we loaded the client library?
+        (presenceClient) => {
+            var client = presenceClient(self.endpoint, person);
+            client.on('connection.open', () => {
+                $log.info("presence connection open");
+                broadcast("presence.connection.success", client.url);
+                addHandlers(client, messageHandlers);
+            });
+            client.on('connection.error', () => {
+                broadcast("presence.connection.error", client.url);
+            });
+            client.startConnection();
+            return client;
+        },
+        () => {
+            broadcast("presence.connection.error", "Could not get access to the library ");
+        }).catch((err)=>{
+            $log.error("error starting presence", err);
+        });
 
     self.articleSubscribe = function (articleIds) {
         var p = presence.then((p) => p.subscribe(articleIds).catch(
@@ -118,7 +122,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                 deRegisterPreviousSubscribe = function() {
                     // first tell anyone waiting on this listener
                     // that it was cancelled.
-                    reject("replace with new subscribe request");
+                    reject("replaced with new subscribe request");
                     // then call the deRegister function that $on
                     // gave us.
                     removeListener();
