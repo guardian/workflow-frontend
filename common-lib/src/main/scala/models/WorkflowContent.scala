@@ -49,7 +49,7 @@ object WorkflowContent {
       commentable=wireStatus.commentable,
       published = wireStatus.published,
       timePublished = wireStatus.publicationDate,
-      takenDown = true,
+      takenDown = false,
       timeTakenDown = None
     )
   }
@@ -59,7 +59,7 @@ object WorkflowContent {
           headline, published, timePublished, takenDown, timeTakenDown, _) =>
           WorkflowContent(
             composerId, path, headline, contentType, None, Status(status), lastMod,
-            lastModBy, commentable, published, timePublished, false, None
+            lastModBy, commentable, published, timePublished, takenDown, timeTakenDown 
           )
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =

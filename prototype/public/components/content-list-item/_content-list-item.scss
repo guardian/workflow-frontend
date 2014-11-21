@@ -25,6 +25,12 @@
         border-left: 7px solid $c-green;
     }
 
+    &--takendown {
+        @extend .content-list-item;
+        background-color: blue;
+        border-left: 7px solid red;
+    }
+
     &.ng-enter {
         -webkit-animation: content-list-item--enter-sequence 2s ease-out;
         animation: content-list-item--enter-sequence 2s ease-out;
