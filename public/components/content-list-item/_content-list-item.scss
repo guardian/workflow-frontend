@@ -27,8 +27,9 @@
 
     &--takendown {
         @extend .content-list-item;
-        background-color: blue;
-        border-left: 7px solid red;
+        background-color: $c-grey-300;
+        border-left: 7px solid $c-grey-600;
+        border-left-style: dotted;
     }
 
     &.ng-enter {
