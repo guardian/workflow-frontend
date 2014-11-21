@@ -10,7 +10,6 @@ function wfPresenceInitialData ($rootScope) {
             newData[item.subscriptionId] = item.currentState;
             return newData;
         }, {});
-        console.log("PMR initialData updated to:", initialData);
     });
 
     return {
