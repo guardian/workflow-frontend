@@ -1,4 +1,5 @@
-function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService, $log) {
+function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
+                                        wfPresenceInitialData, $log) {
 
     return {
         restrict: 'E',
@@ -26,22 +27,14 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService, $log) {
                 }
             }
 
-            $scope.$watch("id", (newValue, oldValue) => {
-                // may be undefined
-                if(!newValue) return;
-                console.log("PMR - attempting to get initialData");
-                wfPresenceService.initialData(newValue).then((currentState) => {
-                    console.log("PMR - got initialData");
-                    applyCurrentState(currentState);
-                }, (err) => {
-                    $log.error("Error getting initial data:", err);
-                });
-
-                $scope.$on("presence.status", (ev, data) => {
-                    if(newValue === data.subscriptionId) {
-                        applyCurrentState(data.currentState);
-                    }
-                });
+            $scope.$watch(() => wfPresenceInitialData.getForId($scope.id), () => {
+                applyCurrentState(wfPresenceInitialData.getForId($scope.id));
+            });
+        
+            $scope.$on("presence.status", (ev, data) => {
+                if($scope.id === data.subscriptionId) {
+                    applyCurrentState(data.currentState);
+                }
             });
         }
     };
