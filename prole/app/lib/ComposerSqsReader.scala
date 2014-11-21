@@ -86,7 +86,10 @@ class ComposerSqsReader extends Actor {
             CommonDB.deleteContent(e.composerId) 
             Logger.info(s"content deleted successfully: ${e.composerId}")
           }
-        }
+          case "takedown" => {
+            Logger.info(s"content taken down: ${e.composerId}")
+          }
+        }  
       } catch {
         case sqle: SQLException => recordLifecycleEventError(e, sqle)
       }

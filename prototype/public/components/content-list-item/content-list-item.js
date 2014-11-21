@@ -97,6 +97,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.created = item.createdAt;
             this.lastModified = item.lastModified;
 
+            this.isTakenDown = item.takenDown;
+
             this.isPublished = item.published;
             this.publishedState = item.published ? 'Published' : ''; // TODO: Taken down, Embargoed
             this.publishedTime = item.timePublished;

@@ -1,4 +1,10 @@
-<tr class="content-list-item" ng-click="selectItem(contentItem)" ng-class="{ 'content-list-item--selected': contentList.selectedItem === contentItem, 'content-list-item--published': contentItem.isPublished }">
+<tr class="content-list-item" ng-click="selectItem(contentItem)" 
+    ng-class="
+    { 
+        'content-list-item--selected': contentList.selectedItem === contentItem, 
+        'content-list-item--published': contentItem.isPublished,
+        'content-list-item--takendown': contentItem.isTakenDown 
+    }">
     <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priority | getPriorityString }}">
         <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority | getPriorityString }}" ng-show="contentItem.priority !== 0"/>
     </td>
