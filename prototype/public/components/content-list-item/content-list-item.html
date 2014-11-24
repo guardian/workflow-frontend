@@ -1,4 +1,5 @@
 <tr class="content-list-item" ng-click="selectItem(contentItem)" ng-class="{ 'content-list-item--selected': contentList.selectedItem === contentItem, 'content-list-item--published': contentItem.isPublished }">
+    <td class="content-list-item__notifier"></td>
     <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priority | getPriorityString }}">
         <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority | getPriorityString }}" ng-show="contentItem.priority !== 0"/>
     </td>
@@ -76,4 +77,5 @@
             contentItem.publishedTime | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
         </div>
     </td>
+    <td class="content-list-item__notifier"></td>
 </tr>
