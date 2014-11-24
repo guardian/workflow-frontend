@@ -1,6 +1,6 @@
 import _ from "underscore"
 import { wfPresenceIndicatorsDirective } from 'components/presence-indicator/presence-indicators';
-import { wfPresenceInitialData } from 'components/presence-indicator/presence-initial-data';
+import { wfPresenceCurrentState } from 'components/presence-indicator/presence-status';
 
 var module = angular.module('wfPresenceService', []);
 
@@ -103,8 +103,8 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 
 }]);
 
-module.factory('wfPresenceInitialData', ['$rootScope', wfPresenceInitialData]);
+module.factory('wfPresenceCurrentState', ['$rootScope', wfPresenceCurrentState]);
 
 module.directive('wfPresenceIndicators', ['$rootScope', 'wfPresenceService',
-                                          'wfPresenceInitialData','$log',
+                                          'wfPresenceCurrentState','$log',
                                           wfPresenceIndicatorsDirective]);
