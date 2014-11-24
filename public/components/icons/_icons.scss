@@ -5,7 +5,31 @@
 .wf-icon {
     width: 100%;
     height: 100%;
+    vertical-align: middle;
+
+    fill: $c-grey-600;
+
+    &--active {
+        @extend .wf-icon;
+    }
+
+    &--inactive {
+        @extend .wf-icon;
+
+        fill: $c-grey-300;
+    }
+
+    &-type {
+        &--priority-urgent {
+            fill: $c-yellow;
+        }
+
+        &--priority-very-urgent {
+            fill: $c-red;
+        }
+    }
 }
 
-$i-arrow-down: url("/assets/components/icons/arrow-down.svg");
-$i-arrow-up: url("/assets/components/icons/arrow-up.svg");
+// TODO: Move css that references these to use new linked svg icons
+$i-arrow-down: url("/assets/components/icons/src/arrow-down.svg");
+$i-arrow-up: url("/assets/components/icons/src/arrow-up.svg");
