@@ -99,10 +99,9 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
            
-            var lifecycleState       = this.lifecycleState(item); 
-            this.lifecycleState      = lifecycleState.display;
-            this.lifecycleStateTime  = lifecycleState.time;
-            this.lifeCycleStateClass = lifecycleState.cssClass
+            var lifecycleState = this.lifecycleState(item); 
+            this.lifecycleState = lifecycleState.display;
+            this.lifecycleStateTime = lifecycleState.time;
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -113,10 +112,10 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
         lifecycleState(item) {
             // Highest priority at the top!
             var states = [
-                { "cssClass": "takendown", "display": "Taken down", "active": item.takenDown, "time": item.timeTakenDown},
-                { "cssClass": "embargoed", "display": "Embargoed", "active": false, "time": undefined },
-                { "cssClass": "published", "display": "Published", "active": item.published, "time": item.timePublished},
-                { "cssClass": undefined, "display": "", "active": true, "time": undefined} // Base state
+                { "display": "Taken down", "active": item.takenDown, "time": item.timeTakenDown},
+                { "display": "Embargoed", "active": false, "time": undefined },
+                { "display": "Published", "active": item.published, "time": item.timePublished},
+                { "display": "", "active": true, "time": undefined} // Base state
             ]
 
             return (states.filter(function(o) { return o.active === true; })[0]);
