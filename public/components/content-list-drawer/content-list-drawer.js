@@ -190,7 +190,8 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
             };
 
             $scope.sendContentItemToInCopy = function () {
-                $scope.contentItem.linkedWithInCopy = !$scope.contentItem.linkedWithInCopy;
+                //                $scope.contentItem.linkedWithInCopy = !$scope.contentItem.linkedWithInCopy;
+                document.location="gnm://composer/export/" + $scope.contentItem.composerId;
             }
 
             function errorMessage(err) {
