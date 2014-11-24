@@ -18,18 +18,21 @@
     &--selected {
         background-color: $c-grey-200;
     }
-
-    &--published {
-        @extend .content-list-item;
-        background-color: $c-light-green;
-        border-left: 7px solid $c-green;
+    &__notifier {
+        min-width: 4px;
     }
 
+    &--published {
+        background: $c-light-green; 
+        .content-list-item__notifier {
+            background: $c-green;
+        }
+    }
     &--takendown {
-        @extend .content-list-item;
-        background-color: $c-grey-300;
-        border-left: 7px solid $c-grey-600;
-        border-left-style: dotted;
+        background: $c-grey-300;
+        .content-list-item__notifier {
+            background: repeating-linear-gradient( 45deg, $c-grey-300, $c-grey-300 3px, $c-grey-600 3px, $c-grey-600 6px)
+        }
     }
 
     &.ng-enter {
