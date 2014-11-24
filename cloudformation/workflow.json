@@ -584,7 +584,7 @@
         },
         "FCNotificationDeadLetterQueue": {
             "Type": "AWS::SQS::Queue",
-            "Properties: {
+            "Properties": {
             }
         },
         "FCNotificationsQueue": {
