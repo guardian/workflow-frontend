@@ -1,5 +1,7 @@
 import _ from "underscore"
 import { wfPresenceIndicatorsDirective } from 'components/presence-indicator/presence-indicators';
+import { wfPresenceInitialData } from 'components/presence-indicator/presence-initial-data';
+
 var module = angular.module('wfPresenceService', []);
 
 module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $log, config, wfFeatureSwitches, wfUser) {
@@ -46,87 +48,53 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         email     : wfUser.email
     }
     // INITIATE the connection if presence is enabled
-    var presence = self.whenEnabled.then(()=>System.import('presence-client')).then(
-                    (presenceClient) => {
-                        var client = presenceClient(self.endpoint, person);
-                            client.on('connection.open', () => {
-                                $log.info("presence connection open");
-                                broadcast("presence.connection.success", client.url);
-                                addHandlers(client, messageHandlers);
-                            });
-                            client.on('connection.error', () => {
-                                broadcast("presence.connection.error", client.url);
-                            });
-                            client.startConnection();
-                        return client;
-                    },
-                    () => {
-                        $log.info("presence is disabled");
-                        broadcast("presence.connection.error", "Could not get access to the library ");
-                    }).catch((err)=>{
-                        $log.error("error starting presence", err);
-                    });
+    var presence = self.whenEnabled.then(
+        // 1. Is presence enabled?
+        ()=>System.import('presence-client'),
+        ()=>$log.info("presence is disabled")
+    ).then(
+        // 2. Have we loaded the client library?
+        (presenceClient) => {
+            var clientPromise =
+                new Promise((resolve, reject) => {
+                    var client = presenceClient(self.endpoint, person);
+                    client.on('connection.open', ()=>resolve(client));
+                    client.on('connection.error', reject);
+                    client.startConnection();
+                });
+            clientPromise.then(
+                // 3. have successfully connected?
+                (client) => {
+                    $log.info("presence connection open");
+                    broadcast("presence.connection.success", client.url);
+                    addHandlers(client, messageHandlers);
+                    return client;
+                },
+                () => $log.error("could not open presence connection")
+            );
+            return clientPromise;
+        },
+        () => {
+            broadcast("presence.connection.error", "Could not get access to the library ");
+        }).catch((err)=>{
+            $log.error("error starting presence", err);
+        });
 
     self.articleSubscribe = function (articleIds) {
         var p = presence.then((p) => p.subscribe(articleIds).catch(
             function(){
-                $log.error("could not subscribe to presence ", p.url);
+                $log.error("could not subscribe to presence", p.url, arguments);
                 broadcast("presence.connection.error");
         }));
         return p
     };
-
-    // Initial data var/function moved from wfPresenceSubscription controller
-    // FIXME should this be onConnection?
-    var initialData = new Promise(function(resolve, reject) {
-        reject("no subscription request made");
-    });
-
-    self.initialData = function(id) {
-        return initialData.then(function (data) {
-            return new Promise(function(resolve, reject) {
-                var found = _.find(data, function(d) {
-                    return d.subscriptionId === id;
-                });
-                if(!found) {
-                    reject("unknown ID: [" + id + "]");
-                } else {
-                    resolve(found.currentState);
-                }
-            });
-        });
-    };
-
 
     // Subscribe var/function moved from wfPresenceSubscription controller
     var deRegisterPreviousSubscribe = angular.noop;
 
     self.subscribe = function(composerIds) {
         return self.whenEnabled.then(function() {
-
-            deRegisterPreviousSubscribe();
-
-            // set up a promise that will wait for the event to be
-            // transmitted from the wfPresenceService and return
-            // the results.
-            initialData = new Promise(function(resolve, reject) {
-                // $on will return a function that can be used
-                // later to deregister the listener
-                var removeListener = $rootScope.$on("presence.subscribed", function (ev, data) {
-                    resolve(data.subscribedTo);
-                });
-                deRegisterPreviousSubscribe = function() {
-                    // first tell anyone waiting on this listener
-                    // that it was cancelled.
-                    reject("replace with new subscribe request");
-                    // then call the deRegister function that $on
-                    // gave us.
-                    removeListener();
-                };
-            });
-
-            self.articleSubscribe(composerIds);
-
+            return self.articleSubscribe(composerIds);
         });
 
     };
@@ -135,4 +103,8 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 
 }]);
 
-module.directive('wfPresenceIndicators', ['$rootScope', 'wfPresenceService', wfPresenceIndicatorsDirective]);
+module.factory('wfPresenceInitialData', ['$rootScope', wfPresenceInitialData]);
+
+module.directive('wfPresenceIndicators', ['$rootScope', 'wfPresenceService',
+                                          'wfPresenceInitialData','$log',
+                                          wfPresenceIndicatorsDirective]);
