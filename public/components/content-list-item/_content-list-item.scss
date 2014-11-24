@@ -18,11 +18,14 @@
     &--selected {
         background-color: $c-grey-200;
     }
-
+    &__notifier {
+        min-width: 4px;
+    }
     &--published {
-        @extend .content-list-item;
-        background-color: $c-light-green;
-        border-left: 7px solid $c-green;
+        background: $c-light-green; 
+        .content-list-item__notifier {
+            background: $c-green;
+        }
     }
 
     &.ng-enter {
