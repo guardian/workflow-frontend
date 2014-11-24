@@ -26,7 +26,7 @@
         "ImageIdEBSStorage": {
             "Description": "AMI id for instances with ebs storage.",
             "Type": "String",
-            "Default": "ami-f4b11183"
+            "Default": "ami-dabd0dad"
         },
         "FCMetadataTopic": {
             "Description": "ARN of the topic for Flexible Content metadata events",
