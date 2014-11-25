@@ -1,4 +1,10 @@
-<tr class="content-list-item" ng-click="selectItem(contentItem)" ng-class="{ 'content-list-item--selected': contentList.selectedItem === contentItem, 'content-list-item--published': contentItem.isPublished }">
+<tr class="content-list-item" ng-click="selectItem(contentItem)" 
+    ng-class="
+    { 
+        'content-list-item--selected': contentList.selectedItem === contentItem, 
+        'content-list-item--published': contentItem.isPublished && !contentItem.isTakenDown,
+        'content-list-item--takendown': contentItem.isTakenDown 
+    }">
     <td class="content-list-item__notifier"></td>
     <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priority | getPriorityString }}">
         <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority | getPriorityString }}" ng-show="contentItem.priority !== 0"/>
@@ -72,9 +78,9 @@
                 </span>
     </td>
     <td class="content-list-item__field--published-state" title="Published state: {{ contentItem.publishedState || 'Draft' }}{{ contentItem.publishedTime && ' on ' + (contentItem.publishedTime | wfLocaliseDateTime | wfFormatDateTime:'long') }}">
-        {{ contentItem.publishedState }}
+        {{ contentItem.lifecycleState }}
         <div class="content-list-item__field-supl--published-state" ng-if="contentItem.isPublished">{{
-            contentItem.publishedTime | wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
+            contentItem.lifecycleStateTime| wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
         </div>
     </td>
     <td class="content-list-item__notifier"></td>

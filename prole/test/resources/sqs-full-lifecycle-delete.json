@@ -1,0 +1,12 @@
+{
+    "Type": "Notification",
+    "MessageId": "9fd76fd1-a450-56d1-9d97-2336752089d5",
+    "TopicArn": "arn:aws:sns:eu-west-1:308506855511:dev-fc-lifecycle-events",
+    "Subject": "fc-lifecycle.v2",
+    "Message": "{\"pageId\":\"123456\",\"composerId\":\"546dcf3eb0c6c8508a6990e0\",\"lastUpdate\":1416482634003,\"managedByComposer\":false,\"event\":\"delete\",\"eventTime\":1416482634004}",
+    "Timestamp": "2014-11-20T11:23:28.293Z",
+    "SignatureVersion": "1",
+    "Signature": "lEhvpe63/GlZT0sh2ItM7JuKpZbGJ+20KbtBtZHnNfno5mH7AvunbyxND4UHqrVgDa17HwrzXHegMrSjbTG549YLP9zk41lfBsCCkhy2cC6E14iByv/XKJQp0d7M2HJJSjK1sTIGbppkte2gZGPPbkpz0G9MgPtJPjroIeZnSZHVCGxdhRmE04EWpXZ0voMxRikDftxSYU8nKdnM5PTl1l10iAb6NCNyep7SLntoh+2zK/GPSAh399NeYIblt527Vfsf5UDeI33GB0jIoIPl2BuMdhNhtXqmRhUVGEeibshNCbfaFNdJPUXZ6Z+M+KJqFhDRLs9VBX6nUa/U2ZAozg==",
+    "SigningCertURL": "https://sns.eu-west-1.amazonaws.com/SimpleNotificationService-d6d679a1d18e95c2f9ffcf11f4f9e198.pem",
+    "UnsubscribeURL": "https://sns.eu-west-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-west-1:308506855511:dev-fc-lifecycle-events:7f645556-40f7-46dd-9c2d-9a9c455c61c5"
+}
