@@ -28,7 +28,7 @@
     </thead>
     <tbody ng-repeat="group in content track by group.name">
         <tr class="content-list__group-heading-row">
-            <th class="content-list__group-heading" scope="rowgroup" colspan="17">
+            <th class="content-list__group-heading" scope="rowgroup" colspan="18">
                 <span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span>
                 <button class="content-list__button--new" ng-click="contentList.newItem()" ng-if="group.name === 'stub'"><i class="content-list__button-icon" wf-icon="pen"></i>New</button>
                 <button class="content-list__button--import" ng-click="contentList.importItem()" ng-if="group.name === 'stub'"><i class="content-list__button-icon" wf-icon="import"></i>Import from Composer</button>
