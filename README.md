@@ -120,7 +120,7 @@ Run the tests
 
     $ protractor test/conf.js
 
-Updating AMIS
+Updating AMIs
 -------------
 
 We use [packer](https://packer.io/) to create new AMIs, you can download it here: http://www.packer.io/downloads.html.
