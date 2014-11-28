@@ -30,6 +30,7 @@ import 'layouts/dashboard/dashboard-sidebar';
 
 import 'lib/date-service';
 import 'lib/filters-service';
+import 'lib/column-service';
 import 'lib/analytics';
 import 'lib/feature-switches';
 
@@ -57,6 +58,7 @@ angular.module('workflow',
         'wfDateService',
         'wfAnalytics',
         'wfFiltersService',
+        'wfColumnService',
         'wfFeatureSwitches',
         'xeditable'
     ])
