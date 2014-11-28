@@ -20,6 +20,8 @@ case class WorkflowContent(
                             timePublished: Option[DateTime],
                             storyBundleId: Option[String],
                             activeInInCopy: Boolean
+                            takenDown: Boolean,
+                            timeTakenDown: Option[DateTime]
                             ) {
 
   def updateWith(wireStatus: WireStatus): WorkflowContent =
@@ -50,7 +52,9 @@ object WorkflowContent {
       published = wireStatus.published,
       timePublished = wireStatus.publicationDate,
       storyBundleId = wireStatus.storyBundleId,
-      false
+      false, // assume not active in incopy
+      takenDown = false,
+      timeTakenDown = None
     )
   }
 
@@ -60,13 +64,13 @@ object WorkflowContent {
           WorkflowContent(
             composerId, path, headline, contentType, None, Status(status), lastMod,
             lastModBy, commentable, published, timePublished, storyBundleId,
-            activeInInCopy
+            activeInInCopy, takenDown, timeTakenDown)
           )
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
     (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
      wc.contentType, wc.commentable, wc.headline, wc.published, wc.timePublished,
-     revision, wc.storyBundleId, wc.activeInInCopy)
+     revision, wc.storyBundleId, wc.activeInInCopy, false, None)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
 
@@ -83,6 +87,9 @@ object WorkflowContent {
       (__ \ "published").read[Boolean] ~
       (__ \ "timePublished").readNullable[DateTime] ~
       (__ \ "storyBundleId").readNullable[String] ~
-      (__ \ "activeInIncopy").read[Boolean]
+      (__ \ "activeInIncopy").read[Boolean] ~
+      (__ \ "timePublished").readNullable[DateTime] ~ 
+      (__ \ "takenDown").read[Boolean] ~
+      (__ \ "timeTakenDown").readNullable[DateTime]
       )(WorkflowContent.apply _)
 }

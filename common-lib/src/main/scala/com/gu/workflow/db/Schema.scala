@@ -55,6 +55,8 @@ object Schema {
       Option[Long],    // revision
       Option[String],  // storyBundleId
       Boolean          // activeInInCopy
+      Boolean,         // takenDown 
+      Option[DateTime],// timeTakenDown
     )
 
   case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
@@ -68,12 +70,14 @@ object Schema {
     def headline       = column [Option[String]]    ("headline")
     def published      = column [Boolean]           ("published")
     def timePublished  = column [Option[DateTime]]  ("time_published")
+    def takenDown      = column [Boolean]           ("takendown")
+    def timeTakenDown  = column [Option[DateTime]]  ("time_takendown")
     def revision       = column [Option[Long]]      ("revision")
     def storyBundleId  = column [Option[String]]    ("storybundleid")
     def activeInInCopy = column [Boolean]           ("activeinincopy")
     def * = (composerId, path, lastModified, lastModifiedBy, status,
              contentType, commentable, headline, published, timePublished,
-             revision, storyBundleId, activeInInCopy)
+             revision, storyBundleId, activeInInCopy, takenDown, timeTakenDown)
   }
 
   type SectionRow = (

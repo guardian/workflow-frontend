@@ -582,10 +582,18 @@
                 "UserName": { "Ref": "PrototypeUser" }
             }
         },
-
-        "FCNotificationsQueue": {
+        "FCNotificationDeadLetterQueue": {
             "Type": "AWS::SQS::Queue",
             "Properties": {
+            }
+        },
+        "FCNotificationsQueue": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": { 
+                "RedrivePolicy": {
+                    "maxReceiveCount": 2,
+                    "deadLetterTargetArn": { "Fn::GetAtt" : [ "FCNotificationDeadLetterQueue", "Arn" ] }
+                }
             }
         },
         "FCNotificationsQueuePolicy": {

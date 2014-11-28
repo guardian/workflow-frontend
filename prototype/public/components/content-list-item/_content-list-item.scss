@@ -18,11 +18,21 @@
     &--selected {
         background-color: $c-grey-200;
     }
+    &__notifier {
+        min-width: 4px;
+    }
 
     &--published {
-        @extend .content-list-item;
-        background-color: $c-light-green;
-        border-left: 7px solid $c-green;
+        background: $c-light-green; 
+        .content-list-item__notifier {
+            background: $c-green;
+        }
+    }
+    &--takendown {
+        background: $c-grey-300;
+        .content-list-item__notifier {
+            background: repeating-linear-gradient( 45deg, $c-grey-300, $c-grey-300 3px, $c-grey-600 3px, $c-grey-600 6px)
+        }
     }
 
     &.ng-enter {
@@ -68,7 +78,7 @@
         }
 
         &--presence {
-            background-color: #474D80;
+            background-color: $c-presence-purple;
             color: #fff;
 
             &:hover {
@@ -105,32 +115,6 @@
         }
     }
 
-    // Styles for presence indicators
-    &__presence {
-        display: inline-block;
-
-        &-list {
-            margin: 0;
-            padding: 0;
-        }
-
-
-        &--present,
-        &--unknown {
-            @extend .content-list-item__presence;
-        }
-
-        &--unknown {
-            background-color: lightgrey;
-            color: white;
-        }
-
-        &--free {
-            display: none;
-        }
-
-    }
-
     &__headline-toggle {
         float: left;
         color: $c-grey-400;
@@ -155,7 +139,6 @@
         &--content-type,
         &--working-title,
         &--headline,
-        &--presence,
         &--office,
         &--legal,
         &--status,
@@ -170,12 +153,13 @@
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
-        
-        // smaller font size for assignee
-        &--assignee {
+
+        // smaller font size for assignee & presence
+        &--assignee,
+        &--presence {
             @extend %fs-data-2;
         }
-        
+
         // icon fields
         &--priority,
         &--comments,
@@ -201,6 +185,10 @@
         &--assignee,
         &--office {
             width: 30px;
+        }
+
+        &--presence {
+            position: relative;
         }
 
         &--deadline,

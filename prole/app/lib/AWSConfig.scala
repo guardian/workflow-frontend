@@ -21,8 +21,6 @@ import scala.concurrent.duration._
 import play.api.libs.json.{JsResult, Json}
 import com.amazonaws.services.sqs.model._
 import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.services.sqs.AmazonSQSClient
-import models.WireStatus
 
 
 object AWSCreds {
@@ -33,38 +31,7 @@ object AWSCreds {
   lazy val basic = new BasicAWSCredentials(accessKey, secret)
 }
 
-object AWSWorkflowQueue {
-
-  lazy val sqsClient = {
-    val client = new AmazonSQSClient(AWSCreds.basic)
-    client.setEndpoint("sqs.eu-west-1.amazonaws.com")
-    client
-  }
-
-  lazy val queueUrl = ProleConfiguration.apply.flexNotificationsQ
-
-  def getMessages(messageCount: Int = 1, waitTimeSeconds: Int = 1): List[Message] = {
-    sqsClient.receiveMessage(
-      new ReceiveMessageRequest(queueUrl).withWaitTimeSeconds(1).withMaxNumberOfMessages(messageCount)
-    ).getMessages.asScala.toList
-  }
-
-  def deleteMessage(message: Message) {
-    sqsClient.deleteMessage(
-      new DeleteMessageRequest(queueUrl, message.getReceiptHandle)
-    )
-  }
-
-  def toWireStatus(awsMsg: Message): JsResult[WireStatus] = {
-    val body = Json.parse(awsMsg.getBody)
-    (body \ "Message").validate[String].flatMap { msg =>
-      Json.parse(msg).validate[WireStatus]
-    }
-  }
-}
-
 trait AwsInstanceTags {
-
   lazy val instanceId = Option(EC2MetadataUtils.getInstanceId)
 
   lazy val ec2Client = {
@@ -125,7 +92,6 @@ object CloudWatch extends AwsInstanceTags {
       )
     }
   }
-
 
   case object ReportMetrics
 

@@ -1,0 +1,113 @@
+@import "layouts/global/mixins";
+
+// Styles for presence indicators
+
+$rightIconOffset: 14px;
+$iconsToStack: 8;
+$iconExpandIntervalDistance: 24;
+$stackColorLightenIncrement: 14%;
+$iconAnimationTransTime: 0.5s;
+$iconAnimationEasingFunction: ease-in-out;
+
+.content-list-item__presence {
+    display: inline-block;
+
+    &-list {
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+
+    &--present,
+    &--unknown {
+        @extend .content-list-item__presence;
+    }
+
+    &--unknown {
+        background-color: lightgrey;
+        color: white;
+    }
+
+    &--free {
+        display: none;
+    }
+
+}
+
+.content-list-item__presence-list {
+
+    .content-list-item__presence--present {
+        position: absolute;
+        top: 8px;
+        right: $rightIconOffset;
+
+        @include transition(right $iconAnimationTransTime $iconAnimationEasingFunction);
+
+        .content-list-item__icon--presence {
+            @include transition(color $iconAnimationTransTime, background-color $iconAnimationTransTime $iconAnimationEasingFunction);
+        }
+
+        @for $i from 1 to $iconsToStack {
+            &:nth-of-type(#{$i+1}) {
+                right: ($i * -4) + $rightIconOffset;
+                z-index: $i*-1;
+                .content-list-item__icon--presence {
+                    background-color: lighten($c-presence-purple, $i*$stackColorLightenIncrement);
+                    color: rgba(255, 255, 255, 0);
+                }
+            }
+        }
+    }
+
+    &:hover .content-list-item__presence--present {
+        @for $i from 1 to $iconsToStack + 50 {
+            // ensure all icons shown when expanded
+            &:nth-of-type(#{$i+1}) {
+                right: ($i * $iconExpandIntervalDistance) + $rightIconOffset;
+                z-index: $i*-1;
+                .content-list-item__icon--presence {
+                    background-color: $c-presence-purple;
+                    color: rgba(255, 255, 255, 1);
+                    @include box-shadow(0px 0px 4px 1px #ffffff);
+                }
+            }
+        }
+    }
+}
+
+// Presence in the drawer
+
+.content-list-item__presence-list--drawer {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+
+    .content-list-item__presence--present {
+        position: static;
+        display: inline-block;
+        .content-list-item__icon--presence {
+            width: auto;
+            height: auto;
+            text-transform: none;
+            @extend %fs-data-2;
+            @include border-radius(50px);
+            padding: 0 6px;
+            line-height: 16px;
+            margin: 1px 0;
+            border: 1px solid transparent;
+
+            &:hover {
+                background-color: #ffffff;
+                border: 1px solid $c-presence-purple;
+                color: $c-presence-purple;
+            }
+        }
+    }
+}

@@ -57,16 +57,14 @@ object PostgresDB {
         if s.composerId === c.composerId
       } yield (s, c)
 
-
       query.filter( {case (s,c) => displayContentItem(s, c) })
            .list.map {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
           val content = WorkflowContent.fromContentRow(contentData)
+
           DashboardRow(stub, content)
       }
-
-
     }
 
   private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
@@ -85,7 +83,9 @@ object PostgresDB {
         None,
         None,
         None,
-        activeInInCopy))
+        activeInInCopy,
+        false,
+        None))
     }
   }
 
