@@ -197,12 +197,6 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                         $scope.$apply();
                     }, errorMessage);
             };
-
-            $scope.sendContentItemToInCopy = function () {
-                //                $scope.contentItem.linkedWithInCopy = !$scope.contentItem.linkedWithInCopy;
-                document.location="gnm://composer/export/" + $scope.contentItem.composerId;
-            }
-
             function errorMessage(err) {
                 $scope.$apply(() => { throw new Error('Error deleting content: ' + (err.message || err)); });
 
