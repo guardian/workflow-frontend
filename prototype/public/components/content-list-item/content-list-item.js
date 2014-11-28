@@ -98,8 +98,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
-           
-            var lifecycleState = this.lifecycleState(item); 
+
+            var lifecycleState = this.lifecycleState(item);
             this.lifecycleState = lifecycleState.display;
             this.lifecycleStateTime = lifecycleState.time;
 
@@ -132,7 +132,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
  * Directive allowing the contentListItems to interact with the details drawer
  * @param $rootScope
  */
-var wfContentListItem = function ($rootScope) {
+var wfContentListItem = function ($rootScope, wfColumnService) {
     return {
         restrict: 'A',
         replace: true,
@@ -142,6 +142,9 @@ var wfContentListItem = function ($rootScope) {
             contentList: '=',
             legalValues: '=',
             statusValues: '='
+        },
+        controller: ($scope) => {
+            $scope.columns = wfColumnService.getColumns();
         },
         link: function ($scope, elem, attrs) {
 
