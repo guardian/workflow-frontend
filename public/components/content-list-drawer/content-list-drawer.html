@@ -166,7 +166,7 @@
                     <li class="drawer__control">
                         <span class="drawer__section-data-row drawer__control-item drawer__control-item--delete" ng-click="sendContentItemToInCopy()">
                             <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="incopy"></i>
-                            {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
+                            <a href="{{ incopyExportUrl }}">{{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy</a>
                         </span>
                     </li>
                  </ul>
