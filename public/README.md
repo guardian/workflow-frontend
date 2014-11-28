@@ -48,6 +48,34 @@ Running Sass build manually:
 
     sbt "project prototype" web-assets:sass
 
+## SVG Icons
+Icons in Workflow are SVG files. At the moment, they are combined into a single concatenated SVG manually (`components/icons/icons.svg`). Each icon is declared in the `<defs>` element and given its own group (`<g>`) with a unique identifier. This identifier is used by the icon directive defined in `components/icons/icons.js`, which re-uses each icon using the `<use>` element, referencing the icon's unique ID.
+
+
+
+Example Icon Sprite file:
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+    <defs>
+        <g id="example">
+            <path d="..." />
+        </g>
+    </defs>
+</svg>
+```
+
+
+Icon directive
+```html
+<i wf-icon="example" />
+```
+Appends SVG:
+```xml
+<svg class="wf-icon--active wf-icon-type--example" viewBox="0 0 128 128">
+    <use xlink:href="#icon-example"></use>
+</svg>
+```
+
 
 ## Javascript unit tests
 - Tests written in [mocha](http://visionmedia.github.io/mocha/)
