@@ -12,7 +12,14 @@ import akka.actor.Actor
 import play.api.libs.json.{JsError, JsSuccess}
 import play.api.Logger
 import com.gu.workflow.db.CommonDB
-import models.WorkflowContent
+import models.{
+  WorkflowContent, 
+  WireStatus, 
+  LifecycleEvent, 
+  WorkflowNotification,
+  Stub
+}
+
 
 class ComposerSqsReader extends Actor {
 
@@ -26,41 +33,81 @@ class ComposerSqsReader extends Actor {
     context.system.scheduler.scheduleOnce(1 second, self, PollMessages)
   }
 
-
   override def postRestart(reason: Throwable) { reschedule }
+
+  private def msg = AWSWorkflowQueue.getMessages(messageCount = 1, waitTimeSeconds = 1)
 
   @tailrec
   private def processMessages {
-    for(
-      message <- AWSWorkflowQueue.getMessages(messageCount = 1, waitTimeSeconds = 1)
-    ) {
+    for(m <- msg) {
       ComposerSqsReader.updateLastRead()
       
-      AWSWorkflowQueue.toWireStatus(message) match {
-        case JsError(e) => Logger.error(s"error parsing wirestatus: $e"); CloudWatch.recordMessageError
-        case JsSuccess(recievedStatus, _) => {
-          CommonDB.getStubForComposerId(recievedStatus.composerId) match {
-            case Some(stub) => {
-              try {
-                val content = WorkflowContent.fromWireStatus(recievedStatus, stub)
-                if(recievedStatus.updateType=="live") {
-                  CommonDB.createOrModifyContent(content, recievedStatus.revision)
-                }
-              } catch {
-                // this clause logs failed writes and swallows the message. if the database is dead then the
-                // CommonDB.getStubForComposerId call will fail and the exception propagate up to the retry loop
-                case sqle: SQLException => Logger.error(s"unable to write status: $recievedStatus", sqle); CloudWatch.recordMessageError
-              }
-            }
-            case None => CloudWatch.recordUntrackedContentMessage; Logger.trace("update to non tracked content recieved, ignoring") // this is where we could start tracking content automatically
-          }
-          CloudWatch.recordMessageProcessed
-        }
+      AWSWorkflowQueue.parseMessage(m) match {
+        case Some(s: WireStatus)     => processWireStatus(s) 
+        case Some(e: LifecycleEvent) => processLifecycleEvent(e)
+        case _ => 
       }
 
-      AWSWorkflowQueue.deleteMessage(message)
+      CloudWatch.recordMessageProcessed
+      AWSWorkflowQueue.deleteMessage(m)
     }
+
     processMessages
+  }
+
+  private def recordWriteStatusError(s: WireStatus, sqle: SQLException): Unit = {
+    CloudWatch.recordMessageError
+    Logger.error(s"unable to write status: $s", sqle)
+  }
+
+  private def recordLifecycleEventError(e: LifecycleEvent, sqle: SQLException): Unit = {
+    CloudWatch.recordMessageError
+    Logger.error(s"unable to perform lifecycle event $e", sqle)
+  }
+
+  private def recordUntrackedContent: Unit = {
+    CloudWatch.recordUntrackedContentMessage
+    Logger.trace("update to non tracked content recieved, ignoring") 
+  }
+
+  private def stub(id: String): Option[Stub] = {
+    // CommonDB.getStubForComposerId exception will propogate up
+    val stub = CommonDB.getStubForComposerId(id)
+    if(stub.isEmpty) recordUntrackedContent
+
+    stub
+  }
+
+  private def processLifecycleEvent(e: LifecycleEvent) = {
+    stub(e.composerId).map { stub => {
+      try {
+        e.event match {
+          case "delete" => {
+            CommonDB.deleteContent(e.composerId) 
+            Logger.info(s"content deleted successfully: ${e.composerId}")
+          }
+          case "takedown" => {
+            CommonDB.takeDownContent(e.composerId, Some(e.eventTime))
+            Logger.info(s"content taken down: ${e.composerId}")
+          }
+        }  
+      } catch {
+        case sqle: SQLException => recordLifecycleEventError(e, sqle)
+      }
+    }}
+  }
+
+  private def processWireStatus(status: WireStatus) = {
+    stub(status.composerId).map { stub =>
+      try {
+        val content = WorkflowContent.fromWireStatus(status, stub)
+        if(status.updateType=="live") {
+          CommonDB.createOrModifyContent(content, status.revision)
+        }
+      } catch {
+        case sqle: SQLException => recordWriteStatusError(status, sqle)
+      }
+    }
   }
 }
 

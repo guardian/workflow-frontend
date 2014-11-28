@@ -54,7 +54,8 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">In use by</span>
-                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                        <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true">
+                        </wf-presence-indicators>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Assigned to</span>
@@ -152,7 +153,7 @@
                     </li>
                     <li class="drawer__control" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}">
                     <span class="drawer__section-data-row drawer__control-item drawer__control-item--delete" ng-click="deleteContentItem()">
-                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete" wf-icon-dark="awaitingDeleteConfirmation"></i>
+                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
                             {{ awaitingDeleteConfirmation ? 'Delete' : 'Delete from workflow' }}
                         </span>
                     </li>
