@@ -447,14 +447,6 @@
                         "#!/bin/bash -ev\n",
 
                         "apt-get -y update\n",
-                        "locale-gen en_GB.UTF-8\n",
-                        "apt-get -y install openjdk-7-jre-headless\n",
-                        "apt-get -y install python-setuptools\n",
-                        "apt-get -y install unzip\n",
-                        "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz","\n",
-                        "mkdir -p /root/aws-cfn-bootstrap-latest","\n",
-                        "tar xvfz /root/aws-cfn-bootstrap-latest.tar.gz --strip-components=1 -C /root/aws-cfn-bootstrap-latest","\n",
-                        "easy_install /root/aws-cfn-bootstrap-latest/","\n",
 
                         "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r ProleLaunchConfig ",
                         "  --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
