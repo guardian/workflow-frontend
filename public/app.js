@@ -60,9 +60,14 @@ angular.module('workflow',
         'wfFeatureSwitches',
         'xeditable'
     ])
-    .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', function ($stateProvider, $urlRouterProvider, $compileProvider) {
         // TODO: remember user's state and redirect there on default '' route
         $urlRouterProvider.when('', '/dashboard');
+
+        $compileProvider.aHrefSanitizationWhitelist(
+            RegExp($compileProvider.aHrefSanitizationWhitelist().source +
+                   "|^\\s*" + _wfConfig.incopyExportUrl.match("^.*?:")[0])
+        );
 
         $stateProvider.state('dashboard', {
             url: '/dashboard',
