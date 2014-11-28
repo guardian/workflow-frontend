@@ -16,6 +16,13 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
     var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
         hiddenClass = 'content-list-drawer--hidden';
 
+    function buildIncopyUrl(fields) {
+        return config.incopyExportUrl
+            .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
+                return fields[fieldName] || "";
+            });
+    }
+
     return {
         restrict: 'A',
         replace: true,
@@ -60,6 +67,8 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
 
                 $scope.contentItem = contentItem;
                 $scope.contentList.selectedItem = contentItem;
+
+                $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
 
                 var w = $window.getComputedStyle(elem[0], null).width; // force reflow styles
 
