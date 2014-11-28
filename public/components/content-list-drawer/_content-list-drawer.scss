@@ -70,6 +70,10 @@
     &--confirm {
         color: white;
         background-color: $c-red;
+
+        .wf-icon-type--delete {
+            fill: #fff;
+        }
     }
 
     .drawer__control-item {

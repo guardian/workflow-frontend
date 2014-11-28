@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>@title | Workflow</title>
+  <title>@title</title>
   <script>
     this._wfConfig = @Html(config.toString);
   </script>
@@ -14,6 +14,7 @@
   <link rel="stylesheet" type="text/css" href="@routes.Assets.at("layouts/global/core.min.css")"/>
 </head>
 <body class="main-container">
+
   <header class="top-toolbar">
     <h1 class="top-toolbar__title">
       <a class="top-toolbar__title-link" href="@routes.Application.index">Workflow</a>
@@ -25,11 +26,15 @@
                 <a class="top-toolbar__user-link" href="@routes.Application.index">Log in</a>
             } else {
                 <a class="top-toolbar__user-link" href="@routes.Login.logout" title="Logout">Logout</a>
-            } 
+            }
         </noscript>
     </div>
   </header>
 
 @content
+
+<!-- build-commit-id: @prototype.BuildInfo.gitCommitId -->
+<!-- build-number: @prototype.BuildInfo.buildNumber -->
+
 </body>
 </html>
