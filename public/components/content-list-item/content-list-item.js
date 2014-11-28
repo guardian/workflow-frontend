@@ -60,7 +60,6 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
         update(item) {
 
             // TODO: Stubs have a different structure to content items
-
             this.id = item.id || item.stubId;
             this.composerId = item.composerId;
 
@@ -97,9 +96,12 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.created = item.createdAt;
             this.lastModified = item.lastModified;
 
+            this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
-            this.publishedState = item.published ? 'Published' : ''; // TODO: Taken down, Embargoed
-            this.publishedTime = item.timePublished;
+           
+            var lifecycleState = this.lifecycleState(item); 
+            this.lifecycleState = lifecycleState.display;
+            this.lifecycleStateTime = lifecycleState.time;
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -114,6 +116,18 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
                 'Not linked with InCopy';
 
             this.item = item;
+        }
+
+        lifecycleState(item) {
+            // Highest priority at the top!
+            var states = [
+                { "display": "Taken down", "active": item.takenDown, "time": item.timeTakenDown},
+                { "display": "Embargoed", "active": false, "time": undefined },
+                { "display": "Published", "active": item.published, "time": item.timePublished},
+                { "display": "", "active": true, "time": undefined} // Base state
+            ]
+
+            return (states.filter(function(o) { return o.active === true; })[0]);
         }
     }
 
