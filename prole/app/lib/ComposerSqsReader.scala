@@ -85,8 +85,9 @@ class ComposerSqsReader extends Actor {
   }
 
   private def processLifecycleEvent(e: LifecycleEvent): Boolean = {
+    Logger.info(s"processing lifecycle event '${e.event}' for ${e.composerId}")
+
     stub(e.composerId).map { stub => {
-      Logger.info(s"processing lifecycle event '${e.event}' for ${e.composerId}")
       try {
         e.event match {
           case "delete" => {
