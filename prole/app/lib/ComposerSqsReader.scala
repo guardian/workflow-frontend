@@ -74,7 +74,7 @@ class ComposerSqsReader extends Actor {
 
   private def recordUntrackedContent(id: String): Unit = {
     CloudWatch.recordUntrackedContentMessage
-    Logger.info(s"update to non tracked content recieved ($id), ignoring") 
+    Logger.trace(s"update to non tracked content recieved ($id), ignoring") 
   }
 
   private def stub(id: String): Option[Stub] = {
