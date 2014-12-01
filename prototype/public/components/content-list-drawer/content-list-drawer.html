@@ -61,6 +61,13 @@
                         <span class="drawer__section-title">Assigned to</span>
                         <span class="drawer__section-data-row--editable" editable-text="contentItem.item.assignee" buttons="no" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.item.assignee || "None" }}</span>
                     </li>
+
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">InCopy</span>
+                        <span class="drawer__section-data-row">{{ contentItem.incopyTitle }}</span>
+                        <span class="drawer__section-data-row" ng-if="contentItem.isOwnedByInCopy"><i>Locked</i></span>
+                    </li>
+
                 </ul>
 
                 <ul class="drawer__column">
@@ -156,6 +163,12 @@
                         <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
                             {{ awaitingDeleteConfirmation ? 'Delete' : 'Delete from workflow' }}
                         </span>
+                    </li>
+                    <li class="drawer__control" ng-show="incopyExportEnabled">
+                        <a href="{{ incopyExportUrl }}" class="drawer__section-data-row drawer__control-item drawer__control-item--incopy">
+                            <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="incopy"></i>
+                            {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
+                        </a>
                     </li>
                  </ul>
             </div>

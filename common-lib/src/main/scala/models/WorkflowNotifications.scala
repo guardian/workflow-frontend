@@ -37,7 +37,8 @@ case class WireStatus(
   lastMajorRevisionDate: Option[DateTime],
   publicationDate: Option[DateTime],
   revision: Long,
-  updateType: String
+  updateType: String,
+  storyBundleId: Option[String]
 ) extends WorkflowNotification
 
 object WireStatus {
@@ -76,7 +77,8 @@ object WireStatus {
       (__ \ "content" \ "lastMajorRevisionDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
       (__ \ "content" \ "publicationDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
       (__ \ "content" \ "revision").read[Long] ~
-      (__ \ "content" \ "updateType").read[String]
+      (__ \ "content" \ "updateType").read[String] ~
+      (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String]
       )(WireStatus.apply _)
 
 }
