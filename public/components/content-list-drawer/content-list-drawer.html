@@ -164,7 +164,7 @@
                             {{ awaitingDeleteConfirmation ? 'Delete' : 'Delete from workflow' }}
                         </span>
                     </li>
-                    <li class="drawer__control">
+                    <li class="drawer__control" ng-show="incopyExportEnabled">
                         <a href="{{ incopyExportUrl }}" class="drawer__section-data-row drawer__control-item drawer__control-item--incopy">
                             <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="incopy"></i>
                             {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
