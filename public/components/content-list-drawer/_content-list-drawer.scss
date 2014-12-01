@@ -80,6 +80,13 @@
         &--delete {
             height: 50px;
         }
+        &--incopy,
+        &--incopy:visited,
+        &--incopy:hover {
+            // overwrite link styling
+            color: inherit;
+            text-decoration: inherit;
+        }
         cursor: pointer;
         position: relative;
         padding: 2px 0 0 22px;

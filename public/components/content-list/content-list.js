@@ -18,7 +18,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .controller('wfContentListController', ['$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer]);
 
 
 function wfContentListController($scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService) {
