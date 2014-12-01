@@ -16,9 +16,9 @@ import { wfContentListDrawer } from 'components/content-list-drawer/content-list
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
-    .controller('wfContentListController', ['$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', wfContentListController])
+    .controller('wfContentListController', ['$rootScope', '$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
-    .directive('wfContentListItem', ['$rootScope', 'wfColumnService', wfContentListItem])
+    .directive('wfContentListItem', ['$rootScope', '$q', '$compile', '$http', '$templateCache', 'wfColumnService', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer])
     .directive("bindCompiledHtml", function($compile, $timeout) {
         return {
@@ -42,11 +42,16 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     });
 
 
-function wfContentListController($scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService) {
+function wfContentListController($rootScope, $scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService) {
 
     /*jshint validthis:true */
 
-    this.columns = wfColumnService.getColumns();
+    $scope.columns = wfColumnService.getColumns();
+
+    $scope.colChange = function () {
+        wfColumnService.setColumns($scope.columns);
+        $rootScope.$emit('contentItem.columnsChanged');
+    };
 
     this.showHeadline = false;
 
