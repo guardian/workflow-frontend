@@ -1,5 +1,6 @@
 import sbt._
 import sbt.Keys._
+import sbtbuildinfo.Plugin._
 import com.typesafe.sbt.web.Import._
 import com.typesafe.sbt.gzip.Import._
 
