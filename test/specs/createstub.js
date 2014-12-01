@@ -32,8 +32,8 @@ describe('stub creation', function() {
         expect(browser.getTitle()).toEqual('Welcome to Workflow');
     });
 
-    it('should create a new stub', function() {
 
+    it('should create a new stub', function() {
         element(newStubButton).click();
         element(stubTitleField).sendKeys(stubTitle);
         element(datePicker).sendKeys("8pm");
