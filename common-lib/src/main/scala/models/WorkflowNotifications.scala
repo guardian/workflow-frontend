@@ -37,7 +37,7 @@ case class WireStatus(
   lastMajorRevisionDate: Option[DateTime],
   publicationDate: Option[DateTime],
   revision: Long,
-  updateType: String
+  updateType: String,
   storyBundleId: Option[String]
 ) extends WorkflowNotification
 

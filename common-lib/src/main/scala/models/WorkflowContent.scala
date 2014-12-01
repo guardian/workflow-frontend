@@ -19,7 +19,7 @@ case class WorkflowContent(
                             published: Boolean,
                             timePublished: Option[DateTime],
                             storyBundleId: Option[String],
-                            activeInInCopy: Boolean
+                            activeInInCopy: Boolean,
                             takenDown: Boolean,
                             timeTakenDown: Option[DateTime]
                             ) {
@@ -60,12 +60,12 @@ object WorkflowContent {
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
-          headline, published, timePublished, _, storyBundleId, activeInInCopy) =>
+          headline, published, timePublished, _, storyBundleId, activeInInCopy,
+          takenDown, timeTakenDown) =>
           WorkflowContent(
             composerId, path, headline, contentType, None, Status(status), lastMod,
             lastModBy, commentable, published, timePublished, storyBundleId,
             activeInInCopy, takenDown, timeTakenDown)
-          )
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
     (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
@@ -88,7 +88,6 @@ object WorkflowContent {
       (__ \ "timePublished").readNullable[DateTime] ~
       (__ \ "storyBundleId").readNullable[String] ~
       (__ \ "activeInIncopy").read[Boolean] ~
-      (__ \ "timePublished").readNullable[DateTime] ~ 
       (__ \ "takenDown").read[Boolean] ~
       (__ \ "timeTakenDown").readNullable[DateTime]
       )(WorkflowContent.apply _)

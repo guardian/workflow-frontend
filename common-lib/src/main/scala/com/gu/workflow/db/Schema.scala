@@ -54,9 +54,9 @@ object Schema {
       Option[DateTime],// timePublished
       Option[Long],    // revision
       Option[String],  // storyBundleId
-      Boolean          // activeInInCopy
+      Boolean,         // activeInInCopy
       Boolean,         // takenDown 
-      Option[DateTime],// timeTakenDown
+      Option[DateTime] // timeTakenDown
     )
 
   case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
