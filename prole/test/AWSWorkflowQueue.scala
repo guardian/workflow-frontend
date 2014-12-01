@@ -38,7 +38,8 @@ class AWSWorkflowQueueSpec extends FunSpec with ShouldMatchers with ResourcesHel
           None,
           None,
           6.toLong,
-          "live"
+          "live",
+          None
         ))
     
         result should equal(expectedResult) 
