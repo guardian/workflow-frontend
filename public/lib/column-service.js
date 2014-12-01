@@ -1,7 +1,6 @@
 import angular from 'angular';
 import moment from 'moment';
-
-console.log("abc123");
+import { columnDefaults } from 'lib/column-defaults'
 
 angular.module('wfColumnService', [])
     .factory('wfColumnService', ['$rootScope', '$sce',
@@ -24,57 +23,7 @@ angular.module('wfColumnService', [])
 
                 init() {
 
-                    this.availableColums = [{
-                        name: 'titles',
-                        labelHTML: 'Working title / Headline',
-                        colspan: 1,
-                        title: ''
-                    },{
-                        name: 'presence',
-                        labelHTML: '<i class="content-list-head__heading-icon--presence" wf-icon="presence"/>',
-                        colspan: 1,
-                        title: 'In use by (Coming soon)'
-                    },{
-                        name: 'assignee',
-                        labelHTML: '<i class="content-list-head__heading-icon--assignee" wf-icon="assigned-to"/>',
-                        colspan: 1,
-                        title: 'Assigned to'
-                    },{
-                        name: 'office',
-                        labelHTML: 'Office',
-                        colspan: 1,
-                        title: ''
-                    },{
-                        name: 'deadline',
-                        labelHTML: 'Deadline',
-                        colspan: 1,
-                        title: ''
-                    },{
-                        name: 'section',
-                        labelHTML: 'Section',
-                        colspan: 1,
-                        title: ''
-                    },{
-                        name: 'status',
-                        labelHTML: 'Status',
-                        colspan: 1,
-                        title: ''
-                    },{
-                        name: 'notes',
-                        labelHTML: 'Notes',
-                        colspan: 1,
-                        title: ''
-                    },{
-                        name: 'links',
-                        labelHTML: 'Open in',
-                        colspan: 4,
-                        title: ''
-                    },{
-                        name: 'published-state',
-                        labelHTML: 'State',
-                        colspan: 1,
-                        title: ''
-                    }];
+                    this.availableColums = columnDefaults;
 
                     this.columns = this.availableColums;
 
@@ -95,6 +44,10 @@ angular.module('wfColumnService', [])
 
                 getColumns() {
                     return this.columns;
+                }
+
+                setColumns(columns) {
+                    this.columns = columns;
                 }
 
                 stringToArray(value) {

@@ -129,3 +129,25 @@ $content-list-icon-size: 14px;
     }
 
 }
+
+// column-configurator
+
+ .column-configurator {
+     position: absolute;
+     top: 0;
+     right: 0;
+     width: 200px;
+
+     // _toolbar-sections-dropdown.scss:71
+     background-color: $c-grey-170;
+     border: 1px solid $c-grey-400;
+     border-top: none;
+     box-shadow: 2px 1px 5px $c-grey-300;
+     display: block;
+     -webkit-transition: opacity .35 ease-in-out;
+     -moz-transition: opacity .35 ease-in-out;
+     -ms-transition: opacity .35 ease-in-out;
+     -o-transition: opacity .35 ease-in-out;
+     transition: opacity .35 ease-in-out;
+     // ! _toolbar-sections-dropdown.scss:71
+ }
