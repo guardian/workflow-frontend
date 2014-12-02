@@ -19,7 +19,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .controller('wfContentListController', ['$rootScope', '$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', '$q', '$compile', '$http', '$templateCache', 'wfColumnService', wfContentListItem])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer])
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer])
     .directive("bindCompiledHtml", function($compile, $timeout) {
         return {
             scope: {
@@ -40,6 +40,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
             }
         };
     });
+
 
 
 function wfContentListController($rootScope, $scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService) {
