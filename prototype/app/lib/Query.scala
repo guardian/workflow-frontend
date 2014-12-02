@@ -1,5 +1,8 @@
 package lib
 
+import scala.slick.ast.BaseTypedType
+import scala.slick.driver.PostgresDriver.simple._
+import scala.slick.lifted.{Query, Column, ExtensionMethodConversions}
 import models._
 import org.joda.time.DateTime
 
@@ -22,6 +25,10 @@ case class WfQuery(
 )
 
 object WfQuery {
+  def or[DB, Row, A : BaseTypedType](origQuery: Query[DB, Row], options: Seq[A])(field: DB => Column[A]): Query[DB, Row] =
+    if(options.isEmpty) origQuery
+    else origQuery.filter(table => field(table) inSet options)
+
   def optToSeq[A](o: Option[A]): Seq[A] =
     o map (List(_)) getOrElse Nil
 
