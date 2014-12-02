@@ -19,6 +19,7 @@
 <table class="content-list">
     <thead class="content-list-head">
         <tr class="content-list-head__row">
+
             <th class="content-list-head__heading--group" colspan="4"></th>
 
             <th ng-repeat="col in columns" ng-if="col.labelHTML.length > 0 && col.active" class="content-list-head__heading--{{ col.name }}" ng-attr-title="{{ col.title.length > 0 && col.title || undefined }}" colspan="{{ col.colspan }}" bind-compiled-html="col.labelHTML"></span></th>

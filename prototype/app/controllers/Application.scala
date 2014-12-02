@@ -37,7 +37,8 @@ object Application extends Controller with PanDomainAuthActions {
         "sectionsInDesks" -> sectionsInDesks, // TODO: Combine desks & sectionsInDesks
         "presenceUrl" -> PrototypeConfiguration.cached.presenceUrl,
         "presenceClientLib" -> PrototypeConfiguration.cached.presenceClientLib,
-        "user" -> Json.parse(user.toJson)
+        "user" -> Json.parse(user.toJson),
+        "incopyExportUrl" -> PrototypeConfiguration.cached.incopyExportUrl
       )
 
       Ok(views.html.app(title, Some(user), config))

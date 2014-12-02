@@ -42,14 +42,16 @@ class ComposerSqsReader extends Actor {
     for(m <- msg) {
       ComposerSqsReader.updateLastRead()
       
-      AWSWorkflowQueue.parseMessage(m) match {
+      if(AWSWorkflowQueue.parseMessage(m) match {
         case Some(s: WireStatus)     => processWireStatus(s) 
         case Some(e: LifecycleEvent) => processLifecycleEvent(e)
-        case _ => 
+        case _ => false
+      }) {
+        CloudWatch.recordMessageProcessed
+        AWSWorkflowQueue.deleteMessage(m)
+      } else {
+        Logger.error(s"message not parsed: $m")  
       }
-
-      CloudWatch.recordMessageProcessed
-      AWSWorkflowQueue.deleteMessage(m)
     }
 
     processMessages
@@ -65,49 +67,64 @@ class ComposerSqsReader extends Actor {
     Logger.error(s"unable to perform lifecycle event $e", sqle)
   }
 
-  private def recordUntrackedContent: Unit = {
+  private def recordStubRetrievalError(id: String, sqle: SQLException): Unit = {
+    CloudWatch.recordMessageError
+    Logger.error(s"unable to retrieve stub: $id", sqle)
+  }
+
+  private def recordUntrackedContent(id: String): Unit = {
     CloudWatch.recordUntrackedContentMessage
-    Logger.trace("update to non tracked content recieved, ignoring") 
+    Logger.trace(s"update to non tracked content recieved ($id), ignoring") 
   }
 
   private def stub(id: String): Option[Stub] = {
-    // CommonDB.getStubForComposerId exception will propogate up
     val stub = CommonDB.getStubForComposerId(id)
-    if(stub.isEmpty) recordUntrackedContent
+    if(stub.isEmpty) recordUntrackedContent(id)
 
     stub
   }
 
-  private def processLifecycleEvent(e: LifecycleEvent) = {
+  private def processLifecycleEvent(e: LifecycleEvent): Boolean = {
+    Logger.info(s"processing lifecycle event '${e.event}' for ${e.composerId}")
+
     stub(e.composerId).map { stub => {
       try {
         e.event match {
           case "delete" => {
             CommonDB.deleteContent(e.composerId) 
             Logger.info(s"content deleted successfully: ${e.composerId}")
+
+            true
           }
           case "takedown" => {
             CommonDB.takeDownContent(e.composerId, Some(e.eventTime))
             Logger.info(s"content taken down: ${e.composerId}")
+
+            true
           }
-        }  
+          case _ => {
+            Logger.info(s"unrecognised lifecycle event ${e.event}")
+
+            false
+          }
+        }
       } catch {
-        case sqle: SQLException => recordLifecycleEventError(e, sqle)
+        case sqle: SQLException => recordLifecycleEventError(e, sqle); false
       }
-    }}
+    }}.getOrElse(true)
   }
 
-  private def processWireStatus(status: WireStatus) = {
+  private def processWireStatus(status: WireStatus): Boolean = {
     stub(status.composerId).map { stub =>
       try {
         val content = WorkflowContent.fromWireStatus(status, stub)
         if(status.updateType=="live") {
           CommonDB.createOrModifyContent(content, status.revision)
-        }
+        }; true
       } catch {
-        case sqle: SQLException => recordWriteStatusError(status, sqle)
+        case sqle: SQLException => recordWriteStatusError(status, sqle); false
       }
-    }
+    }.getOrElse(true)
   }
 }
 

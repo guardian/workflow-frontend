@@ -106,6 +106,15 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.links = new ContentItemLinks(item);
             this.path = item.path;
 
+            this.isOwnedByInCopy = item.activeInInCopy;
+            this.storyBundleId = item.storyBundleId;
+            /* it may be linked with InCopy but owned by composer */
+            this.linkedWithIncopy = (typeof item.storyBundleId === "string" &&
+                                     item.storyBundleId.length > 0);
+            this.incopyTitle = this.linkedWithIncopy ?
+                'Linked with InCopy Story Bundle ' + this.storyBundleId :
+                'Not linked with InCopy';
+
             this.item = item;
         }
 

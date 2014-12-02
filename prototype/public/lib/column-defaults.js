@@ -20,6 +20,20 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'priority.html',
     active: true
 },{
+    name: 'content-type',
+    labelHTML: '',
+    colspan: 0,
+    title: '',
+    templateUrl: templateRoot + 'content-type.html',
+    active: true
+},{
+    name: 'titles',
+    labelHTML: 'Working title / Headline',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'title.html',
+    active: true
+},{
     name: 'comments',
     labelHTML: '',
     colspan: 0,
@@ -34,18 +48,11 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'main-image.html',
     active: true
 },{
-    name: 'content-type',
+    name: 'incopy',
     labelHTML: '',
     colspan: 0,
     title: '',
-    templateUrl: templateRoot + 'content-type.html',
-    active: true
-},{
-    name: 'titles',
-    labelHTML: 'Working title / Headline',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'title.html',
+    templateUrl: templateRoot + 'incopy.html',
     active: true
 },{
     name: 'presence',
