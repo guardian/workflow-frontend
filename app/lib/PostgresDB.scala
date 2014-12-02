@@ -29,54 +29,66 @@ object PostgresDB {
                   prodOffice:   Option[String]   = None,
                   createdFrom:  Option[DateTime] = None,
                   createdUntil: Option[DateTime] = None
-  ): List[DashboardRow] = Nil
+  ): List[DashboardRow] =
+    getContent(WfQuery.fromOptions(
+                 section, desk, dueFrom, dueUntil, status, contentType,
+                 published, flags, prodOffice, createdFrom, createdUntil
+               )
+    )
 
-  // getContent(WfQuery.fromOptions(
-  //                  section, desk, dueFrom, dueUntil, status, contentType,
-  //                  published, flags, prodOffice, createdFrom, createdUntil
-  //                )
-  // )
+  def getContent(q: WfQuery): List[DashboardRow] =
+    DB.withTransaction { implicit session =>
+      // val flagFilters = q.flags.flatMap(queryStringToFlag.get(_)).seq
+      // val flagFilterOpt = if(flagFilters.isEmpty) None else Some(flagFilters)
 
+      // val stubsQuery =
+      //   stubs |>
+      //   flagFilterOpt.foldl[StubQuery]((q, filters) => q.filter(_.needsLegal inSet(filters))) |>
+      //   dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
+      //   dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+      //   section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>
+      //   prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
+      //   createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
+      //   createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
 
-// 
-//     DB.withTransaction { implicit session =>
+      // val contentQuery =
+      //   content |>
+      //     status.foldl[ContentQuery] { case (q, Status(s)) => q.filter(_.status === s) } |>
+      //     contentType.foldl[ContentQuery] ((q, contentType) => q.filter(_.contentType === contentType)) |>
+      //     published.foldl[ContentQuery] ((q, published) => q.filter(_.published === published))
 
-//       val flagFilters = flags.flatMap(queryStringToFlag.get(_)).seq
-//       val flagFilterOpt = if(flagFilters.isEmpty) None else Some(flagFilters)
+      val stubsQuery =
+        WfQuery.or(stubs, List("Dev", "Technology"))(tbl => tbl.section) |>
+          (q => WfQuery.or(q, List("AU", "UK"))(_.prodOffice))
+//        stubs.filter( _.section inSet q.section.map(_.name))
+      //        stubs
 
-//       val stubsQuery =
-//         stubs |>
-//         flagFilterOpt.foldl[StubQuery]((q, filters) => q.filter(_.needsLegal inSet(filters))) |>
-//         dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-//         dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-//         section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>
-//         prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
-//         createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
-//         createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
+      val contentQuery = content
 
-//       val contentQuery =
-//         content |>
-//           status.foldl[ContentQuery] { case (q, Status(s)) => q.filter(_.status === s) } |>
-//           contentType.foldl[ContentQuery] ((q, contentType) => q.filter(_.contentType === contentType)) |>
-//           published.foldl[ContentQuery] ((q, published) => q.filter(_.published === published))
+      val query = for {
+        s <- stubsQuery
+        c <- contentQuery
+        if s.composerId === c.composerId
+      } yield (s, c)
 
-//       val query = for {
-//         s <- stubsQuery
-//         c <- contentQuery
-//         if s.composerId === c.composerId
-//       } yield (s, c)
+      // query.filter( {case (s,c) => displayContentItem(s, c) })
+      //      .list.map {
+      //       case (stubData, contentData) =>
+      //     val stub    = Stub.fromStubRow(stubData)
+      //     val content = WorkflowContent.fromContentRow(contentData)
+      //     DashboardRow(stub, content)
+      // }
 
-
-//       query.filter( {case (s,c) => displayContentItem(s, c) })
-//            .list.map {
-//             case (stubData, contentData) =>
-//           val stub    = Stub.fromStubRow(stubData)
-//           val content = WorkflowContent.fromContentRow(contentData)
-//           DashboardRow(stub, content)
-//       }
-
-
-//     }
+      val res = query.filter( {case (s,c) => displayContentItem(s, c) })
+           .list.map {
+            case (stubData, contentData) =>
+          val stub    = Stub.fromStubRow(stubData)
+          val content = WorkflowContent.fromContentRow(contentData)
+          DashboardRow(stub, content)
+      }
+      println(s"res ${res}")
+      return res
+    }
 
   private def ensureContentExistsWithId(composerId: String, contentType: String)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
