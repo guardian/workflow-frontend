@@ -31,7 +31,7 @@ object WfQuery {
 
     // no options provided, return query unchanged
     case Nil  => (startQuery => startQuery)
-    case opts => { startQuery =>
+    case opts => { startQuery => 
       startQuery.filter(table => getField(table) inSet options)
     }
   }
