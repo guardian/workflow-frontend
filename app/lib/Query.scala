@@ -25,9 +25,16 @@ case class WfQuery(
 )
 
 object WfQuery {
-  def or[DB, Row, A : BaseTypedType](origQuery: Query[DB, Row], options: Seq[A])(field: DB => Column[A]): Query[DB, Row] =
-    if(options.isEmpty) origQuery
-    else origQuery.filter(table => field(table) inSet options)
+  def inSet[A : BaseTypedType, DB, Row](options: Seq[A],
+                                            getField: DB => Column[A]):
+      (Query[DB, Row]) => Query[DB, Row] = options match {
+
+    // no options provided, return query unchanged
+    case Nil  => (startQuery => startQuery)
+    case opts => { startQuery =>
+      startQuery.filter(table => getField(table) inSet options)
+    }
+  }
 
   def optToSeq[A](o: Option[A]): Seq[A] =
     o map (List(_)) getOrElse Nil
