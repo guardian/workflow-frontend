@@ -57,9 +57,12 @@ object PostgresDB {
       //     contentType.foldl[ContentQuery] ((q, contentType) => q.filter(_.contentType === contentType)) |>
       //     published.foldl[ContentQuery] ((q, published) => q.filter(_.published === published))
 
-      val stubsQuery =
-        WfQuery.or(stubs, List("Dev", "Technology"))(tbl => tbl.section) |>
-          (q => WfQuery.or(q, List("AU", "UK"))(_.prodOffice))
+      import WfQuery.inSet
+      val stubsQuery = stubs |>
+        inSet(List("Dev", "Technology"), _.section) |>
+        inSet(List("AU", "UK"), _.prodOffice)
+
+//          (q => WfQuery.or(q, )(_.prodOffice))
 //        stubs.filter( _.section inSet q.section.map(_.name))
       //        stubs
 
