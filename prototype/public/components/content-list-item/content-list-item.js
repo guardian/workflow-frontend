@@ -73,7 +73,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 
             // TODO: pull main image from composer
             this.hasMainImage = Boolean(item.mainMedia);
-            this.mainImageTitle = 'Main image (Coming soon)';
+            this.mainImageTitle = 'Main media (' + (item.mainMedia || 'none')  + ')';
 
             this.assignee = item.assignee && toInitials(item.assignee) || '';
             this.assigneeFull = item.assignee || 'unassigned';
