@@ -54,13 +54,14 @@ object Application extends Controller with PanDomainAuthActions {
   def makeCookie[A](name: String, value: Boolean => Boolean)
                 (implicit request: Request[A]): Option[Cookie] =
     featureList.get(name).map { curVal =>
-      Cookie(name, if(value(curVal)) "1" else "0", Some(Int.MaxValue))
+      Cookie(name, if(value(curVal)) "1" else "0", Some(Int.MaxValue),
+             httpOnly = false)
     }
 
   def featureSwitch(name: String, value: Boolean => Boolean) =
     AuthAction { implicit request =>
       makeCookie(name, value).map(cookie =>
-        Ok(s"${cookie.name} set to ${cookie.value}").withCookies(cookie))
+        TemporaryRedirect("/").withCookies(cookie))
         .getOrElse(BadRequest(s"Unknown cookie $name"))
     }
 
