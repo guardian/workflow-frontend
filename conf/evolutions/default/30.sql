@@ -22,6 +22,7 @@ CREATE TABLE archive
   , activeinincopy boolean not null default false
   , takendown boolean not null default false
   , time_takendown timestamp without time zone
+  , mainmedia character varying(32)
 );
 
 
