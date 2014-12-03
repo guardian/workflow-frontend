@@ -27,6 +27,7 @@ class AWSWorkflowQueueSpec extends FunSpec with ShouldMatchers with ResourcesHel
           "546df848aa248d0c8b6e2f2e", 
           Some("global/2014/nov/20/546df848aa248d0c8b6e2f2e"), 
           Some("foo"),
+          None,
           "article",
           "field",
           false,
