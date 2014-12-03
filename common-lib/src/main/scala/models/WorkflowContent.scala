@@ -10,6 +10,7 @@ case class WorkflowContent(
                             composerId: String,
                             path: Option[String],
                             headline: Option[String],
+                            mainMedia: Option[String],
                             contentType: String,
                             section: Option[Section],
                             status: Status,
@@ -43,6 +44,7 @@ object WorkflowContent {
       wireStatus.composerId,
       wireStatus.path,
       wireStatus.headline,
+      wireStatus.mainMedia,
       wireStatus.`type`,
       wireStatus.tagSections.headOption,
       wireStatus.status, // not written to the database but the DTO requires a value.
@@ -60,16 +62,16 @@ object WorkflowContent {
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
-          headline, published, timePublished, _, storyBundleId, activeInInCopy,
+          headline, mainMedia, published, timePublished, _, storyBundleId, activeInInCopy,
           takenDown, timeTakenDown) =>
           WorkflowContent(
-            composerId, path, headline, contentType, None, Status(status), lastMod,
+            composerId, path, headline, mainMedia, contentType, None, Status(status), lastMod,
             lastModBy, commentable, published, timePublished, storyBundleId,
             activeInInCopy, takenDown, timeTakenDown)
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
     (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
-     wc.contentType, wc.commentable, wc.headline, wc.published, wc.timePublished,
+     wc.contentType, wc.commentable, wc.headline, wc.mainMedia, wc.published, wc.timePublished,
      revision, wc.storyBundleId, wc.activeInInCopy, false, None)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
@@ -78,6 +80,7 @@ object WorkflowContent {
     ((__ \ "composerId").read[String] ~
       (__ \ "path").readNullable[String] ~
       (__ \ "headline").readNullable[String] ~
+      (__ \ "mainMedia").readNullable[String] ~
       (__ \ "contentType").read[String] ~
       (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
       (__ \ "status").read[String].map { s => Status(s) } ~

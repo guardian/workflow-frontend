@@ -26,6 +26,7 @@ case class WireStatus(
   composerId: String,
   path: Option[String],
   headline: Option[String],
+  mainMedia: Option[String],
   `type`: String,
   whatChanged: String,
   published: Boolean,
@@ -64,6 +65,7 @@ object WireStatus {
     ((__ \ "content" \ "identifiers" \ "composerId").read[String] ~
       (__ \ "content" \ "identifiers" \ "path").readNullable[String] ~
       (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
+      (__ \ "content" \ "mainMediaType").readNullable[String] ~
       (__ \ "content" \ "type").read[String] ~
       (__ \ "whatChanged").read[String] ~
       (__ \ "published").read[Boolean] ~
