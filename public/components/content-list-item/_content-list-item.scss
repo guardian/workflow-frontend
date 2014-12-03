@@ -232,6 +232,7 @@
         &--published-state {
             width: 80px;
             padding: 5px 10px;
+            @extend %fs-data-3;
         }
     }
 }
