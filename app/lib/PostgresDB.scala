@@ -87,23 +87,38 @@ object PostgresDB {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
           val content = WorkflowContent.fromContentRow(contentData)
+
           DashboardRow(stub, content)
       }
       println(s"res ${res}")
       return res
     }
 
-  private def ensureContentExistsWithId(composerId: String, contentType: String)(implicit session: Session) {
+  private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
       content +=
-        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false, None, None))
+      ((composerId,
+        None,
+        new DateTime,
+        None,
+        Status.Writers.name,
+        contentType,
+        false,
+        None,
+        false,
+        None,
+        None,
+        None,
+        activeInInCopy,
+        false,
+        None))
     }
   }
 
-  def createStub(stub: Stub): Unit =
+  def createStub(stub: Stub, activeInInCopy: Boolean = false): Unit =
     DB.withTransaction { implicit session =>
-      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
+      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article"), activeInInCopy))
       stubs += Stub.newStubRow(stub)
     }
 
