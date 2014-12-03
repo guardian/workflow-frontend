@@ -220,6 +220,11 @@ object PostgresDB {
 
   def deleteStub(id: Long) {
     DB.withTransaction { implicit session =>
+
+      archive
+        .map(a => (a.stubId, a.composerId, a.workingTitle, a.section, a.contentType, a.prodOffice, a.createdAt, a.wasDeleted, a.lastModified, a.status))
+        .insert(for (s <- stubs; if s.pk === id) yield (s.pk, s.composerId, s.workingTitle, s.section, s.contentType, s.prodOffice, s.createdAt, true, new DateTime, "Stub"))
+
       stubs.filter(_.pk === id).delete
     }
   }
