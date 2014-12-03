@@ -225,7 +225,13 @@ object PostgresDB {
         .map(a => (a.stubId, a.composerId, a.workingTitle, a.section, a.contentType, a.prodOffice, a.createdAt, a.wasDeleted, a.lastModified, a.status))
         .insert(for (s <- stubs; if s.pk === id) yield (s.pk, s.composerId, s.workingTitle, s.section, s.contentType, s.prodOffice, s.createdAt, true, new DateTime, "Stub"))
 
-      stubs.filter(_.pk === id).delete
+      val queryCurrentStub = stubs.filter(_.pk === id)
+
+      // Delete from Content table
+      content.filter(c => c.composerId in queryCurrentStub.map(_.composerId)).delete
+
+      // Delete from Stub table
+      queryCurrentStub.delete
     }
   }
 
