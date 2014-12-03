@@ -106,6 +106,7 @@ object PostgresDB {
         contentType,
         false,
         None,
+        None,
         false,
         None,
         None,
