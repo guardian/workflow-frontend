@@ -19,11 +19,12 @@
         background-color: $c-grey-200;
     }
     &__notifier {
-        min-width: 4px;
+        width: 4px;
+        padding: 0;
     }
 
     &--published {
-        background: $c-light-green; 
+        background: $c-light-green;
         .content-list-item__notifier {
             background: $c-green;
         }

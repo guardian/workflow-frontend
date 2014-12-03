@@ -5,25 +5,29 @@
     <a href="mailto:cms.workflow@guardian.co.uk">the Workflow team</a>.
 </div>
 
-    <div class="column-configurator">
-        <ul class="column-configurator__list">
-            <li class="column-configurator__list-item" ng-repeat="col in columns">
-                <label for="{{ col.name }}">
-                    <input type="checkbox" ng-model="col.active" id="{{ col.name }}" name="{{ col.name }}" ng-change="colChange()"/>
-                    {{ col.name }}
-                </label>
-            </li>
-        </ul>
-    </div>
-
 <table class="content-list">
     <thead class="content-list-head">
         <tr class="content-list-head__row">
+            <th class="content-list-head__heading--group content-list-head__heading--notifier" colspan="1"></th>
 
-            <th class="content-list-head__heading--group" colspan="4"></th>
+            <th ng-repeat="col in columns" ng-if="col.active" class="content-list-head__heading--{{ col.name }}" ng-attr-title="{{ col.title.length > 0 && col.title || undefined }}" colspan="{{ col.colspan }}" bind-compiled-html="col.labelHTML"></span></th>
 
-            <th ng-repeat="col in columns" ng-if="col.labelHTML.length > 0 && col.active" class="content-list-head__heading--{{ col.name }}" ng-attr-title="{{ col.title.length > 0 && col.title || undefined }}" colspan="{{ col.colspan }}" bind-compiled-html="col.labelHTML"></span></th>
+            <th class="content-list-head__heading--group content-list-head__heading--notifier content-list-head--button-container" colspan="1">
+                <div class="configure-columns" ng-click="showColumnMenu = !showColumnMenu">
+                    <div class="configure-columns__inner"></div>
+                </div>
 
+                <div class="column-configurator" ng-show="showColumnMenu">
+                    <ul class="column-configurator__list">
+                        <li class="column-configurator__list-item" ng-repeat="col in columns">
+                            <label class="column-configurator__label" for="{{ col.name }}">
+                                <input class="column-configurator__label" type="checkbox" ng-model="col.active" id="{{ col.name }}" name="{{ col.name }}" ng-change="colChange()"/>
+                                {{ col.prettyName }}
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </th>
         </tr>
     </thead>
     <tbody ng-repeat="group in content track by group.name">
