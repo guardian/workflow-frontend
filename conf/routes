@@ -54,9 +54,9 @@ POST           /admin/status/moveUp                   controllers.Admin.moveStat
 POST           /admin/status/moveDown                 controllers.Admin.moveStatusDown
 
 # feature-switching based enpoinds
-GET            /feature/:featureName                  controllers.Application.featureSwitchToggle(featureName)
-GET            /feature/:featureName/on               controllers.Application.featureSwitchOn(featureName)
-GET            /feature/:featureName/off              controllers.Application.featureSwitchOff(featureName)
+GET            /feature/:featureName                  controllers.Feature.featureSwitchToggle(featureName)
+GET            /feature/:featureName/on               controllers.Feature.featureSwitchOn(featureName)
+GET            /feature/:featureName/off              controllers.Feature.featureSwitchOff(featureName)
 
 # Management
 GET            /management/healthcheck                controllers.Management.healthCheck
