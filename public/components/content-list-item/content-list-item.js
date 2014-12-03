@@ -160,19 +160,26 @@ var wfContentListItem = function ($rootScope, $q, $compile, $http, $templateCach
 
                 $scope.columns = wfColumnService.getColumns();
 
-                var columns = [{templateUrl: '/assets/components/content-list-item/content-list-item-start.html'}].concat(
+                var columns = [{
+                    templateUrl: '/assets/components/content-list-item/content-list-item-start.html',
+                    active: true
+                }].concat(
                     $scope.columns,
-                    [{templateUrl: '/assets/components/content-list-item/content-list-item-end.html'}]
+                    [{
+                        templateUrl: '/assets/components/content-list-item/content-list-item-end.html',
+                        active: true
+                    }]
                 );
 
                 var promises = columns.map((col) => {
+
                     return $http.get(col.templateUrl, {cache: $templateCache}).success((html) => {
+
                         if (col.active) {
                             columns[columns.indexOf(col)] = html; // ensure that ajax request results returning at any time and inserted in the correct order
                         } else { // nasty...
                             columns[columns.indexOf(col)] = '';
                         }
-
                     });
                 });
 
