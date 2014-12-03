@@ -4,23 +4,43 @@ import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
+sealed trait WorkflowNotification
 
-case class WireStatus(composerId: String,
-                       path: Option[String],
-                       headline: Option[String],
-                       `type`: String,
-                       whatChanged: String,
-                       published: Boolean,
-                       user: Option[String],
-                       lastModified: DateTime,
-                       tagSections: List[Section],
-                       status: Status,
-                       commentable: Boolean,
-                       lastMajorRevisionDate: Option[DateTime],
-                       publicationDate: Option[DateTime],
-                       revision: Long,
-                       updateType: String
-                       )
+case class LifecycleEvent(
+  composerId: String,
+  managedByComposer: Boolean,
+  event: String,
+  eventTime: DateTime
+) extends WorkflowNotification
+
+object LifecycleEvent {
+  implicit val lifecycleEventReads: Reads[LifecycleEvent] = (
+    (__ \ "composerId").read[String] ~
+    (__ \ "managedByComposer").read[Boolean] ~
+    (__ \ "event").read[String] ~
+    (__ \ "eventTime").read[Long].map(t => new DateTime(t))
+  )(LifecycleEvent.apply _)
+}
+
+case class WireStatus(
+  composerId: String,
+  path: Option[String],
+  headline: Option[String],
+  `type`: String,
+  whatChanged: String,
+  published: Boolean,
+  user: Option[String],
+  lastModified: DateTime,
+  tagSections: List[Section],
+  status: Status,
+  commentable: Boolean,
+  lastMajorRevisionDate: Option[DateTime],
+  publicationDate: Option[DateTime],
+  revision: Long,
+  updateType: String,
+  storyBundleId: Option[String]
+) extends WorkflowNotification
+
 object WireStatus {
 
   val readTagSections = new Reads[List[Section]] {
@@ -57,7 +77,8 @@ object WireStatus {
       (__ \ "content" \ "lastMajorRevisionDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
       (__ \ "content" \ "publicationDate").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
       (__ \ "content" \ "revision").read[Long] ~
-      (__ \ "content" \ "updateType").read[String]
+      (__ \ "content" \ "updateType").read[String] ~
+      (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String]
       )(WireStatus.apply _)
 
 }

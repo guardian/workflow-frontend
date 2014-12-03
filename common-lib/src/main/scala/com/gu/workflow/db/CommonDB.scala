@@ -51,6 +51,10 @@ object CommonDB {
     stubs.filter(_.composerId === composerId).firstOption.map(Stub.fromStubRow(_))
   }
 
+  def getContentForComposerId(composerId: String): Option[WorkflowContent] = DB.withTransaction { implicit session =>
+    content.filter(_.composerId === composerId).firstOption.map(WorkflowContent.fromContentRow(_))
+  }
+
   def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
 
   def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
@@ -84,15 +88,24 @@ object CommonDB {
         .filter(_.composerId === wc.composerId)
         .filter(c => c.revision < revision || c.revision.isNull)
         .map(c =>
-          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.published, c.timePublished, c.revision))
-        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.published, wc.timePublished, Some(revision)))
+          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.published, c.timePublished, c.revision, c.storyBundleId))
+        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.published, wc.timePublished, Some(revision), wc.storyBundleId))
   }
 
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {
       content += WorkflowContent.newContentRow(wc, revision)
   }
 
-  def deleteContent(composerId: String) {
+  def takeDownContent(composerId: String, t: Option[DateTime]) = { 
+    DB.withTransaction { implicit session =>
+      content
+        .filter(_.composerId === composerId)
+        .map(c => (c.takenDown, c.timeTakenDown))
+        .update((true, t))
+    }
+  }
+
+  def deleteContent(composerId: String) = {
     DB.withTransaction { implicit session =>
       content.filter(_.composerId === composerId).delete
       stubs.filter(_.composerId === composerId).delete

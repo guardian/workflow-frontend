@@ -11,7 +11,8 @@ trait PanDomainAuthActions extends AuthActions with Results {
   lazy val config = play.api.Play.configuration
 
   override def validateUser(authedUser: AuthenticatedUser): Boolean = {
-    (authedUser.user.email endsWith ("@guardian.co.uk")) && authedUser.multiFactor
+    (authedUser.user.emailDomain == "guardian.co.uk") &&
+      (authedUser.multiFactor || (config.getString("no2faUser").map(user => user.length > 0 && user == authedUser.user.email).getOrElse(false)))
   }
 
   override def authCallbackUrl: String = config.getString("host").get + "/oauthCallback"
@@ -23,7 +24,7 @@ trait PanDomainAuthActions extends AuthActions with Results {
 
 
   override def invalidUserMessage(claimedAuth: AuthenticatedUser): String = {
-    if( (claimedAuth.user.email endsWith ("@guardian.co.uk)")) && !claimedAuth.multiFactor) {
+    if( (claimedAuth.user.emailDomain == "guardian.co.uk") && !claimedAuth.multiFactor) {
       s"${claimedAuth.user.email} is not valid for use with Workflow as you need to have two factor authentication enabled." +
        s" Please contact the Helpdesk by emailing 34444@theguardian.com or calling 34444 and request access to Composer CMS tools"
     } else {
