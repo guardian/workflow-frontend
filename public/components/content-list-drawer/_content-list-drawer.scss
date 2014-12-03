@@ -70,11 +70,22 @@
     &--confirm {
         color: white;
         background-color: $c-red;
+
+        .wf-icon-type--delete {
+            fill: #fff;
+        }
     }
 
     .drawer__control-item {
         &--delete {
             height: 50px;
+        }
+        &--incopy,
+        &--incopy:visited,
+        &--incopy:hover {
+            // overwrite link styling
+            color: inherit;
+            text-decoration: inherit;
         }
         cursor: pointer;
         position: relative;
