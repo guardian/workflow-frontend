@@ -1,5 +1,6 @@
 import angular from 'angular';
 
+import _ from 'lodash';
 import 'lib/filters-service';
 
 angular.module('wfSidebarFilter', ['wfFiltersService'])
@@ -16,24 +17,29 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         link: function ($scope, elem, attrs) {
 
             $scope.defaultFilter = { caption: "All", value: null };
-            $scope.selectedFilter = wfFiltersService.get($scope.filter.namespace);
+            var currentSelection = wfFiltersService.get($scope.filter.namespace);
 
-            if (!$scope.selectedFilter) {
-                $scope.selectedFilter = null;
+            if (!currentSelection) {
+                $scope.selectedFilters = [];
+            } else {
+                $scope.selectedFilters = currentSelection.split(",")
             }
 
             $scope.filterIsSelected = function(filter) {
-                return (filter != null && filter.value === $scope.selectedFilter);
+                return (filter != null && _.contains($scope.selectedFilters,
+                                                     filter.value));
             };
 
             $scope.filterClick = function(filter) {
                 if($scope.filterIsSelected(filter)) {
-                    $scope.selectedFilter = null;
+                    $scope.selectedFilters =
+                        _.filter($scope.selectedFilters,
+                                 flt => flt === filter);
                 } else {
-                    $scope.selectedFilter = filter.value;
+                    $scope.selectedFilters.push(filter.value);
                 }
-
-                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilter);
+                console.log("filterClick, new filters:", $scope.selectedFilters);
+                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
             };
 
             $scope.toggleSidebarSection = function () {
