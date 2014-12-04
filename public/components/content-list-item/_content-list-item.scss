@@ -315,12 +315,11 @@
         padding: $compact-display-td-padding;
     }
 
-    .content-list-item__field--presence,
+    .content-list-item__icon--presence,
     .content-list-item__icon--assignee {
         @extend %fs-data-1;
         width: 16px;
         height: 16px;
         line-height: 18px;
     }
-
 }
