@@ -2,6 +2,8 @@ var loginHelper = require('./helpers/login');
 var extend = require('extend');
 var tunnelId = require('./unique-id');
 var fs = require('fs');
+var ScreenShotReporter = require('protractor-screenshot-reporter');
+
 
 /* a require helper to avoid nested ../../../ hell */
 global.rootRequire = function(name) {
