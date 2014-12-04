@@ -45,7 +45,7 @@ angular.module('wfPreferencesService', [])
                 }
 
                 /**
-                 * Perform a cusom parse on returned preference data as we only care about the users prefs for workflow
+                 * Perform a cutsom parse on returned preference data as we only care about the users prefs for workflow
                  * and want the data pre-parsed in to js objects ready for use
                  * @param data
                  * @param headersGetter
@@ -56,7 +56,7 @@ angular.module('wfPreferencesService', [])
                     var wfPrefs = data.preferences.workflow; // strip out all but WF prefs
                     for (var key in wfPrefs) {
                         if (wfPrefs.hasOwnProperty(key)) {
-                            wfPrefs[key] = JSON.parse(wfPrefs[key]); // Parse all values to js objects
+                            wfPrefs[key] = JSON.parse(wfPrefs[key]); // Parse all values to js objects as prefs returns a string here
                         }
                     }
                     return wfPrefs;
