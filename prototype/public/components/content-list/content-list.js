@@ -25,6 +25,7 @@ function wfContentListController($scope, statuses, sections, wfContentService, w
 
     /*jshint validthis:true */
 
+    this.compact = true;
     this.showHeadline = false;
 
     this.newItem = function () {
