@@ -15,12 +15,12 @@ CREATE TABLE archive
   , status character varying(16)
   , headline character varying(300)
   , path character varying(512)
-  , published boolean not null default false
+  , published boolean
   , time_published timestamp without time zone
   , revision integer
   , storybundleid character varying(100)
-  , activeinincopy boolean not null default false
-  , takendown boolean not null default false
+  , activeinincopy boolean
+  , takendown boolean
   , time_takendown timestamp without time zone
   , mainmedia character varying(32)
 );
