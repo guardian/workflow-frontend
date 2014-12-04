@@ -15,6 +15,8 @@ import com.gu.workflow.db.CommonDB
 import models.{
   WorkflowContent, 
   WireStatus, 
+  DraftContentUpdateEvent,
+  LiveContentUpdateEvent,
   LifecycleEvent, 
   WorkflowNotification,
   Stub
@@ -43,8 +45,10 @@ class ComposerSqsReader extends Actor {
       ComposerSqsReader.updateLastRead()
       
       if(AWSWorkflowQueue.parseMessage(m) match {
-        case Some(s: WireStatus)     => processWireStatus(s) 
-        case Some(e: LifecycleEvent) => processLifecycleEvent(e)
+        case Some(s: WireStatus)         => processWireStatus(s) 
+        case Some(e: LifecycleEvent)     => processLifecycleEvent(e)
+        case Some(c: DraftContentUpdateEvent) => println(c); true
+        case Some(d: LiveContentUpdateEvent)  => println(d); true
         case _ => false
       }) {
         CloudWatch.recordMessageProcessed
