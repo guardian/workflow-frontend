@@ -19,6 +19,9 @@ describe('stub creation', function() {
         browser.driver.sleep(8000);
 
         element(newStubButton).click();
+
+        browser.driver.sleep(1000);
+
         element(stubTitleField).sendKeys(stubTitle);
         element(saveStubButton).click();
         browser.driver.sleep(6000);
