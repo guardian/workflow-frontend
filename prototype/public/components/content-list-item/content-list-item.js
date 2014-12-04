@@ -156,9 +156,13 @@ var wfContentListItem = function ($rootScope, $q, $compile, $http, $templateCach
         },
         link: function ($scope, elem, attrs) {
 
+            wfColumnService.getColumns().then((data) => {
+                $scope.columns = data;
+                renderColumns();
+            });
+
             function renderColumns () {
 
-                $scope.columns = wfColumnService.getColumns();
 
                 var columns = [{
                     templateUrl: '/assets/components/content-list-item/content-list-item-start.html',
@@ -189,8 +193,6 @@ var wfContentListItem = function ($rootScope, $q, $compile, $http, $templateCach
                     elem = compiled;
                 });
             }
-
-            renderColumns();
 
             $rootScope.$on('contentItem.columnsChanged', renderColumns);
 
