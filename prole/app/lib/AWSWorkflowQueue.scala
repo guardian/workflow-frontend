@@ -48,6 +48,8 @@ object AWSWorkflowQueue {
   def parseMessage(awsMsg: Message): Option[WorkflowNotification] = {
     val body = Json.parse(awsMsg.getBody)
 
+    Logger.trace(s"received message: ${awsMsg.getBody}")
+
     (body \ "Subject").validate[String] match {
       case JsError(e)      => recordMessageParsingError(e); None
       case JsSuccess(n, _) => n match { 
