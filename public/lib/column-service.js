@@ -15,13 +15,11 @@ angular.module('wfColumnService', [])
                     self.availableColums = columnDefaults;
 
                     self.preferencePromise = wfPreferencesService.getPreference('columnConfiguration').then(function resolve (data) {
-                        console.log("got it", data);
                         self.columns = data;
-                        return Promise.resolve(self.columns);
+                        return self.columns;
                     }, function reject () {
-                        console.log("not got it");
                         self.columns = self.availableColums;
-                        return Promise.resolve(self.columns);
+                        return self.columns;
                     });
                 }
 
