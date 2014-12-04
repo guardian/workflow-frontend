@@ -107,8 +107,65 @@ object CommonDB {
 
   def deleteContent(composerId: String) = {
     DB.withTransaction { implicit session =>
+      archiveContentQuery((s, c) => s.composerId === composerId)
       content.filter(_.composerId === composerId).delete
       stubs.filter(_.composerId === composerId).delete
     }
   }
+
+
+  def archiveContentQuery(p: (DBStub, DBContent) => Column[Option[Boolean]])(implicit session: Session) =
+    archive.map(
+      a => (
+        a.stubId,
+        a.composerId,
+        a.wasDeleted,
+        a.workingTitle,
+        a.section,
+        a.contentType,
+        a.prodOffice,
+        a.createdAt,
+        a.lastModified,
+        a.status,
+        a.headline,
+        a.path,
+        a.published,
+        a.timePublished,
+        a.revision,
+        a.storybundleid,
+        a.activeinincopy,
+        a.takendown,
+        a.timeTakendown
+      )
+    )
+    .insert  (for {
+        s <- stubs
+        c <- content
+        if p(s, c)
+        if s.composerId === c.composerId
+      }
+      yield
+        (
+          s.pk,
+          s.composerId,
+          true, // was_deleted
+          s.workingTitle,
+          s.section,
+          s.contentType,
+          s.prodOffice,
+          s.createdAt,
+          c.lastModified,
+          c.status,
+          c.headline,
+          c.path,
+          c.published,
+          c.timePublished,
+          c.revision,
+          c.storyBundleId,
+          c.activeInInCopy,
+          c.takenDown,
+          c.timeTakenDown
+        )
+      )
+
 }

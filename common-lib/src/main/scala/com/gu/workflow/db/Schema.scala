@@ -109,7 +109,7 @@ object Schema {
   }
 
   type ArchiveRow = (
-    Long,              // pk
+    Option[Long],      // pk
     Long,              // stub_id
     Option[String],    // composer_id
     Boolean,           // was_deleted
@@ -132,7 +132,7 @@ object Schema {
   )
 
   case class DBArchive(tag: Tag) extends Table[ArchiveRow](tag, "archive") {
-    def pk = column [Long] ("pk", O.PrimaryKey)
+    def pk = column [Long] ("pk", O.PrimaryKey, O.AutoInc)
     def stubId = column [Long] ("stub_id")
     def composerId = column [Option[String]] ("composer_id")
     def wasDeleted = column [Boolean] ("was_deleted")
@@ -155,7 +155,7 @@ object Schema {
     def timeTakendown = column [Option[DateTime]] ("time_takendown")
 
     def * = (
-      pk, stubId, composerId, wasDeleted,
+      pk.?, stubId, composerId, wasDeleted,
       workingTitle, section, contentType, prodOffice, createdAt,
       lastModified, status, headline, path, published, timePublished, revision,
       storybundleid, activeinincopy, takendown, timeTakendown
