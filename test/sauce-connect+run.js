@@ -52,7 +52,7 @@ sauceConnectLauncher(sauceConnectOptions).then(function(scProcess) {
     sauceConnectProcess = scProcess;
 
     console.log("Start protractor...");
-    return runProtractor('integration/src/test/protractor/protractorconf.js');
+    return runProtractor('protractorconf.js');
 }).then(function() {
     console.log("Shutdown Sauce Connect...");
 // TODO: as promise?

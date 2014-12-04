@@ -16,12 +16,12 @@ describe('stub creation', function() {
         // Not sure why we need this but it doesn't work without
         browser.ignoreSynchronization = true;
 
-        browser.driver.sleep(3000);
+        browser.driver.sleep(8000);
 
         element(newStubButton).click();
         element(stubTitleField).sendKeys(stubTitle);
         element(saveStubButton).click();
-        browser.driver.sleep(3000);
+        browser.driver.sleep(6000);
         expect(ptor.isElementPresent(stub)).toBeTruthy();
   });
 });
