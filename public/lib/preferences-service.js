@@ -23,7 +23,7 @@ angular.module('wfPreferencesService', [])
                 packageData(data) {
                     return {
                         data: {
-                            value: data,
+                            value: JSON.stringify(data),
                             namespace: "workflow"
                         }
                     }
@@ -72,11 +72,7 @@ angular.module('wfPreferencesService', [])
                     for (var key in wfPrefs) {
                         wfPrefs[key] = JSON.parse(wfPrefs[key]);
                     }
-//                    data.preferences.map((el) => {
-//                        el.value = JSON.parse(el.value);
-//                    });
                     return wfPrefs;
-//                    return data;
                 }
             }
 
