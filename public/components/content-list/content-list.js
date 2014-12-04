@@ -47,7 +47,10 @@ function wfContentListController($rootScope, $scope, statuses, sections, wfConte
 
     /*jshint validthis:true */
 
-    $scope.columns = wfColumnService.getColumns();
+    wfColumnService.getColumns().then((data) => {
+        $scope.columns = data;
+    });
+
     $scope.showColumnMenu = false;
     $scope.colChange = function () {
         wfColumnService.setColumns($scope.columns);

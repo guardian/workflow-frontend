@@ -3,28 +3,25 @@ import moment from 'moment';
 import { columnDefaults } from 'lib/column-defaults'
 
 angular.module('wfColumnService', [])
-    .factory('wfColumnService', ['$rootScope', '$sce',
-        function($rootScope, $sce) {
+    .factory('wfColumnService', ['$rootScope', '$sce', 'wfPreferencesService',
+        function($rootScope, $sce, wfPreferencesService) {
 
             class ColumnService {
 
                 constructor() {
-                    this.availableColums = columnDefaults;
 
-                    this.columns = this.availableColums;
-
-                    this.attachListeners()
-                }
-
-                attachListeners() {
                     var self = this;
-                    $rootScope.$on('columns.add', function(event, data) {
-                        self.addColumn(data);
-                        //$rootScope.$broadcast('getContent');
-                    });
 
-                    $rootScope.$on('columns.remove', function(event, data) {
-                        self.removeColumn(data);
+                    self.availableColums = columnDefaults;
+
+                    self.preferencePromise = wfPreferencesService.getPreference('columnConfiguration').then(function resolve (data) {
+                        console.log("got it", data);
+                        self.columns = data;
+                        return Promise.resolve(self.columns);
+                    }, function reject () {
+                        console.log("not got it");
+                        self.columns = self.availableColums;
+                        return Promise.resolve(self.columns);
                     });
                 }
 
@@ -33,13 +30,13 @@ angular.module('wfColumnService', [])
                 }
 
                 getColumns() {
-                    return this.columns;
+                    return this.columns ? Promise.resolve(this.columns) : this.preferencePromise;
                 }
 
                 setColumns(columns) {
                     this.columns = columns;
+                    return wfPreferencesService.setPreference('columnConfiguration', columns);
                 }
-
             }
 
             return new ColumnService();
