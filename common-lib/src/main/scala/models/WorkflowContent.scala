@@ -39,6 +39,49 @@ object WorkflowContent {
 
   implicit val dateTimeFormat = DateFormat
 
+  def fromLiveContentUpdateEvent(e: LiveContentUpdateEvent): WorkflowContent = {
+    WorkflowContent(
+      e.composerId,
+      e.path,
+      e.headline,
+      None,
+      e.`type`,
+      e.tagSections.headOption,
+      e.status, // not written to the database but the DTO requires a value.
+      e.lastModified,
+      e.user,
+      commentable=e.commentable,
+      published = e.published,
+      timePublished = e.publicationDate,
+      storyBundleId = e.storyBundleId,
+      false, // assume not active in incopy
+      takenDown = false,
+      timeTakenDown = None
+    )
+  }
+
+  def fromDraftContentUpdateEvent(e: DraftContentUpdateEvent): WorkflowContent = {
+    WorkflowContent(
+      e.composerId,
+      e.path,
+      e.headline,
+      None,
+      e.`type`,
+      e.tagSections.headOption,
+      e.status, // not written to the database but the DTO requires a value.
+      e.lastModified,
+      e.user,
+      commentable=e.commentable,
+      published = e.published,
+      timePublished = e.publicationDate,
+      storyBundleId = e.storyBundleId,
+      false, // assume not active in incopy
+      takenDown = false,
+      timeTakenDown = None
+    )
+
+  }
+
   def fromWireStatus(wireStatus: WireStatus, stub: Stub): WorkflowContent = {
     WorkflowContent(
       wireStatus.composerId,

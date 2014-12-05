@@ -4,7 +4,9 @@ import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
-sealed trait WorkflowNotification
+sealed trait WorkflowNotification {
+  val composerId: String
+}
 
 case class LiveContentUpdateEvent (
   composerId: String,

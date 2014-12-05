@@ -17,6 +17,7 @@ import models.{
   WireStatus, 
   DraftContentUpdateEvent,
   LiveContentUpdateEvent,
+  ContentUpdateEvent,
   LifecycleEvent, 
   WorkflowNotification,
   Stub
@@ -45,10 +46,9 @@ class ComposerSqsReader extends Actor {
       ComposerSqsReader.updateLastRead()
       
       if(AWSWorkflowQueue.parseMessage(m) match {
-        case Some(s: WireStatus)         => processWireStatus(s) 
-        case Some(e: LifecycleEvent)     => processLifecycleEvent(e)
-        case Some(c: DraftContentUpdateEvent) => println(c); true
-        case Some(d: LiveContentUpdateEvent)  => println(d); true
+        case Some(e: LifecycleEvent)          => processLifecycleEvent(e)
+        case Some(c: DraftContentUpdateEvent) => processContentUpdateEvent(c) 
+        case Some(d: LiveContentUpdateEvent)  => processContentUpdateEvent(d) 
         case _ => false
       }) {
         CloudWatch.recordMessageProcessed
@@ -61,7 +61,7 @@ class ComposerSqsReader extends Actor {
     processMessages
   }
 
-  private def recordWriteStatusError(s: WireStatus, sqle: SQLException): Unit = {
+  private def recordWriteStatusError(s: WorkflowNotification, sqle: SQLException): Unit = {
     CloudWatch.recordMessageError
     Logger.error(s"unable to write status: $s", sqle)
   }
@@ -88,8 +88,44 @@ class ComposerSqsReader extends Actor {
     stub
   }
 
+  private def processContentUpdateEvent(e: WorkflowNotification): Boolean = {
+    Logger.trace(s"process content update ${e}")
+
+    stub(e.composerId).map { stub =>
+      try {
+        e match {
+          case d: DraftContentUpdateEvent => {
+            val content = WorkflowContent.fromDraftContentUpdateEvent(
+              d.asInstanceOf[DraftContentUpdateEvent]
+            ) 
+            CommonDB.createOrModifyContent(
+              content, 
+              d.revision.getOrElse(0L)
+            )
+
+            true
+          }
+          case l: LiveContentUpdateEvent  => {
+            val content = WorkflowContent.fromLiveContentUpdateEvent(
+              l.asInstanceOf[LiveContentUpdateEvent]
+            ) 
+            CommonDB.createOrModifyContent(
+              content, 
+              l.revision.getOrElse(0L)
+            )
+
+            true
+          }
+          case _ => false
+        }
+      } catch {
+        case sqle: SQLException => recordWriteStatusError(e, sqle); false
+      }
+    }.getOrElse(true)
+  }
+
   private def processLifecycleEvent(e: LifecycleEvent): Boolean = {
-    Logger.info(s"processing lifecycle event '${e.event}' for ${e.composerId}")
+    Logger.info(s"process lifecycle event '${e.event}' for ${e.composerId}")
 
     stub(e.composerId).map { stub => {
       try {
@@ -116,19 +152,6 @@ class ComposerSqsReader extends Actor {
         case sqle: SQLException => recordLifecycleEventError(e, sqle); false
       }
     }}.getOrElse(true)
-  }
-
-  private def processWireStatus(status: WireStatus): Boolean = {
-    stub(status.composerId).map { stub =>
-      try {
-        val content = WorkflowContent.fromWireStatus(status, stub)
-        if(status.updateType=="live") {
-          CommonDB.createOrModifyContent(content, status.revision)
-        }; true
-      } catch {
-        case sqle: SQLException => recordWriteStatusError(status, sqle); false
-      }
-    }.getOrElse(true)
   }
 }
 
