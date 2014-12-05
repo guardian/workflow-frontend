@@ -41,12 +41,19 @@ object WorkflowContent {
     }
   }
 
+  def getMainMedia(blockOption: Option[Block]) = {
+    for {
+      block   <- blockOption
+      element <- block.elements.headOption
+    } yield element.elementType
+  }
+
   def fromLiveContentUpdateEvent(e: LiveContentUpdateEvent): WorkflowContent = {
     WorkflowContent(
       e.composerId,
       e.path,
       e.headline,
-      None,
+      getMainMedia(e.mainBlock),
       e.`type`,
       e.tagSections.headOption,
       e.status, // not written to the database but the DTO requires a value.
@@ -67,7 +74,7 @@ object WorkflowContent {
       e.composerId,
       e.path,
       e.headline,
-      None,
+      getMainMedia(e.mainBlock),
       e.`type`,
       e.tagSections.headOption,
       e.status, // not written to the database but the DTO requires a value.

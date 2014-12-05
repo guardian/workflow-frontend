@@ -15,6 +15,7 @@ case class LiveContentUpdateEvent (
   composerId: String,
   path: Option[String],
   headline: Option[String],
+  mainBlock: Option[Block],
   `type`: String,
   whatChanged: String,
   published: Boolean,
@@ -78,6 +79,7 @@ object LiveContentUpdateEvent extends ContentUpdateEvent {
     (__ \ "content" \ "id").read[String] ~
     (__ \ "content" \ "identifiers" \ "path").readNullable[String] ~
     (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
+    (__ \ "content" \ "mainBlock").readNullable[Block] ~
     (__ \ "content" \ "type").read[String] ~
     (__ \ "whatChanged").read[String] ~
     (__ \ "content" \ "published").read[Boolean] ~
