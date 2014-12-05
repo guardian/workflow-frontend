@@ -6,7 +6,7 @@ import play.api.Logger
 import org.joda.time.DateTime
 import com.amazonaws.services.sqs.AmazonSQSClient
 import com.amazonaws.services.sqs.model._
-import models.{LiveContentUpdateEvent, DraftContentUpdateEvent, WireStatus, LifecycleEvent, WorkflowNotification}
+import models.{LiveContentUpdateEvent, DraftContentUpdateEvent, LifecycleEvent, WorkflowNotification}
 import play.api.data.validation.ValidationError
 
 object AWSWorkflowQueue {
@@ -53,7 +53,6 @@ object AWSWorkflowQueue {
     (body \ "Subject").validate[String] match {
       case JsError(e)      => recordMessageParsingError(e); None
       case JsSuccess(n, _) => n match { 
-        case "fc-update.v1"        => deserializeMessageBody[WireStatus](body)
         case "fc-lifecycle.v2"     => deserializeMessageBody[LifecycleEvent](body)
         case "fc-content-draft.v1" => deserializeMessageBody[DraftContentUpdateEvent](body)
         case "fc-content-live.v1"  => deserializeMessageBody[LiveContentUpdateEvent](body)

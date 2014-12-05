@@ -14,12 +14,11 @@ import play.api.Logger
 import com.gu.workflow.db.CommonDB
 import models.{
   WorkflowContent, 
-  WireStatus, 
   DraftContentUpdateEvent,
   LiveContentUpdateEvent,
   ContentUpdateEvent,
+  ContentUpdate,
   LifecycleEvent, 
-  WorkflowNotification,
   Stub
 }
 
@@ -46,9 +45,8 @@ class ComposerSqsReader extends Actor {
       ComposerSqsReader.updateLastRead()
       
       if(AWSWorkflowQueue.parseMessage(m) match {
-        case Some(e: LifecycleEvent)          => processLifecycleEvent(e)
-        case Some(c: DraftContentUpdateEvent) => processContentUpdateEvent(c) 
-        case Some(d: LiveContentUpdateEvent)  => processContentUpdateEvent(d) 
+        case Some(e: LifecycleEvent)     => processLifecycleEvent(e)
+        case Some(c: ContentUpdate) => processContentUpdateEvent(c) 
         case _ => false
       }) {
         CloudWatch.recordMessageProcessed
@@ -61,7 +59,7 @@ class ComposerSqsReader extends Actor {
     processMessages
   }
 
-  private def recordWriteStatusError(s: WorkflowNotification, sqle: SQLException): Unit = {
+  private def recordWriteStatusError(s: ContentUpdate, sqle: SQLException): Unit = {
     CloudWatch.recordMessageError
     Logger.error(s"unable to write status: $s", sqle)
   }
@@ -88,40 +86,22 @@ class ComposerSqsReader extends Actor {
     stub
   }
 
-  private def processContentUpdateEvent(e: WorkflowNotification): Boolean = {
+  private def contentUpdate(e: ContentUpdate): Boolean = {
+    try {
+      WorkflowContent.fromContentUpdateEvent(e).map { content => 
+        CommonDB.createOrModifyContent(
+          content,
+          e.revision.getOrElse(0L)
+        )
+      }; true
+    } catch {
+      case sqle: SQLException => recordWriteStatusError(e, sqle); false
+    }
+  }
+
+  private def processContentUpdateEvent(e: ContentUpdate): Boolean = {
     Logger.trace(s"process content update ${e}")
-
-    stub(e.composerId).map { stub =>
-      try {
-        e match {
-          case d: DraftContentUpdateEvent => {
-            val content = WorkflowContent.fromDraftContentUpdateEvent(
-              d.asInstanceOf[DraftContentUpdateEvent]
-            ) 
-            CommonDB.createOrModifyContent(
-              content, 
-              d.revision.getOrElse(0L)
-            )
-
-            true
-          }
-          case l: LiveContentUpdateEvent  => {
-            val content = WorkflowContent.fromLiveContentUpdateEvent(
-              l.asInstanceOf[LiveContentUpdateEvent]
-            ) 
-            CommonDB.createOrModifyContent(
-              content, 
-              l.revision.getOrElse(0L)
-            )
-
-            true
-          }
-          case _ => false
-        }
-      } catch {
-        case sqle: SQLException => recordWriteStatusError(e, sqle); false
-      }
-    }.getOrElse(true)
+    stub(e.composerId).map { stub => contentUpdate(e) }.getOrElse(true)
   }
 
   private def processLifecycleEvent(e: LifecycleEvent): Boolean = {

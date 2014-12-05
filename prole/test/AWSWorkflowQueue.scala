@@ -1,5 +1,5 @@
 import lib.AWSWorkflowQueue
-import models.{Status, WireStatus, LifecycleEvent, WorkflowNotification}
+import models.{Status, LifecycleEvent, WorkflowNotification}
 
 import org.joda.time.DateTime
 import org.scalatest.{FunSpec, ShouldMatchers}

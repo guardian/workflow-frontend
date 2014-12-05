@@ -7,37 +7,39 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 case class WorkflowContent(
-                            composerId: String,
-                            path: Option[String],
-                            headline: Option[String],
-                            mainMedia: Option[String],
-                            contentType: String,
-                            section: Option[Section],
-                            status: Status,
-                            lastModified: DateTime,
-                            lastModifiedBy: Option[String],
-                            commentable: Boolean,
-                            published: Boolean,
-                            timePublished: Option[DateTime],
-                            storyBundleId: Option[String],
-                            activeInInCopy: Boolean,
-                            takenDown: Boolean,
-                            timeTakenDown: Option[DateTime]
-                            ) {
-
-  def updateWith(wireStatus: WireStatus): WorkflowContent =
-    copy(
-      section = wireStatus.tagSections.headOption,
-      status = if (wireStatus.published) Final else status,
-      lastModified =  wireStatus.lastModified,
-      lastModifiedBy = wireStatus.user,
-      published = wireStatus.published
-    )
-}
+  composerId: String,
+  path: Option[String],
+  headline: Option[String],
+  mainMedia: Option[String],
+  contentType: String,
+  section: Option[Section],
+  status: Status,
+  lastModified: DateTime,
+  lastModifiedBy: Option[String],
+  commentable: Boolean,
+  published: Boolean,
+  timePublished: Option[DateTime],
+  storyBundleId: Option[String],
+  activeInInCopy: Boolean,
+  takenDown: Boolean,
+  timeTakenDown: Option[DateTime]
+)
 
 object WorkflowContent {
 
   implicit val dateTimeFormat = DateFormat
+
+  def fromContentUpdateEvent(e: ContentUpdate): Option[WorkflowContent] = {
+    e match {
+      case l: LiveContentUpdateEvent  => Some(
+        fromLiveContentUpdateEvent(l.asInstanceOf[LiveContentUpdateEvent])
+      )
+      case d: DraftContentUpdateEvent => Some(
+        fromDraftContentUpdateEvent(d.asInstanceOf[DraftContentUpdateEvent])  
+      )
+      case _ => None
+    }
+  }
 
   def fromLiveContentUpdateEvent(e: LiveContentUpdateEvent): WorkflowContent = {
     WorkflowContent(
@@ -80,27 +82,6 @@ object WorkflowContent {
       timeTakenDown = None
     )
 
-  }
-
-  def fromWireStatus(wireStatus: WireStatus, stub: Stub): WorkflowContent = {
-    WorkflowContent(
-      wireStatus.composerId,
-      wireStatus.path,
-      wireStatus.headline,
-      wireStatus.mainMedia,
-      wireStatus.`type`,
-      wireStatus.tagSections.headOption,
-      wireStatus.status, // not written to the database but the DTO requires a value.
-      wireStatus.lastModified,
-      wireStatus.user,
-      commentable=wireStatus.commentable,
-      published = wireStatus.published,
-      timePublished = wireStatus.publicationDate,
-      storyBundleId = wireStatus.storyBundleId,
-      false, // assume not active in incopy
-      takenDown = false,
-      timeTakenDown = None
-    )
   }
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
