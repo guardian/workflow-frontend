@@ -3,7 +3,7 @@ import angular from 'angular';
 import 'lib/filters-service';
 
 angular.module('wfSidebarFilter', ['wfFiltersService'])
-    .directive('wfSidebarFilter', ['wfFiltersService', function (wfFiltersService) {
+    .directive('wfSidebarFilter', ['wfFiltersService', '$injector', function (wfFiltersService, $injector) {
 
     return {
         restrict: 'E',
@@ -14,6 +14,16 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             listIsOpen: '@wfListIsOpen'
         },
         link: function ($scope, elem, attrs) {
+
+            if ($scope.filter.customLinkFunction) {
+                $injector.invoke(
+                    $scope.filter.customLinkFunction, // Custom function
+                    this, // scope for execution
+                    {
+                        '$scope': $scope // local variables to be used before dependency resolution
+                    }
+                );
+            }
 
             $scope.defaultFilter = { caption: "All", value: null };
             $scope.selectedFilter = wfFiltersService.get($scope.filter.namespace);

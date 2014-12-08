@@ -80,28 +80,28 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
 
 
-        $scope.dateOptions = wfDateParser.getDaysThisWeek();
-        var selectedDate = wfFiltersService.get('selectedDate');
-
-        // ensure that the date from the URL is the same object as the
-        // one used in the Select drop-down, as its compared with ===
-        $scope.dateOptions.forEach(function (date) {
-            if (date.isSame(selectedDate)) {
-                selectedDate = date;
-            }
-        });
-
-        $scope.selectedDate = selectedDate;
-
-        $scope.deadlineSelectActive = function () {
-            return $scope.selectedDate && typeof($scope.selectedDate) != 'string';
-        };
-
-        $scope.$watch('selectedDate', function (newValue, oldValue) {
-            if (newValue !== oldValue) {  // Prevents fire change event on init
-                $scope.$emit('filtersChanged.selectedDate', $scope.selectedDate);
-            }
-        });
+//        $scope.dateOptions = wfDateParser.getDaysThisWeek();
+//        var selectedDate = wfFiltersService.get('selectedDate');
+//
+//        // ensure that the date from the URL is the same object as the
+//        // one used in the Select drop-down, as its compared with ===
+//        $scope.dateOptions.forEach(function (date) {
+//            if (date.isSame(selectedDate)) {
+//                selectedDate = date;
+//            }
+//        });
+//
+//        $scope.selectedDate = selectedDate;
+//
+//        $scope.deadlineSelectActive = function () {
+//            return $scope.selectedDate && typeof($scope.selectedDate) != 'string';
+//        };
+//
+//        $scope.$watch('selectedDate', function (newValue, oldValue) {
+//            if (newValue !== oldValue) {  // Prevents fire change event on init
+//                $scope.$emit('filtersChanged.selectedDate', $scope.selectedDate);
+//            }
+//        });
 
     }])
 
