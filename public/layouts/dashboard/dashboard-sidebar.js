@@ -56,6 +56,74 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
                 filterOptions: [
                     { caption: 'Needs legal', value: 'needsLegal' }
                 ]
+            },
+            {
+                title: 'Deadline',
+                namespace: 'deadline',
+                filterOptions: [
+                    { caption: 'Today', value: 'today' },
+                    { caption: 'Tomorrow', value: 'tomorrow' },
+                    { caption: 'This weekend', value: 'weekend' },
+                    {
+                        caption: 'Choose date',
+                        value: 'customDate',
+                        url: '/assets/components/sidebar-filter/custom-filter-templates/deadline-date-select.html'
+                    }
+                ],
+                customLinkFunction: ['wfDateParser', '$scope', (wfDateParser, $scope) => {
+
+                    $scope.dateOptions = wfDateParser.getDaysThisWeek();
+                    var selectedDate = wfFiltersService.get('selectedDate');
+
+                    // ensure that the date from the URL is the same object as the
+                    // one used in the Select drop-down, as its compared with ===
+                    $scope.dateOptions.forEach(function (date) {
+                        if (date.isSame(selectedDate)) {
+                            selectedDate = date;
+                            $scope.selectedFilter = 'customDate';
+                        }
+                    });
+
+                    $scope.select = { // Angular weirdness
+                        selectedDate: selectedDate
+                    };
+
+                    $scope.deadlineSelectActive = function () {
+                        return $scope.select.selectedDate && typeof($scope.select.selectedDate) != 'string';
+                    };
+
+                    $scope.$watch('select.selectedDate', function (newValue, oldValue) {
+                        console.log("blahhh???", newValue, oldValue);
+                        if (newValue !== oldValue) {  // Prevents fire change event on init
+                            $scope.$emit('filtersChanged.deadline', $scope.select.selectedDate);
+                            $scope.selectedFilter = 'customDate';
+                        }
+                    });
+                }]
             }
         ];
     }]);
+
+
+//$scope.dateOptions = wfDateParser.getDaysThisWeek();
+//var selectedDate = wfFiltersService.get('selectedDate');
+//
+//// ensure that the date from the URL is the same object as the
+//// one used in the Select drop-down, as its compared with ===
+//$scope.dateOptions.forEach(function (date) {
+//    if (date.isSame(selectedDate)) {
+//        selectedDate = date;
+//    }
+//});
+//
+//$scope.selectedDate = selectedDate;
+//
+//$scope.deadlineSelectActive = function () {
+//    return $scope.selectedDate && typeof($scope.selectedDate) != 'string';
+//};
+//
+//$scope.$watch('selectedDate', function (newValue, oldValue) {
+//    if (newValue !== oldValue) {  // Prevents fire change event on init
+//        $scope.$emit('filtersChanged.selectedDate', $scope.selectedDate);
+//    }
+//});

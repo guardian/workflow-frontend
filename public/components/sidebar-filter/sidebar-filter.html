@@ -7,11 +7,14 @@
     </div>
 
     <ul id="type" class="sidebar__filter-list">
-        <li ng-repeat="filterOption in filter.filterOptions" ng-class="{'sidebar__filter--active': filterIsSelected(filterOption)}" class="sidebar__filter">
-            <a href="" class="sidebar__filter-link" ng-click="filterClick(filterOption)">
+        <li ng-repeat="filterOption in filter.filterOptions" ng-class="{'sidebar__filter--active': filterIsSelected(filterOption)}" class="sidebar__filter" ng-switch on="filterOption.url.length > 0">
+            <a ng-switch-when="false" href="" class="sidebar__filter-link" ng-click="filterClick(filterOption)">
                 <i class="sidebar__filter-icon" ng-if="filterOption.icon" wf-icon="{{filterOption.icon}}"></i>
                 {{filterOption.caption}}
             </a>
+            <div ng-switch-when="true">
+                <div ng-include="filterOption.url"></div>
+            </div>
         </li>
     </ul>
 </div>
