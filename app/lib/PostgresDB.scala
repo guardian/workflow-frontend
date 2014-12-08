@@ -96,6 +96,16 @@ object PostgresDB {
       stubs += Stub.newStubRow(stub)
     }
 
+  def createContent(stub: Stub, contentItem: Option[WorkflowContent]) = {
+    DB.withTransaction { implicit session =>
+      stubs += Stub.newStubRow(stub)
+      content += WorkflowContent.newContentRow(contentItem.get, None)
+//      contentItem.map {
+//        case a => content += WorkflowContent.newContentRow(a, None)
+//      }
+    }
+  }
+
   def getContentByComposerId(composerId: String): Option[DashboardRow] = {
     DB.withTransaction { implicit session =>
 
