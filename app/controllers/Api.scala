@@ -138,6 +138,8 @@ object Api extends Controller with PanDomainAuthActions {
 
 
   def createContent() = APIAuthAction { implicit request =>
+
+    // optional content: Parses WorkflowContent from the request if it can
     def optContent(jsValue: JsValue): Either[Result, Option[WorkflowContent]] = {
       jsValue.validate[WorkflowContent] match {
         case JsSuccess(a, _) => Right(Some(a))
@@ -146,19 +148,12 @@ object Api extends Controller with PanDomainAuthActions {
       }
     }
 
-//    def optionalContent(jsValue: JsValue): Option[WorkflowContent] =
-//      jsValue.validate[WorkflowContent] match {
-//        case JsSuccess(a, _) => Some(a)
-//        case error@JsError(_) =>
-//          None
-//      }
-
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       stub <- extract[Stub](jsValue).right
-      content <- extract[WorkflowContent](jsValue).right
+      content <- optContent(jsValue).right
     } yield {
-      PostgresDB.createContent(stub, Some(content))
+      PostgresDB.createContent(stub, content)
 
       NoContent
     }).merge
