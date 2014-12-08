@@ -1,0 +1,57 @@
+{
+  "content": {
+    "id": "id",
+    "identifiers": {
+      "path": "global/2014/dec/08/nopennnnn"
+    },
+    "type": "article",
+    "published": false,
+    "contentChangeDetails": {
+      "lastModified": {
+        "date": 1418039017093,
+        "user": {
+          "email": "robert.kenny@guardian.co.uk",
+          "firstName": "Robert",
+          "lastName": "Kenny"
+        }
+      },
+      "created": {
+        "date": 1418037037795,
+        "user": {
+          "email": "robert.kenny@guardian.co.uk",
+          "firstName": "Robert",
+          "lastName": "Kenny"
+        }
+      },
+      "revision": 31
+    },
+    "collaborators": [
+      {
+        "email": "robert.kenny@guardian.co.uk",
+        "firstName": "Robert",
+        "lastName": "Kenny"
+      }
+    ],
+    "fields": {
+      "headline": "Nopennnnnn",
+      "linkText": "Nopennnnnn",
+      "slug": "nopennnnn"
+    },
+    "settings": {
+      "relatedContentOff": "false",
+      "blockAds": "false",
+      "isInappropriateForSponsorship": "false",
+      "productionOffice": "UK",
+      "timeZone": "Europe/London"
+    },
+    "toolSettings": {
+      "slugLinked": "true",
+      "linkTextLinked": "true",
+      "trailTextLinked": "true"
+    },
+    "updateType": "draft"
+  },
+  "whatChanged": "field",
+  "published": false,
+  "eventTime": 1418039017153
+}

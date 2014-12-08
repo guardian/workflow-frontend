@@ -29,18 +29,6 @@ object WorkflowContent {
 
   implicit val dateTimeFormat = DateFormat
 
-  def fromContentUpdateEvent(e: ContentUpdate): Option[WorkflowContent] = {
-    e match {
-      case l: LiveContentUpdateEvent  => Some(
-        fromLiveContentUpdateEvent(l.asInstanceOf[LiveContentUpdateEvent])
-      )
-      case d: DraftContentUpdateEvent => Some(
-        fromDraftContentUpdateEvent(d.asInstanceOf[DraftContentUpdateEvent])  
-      )
-      case _ => None
-    }
-  }
-
   def getMainMedia(blockOption: Option[Block]) = {
     for {
       block   <- blockOption
@@ -48,14 +36,14 @@ object WorkflowContent {
     } yield element.elementType
   }
 
-  def fromLiveContentUpdateEvent(e: LiveContentUpdateEvent): WorkflowContent = {
+  def fromContentUpdateEvent(e: ContentUpdateEvent): WorkflowContent = {
     WorkflowContent(
       e.composerId,
       e.path,
       e.headline,
       getMainMedia(e.mainBlock),
       e.`type`,
-      e.tagSections.headOption,
+      e.tagSections.map { _.head.section },
       e.status, // not written to the database but the DTO requires a value.
       e.lastModified,
       e.user,
@@ -67,28 +55,6 @@ object WorkflowContent {
       takenDown = false,
       timeTakenDown = None
     )
-  }
-
-  def fromDraftContentUpdateEvent(e: DraftContentUpdateEvent): WorkflowContent = {
-    WorkflowContent(
-      e.composerId,
-      e.path,
-      e.headline,
-      getMainMedia(e.mainBlock),
-      e.`type`,
-      e.tagSections.headOption,
-      e.status, // not written to the database but the DTO requires a value.
-      e.lastModified,
-      e.user,
-      commentable=e.commentable,
-      published = e.published,
-      timePublished = e.publicationDate,
-      storyBundleId = e.storyBundleId,
-      false, // assume not active in incopy
-      takenDown = false,
-      timeTakenDown = None
-    )
-
   }
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {

@@ -21,31 +21,6 @@ class AWSWorkflowQueueSpec extends FunSpec with ShouldMatchers with ResourcesHel
 
   describe("AWSWorkflowQueue") {
     describe(".parseMessage") {
-      it("should parse a valid wirestatus message") {
-        val result = AWSWorkflowQueue.parseMessage(msg("sqs-full-wirestatus-change"))
-        val expectedResult = Some(WireStatus(
-          "546df848aa248d0c8b6e2f2e", 
-          Some("global/2014/nov/20/546df848aa248d0c8b6e2f2e"), 
-          Some("foo"),
-          None,
-          "article",
-          "field",
-          false,
-          Some("Robert Kenny"),
-          new DateTime("2014-11-20T14:19:56.840Z"),
-          List(),
-          Status("Writers"),
-          false,
-          None,
-          None,
-          6.toLong,
-          "live",
-          None
-        ))
-    
-        result should equal(expectedResult) 
-      }
-
       it("should parse a valid lifecycle message") {
         val result = AWSWorkflowQueue.parseMessage(msg("sqs-full-lifecycle-delete"))
         val expectedResult = Some(LifecycleEvent(

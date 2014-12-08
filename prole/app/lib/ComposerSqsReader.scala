@@ -14,10 +14,7 @@ import play.api.Logger
 import com.gu.workflow.db.CommonDB
 import models.{
   WorkflowContent, 
-  DraftContentUpdateEvent,
-  LiveContentUpdateEvent,
   ContentUpdateEvent,
-  ContentUpdate,
   LifecycleEvent, 
   Stub
 }
@@ -46,7 +43,7 @@ class ComposerSqsReader extends Actor {
       
       if(AWSWorkflowQueue.parseMessage(m) match {
         case Some(e: LifecycleEvent)     => processLifecycleEvent(e)
-        case Some(c: ContentUpdate) => processContentUpdateEvent(c) 
+        case Some(c: ContentUpdateEvent) => processContentUpdateEvent(c) 
         case _ => false
       }) {
         CloudWatch.recordMessageProcessed
@@ -59,9 +56,9 @@ class ComposerSqsReader extends Actor {
     processMessages
   }
 
-  private def recordWriteStatusError(s: ContentUpdate, sqle: SQLException): Unit = {
+  private def recordWriteStatusError(e: ContentUpdateEvent, sqle: SQLException): Unit = {
     CloudWatch.recordMessageError
-    Logger.error(s"unable to write status: $s", sqle)
+    Logger.error(s"unable to write status: $e", sqle)
   }
 
   private def recordLifecycleEventError(e: LifecycleEvent, sqle: SQLException): Unit = {
@@ -86,20 +83,18 @@ class ComposerSqsReader extends Actor {
     stub
   }
 
-  private def contentUpdate(e: ContentUpdate): Boolean = {
+  private def contentUpdate(e: ContentUpdateEvent): Boolean = {
     try {
-      WorkflowContent.fromContentUpdateEvent(e).map { content => 
-        CommonDB.createOrModifyContent(
-          content,
-          e.revision.getOrElse(0L)
-        )
-      }; true
+      CommonDB.createOrModifyContent(
+        WorkflowContent.fromContentUpdateEvent(e),
+        e.revision.getOrElse(0L)
+      ); true
     } catch {
       case sqle: SQLException => recordWriteStatusError(e, sqle); false
     }
   }
 
-  private def processContentUpdateEvent(e: ContentUpdate): Boolean = {
+  private def processContentUpdateEvent(e: ContentUpdateEvent): Boolean = {
     Logger.trace(s"process content update ${e}")
     stub(e.composerId).map { stub => contentUpdate(e) }.getOrElse(true)
   }

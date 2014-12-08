@@ -6,7 +6,7 @@ import play.api.Logger
 import org.joda.time.DateTime
 import com.amazonaws.services.sqs.AmazonSQSClient
 import com.amazonaws.services.sqs.model._
-import models.{LiveContentUpdateEvent, DraftContentUpdateEvent, LifecycleEvent, WorkflowNotification}
+import models.{ContentUpdateEvent, LifecycleEvent, WorkflowNotification}
 import play.api.data.validation.ValidationError
 
 object AWSWorkflowQueue {
@@ -53,9 +53,8 @@ object AWSWorkflowQueue {
     (body \ "Subject").validate[String] match {
       case JsError(e)      => recordMessageParsingError(e); None
       case JsSuccess(n, _) => n match { 
-        case "fc-lifecycle.v2"     => deserializeMessageBody[LifecycleEvent](body)
-        case "fc-content-draft.v1" => deserializeMessageBody[DraftContentUpdateEvent](body)
-        case "fc-content-live.v1"  => deserializeMessageBody[LiveContentUpdateEvent](body)
+        case "fc-lifecycle.v2" => deserializeMessageBody[LifecycleEvent](body)
+        case "fc-content.v1"   => deserializeMessageBody[ContentUpdateEvent](body)
         case _ => Logger.error(s"message type unrecognised: $n"); None
       }
     }

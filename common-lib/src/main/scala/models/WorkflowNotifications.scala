@@ -6,12 +6,11 @@ import play.api.libs.functional.syntax._
 
 sealed trait WorkflowNotification
 
-sealed trait ContentUpdate {
-  val composerId: String
-  val revision: Option[Long]
-}
+case class Tag(id: Long, isLead: Boolean, section: Section)
+case class Element(elementType: String)
+case class Block(id: String, lastModified: DateTime, elements: List[Element])
 
-case class LiveContentUpdateEvent (
+case class ContentUpdateEvent (
   composerId: String,
   path: Option[String],
   headline: Option[String],
@@ -21,61 +20,33 @@ case class LiveContentUpdateEvent (
   published: Boolean,
   user: Option[String],
   lastModified: DateTime,
-  tagSections: List[Section],
+  tagSections: Option[List[Tag]],
   status: Status,
   commentable: Boolean,
   lastMajorRevisionDate: Option[DateTime],
   publicationDate: Option[DateTime],
   revision: Option[Long],
   storyBundleId: Option[String]
-) extends WorkflowNotification with ContentUpdate
+) extends WorkflowNotification
 
-case class DraftContentUpdateEvent (
-  composerId: String,
-  path: Option[String],
-  headline: Option[String],
-  mainBlock: Option[Block],
-  `type`: String,
-  whatChanged: String,
-  published: Boolean,
-  user: Option[String],
-  lastModified: DateTime,
-  tagSections: List[Section],
-  status: Status,
-  commentable: Boolean,
-  lastMajorRevisionDate: Option[DateTime],
-  publicationDate: Option[DateTime],
-  revision: Option[Long],
-  storyBundleId: Option[String]
-) extends WorkflowNotification with ContentUpdate
-
-object DraftContentUpdateEvent extends ContentUpdateEvent {
+object ContentUpdateEvent {
   import Status._
-  implicit val draftcontentUpdateEventReads: Reads[DraftContentUpdateEvent] = (
-    (__ \ "content" \ "id").read[String] ~
-    (__ \ "content" \ "identifiers" \ "path").readNullable[String] ~
-    (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
-    (__ \ "content" \ "draftMainBlock").readNullable[Block] ~
-    (__ \ "content" \ "type").read[String] ~
-    (__ \ "whatChanged").read[String] ~
-    (__ \ "content" \ "published").read[Boolean] ~
-    readUser ~
-    (__ \ "content" \ "contentChangeDetails" \ "lastModified" \ "date").read[Long].map(t => new DateTime(t)) ~
-    readTagSections ~
-    (__ \ "content" \ "published").read[Boolean].map(p => if (p) Final else Writers) ~
-    (__ \ "content" \ "settings" \ "commentable").readNullable[String].map {
-      s => s.exists(_=="true")
-    } ~
-    (__ \ "content" \ "contentChangeDetails" \ "lastMajorRevisionPublished" \ "date").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
-    (__ \ "content" \ "contentChangeDetails" \ "published" \ "date").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
-    (__ \ "content" \ "contentChangeDetails" \ "revision").readNullable[Long] ~
-    (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String]
-    )(DraftContentUpdateEvent.apply _)
-}
 
-object LiveContentUpdateEvent extends ContentUpdateEvent {
-  import Status._
-  implicit val liveContentUpdateEventReads: Reads[LiveContentUpdateEvent] = (
+  implicit val tagReads: Reads[Tag] = (
+    (__ \ "tag" \ "id").read[Long] ~
+    (__ \ "isLead").read[Boolean] ~
+    (__ \ "tag" \ "section").read[Section]
+  )(Tag.apply _)
+
+  implicit val elementReads: Reads[Element] = Json.reads[Element]
+
+  implicit val blockReads: Reads[Block] = (
+    (__ \ "id").read[String] ~
+    (__ \ "lastModified").read[Long].map(t => new DateTime(t)) ~
+    (__ \ "elements").read[List[Element]]
+  )(Block.apply _)
+
+  implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (
     (__ \ "content" \ "id").read[String] ~
     (__ \ "content" \ "identifiers" \ "path").readNullable[String] ~
     (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
@@ -85,24 +56,22 @@ object LiveContentUpdateEvent extends ContentUpdateEvent {
     (__ \ "content" \ "published").read[Boolean] ~
     readUser ~
     (__ \ "content" \ "contentChangeDetails" \ "lastModified" \ "date").read[Long].map(t => new DateTime(t)) ~
-    readTagSections ~
+    (__ \ "content" \ "taxonomy").readNullable(
+      (__ \ "tags").read[List[Tag]]
+    ) ~
     (__ \ "content" \ "published").read[Boolean].map(p => if (p) Final else Writers) ~
     (__ \ "content" \ "settings" \ "commentable").readNullable[String].map {
       s => s.exists(_=="true")
     } ~
-    (__ \ "content" \ "contentChangeDetails" \ "lastMajorRevisionPublished" \ "date").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
-    (__ \ "content" \ "contentChangeDetails" \ "published" \ "date").readNullable[Long].map(timeOpt => timeOpt.map(t => new DateTime(t))) ~
+    (__ \ "content" \ "contentChangeDetails" \ "lastMajorRevisionPublished").readNullable(
+      (__ \ "date").read[Long].map(t => new DateTime(t))
+    ) ~
+    (__ \ "content" \ "contentChangeDetails" \ "published").readNullable(
+      (__ \ "date").read[Long].map(t => new DateTime(t))
+    ) ~
     (__ \ "content" \ "contentChangeDetails" \ "revision").readNullable[Long] ~
     (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String]
-  )(LiveContentUpdateEvent.apply _)
-}
-
-trait ContentUpdateEvent {
-  val readTagSections = new Reads[List[Section]] {
-    def reads(json: JsValue): JsResult[List[Section]] = {
-      (json \ "content" \ "taxonomy" \ "tags").validate[Option[List[Section]]].map(_.toList.flatten)
-    }
-  }
+    )(ContentUpdateEvent.apply _)
 
   def readUser = new Reads[Option[String]] {
     def reads(json: JsValue): JsResult[Option[String]] =
