@@ -37,10 +37,11 @@ function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, leg
         wfComposerService.getComposerContent($scope.formData.composerUrl).then(
             (composerContent) => {
                 if (composerContent) {
-                    $scope.stub.composerId = composerContent.id;
-                    $scope.stub.contentType = composerContent.type;
-                    $scope.stub.title = composerContent.headline;
-                    $scope.stub.activeInInCopy = composerContent.activeInInCopy;
+                    var stub = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
+
+                    // preset working title
+                    stub.title = stub.headline;
+
                 } else {
                     $scope.stub.composerId = null;
                     $scope.stub.contentType = null;

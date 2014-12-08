@@ -136,6 +136,34 @@ object Api extends Controller with PanDomainAuthActions {
      }).merge
   }
 
+
+  def createContent() = APIAuthAction { implicit request =>
+    def optContent(jsValue: JsValue): Either[Result, Option[WorkflowContent]] = {
+      jsValue.validate[WorkflowContent] match {
+        case JsSuccess(a, _) => Right(Some(a))
+        case error@JsError(_) =>
+          Right(None)
+      }
+    }
+
+//    def optionalContent(jsValue: JsValue): Option[WorkflowContent] =
+//      jsValue.validate[WorkflowContent] match {
+//        case JsSuccess(a, _) => Some(a)
+//        case error@JsError(_) =>
+//          None
+//      }
+
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+      stub <- extract[Stub](jsValue).right
+      content <- extract[WorkflowContent](jsValue).right
+    } yield {
+      PostgresDB.createContent(stub, Some(content))
+
+      NoContent
+    }).merge
+  }
+
   def putStub(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
