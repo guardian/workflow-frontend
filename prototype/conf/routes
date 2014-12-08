@@ -19,7 +19,7 @@ OPTIONS        /api/content/:composerId/status        controllers.Api.allowCORSA
 DELETE         /api/content/:composerId               controllers.Api.deleteContent(composerId: String)
 
 GET            /api/stubs                             controllers.Api.stubs
-POST           /api/stubs                             controllers.Api.newStub(activeInInCopy: Boolean ?= false)
+POST           /api/stubs                             controllers.Api.createContent
 PUT            /api/stubs/:stubId                     controllers.Api.putStub(stubId: Long)
 PUT            /api/stubs/:stubId/assignee            controllers.Api.putStubAssignee(stubId: Long)
 PUT            /api/stubs/:stubId/dueDate             controllers.Api.putStubDueDate(stubId: Long)

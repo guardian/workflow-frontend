@@ -90,7 +90,7 @@ object WorkflowContent {
       (__ \ "published").read[Boolean] ~
       (__ \ "timePublished").readNullable[DateTime] ~
       (__ \ "storyBundleId").readNullable[String] ~
-      (__ \ "activeInIncopy").read[Boolean] ~
+      (__ \ "activeInInCopy").read[Boolean] ~
       (__ \ "takenDown").read[Boolean] ~
       (__ \ "timeTakenDown").readNullable[DateTime]
       )(WorkflowContent.apply _)
