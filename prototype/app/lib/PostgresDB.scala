@@ -99,10 +99,9 @@ object PostgresDB {
   def createContent(stub: Stub, contentItem: Option[WorkflowContent]) = {
     DB.withTransaction { implicit session =>
       stubs += Stub.newStubRow(stub)
-      content += WorkflowContent.newContentRow(contentItem.get, None)
-//      contentItem.map {
-//        case a => content += WorkflowContent.newContentRow(a, None)
-//      }
+      contentItem.foreach {
+        a => content += WorkflowContent.newContentRow(a, None)
+      }
     }
   }
 
