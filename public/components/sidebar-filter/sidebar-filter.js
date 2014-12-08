@@ -15,21 +15,21 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         },
         link: function ($scope, elem, attrs) {
 
-            if ($scope.filter.customLinkFunction) {
-                $injector.invoke(
-                    $scope.filter.customLinkFunction, // Custom function
-                    this, // scope for execution
-                    {
-                        '$scope': $scope // local variables to be used before dependency resolution
-                    }
-                );
-            }
-
             $scope.defaultFilter = { caption: "All", value: null };
             $scope.selectedFilter = wfFiltersService.get($scope.filter.namespace);
 
             if (!$scope.selectedFilter) {
                 $scope.selectedFilter = null;
+            }
+
+            if ($scope.filter.customLinkFunction) { // Custom linking function for non-standard filters
+                $injector.invoke(
+                    $scope.filter.customLinkFunction, // function
+                    this, // scope for execution
+                    {
+                        '$scope': $scope // local variables to be used before dependency resolution
+                    }
+                );
             }
 
             $scope.filterIsSelected = function(filter) {
