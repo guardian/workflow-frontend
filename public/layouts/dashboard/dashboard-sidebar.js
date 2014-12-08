@@ -89,41 +89,21 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
                     };
 
                     $scope.deadlineSelectActive = function () {
-                        return $scope.select.selectedDate && typeof($scope.select.selectedDate) != 'string';
+                        return $scope.select.selectedDate && typeof($scope.select.selectedDate) != 'string' && $scope.selectedFilter === 'customDate';
                     };
 
                     $scope.$watch('select.selectedDate', function (newValue, oldValue) {
-                        console.log("blahhh???", newValue, oldValue);
                         if (newValue !== oldValue) {  // Prevents fire change event on init
                             $scope.$emit('filtersChanged.deadline', $scope.select.selectedDate);
-                            $scope.selectedFilter = 'customDate';
+                            if (newValue !== null) {
+                                $scope.selectedFilter = 'customDate';
+                            } else {
+                                $scope.selectedFilter = newValue;
+                            }
+
                         }
                     });
                 }]
             }
         ];
     }]);
-
-
-//$scope.dateOptions = wfDateParser.getDaysThisWeek();
-//var selectedDate = wfFiltersService.get('selectedDate');
-//
-//// ensure that the date from the URL is the same object as the
-//// one used in the Select drop-down, as its compared with ===
-//$scope.dateOptions.forEach(function (date) {
-//    if (date.isSame(selectedDate)) {
-//        selectedDate = date;
-//    }
-//});
-//
-//$scope.selectedDate = selectedDate;
-//
-//$scope.deadlineSelectActive = function () {
-//    return $scope.selectedDate && typeof($scope.selectedDate) != 'string';
-//};
-//
-//$scope.$watch('selectedDate', function (newValue, oldValue) {
-//    if (newValue !== oldValue) {  // Prevents fire change event on init
-//        $scope.$emit('filtersChanged.selectedDate', $scope.selectedDate);
-//    }
-//});
