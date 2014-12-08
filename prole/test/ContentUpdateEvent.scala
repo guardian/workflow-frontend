@@ -9,6 +9,12 @@ class ContentUpdateEventModelSpec extends FunSuite with ShouldMatchers with Reso
   test("parse content update notification") {
     val resource = slurp("flex-content-update.json").getOrElse(throw new RuntimeException("could not find test resource"))
     val JsSuccess(ws, _) = Json.parse(resource).validate[ContentUpdateEvent]
+
     ws.composerId should equal("id")
+
+    (for {
+      b <- ws.mainBlock
+      e <- b.elements.headOption
+    } yield e.elementType).getOrElse("none") should equal("embed")
   }
 }
