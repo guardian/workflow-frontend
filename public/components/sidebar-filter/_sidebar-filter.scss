@@ -27,7 +27,7 @@
 }
 
 .sidebar__header {
-    background-color: $c-grey-300;
+    background-color: $c-grey-200;
     height: 28px;
     border-top: 1px solid #ffffff;
 
@@ -78,13 +78,13 @@
     .sidebar__filter-link {
         @extend %fs-data-3;
         color: $c-text;
-        background-color: $c-grey-170;
+        background-color: $c-grey-100;
         padding: 7px 0 7px 23px;
         display: block;
         width: 100%;
         &:hover {
             text-decoration: none;
-            background-color: darken($c-grey-170, 15%);
+            background-color: darken($c-grey-100, 15%);
         }
     }
     .sidebar__filter-icon {
