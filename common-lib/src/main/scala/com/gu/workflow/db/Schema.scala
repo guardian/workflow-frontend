@@ -110,12 +110,66 @@ object Schema {
     def * = (section_id, desk_id)
   }
 
+  type ArchiveRow = (
+    Option[Long],      // pk
+    Long,              // stub_id
+    Option[String],    // composer_id
+    Boolean,           // was_deleted
+    String,            // working_title
+    String,            // section
+    Option[String],    // content_type
+    String,            // prod_office,
+    DateTime,          // created_at
+    DateTime,          // last_modified
+    String,            // status
+    Option[String],    // headline
+    Option[String],    // path
+    Boolean,           // published
+    Option[DateTime],  // timePublished
+    Option[Long],      // revision
+    Option[String],    // storyBundleId
+    Boolean,           // activeInInCopy
+    Boolean,           // takenDown
+    Option[DateTime]   // timeTakenDown
+  )
+
+  case class DBArchive(tag: Tag) extends Table[ArchiveRow](tag, "archive") {
+    def pk = column [Long] ("pk", O.PrimaryKey, O.AutoInc)
+    def stubId = column [Long] ("stub_id")
+    def composerId = column [Option[String]] ("composer_id")
+    def wasDeleted = column [Boolean] ("was_deleted")
+    def workingTitle = column [String] ("working_title")
+    def section = column [String] ("section")
+    def contentType = column [Option[String]] ("content_type")
+    def prodOffice = column [String] ("prod_office")
+    def createdAt = column [DateTime] ("created_at")
+
+    def lastModified = column [DateTime] ("last_modified")
+    def status = column [String] ("status")
+    def headline = column [Option[String]] ("headline")
+    def path = column [Option[String]] ("path")
+    def published = column [Boolean] ("published")
+    def timePublished = column [Option[DateTime]] ("time_published")
+    def revision = column [Option[Long]] ("revision")
+    def storybundleid = column [Option[String]] ("storybundleid")
+    def activeinincopy = column [Boolean] ("activeinincopy")
+    def takendown = column [Boolean] ("takendown")
+    def timeTakendown = column [Option[DateTime]] ("time_takendown")
+
+    def * = (
+      pk.?, stubId, composerId, wasDeleted,
+      workingTitle, section, contentType, prodOffice, createdAt,
+      lastModified, status, headline, path, published, timePublished, revision,
+      storybundleid, activeinincopy, takendown, timeTakendown
+    )
+  }
+
   type StubQuery = Query[DBStub, StubRow]
   type ContentQuery = Query[DBContent, ContentRow]
   type SectionQuery = Query[DBSection, SectionRow]
   type DeskQuery = Query[DBDesk, SectionRow]
-
   type DeskSectionMappingQuery = Query[DBDeskSectionMapping, deskSectionMappingRow]
+  type ArchiveQuery = Query[DBArchive, ArchiveRow]
 
   val stubs: StubQuery = TableQuery(DBStub)
   val content: ContentQuery = TableQuery(DBContent)
@@ -125,6 +179,8 @@ object Schema {
   val desks: DeskQuery = TableQuery(DBDesk)
 
   val deskSectionMapping: DeskSectionMappingQuery = TableQuery(DBDeskSectionMapping)
+
+  val archive: ArchiveQuery = TableQuery(DBArchive)
 
   implicit lazy val flagColumnType = MappedColumnType.base[Flag, String] (
     f => f.toString,
