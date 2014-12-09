@@ -42,6 +42,7 @@ function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, leg
                     // preset working title
                     stub.title = stub.headline;
 
+
                 } else {
                     $scope.stub.composerId = null;
                     $scope.stub.contentType = null;
@@ -132,6 +133,8 @@ wfStubModal.run(['$rootScope',
             modalInstance.result.then(function (modalCloseResult) {
                 var stub = modalCloseResult.stub;
                 var addToComposer = modalCloseResult.addToComposer;
+
+                stub.status = 'Writers'; // TODO: allow status to be selected
 
                 var promise;
                 if (addToComposer) {
