@@ -57,8 +57,24 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.update(item);
         }
 
-        update(item) {
+        truncateString(string, length, ellipsis) {
+            if(typeof string !== 'string') return string;
 
+            var defaultLength = 40;
+            var defaultEllipsis = "...";
+
+            var maxLength = typeof length !== 'undefined' ? a : defaultLength;
+            var ellipsis = typeof ellipsis !== 'undefined' ? a : defaultEllipsis;
+
+            var truncateString = () => {
+                return `${string.substring(0,(maxLength - ellipsis.length))}${ellipsis}`;
+            }
+
+            return (string.length + ellipsis.length) >= maxLength ?  truncateString() : string; 
+        }
+
+        update(item) {
+            
             // TODO: Stubs have a different structure to content items
             this.id = item.id || item.stubId;
             this.composerId = item.composerId;
@@ -74,6 +90,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             // TODO: pull main image from composer
             this.hasMainImage = Boolean(item.mainMedia);
             this.mainImageTitle = 'Main media (' + (item.mainMedia || 'none')  + ')';
+
+            this.trailtext = this.truncateString(item.trailtext);
 
             this.assignee = item.assignee && toInitials(item.assignee) || '';
             this.assigneeFull = item.assignee || 'unassigned';
