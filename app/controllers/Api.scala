@@ -126,15 +126,6 @@ object Api extends Controller with PanDomainAuthActions {
     )
   }
 
-  def newStub(activeInInCopy: Boolean = false) = APIAuthAction { implicit request =>
-    (for {
-       jsValue <- readJsonFromRequest(request.body).right
-       stub <- extract[Stub](jsValue).right
-     } yield {
-      PostgresDB.createStub(stub, activeInInCopy)
-       NoContent
-     }).merge
-  }
 
 
   def createContent() = APIAuthAction { implicit request =>

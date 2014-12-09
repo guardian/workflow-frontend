@@ -90,11 +90,6 @@ object PostgresDB {
     }
   }
 
-  def createStub(stub: Stub, activeInInCopy: Boolean = false): Unit =
-    DB.withTransaction { implicit session =>
-      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article"), activeInInCopy))
-      stubs += Stub.newStubRow(stub)
-    }
 
   /**
    * Creates a new content item in Workflow.

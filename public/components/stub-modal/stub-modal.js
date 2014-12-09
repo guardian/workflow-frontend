@@ -144,8 +144,7 @@ wfStubModal.run(['$rootScope',
                     promise = wfContentService.updateStub(stub);
 
                 } else {
-                    promise = wfContentService.createStub(stub,
-                                                          stub.activeInInCopy);
+                    promise = wfContentService.createStub(stub);
                 }
 
                 promise.then(() => {
