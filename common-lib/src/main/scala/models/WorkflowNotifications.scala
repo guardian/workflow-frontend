@@ -6,8 +6,9 @@ import play.api.libs.functional.syntax._
 
 sealed trait WorkflowNotification
 
+case class Asset(assetType: String, mimeType:String, url:String, fields: Map[String, String])
 case class Tag(id: Long, isLead: Boolean, section: Section)
-case class Element(elementType: String)
+case class Element(elementType: String, fields: Map[String, String], assets: List[Asset])
 case class Block(id: String, lastModified: DateTime, elements: List[Element])
 
 case class ContentUpdateEvent (
@@ -38,6 +39,7 @@ object ContentUpdateEvent {
     (__ \ "tag" \ "section").read[Section]
   )(Tag.apply _)
 
+  implicit val assetReads: Reads[Asset] = Json.reads[Asset]
   implicit val elementReads: Reads[Element] = Json.reads[Element]
 
   implicit val blockReads: Reads[Block] = (

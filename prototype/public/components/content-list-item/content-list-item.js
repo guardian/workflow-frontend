@@ -90,6 +90,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             // TODO: pull main image from composer
             this.hasMainImage = Boolean(item.mainMedia);
             this.mainImageTitle = 'Main media (' + (item.mainMedia || 'none')  + ')';
+            this.mainMediaUrl = item.mainMediaUrl
 
             this.trailtext = this.truncateString(item.trailtext);
 

@@ -88,8 +88,8 @@ object CommonDB {
         .filter(_.composerId === wc.composerId)
         .filter(c => c.revision < revision || c.revision.isNull)
         .map(c =>
-          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.trailtext, c.mainMedia, c.published, c.timePublished, c.revision, c.storyBundleId))
-        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.trailtext, wc.mainMedia, wc.published, wc.timePublished, Some(revision), wc.storyBundleId))
+          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.trailtext, c.mainMedia, c.mainMediaUrl, c.published, c.timePublished, c.revision, c.storyBundleId))
+        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.trailtext, wc.mainMedia, wc.mainMediaUrl, wc.published, wc.timePublished, Some(revision), wc.storyBundleId))
   }
 
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {

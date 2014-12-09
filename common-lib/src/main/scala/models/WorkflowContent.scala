@@ -12,6 +12,7 @@ case class WorkflowContent(
   headline: Option[String],
   trailtext: Option[String],
   mainMedia: Option[String],
+  mainMediaUrl: Option[String],
   contentType: String,
   section: Option[Section],
   status: Status,
@@ -37,6 +38,33 @@ object WorkflowContent {
     } yield element.elementType
   }
 
+
+  def getImageAssetSize(asset: Asset): Option[Long] = {
+       for {
+        width <- asset.fields.get("width")
+        height <- asset.fields.get("height")
+      } yield (width.toLong) * (height.toLong)
+  }
+
+  def getMainMediaImageUrl(assets: List[Asset]): Option[String] = {
+    val imageAssets = assets.filter(_.assetType == "image")
+    val biggestAsset = imageAssets.reduceLeft((l,r) => if(getImageAssetSize(l).get < getImageAssetSize(r).get){ l } else { r })
+
+    Some(biggestAsset.url)
+  }
+
+  def getMainMediaUrl(blocks: Option[Block]): Option[String] = {
+    getMainMedia(blocks) match {
+      case Some("image") => for {
+        block <- blocks
+        element <- block.elements.headOption
+        mainMediaUrlOption = getMainMediaImageUrl(element.assets)
+        mainMediaUrl <- mainMediaUrlOption
+      } yield mainMediaUrl
+      case _ => None
+    }
+  }
+
   def fromContentUpdateEvent(e: ContentUpdateEvent): WorkflowContent = {
     WorkflowContent(
       e.composerId,
@@ -44,6 +72,7 @@ object WorkflowContent {
       e.fields.get("headline"),
       e.fields.get("trailText"),
       getMainMedia(e.mainBlock),
+      getMainMediaUrl(e.mainBlock),
       e.`type`,
       e.tagSections.map { _.head.section },
       e.status, // not written to the database but the DTO requires a value.
@@ -61,16 +90,16 @@ object WorkflowContent {
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
-          headline, trailtext, mainMedia, published, timePublished, _, storyBundleId, activeInInCopy,
+          headline, trailtext, mainMedia, mainMediaUrl, published, timePublished, _, storyBundleId, activeInInCopy,
           takenDown, timeTakenDown) =>
           WorkflowContent(
-            composerId, path, headline, trailtext, mainMedia, contentType, None, Status(status), lastMod,
+            composerId, path, headline, trailtext, mainMedia, mainMediaUrl, contentType, None, Status(status), lastMod,
             lastModBy, commentable, published, timePublished, storyBundleId,
             activeInInCopy, takenDown, timeTakenDown)
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
     (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
-     wc.contentType, wc.commentable, wc.headline, wc.trailtext, wc.mainMedia, wc.published, wc.timePublished,
+     wc.contentType, wc.commentable, wc.headline, wc.trailtext, wc.mainMedia, wc.mainMediaUrl, wc.published, wc.timePublished,
      revision, wc.storyBundleId, wc.activeInInCopy, false, None)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
@@ -81,6 +110,7 @@ object WorkflowContent {
       (__ \ "headline").readNullable[String] ~
       (__ \ "trailtext").readNullable[String] ~
       (__ \ "mainMedia").readNullable[String] ~
+      (__ \ "mainMediaUrl").readNullable[String] ~
       (__ \ "contentType").read[String] ~
       (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
       (__ \ "status").read[String].map { s => Status(s) } ~
