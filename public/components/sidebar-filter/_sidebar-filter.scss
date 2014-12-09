@@ -128,5 +128,33 @@
     }
 }
 
+// Custom deadline filter option
 
+%deadline-select {
+    padding: 7px 0 7px 23px;
+    height: 30px;
+    width: 100%;
+    @extend %fs-data-3;
+    line-height: 1em;
+    font-weight: normal;
+    border: none;
+    border-radius: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    cursor: pointer;
+}
 
+.sidebar__filter__deadline-select {
+    @extend %deadline-select;
+    color: #333 ;
+    background-color: #f6f6f6;
+
+}
+
+.sidebar__filter__deadline-select--active {
+    @extend %deadline-select;
+    color: $c-text;
+    background-color: $c-bluegrey;
+    border-left: 3px solid $c-highlight-blue;
+}
