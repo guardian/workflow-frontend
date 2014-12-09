@@ -115,6 +115,16 @@
     padding: 2px 0;
 }
 
+.drawer__section-image-container {
+    max-width: 160px;
+    max-height: 80px;
+    overflow: hidden;
+
+    img {
+        width: 160px;
+    }
+}
+
 .drawer__section-data-row {
     @extend %fs-data-3;
     display: block;
