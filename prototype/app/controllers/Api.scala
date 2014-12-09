@@ -139,23 +139,34 @@ object Api extends Controller with PanDomainAuthActions {
 
   def createContent() = APIAuthAction { implicit request =>
 
-    // optional content: Parses WorkflowContent from the request if it can
-    def optContent(jsValue: JsValue): Either[Result, Option[WorkflowContent]] = {
-      jsValue.validate[WorkflowContent] match {
-        case JsSuccess(a, _) => Right(Some(a))
-        case error@JsError(_) =>
-          Right(None)
-      }
+    // optional content: Parses WorkflowContent from the request if a composerId is specified
+    def optionalContent(stub: Stub, jsValue: JsValue): Either[Result, Option[WorkflowContent]] = {
+      stub.composerId.map(_ =>
+        jsValue.validate[WorkflowContent] match {
+          case JsSuccess(a, _) => Right(Some(a))
+          case error@JsError(a) => {
+            val errMsg = errorMsgs(error)
+            Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
+          }
+
+        }
+      ).getOrElse(Right(None))
     }
+
+    def renderCreateJson[A : Writes](id: A, status: String): JsValue =
+      Json.obj("data" -> Json.obj("stubId" -> id), "status" -> status)
 
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       stub <- extract[Stub](jsValue).right
-      content <- optContent(jsValue).right
+      content <- optionalContent(stub, jsValue).right
     } yield {
-      PostgresDB.createContent(stub, content)
 
-      NoContent
+      PostgresDB.createContent(stub, content) match {
+        case Left(x) => Conflict(renderCreateJson(x, "exists"))
+        case Right(x) => Created(renderCreateJson(x, "created"))
+      }
+
     }).merge
   }
 
