@@ -96,11 +96,28 @@ object PostgresDB {
       stubs += Stub.newStubRow(stub)
     }
 
-  def createContent(stub: Stub, contentItem: Option[WorkflowContent]) = {
+  /**
+   * Creates a new content item in Workflow.
+   *
+   * @param stub
+   * @param contentItem
+   * @return Either: Left(Long) if item exists already with composerId.
+   *         Right(Long) of newly created item.
+   */
+  def createContent(stub: Stub, contentItem: Option[WorkflowContent]): Either[Long,Long] = {
     DB.withTransaction { implicit session =>
-      stubs += Stub.newStubRow(stub)
-      contentItem.foreach {
-        a => content += WorkflowContent.newContentRow(a, None)
+
+      val existing = contentItem.map(c => (for (s <- stubs if s.composerId === c.composerId) yield s.pk).firstOption)
+
+      existing match {
+        case Some(Some(x)) => Left(x)
+        case _ => {
+          contentItem.foreach(
+            content += WorkflowContent.newContentRow(_, None)
+          )
+
+          Right((stubs returning stubs.map(_.pk)) += Stub.newStubRow(stub))
+        }
       }
     }
   }

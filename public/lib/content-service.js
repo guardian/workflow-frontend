@@ -55,8 +55,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                         wfComposerService.parseComposerData(response.data, stub);
 
-                        stub.status = 'Writers'; // TODO: allow status to be selected
-
                         if (stub.id) {
                             return this.updateStub(stub);
                             // return this.updateComposerId(stub.id, composerId, stub.contentType);
