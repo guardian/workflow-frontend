@@ -118,7 +118,8 @@
 .drawer__section-data-row {
     @extend %fs-data-3;
     display: block;
-    text-transform: capitalize;
+    max-width: 150px;
+    word-wrap: break-word;
     .glyphicon,
     .content-list-item__icon--composer {
         margin-right: 4px;
@@ -140,6 +141,10 @@
 }
 
 .drawer__section-data-row--coming-soon {
+    color: $c-grey-400;
+}
+
+.drawer__section-data-row--empty {
     color: $c-grey-400;
 }
 

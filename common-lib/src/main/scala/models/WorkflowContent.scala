@@ -10,6 +10,7 @@ case class WorkflowContent(
   composerId: String,
   path: Option[String],
   headline: Option[String],
+  trailtext: Option[String],
   mainMedia: Option[String],
   contentType: String,
   section: Option[Section],
@@ -39,8 +40,9 @@ object WorkflowContent {
   def fromContentUpdateEvent(e: ContentUpdateEvent): WorkflowContent = {
     WorkflowContent(
       e.composerId,
-      e.path,
-      e.headline,
+      e.identifiers.get("path"),
+      e.fields.get("headline"),
+      e.fields.get("trailText"),
       getMainMedia(e.mainBlock),
       e.`type`,
       e.tagSections.map { _.head.section },
@@ -59,16 +61,16 @@ object WorkflowContent {
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
-          headline, mainMedia, published, timePublished, _, storyBundleId, activeInInCopy,
+          headline, trailtext, mainMedia, published, timePublished, _, storyBundleId, activeInInCopy,
           takenDown, timeTakenDown) =>
           WorkflowContent(
-            composerId, path, headline, mainMedia, contentType, None, Status(status), lastMod,
+            composerId, path, headline, trailtext, mainMedia, contentType, None, Status(status), lastMod,
             lastModBy, commentable, published, timePublished, storyBundleId,
             activeInInCopy, takenDown, timeTakenDown)
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
     (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
-     wc.contentType, wc.commentable, wc.headline, wc.mainMedia, wc.published, wc.timePublished,
+     wc.contentType, wc.commentable, wc.headline, wc.trailtext, wc.mainMedia, wc.published, wc.timePublished,
      revision, wc.storyBundleId, wc.activeInInCopy, false, None)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
@@ -77,6 +79,7 @@ object WorkflowContent {
     ((__ \ "composerId").read[String] ~
       (__ \ "path").readNullable[String] ~
       (__ \ "headline").readNullable[String] ~
+      (__ \ "trailtext").readNullable[String] ~
       (__ \ "mainMedia").readNullable[String] ~
       (__ \ "contentType").read[String] ~
       (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~

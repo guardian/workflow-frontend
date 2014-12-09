@@ -12,8 +12,8 @@ case class Block(id: String, lastModified: DateTime, elements: List[Element])
 
 case class ContentUpdateEvent (
   composerId: String,
-  path: Option[String],
-  headline: Option[String],
+  identifiers: Map[String, String],
+  fields: Map[String, String],
   mainBlock: Option[Block],
   `type`: String,
   whatChanged: String,
@@ -48,8 +48,8 @@ object ContentUpdateEvent {
 
   implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (
     (__ \ "content" \ "id").read[String] ~
-    (__ \ "content" \ "identifiers" \ "path").readNullable[String] ~
-    (__ \ "content" \ "fields" \ "headline").readNullable[String] ~
+    (__ \ "content" \ "identifiers").read[Map[String, String]] ~
+    (__ \ "content" \ "fields").read[Map[String, String]] ~
     (__ \ "content" \ "mainBlock").readNullable[Block] ~
     (__ \ "content" \ "type").read[String] ~
     (__ \ "whatChanged").read[String] ~

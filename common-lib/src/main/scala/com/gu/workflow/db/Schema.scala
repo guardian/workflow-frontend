@@ -50,6 +50,7 @@ object Schema {
       String,          // content_type
       Boolean,         // commentable
       Option[String],  // headline
+      Option[String],  // trailtext
       Option[String],  // mainMedia 
       Boolean,         // published
       Option[DateTime],// timePublished
@@ -69,6 +70,7 @@ object Schema {
     def contentType    = column [String]            ("content_type")
     def commentable    = column [Boolean]           ("commentable")
     def headline       = column [Option[String]]    ("headline")
+    def trailtext      = column [Option[String]]    ("trailtext")
     def mainMedia      = column [Option[String]]    ("mainmedia")
     def published      = column [Boolean]           ("published")
     def timePublished  = column [Option[DateTime]]  ("time_published")
@@ -78,7 +80,7 @@ object Schema {
     def storyBundleId  = column [Option[String]]    ("storybundleid")
     def activeInInCopy = column [Boolean]           ("activeinincopy")
     def * = (composerId, path, lastModified, lastModifiedBy, status,
-             contentType, commentable, headline, mainMedia, published, timePublished,
+             contentType, commentable, headline, trailtext, mainMedia, published, timePublished,
              revision, storyBundleId, activeInInCopy, takenDown, timeTakenDown)
   }
 
