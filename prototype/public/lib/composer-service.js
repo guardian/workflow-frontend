@@ -29,6 +29,7 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
         contentType: (d) => d.type,
         headline: (d) => deepSearch(d, ['preview', 'data', 'fields', 'headline', 'data']) || undefined,
         published: (d) => d.published,
+        timePublished: (d) => new Date(deepSearch(d, ['contentChangeDetails', 'data', 'published', 'date']) || undefined),
         path: (d) => deepSearch(d, ['identifiers', 'path', 'data']),
         commentable: (d) => deepSearch(d, ['preview', 'data', 'settings', 'commentable', 'data']) === 'true',
         takenDown: (d) => false, // TODO: takenDown from composer feed
