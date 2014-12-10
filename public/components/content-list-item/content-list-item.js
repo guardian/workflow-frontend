@@ -87,12 +87,12 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.hasComments = !!item.commentable;
             this.commentsTitle = this.hasComments ? 'on' : 'off';
 
-            // TODO: pull main image from composer
             this.hasMainImage = Boolean(item.mainMedia);
             this.mainImageTitle = 'Main media (' + (item.mainMedia || 'none')  + ')';
-            this.mainMediaUrl = item.mainMediaUrl
+            this.mainMediaUrl = item.mainMediaUrl;
 
             this.trailtext = this.truncateString(item.trailtext);
+            this.trailImageUrl = item.trailImageUrl;
 
             this.assignee = item.assignee && toInitials(item.assignee) || '';
             this.assigneeFull = item.assignee || 'unassigned';
