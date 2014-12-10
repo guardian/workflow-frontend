@@ -128,7 +128,6 @@
 .drawer__section-data-row {
     @extend %fs-data-3;
     display: block;
-    max-width: 150px;
     word-wrap: break-word;
     .glyphicon,
     .content-list-item__icon--composer {
