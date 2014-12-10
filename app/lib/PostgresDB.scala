@@ -99,19 +99,19 @@ object PostgresDB {
    * @return Either: Left(Long) if item exists already with composerId.
    *         Right(Long) of newly created item.
    */
-  def createContent(stub: Stub, contentItem: Option[WorkflowContent]): Either[Long,Long] = {
+  def createContent(contentItem: ContentItem): Either[Long,Long] = {
     DB.withTransaction { implicit session =>
 
-      val existing = contentItem.map(c => (for (s <- stubs if s.composerId === c.composerId) yield s.pk).firstOption)
+      val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
 
       existing match {
-        case Some(Some(x)) => Left(x)
-        case _ => {
-          contentItem.foreach(
+        case Some(stubId) => Left(stubId)
+        case None => {
+          contentItem.wcOpt.foreach(
             content += WorkflowContent.newContentRow(_, None)
           )
 
-          Right((stubs returning stubs.map(_.pk)) += Stub.newStubRow(stub))
+          Right((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
         }
       }
     }
