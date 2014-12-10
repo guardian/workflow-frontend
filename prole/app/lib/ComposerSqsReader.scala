@@ -87,7 +87,7 @@ class ComposerSqsReader extends Actor {
     try {
       CommonDB.createOrModifyContent(
         WorkflowContent.fromContentUpdateEvent(e),
-        e.revision.getOrElse(0L)
+        e.revision
       ); true
     } catch {
       case sqle: SQLException => recordWriteStatusError(e, sqle); false

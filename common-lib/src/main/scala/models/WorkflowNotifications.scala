@@ -27,9 +27,9 @@ case class ContentUpdateEvent (
   commentable: Boolean,
   lastMajorRevisionDate: Option[DateTime],
   publicationDate: Option[DateTime],
-  revision: Option[Long],
-  storyBundleId: Option[String], 
-  thumbnail: Option[Thumbnail]
+  thumbnail: Option[Thumbnail],
+  storyBundleId: Option[String],
+  revision: Long
 ) extends WorkflowNotification
 
 object ContentUpdateEvent {
@@ -73,9 +73,9 @@ object ContentUpdateEvent {
     (__ \ "content" \ "contentChangeDetails" \ "published").readNullable(
       (__ \ "date").read[Long].map(t => new DateTime(t))
     ) ~
-    (__ \ "content" \ "contentChangeDetails" \ "revision").readNullable[Long] ~
+    (__ \ "content" \ "thumbnail").readNullable[Thumbnail] ~
     (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String] ~
-    (__ \ "content" \ "thumbnail").readNullable[Thumbnail]
+    (__ \ "content" \ "contentChangeDetails" \ "revision").readNullable[Long].map(optLong => optLong.getOrElse(0L))
     )(ContentUpdateEvent.apply _)
 
   def readUser = new Reads[Option[String]] {
