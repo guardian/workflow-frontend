@@ -138,7 +138,7 @@ object Api extends Controller with PanDomainAuthActions {
          case Left(stubId) => Conflict(renderCreateJson(stubId, "conflict"))
          case Right(stubId) => Created(renderCreateJson(stubId, "created"))
        }
-    })
+    }).merge
   }
 
   def putStub(stubId: Long) = APIAuthAction { implicit request =>
