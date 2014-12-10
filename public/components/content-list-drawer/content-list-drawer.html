@@ -27,6 +27,7 @@
                     <li class="drawer__section">
                         <span class="drawer__section-title">Last modified</span>
                         <span class="drawer__section-data-row">{{ (contentItem.lastModified | wfLocaliseDateTime | wfFormatDateTime) || "-" }}</span>
+                        <span class="drawer__section-data-row" ng-show="contentItem.lastModifiedBy">by {{ contentItem.lastModifiedBy }}</span>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">First published</span>
