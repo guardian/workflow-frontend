@@ -10,6 +10,7 @@ case class Asset(assetType: String, mimeType:String, url:String, fields: Map[Str
 case class Tag(id: Long, isLead: Boolean, section: Section)
 case class Element(elementType: String, fields: Map[String, String], assets: List[Asset])
 case class Block(id: String, lastModified: DateTime, elements: List[Element])
+case class Thumbnail(fields: Map[String, String], assets: List[Asset])
 
 case class ContentUpdateEvent (
   composerId: String,
@@ -27,7 +28,8 @@ case class ContentUpdateEvent (
   lastMajorRevisionDate: Option[DateTime],
   publicationDate: Option[DateTime],
   revision: Option[Long],
-  storyBundleId: Option[String]
+  storyBundleId: Option[String], 
+  thumbnail: Option[Thumbnail]
 ) extends WorkflowNotification
 
 object ContentUpdateEvent {
@@ -41,7 +43,7 @@ object ContentUpdateEvent {
 
   implicit val assetReads: Reads[Asset] = Json.reads[Asset]
   implicit val elementReads: Reads[Element] = Json.reads[Element]
-
+  implicit val thumbnailReads: Reads[Thumbnail] = Json.reads[Thumbnail]
   implicit val blockReads: Reads[Block] = (
     (__ \ "id").read[String] ~
     (__ \ "lastModified").read[Long].map(t => new DateTime(t)) ~
@@ -72,7 +74,8 @@ object ContentUpdateEvent {
       (__ \ "date").read[Long].map(t => new DateTime(t))
     ) ~
     (__ \ "content" \ "contentChangeDetails" \ "revision").readNullable[Long] ~
-    (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String]
+    (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String] ~
+    (__ \ "content" \ "thumbnail").readNullable[Thumbnail]
     )(ContentUpdateEvent.apply _)
 
   def readUser = new Reads[Option[String]] {

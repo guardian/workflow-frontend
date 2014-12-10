@@ -53,6 +53,7 @@ object Schema {
       Option[String],  // trailtext
       Option[String],  // mainMedia 
       Option[String],  // mainMediaUrl 
+      Option[String],  // trailImageUrl 
       Boolean,         // published
       Option[DateTime],// timePublished
       Option[Long],    // revision
@@ -74,6 +75,7 @@ object Schema {
     def trailtext      = column [Option[String]]    ("trailtext")
     def mainMedia      = column [Option[String]]    ("mainmedia")
     def mainMediaUrl   = column [Option[String]]    ("mainmedia_url")
+    def trailImageUrl  = column [Option[String]]    ("trailimage_url")
     def published      = column [Boolean]           ("published")
     def timePublished  = column [Option[DateTime]]  ("time_published")
     def takenDown      = column [Boolean]           ("takendown")
@@ -82,7 +84,7 @@ object Schema {
     def storyBundleId  = column [Option[String]]    ("storybundleid")
     def activeInInCopy = column [Boolean]           ("activeinincopy")
     def * = (composerId, path, lastModified, lastModifiedBy, status,
-             contentType, commentable, headline, trailtext, mainMedia, mainMediaUrl, published, timePublished,
+             contentType, commentable, headline, trailtext, mainMedia, mainMediaUrl, trailImageUrl, published, timePublished,
              revision, storyBundleId, activeInInCopy, takenDown, timeTakenDown)
   }
 
