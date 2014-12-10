@@ -10,6 +10,7 @@ case class WorkflowContent(
   composerId: String,
   path: Option[String],
   headline: Option[String],
+  standfirst: Option[String],
   trailtext: Option[String],
   mainMedia: Option[String],
   mainMediaUrl: Option[String],
@@ -29,7 +30,6 @@ case class WorkflowContent(
 )
 
 object WorkflowContent {
-
   implicit val dateTimeFormat = DateFormat
 
   def getMainMedia(blockOption: Option[Block]) = {
@@ -82,6 +82,7 @@ object WorkflowContent {
       e.composerId,
       e.identifiers.get("path"),
       e.fields.get("headline"),
+      e.fields.get("standfirst"),
       e.fields.get("trailText"),
       getMainMedia(e.mainBlock),
       getMainMediaUrl(e.mainBlock),
@@ -103,16 +104,16 @@ object WorkflowContent {
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
-          headline, trailtext, mainMedia, mainMediaUrl, trailImageUrl, published, timePublished, _, storyBundleId, activeInInCopy,
+          headline, standfirst, trailtext, mainMedia, mainMediaUrl, trailImageUrl, published, timePublished, _, storyBundleId, activeInInCopy,
           takenDown, timeTakenDown) =>
           WorkflowContent(
-            composerId, path, headline, trailtext, mainMedia, mainMediaUrl, trailImageUrl, contentType, None, Status(status), lastMod,
+            composerId, path, headline, standfirst, trailtext, mainMedia, mainMediaUrl, trailImageUrl, contentType, None, Status(status), lastMod,
             lastModBy, commentable, published, timePublished, storyBundleId,
             activeInInCopy, takenDown, timeTakenDown)
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
     (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
-     wc.contentType, wc.commentable, wc.headline, wc.trailtext, wc.mainMedia, wc.mainMediaUrl, wc.trailImageUrl, wc.published, wc.timePublished,
+     wc.contentType, wc.commentable, wc.headline, wc.standfirst, wc.trailtext, wc.mainMedia, wc.mainMediaUrl, wc.trailImageUrl, wc.published, wc.timePublished,
      revision, wc.storyBundleId, wc.activeInInCopy, false, None)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
@@ -121,6 +122,7 @@ object WorkflowContent {
     ((__ \ "composerId").read[String] ~
       (__ \ "path").readNullable[String] ~
       (__ \ "headline").readNullable[String] ~
+      (__ \ "standfirst").readNullable[String] ~
       (__ \ "trailtext").readNullable[String] ~
       (__ \ "mainMedia").readNullable[String] ~
       (__ \ "mainMediaUrl").readNullable[String] ~

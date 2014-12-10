@@ -40,11 +40,7 @@ object CommonDB {
           createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
           createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
 
-      q.filter(s => dueDateNotExpired(s.due))
-        .list.map(row => Stub.fromStubRow(row))
-
-
-
+      q.filter(s => dueDateNotExpired(s.due)).list.map(row => Stub.fromStubRow(row))
     }
 
   def getStubForComposerId(composerId: String): Option[Stub] = DB.withTransaction { implicit session =>
@@ -78,18 +74,16 @@ object CommonDB {
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
     DB.withTransaction { implicit session =>
       val contentExists = content.filter(_.composerId === wc.composerId).exists.run
-      if (contentExists) updateContent(wc, revision)
-      else createContent(wc, Some(revision))
+      if (contentExists) updateContent(wc, revision)      else createContent(wc, Some(revision))
     }
-
 
   def updateContent(wc: WorkflowContent, revision: Long)(implicit session: Session): Int = {
       content
         .filter(_.composerId === wc.composerId)
         .filter(c => c.revision < revision || c.revision.isNull)
         .map(c => 
-          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.trailtext, c.mainMedia, c.mainMediaUrl, c.trailImageUrl, c.published, c.timePublished, c.revision, c.storyBundleId))
-        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.trailtext, wc.mainMedia, wc.mainMediaUrl, wc.trailImageUrl, wc.published, wc.timePublished, Some(revision), wc.storyBundleId))
+          (c.path, c.lastModified, c.lastModifiedBy, c.contentType, c.commentable, c.headline, c.standfirst, c.trailtext, c.mainMedia, c.mainMediaUrl, c.trailImageUrl, c.published, c.timePublished, c.revision, c.storyBundleId))
+        .update((wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, wc.commentable, wc.headline, wc.standfirst, wc.trailtext, wc.mainMedia, wc.mainMediaUrl, wc.trailImageUrl, wc.published, wc.timePublished, Some(revision), wc.storyBundleId))
   }
 
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {
