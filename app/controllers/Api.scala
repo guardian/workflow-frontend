@@ -57,26 +57,28 @@ object Api extends Controller with PanDomainAuthActions {
   def content = APIAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
-    val sections = req.getQueryString("section").map(_.split(",").toList.map(Section(_))) // "Section1,Section2,..,SectionN" -> List(Section("Section1"), .., Section("SectionN"))
+    val sections = queryStringMultiOption(req.getQueryString("section"), s => Some(Section(s)))
     val contentType = req.getQueryString("content-type")
     val flags = req.queryString.get("flags") getOrElse Nil
     val prodOffice = req.getQueryString("prodOffice")
     val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
     val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
-    val status = queryStringMultiOption("status", StatusDatabase.find(_))
+    val status = queryStringMultiOption(req.getQueryString("status"), StatusDatabase.find(_))
 
     def getContent = {
       val content = PostgresDB.getContent(
-        section = sections,
-        dueFrom = dueFrom,
-        dueUntil = dueUntil,
-        status = status,
-        contentType = contentType,
-        published = req.getQueryString("state").map(_ == "published"),
-        flags = flags,
-        prodOffice = prodOffice,
-        createdFrom = createdFrom,
-        createdUntil = createdUntil
+        WfQuery(section = sections,
+                status  = status)
+        // section = sections,
+        // dueFrom = dueFrom,
+        // dueUntil = dueUntil,
+        // status = status,
+        // contentType = contentType,
+        // published = req.getQueryString("state").map(_ == "published"),
+        // flags = flags,
+        // prodOffice = prodOffice,
+        // createdFrom = createdFrom,
+        // createdUntil = createdUntil
       )
 
 
@@ -100,16 +102,10 @@ object Api extends Controller with PanDomainAuthActions {
         createdUntil = createdUntil).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
     }
 
-    val stubs = status match {
-      case Some(models.Status("Stub")) | None => getStubs
-      case _ => Nil
-    }
+    val stubs =
+      if(status.exists(_ == models.Status("Stub"))) getStubs else Nil
 
-    val content = status match {
-      case Some(models.Status("Stub")) => Nil
-      case _ => getContent
-    }
-
+    val content = getContent
 
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
