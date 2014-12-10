@@ -15,6 +15,6 @@ class ContentUpdateEventModelSpec extends FunSuite with ShouldMatchers with Reso
     (for {
       b <- ws.mainBlock
       e <- b.elements.headOption
-    } yield e.elementType).getOrElse("none") should equal("embed")
+    } yield e.elementType) should equal(Some("embed"))
   }
 }
