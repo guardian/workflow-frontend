@@ -64,7 +64,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
         truncateString(string, length, ellipsis, stripHtml) {
             if(typeof string !== 'string') return string;
 
-            var defaultLength = 40;
+            var defaultLength = 140;
             var defaultEllipsis = "...";
 
             var maxLength = typeof length !== 'undefined' ? length : defaultLength;
@@ -96,9 +96,15 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.hasComments = !!item.commentable;
             this.commentsTitle = this.hasComments ? 'on' : 'off';
 
-            this.hasMainImage = Boolean(item.mainMedia);
-            this.mainImageTitle = 'Main media (' + (item.mainMedia || 'none')  + ')';
+            this.hasMainMedia = Boolean(item.mainMedia);
+            this.mainMediaType = item.mainMedia;
+            this.mainMediaTitle = 'Main media (' + (item.mainMedia || 'none')  + ')';
             this.mainMediaUrl = item.mainMediaUrl;
+            this.mainMediaCaption = this.truncateString(item.mainMediaCaption);
+            this.mainMediaAltText = this.truncateString(item.mainMediaAltText);
+
+            // Currently we don't pull in any preview information about non-image main media
+            this.mainMediaNoPreview = this.mainMediaType && this.mainMediaType != 'image';
 
             this.trailtext = this.truncateString(item.trailtext);
             this.trailImageUrl = item.trailImageUrl;
