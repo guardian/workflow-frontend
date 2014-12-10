@@ -73,8 +73,11 @@ object WorkflowContent {
     } yield urlOption 
   }
 
-  def getSectionFromTags(tags: List[Tag]): Option[Section] = {
-    tags.headOption.map { t => t.section }
+  def getSectionFromTags(tagsOption: Option[List[Tag]]): Option[Section] = {
+    for {
+      tags <- tagsOption
+      tag <- tags.headOption
+    } yield tag.section
   }
 
   def getMainMediaField(field: String, blocks: Option[Block]): Option[String] = {
