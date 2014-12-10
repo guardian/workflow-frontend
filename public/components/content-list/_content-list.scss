@@ -5,13 +5,19 @@
  */
 
 $content-list-icon-size: 14px;
+$compact-display-td-padding: 2px 5px;
 
 // Global padding for cells
 %content-list__field-padding {
     padding: 10px 5px;
 }
 
-.content-list, .content-list * {
+    // Compact layout
+    .content-list--compact %content-list__field-padding {
+        padding: $compact-display-td-padding;
+    }
+
+ .content-list, .content-list * {
     box-sizing: content-box;
 }
 
@@ -128,4 +134,35 @@ $content-list-icon-size: 14px;
         }
     }
 
+}
+
+.content-list-head__heading--group {
+    position: relative;
+}
+
+.content-list__compact-button {
+    position: absolute;
+    bottom: 4px;
+    left: 6px;
+    display: block;
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    background: repeating-linear-gradient(
+            0deg,
+            #ffffff,
+            #ffffff 1px,
+            $c-grey-400 1px,
+            $c-grey-400 2px
+    );
+
+    &--active {
+        background: repeating-linear-gradient(
+                0deg,
+                #ffffff,
+                #ffffff 2px,
+                $c-grey-400 2px,
+                $c-grey-400 4px
+        );
+    }
 }
