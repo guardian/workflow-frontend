@@ -45,7 +45,6 @@ object Schema {
       String,          // composer_id
       Option[String],  // path
       DateTime,        // last_modified
-      Option[String],  // last_modified_by
       String,          // status
       String,          // content_type
       Boolean,         // commentable
@@ -54,6 +53,8 @@ object Schema {
       Option[String],  // trailtext
       Option[String],  // mainMedia 
       Option[String],  // mainMediaUrl 
+      Option[String],  // mainMediaCaption
+      Option[String],  // mainMediaAltText
       Option[String],  // trailImageUrl 
       Boolean,         // published
       Option[DateTime],// timePublished
@@ -65,29 +66,30 @@ object Schema {
     )
 
   case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
-    def composerId     = column [String]            ("composer_id", O.PrimaryKey)
-    def path           = column [Option[String]]    ("path")
-    def lastModified   = column [DateTime]          ("last_modified")
-    def lastModifiedBy = column [Option[String]]    ("last_modified_by")
-    def status         = column [String]            ("status")
-    def contentType    = column [String]            ("content_type")
-    def commentable    = column [Boolean]           ("commentable")
-    def headline       = column [Option[String]]    ("headline")
-    def standfirst     = column [Option[String]]    ("standfirst")
-    def trailtext      = column [Option[String]]    ("trailtext")
-    def mainMedia      = column [Option[String]]    ("mainmedia")
-    def mainMediaUrl   = column [Option[String]]    ("mainmedia_url")
-    def trailImageUrl  = column [Option[String]]    ("trailimage_url")
-    def published      = column [Boolean]           ("published")
-    def timePublished  = column [Option[DateTime]]  ("time_published")
-    def takenDown      = column [Boolean]           ("takendown")
-    def timeTakenDown  = column [Option[DateTime]]  ("time_takendown")
-    def revision       = column [Option[Long]]      ("revision")
-    def storyBundleId  = column [Option[String]]    ("storybundleid")
-    def activeInInCopy = column [Boolean]           ("activeinincopy")
-    def * = (composerId, path, lastModified, lastModifiedBy, status,
+    def composerId       = column [String]            ("composer_id", O.PrimaryKey)
+    def path             = column [Option[String]]    ("path")
+    def lastModified     = column [DateTime]          ("last_modified")
+    def status           = column [String]            ("status")
+    def contentType      = column [String]            ("content_type")
+    def commentable      = column [Boolean]           ("commentable")
+    def headline         = column [Option[String]]    ("headline")
+    def standfirst       = column [Option[String]]    ("standfirst")
+    def trailtext        = column [Option[String]]    ("trailtext")
+    def mainMedia        = column [Option[String]]    ("mainmedia")
+    def mainMediaUrl     = column [Option[String]]    ("mainmedia_url")
+    def mainMediaCaption = column [Option[String]]    ("mainmedia_caption")
+    def mainMediaAltText = column [Option[String]]    ("mainmedia_alttext")
+    def trailImageUrl    = column [Option[String]]    ("trailimage_url")
+    def published        = column [Boolean]           ("published")
+    def timePublished    = column [Option[DateTime]]  ("time_published")
+    def takenDown        = column [Boolean]           ("takendown")
+    def timeTakenDown    = column [Option[DateTime]]  ("time_takendown")
+    def revision         = column [Option[Long]]      ("revision")
+    def storyBundleId    = column [Option[String]]    ("storybundleid")
+    def activeInInCopy   = column [Boolean]           ("activeinincopy")
+    def * = (composerId, path, lastModified, status,
              contentType, commentable, headline, standfirst, trailtext, 
-             mainMedia, mainMediaUrl, trailImageUrl, published, timePublished,
+             mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText, trailImageUrl, published, timePublished,
              revision, storyBundleId, activeInInCopy, takenDown, timeTakenDown)
   }
 

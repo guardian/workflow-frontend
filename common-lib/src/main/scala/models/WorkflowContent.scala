@@ -14,12 +14,13 @@ case class WorkflowContent(
   trailtext: Option[String],
   mainMedia: Option[String],
   mainMediaUrl: Option[String],
+  mainMediaCaption: Option[String],
+  mainMediaAltText: Option[String],
   trailImageUrl: Option[String],
   contentType: String,
   section: Option[Section],
   status: Status,
   lastModified: DateTime,
-  lastModifiedBy: Option[String],
   commentable: Boolean,
   published: Boolean,
   timePublished: Option[DateTime],
@@ -38,7 +39,6 @@ object WorkflowContent {
       element <- block.elements.headOption
     } yield element.elementType
   }
-
 
   def getImageAssetSize(asset: Asset): Option[Long] = {
        for {
@@ -77,6 +77,14 @@ object WorkflowContent {
     tags.headOption.map { t => t.section }
   }
 
+  def getMainMediaField(field: String, blocks: Option[Block]): Option[String] = {
+    for {
+      block <- blocks 
+      element <- block.elements.headOption
+      field <- element.fields.get(field)
+    } yield field
+  }
+
   def fromContentUpdateEvent(e: ContentUpdateEvent): WorkflowContent = {
     WorkflowContent(
       e.composerId,
@@ -86,12 +94,13 @@ object WorkflowContent {
       e.fields.get("trailText"),
       getMainMedia(e.mainBlock),
       getMainMediaUrl(e.mainBlock),
+      getMainMediaField("caption", e.mainBlock),
+      getMainMediaField("alt", e.mainBlock),
       getTrailImageUrl(e.thumbnail),
       e.`type`,
       getSectionFromTags(e.tags),
       e.status, // not written to the database but the DTO requires a value.
       e.lastModified,
-      e.user,
       commentable=e.commentable,
       published = e.published,
       timePublished = e.publicationDate,
@@ -103,17 +112,17 @@ object WorkflowContent {
   }
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
-    case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
-          headline, standfirst, trailtext, mainMedia, mainMediaUrl, trailImageUrl, published, timePublished, _, storyBundleId, activeInInCopy,
+    case (composerId, path, lastMod, status, contentType, commentable,
+          headline, standfirst, trailtext, mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText, trailImageUrl, published, timePublished, _, storyBundleId, activeInInCopy,
           takenDown, timeTakenDown) =>
           WorkflowContent(
-            composerId, path, headline, standfirst, trailtext, mainMedia, mainMediaUrl, trailImageUrl, contentType, None, Status(status), lastMod,
-            lastModBy, commentable, published, timePublished, storyBundleId,
+            composerId, path, headline, standfirst, trailtext, mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText, trailImageUrl, contentType, None, Status(status), lastMod,
+            commentable, published, timePublished, storyBundleId,
             activeInInCopy, takenDown, timeTakenDown)
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
-    (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
-     wc.contentType, wc.commentable, wc.headline, wc.standfirst, wc.trailtext, wc.mainMedia, wc.mainMediaUrl, wc.trailImageUrl, wc.published, wc.timePublished,
+    (wc.composerId, wc.path, wc.lastModified, wc.status.name,
+     wc.contentType, wc.commentable, wc.headline, wc.standfirst, wc.trailtext, wc.mainMedia, wc.mainMediaUrl, wc.mainMediaCaption, wc.mainMediaAltText, wc.trailImageUrl, wc.published, wc.timePublished,
      revision, wc.storyBundleId, wc.activeInInCopy, false, None)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
@@ -126,12 +135,13 @@ object WorkflowContent {
       (__ \ "trailtext").readNullable[String] ~
       (__ \ "mainMedia").readNullable[String] ~
       (__ \ "mainMediaUrl").readNullable[String] ~
+      (__ \ "mainMediaCaption").readNullable[String] ~
+      (__ \ "mainMediaAltText").readNullable[String] ~
       (__ \ "trailImageUrl").readNullable[String] ~
       (__ \ "contentType").read[String] ~
       (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
       (__ \ "status").read[String].map { s => Status(s) } ~
       (__ \ "lastModified").read[DateTime] ~
-      (__ \ "lastModifiedBy").readNullable[String] ~
       (__ \ "commentable").read[Boolean] ~
       (__ \ "published").read[Boolean] ~
       (__ \ "timePublished").readNullable[DateTime] ~
