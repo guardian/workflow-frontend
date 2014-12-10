@@ -57,20 +57,28 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.update(item);
         }
 
-        truncateString(string, length, ellipsis) {
+        htmlToPlaintext(text) {
+            return String(text).replace(/<[^>]+>/gm, '');
+        }
+
+        truncateString(string, length, ellipsis, stripHtml) {
             if(typeof string !== 'string') return string;
 
             var defaultLength = 40;
             var defaultEllipsis = "...";
 
-            var maxLength = typeof length !== 'undefined' ? a : defaultLength;
-            var ellipsis = typeof ellipsis !== 'undefined' ? a : defaultEllipsis;
+            var maxLength = typeof length !== 'undefined' ? length : defaultLength;
+            var ellipsis = typeof ellipsis !== 'undefined' ? ellipsis : defaultEllipsis;
+            var stripHtml = typeof stripHtml !== 'undefined' ? stripHtml : true;
+
+            // Strip HTML out here so length calculation is correct
+            string = stripHtml ? this.htmlToPlaintext(string) : string;
 
             var truncateString = () => {
                 return `${string.substring(0,(maxLength - ellipsis.length))}${ellipsis}`;
             }
 
-            return (string.length + ellipsis.length) >= maxLength ?  truncateString() : string; 
+            return (string.length + ellipsis.length) >= maxLength ?  truncateString() : string;
         }
 
         update(item) {
@@ -80,6 +88,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.composerId = item.composerId;
 
             this.headline = item.headline;
+            this.standfirst = this.truncateString(item.standfirst);
             this.workingTitle = item.workingTitle || item.title;
 
             this.priority = item.priority;
