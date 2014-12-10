@@ -44,6 +44,16 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
+  def queryStringMultiOption[A](name: String, f: String => Option[A] = (x: String) => Some(x))
+                            (implicit req: Request[_]): List[A] =
+    // conver the query string into a list of filters by separating on
+    // "," and pass to the transformation function to get the required
+    // type. If the param doesn't exist in the query string, assume
+    // the empty list
+    req.getQueryString(name) map {
+      _.split(",").toList.map(f).collect { case Some(a) => a }
+    } getOrElse Nil
+
   def content = APIAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
@@ -53,7 +63,7 @@ object Api extends Controller with PanDomainAuthActions {
     val prodOffice = req.getQueryString("prodOffice")
     val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
     val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
-    val status = req.getQueryString("status").flatMap(StatusDatabase.find)
+    val status = queryStringMultiOption("status", StatusDatabase.find(_))
 
     def getContent = {
       val content = PostgresDB.getContent(
