@@ -45,7 +45,9 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def queryStringMultiOption[A](param: Option[String],
-                            f: String => Option[A]): List[A] =
+                                // default transformer just makes
+                                // Option using Sum.apply
+                                f: String => Option[A] = (s: String) => Some(s)): List[A] =
     // conver the query string into a list of filters by separating on
     // "," and pass to the transformation function to get the required
     // type. If the param doesn't exist in the query string, assume
@@ -54,13 +56,16 @@ object Api extends Controller with PanDomainAuthActions {
       _.split(",").toList.map(f).collect { case Some(a) => a }
     } getOrElse Nil
 
+//    req.getQueryString(name).map(_.split(",").toList.map(f).getOrElse(Nil)).filter(!_.isEmpty)).getOrElse(Nil)
+
   def content = APIAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
-    val sections = queryStringMultiOption(req.getQueryString("section"), s => Some(Section(s)))
-    val contentType = req.getQueryString("content-type")
+    val sections = queryStringMultiOption(req.getQueryString("section"),
+                                          s => Some(Section(s)))
+    val contentType = queryStringMultiOption(req.getQueryString("content-type"))
     val flags = req.queryString.get("flags") getOrElse Nil
-    val prodOffice = req.getQueryString("prodOffice")
+    val prodOffice = queryStringMultiOption(req.getQueryString("prodOffice"))
     val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
     val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
     val status = queryStringMultiOption(req.getQueryString("status"), StatusDatabase.find(_))
@@ -68,7 +73,9 @@ object Api extends Controller with PanDomainAuthActions {
     def getContent = {
       val content = PostgresDB.getContent(
         WfQuery(section = sections,
-                status  = status)
+                status  = status,
+                contentType = contentType,
+                prodOffice = prodOffice)
         // section = sections,
         // dueFrom = dueFrom,
         // dueUntil = dueUntil,
@@ -94,10 +101,12 @@ object Api extends Controller with PanDomainAuthActions {
       CommonDB.getStubs(
         dueFrom = dueFrom,
         dueUntil = dueUntil,
-        section = sections,
-        contentType = contentType,
+        // XXX TODO -> need to fix this
+        section = (if(sections.isEmpty) None else Some(sections)),
+        contentType = contentType.headOption,
+        prodOffice = prodOffice.headOption,
+        // XXX
         unlinkedOnly = true,
-        prodOffice = prodOffice,
         createdFrom = createdFrom,
         createdUntil = createdUntil).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
     }
