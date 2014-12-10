@@ -108,6 +108,10 @@
     }
 }
 
+.drawer__section-mainmedia--nopreview {
+    text-transform: capitalize;
+}
+
 .drawer__section-title {
     @extend %fs-data-3;
     font-weight: bold;
