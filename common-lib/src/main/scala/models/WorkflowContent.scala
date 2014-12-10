@@ -95,3 +95,10 @@ object WorkflowContent {
       (__ \ "timeTakenDown").readNullable[DateTime]
       )(WorkflowContent.apply _)
 }
+
+
+case class ContentItem(stub: Stub, wcOpt: Option[WorkflowContent])
+
+case object ContentItem {
+  implicit val contentItemReads = Json.reads[ContentItem]
+}
