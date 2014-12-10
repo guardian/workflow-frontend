@@ -34,7 +34,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 if($scope.filterIsSelected(filter)) {
                     $scope.selectedFilters =
                         _.filter($scope.selectedFilters,
-                                 flt => flt === filter);
+                                 flt => flt !== filter.value);
                 } else {
                     $scope.selectedFilters.push(filter.value);
                 }
