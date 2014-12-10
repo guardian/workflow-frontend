@@ -44,13 +44,13 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def queryStringMultiOption[A](name: String, f: String => Option[A] = (x: String) => Some(x))
-                            (implicit req: Request[_]): List[A] =
+  def queryStringMultiOption[A](param: Option[String],
+                            f: String => Option[A]): List[A] =
     // conver the query string into a list of filters by separating on
     // "," and pass to the transformation function to get the required
     // type. If the param doesn't exist in the query string, assume
     // the empty list
-    req.getQueryString(name) map {
+    param map {
       _.split(",").toList.map(f).collect { case Some(a) => a }
     } getOrElse Nil
 
