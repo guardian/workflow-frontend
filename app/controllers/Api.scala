@@ -11,7 +11,7 @@ import play.api.libs.json._
 
 import lib.Responses._
 import lib._
-import models.{Section, WorkflowContent, Stub}
+import models.{ContentItem, Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
 import com.gu.workflow.db.{SectionDB, CommonDB}
 import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
@@ -33,6 +33,7 @@ case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
 
   lazy val parser = action.parser
 }
+
 
 object Api extends Controller with PanDomainAuthActions {
 
@@ -129,36 +130,15 @@ object Api extends Controller with PanDomainAuthActions {
 
 
   def createContent() = APIAuthAction { implicit request =>
-
-    // optional content: Parses WorkflowContent from the request if a composerId is specified
-    def optionalContent(stub: Stub, jsValue: JsValue): Either[Result, Option[WorkflowContent]] = {
-      stub.composerId.map(_ =>
-        jsValue.validate[WorkflowContent] match {
-          case JsSuccess(a, _) => Right(Some(a))
-          case error@JsError(a) => {
-            val errMsg = errorMsgs(error)
-            Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
-          }
-
-        }
-      ).getOrElse(Right(None))
-    }
-
-    def renderCreateJson[A : Writes](id: A, status: String): JsValue =
-      Json.obj("data" -> Json.obj("stubId" -> id), "status" -> status)
-
     (for {
       jsValue <- readJsonFromRequest(request.body).right
-      stub <- extract[Stub](jsValue).right
-      content <- optionalContent(stub, jsValue).right
+      contentItem <- extract[ContentItem](jsValue).right
     } yield {
-
-      PostgresDB.createContent(stub, content) match {
-        case Left(x) => Conflict(renderCreateJson(x, "exists"))
-        case Right(x) => Created(renderCreateJson(x, "created"))
-      }
-
-    }).merge
+       PostgresDB.createContent(contentItem) match {
+         case Left(stubId) => Conflict(renderCreateJson(stubId, "conflict"))
+         case Right(stubId) => Created(renderCreateJson(stubId, "created"))
+       }
+    })
   }
 
   def putStub(stubId: Long) = APIAuthAction { implicit request =>
