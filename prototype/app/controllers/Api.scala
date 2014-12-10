@@ -103,7 +103,9 @@ object Api extends Controller with PanDomainAuthActions {
     }
 
     val stubs =
-      if(status.exists(_ == models.Status("Stub"))) getStubs else Nil
+      if(status.isEmpty || status.exists(_ == models.Status("Stub")))
+        getStubs
+      else Nil
 
     val content = getContent
 
