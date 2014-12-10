@@ -7,7 +7,7 @@
     border-radius: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
-    padding: 16px 34px 17px 18px;
+    padding: 16px 25px 17px 8px;
     margin-left: 5px;
     outline: none;
     cursor: pointer;
@@ -66,6 +66,7 @@
     display: block;
     width: 100%;
     white-space: nowrap;
+    text-align: left;
 }
 
 .section-list {
