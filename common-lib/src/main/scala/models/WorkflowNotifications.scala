@@ -22,7 +22,7 @@ case class ContentUpdateEvent (
   published: Boolean,
   user: Option[String],
   lastModified: DateTime,
-  tagSections: Option[List[Tag]],
+  tags: List[Tag],
   status: Status,
   commentable: Boolean,
   lastMajorRevisionDate: Option[DateTime],
@@ -60,9 +60,7 @@ object ContentUpdateEvent {
     (__ \ "content" \ "published").read[Boolean] ~
     readUser ~
     (__ \ "content" \ "contentChangeDetails" \ "lastModified" \ "date").read[Long].map(t => new DateTime(t)) ~
-    (__ \ "content" \ "taxonomy").readNullable(
-      (__ \ "tags").read[List[Tag]]
-    ) ~
+    (__ \ "content" \ "taxonomy" \ "tags").read[List[Tag]] ~
     (__ \ "content" \ "published").read[Boolean].map(p => if (p) Final else Writers) ~
     (__ \ "content" \ "settings" \ "commentable").readNullable[String].map {
       s => s.exists(_=="true")

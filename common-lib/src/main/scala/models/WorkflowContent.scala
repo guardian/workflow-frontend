@@ -73,6 +73,10 @@ object WorkflowContent {
     } yield urlOption 
   }
 
+  def getSectionFromTags(tags: List[Tag]): Option[Section] = {
+    tags.headOption.map { t => t.section }
+  }
+
   def fromContentUpdateEvent(e: ContentUpdateEvent): WorkflowContent = {
     WorkflowContent(
       e.composerId,
@@ -83,7 +87,7 @@ object WorkflowContent {
       getMainMediaUrl(e.mainBlock),
       getTrailImageUrl(e.thumbnail),
       e.`type`,
-      e.tagSections.map { _.head.section },
+      getSectionFromTags(e.tags),
       e.status, // not written to the database but the DTO requires a value.
       e.lastModified,
       e.user,
