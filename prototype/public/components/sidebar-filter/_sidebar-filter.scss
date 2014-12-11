@@ -30,9 +30,14 @@
     background-color: $c-grey-200;
     height: 28px;
     border-top: 1px solid #ffffff;
+    display: flex;
 
     &:hover {
         background-color: darken($c-grey-300, 15%);
+    }
+
+    .sidebar__header-spacer {
+        flex-grow: 1;
     }
 
     .sidebar__heading {
@@ -44,7 +49,7 @@
         font-weight: bold;
         margin: 0;
         cursor: pointer;
-
+        flex-grow: 0;
         &::before {
             transform: rotate(-90deg);
         }
@@ -116,11 +121,12 @@
     }
 
     &.sidebar__filter--default {
-        float: right;
+        display: inline-block;
         padding: 0;
         border-bottom: 0;
         border-left: 1px solid #fff;
         height: 100%;
+        flex-grow: 0;
         .sidebar__filter-link {
             height: 100%;
             padding: 6px 12px;
@@ -182,4 +188,8 @@
 
 .sidebar__filter--active .sidebar__filter-custom--customDate:after {
     background-color: $c-bluegrey;
+}
+
+:-moz-any(.sidebar__filter__deadline-select, .sidebar__filter__deadline-select--active) {
+    padding-left: 19px;
 }
