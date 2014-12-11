@@ -118,7 +118,6 @@
 .drawer__section-data-row {
     @extend %fs-data-3;
     display: block;
-    text-transform: capitalize;
     .glyphicon,
     .content-list-item__icon--composer {
         margin-right: 4px;
