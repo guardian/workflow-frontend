@@ -12,7 +12,7 @@
                 <i class="sidebar__filter-icon" ng-if="filterOption.icon" wf-icon="{{filterOption.icon}}"></i>
                 {{filterOption.caption}}
             </a>
-            <div ng-switch-when="true">
+            <div ng-switch-when="true" class="sidebar__filter-custom--{{ filterOption.value }}">
                 <div ng-include="filterOption.url"></div>
             </div>
         </li>

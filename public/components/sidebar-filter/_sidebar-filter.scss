@@ -143,13 +143,17 @@
     -moz-appearance: none;
     outline: none;
     cursor: pointer;
+
+    &:-moz-focusring {
+        color: transparent;
+        text-shadow: 0 0 0 #000;
+    }
 }
 
 .sidebar__filter__deadline-select {
     @extend %deadline-select;
     color: #333 ;
     background-color: #f6f6f6;
-
 }
 
 .sidebar__filter__deadline-select--active {
@@ -157,4 +161,25 @@
     color: $c-text;
     background-color: $c-bluegrey;
     border-left: 3px solid $c-highlight-blue;
+}
+
+// moz dropdown arrow masking
+.sidebar__filter-custom--customDate {
+    position: relative;
+
+    &:after {
+        content: " ";
+        background: $i-arrow-down center no-repeat #F6F6F6;
+        background-size: 12px;
+        width: 20px;
+        position: absolute;
+        height: 100%;
+        top: 0;
+        right: 0;
+        pointer-events: none;
+    }
+}
+
+.sidebar__filter--active .sidebar__filter-custom--customDate:after {
+    background-color: $c-bluegrey;
 }
