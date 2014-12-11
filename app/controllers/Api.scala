@@ -15,6 +15,7 @@ import models.{Section, WorkflowContent, Stub}
 import org.joda.time.DateTime
 import com.gu.workflow.db.{SectionDB, CommonDB}
 import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
+import com.gu.workflow.query._
 
 import scala.concurrent.Future
 
