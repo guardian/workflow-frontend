@@ -59,9 +59,9 @@ object PostgresDB {
       //     published.foldl[ContentQuery] ((q, published) => q.filter(_.published === published))
 
       import WfQuery.inSet
-      val stubsQuery = stubs |>
-        inSet(q.section.map(_.toString), _.section) |>
-        inSet(q.prodOffice, _.prodOffice)
+      //val stubsQuery = CommonDB.stubs // |>
+//        inSet(q.section.map(_.toString), _.section) |>
+//        inSet(q.prodOffice, _.prodOffice)
 
 //          (q => WfQuery.or(q, )(_.prodOffice))
 //        stubs.filter( _.section inSet q.section.map(_.name))
@@ -72,7 +72,7 @@ object PostgresDB {
         inSet(q.contentType, _.contentType)
 
       val query = for {
-        s <- stubsQuery
+        s <- stubsQuery(q)
         c <- contentQuery
         if s.composerId === c.composerId
       } yield (s, c)

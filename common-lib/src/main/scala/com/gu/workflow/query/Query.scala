@@ -38,8 +38,9 @@ object WfQuery {
                                               getField: DB => Column[Option[A]]):
       (Query[DB, Row]) => Query[DB, Row] = options match {
     case Nil  => (startQuery => startQuery)
-    case opts => (startQuery => startQuery.filter(table => getField(table).isNotNull
-                                                    && (getField(table).get inSet options)))
+    case opts => (startQuery => startQuery
+                    .filter(table => getField(table).isNotNull)
+                    .filter(table => getField(table) inSet options))
   }
 
   def optToSeq[A](o: Option[A]): Seq[A] =

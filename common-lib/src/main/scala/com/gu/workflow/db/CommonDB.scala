@@ -15,32 +15,25 @@ object CommonDB {
   import play.api.db.slick.DB
   import WfQuery._
 
-  def stubsQuery(q: WfQuery) = {
-    stubs |>
-      inSet(q.section.map(_.toString), _.section) |>
-      optInSet(q.contentType, _.contentType) |>
+  def stubsQuery(q: WfQuery) = stubs |>
+    inSet(q.section.map(_.toString), _.section) |>
+    optInSet(q.contentType, _.contentType) |>
     inSet(q.prodOffice, _.prodOffice)
-  }
 
   def getStubs(
-                dueFrom: Option[DateTime] = None,
-                dueUntil: Option[DateTime] = None,
-                section: Option[List[Section]] = None,
-                composerId: Set[String] = Set.empty,
-                contentType: Option[String] = None,
-                unlinkedOnly: Boolean = false,
-                prodOffice: Option[String] = None,
-                createdFrom: Option[DateTime] = None,
-                createdUntil: Option[DateTime] = None
+    query: WfQuery
+                // dueFrom: Option[DateTime] = None,
+                // dueUntil: Option[DateTime] = None,
+                // section: Option[List[Section]] = None,
+                // composerId: Set[String] = Set.empty,
+                // contentType: Option[String] = None,
+                // unlinkedOnly: Boolean = false,
+                // prodOffice: Option[String] = None,
+                // createdFrom: Option[DateTime] = None,
+                // createdUntil: Option[DateTime] = None
                 ): List[Stub] =
     DB.withTransaction { implicit session =>
-      val cIds = if (composerId.nonEmpty) Some(composerId) else None
-
-      val query = WfQuery(
-        section = section.getOrElse(Nil),
-        contentType = optToSeq(contentType),
-        prodOffice = optToSeq(prodOffice)
-      )
+//      val cIds = if (composerId.nonEmpty) Some(composerId) else None
 
       val q = stubsQuery(query)
         // (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>

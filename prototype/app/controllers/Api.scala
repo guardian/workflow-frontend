@@ -71,12 +71,14 @@ object Api extends Controller with PanDomainAuthActions {
     val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
     val status = queryStringMultiOption(req.getQueryString("status"), StatusDatabase.find(_))
 
+    val queryData = WfQuery(section = sections,
+                            status  = status,
+                            contentType = contentType,
+                            prodOffice = prodOffice)
+
     def getContent = {
       val content = PostgresDB.getContent(
-        WfQuery(section = sections,
-                status  = status,
-                contentType = contentType,
-                prodOffice = prodOffice)
+        queryData
         // section = sections,
         // dueFrom = dueFrom,
         // dueUntil = dueUntil,
@@ -98,19 +100,19 @@ object Api extends Controller with PanDomainAuthActions {
       publishedContent ::: unpublishedContent
     }
 
-    def getStubs = {
-      CommonDB.getStubs(
-        dueFrom = dueFrom,
-        dueUntil = dueUntil,
-        // XXX TODO -> need to fix this
-        section = (if(sections.isEmpty) None else Some(sections)),
-        contentType = contentType.headOption,
-        prodOffice = prodOffice.headOption,
-        // XXX
-        unlinkedOnly = true,
-        createdFrom = createdFrom,
-        createdUntil = createdUntil).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
-    }
+    def getStubs =
+      CommonDB.getStubs(queryData)
+    //     dueFrom = dueFrom,
+    //     dueUntil = dueUntil,
+    //     // XXX TODO -> need to fix this
+    //     section = (if(sections.isEmpty) None else Some(sections)),
+    //     contentType = contentType.headOption,
+    //     prodOffice = prodOffice.headOption,
+    //     // XXX
+    //     unlinkedOnly = true,
+    //     createdFrom = createdFrom,
+    //     createdUntil = createdUntil).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
+    // }
 
     val stubs =
       if(status.isEmpty || status.exists(_ == models.Status("Stub")))
@@ -140,7 +142,13 @@ object Api extends Controller with PanDomainAuthActions {
 
   def stubs = APIAuthAction { implicit req =>
     stubFilters.bindFromRequest.fold(
-    formWithErrors => BadRequest(formWithErrors.errorsAsJson), { case (dueFrom, dueUntil) => Ok(renderJsonResponse(CommonDB.getStubs(dueFrom, dueUntil)))}
+      formWithErrors => BadRequest(formWithErrors.errorsAsJson), {
+        case (dueFrom, dueUntil) => Ok(renderJsonResponse(
+                                         CommonDB.getStubs(
+                                           WfQuery(dueTimes = List(WfQueryTime(dueFrom, dueUntil)))
+                                         )
+                                       ))
+      }
     )
   }
 
