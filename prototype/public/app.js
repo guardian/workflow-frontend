@@ -80,6 +80,10 @@ angular.module('workflow',
                     templateUrl: '/assets/layouts/dashboard/dashboard-toolbar.html',
                     controller: 'wfDashboardToolbarController'
                 },
+                'view-create': {
+                    templateUrl: '/assets/layouts/dashboard/dashboard-create.html',
+                    controller: 'wfDashboardToolbarController'
+                },
                 'view-user': {
                     templateUrl: '/assets/layouts/dashboard/dashboard-user.html',
                     controller: 'wfDashboardUserController'
