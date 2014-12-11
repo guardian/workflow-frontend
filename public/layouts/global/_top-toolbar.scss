@@ -61,12 +61,12 @@
     -ms-flex-positive: 1;
     flex-grow: 1;
     flex-shrink: 0;
-    flex-basis: 1084px;
 }
 
 .top-toolbar__user {
     text-align: right;
-    margin: auto 10px;
+    padding: 8px 15px;
+    border-left: 1px solid #bdbdbd;
 }
 
 .top-toolbar__user-link {
