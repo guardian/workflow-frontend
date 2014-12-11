@@ -1,4 +1,4 @@
-package lib
+package com.gu.workflow.query
 
 import scala.slick.ast.BaseTypedType
 import scala.slick.driver.PostgresDriver.simple._
