@@ -95,29 +95,45 @@ wfStubModal.run(['$rootScope',
             return sections.filter((section) => section.name === sectionName)[0];
         }
 
+        var lastUsedSection = 'Technology'; // tech by default
+
+        function defaultStub() {
+            function defaultSection() {
+                var filteredSection = currentFilteredSection(),
+                    splitSections;
+
+                if (!filteredSection) {
+                    return lastUsedSection;
+                }
+
+                splitSections = filteredSection.split(',');
+
+                if (splitSections.indexOf(lastUsedSection) !== -1) {
+                    return lastUsedSection;
+                }
+
+                return splitSections[0] || lastUsedSection;
+            }
+
+            return {
+                contentType: 'article',
+                section: getSectionFromSections(defaultSection()),
+                priority: 0,
+                needsLegal: 'NA',
+                prodOffice: currentFilteredOffice() ||  'UK' 
+            };
+        }
+
         $rootScope.$on('stub:edit', function (event, stub) {
             open(stub, 'edit');
         });
 
         $rootScope.$on('stub:create', function (event) {
-            var stub = {
-                contentType: 'article',
-                section: getSectionFromSections(currentFilteredSection() || 'Technology'),
-                priority: 0,
-                needsLegal: 'NA',
-                prodOffice: currentFilteredOffice() ||  'UK' 
-            };
-            open(stub, 'create');
+            open(defaultStub(), 'create');
         });
 
         $rootScope.$on('content:import', function (event) {
-            var stub = {
-                section: getSectionFromSections(currentFilteredSection() || 'Technology'),
-                priority: 0,
-                needsLegal: 'NA',
-                prodOffice: wfProdOfficeService.getDefaultOffice()
-            };
-            open(stub, 'import');
+            open(defaultStub(), 'import');
         });
 
         function open(stub, mode) {
@@ -146,6 +162,10 @@ wfStubModal.run(['$rootScope',
                 } else {
                     promise = wfContentService.createStub(stub,
                                                           stub.activeInInCopy);
+                }
+
+                if (stub.section) {
+                    lastUsedSection = stub.section.name;
                 }
 
                 promise.then(() => {
