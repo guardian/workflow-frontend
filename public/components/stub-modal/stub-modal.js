@@ -87,6 +87,10 @@ wfStubModal.run(['$rootScope',
             return wfFiltersService.get('section');
         }
 
+        function currentFilteredOffice() {
+            return wfFiltersService.get('prodOffice');
+        }
+
         function getSectionFromSections(sectionName) {
             return sections.filter((section) => section.name === sectionName)[0];
         }
@@ -101,7 +105,7 @@ wfStubModal.run(['$rootScope',
                 section: getSectionFromSections(currentFilteredSection() || 'Technology'),
                 priority: 0,
                 needsLegal: 'NA',
-                prodOffice: wfProdOfficeService.getDefaultOffice()
+                prodOffice: currentFilteredOffice() ||  'UK' 
             };
             open(stub, 'create');
         });
