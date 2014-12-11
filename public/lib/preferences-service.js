@@ -19,18 +19,19 @@ angular.module('wfPreferencesService', [])
                         self.preferences = data.data;
                         return self.preferences;
                     }, function error () {
-                        $log.error("Could not fetch preferences", arguments);
+                        $log.error('Could not fetch preferences', arguments);
                         return Promise.reject();
                     });
                 }
 
                 /**
                  * Return a request url using the app config
-                 * @param path String
-                 * @returns {String} url
+                 * @param user
+                 * @param prefKey
+                 * @returns {string}
                  */
-                url(path) {
-                    return _wfConfig.preferencesUrl + path;
+                url(user, prefKey) {
+                    return _wfConfig.preferencesUrl + user + '/workflow' + (prefKey ? '/' + prefKey : '');
                 }
 
                 /**
@@ -38,7 +39,7 @@ angular.module('wfPreferencesService', [])
                  * @returns {HttpPromise}
                  */
                 retrievePrefrences() {
-                    return $http.get(this.url("/preferences/" + this.user +"/workflow"), {
+                    return $http.get(this.url(this.user), {
                         withCredentials: true,
                         transformResponse: this.transformResponse // custom transform on data
                     });
@@ -52,9 +53,8 @@ angular.module('wfPreferencesService', [])
                  * @returns {Object} Parsed preference data narrowed to workflow prefs only
                  */
                 transformResponse(data, headersGetter) {
-                    data = JSON.parse(data).data;
+                    var wfPrefs = JSON.parse(data).data;
 
-                    var wfPrefs = data; // strip out all but WF prefs
                     for (var key in wfPrefs) {
                         if (wfPrefs.hasOwnProperty(key)) {
                             wfPrefs[key] = JSON.parse(wfPrefs[key]); // Parse all values to js objects as prefs returns a string here
@@ -71,7 +71,7 @@ angular.module('wfPreferencesService', [])
                 packageData(data) {
                     return {
                         data: {
-                            value: JSON.stringify(data),
+                            value: JSON.stringify(data)
                         }
                     }
                 }
@@ -84,7 +84,7 @@ angular.module('wfPreferencesService', [])
                  */
                 setPreference(name, data) {
                     return $http.put(
-                        this.url("/preferences/"+ this.user +"/workflow/" + name),
+                        this.url(this.user, name),
                         this.packageData(data),
                         {
                             withCredentials: true
