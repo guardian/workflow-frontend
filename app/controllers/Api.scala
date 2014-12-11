@@ -128,16 +128,15 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
 
-
   def createContent() = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
       contentItem <- extract[ContentItem](jsValue).right
     } yield {
-       PostgresDB.createContent(contentItem) match {
-         case Left(stubId) => Conflict(renderCreateJson(stubId, "conflict"))
-         case Right(stubId) => Created(renderCreateJson(stubId, "created"))
-       }
+      PostgresDB.createContent(contentItem) match {
+        case Left(stubId) => Conflict(renderCreateJson(stubId, "conflict"))
+        case Right(stubId) => Created(renderCreateJson(stubId, "created"))
+      }
     }).merge
   }
 
