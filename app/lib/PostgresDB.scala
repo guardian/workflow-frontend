@@ -9,6 +9,7 @@ import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
 import com.gu.workflow.db.CommonDB._
+import com.gu.workflow.query._
 
 object PostgresDB {
 
@@ -66,7 +67,9 @@ object PostgresDB {
 //        stubs.filter( _.section inSet q.section.map(_.name))
       //        stubs
 
-      val contentQuery = content
+      val contentQuery = content |>
+        inSet(q.status.map(_.toString),  _.status) |>
+        inSet(q.contentType, _.contentType)
 
       val query = for {
         s <- stubsQuery
@@ -90,7 +93,7 @@ object PostgresDB {
 
           DashboardRow(stub, content)
       }
-      println(s"res ${res}")
+      //println(s"res ${res}")
       return res
     }
 

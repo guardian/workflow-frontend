@@ -30,6 +30,11 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                                                      filter.value));
             };
 
+            $scope.defaultClick = function(filter) {
+                $scope.selectedFilters = [];
+                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
+            }
+            
             $scope.filterClick = function(filter) {
                 if($scope.filterIsSelected(filter)) {
                     $scope.selectedFilters =
@@ -38,7 +43,6 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 } else {
                     $scope.selectedFilters.push(filter.value);
                 }
-                console.log("filterClick, new filters:", $scope.selectedFilters);
                 $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
             };
 
