@@ -2,20 +2,20 @@
 
 // Styles for presence indicators
 
-$topIconOffset: 8px;
-$rightIconOffset: 14px;
-$iconsToStack: 8;
-$iconExpandIntervalDistance: 24;
-$stackColorLightenIncrement: 14%;
-$iconAnimationTransTime: 0.5s;
-$iconAnimationEasingFunction: ease-in-out;
-
 // Compact view
 
 .content-list--compact {
     $topIconOffset: 3px;
     $rightIconOffset: 8px;
 }
+
+$topIconOffset: 8px !default;
+$rightIconOffset: 14px !default;
+$iconsToStack: 8;
+$iconExpandIntervalDistance: 24;
+$stackColorLightenIncrement: 14%;
+$iconAnimationTransTime: 0.5s;
+$iconAnimationEasingFunction: ease-in-out;
 
 
 .content-list-item__presence {
