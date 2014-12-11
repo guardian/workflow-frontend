@@ -2,7 +2,7 @@ package com.gu.workflow.query
 
 import scala.slick.ast.BaseTypedType
 import scala.slick.driver.PostgresDriver.simple._
-import scala.slick.lifted.{Query, Column, ExtensionMethodConversions}
+import scala.slick.lifted.{Query, Column}
 import models._
 import org.joda.time.DateTime
 
@@ -28,12 +28,18 @@ object WfQuery {
   def inSet[A : BaseTypedType, DB, Row](options: Seq[A],
                                             getField: DB => Column[A]):
       (Query[DB, Row]) => Query[DB, Row] = options match {
-
     // no options provided, return query unchanged
     case Nil  => (startQuery => startQuery)
-    case opts => { startQuery => 
-      startQuery.filter(table => getField(table) inSet options)
-    }
+    case opts => (startQuery => startQuery.filter(table => getField(table) inSet options))
+  }
+
+  // can I find a better way to implement the option logic?
+  def optInSet[A : BaseTypedType, DB, Row](options: Seq[A],
+                                              getField: DB => Column[Option[A]]):
+      (Query[DB, Row]) => Query[DB, Row] = options match {
+    case Nil  => (startQuery => startQuery)
+    case opts => (startQuery => startQuery.filter(table => getField(table).isNotNull
+                                                    && (getField(table).get inSet options)))
   }
 
   def optToSeq[A](o: Option[A]): Seq[A] =

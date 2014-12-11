@@ -6,13 +6,21 @@ import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time._
 import com.gu.workflow.syntax._
 import models._
+import com.gu.workflow.query._
 import com.gu.workflow.db.Schema._
-
 
 object CommonDB {
 
   import play.api.Play.current
   import play.api.db.slick.DB
+  import WfQuery._
+
+  def stubsQuery(q: WfQuery) = {
+    stubs |>
+      inSet(q.section.map(_.toString), _.section) |>
+      optInSet(q.contentType, _.contentType) |>
+    inSet(q.prodOffice, _.prodOffice)
+  }
 
   def getStubs(
                 dueFrom: Option[DateTime] = None,
@@ -26,19 +34,24 @@ object CommonDB {
                 createdUntil: Option[DateTime] = None
                 ): List[Stub] =
     DB.withTransaction { implicit session =>
-
       val cIds = if (composerId.nonEmpty) Some(composerId) else None
 
-      val q =
-        (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
-          dueFrom.foldl[StubQuery]     ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-          dueUntil.foldl[StubQuery]    ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>
-          contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
-          cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids)) |>
-          prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
-          createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
-          createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
+      val query = WfQuery(
+        section = section.getOrElse(Nil),
+        contentType = optToSeq(contentType),
+        prodOffice = optToSeq(prodOffice)
+      )
+
+      val q = stubsQuery(query)
+        // (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
+        //   dueFrom.foldl[StubQuery]     ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
+        //   dueUntil.foldl[StubQuery]    ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
+        //   section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>
+        //   contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
+        //   cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids)) |>
+        //   prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
+        //   createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
+        //   createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
 
       q.filter(s => dueDateNotExpired(s.due))
         .list.map(row => Stub.fromStubRow(row))
