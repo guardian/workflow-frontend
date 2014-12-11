@@ -187,7 +187,10 @@
         }
 
         &--presence,
-        &--assignee,
+        &--assignee {
+            min-width: 28px;
+        }
+
         &--office {
             width: 30px;
         }
