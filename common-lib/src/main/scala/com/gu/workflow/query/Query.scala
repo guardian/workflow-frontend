@@ -25,23 +25,20 @@ case class WfQuery(
 )
 
 object WfQuery {
-  def inSet[A : BaseTypedType, DB, Row](options: Seq[A],
-                                            getField: DB => Column[A]):
+  def searchSet[A, DB, Row](options: Seq[_], getField: DB => Column[A])(pred: Column[A] => Column[Boolean]):
       (Query[DB, Row]) => Query[DB, Row] = options match {
-    // no options provided, return query unchanged
     case Nil  => (startQuery => startQuery)
-    case opts => (startQuery => startQuery.filter(table => getField(table) inSet options))
+    case opts => (startQuery => startQuery.filter(table => pred(getField(table))))
   }
 
+  def simpleInSet[A : BaseTypedType, DB, Row](options: Seq[A])(getField: DB => Column[A]):
+      (Query[DB, Row]) => Query[DB, Row] =
+    searchSet(options, getField)(_ inSet options)
+
   // can I find a better way to implement the option logic?
-  def optInSet[A : BaseTypedType, DB, Row](options: Seq[A],
-                                              getField: DB => Column[Option[A]]):
-      (Query[DB, Row]) => Query[DB, Row] = options match {
-    case Nil  => (startQuery => startQuery)
-    case opts => (startQuery => startQuery
-                    .filter(table => getField(table).isNotNull)
-                    .filter(table => getField(table) inSet options))
-  }
+  def optInSet[A : BaseTypedType, DB, Row](options: Seq[A])(getField: DB => Column[Option[A]]):
+      (Query[DB, Row]) => Query[DB, Row] =
+      searchSet(options, getField)(col => (col inSet options).isNotNull)
 
   def optToSeq[A](o: Option[A]): Seq[A] =
     o map (List(_)) getOrElse Nil

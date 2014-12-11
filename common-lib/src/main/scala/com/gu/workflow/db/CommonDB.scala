@@ -16,9 +16,9 @@ object CommonDB {
   import WfQuery._
 
   def stubsQuery(q: WfQuery) = stubs |>
-    inSet(q.section.map(_.toString), _.section) |>
-    optInSet(q.contentType, _.contentType) |>
-    inSet(q.prodOffice, _.prodOffice)
+    simpleInSet(q.section.map(_.toString))(_.section) |>
+    optInSet(q.contentType)(_.contentType) |>
+    simpleInSet(q.prodOffice)(_.prodOffice)
 
   def getStubs(
     query: WfQuery
