@@ -38,7 +38,7 @@ angular.module('wfPreferencesService', [])
                  * @returns {HttpPromise}
                  */
                 retrievePrefrences() {
-                    return $http.get(this.url("/preferences/" + this.user), {
+                    return $http.get(this.url("/preferences/" + this.user +"/workflow"), {
                         withCredentials: true,
                         transformResponse: this.transformResponse // custom transform on data
                     });
@@ -53,7 +53,8 @@ angular.module('wfPreferencesService', [])
                  */
                 transformResponse(data, headersGetter) {
                     data = JSON.parse(data).data;
-                    var wfPrefs = data.preferences.workflow; // strip out all but WF prefs
+
+                    var wfPrefs = data; // strip out all but WF prefs
                     for (var key in wfPrefs) {
                         if (wfPrefs.hasOwnProperty(key)) {
                             wfPrefs[key] = JSON.parse(wfPrefs[key]); // Parse all values to js objects as prefs returns a string here
@@ -71,7 +72,6 @@ angular.module('wfPreferencesService', [])
                     return {
                         data: {
                             value: JSON.stringify(data),
-                            namespace: "workflow"
                         }
                     }
                 }
@@ -83,8 +83,8 @@ angular.module('wfPreferencesService', [])
                  * @returns {HttpPromise}
                  */
                 setPreference(name, data) {
-                    return $http.post(
-                        this.url("/preference/" + name),
+                    return $http.put(
+                        this.url("/preferences/"+ this.user +"/workflow/" + name),
                         this.packageData(data),
                         {
                             withCredentials: true
