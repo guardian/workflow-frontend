@@ -18,6 +18,11 @@
     &--selected {
         background-color: $c-grey-200;
     }
+    
+    &:hover {
+        background-color: $c-grey-150;
+    }
+    
     &__notifier {
         width: 4px;
     }
