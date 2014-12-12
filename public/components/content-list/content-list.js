@@ -57,6 +57,7 @@ function wfContentListController($rootScope, $scope, statuses, sections, wfConte
         $rootScope.$emit('contentItem.columnsChanged');
     };
 
+    this.compact = false;
     this.showHeadline = false;
 
     this.newItem = function () {
