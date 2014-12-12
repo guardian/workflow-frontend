@@ -242,7 +242,16 @@ object PostgresDB {
 
   def deleteStub(id: Long) {
     DB.withTransaction { implicit session =>
-      stubs.filter(_.pk === id).delete
+
+      archiveContentQuery((s, c) => s.pk === id)
+
+      val queryCurrentStub = stubs.filter(_.pk === id)
+
+      // Delete from Content table
+      content.filter(c => c.composerId in queryCurrentStub.map(_.composerId)).delete
+
+      // Delete from Stub table
+      queryCurrentStub.delete
     }
   }
 
