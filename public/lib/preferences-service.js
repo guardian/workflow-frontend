@@ -31,7 +31,7 @@ angular.module('wfPreferencesService', [])
                  * @returns {string}
                  */
                 url(user, prefKey) {
-                    return _wfConfig.preferencesUrl + user + '/workflow' + (prefKey ? '/' + prefKey : '');
+                    return _wfConfig.preferencesUrl + '/' + user + '/workflow' + (prefKey ? '/' + prefKey : '');
                 }
 
                 /**
@@ -53,14 +53,18 @@ angular.module('wfPreferencesService', [])
                  * @returns {Object} Parsed preference data narrowed to workflow prefs only
                  */
                 transformResponse(data, headersGetter) {
-                    var wfPrefs = JSON.parse(data).data;
+                    if (data) {
+                        var wfPrefs = JSON.parse(data).data;
 
-                    for (var key in wfPrefs) {
-                        if (wfPrefs.hasOwnProperty(key)) {
-                            wfPrefs[key] = JSON.parse(wfPrefs[key]); // Parse all values to js objects as prefs returns a string here
+                        for (var key in wfPrefs) {
+                            if (wfPrefs.hasOwnProperty(key)) {
+                                wfPrefs[key] = JSON.parse(wfPrefs[key]); // Parse all values to js objects as prefs returns a string here
+                            }
                         }
+                        return wfPrefs;
+                    } else {
+                        return null;
                     }
-                    return wfPrefs;
                 }
 
                 /**
@@ -105,7 +109,12 @@ angular.module('wfPreferencesService', [])
                         return Promise.resolve(this.preferences[name]);
                     } else {
                         return this.prefsPromise.then(function resolve (data) {
-                            return data[name];
+                            if (data[name]) {
+                                return data[name];
+                            } else {
+                                $log.info('No preference set for: ' + name);
+                                return Promise.reject();
+                            }
                         }, function reject () {
                             return Promise.reject();
                         });
