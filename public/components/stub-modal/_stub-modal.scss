@@ -1,0 +1,70 @@
+%modal-body__header-select-icon {
+    &::before {
+        content: " ";
+        background: $i-arrow-down right no-repeat transparent;
+        background-size: 12px;
+        width: 13px;
+        height: 12px;
+        display: inline-block;
+        margin: 0 5px 0 0;
+        position: relative;
+        top: 2px;
+
+        -webkit-transition: transform 0.25s ease-in-out;
+        -moz-transition: transform 0.25s ease-in-out;
+        -ms-transition: transform 0.25s ease-in-out;
+        -o-transition: transform 0.25s ease-in-out;
+        transition: transform 0.25s ease-in-out;
+    }
+}
+
+.modal-body__header {
+    background-color: $c-grey-100;
+    border-bottom: 1px solid $c-grey-200; 
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0px;
+}
+
+.modal-body__header-expander {
+    @extend %modal-body__header-select-icon;
+    @extend %fs-data-1;
+
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 6px 0 5px 5px;
+    font-weight: bold;
+    margin: 0;
+
+    &:hover, &:focus {
+        text-decoration: none;
+    }
+
+    &::before {
+        transform: rotate(-90deg);
+    }
+    &--open::before {
+        transform: rotate(0deg);
+    }
+}
+
+.modal-body__advanced {
+    margin-top:0px;
+    padding: 0px 15px;
+    max-height: 0px;
+    opacity:0;
+
+    overflow: hidden;
+
+    -webkit-transition: all 0.25s;
+    -moz-transition: all 0.25s;
+    transition: all 0.25s;    
+}
+
+.modal-body__advanced--open {
+    margin-top: 15px;
+    max-height: 250px;
+    opacity:1;
+
+    overflow: visible;
+}
