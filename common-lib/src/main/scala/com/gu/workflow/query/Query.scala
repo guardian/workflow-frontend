@@ -29,6 +29,7 @@ case class WfQuery(
 
 object WfQuery {
   // correctly typed shorthand
+  private val TrueCol: Column[Boolean] = LiteralColumn(true)
 
   def searchSet[A, DB, Row](options: Seq[_], getField: DB => A)(pred: A => Column[Boolean]):
       (Query[DB, Row]) => Query[DB, Row] = options match {
@@ -44,6 +45,20 @@ object WfQuery {
   def optInSet[A : BaseTypedType, DB, Row](options: Seq[A])(getField: DB => Column[Option[A]]):
       (Query[DB, Row]) => Query[DB, Row] =
     searchSet(options, getField)(col => (col inSet options).getOrElse(false))
+
+  def dateInSet[A : BaseTypedType, DB, Row](options: Seq[WfQueryTime])
+               (getField: DB => (Column[DateTime], Column[DateTime])):
+       (Query[DB, Row]) => Query[DB, Row] =
+    searchSet(options, getField) { case (startDate, finishDate) =>
+      // build up a query that compares each dateblock to the date
+      // either of the date boundaries might be missing, in which
+      // case, we want to return true
+      options.foldLeft(TrueCol) { (sofar, dateblock) =>
+        sofar &&
+          (startDate  >= dateblock.from ).getOrElse(true) &&
+          (finishDate <= dateblock.until).getOrElse(true)
+      }
+    }
 
   def optToSeq[A](o: Option[A]): Seq[A] =
     o map (List(_)) getOrElse Nil
