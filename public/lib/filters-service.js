@@ -41,7 +41,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
-                $rootScope.$on('filtersChanged.selectedDate', function(event, data) {
+                $rootScope.$on('filtersChanged.deadline', function(event, data) { // TODO: fix deadline/selectedDate namespacing
                     self.update('selectedDate', data);
                     $rootScope.$broadcast('getContent');
                 });
