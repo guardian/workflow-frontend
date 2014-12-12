@@ -16,7 +16,8 @@ object CommonDB {
   import WfQuery._
 
   def getStubs(
-    query: WfQuery
+    query: WfQuery,
+    unlinkedOnly: Boolean = false
                 // dueFrom: Option[DateTime] = None,
                 // dueUntil: Option[DateTime] = None,
                 // section: Option[List[Section]] = None,
@@ -30,8 +31,8 @@ object CommonDB {
     DB.withTransaction { implicit session =>
 //      val cIds = if (composerId.nonEmpty) Some(composerId) else None
 
-      val q = stubsQuery(query)
-        // (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
+      val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isNull) else stubsQuery(query)
+
         //   dueFrom.foldl[StubQuery]     ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
         //   dueUntil.foldl[StubQuery]    ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
         //   section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>

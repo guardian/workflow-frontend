@@ -104,7 +104,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
 
     def getStubs =
-      CommonDB.getStubs(queryData)
+      CommonDB.getStubs(queryData, unlinkedOnly = true)
 
     //     dueFrom = dueFrom,
     //     dueUntil = dueUntil,
