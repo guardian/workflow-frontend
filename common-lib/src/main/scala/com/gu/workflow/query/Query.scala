@@ -29,7 +29,8 @@ case class WfQuery(
 
 object WfQuery {
   // correctly typed shorthand
-  private val TrueCol: Column[Boolean] = LiteralColumn(true)
+  private val TrueCol : Column[Boolean] = LiteralColumn(true)
+  private val FalseCol: Column[Boolean] = LiteralColumn(false)
 
   def searchSet[A, DB, Row](options: Seq[_], getField: DB => A)(pred: A => Column[Boolean]):
       (Query[DB, Row]) => Query[DB, Row] = options match {
@@ -46,17 +47,18 @@ object WfQuery {
       (Query[DB, Row]) => Query[DB, Row] =
     searchSet(options, getField)(col => (col inSet options).getOrElse(false))
 
-  def dateInSet[A : BaseTypedType, DB, Row](options: Seq[WfQueryTime])
-               (getField: DB => (Column[DateTime], Column[DateTime])):
+
+  def dateInSet[DB, Row](options: Seq[WfQueryTime])
+               (getField: DB => Column[Option[DateTime]]):
        (Query[DB, Row]) => Query[DB, Row] =
-    searchSet(options, getField) { case (startDate, finishDate) =>
+    searchSet(options, getField) { date =>
       // build up a query that compares each dateblock to the date
       // either of the date boundaries might be missing, in which
       // case, we want to return true
-      options.foldLeft(TrueCol) { (sofar, dateblock) =>
-        sofar &&
-          (startDate  >= dateblock.from ).getOrElse(true) &&
-          (finishDate <= dateblock.until).getOrElse(true)
+      options.foldLeft(FalseCol) { (sofar, dateblock) =>
+        sofar || (!date.isNull &&
+          (date >= dateblock.from).getOrElse(true) &&
+             (date < dateblock.until).getOrElse(true))
       }
     }
 
@@ -96,11 +98,11 @@ object WfQuery {
   def stubsQuery(q: WfQuery) = stubs |>
     simpleInSet(q.section.map(_.toString))(_.section) |>
     optInSet(q.contentType)(_.contentType) |>
-    simpleInSet(q.prodOffice)(_.prodOffice)
+    simpleInSet(q.prodOffice)(_.prodOffice) |>
+    dateInSet(q.dueTimes)(_.due)
 
   def contentQuery(q: WfQuery) = content |>
-        simpleInSet(q.status.map(_.toString))(_.status) |>
-        simpleInSet(q.contentType)(_.contentType) //|>
-//        dateInSet(q.dueTimes)(_.due
+    simpleInSet(q.status.map(_.toString))(_.status) |>
+    simpleInSet(q.contentType)(_.contentType)
 
 }
