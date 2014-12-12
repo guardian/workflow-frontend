@@ -26,15 +26,18 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             }
 
             $scope.filterIsSelected = function(filter) {
-                return (filter != null && _.contains($scope.selectedFilters,
-                                                     filter.value));
+                if($scope.selectedFilters.length < 1)
+                    return filter.value === $scope.defaultFilter.value
+                else
+                    return (filter != null && _.contains($scope.selectedFilters, filter.value));
             };
 
-            $scope.defaultClick = function(filter) {
+            $scope.defaultFilterClick = function(filter) {
+                // this is a replace operartion, instead of an add
                 $scope.selectedFilters = [];
                 $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
             }
-            
+
             $scope.filterClick = function(filter) {
                 if($scope.filterIsSelected(filter)) {
                     $scope.selectedFilters =
