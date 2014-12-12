@@ -71,10 +71,13 @@ object Api extends Controller with PanDomainAuthActions {
     val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
     val status = queryStringMultiOption(req.getQueryString("status"), StatusDatabase.find(_))
 
-    val queryData = WfQuery(section = sections,
-                            status  = status,
-                            contentType = contentType,
-                            prodOffice = prodOffice)
+    val queryData = WfQuery(
+      section     = sections,
+      status      = status,
+      contentType = contentType,
+      prodOffice  = prodOffice,
+      dueTimes    = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil)
+    )
 
     def getContent = {
       val content = PostgresDB.getContent(
