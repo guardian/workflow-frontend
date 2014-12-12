@@ -15,11 +15,6 @@ object CommonDB {
   import play.api.db.slick.DB
   import WfQuery._
 
-  def stubsQuery(q: WfQuery) = stubs |>
-    simpleInSet(q.section.map(_.toString))(_.section) |>
-    optInSet(q.contentType)(_.contentType) |>
-    simpleInSet(q.prodOffice)(_.prodOffice)
-
   def getStubs(
     query: WfQuery
                 // dueFrom: Option[DateTime] = None,
@@ -102,7 +97,7 @@ object CommonDB {
       content += WorkflowContent.newContentRow(wc, revision)
   }
 
-  def takeDownContent(composerId: String, t: Option[DateTime]) = { 
+  def takeDownContent(composerId: String, t: Option[DateTime]) = {
     DB.withTransaction { implicit session =>
       content
         .filter(_.composerId === composerId)

@@ -2,9 +2,12 @@ package com.gu.workflow.query
 
 import scala.slick.ast.BaseTypedType
 import scala.slick.driver.PostgresDriver.simple._
+import com.github.tototoshi.slick.PostgresJodaSupport._
 import scala.slick.lifted.{Query, Column}
 import models._
 import org.joda.time.DateTime
+import com.gu.workflow.db.Schema.{stubs, content}
+import com.gu.workflow.syntax._
 
 case class WfQueryTime(
   from  : Option[DateTime],
@@ -25,7 +28,9 @@ case class WfQuery(
 )
 
 object WfQuery {
-  def searchSet[A, DB, Row](options: Seq[_], getField: DB => Column[A])(pred: Column[A] => Column[Boolean]):
+  // correctly typed shorthand
+
+  def searchSet[A, DB, Row](options: Seq[_], getField: DB => A)(pred: A => Column[Boolean]):
       (Query[DB, Row]) => Query[DB, Row] = options match {
     case Nil  => (startQuery => startQuery)
     case opts => (startQuery => startQuery.filter(table => pred(getField(table))))
@@ -72,5 +77,15 @@ object WfQuery {
     optToSeq(prodOffice),
     dateTimeToQueryTime(createdFrom, createdUntil)
   )
+
+  def stubsQuery(q: WfQuery) = stubs |>
+    simpleInSet(q.section.map(_.toString))(_.section) |>
+    optInSet(q.contentType)(_.contentType) |>
+    simpleInSet(q.prodOffice)(_.prodOffice)
+
+  def contentQuery(q: WfQuery) = content |>
+        simpleInSet(q.status.map(_.toString))(_.status) |>
+        simpleInSet(q.contentType)(_.contentType) //|>
+//        dateInSet(q.dueTimes)(_.due
 
 }
