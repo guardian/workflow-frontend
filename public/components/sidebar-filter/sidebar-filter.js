@@ -4,7 +4,7 @@ import _ from 'lodash';
 import 'lib/filters-service';
 
 angular.module('wfSidebarFilter', ['wfFiltersService'])
-    .directive('wfSidebarFilter', ['wfFiltersService', function (wfFiltersService) {
+    .directive('wfSidebarFilter', ['wfFiltersService', '$injector', function (wfFiltersService, $injector) {
 
     return {
         restrict: 'E',
@@ -23,6 +23,16 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 $scope.selectedFilters = [];
             } else {
                 $scope.selectedFilters = currentSelection.split(",")
+            }
+
+            if ($scope.filter.customLinkFunction) { // Custom linking function for non-standard filters
+                $injector.invoke(
+                    $scope.filter.customLinkFunction, // function
+                    this, // scope for execution
+                    {
+                        '$scope': $scope // local variables to be used before dependency resolution
+                    }
+                );
             }
 
             $scope.filterIsSelected = function(filter) {
