@@ -38,7 +38,7 @@ object WfQuery {
   // can I find a better way to implement the option logic?
   def optInSet[A : BaseTypedType, DB, Row](options: Seq[A])(getField: DB => Column[Option[A]]):
       (Query[DB, Row]) => Query[DB, Row] =
-      searchSet(options, getField)(col => (col inSet options).isNotNull)
+    searchSet(options, getField)(col => (col inSet options).getOrElse(false))
 
   def optToSeq[A](o: Option[A]): Seq[A] =
     o map (List(_)) getOrElse Nil
