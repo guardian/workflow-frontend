@@ -85,7 +85,7 @@ object PostgresDB {
       //     DashboardRow(stub, content)
       // }
 
-      val res = query.filter( {case (s,c) => displayContentItem(s, c) })
+      query.filter( {case (s,c) => displayContentItem(s, c) })
            .list.map {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
@@ -93,8 +93,6 @@ object PostgresDB {
 
           DashboardRow(stub, content)
       }
-      //println(s"res ${res}")
-      return res
     }
 
   private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
