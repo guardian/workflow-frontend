@@ -95,6 +95,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.deadline = item.due;
             this.created = item.createdAt;
             this.lastModified = item.lastModified;
+            this.lastModifiedBy = item.lastModifiedBy;
 
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
