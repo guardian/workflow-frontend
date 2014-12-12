@@ -52,14 +52,19 @@
     margin-top:0px;
     padding: 0px 15px;
     max-height: 0px;
+    opacity:0;
+
     overflow: hidden;
 
-    -webkit-transition: all 0.8s;
-    -moz-transition: all 0.8s;
-    transition: all 0.8s;    
+    -webkit-transition: all 0.25s;
+    -moz-transition: all 0.25s;
+    transition: all 0.25s;    
 }
 
 .modal-body__advanced--open {
     margin-top: 15px;
     max-height: 250px;
+    opacity:1;
+
+    overflow: visible;
 }
