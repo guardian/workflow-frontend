@@ -156,7 +156,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 //     and cannot be overridden.
 // Note: couldn't include this rule in partials due to :-moz-any(&) causing
 //       Segmentation Fault error in lib-sass
-:-moz-any(.dashboard-toolbar__prod-office-select, .dashboard-toolbar__section-select, .sidebar__filter__deadline-select) {
+:-moz-any(.dashboard-toolbar__prod-office-select, .dashboard-toolbar__section-select) {
     padding-left: 1px;
     padding-right: 2px;
 }

@@ -1,6 +1,7 @@
 <div class="sidebar__section">
     <div class="sidebar__header" ng-click="toggleSidebarSection()">
         <h5 class="query sidebar__heading" data-toggle="collapse" data-target="#type" ng-class="{'sidebar__heading--open': listIsOpen}">{{ filter.title }}</h5>
+        <div class="sidebar__header-spacer"></div>
         <div ng-class="{'sidebar__filter--active': filterIsSelected(defaultFilter)}" class="sidebar__filter sidebar__filter--default">
             <a href="" class="sidebar__filter-link" ng-click="filterClick(defaultFilter); $event.stopPropagation();">{{defaultFilter.caption}}</a>
         </div>
@@ -12,7 +13,7 @@
                 <i class="sidebar__filter-icon" ng-if="filterOption.icon" wf-icon="{{filterOption.icon}}"></i>
                 {{filterOption.caption}}
             </a>
-            <div ng-switch-when="true">
+            <div ng-switch-when="true" class="sidebar__filter-custom--{{ filterOption.value }}">
                 <div ng-include="filterOption.url"></div>
             </div>
         </li>
