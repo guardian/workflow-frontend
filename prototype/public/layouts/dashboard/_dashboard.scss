@@ -1,6 +1,7 @@
 /**
  * Dashboard layout styles.
  */
+@import "layouts/global/vars";
 @import "components/content-list/content-list";
 @import "components/content-list-item/content-list-item";
 @import "components/presence-indicator/presence-indicators";
@@ -10,6 +11,7 @@
 @import "sidebar";
 @import "toolbar";
 @import "components/toolbar-sections-dropdown/toolbar-sections-dropdown";
+@import "components/stub-modal/stub-modal";
 
 .content-list-column {
     overflow: auto;
