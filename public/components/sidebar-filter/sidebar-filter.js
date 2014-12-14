@@ -16,6 +16,13 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         },
         link: function ($scope, elem, attrs) {
 
+            function isMultiSelect() {
+                if(typeof $scope.filter["multi"] === "boolean")
+                    return $scope.filter["multi"]
+                else
+                    return false
+            }
+
             $scope.defaultFilter = { caption: "All", value: null };
             var currentSelection = wfFiltersService.get($scope.filter.namespace);
 
@@ -48,13 +55,21 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
             }
 
+            $scope.selectFilter = function(filter) {
+                if(isMultiSelect()) {
+                    $scope.selectedFilters.push(filter);
+                } else {
+                    $scope.selectedFilters = [filter];
+                }
+            }
+
             $scope.filterClick = function(filter) {
                 if($scope.filterIsSelected(filter)) {
                     $scope.selectedFilters =
                         _.filter($scope.selectedFilters,
                                  flt => flt !== filter.value);
                 } else {
-                    $scope.selectedFilters.push(filter.value);
+                    $scope.selectFilter(filter.value);
                 }
                 $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
             };
