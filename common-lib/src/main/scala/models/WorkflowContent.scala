@@ -60,6 +60,25 @@ object WorkflowContent {
     )
   }
 
+  def default(composerId: String, contentType: String = "article", activeInInCopy: Boolean = false): WorkflowContent = {
+    WorkflowContent(composerId,
+      path=None,
+      headline=None,
+      mainMedia=None,
+      contentType=contentType,
+      section=None,
+      status=Status.Writers,
+      lastModified=new DateTime,
+      lastModifiedBy=None,
+      commentable=false,
+      published=false,
+      timePublished=None,
+      storyBundleId=None,
+      activeInInCopy=activeInInCopy,
+      takenDown=false,
+      timeTakenDown=None)
+  }
+
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
           headline, mainMedia, published, timePublished, _, storyBundleId, activeInInCopy,
