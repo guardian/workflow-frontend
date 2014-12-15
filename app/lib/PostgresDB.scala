@@ -1,5 +1,6 @@
 package lib
 
+import models.ApiResponse.ApiResponse
 import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
@@ -99,13 +100,13 @@ object PostgresDB {
    * @return Either: Left(Long) if item exists already with composerId.
    *         Right(Long) of newly created item.
    */
-  def createContent(contentItem: ContentItem): Either[Long,Long] = {
+  def createContent(contentItem: ContentItem): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
 
       val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
 
       existing match {
-        case Some(stubId) => Left(stubId)
+        case Some(stubId) => Left(ApiError("StubExists",s"Stub ${stubId} already exists", 409, "conflict"))
         case None => {
           contentItem.wcOpt.foreach(
             content += WorkflowContent.newContentRow(_, None)
