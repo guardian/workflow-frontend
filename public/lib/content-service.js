@@ -12,6 +12,14 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
             var httpRequest = wfHttpSessionService.request;
 
             class ContentService {
+                getTypes() {
+                    return { 
+                        "article": "Article",
+                        "liveblog": "Live blog",
+                        "gallery": "Gallery",
+                        "interactive": "Interactive"
+                    }
+                };
 
                 /**
                  * Async retrieves content from service.

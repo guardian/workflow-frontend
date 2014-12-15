@@ -20,21 +20,12 @@
                 <select id="stub_section" name="section" ng-model="stub.section" ng-options="section.name for section in sections"></select>
             </div>
             <div class="pull-right">
-                <label>Content type</label>
-                <select ng-model="stub.contentType">
-                    <option value=""></option>
-                    <option value="article">Article</option>
-                    <option value="liveblog">Live blog</option>
-                    <option value="gallery">Gallery</option>
-                    <option value="interactive">Interactive</option>
+                <label>Production Office</label>
+                <select ng-model="stub.prodOffice"
+                    ng-options="office.value as office.name for office in prodOffices">
                 </select>
+    
             </div>
-        </div>
-        <div class="form-group">
-            <label>Production Office</label>
-            <select ng-model="stub.prodOffice"
-                ng-options="office.value as office.name for office in prodOffices">
-            </select>
         </div>
     </div>    
     <div class="modal-body modal-body__header" ng-click="expanded = !expanded">
@@ -73,14 +64,18 @@
         </div>
     </div>
     <div class="modal-footer" ng-if="mode !== 'import'">
-        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" ng-click="delete()" ng-if="stub.id">Delete</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-        <button type="button" class="btn btn-default" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid">
-            Create in Composer
-        </button>
-        <button type="submit" class="btn btn-primary" ng-click="ok(addToComposer=false)" ng-disabled="stubForm.$invalid">
-            Save stub
-        </button>
+        <div class="pull-left">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" ng-click="delete()" ng-if="stub.id">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+            <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=false)" ng-disabled="stubForm.$invalid">
+                Save stub
+            </button>
+        </div>
+        <div class="pull-right">
+            <button type="button" class="btn btn-primary" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid">
+                Create
+            </button>
+        </div>
     </div>
     <div class="modal-footer" ng-if="mode === 'import'">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
