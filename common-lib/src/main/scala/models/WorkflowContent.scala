@@ -96,9 +96,16 @@ object WorkflowContent {
       )(WorkflowContent.apply _)
 }
 
-
 case class ContentItem(stub: Stub, wcOpt: Option[WorkflowContent])
 
 case object ContentItem {
-  implicit val contentItemReads = Json.reads[ContentItem]
+  implicit val contentItemReads = new Reads[ContentItem] {
+    def reads(json: JsValue) = {
+      for {
+        stub <- json.validate[Stub]
+        wcOpt <- json.validate[Option[WorkflowContent]]
+      } yield ContentItem(stub, wcOpt)
+    }
+  }
 }
+
