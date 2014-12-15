@@ -7,7 +7,7 @@ import scala.slick.lifted.{Query, Column}
 import models._
 import models.Flag.Flag
 import org.joda.time.DateTime
-import com.gu.workflow.db.Schema.{stubs, content, flagColumnType}
+import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
 
 case class WfQueryTime(
@@ -109,5 +109,6 @@ object WfQuery {
 
   def contentQuery(q: WfQuery) = content |>
     simpleInSet(q.status.map(_.toString))(_.status) |>
-    simpleInSet(q.contentType)(_.contentType)
+    simpleInSet(q.contentType)(_.contentType) |>
+    q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published))
 }
