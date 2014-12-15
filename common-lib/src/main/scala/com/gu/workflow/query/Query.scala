@@ -99,10 +99,10 @@ object WfQuery {
     simpleInSet(q.section.map(_.toString))(_.section) |>
     optInSet(q.contentType)(_.contentType) |>
     simpleInSet(q.prodOffice)(_.prodOffice) |>
-    dateInSet(q.dueTimes)(_.due)
+    dateInSet(q.dueTimes)(_.due) |>
+    dateInSet(q.creationTimes)(_.createdAt)
 
   def contentQuery(q: WfQuery) = content |>
     simpleInSet(q.status.map(_.toString))(_.status) |>
     simpleInSet(q.contentType)(_.contentType)
-
 }

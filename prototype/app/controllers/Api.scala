@@ -72,11 +72,12 @@ object Api extends Controller with PanDomainAuthActions {
     val status = queryStringMultiOption(req.getQueryString("status"), StatusDatabase.find(_))
 
     val queryData = WfQuery(
-      section     = sections,
-      status      = status,
-      contentType = contentType,
-      prodOffice  = prodOffice,
-      dueTimes    = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil)
+      section       = sections,
+      status        = status,
+      contentType   = contentType,
+      prodOffice    = prodOffice,
+      dueTimes      = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
+      creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil)
     )
 
     def getContent = {
