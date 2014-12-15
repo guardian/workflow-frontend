@@ -71,23 +71,8 @@ object PostgresDB {
   private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
-      content +=
-      ((composerId,
-        None,
-        new DateTime,
-        None,
-        Status.Writers.name,
-        contentType,
-        false,
-        None,
-        None,
-        false,
-        None,
-        None,
-        None,
-        activeInInCopy,
-        false,
-        None))
+      val wc = WorkflowContent.default(composerId: String, contentType: String, activeInInCopy)
+      content += WorkflowContent.newContentRow(wc, None)
     }
   }
 
