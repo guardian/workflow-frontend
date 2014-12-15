@@ -5,8 +5,9 @@ import scala.slick.driver.PostgresDriver.simple._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import scala.slick.lifted.{Query, Column}
 import models._
+import models.Flag.Flag
 import org.joda.time.DateTime
-import com.gu.workflow.db.Schema.{stubs, content}
+import com.gu.workflow.db.Schema.{stubs, content, flagColumnType}
 import com.gu.workflow.syntax._
 
 case class WfQueryTime(
@@ -22,7 +23,7 @@ case class WfQuery(
   contentType   : Seq[String]      = Nil,
   published     : Option[Boolean]  = None,
   // TODO XXX -> is this currently AND or OR?
-  flags         : Seq[String]      = Nil,
+  flags         : Seq[Flag]  = Nil,
   prodOffice    : Seq[String]      = Nil,
   creationTimes : Seq[WfQueryTime] = Nil
 )
@@ -90,17 +91,22 @@ object WfQuery {
     optToSeq(status),
     optToSeq(contentType),
     published,
-    flags,
+    flags.map(queryStringToFlag(_)),
     optToSeq(prodOffice),
     dateTimeToQueryTime(createdFrom, createdUntil)
   )
+
+  val queryStringToFlag = Map("needsLegal" -> Flag.Required,
+                              "approved" -> Flag.Complete,
+                              "notRequired" -> Flag.NotRequired)
 
   def stubsQuery(q: WfQuery) = stubs |>
     simpleInSet(q.section.map(_.toString))(_.section) |>
     optInSet(q.contentType)(_.contentType) |>
     simpleInSet(q.prodOffice)(_.prodOffice) |>
     dateInSet(q.dueTimes)(_.due) |>
-    dateInSet(q.creationTimes)(_.createdAt)
+    dateInSet(q.creationTimes)(_.createdAt) |>
+    simpleInSet(q.flags)(_.needsLegal)
 
   def contentQuery(q: WfQuery) = content |>
     simpleInSet(q.status.map(_.toString))(_.status) |>

@@ -65,7 +65,8 @@ object Api extends Controller with PanDomainAuthActions {
     val sections = queryStringMultiOption(req.getQueryString("section"),
                                           s => Some(Section(s)))
     val contentType = queryStringMultiOption(req.getQueryString("content-type"))
-    val flags = req.queryString.get("flags") getOrElse Nil
+    val flags = queryStringMultiOption(req.getQueryString("flags"),
+                                       WfQuery.queryStringToFlag.get(_))
     val prodOffice = queryStringMultiOption(req.getQueryString("prodOffice"))
     val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
     val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
@@ -77,7 +78,8 @@ object Api extends Controller with PanDomainAuthActions {
       contentType   = contentType,
       prodOffice    = prodOffice,
       dueTimes      = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
-      creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil)
+      creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
+      flags         = flags
     )
 
     def getContent = {
