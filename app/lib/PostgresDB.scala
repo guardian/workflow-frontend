@@ -16,8 +16,6 @@ object PostgresDB {
   import play.api.Play.current
   import play.api.db.slick.DB
 
-  val queryStringToFlag = Map("needsLegal" -> Flag.Required, "approved" -> Flag.Complete, "notRequired" -> Flag.NotRequired)
-
   def getContent(
                   section:      Option[List[Section]]  = None,
                   desk:         Option[Desk]     = None,
