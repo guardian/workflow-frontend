@@ -22,7 +22,6 @@ case class WfQuery(
   status        : Seq[Status]      = Nil,
   contentType   : Seq[String]      = Nil,
   published     : Option[Boolean]  = None,
-  // TODO XXX -> is this currently AND or OR?
   flags         : Seq[Flag]  = Nil,
   prodOffice    : Seq[String]      = Nil,
   creationTimes : Seq[WfQueryTime] = Nil
