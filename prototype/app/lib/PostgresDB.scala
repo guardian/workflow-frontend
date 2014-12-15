@@ -67,17 +67,32 @@ object PostgresDB {
       }
     }
 
-  private def ensureContentExistsWithId(composerId: String, contentType: String)(implicit session: Session) {
+  private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
       content +=
-        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false, None, false, None, None))
+      ((composerId,
+        None,
+        new DateTime,
+        None,
+        Status.Writers.name,
+        contentType,
+        false,
+        None,
+        None,
+        false,
+        None,
+        None,
+        None,
+        activeInInCopy,
+        false,
+        None))
     }
   }
 
-  def createStub(stub: Stub): Unit =
+  def createStub(stub: Stub, activeInInCopy: Boolean = false): Unit =
     DB.withTransaction { implicit session =>
-      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
+      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article"), activeInInCopy))
       stubs += Stub.newStubRow(stub)
     }
 
@@ -206,7 +221,16 @@ object PostgresDB {
 
   def deleteStub(id: Long) {
     DB.withTransaction { implicit session =>
-      stubs.filter(_.pk === id).delete
+
+      archiveContentQuery((s, c) => s.pk === id)
+
+      val queryCurrentStub = stubs.filter(_.pk === id)
+
+      // Delete from Content table
+      content.filter(c => c.composerId in queryCurrentStub.map(_.composerId)).delete
+
+      // Delete from Stub table
+      queryCurrentStub.delete
     }
   }
 

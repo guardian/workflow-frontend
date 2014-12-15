@@ -29,7 +29,13 @@ Development prerequisites
     ```
       cd prototype
       ./setup.sh
+
     ```
+
+  * In ~/.bash_profile add
+    export AWS_ACCESS_KEY=<access-key-id>
+
+    export AWS_SECRET_KEY=<secret-key>
 
 
 Running the application
@@ -59,6 +65,8 @@ this already if you work with composer, identity, r2 or similar):
 6. Configure the workflow route in nginx
 
     sudo <path_of_dev-nginx>/setup-app.rb <path_of_workflowt>/nginx/nginx-mapping.yml
+
+
 
 ### the apps
 
@@ -111,3 +119,35 @@ Start the Selenium server
 Run the tests
 
     $ protractor test/conf.js
+
+Updating AMIs
+-------------
+
+We use [packer](https://packer.io/) to create new AMIs, you can download it here: http://www.packer.io/downloads.html.
+To create an AMI, you must set AWS_ACCESS_KEY and AWS_SECRET_KEY as described above.
+The prototype app also requires a set of keys. Download them from the private s3 bucket
+
+ ```
+      aws s3 cp s3://workflow-private/packer-ami-key.pem /etc/gu/packer-ami-key.pem
+      ```
+  ```
+       aws s3 cp s3://workflow-private/packer-ami-certificate.pem /etc/gu/packer-ami-certificate.pem
+       ```
+
+###Building
+To add your requirements to the new AMI, you should update provisioning.json. This will probably involve editing the
+provisioners section, but more information can be found in the packer docs. Once you are ready, run the following:
+You should get the latest ubuntu ami image from [https://cloud-images.ubuntu.com/trusty/current/]
+Prole needs a 64 bit ebs instance eu-west-1 region
+Prototype needs a 64 instance-storage eu-west-1 region
+
+``` packer build prototype/provisioning.json
+   ```
+``` packer build prole/provisioning.json
+```
+
+This will take several minutes to build the new AMI. Once complete, you should see something like:
+
+```eu-west-1: ami-xxxxxxxx
+```
+You can then add the ami instance to cloud formation.

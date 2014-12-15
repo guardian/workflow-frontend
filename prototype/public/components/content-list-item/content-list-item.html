@@ -1,19 +1,13 @@
-<tr class="content-list-item" ng-click="selectItem(contentItem)" 
+<tr class="content-list-item" ng-click="selectItem(contentItem)"
     ng-class="
-    { 
-        'content-list-item--selected': contentList.selectedItem === contentItem, 
+    {
+        'content-list-item--selected': contentList.selectedItem === contentItem,
         'content-list-item--published': contentItem.isPublished && !contentItem.isTakenDown,
-        'content-list-item--takendown': contentItem.isTakenDown 
+        'content-list-item--takendown': contentItem.isTakenDown
     }">
     <td class="content-list-item__notifier"></td>
     <td class="content-list-item__field--priority" title="Priority: {{ contentItem.priority | getPriorityString }}">
         <i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority | getPriorityString }}" ng-show="contentItem.priority !== 0"/>
-    </td>
-    <td class="content-list-item__field--comments" title="Comments: {{ contentItem.commentsTitle }}">
-        <i class="content-list-item__icon--comments" wf-icon="comments" wf-icon-active="contentItem.hasComments"/>
-    </td>
-    <td class="content-list-item__field--main-image" title="{{ contentItem.mainImageTitle }}">
-        <i class="content-list-item__icon--main-image" wf-icon="main-image" wf-icon-active="contentItem.hasMainImage"/>
     </td>
     <td class="content-list-item__field--content-type" title="{{ contentItem.contentTypeTitle }}">
         <i class="content-list-item__icon--content-type" wf-icon="{{ contentItem.contentType }}"/>
@@ -24,6 +18,15 @@
         <a ng-href="{{ contentItem.links.composer }}" ng-click="contentList.editItem(contentItem); $event.stopPropagation()" target="_blank">{{
             contentList.showHeadline && contentItem.headline ? contentItem.headline : contentItem.workingTitle }}</a>
     </th>
+    <td class="content-list-item__field--comments" title="Comments: {{ contentItem.commentsTitle }}">
+        <i class="content-list-item__icon--comments" wf-icon="comments" wf-icon-active="contentItem.hasComments"/>
+    </td>
+    <td class="content-list-item__field--main-image" title="{{ contentItem.mainImageTitle }}">
+        <i class="content-list-item__icon--main-image" wf-icon="main-image" wf-icon-active="contentItem.hasMainImage"/>
+    </td>
+    <td class="content-list-item__field--incopy" title="{{ contentItem.incopyTitle }}">
+        <i class="content-list-item__icon--incopy" wf-icon="incopy" wf-icon-active="contentItem.linkedWithIncopy"/>
+    </td>
     <td class="content-list-item__field--presence">
         <wf-presence-indicators presence-id="contentItem.composerId">
         </wf-presence-indicators>
@@ -46,7 +49,7 @@
     </td>
     <td class="content-list-item__field--notes" title="Note: {{ contentItem.note || 'none' }}">{{ contentItem.note }}</td>
     <td class="content-list-item__field--composer">
-        <a href="{{ contentItem.links.composer }}" title="View in Composer (opens in new window)" target="_blank" ng-if="contentItem.links.composer">
+        <a href="{{ contentItem.links.composer }}" title="View in Composer (opens in new window)" target="_blank" ng-if="contentItem.links.composer" ng-click="$event.stopPropagation()">
             <i class="content-list-item__icon--composer" wf-icon="composer"></i>
         </a>
                 <span ng-if="!contentItem.links.composer" title="View in Composer (unavailable)" class="content-list-item__icon--inactive">
@@ -54,7 +57,7 @@
                 </span>
     </td>
     <td class="content-list-item__field--preview">
-        <a href="{{ contentItem.links.preview }}" title="Preview (opens in new window)" target="_blank" ng-if="contentItem.links.preview">
+        <a href="{{ contentItem.links.preview }}" title="Preview (opens in new window)" target="_blank" ng-if="contentItem.links.preview" ng-click="$event.stopPropagation()">
             <i class="content-list-item__icon--preview" wf-icon="preview"></i>
         </a>
                 <span ng-if="!contentItem.links.preview" title="Preview (unavailable)" class="content-list-item__icon--inactive">
@@ -62,7 +65,7 @@
                 </span>
     </td>
     <td class="content-list-item__field--live">
-        <a href="{{ contentItem.links.live }}" title="View on Live site (opens in new window)" target="_blank" ng-if="contentItem.links.live">
+        <a href="{{ contentItem.links.live }}" title="View on Live site (opens in new window)" target="_blank" ng-if="contentItem.links.live" ng-click="$event.stopPropagation()">
             <i class="content-list-item__icon--live" wf-icon="live-site"></i>
         </a>
                 <span ng-if="!contentItem.links.live" title="View on Live site (unavailable)" class="content-list-item__icon--inactive">
@@ -70,7 +73,7 @@
                 </span>
     </td>
     <td class="content-list-item__field--ophan">
-        <a href="{{ contentItem.links.ophan }}" title="View in Ophan (opens in new window)" target="_blank" ng-if="contentItem.links.ophan">
+        <a href="{{ contentItem.links.ophan }}" title="View in Ophan (opens in new window)" target="_blank" ng-if="contentItem.links.ophan"  ng-click="$event.stopPropagation()">
             <i class="content-list-item__icon--ophan" wf-icon="ophan"></i>
         </a>
                 <span ng-if="!contentItem.links.ophan" title="View in Ophan (unavailable)" class="content-list-item__icon--inactive">
@@ -78,7 +81,7 @@
                 </span>
     </td>
     <td class="content-list-item__field--published-state" title="Published state: {{ contentItem.publishedState || 'Draft' }}{{ contentItem.publishedTime && ' on ' + (contentItem.publishedTime | wfLocaliseDateTime | wfFormatDateTime:'long') }}">
-        {{ contentItem.lifecycleState }}
+        <div class="content-list-item__field-primary--published-state">{{ contentItem.lifecycleState }}</div>
         <div class="content-list-item__field-supl--published-state" ng-if="contentItem.isPublished">{{
             contentItem.lifecycleStateTime| wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
         </div>

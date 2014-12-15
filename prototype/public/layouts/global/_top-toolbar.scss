@@ -10,17 +10,39 @@
     max-height: 50px;
     background-color: $c-grey-200;
     border-bottom: 1px solid $c-grey-400;
+
+    z-index: 2;
 }
 
 .top-toolbar__title {
     @extend %f-title;
     font-size: 18px;
-    width: 130px;
-    min-width: 130px;
-    background-color: $c-grey-300;
+    width: $dashboardSidebarWidth;
+    min-width: $dashboardSidebarWidth;
+    background-color: $c-grey-200;
     margin: 0;
     padding: 0 10px;
     line-height: 50px;
+    border-right: 1px solid #bdbdbd;
+
+    // Xmas :-)
+
+    z-index: 1;
+    position: relative;
+    max-width: 130px;
+
+    &:after {
+        content: ' ';
+        display: block;
+        background: url('/assets/components/icons/src/mistletoe.png') transparent no-repeat;
+        height: 32px;
+        width: 32px;
+        position: absolute;
+        z-index: 2;
+        left: 86px;
+        top: 14px;
+        background-size: 32px;
+    }
 }
 
 .top-toolbar__title-link {

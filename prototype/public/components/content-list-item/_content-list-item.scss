@@ -18,12 +18,17 @@
     &--selected {
         background-color: $c-grey-200;
     }
+    
+    &:hover {
+        background-color: $c-grey-150;
+    }
+    
     &__notifier {
-        min-width: 4px;
+        width: 4px;
     }
 
     &--published {
-        background: $c-light-green; 
+        background: $c-light-green;
         .content-list-item__notifier {
             background: $c-green;
         }
@@ -55,7 +60,8 @@
         &--composer,
         &--preview,
         &--live,
-        &--ophan {
+        &--ophan,
+        &--incopy {
             display: inline-block;
             width: $content-list-icon-size;
             height: $content-list-icon-size;
@@ -147,7 +153,8 @@
         &--ophan,
         &--deadline,
         &--created,
-        &--section {
+        &--section,
+        &--incopy {
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
@@ -166,7 +173,8 @@
         &--composer,
         &--preview,
         &--live,
-        &--ophan {
+        &--ophan,
+        &--incopy {
             padding: 10px 5px;
             width: $content-list-icon-size;
         }
@@ -179,7 +187,10 @@
         }
 
         &--presence,
-        &--assignee,
+        &--assignee {
+            min-width: 28px;
+        }
+
         &--office {
             width: 30px;
         }
@@ -229,6 +240,7 @@
         &--published-state {
             width: 80px;
             padding: 5px 10px;
+            @extend %fs-data-3;
         }
     }
 }
@@ -250,5 +262,73 @@
 @include keyframes(content-list-item--leave-sequence) {
     to {
         opacity: 0;
+    }
+}
+
+// Compact layout
+.content-list--compact {
+    .content-list-item__field--working-title,
+    .content-list-item__field--notes {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 200px;
+    }
+
+    .content-list-item__field--section {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 80px;
+    }
+
+    .content-list-item__field {
+        &--priority,
+        &--comments,
+        &--main-image,
+        &--content-type,
+        &--working-title,
+        &--headline,
+        &--office,
+        &--legal,
+        &--status,
+        &--composer,
+        &--preview,
+        &--live,
+        &--ophan,
+        &--deadline,
+        &--created,
+        &--section,
+        &--incopy,
+        &--published-state {
+            @extend %fs-data-2;
+        }
+
+        &--published-state {
+            width: 148px;
+            padding: $compact-display-td-padding;
+        }
+
+        &-primary--published-state {
+            display: inline;
+        }
+
+        &-supl--published-state {
+            display: inline;
+        }
+    }
+
+    .content-list-item__field--presence,
+    .content-list-item__field--assignee,
+    .content-list-item__field--office {
+        padding: $compact-display-td-padding;
+    }
+
+    .content-list-item__icon--presence,
+    .content-list-item__icon--assignee {
+        @extend %fs-data-1;
+        width: 16px;
+        height: 16px;
+        line-height: 18px;
     }
 }

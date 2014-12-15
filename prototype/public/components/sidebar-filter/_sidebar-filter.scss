@@ -27,12 +27,17 @@
 }
 
 .sidebar__header {
-    background-color: $c-grey-300;
+    background-color: $c-grey-200;
     height: 28px;
     border-top: 1px solid #ffffff;
+    display: flex;
 
     &:hover {
         background-color: darken($c-grey-300, 15%);
+    }
+
+    .sidebar__header-spacer {
+        flex-grow: 1;
     }
 
     .sidebar__heading {
@@ -44,7 +49,7 @@
         font-weight: bold;
         margin: 0;
         cursor: pointer;
-
+        flex-grow: 0;
         &::before {
             transform: rotate(-90deg);
         }
@@ -78,13 +83,13 @@
     .sidebar__filter-link {
         @extend %fs-data-3;
         color: $c-text;
-        background-color: $c-grey-170;
+        background-color: $c-grey-100;
         padding: 7px 0 7px 23px;
         display: block;
         width: 100%;
         &:hover {
             text-decoration: none;
-            background-color: darken($c-grey-170, 15%);
+            background-color: darken($c-grey-100, 15%);
         }
     }
     .sidebar__filter-icon {
@@ -116,11 +121,12 @@
     }
 
     &.sidebar__filter--default {
-        float: right;
+        display: inline-block;
         padding: 0;
         border-bottom: 0;
         border-left: 1px solid #fff;
         height: 100%;
+        flex-grow: 0;
         .sidebar__filter-link {
             height: 100%;
             padding: 6px 12px;
@@ -128,5 +134,62 @@
     }
 }
 
+// Custom deadline filter option
 
+%deadline-select {
+    padding: 7px 0 7px 23px;
+    height: 30px;
+    width: 100%;
+    @extend %fs-data-3;
+    line-height: 1em;
+    font-weight: normal;
+    border: none;
+    border-radius: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    cursor: pointer;
 
+    &:-moz-focusring {
+        color: transparent;
+        text-shadow: 0 0 0 #000;
+    }
+}
+
+.sidebar__filter__deadline-select {
+    @extend %deadline-select;
+    color: #333 ;
+    background-color: #f6f6f6;
+}
+
+.sidebar__filter__deadline-select--active {
+    @extend %deadline-select;
+    color: $c-text;
+    background-color: $c-bluegrey;
+    border-left: 3px solid $c-highlight-blue;
+}
+
+// moz dropdown arrow masking
+.sidebar__filter-custom--customDate {
+    position: relative;
+
+    &:after {
+        content: " ";
+        background: $i-arrow-down center no-repeat #F6F6F6;
+        background-size: 12px;
+        width: 20px;
+        position: absolute;
+        height: 100%;
+        top: 0;
+        right: 0;
+        pointer-events: none;
+    }
+}
+
+.sidebar__filter--active .sidebar__filter-custom--customDate:after {
+    background-color: $c-bluegrey;
+}
+
+:-moz-any(.sidebar__filter__deadline-select, .sidebar__filter__deadline-select--active) {
+    padding-left: 19px;
+}

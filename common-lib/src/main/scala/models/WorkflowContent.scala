@@ -10,6 +10,7 @@ case class WorkflowContent(
                             composerId: String,
                             path: Option[String],
                             headline: Option[String],
+                            mainMedia: Option[String],
                             contentType: String,
                             section: Option[Section],
                             status: Status,
@@ -18,6 +19,8 @@ case class WorkflowContent(
                             commentable: Boolean,
                             published: Boolean,
                             timePublished: Option[DateTime],
+                            storyBundleId: Option[String],
+                            activeInInCopy: Boolean,
                             takenDown: Boolean,
                             timeTakenDown: Option[DateTime]
                             ) {
@@ -41,6 +44,7 @@ object WorkflowContent {
       wireStatus.composerId,
       wireStatus.path,
       wireStatus.headline,
+      wireStatus.mainMedia,
       wireStatus.`type`,
       wireStatus.tagSections.headOption,
       wireStatus.status, // not written to the database but the DTO requires a value.
@@ -49,6 +53,8 @@ object WorkflowContent {
       commentable=wireStatus.commentable,
       published = wireStatus.published,
       timePublished = wireStatus.publicationDate,
+      storyBundleId = wireStatus.storyBundleId,
+      false, // assume not active in incopy
       takenDown = false,
       timeTakenDown = None
     )
@@ -56,15 +62,17 @@ object WorkflowContent {
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
-          headline, published, timePublished, takenDown, timeTakenDown, _) =>
+          headline, mainMedia, published, timePublished, _, storyBundleId, activeInInCopy,
+          takenDown, timeTakenDown) =>
           WorkflowContent(
-            composerId, path, headline, contentType, None, Status(status), lastMod,
-            lastModBy, commentable, published, timePublished, takenDown, timeTakenDown 
-          )
+            composerId, path, headline, mainMedia, contentType, None, Status(status), lastMod,
+            lastModBy, commentable, published, timePublished, storyBundleId,
+            activeInInCopy, takenDown, timeTakenDown)
   }
   def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
     (wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy, wc.status.name,
-     wc.contentType, wc.commentable, wc.headline, wc.published, wc.timePublished, false, None, revision)
+     wc.contentType, wc.commentable, wc.headline, wc.mainMedia, wc.published, wc.timePublished,
+     revision, wc.storyBundleId, wc.activeInInCopy, false, None)
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
 
@@ -72,6 +80,7 @@ object WorkflowContent {
     ((__ \ "composerId").read[String] ~
       (__ \ "path").readNullable[String] ~
       (__ \ "headline").readNullable[String] ~
+      (__ \ "mainMedia").readNullable[String] ~
       (__ \ "contentType").read[String] ~
       (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
       (__ \ "status").read[String].map { s => Status(s) } ~
@@ -79,7 +88,9 @@ object WorkflowContent {
       (__ \ "lastModifiedBy").readNullable[String] ~
       (__ \ "commentable").read[Boolean] ~
       (__ \ "published").read[Boolean] ~
-      (__ \ "timePublished").readNullable[DateTime] ~ 
+      (__ \ "timePublished").readNullable[DateTime] ~
+      (__ \ "storyBundleId").readNullable[String] ~
+      (__ \ "activeInIncopy").read[Boolean] ~
       (__ \ "takenDown").read[Boolean] ~
       (__ \ "timeTakenDown").readNullable[DateTime]
       )(WorkflowContent.apply _)

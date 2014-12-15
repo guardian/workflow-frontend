@@ -5,9 +5,25 @@ import play.Play.autoImport._
 import PlayKeys._
 import com.typesafe.sbt.web._
 import Dependencies._
+import sbtbuildinfo.Plugin._
 
 
 object WorkflowBuild extends Build {
+
+  def buildInfoPlugin = buildInfoSettings ++ Seq(
+    sourceGenerators in Compile <+= buildInfo,
+    buildInfoKeys := Seq[BuildInfoKey](
+      name,
+      BuildInfoKey.constant("buildNumber", Option(System.getenv("BUILD_NUMBER")) getOrElse "DEV"),
+      BuildInfoKey.constant("buildTime", System.currentTimeMillis),
+      BuildInfoKey.constant("gitCommitId", Option(System.getenv("BUILD_VCS_NUMBER")) getOrElse(try {
+        "git rev-parse HEAD".!!.trim
+      } catch {
+        case e: Exception => "unknown"
+      }))
+    ),
+    buildInfoPackage := "prototype"
+  )
 
   val commonSettings =
     Seq(
@@ -20,7 +36,7 @@ object WorkflowBuild extends Build {
       scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings"),
       doc in Compile <<= target.map(_ / "none"),
       incOptions := incOptions.value.withNameHashing(nameHashing = true)
-    )
+    ) ++ buildInfoPlugin
 
   lazy val commonLib = project("common-lib")
     .settings(

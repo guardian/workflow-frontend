@@ -72,8 +72,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.commentsTitle = this.hasComments ? 'on' : 'off';
 
             // TODO: pull main image from composer
-            this.hasMainImage = false;
-            this.mainImageTitle = 'Main image (Coming soon)';
+            this.hasMainImage = Boolean(item.mainMedia);
+            this.mainImageTitle = 'Main media (' + (item.mainMedia || 'none')  + ')';
 
             this.assignee = item.assignee && toInitials(item.assignee) || '';
             this.assigneeFull = item.assignee || 'unassigned';
@@ -95,16 +95,26 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.deadline = item.due;
             this.created = item.createdAt;
             this.lastModified = item.lastModified;
+            this.lastModifiedBy = item.lastModifiedBy;
 
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
-           
-            var lifecycleState = this.lifecycleState(item); 
+
+            var lifecycleState = this.lifecycleState(item);
             this.lifecycleState = lifecycleState.display;
             this.lifecycleStateTime = lifecycleState.time;
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
+
+            this.isOwnedByInCopy = item.activeInInCopy;
+            this.storyBundleId = item.storyBundleId;
+            /* it may be linked with InCopy but owned by composer */
+            this.linkedWithIncopy = (typeof item.storyBundleId === "string" &&
+                                     item.storyBundleId.length > 0);
+            this.incopyTitle = this.linkedWithIncopy ?
+                'Linked with InCopy Story Bundle ' + this.storyBundleId :
+                'Not linked with InCopy';
 
             this.item = item;
         }
@@ -144,7 +154,6 @@ var wfContentListItem = function ($rootScope) {
             statusValues: '='
         },
         link: function ($scope, elem, attrs) {
-
             /**
              * Emit an event telling the details drawer to move itself to this element, update and display.
              * @param {Object} contentItem - this contentItem

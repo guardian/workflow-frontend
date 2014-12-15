@@ -18,15 +18,15 @@
             "Type": "String",
             "Default": "arn:aws:iam::753338109777:server-certificate/workflow.gutools.co.uk"
         },
-        "ImageIdInstanceStorage": {
-            "Description": "AMI id for instances with instance storage.",
+        "ImageIdWorkflow": {
+            "Description": "AMI for Workflow (prototype) instances with instance storage.",
             "Type": "String",
-            "Default": "ami-7aa8080d"
+            "Default": "ami-389a284f"
         },
-        "ImageIdEBSStorage": {
-            "Description": "AMI id for instances with ebs storage.",
+        "ImageIdProle": {
+            "Description": "AMI for Prole instances with EBS storage.",
             "Type": "String",
-            "Default": "ami-f4b11183"
+            "Default": "ami-a89a28df"
         },
         "FCMetadataTopic": {
             "Description": "ARN of the topic for Flexible Content metadata events",
@@ -337,7 +337,7 @@
             },
             "Properties": {
                 "KeyName": { "Ref": "KeyName" },
-                "ImageId": {"Ref": "ImageIdInstanceStorage"},
+                "ImageId": {"Ref": "ImageIdWorkflow"},
                 "SecurityGroups": [
                     { "Ref": "AppServerSecurityGroup" },
                     { "Ref": "SSHSecurityGroup" }
@@ -349,14 +349,6 @@
                         "#!/bin/bash -ev\n",
 
                         "apt-get -y update\n",
-                        "locale-gen en_GB.UTF-8\n",
-                        "apt-get -y install openjdk-7-jre-headless\n",
-                        "apt-get -y install python-setuptools\n",
-                        "apt-get -y install unzip\n",
-                        "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz","\n",
-                        "mkdir -p /root/aws-cfn-bootstrap-latest","\n",
-                        "tar xvfz /root/aws-cfn-bootstrap-latest.tar.gz --strip-components=1 -C /root/aws-cfn-bootstrap-latest","\n",
-                        "easy_install /root/aws-cfn-bootstrap-latest/","\n",
 
                         "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r PrototypeLaunchConfig ",
                         "  --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
@@ -435,7 +427,7 @@
             },
             "Properties": {
                 "KeyName": { "Ref": "KeyName" },
-                "ImageId": {"Ref": "ImageIdEBSStorage"},
+                "ImageId": {"Ref": "ImageIdProle"},
                 "SecurityGroups": [
                     { "Ref": "AppServerSecurityGroup" },
                     { "Ref": "SSHSecurityGroup" }
@@ -447,14 +439,6 @@
                         "#!/bin/bash -ev\n",
 
                         "apt-get -y update\n",
-                        "locale-gen en_GB.UTF-8\n",
-                        "apt-get -y install openjdk-7-jre-headless\n",
-                        "apt-get -y install python-setuptools\n",
-                        "apt-get -y install unzip\n",
-                        "wget -P /root https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz","\n",
-                        "mkdir -p /root/aws-cfn-bootstrap-latest","\n",
-                        "tar xvfz /root/aws-cfn-bootstrap-latest.tar.gz --strip-components=1 -C /root/aws-cfn-bootstrap-latest","\n",
-                        "easy_install /root/aws-cfn-bootstrap-latest/","\n",
 
                         "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r ProleLaunchConfig ",
                         "  --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
