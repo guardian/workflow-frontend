@@ -1,5 +1,6 @@
 package controllers
 
+import models.ApiResponse.ApiResponse
 import models.Flag.Flag
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -11,7 +12,7 @@ import play.api.libs.json._
 
 import lib.Responses._
 import lib._
-import models.{ContentItem, Section, WorkflowContent, Stub}
+import models._
 import org.joda.time.DateTime
 import com.gu.workflow.db.{SectionDB, CommonDB}
 import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
@@ -129,15 +130,13 @@ object Api extends Controller with PanDomainAuthActions {
 
 
   def createContent() = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      contentItem <- extract[ContentItem](jsValue).right
+   ApiResponse(for {
+      jsValue <- readJsonFromRequestApiResponse(request.body).right
+      contentItem <- extractApiResponse[ContentItem](jsValue).right
+      stubId <- PostgresDB.createContent(contentItem).right
     } yield {
-      PostgresDB.createContent(contentItem) match {
-        case Left(stubId) => Conflict(renderCreateJson(stubId, "conflict"))
-        case Right(stubId) => Created(renderCreateJson(stubId, "created"))
-      }
-    }).merge
+     stubId
+    })
   }
 
   def putStub(stubId: Long) = APIAuthAction { implicit request =>
@@ -285,6 +284,14 @@ object Api extends Controller with PanDomainAuthActions {
     requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
   }
 
+  //duplicated from the method above to give a standard API response. should move all api methods onto to this
+  private def readJsonFromRequestApiResponse(requestBody: AnyContent): ApiResponse[JsValue] = {
+    requestBody.asJson match {
+      case Some(jsValue) => Right(jsValue)
+      case None => Left((ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")))
+    }
+  }
+
   /* JsError's may contain a number of different errors for differnt
    * paths. This will aggregate them into a single string */
   private def errorMsgs(error: JsError) =
@@ -301,6 +308,16 @@ object Api extends Controller with PanDomainAuthActions {
       case error@JsError(_) =>
         val errMsg = errorMsgs(error)
         Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
+    }
+  }
+
+  //duplicated from the method above to give a standard API response. should move all api methods onto to this
+  private def extractApiResponse[A: Reads](jsValue: JsValue): ApiResponse[A] = {
+    jsValue.validate[A] match {
+      case JsSuccess(a, _) => Right(a)
+      case error@JsError(_) =>
+        val errMsg = errorMsgs(error)
+        Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
     }
   }
 
