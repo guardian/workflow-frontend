@@ -71,6 +71,7 @@ object Api extends Controller with PanDomainAuthActions {
     val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
     val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
     val status = queryStringMultiOption(req.getQueryString("status"), StatusDatabase.find(_))
+    val published = req.getQueryString("state").map(_ == "published")
 
     val queryData = WfQuery(
       section       = sections,
@@ -79,7 +80,8 @@ object Api extends Controller with PanDomainAuthActions {
       prodOffice    = prodOffice,
       dueTimes      = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
       creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
-      flags         = flags
+      flags         = flags,
+      published     = published
     )
 
     def getContent = {
@@ -122,7 +124,11 @@ object Api extends Controller with PanDomainAuthActions {
     // }
 
     val stubs =
-      if(status.isEmpty || status.exists(_ == models.Status("Stub")))
+      if(
+        (status.isEmpty || status.exists(_ == models.Status("Stub"))) &&
+          // stubs are never 'published'
+          (published != Some(true))
+      )
         getStubs
       else Nil
 
