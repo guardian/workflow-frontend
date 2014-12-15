@@ -50,7 +50,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Also will create the stub if it doesn't have an id.
                  */
                 createInComposer(stub) {
-                    console.log('create in composer');
                     return wfComposerService.create(stub.contentType).then( (response) => {
 
                         wfComposerService.parseComposerData(response.data, stub);
@@ -70,7 +69,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Updates an existing stub by overwriting its fields via PUT.
                  */
                 updateStub(stub) {
-                    console.log('updating stub ', stub)
                     return httpRequest({
                         method: 'PUT',
                         url: '/api/stubs/' + stub.id,
@@ -128,7 +126,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Link existing stub to composer article.
                  */
                 updateComposerId(stubId, composerId, contentType) {
-                    console.log('linking existing stub with composer')
                     return httpRequest({
                         method: 'POST', // TODO: update to PATCH method
                         url: '/api/stubs/' + stubId,
