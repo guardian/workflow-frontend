@@ -14,3 +14,14 @@ angular
             $scope.$emit('content:import');
         }
     }])
+    .directive('wfDropdownToggle', ['$document', function($document){
+        return {
+            restrict: 'A',
+            link: function(scope, element) {
+console.log("foo");
+                scope.toggleDropdown = function() { scope.showDropdown = !scope.showDropdown }
+                element.bind('click', function(event) { event.stopPropagation(); });
+                $document.bind('click', function(){ scope.showDropdown = false; scope.$apply();});
+            }
+        };
+    }]);
