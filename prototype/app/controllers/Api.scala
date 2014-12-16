@@ -57,8 +57,6 @@ object Api extends Controller with PanDomainAuthActions {
       _.split(",").toList.map(f).collect { case Some(a) => a }
     } getOrElse Nil
 
-//    req.getQueryString(name).map(_.split(",").toList.map(f).getOrElse(Nil)).filter(!_.isEmpty)).getOrElse(Nil)
-
   def content = APIAuthAction { implicit req =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
@@ -85,19 +83,7 @@ object Api extends Controller with PanDomainAuthActions {
     )
 
     def getContent = {
-      val content = PostgresDB.getContent(
-        queryData
-        // section = sections,
-        // dueFrom = dueFrom,
-        // dueUntil = dueUntil,
-        // status = status,
-        // contentType = contentType,
-        // published = req.getQueryString("state").map(_ == "published"),
-        // flags = flags,
-        // prodOffice = prodOffice,
-        // createdFrom = createdFrom,
-        // createdUntil = createdUntil
-      )
+      val content = PostgresDB.getContent(queryData)
 
 
       val publishedContent = content.filter(d => d.wc.status == models.Status("Final"))
@@ -111,26 +97,10 @@ object Api extends Controller with PanDomainAuthActions {
     def getStubs =
       CommonDB.getStubs(queryData, unlinkedOnly = true)
 
-    //     dueFrom = dueFrom,
-    //     dueUntil = dueUntil,
-    //     // XXX TODO -> need to fix this
-    //     section = (if(sections.isEmpty) None else Some(sections)),
-    //     contentType = contentType.headOption,
-    //     prodOffice = prodOffice.headOption,
-    //     // XXX
-    //     unlinkedOnly = true,
-    //     createdFrom = createdFrom,
-    //     createdUntil = createdUntil).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
-    // }
-
     val stubs =
-      if(
-        (status.isEmpty || status.exists(_ == models.Status("Stub"))) &&
-          // stubs are never 'published'
-          (published != Some(true))
-      )
-        getStubs
-      else Nil
+      if((status.isEmpty || status.exists(_ == models.Status("Stub"))) &&
+           // stubs are never 'published'
+           (published != Some(true))) getStubs else Nil
 
     val content = getContent
 
