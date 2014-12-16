@@ -33,8 +33,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 createStub(stubData) {
                     var params = {};
-                    console.log('create stub')
-                    console.log(stubData);
                     return httpRequest({
                         method: 'POST',
                         url: '/api/stubs',
