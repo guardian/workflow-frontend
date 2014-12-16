@@ -37,46 +37,12 @@ object PostgresDB {
 
   def getContent(q: WfQuery): List[DashboardRow] =
     DB.withTransaction { implicit session =>
-      // val flagFilters = q.flags.flatMap(queryStringToFlag.get(_)).seq
-      // val flagFilterOpt = if(flagFilters.isEmpty) None else Some(flagFilters)
-
-      // val stubsQuery =
-      //   stubs |>
-      //   flagFilterOpt.foldl[StubQuery]((q, filters) => q.filter(_.needsLegal inSet(filters))) |>
-      //   dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-      //   dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-      //   section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>
-      //   prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
-      //   createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
-      //   createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
-
-      // val contentQuery =
-      //   content |>
-      //     status.foldl[ContentQuery] { case (q, Status(s)) => q.filter(_.status === s) } |>
-      //     contentType.foldl[ContentQuery] ((q, contentType) => q.filter(_.contentType === contentType)) |>
-      //     published.foldl[ContentQuery] ((q, published) => q.filter(_.published === published))
-
-      //val stubsQuery = CommonDB.stubs // |>
-//        inSet(q.section.map(_.toString), _.section) |>
-//        inSet(q.prodOffice, _.prodOffice)
-
-//          (q => WfQuery.or(q, )(_.prodOffice))
-//        stubs.filter( _.section inSet q.section.map(_.name))
-      //        stubs
 
       val query = for {
         s <- WfQuery.stubsQuery(q)
         c <- WfQuery.contentQuery(q)
         if s.composerId === c.composerId
       } yield (s, c)
-
-      // query.filter( {case (s,c) => displayContentItem(s, c) })
-      //      .list.map {
-      //       case (stubData, contentData) =>
-      //     val stub    = Stub.fromStubRow(stubData)
-      //     val content = WorkflowContent.fromContentRow(contentData)
-      //     DashboardRow(stub, content)
-      // }
 
       query.filter( {case (s,c) => displayContentItem(s, c) })
            .list.map {
