@@ -3,7 +3,7 @@ package com.gu.workflow.query
 import scala.slick.ast.BaseTypedType
 import scala.slick.driver.PostgresDriver.simple._
 import com.github.tototoshi.slick.PostgresJodaSupport._
-import scala.slick.lifted.{Query, Column}
+import scala.slick.lifted.{Query, Column, StringColumnExtensionMethods}
 import models._
 import models.Flag.Flag
 import org.joda.time.DateTime
@@ -24,7 +24,8 @@ case class WfQuery(
   published     : Option[Boolean]  = None,
   flags         : Seq[Flag]  = Nil,
   prodOffice    : Seq[String]      = Nil,
-  creationTimes : Seq[WfQueryTime] = Nil
+  creationTimes : Seq[WfQueryTime] = Nil,
+  text          : Option[String]   = None
 )
 
 object WfQuery {
@@ -61,6 +62,19 @@ object WfQuery {
              (date < dateblock.until).getOrElse(true))
       }
     }
+
+  def fuzzyMatchPred[C, Column[C] <% StringColumnExtensionMethods[C]](patterns: Seq[String]) = { col: Column[C] =>
+    patterns.foldLeft(FalseCol) { (sofar, pattern) =>
+      sofar || (col.toUpperCase like ("%" + pattern.toUpperCase + "%"))
+    }
+  }
+
+//  def fuzzyMatch[DB, Row](patterns: Seq[String], getField: DB => Column[String]):
+//      (Query[DB, Row]) => Query[DB, Row] =
+//    searchSet(patterns, getField)(fuzzyMatchPred(patterns))
+
+  def fuzzyMatch[C, Column[C] <% StringColumnExtensionMethods[C]](patterns: Seq[String], getField: DB => Column[C]) =
+    searchSet(patterns, getField) { fuzzyMatchPred(patterns) }
 
   def optToSeq[A](o: Option[A]): Seq[A] =
     o map (List(_)) getOrElse Nil
@@ -105,7 +119,8 @@ object WfQuery {
     simpleInSet(q.prodOffice)(_.prodOffice) |>
     dateInSet(q.dueTimes)(_.due) |>
     dateInSet(q.creationTimes)(_.createdAt) |>
-    simpleInSet(q.flags)(_.needsLegal)
+    simpleInSet(q.flags)(_.needsLegal) |>
+    fuzzyMatch(optToSeq(q.text), _.note)
 
   def contentQuery(q: WfQuery) = content |>
     simpleInSet(q.status.map(_.toString))(_.status) |>
