@@ -59,6 +59,9 @@ GET            /feature/:featureName                  controllers.Feature.featur
 GET            /feature/:featureName/on               controllers.Feature.featureSwitchOn(featureName)
 GET            /feature/:featureName/off              controllers.Feature.featureSwitchOff(featureName)
 
+# shared secret auth test
+GET            /sharedsecret/content                  controllers.Api.sharedAuthGetContent
+
 # Management
 GET            /management/healthcheck                controllers.Management.healthCheck
 # Map static resources from the /public folder to the /assets URL path
