@@ -9,13 +9,12 @@ import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
 import com.gu.workflow.db.CommonDB._
+import com.gu.workflow.query._
 
 object PostgresDB {
 
   import play.api.Play.current
   import play.api.db.slick.DB
-
-  val queryStringToFlag = Map("needsLegal" -> Flag.Required, "approved" -> Flag.Complete, "notRequired" -> Flag.NotRequired)
 
   def getContent(
                   section:      Option[List[Section]]  = None,
@@ -29,31 +28,19 @@ object PostgresDB {
                   prodOffice:   Option[String]   = None,
                   createdFrom:  Option[DateTime] = None,
                   createdUntil: Option[DateTime] = None
-                  ): List[DashboardRow] =
+  ): List[DashboardRow] =
+    getContent(WfQuery.fromOptions(
+                 section, desk, dueFrom, dueUntil, status, contentType,
+                 published, flags, prodOffice, createdFrom, createdUntil
+               )
+    )
+
+  def getContent(q: WfQuery): List[DashboardRow] =
     DB.withTransaction { implicit session =>
 
-      val flagFilters = flags.flatMap(queryStringToFlag.get(_)).seq
-      val flagFilterOpt = if(flagFilters.isEmpty) None else Some(flagFilters)
-
-      val stubsQuery =
-        stubs |>
-        flagFilterOpt.foldl[StubQuery]((q, filters) => q.filter(_.needsLegal inSet(filters))) |>
-        dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-        dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-        section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>
-        prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
-        createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
-        createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
-
-      val contentQuery =
-        content |>
-          status.foldl[ContentQuery] { case (q, Status(s)) => q.filter(_.status === s) } |>
-          contentType.foldl[ContentQuery] ((q, contentType) => q.filter(_.contentType === contentType)) |>
-          published.foldl[ContentQuery] ((q, published) => q.filter(_.published === published))
-
       val query = for {
-        s <- stubsQuery
-        c <- contentQuery
+        s <- WfQuery.stubsQuery(q)
+        c <- WfQuery.contentQuery(q)
         if s.composerId === c.composerId
       } yield (s, c)
 
