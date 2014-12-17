@@ -39,11 +39,8 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 /**
                  * Async creates a stub in workflow.
                  */
-                createStub(stubData, activeInInCopy) {
+                createStub(stubData) {
                     var params = {};
-                    if (activeInInCopy) {
-                        params.activeInInCopy = "true";
-                    }
                     return httpRequest({
                         method: 'POST',
                         url: '/api/stubs',
@@ -61,16 +58,14 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 createInComposer(stub) {
                     return wfComposerService.create(stub.contentType).then( (response) => {
 
-                        var composerId = response.data.data.id;
-
-                        stub.composerId = composerId;
+                        wfComposerService.parseComposerData(response.data, stub);
 
                         if (stub.id) {
                             return this.updateStub(stub);
                             // return this.updateComposerId(stub.id, composerId, stub.contentType);
 
                         } else {
-                            return this.createStub(stub, false);
+                            return this.createStub(stub);
                         }
                     });
                 }
