@@ -59,7 +59,8 @@ object Api extends Controller with PanDomainAuthActions {
       _.split(",").toList.map(f).collect { case Some(a) => a }
     } getOrElse Nil
 
-  def content = APIAuthAction { implicit req =>
+  // can be hidden behind multiple auth endpoints
+  val getContentBlock = { implicit req: Request[AnyContent] =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
     val sections = queryStringMultiOption(req.getQueryString("section"),
@@ -108,6 +109,8 @@ object Api extends Controller with PanDomainAuthActions {
 
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
+
+  def content = APIAuthAction(getContentBlock)
 
   def getContentbyId(composerId: String) =
     CORSable(PrototypeConfiguration.apply.composerUrl) {
