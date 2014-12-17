@@ -20,6 +20,7 @@
       <a class="top-toolbar__title-link" href="@routes.Application.index" title="Happy Xmas 2014 from the Workflow team!">Workflow</a>
     </h1>
     <div class="top-toolbar__view-toolbar" ui-view="view-toolbar"></div>
+    <div class="top-toolbar__create" ui-view="view-create"></div>
     <div class="top-toolbar__user" ui-view="view-user">
         <noscript class="logout__noscript">
             @if(user.isEmpty) {
