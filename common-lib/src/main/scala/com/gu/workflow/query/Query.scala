@@ -33,9 +33,12 @@ object WfQuery {
   private val TrueCol : Column[Boolean] = LiteralColumn(true)
   private val FalseCol: Column[Boolean] = LiteralColumn(false)
 
+  def queryPassThrough[DB, Row]: (Query[DB, Row]) => Query[DB, Row] =
+    (query) => query
+
   def searchSet[A, DB, Row](options: Seq[_], getField: DB => A)(pred: A => Column[Boolean]):
       (Query[DB, Row]) => Query[DB, Row] = options match {
-    case Nil  => (startQuery => startQuery)
+    case Nil  => queryPassThrough[DB, Row]
     case opts => (startQuery => startQuery.filter(table => pred(getField(table))))
   }
 
@@ -66,7 +69,6 @@ object WfQuery {
   def fuzzyMatch[DB, Row](patterns: Seq[String])(getField: DB => Column[Option[String]]):
       Query[DB, Row] => Query[DB, Row] =
     searchSet(patterns, getField) { col: Column[Option[String]] =>
-
       patterns.foldLeft(FalseCol.?) { (sofar, pattern) =>
         sofar || (col.toUpperCase like ("%" + pattern.toUpperCase + "%"))
       } getOrElse false
@@ -74,9 +76,12 @@ object WfQuery {
 
   def matchTextFields[DB, Row](patterns: Seq[String])
                      (fields: Seq[DB => Column[Option[String]]]):
-      Query[DB, Row] => Query[DB, Row] = (query) =>
-  fields.map(getField => fuzzyMatch[DB, Row](patterns)(getField)(query))
-    .reduce(_ ++ _)
+      Query[DB, Row] => Query[DB, Row] = patterns match {
+    case Nil   => queryPassThrough[DB, Row]
+    case patts => (query) =>
+      fields.map(getField => fuzzyMatch[DB, Row](patts)(getField)(query))
+      .reduce(_ ++ _)
+  }
 
   def optToSeq[A](o: Option[A]): Seq[A] =
     o map (List(_)) getOrElse Nil
