@@ -12,9 +12,9 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
         },
         link: function ($scope, $element, attrs, ngModel) {
 
-            var sectionListElem = $element[0].querySelector('.section-list'),
+            var sectionListElem = $element[0].querySelector('.dropdown-toolbar__list'),
                 button = $element.find('button'),
-                buttonTitle = $element[0].querySelector('.dashboard-toolbar__section-select-text'),
+                buttonTitle = $element[0].querySelector('.dashboard-toolbar__dropdown-select-text'),
                 sectionListHiddenClass = 'section-list--hidden';
 
             /**
