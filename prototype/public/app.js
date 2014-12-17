@@ -25,6 +25,7 @@ import 'components/icons/icons';
 
 import 'layouts/dashboard/dashboard';
 import 'layouts/dashboard/dashboard-user';
+import 'layouts/dashboard/dashboard-create';
 import 'layouts/dashboard/dashboard-toolbar';
 import 'layouts/dashboard/dashboard-sidebar';
 
@@ -50,6 +51,7 @@ angular.module('workflow',
         'wfSentry',
         'wfDashboard',
         'wfDashboardUser',
+        'wfDashboardCreate',
         'wfDashboardToolbar',
         'wfDashboardSidebar',
         'wfIcons',
@@ -79,6 +81,10 @@ angular.module('workflow',
                 'view-toolbar': {
                     templateUrl: '/assets/layouts/dashboard/dashboard-toolbar.html',
                     controller: 'wfDashboardToolbarController'
+                },
+                'view-create': {
+                    templateUrl: '/assets/layouts/dashboard/dashboard-create.html',
+                    controller: 'wfDashboardCreateController'
                 },
                 'view-user': {
                     templateUrl: '/assets/layouts/dashboard/dashboard-user.html',
