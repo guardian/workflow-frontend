@@ -66,10 +66,17 @@ object WfQuery {
   def fuzzyMatch[DB, Row](patterns: Seq[String])(getField: DB => Column[Option[String]]):
       Query[DB, Row] => Query[DB, Row] =
     searchSet(patterns, getField) { col: Column[Option[String]] =>
+
       patterns.foldLeft(FalseCol.?) { (sofar, pattern) =>
         sofar || (col.toUpperCase like ("%" + pattern.toUpperCase + "%"))
       } getOrElse false
     }
+
+  def matchTextFields[DB, Row](patterns: Seq[String])
+                     (fields: Seq[DB => Column[Option[String]]]):
+      Query[DB, Row] => Query[DB, Row] = (query) =>
+  fields.map(getField => fuzzyMatch[DB, Row](patterns)(getField)(query))
+    .reduce(_ ++ _)
 
   def optToSeq[A](o: Option[A]): Seq[A] =
     o map (List(_)) getOrElse Nil
@@ -108,6 +115,12 @@ object WfQuery {
                               "approved" -> Flag.Complete,
                               "notRequired" -> Flag.NotRequired)
 
+  // fields against which the 'text' free text pattern should be
+  // tested
+  val textFields: Seq[DBStub => Column[Option[String]]] = List(
+    _.note, _.workingTitle
+  )
+
   def stubsQuery(q: WfQuery) = stubs |>
     simpleInSet(q.section.map(_.toString))(_.section) |>
     optInSet(q.contentType)(_.contentType) |>
@@ -115,7 +128,7 @@ object WfQuery {
     dateInSet(q.dueTimes)(_.due) |>
     dateInSet(q.creationTimes)(_.createdAt) |>
     simpleInSet(q.flags)(_.needsLegal) |>
-    fuzzyMatch(optToSeq(q.text))(_.note)
+    matchTextFields(optToSeq(q.text))(textFields)
 
   def contentQuery(q: WfQuery) = content |>
     simpleInSet(q.status.map(_.toString))(_.status) |>
