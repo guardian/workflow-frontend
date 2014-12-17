@@ -63,18 +63,13 @@ object WfQuery {
       }
     }
 
-  def fuzzyMatchPred[C, Column[C] <% StringColumnExtensionMethods[C]](patterns: Seq[String]) = { col: Column[C] =>
-    patterns.foldLeft(FalseCol) { (sofar, pattern) =>
-      sofar || (col.toUpperCase like ("%" + pattern.toUpperCase + "%"))
+  def fuzzyMatch[DB, Row](patterns: Seq[String])(getField: DB => Column[Option[String]]):
+      Query[DB, Row] => Query[DB, Row] =
+    searchSet(patterns, getField) { col: Column[Option[String]] =>
+      patterns.foldLeft(FalseCol.?) { (sofar, pattern) =>
+        sofar || (col.toUpperCase like ("%" + pattern.toUpperCase + "%"))
+      } getOrElse false
     }
-  }
-
-//  def fuzzyMatch[DB, Row](patterns: Seq[String], getField: DB => Column[String]):
-//      (Query[DB, Row]) => Query[DB, Row] =
-//    searchSet(patterns, getField)(fuzzyMatchPred(patterns))
-
-  def fuzzyMatch[C, Column[C] <% StringColumnExtensionMethods[C]](patterns: Seq[String], getField: DB => Column[C]) =
-    searchSet(patterns, getField) { fuzzyMatchPred(patterns) }
 
   def optToSeq[A](o: Option[A]): Seq[A] =
     o map (List(_)) getOrElse Nil
@@ -120,7 +115,7 @@ object WfQuery {
     dateInSet(q.dueTimes)(_.due) |>
     dateInSet(q.creationTimes)(_.createdAt) |>
     simpleInSet(q.flags)(_.needsLegal) |>
-    fuzzyMatch(optToSeq(q.text), _.note)
+    fuzzyMatch(optToSeq(q.text))(_.note)
 
   def contentQuery(q: WfQuery) = content |>
     simpleInSet(q.status.map(_.toString))(_.status) |>
