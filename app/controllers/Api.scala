@@ -292,6 +292,8 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
+  def sharedAuthGetContent = SharedSecretAuthAction(getContentBlock)
+
   private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
     requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
   }
