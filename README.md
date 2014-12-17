@@ -141,13 +141,41 @@ You should get the latest ubuntu ami image from [https://cloud-images.ubuntu.com
 Prole needs a 64 bit ebs instance eu-west-1 region
 Prototype needs a 64 instance-storage eu-west-1 region
 
-``` packer build prototype/provisioning.json
-   ```
-``` packer build prole/provisioning.json
-```
+    packer build prototype/provisioning.json
+    packer build prole/provisioning.json
 
 This will take several minutes to build the new AMI. Once complete, you should see something like:
 
-```eu-west-1: ami-xxxxxxxx
-```
+    eu-west-1: ami-xxxxxxxx
+
 You can then add the ami instance to cloud formation.
+
+Shared Auth API
+---------------
+
+It is possible to use some endpoints by providing a shared secret as a cookie
+call `workflow-secret`. This cookie should be an HMAC SHA1 signature of the
+current time (in ms since the epoch) with the last 16 bits masked to 0 signed
+with the shared key, as configured in the config file under `api.sharedsecret`.
+
+For example, here is a simple shell script that uses the `openssl` command-line
+tool, which is almost always present (including on stock Macs), to generate the
+appropriate cookie value.
+
+```
+#!/bin/bash
+
+if [[ -z "$1" ]]
+then
+    echo "Please provide a key as the first arg"
+    exit
+fi
+
+KEY=$1
+
+# everything before here is optional niceties
+NOW=$(date '+%s')
+PLAINTEXT=$((($NOW * 1000) & ~65535))
+echo -n "$PLAINTEXT" | openssl sha1 -hmac "$KEY"
+```
+
