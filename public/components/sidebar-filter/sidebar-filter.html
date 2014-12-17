@@ -3,7 +3,7 @@
         <h5 class="query sidebar__heading" data-toggle="collapse" data-target="#type" ng-class="{'sidebar__heading--open': listIsOpen}">{{ filter.title }}</h5>
         <div class="sidebar__header-spacer"></div>
         <div ng-class="{'sidebar__filter--active': filterIsSelected(defaultFilter)}" class="sidebar__filter sidebar__filter--default">
-            <a href="" class="sidebar__filter-link" ng-click="filterClick(defaultFilter); $event.stopPropagation();">{{defaultFilter.caption}}</a>
+            <a href="" class="sidebar__filter-link" ng-click="defaultFilterClick(defaultFilter); $event.stopPropagation();">{{defaultFilter.caption}}</a>
         </div>
     </div>
 
