@@ -60,6 +60,25 @@ object WorkflowContent {
     )
   }
 
+  def default(composerId: String, contentType: String = "article", activeInInCopy: Boolean = false): WorkflowContent = {
+    WorkflowContent(composerId,
+      path=None,
+      headline=None,
+      mainMedia=None,
+      contentType=contentType,
+      section=None,
+      status=Status.Writers,
+      lastModified=new DateTime,
+      lastModifiedBy=None,
+      commentable=false,
+      published=false,
+      timePublished=None,
+      storyBundleId=None,
+      activeInInCopy=activeInInCopy,
+      takenDown=false,
+      timeTakenDown=None)
+  }
+
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId, path, lastMod, lastModBy, status, contentType, commentable,
           headline, mainMedia, published, timePublished, _, storyBundleId, activeInInCopy,
@@ -90,8 +109,22 @@ object WorkflowContent {
       (__ \ "published").read[Boolean] ~
       (__ \ "timePublished").readNullable[DateTime] ~
       (__ \ "storyBundleId").readNullable[String] ~
-      (__ \ "activeInIncopy").read[Boolean] ~
+      (__ \ "activeInInCopy").read[Boolean] ~
       (__ \ "takenDown").read[Boolean] ~
       (__ \ "timeTakenDown").readNullable[DateTime]
       )(WorkflowContent.apply _)
 }
+
+case class ContentItem(stub: Stub, wcOpt: Option[WorkflowContent])
+
+case object ContentItem {
+  implicit val contentItemReads = new Reads[ContentItem] {
+    def reads(json: JsValue) = {
+      for {
+        stub <- json.validate[Stub]
+        wcOpt <- json.validate[Option[WorkflowContent]]
+      } yield ContentItem(stub, wcOpt)
+    }
+  }
+}
+

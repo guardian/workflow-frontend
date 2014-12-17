@@ -1,5 +1,6 @@
 package lib
 
+import models.ApiResponse.ApiResponse
 import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
@@ -57,31 +58,37 @@ object PostgresDB {
   private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
-      content +=
-      ((composerId,
-        None,
-        new DateTime,
-        None,
-        Status.Writers.name,
-        contentType,
-        false,
-        None,
-        None,
-        false,
-        None,
-        None,
-        None,
-        activeInInCopy,
-        false,
-        None))
+      val wc = WorkflowContent.default(composerId: String, contentType: String, activeInInCopy)
+      content += WorkflowContent.newContentRow(wc, None)
     }
   }
 
-  def createStub(stub: Stub, activeInInCopy: Boolean = false): Unit =
+
+  /**
+   * Creates a new content item in Workflow.
+   *
+   * @param stub
+   * @param contentItem
+   * @return Either: Left(Long) if item exists already with composerId.
+   *         Right(Long) of newly created item.
+   */
+  def createContent(contentItem: ContentItem): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
-      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article"), activeInInCopy))
-      stubs += Stub.newStubRow(stub)
+
+      val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
+
+      existing match {
+        case Some(stubId) => Left(ApiError("StubExists",s"Stub ${stubId} already exists", 409, "conflict"))
+        case None => {
+          contentItem.wcOpt.foreach(
+            content += WorkflowContent.newContentRow(_, None)
+          )
+
+          Right((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
+        }
+      }
     }
+  }
 
   def getContentByComposerId(composerId: String): Option[DashboardRow] = {
     DB.withTransaction { implicit session =>
