@@ -16,6 +16,12 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         },
         link: function ($scope, elem, attrs) {
 
+            console.log("listening on ", "freeTextUpdateFilter." + $scope.filter.namespace);
+            $scope.$on("freeTextUpdateFilter." + $scope.filter.namespace, function(ev, value) {
+                console.log(value);
+                $scope.filterClick({value: value});
+            });
+
             function isMultiSelect() {
                 if(typeof $scope.filter["multi"] === "boolean")
                     return $scope.filter["multi"]
@@ -94,4 +100,9 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             };
         }
     };
-}]);
+    }]).directive("wfToolbarFreetext", ['wfFiltersService', '$rootScope', function(wfFiltersService, $rootScope) {
+        return {
+            link: function ($scope, elem, attrs) {
+                $scope.$watch(elem[0].value
+            }
+    }]);
