@@ -1,6 +1,8 @@
 import angular from 'angular';
 import moment from 'moment';
 
+import _ from 'lodash';
+
 import './date-service';
 
 angular.module('wfFiltersService', ['wfDateService'])
@@ -51,10 +53,28 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                var keywords = {
+                    "type"   : "content-type",
+                    "status" : "status",
+                    "state"  : "state"
+                }
+
                 $rootScope.$on('filtersChanged.freeText', function(event, data) {
-                    self.update('text', data);
+                    self.clearAll();
+                    if(data != null) {
+                        var rest =
+                            data.replace(/\s*([A-Za-z-]+):(\S+)\s*/g, (match, field, value) => {
+                                if(_.has(keywords, field)) {
+                                    self.update(keywords[field], value);
+                                }
+                                console.log("field: " + field + " => value: " + value);
+                                return "";
+                            });
+                        self.update('text', rest);
+                    } else {
+                        self.update('text', null);
+                    }
                     $rootScope.$broadcast('getContent');
-//                    console.log("filtersChanged.freeText event:", data);
                 });
 
 
@@ -109,6 +129,12 @@ angular.module('wfFiltersService', ['wfDateService'])
 
             getAll() {
                 return this.filters;
+            }
+
+            clearAll() {
+                _.forOwn(this.filters, (value, key) => {
+                    this.update(key, null);
+                });
             }
 
         }

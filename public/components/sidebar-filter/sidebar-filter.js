@@ -16,13 +16,6 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         },
         link: function ($scope, elem, attrs) {
 
-            console.log("listening on ", "freeTextUpdateFilter." + $scope.filter.namespace);
-            $scope.$on("freeTextUpdateFilter." + $scope.filter.namespace, function(ev, value) {
-                console.log(value);
-                $scope.selectFilter(value);
-                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
-            });
-
             function isMultiSelect() {
                 if(typeof $scope.filter["multi"] === "boolean")
                     return $scope.filter["multi"]
@@ -101,17 +94,26 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             };
         }
     };
-    }]).directive("wfToolbarFreetext", ['wfFiltersService', '$rootScope', function(wfFiltersService, $rootScope) {
+    }]).directive("wfToolbarFreetext", ['wfFiltersService', '$rootScope', '$timeout', function(wfFiltersService, $rootScope,$timeout) {
+        // how long to wait (ms) after seeing a change before
+        // committing it? (e.g. we want to activate the change
+        // once the user has finished typing).
+        var delay = 500;
+
         return {
             link: function ($scope, elem, attrs) {
-                $scope.$watch(() => elem[0].value, (newVal, oldVal) => {
-                    var rest = newVal.replace(/([A-Za-z]+):(\S+)/g, (match, field, value) => {
-                        $rootScope.$broadcast("freeTextUpdateFilter." + field, value);
-                        console.log("field: " + field + " => value: " + value);
-                        return "";
-                    });
-                    $rootScope.$broadcast("filtersChanged.freeText", (rest.length < 1) ? null : rest);
-                });
+                $scope.value = "";
+                var timeout = null;
+                $scope.update = function() {
+                    var newVal = $scope.value;
+                    if(timeout != null) $timeout.cancel(timeout);
+                    timeout = $timeout(() => {
+                        $rootScope.$broadcast("filtersChanged.freeText",
+                                              ($scope.value.length < 1) ? null : $scope.value);
+
+                        console.log("updated");
+                    }, delay);
+                }
             }
         }
     }]);
