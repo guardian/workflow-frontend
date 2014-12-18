@@ -6,41 +6,22 @@ import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time._
 import com.gu.workflow.syntax._
 import models._
+import com.gu.workflow.query._
 import com.gu.workflow.db.Schema._
-
 
 object CommonDB {
 
   import play.api.Play.current
   import play.api.db.slick.DB
+  import WfQuery._
 
-  def getStubs(
-                dueFrom: Option[DateTime] = None,
-                dueUntil: Option[DateTime] = None,
-                section: Option[List[Section]] = None,
-                composerId: Set[String] = Set.empty,
-                contentType: Option[String] = None,
-                unlinkedOnly: Boolean = false,
-                prodOffice: Option[String] = None,
-                createdFrom: Option[DateTime] = None,
-                createdUntil: Option[DateTime] = None
-                ): List[Stub] =
+  def getStubs(query: WfQuery, unlinkedOnly: Boolean = false): List[Stub] =
     DB.withTransaction { implicit session =>
 
-      val cIds = if (composerId.nonEmpty) Some(composerId) else None
+      val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isNull) else stubsQuery(query)
 
-      val q =
-        (if (unlinkedOnly) stubs.filter(_.composerId.isNull) else stubs) |>
-          dueFrom.foldl[StubQuery]     ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-          dueUntil.foldl[StubQuery]    ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-          section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>
-          contentType.foldl[StubQuery] { case (q, _)  => q.filter(_.contentType === contentType) } |>
-          cIds.foldl[StubQuery]        ((q, ids)      => q.filter(_.composerId inSet ids)) |>
-          prodOffice.foldl[StubQuery]  ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
-          createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
-          createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
-
-      q.filter(s => dueDateNotExpired(s.due)).list.map(row => Stub.fromStubRow(row))
+      q.filter(s => dueDateNotExpired(s.due))
+        .list.map(row => Stub.fromStubRow(row))
     }
 
   def getStubForComposerId(composerId: String): Option[Stub] = DB.withTransaction { implicit session =>
@@ -90,7 +71,7 @@ object CommonDB {
       content += WorkflowContent.newContentRow(wc, revision)
   }
 
-  def takeDownContent(composerId: String, t: Option[DateTime]) = { 
+  def takeDownContent(composerId: String, t: Option[DateTime]) = {
     DB.withTransaction { implicit session =>
       content
         .filter(_.composerId === composerId)

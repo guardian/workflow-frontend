@@ -56,11 +56,6 @@ angular.module('wfFiltersService', ['wfDateService'])
                 this.attachListeners()
             }
 
-            stringToArray(value) {
-                if (value) return value.split(",");
-                else return [];
-            }
-
             constructor()
             {
                 var params = $location.search();
@@ -73,10 +68,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                    'section': params['section'],
                    'content-type': params['content-type'],
                    'selectedDate': wfDateParser.parseQueryString(selectedDate),
-                   'flags': (function (that) {
-                       var a = that.stringToArray(params['flags']);
-                       return a.length > 0 ? a : undefined;
-                   })(this),
+                    'flags': params['flags'],
                    'prodOffice': params['prodOffice'],
                    'created': params['created']
                 };
