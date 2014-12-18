@@ -50,6 +50,13 @@ angular.module('wfFiltersService', ['wfDateService'])
                     self.update('created',  data);
                     $rootScope.$broadcast('getContent');
                 });
+
+                $rootScope.$on('filtersChanged.freeText', function(event, data) {
+                    self.update('text', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
+
             }
 
             init() {
