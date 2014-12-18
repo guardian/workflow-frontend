@@ -15,6 +15,7 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
             {
                 title: 'Status',
                 namespace: 'status',
+                multi: true,
                 filterOptions: statuses.map((status) => {
                     return {
                         caption: status === 'Stub' ? 'News list' : status,
@@ -25,6 +26,7 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
             {
                 title: 'Content',
                 namespace: 'content-type',
+                multi: true,
                 filterOptions: [
                     { caption: 'Article', value: 'article', icon: 'article' },
                     { caption: 'Liveblog', value: 'liveblog', icon: 'liveblog' },
@@ -80,7 +82,7 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
                     $scope.dateOptions.forEach(function (date) {
                         if (date.isSame(selectedDate)) {
                             selectedDate = date;
-                            $scope.selectedFilter = 'customDate';
+                            $scope.selectFilter('customDate');
                         }
                     });
 
@@ -96,11 +98,10 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
                         if (newValue !== oldValue) {  // Prevents fire change event on init
                             $scope.$emit('filtersChanged.deadline', $scope.select.selectedDate);
                             if (newValue !== null) {
-                                $scope.selectedFilter = 'customDate';
+                                $scope.selectFilter('customDate');
                             } else {
-                                $scope.selectedFilter = newValue;
+                                $scope.selectedFilters = [];
                             }
-
                         }
                     });
                 }]
