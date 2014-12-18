@@ -8,10 +8,9 @@
 @import "components/content-list-drawer/content-list-drawer";
 @import "components/stubs-list/stubs-list";
 @import "components/details-panel/details-panel";
+@import "components/stub-modal/stub-modal";
 @import "sidebar";
 @import "toolbar";
-@import "components/toolbar-sections-dropdown/toolbar-sections-dropdown";
-@import "components/stub-modal/stub-modal";
 
 .content-list-column {
     overflow: auto;
