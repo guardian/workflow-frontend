@@ -19,7 +19,8 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             console.log("listening on ", "freeTextUpdateFilter." + $scope.filter.namespace);
             $scope.$on("freeTextUpdateFilter." + $scope.filter.namespace, function(ev, value) {
                 console.log(value);
-                $scope.filterClick({value: value});
+                $scope.selectFilter(value);
+                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
             });
 
             function isMultiSelect() {
@@ -103,6 +104,14 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
     }]).directive("wfToolbarFreetext", ['wfFiltersService', '$rootScope', function(wfFiltersService, $rootScope) {
         return {
             link: function ($scope, elem, attrs) {
-                $scope.$watch(elem[0].value
+                $scope.$watch(() => elem[0].value, (newVal, oldVal) => {
+                    var rest = newVal.replace(/([A-Za-z]+):(\S+)/g, (match, field, value) => {
+                        $rootScope.$broadcast("freeTextUpdateFilter." + field, value);
+                        console.log("field: " + field + " => value: " + value);
+                        return "";
+                    });
+                    $rootScope.$broadcast("filtersChanged.freeText", (rest.length < 1) ? null : rest);
+                });
             }
+        }
     }]);
