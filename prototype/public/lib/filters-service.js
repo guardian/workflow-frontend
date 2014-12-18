@@ -54,6 +54,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                 $rootScope.$on('filtersChanged.freeText', function(event, data) {
                     self.update('text', data);
                     $rootScope.$broadcast('getContent');
+//                    console.log("filtersChanged.freeText event:", data);
                 });
 
 
