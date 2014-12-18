@@ -16,10 +16,13 @@ var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesSer
 
 function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService) {
 
+
+    var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
+
     $scope.mode = mode;
     $scope.modalTitle = ({
-        'create': 'Create News item',
-        'edit': 'Edit News item',
+        'create': `Create ${contentName}`,
+        'edit': `Edit ${contentName}`, 
         'import': 'Import from Composer'
     })[mode];
 
@@ -37,10 +40,12 @@ function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, leg
         wfComposerService.getComposerContent($scope.formData.composerUrl).then(
             (composerContent) => {
                 if (composerContent) {
-                    $scope.stub.composerId = composerContent.id;
-                    $scope.stub.contentType = composerContent.type;
-                    $scope.stub.title = composerContent.headline;
-                    $scope.stub.activeInInCopy = composerContent.activeInInCopy;
+                    var stub = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
+
+                    // preset working title
+                    stub.title = stub.headline;
+
+
                 } else {
                     $scope.stub.composerId = null;
                     $scope.stub.contentType = null;
@@ -97,7 +102,7 @@ wfStubModal.run(['$rootScope',
 
         var lastUsedSection = 'Technology'; // tech by default
 
-        function defaultStub() {
+        function defaultStub(contentType) {
             function defaultSection() {
                 var filteredSection = currentFilteredSection(),
                     splitSections;
@@ -116,7 +121,7 @@ wfStubModal.run(['$rootScope',
             }
 
             return {
-                contentType: 'article',
+                contentType: contentType,
                 section: getSectionFromSections(defaultSection()),
                 priority: 0,
                 needsLegal: 'NA',
@@ -128,8 +133,8 @@ wfStubModal.run(['$rootScope',
             open(stub, 'edit');
         });
 
-        $rootScope.$on('stub:create', function (event) {
-            open(defaultStub(), 'create');
+        $rootScope.$on('stub:create', function (event, contentType) {
+            open(defaultStub(contentType), 'create');
         });
 
         $rootScope.$on('content:import', function (event) {
@@ -152,6 +157,8 @@ wfStubModal.run(['$rootScope',
                 var stub = modalCloseResult.stub;
                 var addToComposer = modalCloseResult.addToComposer;
 
+                stub.status = 'Writers'; // TODO: allow status to be selected
+
                 var promise;
                 if (addToComposer) {
                     promise = wfContentService.createInComposer(stub);
@@ -160,8 +167,7 @@ wfStubModal.run(['$rootScope',
                     promise = wfContentService.updateStub(stub);
 
                 } else {
-                    promise = wfContentService.createStub(stub,
-                                                          stub.activeInInCopy);
+                    promise = wfContentService.createStub(stub);
                 }
 
                 if (stub.section) {

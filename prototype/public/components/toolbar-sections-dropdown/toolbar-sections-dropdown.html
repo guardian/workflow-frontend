@@ -1,17 +1,16 @@
-<div class="dashboard-toolbar__section dashboard-toolbar__section--dropdown">
-
-    <button class="dashboard-toolbar__section-dropdown-button" ng-click="toggleDropdown();">
-        <div class="dashboard-toolbar__section-label">
-            <span class="dashboard-toolbar__section-label-text">Section</span>
-            <div class="dashboard-toolbar__section-select" >
-                <span class="dashboard-toolbar__section-select-text">All sections</span></div>
+<div class="dashboard-toolbar__dropdown dashboard-toolbar__dropdown--section">
+    <button class="dashboard-toolbar__dropdown-dropdown-button" ng-click="toggleDropdown()">
+        <div class="dashboard-toolbar__dropdown-label">
+            <span class="dashboard-toolbar__dropdown-label-text">Section</span>
+            <div class="dashboard-toolbar__dropdown-select" >
+                <span class="dashboard-toolbar__dropdown-select-text">All sections</span></div>
         </div>
     </button>
 
-    <ul class="dashboard-toolbar__dropdown section-list list-unstyled section-list--hidden">
-        <li class="section-list__item" ng-model="selectedSections" ng-repeat="s in sections" ng-class="{'section-list__item--active': s.selected, 'section-list__item--pre-selected': s.selected}">
-            <label class="section-list__item-label" for="{{ s.id }}">
-                <input class="section-list__chk" type="checkbox" ng-model="s.selected" id="{{ s.id }}" name="{{ s.id }}" value="{{ s.name }}" ng-change="checkboxUpdate();"/><span class="section-list__item-title">{{ s.name }}</span>
+    <ul class="dashboard-toolbar__dropdown dropdown-toolbar__list list-unstyled section-list--hidden">
+        <li class="dropdown-toolbar__item" ng-model="selectedSections" ng-repeat="s in sections" ng-class="{'dropdown-toolbar__item--active': s.selected, 'dropdown-toolbar__item--pre-selected': s.selected}">
+            <label class="dropdown-toolbar__item-label" for="{{ s.id }}">
+                <input class="section-list__chk" type="checkbox" ng-model="s.selected" id="{{ s.id }}" name="{{ s.id }}" value="{{ s.name }}" ng-change="checkboxUpdate();"/><span class="dropdown-toolbar__item-title">{{ s.name }}</span>
             </label>
         </li>
     </ul>
