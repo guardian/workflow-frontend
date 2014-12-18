@@ -1,5 +1,6 @@
 import angular from 'angular';
 
+import _ from 'lodash';
 import 'lib/filters-service';
 
 angular.module('wfSidebarFilter', ['wfFiltersService'])
@@ -15,11 +16,20 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         },
         link: function ($scope, elem, attrs) {
 
-            $scope.defaultFilter = { caption: "All", value: null };
-            $scope.selectedFilter = wfFiltersService.get($scope.filter.namespace);
+            function isMultiSelect() {
+                if(typeof $scope.filter["multi"] === "boolean")
+                    return $scope.filter["multi"]
+                else
+                    return false
+            }
 
-            if (!$scope.selectedFilter) {
-                $scope.selectedFilter = null;
+            $scope.defaultFilter = { caption: "All", value: null };
+            var currentSelection = wfFiltersService.get($scope.filter.namespace);
+
+            if (!currentSelection) {
+                $scope.selectedFilters = [];
+            } else {
+                $scope.selectedFilters = currentSelection.split(",")
             }
 
             if ($scope.filter.customLinkFunction) { // Custom linking function for non-standard filters
@@ -33,17 +43,35 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             }
 
             $scope.filterIsSelected = function(filter) {
-                return (filter != null && filter.value === $scope.selectedFilter);
+                if($scope.selectedFilters.length < 1)
+                    return filter.value === $scope.defaultFilter.value
+                else
+                    return (filter != null && _.contains($scope.selectedFilters, filter.value));
             };
+
+            $scope.defaultFilterClick = function(filter) {
+                // this is a replace operartion, instead of an add
+                $scope.selectedFilters = [];
+                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
+            }
+
+            $scope.selectFilter = function(filter) {
+                if(isMultiSelect()) {
+                    $scope.selectedFilters.push(filter);
+                } else {
+                    $scope.selectedFilters = [filter];
+                }
+            }
 
             $scope.filterClick = function(filter) {
                 if($scope.filterIsSelected(filter)) {
-                    $scope.selectedFilter = null;
+                    $scope.selectedFilters =
+                        _.filter($scope.selectedFilters,
+                                 flt => flt !== filter.value);
                 } else {
-                    $scope.selectedFilter = filter.value;
+                    $scope.selectFilter(filter.value);
                 }
-
-                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilter);
+                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
             };
 
             $scope.toggleSidebarSection = function () {
