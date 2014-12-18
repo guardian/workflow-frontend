@@ -96,12 +96,14 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.hasComments = !!item.commentable;
             this.commentsTitle = this.hasComments ? 'on' : 'off';
 
-            this.hasMainMedia = Boolean(item.mainMedia);
-            this.mainMediaType = item.mainMedia;
-            this.mainMediaTitle = 'Main media (' + (item.mainMedia || 'none')  + ')';
-            this.mainMediaUrl = item.mainMediaUrl;
-            this.mainMediaCaption = this.truncateString(item.mainMediaCaption);
-            this.mainMediaAltText = this.truncateString(item.mainMediaAltText);
+            this.hasMainMedia = Boolean(item.mainMedia) && Boolean(item.mainMedia.mediaType);
+            if(this.hasMainMedia) {
+                this.mainMediaType    = item.mainMedia.mediaType; 
+                this.mainMediaTitle   = 'Main media (' + (item.mainMediaType || 'none')  + ')';
+                this.mainMediaUrl     = item.mainMedia.url;
+                this.mainMediaCaption = this.truncateString(item.mainMedia.caption);
+                this.mainMediaAltText = this.truncateString(item.mainMedia.altText);
+            }
 
             // Currently we don't pull in any preview information about non-image main media
             this.mainMediaNoPreview = this.mainMediaType && this.mainMediaType != 'image';
