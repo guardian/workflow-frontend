@@ -6,16 +6,86 @@ import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
+case class Asset(assetType: String, mimeType:String, url:String, fields: Map[String, String])
+object Asset {
+  def getImageAssetSize(asset: Asset): Option[Long] = {
+       for {
+        width <- asset.fields.get("width")
+        height <- asset.fields.get("height")
+      } yield (width.toLong) * (height.toLong)
+  }
+
+  def getImageAssetUrl(assets: List[Asset]): Option[String] = {
+    val imageAssets = assets.filter(_.assetType == "image")
+    val smallestAsset = imageAssets.reduceLeft((l,r) => 
+        if(getImageAssetSize(l).get < getImageAssetSize(r).get){ l } else { r })
+
+    Some(smallestAsset.url)
+  }
+}
+
+case class Tag(id: Long, isLead: Boolean, section: Section)
+case class Element(elementType: String, fields: Map[String, String], assets: List[Asset])
+case class Block(id: String, lastModified: DateTime, elements: List[Element])
+case class Thumbnail(fields: Map[String, String], assets: List[Asset])
+
+case class WorkflowContentMainMedia(
+  mediaType: Option[String] = None,
+  url: Option[String]       = None,
+  caption: Option[String]   = None,
+  altText: Option[String]   = None
+)
+
+object WorkflowContentMainMedia {
+  implicit val workFlowContentMainMediaWrites: Writes[WorkflowContentMainMedia] = 
+    Json.writes[WorkflowContentMainMedia]
+
+  implicit val workFlowContentMainMedia: Reads[WorkflowContentMainMedia] = 
+    Json.reads[WorkflowContentMainMedia]
+
+  def getMainMedia(blockOption: Option[Block]) = {
+    blockOption.map { block =>
+      WorkflowContentMainMedia(
+        getMainMediaType(block),
+        getMainMediaUrl(block),
+        getMainMediaField("caption", block),
+        getMainMediaField("alt", block)
+      )
+    }
+  }
+
+  def getMainMediaType(block: Block) = {
+    for {
+      element <- block.elements.headOption
+    } yield element.elementType
+  }
+
+  def getMainMediaUrl(block: Block): Option[String] = {
+    getMainMediaType(block) match {
+      case Some("image") => for {
+        element <- block.elements.headOption
+        mainMediaUrlOption = Asset.getImageAssetUrl(element.assets)
+        mainMediaUrl <- mainMediaUrlOption
+      } yield mainMediaUrl
+      case _ => None
+    }
+  }
+
+  def getMainMediaField(field: String, block: Block): Option[String] = {
+    for {
+      element <- block.elements.headOption
+      field <- element.fields.get(field)
+    } yield field
+  }
+}
+
 case class WorkflowContent(
   composerId: String,
   path: Option[String],
   headline: Option[String],
   standfirst: Option[String],
   trailtext: Option[String],
-  mainMedia: Option[String],
-  mainMediaUrl: Option[String],
-  mainMediaCaption: Option[String],
-  mainMediaAltText: Option[String],
+  mainMedia: Option[WorkflowContentMainMedia],
   trailImageUrl: Option[String],
   contentType: String,
   section: Option[Section],
@@ -33,43 +103,10 @@ case class WorkflowContent(
 object WorkflowContent {
   implicit val dateTimeFormat = DateFormat
 
-  def getMainMedia(blockOption: Option[Block]) = {
-    for {
-      block   <- blockOption
-      element <- block.elements.headOption
-    } yield element.elementType
-  }
-
-  def getImageAssetSize(asset: Asset): Option[Long] = {
-       for {
-        width <- asset.fields.get("width")
-        height <- asset.fields.get("height")
-      } yield (width.toLong) * (height.toLong)
-  }
-
-  def getImageAssetUrl(assets: List[Asset]): Option[String] = {
-    val imageAssets = assets.filter(_.assetType == "image")
-    val smallestAsset = imageAssets.reduceLeft((l,r) => if(getImageAssetSize(l).get < getImageAssetSize(r).get){ l } else { r })
-
-    Some(smallestAsset.url)
-  }
-
-  def getMainMediaUrl(blocks: Option[Block]): Option[String] = {
-    getMainMedia(blocks) match {
-      case Some("image") => for {
-        block <- blocks
-        element <- block.elements.headOption
-        mainMediaUrlOption = getImageAssetUrl(element.assets)
-        mainMediaUrl <- mainMediaUrlOption
-      } yield mainMediaUrl
-      case _ => None
-    }
-  }
-
   def getTrailImageUrl(thumbnail: Option[Thumbnail]): Option[String] = {
     for {
       t <- thumbnail
-      urlOption <- getImageAssetUrl(t.assets)
+      urlOption <- Asset.getImageAssetUrl(t.assets)
     } yield urlOption 
   }
 
@@ -80,25 +117,16 @@ object WorkflowContent {
     } yield tag.section
   }
 
-  def getMainMediaField(field: String, blocks: Option[Block]): Option[String] = {
-    for {
-      block <- blocks 
-      element <- block.elements.headOption
-      field <- element.fields.get(field)
-    } yield field
-  }
-
   def fromContentUpdateEvent(e: ContentUpdateEvent): WorkflowContent = {
+    val mainMedia = WorkflowContentMainMedia.getMainMedia(e.mainBlock)
+
     WorkflowContent(
       e.composerId,
       e.identifiers.get("path"),
       e.fields.get("headline"),
       e.fields.get("standfirst"),
       e.fields.get("trailText"),
-      getMainMedia(e.mainBlock),
-      getMainMediaUrl(e.mainBlock),
-      getMainMediaField("caption", e.mainBlock),
-      getMainMediaField("alt", e.mainBlock),
+      mainMedia,
       getTrailImageUrl(e.thumbnail),
       e.`type`,
       getSectionFromTags(e.tags),
@@ -115,15 +143,13 @@ object WorkflowContent {
   }
 
   def default(composerId: String, contentType: String = "article", activeInInCopy: Boolean = false): WorkflowContent = {
-    WorkflowContent(composerId,
+    WorkflowContent(
+      composerId,
       path=None,
       headline=None,
       standfirst=None,
       trailtext=None,
       mainMedia=None,
-      mainMediaUrl=None,
-      mainMediaCaption=None,
-      mainMediaAltText=None,
       trailImageUrl=None,
       contentType=contentType,
       section=None,
@@ -139,20 +165,46 @@ object WorkflowContent {
   }
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
-    case (composerId, path, lastMod, status, contentType, commentable,
-          headline, standfirst, trailtext, mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText, trailImageUrl, published, timePublished, _, storyBundleId, activeInInCopy,
-          takenDown, timeTakenDown) =>
-          WorkflowContent(
-            composerId, path, headline, standfirst, trailtext, mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText, trailImageUrl, contentType, None, Status(status), lastMod,
-            commentable, published, timePublished, storyBundleId,
-            activeInInCopy, takenDown, timeTakenDown)
-  }
-  def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow =
-    (wc.composerId, wc.path, wc.lastModified, wc.status.name,
-     wc.contentType, wc.commentable, wc.headline, wc.standfirst, wc.trailtext, wc.mainMedia, wc.mainMediaUrl, wc.mainMediaCaption, wc.mainMediaAltText, wc.trailImageUrl, wc.published, wc.timePublished,
-     revision, wc.storyBundleId, wc.activeInInCopy, false, None)
+    case (
+      composerId, path, lastMod, 
+      status, contentType, commentable,
+      headline, standfirst, trailtext,
+      mainMedia, mainMediaUrl, mainMediaCaption,
+      mainMediaAltText, trailImageUrl, published,
+      timePublished, _, storyBundleId, activeInInCopy,
+      takenDown, timeTakenDown
+    ) => {
+      val media = WorkflowContentMainMedia(
+        mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
 
-  implicit val workFlowContentWrites: Writes[WorkflowContent] = Json.writes[WorkflowContent]
+      WorkflowContent(
+        composerId, path, headline,
+        standfirst, trailtext, Some(media),
+        trailImageUrl, contentType, None, 
+        Status(status), lastMod, commentable, 
+        published, timePublished, storyBundleId,
+        activeInInCopy, takenDown, timeTakenDown)
+    }
+  }
+
+  def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow = {
+    val mainMedia = wc.mainMedia.getOrElse(
+      WorkflowContentMainMedia(None, None, None, None)
+    )
+
+    (
+      wc.composerId, wc.path, wc.lastModified,
+      wc.status.name, wc.contentType, wc.commentable, 
+      wc.headline, wc.standfirst, wc.trailtext, 
+      mainMedia.mediaType, mainMedia.url, mainMedia.caption, 
+      mainMedia.altText, wc.trailImageUrl, wc.published, 
+      wc.timePublished, revision, wc.storyBundleId, 
+      wc.activeInInCopy, false, None
+    )
+  }
+
+  implicit val workFlowContentWrites: Writes[WorkflowContent] = 
+    Json.writes[WorkflowContent]
 
   implicit val workFlowContentReads: Reads[WorkflowContent] =
     ((__ \ "composerId").read[String] ~
@@ -160,13 +212,12 @@ object WorkflowContent {
       (__ \ "headline").readNullable[String] ~
       (__ \ "standfirst").readNullable[String] ~
       (__ \ "trailtext").readNullable[String] ~
-      (__ \ "mainMedia").readNullable[String] ~
-      (__ \ "mainMediaUrl").readNullable[String] ~
-      (__ \ "mainMediaCaption").readNullable[String] ~
-      (__ \ "mainMediaAltText").readNullable[String] ~
+      (__ \ "mainMedia").readNullable[WorkflowContentMainMedia] ~
       (__ \ "trailImageUrl").readNullable[String] ~
       (__ \ "contentType").read[String] ~
-      (__ \ "section" \ "name").readNullable[String].map { _.map(s => Section(s))} ~
+      (__ \ "section" \ "name").readNullable[String].map { 
+        _.map(s => Section(s))
+      } ~
       (__ \ "status").read[String].map { s => Status(s) } ~
       (__ \ "lastModified").read[DateTime] ~
       (__ \ "commentable").read[Boolean] ~
@@ -180,7 +231,6 @@ object WorkflowContent {
 }
 
 case class ContentItem(stub: Stub, wcOpt: Option[WorkflowContent])
-
 case object ContentItem {
   implicit val contentItemReads = new Reads[ContentItem] {
     def reads(json: JsValue) = {
