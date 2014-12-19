@@ -129,7 +129,7 @@ object WfQuery {
 
   def stubsQuery(q: WfQuery) = stubs |>
     simpleInSet(q.section.map(_.toString))(_.section) |>
-    optInSet(q.contentType)(_.contentType) |>
+    optInSet(q.contentType.map(_.toUpperCase))(_.contentType.toUpperCase) |>
     simpleInSet(q.prodOffice)(_.prodOffice) |>
     dateInSet(q.dueTimes)(_.due) |>
     dateInSet(q.creationTimes)(_.createdAt) |>
@@ -138,7 +138,7 @@ object WfQuery {
     matchTextFields(optToSeq(q.text))(textFields)
 
   def contentQuery(q: WfQuery) = content |>
-    simpleInSet(q.status.map(_.toString))(_.status) |>
-    simpleInSet(q.contentType)(_.contentType) |>
+    simpleInSet(q.status.map(_.toString.toUpperCase))(_.status.toUpperCase) |>
+    simpleInSet(q.contentType.map(_.toUpperCase))(_.contentType.toUpperCase) |>
     q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published))
 }
