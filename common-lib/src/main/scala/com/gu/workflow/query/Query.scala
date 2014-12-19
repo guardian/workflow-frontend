@@ -25,7 +25,8 @@ case class WfQuery(
   flags         : Seq[Flag]  = Nil,
   prodOffice    : Seq[String]      = Nil,
   creationTimes : Seq[WfQueryTime] = Nil,
-  text          : Option[String]   = None
+  text          : Option[String]   = None,
+  assignedTo    : Seq[String]      = Nil
 )
 
 object WfQuery {
@@ -133,6 +134,7 @@ object WfQuery {
     dateInSet(q.dueTimes)(_.due) |>
     dateInSet(q.creationTimes)(_.createdAt) |>
     simpleInSet(q.flags)(_.needsLegal) |>
+    fuzzyMatch(q.assignedTo)(_.assignee) |>
     matchTextFields(optToSeq(q.text))(textFields)
 
   def contentQuery(q: WfQuery) = content |>

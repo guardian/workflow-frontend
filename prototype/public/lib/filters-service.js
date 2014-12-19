@@ -54,9 +54,12 @@ angular.module('wfFiltersService', ['wfDateService'])
                 });
 
                 var keywords = {
-                    "type"   : "content-type",
-                    "status" : "status",
-                    "state"  : "state"
+                    "type"       : "content-type",
+                    "status"     : "status",
+                    "state"      : "state",
+                    "who"        : "assignee",
+                    "assignee"   : "assignee",
+                    "assignedto" : "assignee"
                 }
 
                 $rootScope.$on('filtersChanged.freeText', function(event, data) {
@@ -67,7 +70,6 @@ angular.module('wfFiltersService', ['wfDateService'])
                                 if(_.has(keywords, field)) {
                                     self.update(keywords[field], value);
                                 }
-                                console.log("field: " + field + " => value: " + value);
                                 return "";
                             });
                         self.update('text', rest);
@@ -96,9 +98,10 @@ angular.module('wfFiltersService', ['wfDateService'])
                    'section': params['section'],
                    'content-type': params['content-type'],
                    'selectedDate': wfDateParser.parseQueryString(selectedDate),
-                    'flags': params['flags'],
+                   'flags': params['flags'],
                    'prodOffice': params['prodOffice'],
-                   'created': params['created']
+                   'created': params['created'],
+                   'assignee': params['assignee']
                 };
             }
 
