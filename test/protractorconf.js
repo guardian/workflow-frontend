@@ -23,11 +23,11 @@ if (process.env.CT_DEBUG) {
 var sauceCredentials = {
     username:  process.env.SAUCE_USERNAME,
     accessKey: process.env.SAUCE_ACCESS_KEY
-};
+    },
 
 
 // TODO: make it more configurable
-var browserEnv = {
+browserEnv = {
     // Ideally would run on OS X to simulate editorial machines, but
     // the OS X vms seem a lot less reliable, so falling back to
     // Windows for the moment.
@@ -35,26 +35,26 @@ var browserEnv = {
     platform: 'Windows 8',
     browserName: 'chrome',
     version: '32'
-};
+},
 
 // Set which browser to run in when running locally
-var localEnv = {
+localEnv = {
     browserName: 'chrome'
-};
+},
 
 
-var seleniumAddress;
-var capabilities = {
+seleniumAddress,
+capabilities = {
     'tunnel-identifier': tunnelId,
     shardTestFiles: true,
     maxInstances: 10
-};
-var extraConfig = {};
-var extraJasmineOpts = {
+},
+extraConfig = {},
+extraJasmineOpts = {
     isVerbose: true
-};
+},
 
-var useSauceLabs = !! process.env.RUN_IN_SAUCE_LABS;
+useSauceLabs = !! process.env.RUN_IN_SAUCE_LABS;
 if (useSauceLabs) {
     // SauceConnect port (it must be running!)
     seleniumAddress = 'http://localhost:4445/wd/hub';

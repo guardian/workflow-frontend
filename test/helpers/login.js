@@ -6,8 +6,8 @@ module.exports = function () {
      */
 
     var environment = process.env.ENVIRONMENT || 'release';
-    var email = "composer.test@guardian.co.uk";
-    var password = "2&rDC*Ej";
+    var email = process.env.TESTUSER_USERNAME;
+    var password = process.env.TESTUSER_PASSWORD;
 
     // Lookup environment to run against from the ENVIRONMENT variable
     var workflowUri = {
