@@ -2,29 +2,29 @@ var ptor    = protractor.getInstance();
 
 describe('stub creation', function() {
 
-    var random =            Math.round(Math.random() * 1000000);
-    var stubTitle =         ('Auto Test: ' + random);
+    var random =            Math.round(Math.random() * 1000000),
+        stubTitle =         ('Auto Test: ' + random);
 
     // Locators
-    var stub =              by.cssContainingText('a', stubTitle);
-    var saveStubButton =    by.partialButtonText('Save stub');
-    var newStubButton =     by.partialButtonText('New'); // or by css with content-list__button--new ng-scope
-    var stubTitleField =    by.id("stub_title");
-
+    var CreateNewButton =   by.css('.wf-icon-type--arrow-down'),
+        createArticle =     by.cssContainingText('span', 'Article'),
+        stubTitleField =    by.id("stub_title"),
+        saveStubButton =    by.buttonText('Save stub'),
+        stub =              by.cssContainingText('a', stubTitle);
 
     it('should create a new stub', function() {
         // Not sure why we need this but it doesn't work without
         browser.ignoreSynchronization = true;
 
         browser.driver.sleep(8000);
-
-        element(newStubButton).click();
-
+        element(CreateNewButton).click();
         browser.driver.sleep(1000);
-
+        element(createArticle).click();
+        browser.driver.sleep(1000);
         element(stubTitleField).sendKeys(stubTitle);
         element(saveStubButton).click();
         browser.driver.sleep(6000);
+        console.log('Stub Created: ' + stubTitle);
         expect(ptor.isElementPresent(stub)).toBeTruthy();
   });
 });
