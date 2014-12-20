@@ -1,4 +1,3 @@
-
 .top-toolbar {
     // Flexbox prefixes - TODO: Autoprefixer
     display: -webkit-box;
@@ -61,16 +60,21 @@
     -webkit-flex-grow: 1;
     -ms-flex-positive: 1;
     flex-grow: 1;
-    flex-shrink: 0;
-    flex-basis: 1084px;
+    flex-shrink: 1;
 }
 
 .top-toolbar__user {
     text-align: right;
-    margin: auto 10px;
+    padding: 8px 15px;
+    border-left: 1px solid #bdbdbd;
 }
 
 .top-toolbar__user-link {
     color: $c-text;
     white-space: nowrap;
+    display: block;
+}
+
+.top-toolbar__user-link--feedback {
+    font-size: 0.9em;
 }
