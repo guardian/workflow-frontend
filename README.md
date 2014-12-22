@@ -118,7 +118,15 @@ Start the Selenium server
 
 Run the tests
 
-    $ protractor test/conf.js
+    export TESTUSER_USERNAME=<username>
+    export TESTUSER_PASSWORD=<password>
+    $ protractor ~/test/conf.js
+
+Run the tests through saucelabs
+
+    export SAUCE_USERNAME=<username>
+    export SAUCE_ACCESS_KEY=<access_key>
+    $ node ~/test/sauce-connect+run.js
 
 Updating AMIs
 -------------
