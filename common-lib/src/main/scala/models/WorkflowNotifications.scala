@@ -6,12 +6,6 @@ import play.api.libs.functional.syntax._
 
 sealed trait WorkflowNotification
 
-case class Asset(assetType: String, mimeType:String, url:String, fields: Map[String, String])
-case class Tag(id: Long, isLead: Boolean, section: Section)
-case class Element(elementType: String, fields: Map[String, String], assets: List[Asset])
-case class Block(id: String, lastModified: DateTime, elements: List[Element])
-case class Thumbnail(fields: Map[String, String], assets: List[Asset])
-
 case class ContentUpdateEvent (
   composerId: String,
   identifiers: Map[String, String],

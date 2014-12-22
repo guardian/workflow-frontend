@@ -59,12 +59,25 @@ object CommonDB {
     }
 
   def updateContent(wc: WorkflowContent, revision: Long)(implicit session: Session): Int = {
+      val mainMedia = wc.mainMedia.getOrElse(WorkflowContentMainMedia())
+
       content
         .filter(_.composerId === wc.composerId)
         .filter(c => c.revision < revision || c.revision.isNull)
-        .map(c => 
-          (c.path, c.lastModified, c.contentType, c.commentable, c.headline, c.standfirst, c.trailtext, c.mainMedia, c.mainMediaUrl, c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl, c.published, c.timePublished, c.revision, c.storyBundleId))
-        .update((wc.path, wc.lastModified, wc.contentType, wc.commentable, wc.headline, wc.standfirst, wc.trailtext, wc.mainMedia, wc.mainMediaUrl, wc.mainMediaCaption, wc.mainMediaAltText, wc.trailImageUrl, wc.published, wc.timePublished, Some(revision), wc.storyBundleId))
+        .map(c => (
+          c.path, c.lastModified, c.contentType, 
+          c.commentable, c.headline, c.standfirst, 
+          c.trailtext, c.mainMedia, c.mainMediaUrl,
+          c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl, 
+          c.published, c.timePublished, c.revision, c.storyBundleId)
+        )
+        .update((
+          wc.path, wc.lastModified, wc.contentType, 
+          wc.commentable, wc.headline, wc.standfirst, 
+          wc.trailtext, mainMedia.mediaType, mainMedia.url, 
+          mainMedia.caption, mainMedia.altText, wc.trailImageUrl, 
+          wc.published, wc.timePublished, Some(revision), wc.storyBundleId)
+        )
   }
 
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {
