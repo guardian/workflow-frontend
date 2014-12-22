@@ -216,7 +216,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     width: calc(100% + 2px); // Menu takes width of parent, +2 accounts for border of parent
     top : 100%;
     left: -1px; // centers menu wrt parent+parent border
-    background-color: #cccccc;
+    background-color: $c-bluegrey;
     
 
     padding: 0;
