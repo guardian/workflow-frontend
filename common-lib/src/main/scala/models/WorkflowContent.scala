@@ -91,6 +91,7 @@ case class WorkflowContent(
   section: Option[Section],
   status: Status,
   lastModified: DateTime,
+  lastModifiedBy: Option[String],
   commentable: Boolean,
   published: Boolean,
   timePublished: Option[DateTime],
@@ -132,6 +133,7 @@ object WorkflowContent {
       getSectionFromTags(e.tags),
       e.status, // not written to the database but the DTO requires a value.
       e.lastModified,
+      e.user,
       commentable=e.commentable,
       published = e.published,
       timePublished = e.publicationDate,
@@ -155,6 +157,7 @@ object WorkflowContent {
       section=None,
       status=Status.Writers,
       lastModified=new DateTime,
+      lastModifiedBy=None,
       commentable=false,
       published=false,
       timePublished=None,
@@ -166,7 +169,7 @@ object WorkflowContent {
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (
-      composerId, path, lastMod, 
+      composerId, path, lastMod, lastModBy, 
       status, contentType, commentable,
       headline, standfirst, trailtext,
       mainMedia, mainMediaUrl, mainMediaCaption,
@@ -181,7 +184,7 @@ object WorkflowContent {
         composerId, path, headline,
         standfirst, trailtext, Some(media),
         trailImageUrl, contentType, None, 
-        Status(status), lastMod, commentable, 
+        Status(status), lastMod, lastModBy, commentable, 
         published, timePublished, storyBundleId,
         activeInInCopy, takenDown, timeTakenDown)
     }
@@ -193,7 +196,7 @@ object WorkflowContent {
     )
 
     (
-      wc.composerId, wc.path, wc.lastModified,
+      wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy,
       wc.status.name, wc.contentType, wc.commentable, 
       wc.headline, wc.standfirst, wc.trailtext, 
       mainMedia.mediaType, mainMedia.url, mainMedia.caption, 
@@ -220,6 +223,7 @@ object WorkflowContent {
       } ~
       (__ \ "status").read[String].map { s => Status(s) } ~
       (__ \ "lastModified").read[DateTime] ~
+      (__ \ "lastModifiedBy").readNullable[String] ~
       (__ \ "commentable").read[Boolean] ~
       (__ \ "published").read[Boolean] ~
       (__ \ "timePublished").readNullable[DateTime] ~

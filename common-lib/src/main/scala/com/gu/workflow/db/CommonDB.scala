@@ -65,14 +65,14 @@ object CommonDB {
         .filter(_.composerId === wc.composerId)
         .filter(c => c.revision < revision || c.revision.isNull)
         .map(c => (
-          c.path, c.lastModified, c.contentType, 
+          c.path, c.lastModified, c.lastModifiedBy, c.contentType, 
           c.commentable, c.headline, c.standfirst, 
           c.trailtext, c.mainMedia, c.mainMediaUrl,
           c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl, 
           c.published, c.timePublished, c.revision, c.storyBundleId)
         )
         .update((
-          wc.path, wc.lastModified, wc.contentType, 
+          wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, 
           wc.commentable, wc.headline, wc.standfirst, 
           wc.trailtext, mainMedia.mediaType, mainMedia.url, 
           mainMedia.caption, mainMedia.altText, wc.trailImageUrl, 

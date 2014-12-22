@@ -45,6 +45,7 @@ object Schema {
       String,          // composer_id
       Option[String],  // path
       DateTime,        // last_modified
+      Option[String],  // last_modified_by
       String,          // status
       String,          // content_type
       Boolean,         // commentable
@@ -69,6 +70,7 @@ object Schema {
     def composerId       = column [String]            ("composer_id", O.PrimaryKey)
     def path             = column [Option[String]]    ("path")
     def lastModified     = column [DateTime]          ("last_modified")
+    def lastModifiedBy   = column [Option[String]]    ("last_modified_by")
     def status           = column [String]            ("status")
     def contentType      = column [String]            ("content_type")
     def commentable      = column [Boolean]           ("commentable")
@@ -87,7 +89,7 @@ object Schema {
     def revision         = column [Option[Long]]      ("revision")
     def storyBundleId    = column [Option[String]]    ("storybundleid")
     def activeInInCopy   = column [Boolean]           ("activeinincopy")
-    def * = (composerId, path, lastModified, status,
+    def * = (composerId, path, lastModified, lastModifiedBy, status,
              contentType, commentable, headline, standfirst, trailtext, 
              mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText, trailImageUrl, published, timePublished,
              revision, storyBundleId, activeInInCopy, takenDown, timeTakenDown)
