@@ -8,29 +8,33 @@
 <table class="content-list" ng-class="{ 'content-list--compact': contentList.compact }">
     <thead class="content-list-head">
         <tr class="content-list-head__row">
-            <th class="content-list-head__heading--group" colspan="3">
+            <th class="content-list-head__heading--group content-list-head__heading--notifier" colspan="1">
                 <div class="content-list__compact-button" ng-class="{ 'content-list__compact-button--active': contentList.compact }" ng-click="contentList.compact = !contentList.compact" title="Toggle compact view"></div>
             </th>
-            <th class="content-list-head__heading--titles">Working title / Headline</span></th>
-            <th class="content-list-head__heading--group" colspan="3"></th>
-            <th class="content-list-head__heading--presence" title="In use by">
-                <i class="content-list-head__heading-icon--presence" wf-icon="presence"/>
+
+            <th ng-repeat="col in columns" ng-if="col.active" class="content-list-head__heading--{{ col.name }}" ng-attr-title="{{ col.title.length > 0 && col.title || undefined }}" colspan="{{ col.colspan }}" bind-compiled-html="col.labelHTML"></span></th>
+
+            <th class="content-list-head__heading--group content-list-head__heading--notifier content-list-head--button-container" colspan="1">
+                <div class="configure-columns" ng-click="showColumnMenu = !showColumnMenu" title="Select columns">
+                    <div class="configure-columns__inner"></div>
+                </div>
+
+                <div class="column-configurator" ng-show="showColumnMenu">
+                    <ul class="column-configurator__list">
+                        <li class="column-configurator__list-item" ng-repeat="col in columns" ng-if="col.name!='titles'">
+                            <label class="column-configurator__label" for="{{ col.name }}">
+                                <input class="column-configurator__label" type="checkbox" ng-model="col.active" id="{{ col.name }}" name="{{ col.name }}" ng-change="colChange()"/>
+                                {{ col.prettyName }}
+                            </label>
+                        </li>
+                    </ul>
+                </div>
             </th>
-            <th class="content-list-head__heading--assignee" title="Assigned to">
-                <i class="content-list-head__heading-icon--assignee" wf-icon="assigned-to"/>
-            </th>
-            <th class="content-list-head__heading--office" title="Production office">Office</th>
-            <th class="content-list-head__heading--deadline">Deadline</th>
-            <th class="content-list-head__heading--section">Section</th>
-            <th class="content-list-head__heading--status">Status</th>
-            <th class="content-list-head__heading--notes">Notes</th>
-            <th class="content-list-head__heading--links" colspan="4">Open in</th>
-            <th class="content-list-head__heading--published-state">State</th>
         </tr>
     </thead>
     <tbody ng-repeat="group in content track by group.name">
         <tr class="content-list__group-heading-row">
-            <th class="content-list__group-heading" scope="rowgroup" colspan="20">
+            <th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}">
                 <span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span>
             </th>
         </tr>
