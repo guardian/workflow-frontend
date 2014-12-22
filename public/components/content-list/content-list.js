@@ -8,7 +8,6 @@ import 'lib/content-service';
 import 'lib/date-service';
 import 'lib/presence';
 import 'lib/prodoffice-service';
-import 'lib/column-service';
 import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
 
@@ -16,46 +15,15 @@ import { wfContentListDrawer } from 'components/content-list-drawer/content-list
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
-    .controller('wfContentListController', ['$rootScope', '$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', wfContentListController])
+    .controller('wfContentListController', ['$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
-    .directive('wfContentListItem', ['$rootScope', '$q', '$compile', '$http', '$templateCache', 'wfColumnService', wfContentListItem])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer])
-    .directive("bindCompiledHtml", function($compile, $timeout) {
-        return {
-            scope: {
-                rawHtml: '=bindCompiledHtml'
-            },
-            link: function(scope, elem, attrs) {
-                scope.$watch('rawHtml', function(value) {
-                    if (!value) return;
-                    var newElem;
-                    try { // Crappy javascript :-(
-                        newElem = $compile(value)(scope.$parent);
-                    } catch (e) {
-                        newElem = value;
-                    }
-                    elem.contents().remove();
-                    elem.append(newElem);
-                });
-            }
-        };
-    });
+    .directive('wfContentListItem', ['$rootScope', wfContentListItem])
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer]);
 
 
-
-function wfContentListController($rootScope, $scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService) {
+function wfContentListController($scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService) {
 
     /*jshint validthis:true */
-
-    wfColumnService.getColumns().then((data) => {
-        $scope.columns = data;
-    });
-
-    $scope.showColumnMenu = false;
-    $scope.colChange = function () {
-        wfColumnService.setColumns($scope.columns);
-        $rootScope.$emit('contentItem.columnsChanged');
-    };
 
     this.compact = false;
     this.showHeadline = false;

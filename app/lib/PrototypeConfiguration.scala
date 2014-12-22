@@ -3,16 +3,8 @@ package lib
 import com.gu.workflow.lib.Config
 import play.Logger
 
-case class PrototypeConfiguration(
-                                   composerUrl: String,
-                                   googleClientId: String,
-                                   googleClientSecret: String,
-                                   host: String,
-                                   presenceUrl: String,
-                                   presenceClientLib: String,
-                                   preferencesUrl: String,
-                                   incopyExportUrl: String
-                                   )
+case class PrototypeConfiguration(composerUrl: String, googleClientId: String, googleClientSecret: String, host: String, presenceUrl: String, presenceClientLib: String,
+                                  incopyExportUrl: String)
 
 object PrototypeConfiguration {
 
@@ -27,9 +19,8 @@ object PrototypeConfiguration {
         appSecret <- Config.getConfigString("application.secret").right
         presenceUrl <- Config.getConfigString("presence.url").right
         presenceClientLib <- Config.getConfigString("presence.clientLib").right
-        preferencesUrl <- Config.getConfigString("preferences.url").right
         incopyExportUrl <- Config.getConfigString("incopyExportUrl").right
-      } yield PrototypeConfiguration(composerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl))
+      } yield PrototypeConfiguration(composerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, incopyExportUrl))
     configEit.fold(error => {
       Logger.error(s"could not instantiate Prototype Configuration ${error}")
       sys.error(error)
