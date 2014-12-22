@@ -14,9 +14,7 @@ import 'lib/prodoffice-service';
 
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService']);
 
-function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService) {
-
-
+function StubModalInstanceCtrl($scope, $modalInstance, $window, config, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService) {
     var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
 
     $scope.mode = mode;
@@ -34,7 +32,6 @@ function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, leg
     $scope.sections = sections;
     $scope.legalStates = legalStatesService.getLegalStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
-
 
     $scope.composerUrlChanged = () => {
         wfComposerService.getComposerContent($scope.formData.composerUrl).then(
@@ -79,14 +76,17 @@ function StubModalInstanceCtrl($scope, $modalInstance, stub, mode, sections, leg
 
 }
 
-wfStubModal.run(['$rootScope',
+wfStubModal.run([
+    '$window',
+    '$rootScope',
     '$modal',
     '$log',
     'wfContentService',
     'wfFiltersService',
     'wfProdOfficeService',
     'sections',
-    function ($rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, sections) {
+    'config',
+    function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, sections, config) {
 
         function currentFilteredSection() {
             return wfFiltersService.get('section');
@@ -137,6 +137,13 @@ wfStubModal.run(['$rootScope',
             open(defaultStub(contentType), 'create');
         });
 
+        $rootScope.$on('stub.created', (event, msg) => {
+            if(msg.contentItem.composerId) {
+                var composerUrl = config.composerViewContent + '/' + msg.contentItem.composerId;
+                $window.open(composerUrl);
+            }
+        });
+
         $rootScope.$on('content:import', function (event) {
             open(defaultStub(), 'import');
         });
@@ -175,7 +182,6 @@ wfStubModal.run(['$rootScope',
                 }
 
                 promise.then(() => {
-
                     // Map modal mode to event name
                     var eventName = ({
                         'create': 'stub.created',
@@ -184,9 +190,7 @@ wfStubModal.run(['$rootScope',
                     }[mode]);
 
                     $rootScope.$broadcast(eventName, { 'contentItem': stub });
-
                     $rootScope.$broadcast('getContent');
-
                 }, (err) => {
                     $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
                 });
