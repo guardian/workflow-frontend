@@ -94,6 +94,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             };
         }
     };
+
     }]).directive("wfToolbarFreetext", ['wfFiltersService', '$rootScope', '$timeout', function(wfFiltersService, $rootScope,$timeout) {
         // how long to wait (ms) after seeing a change before
         // committing it? (e.g. we want to activate the change
@@ -105,13 +106,16 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 $scope.value = "";
                 var timeout = null;
                 $scope.update = function() {
-                    var newVal = $scope.value;
-                    if(timeout != null) $timeout.cancel(timeout);
-                    timeout = $timeout(() => {
-                        $rootScope.$broadcast("filtersChanged.freeText",
-                                              ($scope.value.length < 1) ? null : $scope.value);
 
-                        console.log("updated");
+                    if(timeout != null) {
+                        $timeout.cancel(timeout);
+                    }
+
+                    timeout = $timeout(() => {
+                        $rootScope.$broadcast(
+                            "filtersChanged.freeText",
+                            ($scope.value.length < 1) ? null : $scope.value
+                        );
                     }, delay);
                 }
             }
