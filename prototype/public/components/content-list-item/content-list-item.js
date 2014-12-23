@@ -145,6 +145,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 var wfContentListItem = function ($rootScope, $q, $compile, $http, $templateCache, wfColumnService) {
     return {
         restrict: 'A',
+        replace: true,
         templateUrl: '/assets/components/content-list-item/content-list-item-container.html',
         scope: {
             contentItem: '=',
