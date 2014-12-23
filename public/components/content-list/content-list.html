@@ -39,12 +39,7 @@
             </th>
         </tr>
 
-        <tr wf-content-list-item ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections" class="content-list-item" ng-click="selectItem(contentItem)" ng-class="
-    {
-        'content-list-item--selected': contentList.selectedItem === contentItem,
-        'content-list-item--published': contentItem.isPublished && !contentItem.isTakenDown,
-        'content-list-item--takendown': contentItem.isTakenDown
-    }"></tr>
+        <tr wf-content-list-item ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections"></tr>
 
     </tbody>
 
