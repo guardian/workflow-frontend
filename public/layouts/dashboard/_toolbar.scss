@@ -210,6 +210,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 .dashboard-toolbar__dropdown {
     .dashboard-toolbar__dropdown-dropdown-button {
         border-right: $dashboard-toolbar-separator;
+        overflow: hidden;
     }
 
     z-index: 1;
@@ -217,7 +218,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     top : 100%;
     left: -1px; // centers menu wrt parent+parent border
     background-color: $c-bluegrey;
-    
+
 
     padding: 0;
     flex: 2 0 240px;
@@ -257,7 +258,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 .dashboard-toolbar__dropdown-select {
     @extend %dashboard-toolbar__select;
     @extend %dashboard-toolbar__label--select;
-    
+
     flex: 1;
     display: inline-block;
     text-transform: none;
