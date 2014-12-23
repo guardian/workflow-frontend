@@ -145,10 +145,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 var wfContentListItem = function ($rootScope, $q, $compile, $http, $templateCache, wfColumnService) {
     return {
         restrict: 'A',
-//        replace: true,
-//        template: () => {
-//            return $templateRequest.get('/assets/components/content-list-item/content-list-item.html');
-//        },
+        replace: true,
+        templateUrl: '/assets/components/content-list-item/content-list-item-container.html',
         scope: {
             contentItem: '=',
             contentList: '=',
@@ -190,8 +188,7 @@ var wfContentListItem = function ($rootScope, $q, $compile, $http, $templateCach
 
                 $q.all(promises).then(() => {
                     var compiled = $compile(columns.join(''))($scope);
-                    elem.replaceWith(compiled);
-                    elem = compiled;
+                    elem.empty().append(compiled);
                 });
             }
 
