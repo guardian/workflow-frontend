@@ -114,11 +114,15 @@ object Api extends Controller with PanDomainAuthActions {
 
   def getContentbyId(composerId: String) =
     CORSable(PrototypeConfiguration.apply.composerUrl) {
-      APIAuthAction { implicit req =>
-        val data = PostgresDB.getContentByComposerId(composerId)
-        data.map{s => Ok(renderJsonResponse(s))}.getOrElse(NotFound)
-      }
+      APIAuthAction { contentById(composerId) }
     }
+
+  def contentById(composerId: String) = { implicit req: Request[AnyContent] =>
+    val data = PostgresDB.getContentByComposerId(composerId)
+    data.map{s => Ok(renderJsonResponse(s))}.getOrElse(NotFound)
+  }
+
+  def sharedAuthGetContentById(composerId: String) = SharedSecretAuthAction(contentById(composerId))
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   val iso8601DateTimeNoMillis = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
