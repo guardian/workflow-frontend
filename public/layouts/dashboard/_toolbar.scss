@@ -68,7 +68,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
     &:after {
         content: " ";
-        background: $i-arrow-down right no-repeat $c-grey-200;
+        background: $i-arrow-down right no-repeat $c-bluegrey;
         background-size: 12px;
         width: 17px;
         position: absolute;
@@ -164,14 +164,14 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 // Custom select box drop-down
 %dashboard-toolbar__select {
     @extend %fs-data-3;
-    background-color: $c-grey-300;
+    background-color: $c-bluegrey;
 
     font-weight: normal;
     border: none;
     border-radius: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
-    padding: 16px 25px 17px 8px;
+    padding: 16px 25px 17px 5px;
     margin-left: 5px;
     outline: none;
     cursor: pointer;
@@ -187,7 +187,7 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
         }
     }
     .dashboard-toolbar__dropdown-select {
-        padding: 14px 25px 17px 8px;
+        padding: 15px 25px 17px 5px;
         background-color: transparent;
         &:after {
             background: none;
@@ -210,23 +210,24 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 .dashboard-toolbar__dropdown {
     .dashboard-toolbar__dropdown-dropdown-button {
         border-right: $dashboard-toolbar-separator;
+        overflow: hidden;
     }
 
     z-index: 1;
     width: calc(100% + 2px); // Menu takes width of parent, +2 accounts for border of parent
     top : 100%;
     left: -1px; // centers menu wrt parent+parent border
-    background-color: #cccccc;
-    
+    background-color: $c-bluegrey;
+
 
     padding: 0;
     flex: 2 0 240px;
-    max-width: 300px;
+    max-width: 200px;
 }
 
 .dashboard-toolbar__dropdown-dropdown-button {
     border: none;
-    background-color: $c-grey-200;
+    background-color: $c-bluegrey;
     padding: 0 15px;
     height: 100%;
     position: relative;
@@ -251,19 +252,20 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     position: relative;
     margin-bottom: 0;
     font-size: 1.1rem;
-    padding: 15px 25px 17px 8px;
+    padding: 17px 7px 17px 5px;
 }
 
 .dashboard-toolbar__dropdown-select {
     @extend %dashboard-toolbar__select;
     @extend %dashboard-toolbar__label--select;
-    
+
     flex: 1;
     display: inline-block;
     text-transform: none;
     margin-left: 7px;
     margin: 2px;
     padding-bottom: 1px;
+    margin-top: 1px;
 }
 
 .dashboard-toolbar__dropdown-select-text {
