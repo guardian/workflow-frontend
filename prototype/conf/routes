@@ -61,6 +61,7 @@ GET            /feature/:featureName/off              controllers.Feature.featur
 
 # shared secret auth test
 GET            /sharedsecret/content                  controllers.Api.sharedAuthGetContent
+GET            /sharedsecret/content/:id              controllers.Api.sharedAuthGetContentById(id)
 
 # Management
 GET            /management/healthcheck                controllers.Management.healthCheck
