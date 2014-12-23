@@ -1,6 +1,8 @@
 import angular from 'angular';
 import moment from 'moment';
 
+import _ from 'lodash';
+
 import './date-service';
 
 angular.module('wfFiltersService', ['wfDateService'])
@@ -50,6 +52,34 @@ angular.module('wfFiltersService', ['wfDateService'])
                     self.update('created',  data);
                     $rootScope.$broadcast('getContent');
                 });
+
+                var keywords = {
+                    "type"       : "content-type",
+                    "status"     : "status",
+                    "state"      : "state",
+                    "who"        : "assignee",
+                    "assignee"   : "assignee",
+                    "assignedto" : "assignee"
+                }
+
+                $rootScope.$on('filtersChanged.freeText', function(event, data) {
+                    self.clearAll();
+                    if(data != null) {
+                        var rest =
+                            data.replace(/\s*([A-Za-z-]+):(\S+)\s*/g, (match, field, value) => {
+                                if(_.has(keywords, field)) {
+                                    self.update(keywords[field], value);
+                                }
+                                return "";
+                            });
+                        self.update('text', rest);
+                    } else {
+                        self.update('text', null);
+                    }
+                    $rootScope.$broadcast('getContent');
+                });
+
+
             }
 
             init() {
@@ -68,9 +98,10 @@ angular.module('wfFiltersService', ['wfDateService'])
                    'section': params['section'],
                    'content-type': params['content-type'],
                    'selectedDate': wfDateParser.parseQueryString(selectedDate),
-                    'flags': params['flags'],
+                   'flags': params['flags'],
                    'prodOffice': params['prodOffice'],
-                   'created': params['created']
+                   'created': params['created'],
+                   'assignee': params['assignee']
                 };
             }
 
@@ -101,6 +132,12 @@ angular.module('wfFiltersService', ['wfDateService'])
 
             getAll() {
                 return this.filters;
+            }
+
+            clearAll() {
+                _.forOwn(this.filters, (value, key) => {
+                    this.update(key, null);
+                });
             }
 
         }

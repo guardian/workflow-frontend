@@ -3,7 +3,7 @@ package com.gu.workflow.query
 import scala.slick.ast.BaseTypedType
 import scala.slick.driver.PostgresDriver.simple._
 import com.github.tototoshi.slick.PostgresJodaSupport._
-import scala.slick.lifted.{Query, Column}
+import scala.slick.lifted.{Query, Column, StringColumnExtensionMethods}
 import models._
 import models.Flag.Flag
 import org.joda.time.DateTime
@@ -24,7 +24,9 @@ case class WfQuery(
   published     : Option[Boolean]  = None,
   flags         : Seq[Flag]  = Nil,
   prodOffice    : Seq[String]      = Nil,
-  creationTimes : Seq[WfQueryTime] = Nil
+  creationTimes : Seq[WfQueryTime] = Nil,
+  text          : Option[String]   = None,
+  assignedTo    : Seq[String]      = Nil
 )
 
 object WfQuery {
@@ -32,9 +34,12 @@ object WfQuery {
   private val TrueCol : Column[Boolean] = LiteralColumn(true)
   private val FalseCol: Column[Boolean] = LiteralColumn(false)
 
+  def queryPassThrough[DB, Row]: (Query[DB, Row]) => Query[DB, Row] =
+    (query) => query
+
   def searchSet[A, DB, Row](options: Seq[_], getField: DB => A)(pred: A => Column[Boolean]):
       (Query[DB, Row]) => Query[DB, Row] = options match {
-    case Nil  => (startQuery => startQuery)
+    case Nil  => queryPassThrough[DB, Row]
     case opts => (startQuery => startQuery.filter(table => pred(getField(table))))
   }
 
@@ -61,6 +66,23 @@ object WfQuery {
              (date < dateblock.until).getOrElse(true))
       }
     }
+
+  def fuzzyMatch[DB, Row](patterns: Seq[String])(getField: DB => Column[Option[String]]):
+      Query[DB, Row] => Query[DB, Row] =
+    searchSet(patterns, getField) { col: Column[Option[String]] =>
+      patterns.foldLeft(FalseCol.?) { (sofar, pattern) =>
+        sofar || (col.toUpperCase like ("%" + pattern.toUpperCase + "%"))
+      } getOrElse false
+    }
+
+  def matchTextFields[DB, Row](patterns: Seq[String])
+                     (fields: Seq[DB => Column[Option[String]]]):
+      Query[DB, Row] => Query[DB, Row] = patterns match {
+    case Nil   => queryPassThrough[DB, Row]
+    case patts => (query) =>
+      fields.map(getField => fuzzyMatch[DB, Row](patts)(getField)(query))
+      .reduce(_ ++ _)
+  }
 
   def optToSeq[A](o: Option[A]): Seq[A] =
     o map (List(_)) getOrElse Nil
@@ -99,16 +121,24 @@ object WfQuery {
                               "approved" -> Flag.Complete,
                               "notRequired" -> Flag.NotRequired)
 
+  // fields against which the 'text' free text pattern should be
+  // tested
+  val textFields: Seq[DBStub => Column[Option[String]]] = List(
+    _.note, _.workingTitle
+  )
+
   def stubsQuery(q: WfQuery) = stubs |>
     simpleInSet(q.section.map(_.toString))(_.section) |>
-    optInSet(q.contentType)(_.contentType) |>
+    optInSet(q.contentType.map(_.toUpperCase))(_.contentType.toUpperCase) |>
     simpleInSet(q.prodOffice)(_.prodOffice) |>
     dateInSet(q.dueTimes)(_.due) |>
     dateInSet(q.creationTimes)(_.createdAt) |>
-    simpleInSet(q.flags)(_.needsLegal)
+    simpleInSet(q.flags)(_.needsLegal) |>
+    fuzzyMatch(q.assignedTo)(_.assignee) |>
+    matchTextFields(optToSeq(q.text))(textFields)
 
   def contentQuery(q: WfQuery) = content |>
-    simpleInSet(q.status.map(_.toString))(_.status) |>
-    simpleInSet(q.contentType)(_.contentType) |>
+    simpleInSet(q.status.map(_.toString.toUpperCase))(_.status.toUpperCase) |>
+    simpleInSet(q.contentType.map(_.toUpperCase))(_.contentType.toUpperCase) |>
     q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published))
 }
