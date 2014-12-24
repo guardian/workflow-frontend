@@ -59,7 +59,8 @@ object Api extends Controller with PanDomainAuthActions {
       _.split(",").toList.map(f).collect { case Some(a) => a }
     } getOrElse Nil
 
-  def content = APIAuthAction { implicit req =>
+  // can be hidden behind multiple auth endpoints
+  val getContentBlock = { implicit req: Request[AnyContent] =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
     val sections = queryStringMultiOption(req.getQueryString("section"),
@@ -112,13 +113,19 @@ object Api extends Controller with PanDomainAuthActions {
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
 
+  def content = APIAuthAction(getContentBlock)
+
   def getContentbyId(composerId: String) =
     CORSable(PrototypeConfiguration.apply.composerUrl) {
-      APIAuthAction { implicit req =>
-        val data = PostgresDB.getContentByComposerId(composerId)
-        data.map{s => Ok(renderJsonResponse(s))}.getOrElse(NotFound)
-      }
+      APIAuthAction { contentById(composerId) }
     }
+
+  def contentById(composerId: String) = { implicit req: Request[AnyContent] =>
+    val data = PostgresDB.getContentByComposerId(composerId)
+    data.map{s => Ok(renderJsonResponse(s))}.getOrElse(NotFound)
+  }
+
+  def sharedAuthGetContentById(composerId: String) = SharedSecretAuthAction(contentById(composerId))
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   val iso8601DateTimeNoMillis = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -291,6 +298,8 @@ object Api extends Controller with PanDomainAuthActions {
       }
     }
   }
+
+  def sharedAuthGetContent = SharedSecretAuthAction(getContentBlock)
 
   private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
     requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
