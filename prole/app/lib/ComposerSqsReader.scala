@@ -14,9 +14,8 @@ import play.api.Logger
 import com.gu.workflow.db.CommonDB
 import models.{
   WorkflowContent, 
-  WireStatus, 
+  ContentUpdateEvent,
   LifecycleEvent, 
-  WorkflowNotification,
   Stub
 }
 
@@ -43,8 +42,8 @@ class ComposerSqsReader extends Actor {
       ComposerSqsReader.updateLastRead()
       
       if(AWSWorkflowQueue.parseMessage(m) match {
-        case Some(s: WireStatus)     => processWireStatus(s) 
-        case Some(e: LifecycleEvent) => processLifecycleEvent(e)
+        case Some(e: LifecycleEvent)     => processLifecycleEvent(e)
+        case Some(c: ContentUpdateEvent) => processContentUpdateEvent(c) 
         case _ => false
       }) {
         CloudWatch.recordMessageProcessed
@@ -57,9 +56,9 @@ class ComposerSqsReader extends Actor {
     processMessages
   }
 
-  private def recordWriteStatusError(s: WireStatus, sqle: SQLException): Unit = {
+  private def recordWriteStatusError(e: ContentUpdateEvent, sqle: SQLException): Unit = {
     CloudWatch.recordMessageError
-    Logger.error(s"unable to write status: $s", sqle)
+    Logger.error(s"unable to write status: $e", sqle)
   }
 
   private def recordLifecycleEventError(e: LifecycleEvent, sqle: SQLException): Unit = {
@@ -84,8 +83,24 @@ class ComposerSqsReader extends Actor {
     stub
   }
 
+  private def contentUpdate(e: ContentUpdateEvent): Boolean = {
+    try {
+      CommonDB.createOrModifyContent(
+        WorkflowContent.fromContentUpdateEvent(e),
+        e.revision
+      ); true
+    } catch {
+      case sqle: SQLException => recordWriteStatusError(e, sqle); false
+    }
+  }
+
+  private def processContentUpdateEvent(e: ContentUpdateEvent): Boolean = {
+    Logger.trace(s"process content update ${e}")
+    stub(e.composerId).map { stub => contentUpdate(e) }.getOrElse(true)
+  }
+
   private def processLifecycleEvent(e: LifecycleEvent): Boolean = {
-    Logger.info(s"processing lifecycle event '${e.event}' for ${e.composerId}")
+    Logger.info(s"process lifecycle event '${e.event}' for ${e.composerId}")
 
     stub(e.composerId).map { stub => {
       try {
@@ -112,19 +127,6 @@ class ComposerSqsReader extends Actor {
         case sqle: SQLException => recordLifecycleEventError(e, sqle); false
       }
     }}.getOrElse(true)
-  }
-
-  private def processWireStatus(status: WireStatus): Boolean = {
-    stub(status.composerId).map { stub =>
-      try {
-        val content = WorkflowContent.fromWireStatus(status, stub)
-        if(status.updateType=="live") {
-          CommonDB.createOrModifyContent(content, status.revision)
-        }; true
-      } catch {
-        case sqle: SQLException => recordWriteStatusError(status, sqle); false
-      }
-    }.getOrElse(true)
   }
 }
 
