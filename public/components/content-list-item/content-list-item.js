@@ -57,13 +57,38 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.update(item);
         }
 
-        update(item) {
+        htmlToPlaintext(text) {
+            return String(text).replace(/<[^>]+>/gm, '');
+        }
 
+        truncateString(string, length, ellipsis, stripHtml) {
+            if(typeof string !== 'string') return string;
+
+            var defaultLength = 140;
+            var defaultEllipsis = "...";
+
+            var maxLength = typeof length !== 'undefined' ? length : defaultLength;
+            var ellipsis = typeof ellipsis !== 'undefined' ? ellipsis : defaultEllipsis;
+            var stripHtml = typeof stripHtml !== 'undefined' ? stripHtml : true;
+
+            // Strip HTML out here so length calculation is correct
+            string = stripHtml ? this.htmlToPlaintext(string) : string;
+
+            var truncateString = () => {
+                return `${string.substring(0,(maxLength - ellipsis.length))}${ellipsis}`;
+            }
+
+            return (string.length + ellipsis.length) >= maxLength ?  truncateString() : string;
+        }
+
+        update(item) {
+            
             // TODO: Stubs have a different structure to content items
             this.id = item.id || item.stubId;
             this.composerId = item.composerId;
 
             this.headline = item.headline;
+            this.standfirst = this.truncateString(item.standfirst);
             this.workingTitle = item.workingTitle || item.title;
 
             this.priority = item.priority;
@@ -71,9 +96,20 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.hasComments = !!item.commentable;
             this.commentsTitle = this.hasComments ? 'on' : 'off';
 
-            // TODO: pull main image from composer
-            this.hasMainImage = Boolean(item.mainMedia);
-            this.mainImageTitle = 'Main media (' + (item.mainMedia || 'none')  + ')';
+            this.hasMainMedia = Boolean(item.mainMedia) && Boolean(item.mainMedia.mediaType);
+            if(this.hasMainMedia) {
+                this.mainMediaType    = item.mainMedia.mediaType; 
+                this.mainMediaTitle   = 'Main media (' + (item.mainMediaType || 'none')  + ')';
+                this.mainMediaUrl     = item.mainMedia.url;
+                this.mainMediaCaption = this.truncateString(item.mainMedia.caption);
+                this.mainMediaAltText = this.truncateString(item.mainMedia.altText);
+            }
+
+            // Currently we don't pull in any preview information about non-image main media
+            this.mainMediaNoPreview = this.mainMediaType && this.mainMediaType != 'image';
+
+            this.trailtext = this.truncateString(item.trailtext);
+            this.trailImageUrl = item.trailImageUrl;
 
             this.assignee = item.assignee && toInitials(item.assignee) || '';
             this.assigneeFull = item.assignee || 'unassigned';
