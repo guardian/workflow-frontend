@@ -15,6 +15,7 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
             {
                 title: 'Status',
                 namespace: 'status',
+                listIsOpen: false,
                 multi: true,
                 filterOptions: statuses.map((status) => {
                     return {
@@ -26,6 +27,7 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
             {
                 title: 'Content',
                 namespace: 'content-type',
+                listIsOpen: false,
                 multi: true,
                 filterOptions: [
                     { caption: 'Article', value: 'article', icon: 'article' },
@@ -37,6 +39,7 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
             {
                 title: 'Created',
                 namespace: 'created',
+                listIsOpen: false,
                 filterOptions: [
                     { caption: 'Yesterday', value: 'yesterday' },
                     { caption: 'Today', value: 'today' },
@@ -47,6 +50,7 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
             {
                 title: 'State',
                 namespace: 'state',
+                listIsOpen: false,
                 filterOptions: [
                     { caption: 'Draft', value: 'draft' },
                     { caption: 'Published', value: 'published' }
@@ -55,6 +59,7 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
             {
                 title: 'Flags',
                 namespace: 'flags',
+                listIsOpen: false,
                 filterOptions: [
                     { caption: 'Needs legal', value: 'needsLegal' }
                 ]
@@ -62,6 +67,7 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
             {
                 title: 'Deadline',
                 namespace: 'deadline',
+                listIsOpen: false,
                 filterOptions: [
                     { caption: 'Today', value: 'today' },
                     { caption: 'Tomorrow', value: 'tomorrow' },
