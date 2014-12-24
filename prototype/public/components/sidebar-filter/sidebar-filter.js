@@ -95,7 +95,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             function updatePreference (key, value) {
 
                 $scope.filterPrefs = $scope.filterPrefs
-                    .filter(() => filter && filter !== null) // TODO: Figure out where nulls in the prefs come from
+                    .filter((filter) => filter && filter !== null) // TODO: Figure out where nulls in the prefs come from
                     .map((filter) => {
                         if (filter && filter.namespace === $scope.filter.namespace) {
                             filter[key] = value;
