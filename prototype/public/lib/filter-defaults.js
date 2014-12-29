@@ -1,5 +1,6 @@
 /**
  * This returned array represents the default configuration of the sidebar filters list.
+ * This is used by the components/sidebar-filter/sidebar-filter.js directive.
  * The function wrapping allows the injection of local dependencies for custom link functions.
  *
  * @type {
@@ -12,6 +13,7 @@
  *              caption: String, // The display title for this option
  *              value: String, // The internal value for this option
  *              icon: String, // Optional classname of the required icon for this option
+ *              url: String // Optional custom template url for this filter option
  *          }
  *      ],
  *      customLinkFunction: Function // A function to be run during the linking phase of the angular directive execution. Dependencies for this function will be resolved angular style during execution.
@@ -87,6 +89,10 @@ var filterDefaults = function (statuses, wfFiltersService) {
                     url: '/assets/components/sidebar-filter/custom-filter-templates/deadline-date-select.html'
                 }
             ],
+
+            /**
+             * Custom linking function that enables the use of a date dropdown for a filter option
+             */
             customLinkFunction: ['wfDateParser', '$scope', (wfDateParser, $scope) => {
 
                 $scope.dateOptions = wfDateParser.getDaysThisWeek();
