@@ -42,10 +42,11 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             }
 
             $scope.filterIsSelected = function(filter) {
-                if($scope.selectedFilters.length < 1)
+                if ($scope.selectedFilters.length < 1) {
                     return filter.value === $scope.defaultFilter.value
-                else
+                } else {
                     return (filter != null && _.contains($scope.selectedFilters, filter.value));
+                }
             };
 
             $scope.defaultFilterClick = function(filter) {
@@ -136,16 +137,21 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                         $scope.filterPrefs = data;
                         var thisFilterPref = data.filter((filter) => filter && filter.namespace === $scope.filter.namespace);
 
-                        if (thisFilterPref.length > 0) {
+                        if ($scope.selectedFilters.length > 0) { // If this filter has an option selected on load then display it open by default
 
-                            $scope.listIsOpen = thisFilterPref[0].listIsOpen;
-                        } else {
+                            $scope.listIsOpen = true;
+                        } else { // Else display the users set preference
+                            if (thisFilterPref.length > 0) {
 
-                            $scope.filterPrefs.push({
-                                namespace: $scope.filter.namespace,
-                                listIsOpen: $scope.filter.listIsOpen
-                            });
-                            $scope.listIsOpen = $scope.filter.listIsOpen;
+                                $scope.listIsOpen = thisFilterPref[0].listIsOpen;
+                            } else { // Else display the default preference
+
+                                $scope.filterPrefs.push({
+                                    namespace: $scope.filter.namespace,
+                                    listIsOpen: $scope.filter.listIsOpen
+                                });
+                                $scope.listIsOpen = $scope.filter.listIsOpen;
+                            }
                         }
 
                         setUpListDisplay();
