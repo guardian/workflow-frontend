@@ -4,15 +4,14 @@ import _ from 'lodash';
 import 'lib/filters-service';
 
 angular.module('wfSidebarFilter', ['wfFiltersService'])
-    .directive('wfSidebarFilter', ['wfFiltersService', '$injector', function (wfFiltersService, $injector) {
+    .directive('wfSidebarFilter', ['wfFiltersService', '$injector', '$timeout', 'wfPreferencesService', function (wfFiltersService, $injector, $timeout, wfPreferencesService) {
 
     return {
         restrict: 'E',
         replace: true,
         templateUrl: '/assets/components/sidebar-filter/sidebar-filter.html',
         scope: {
-            filter: '=wfFilter',
-            listIsOpen: '@wfListIsOpen'
+            filter: '=wfFilter'
         },
         link: function ($scope, elem, attrs) {
 
@@ -43,17 +42,18 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             }
 
             $scope.filterIsSelected = function(filter) {
-                if($scope.selectedFilters.length < 1)
+                if ($scope.selectedFilters.length < 1) {
                     return filter.value === $scope.defaultFilter.value
-                else
+                } else {
                     return (filter != null && _.contains($scope.selectedFilters, filter.value));
+                }
             };
 
             $scope.defaultFilterClick = function(filter) {
                 // this is a replace operartion, instead of an add
                 $scope.selectedFilters = [];
                 $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
-            }
+            };
 
             $scope.selectFilter = function(filter) {
                 if(isMultiSelect()) {
@@ -61,7 +61,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 } else {
                     $scope.selectedFilters = [filter];
                 }
-            }
+            };
 
             $scope.filterClick = function(filter) {
                 if($scope.filterIsSelected(filter)) {
@@ -75,23 +75,98 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             };
 
             $scope.toggleSidebarSection = function () {
-                $scope.list = $scope.list || elem[0].querySelector('.sidebar__filter-list');
-
-                if (!$scope.listHeight) {
-                    $scope.listHeight = $scope.list.offsetHeight;
-                    $scope.list.style.maxHeight = $scope.listHeight + 'px';
-                    getComputedStyle($scope.list).maxHeight; // Force reflow in FF & IE
-                }
 
                 if ($scope.listIsOpen) {
                     $scope.listIsOpen = false;
                     $scope.list.style.maxHeight = '0px';
+                    updatePreference('listIsOpen', false);
                 } else {
                     $scope.listIsOpen = true;
                     $scope.list.style.maxHeight = $scope.listHeight + 'px';
+                    updatePreference('listIsOpen', true);
                 }
 
             };
+
+            /**
+             * Update a generic filter preference
+             * @param key
+             * @param value
+             */
+            function updatePreference (key, value) {
+
+                $scope.filterPrefs = $scope.filterPrefs
+                    .filter((filter) => filter && filter !== null) // TODO: Figure out where nulls in the prefs come from
+                    .map((filter) => {
+                        if (filter && filter.namespace === $scope.filter.namespace) {
+                            filter[key] = value;
+                        }
+                        return filter;
+                    });
+
+                wfPreferencesService
+                    .setPreference('filters', $scope.filterPrefs);
+            };
+
+            /**
+             * After rendering set up the filter list display.
+             *  - Request the preference for the display of the filters
+             *  - Set the filter preferences locally along with the display data for the filter
+             *  - Trigger the render at setUpListDisplay
+             */
+            $timeout(() => {
+
+                function setUpListDisplay () {
+                    $scope.list = $scope.list || elem[0].querySelector('.sidebar__filter-list');
+
+                    if (!$scope.listHeight) {
+                        $scope.listHeight = $scope.list.offsetHeight;
+                        $scope.list.style.maxHeight = $scope.listHeight + 'px';
+                        getComputedStyle($scope.list).maxHeight; // Force reflow in FF & IE
+                    }
+
+                    if (!$scope.listIsOpen) {
+                        $scope.list.style.maxHeight = '0px';
+                    }
+                }
+
+                wfPreferencesService
+                    .getPreference('filters')
+                    .then(function reslove (data) {
+
+                        $scope.filterPrefs = data;
+                        var thisFilterPref = data.filter((filter) => filter && filter.namespace === $scope.filter.namespace);
+
+                        if ($scope.selectedFilters.length > 0) { // If this filter has an option selected on load then display it open by default
+
+                            $scope.listIsOpen = true;
+                        } else { // Else display the users set preference
+                            if (thisFilterPref.length > 0) {
+
+                                $scope.listIsOpen = thisFilterPref[0].listIsOpen;
+                            } else { // Else display the default preference
+
+                                $scope.filterPrefs.push({
+                                    namespace: $scope.filter.namespace,
+                                    listIsOpen: $scope.filter.listIsOpen
+                                });
+                                $scope.listIsOpen = $scope.filter.listIsOpen;
+                            }
+                        }
+
+                        setUpListDisplay();
+                    }, function reject () {
+                        $scope.filterPrefs = [];
+                        $scope.filterPrefs.push({
+                            namespace: $scope.filter.namespace,
+                            listIsOpen: $scope.filter.listIsOpen
+                        });
+                        $scope.listIsOpen = $scope.filter.listIsOpen;
+
+                        setUpListDisplay();
+                    });
+
+            }, 0);
         }
     };
 
