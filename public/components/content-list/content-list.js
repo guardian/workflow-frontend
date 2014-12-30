@@ -16,7 +16,7 @@ import { wfContentListDrawer } from 'components/content-list-drawer/content-list
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
-    .controller('wfContentListController', ['$rootScope', '$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', wfContentListController])
+    .controller('wfContentListController', ['$rootScope', '$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', '$q', '$compile', '$http', '$templateCache', 'wfColumnService', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer])
@@ -43,7 +43,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 
 
-function wfContentListController($rootScope, $scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService) {
+function wfContentListController($rootScope, $scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService) {
 
     /*jshint validthis:true */
 
@@ -57,7 +57,24 @@ function wfContentListController($rootScope, $scope, statuses, sections, wfConte
         $rootScope.$emit('contentItem.columnsChanged');
     };
 
-    this.compact = false;
+    (function handleCompactView () {
+
+        $scope.compactView = {
+            visible: false // compact view off by default
+        };
+
+        wfPreferencesService.getPreference('compactView').then((data) => { // query prefs for compact view
+            $scope.compactView = data;
+            setUpWatch();
+        }, setUpWatch);
+
+        function setUpWatch () {
+            $scope.$watch('compactView', (newValue, oldValue) => { // store any change to compact view as a pref
+                wfPreferencesService.setPreference('compactView', newValue);
+            }, true);
+        }
+    })();
+
     this.showHeadline = false;
 
     this.newItem = function () {
