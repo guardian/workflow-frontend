@@ -6,8 +6,8 @@ import _ from 'lodash';
 import './date-service';
 
 angular.module('wfFiltersService', ['wfDateService'])
-    .factory('wfFiltersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter',
-        function($rootScope, $location, wfDateParser, wfFormatDateTimeFilter) {
+    .factory('wfFiltersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfPreferencesService',
+        function($rootScope, $location, wfDateParser, wfFormatDateTimeFilter, wfPreferencesService) {
 
         class FiltersService
         {
@@ -60,7 +60,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                     "who"        : "assignee",
                     "assignee"   : "assignee",
                     "assignedto" : "assignee"
-                }
+                };
 
                 $rootScope.$on('filtersChanged.freeText', function(event, data) {
                     self.clearAll();
@@ -79,30 +79,56 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
-
             }
 
             init() {
                 this.attachListeners()
             }
 
-            constructor()
-            {
+            constructor() {
+
+                var self = this;
+
                 var params = $location.search();
 
-                var selectedDate = params['selectedDate'];
+                var setUpFilters = function (params) {
 
-                this.filters = {
-                   'status': params['status'],
-                   'state': params['state'],
-                   'section': params['section'],
-                   'content-type': params['content-type'],
-                   'selectedDate': wfDateParser.parseQueryString(selectedDate),
-                   'flags': params['flags'],
-                   'prodOffice': params['prodOffice'],
-                   'created': params['created'],
-                   'assignee': params['assignee']
+                    var selectedDate = params['selectedDate'];
+
+                    self.filters = {
+                        'status': params['status'],
+                        'state': params['state'],
+                        'section': params['section'],
+                        'content-type': params['content-type'],
+                        'selectedDate': wfDateParser.parseQueryString(selectedDate),
+                        'flags': params['flags'],
+                        'prodOffice': params['prodOffice'],
+                        'created': params['created'],
+                        'assignee': params['assignee']
+                    };
                 };
+
+                setUpFilters(params); // base setting
+
+                if (Object.keys(params).length === 0) { // if no params in URL attempt to load filters from user prefs
+
+                    wfPreferencesService.getPreference('location').then((data) => {
+                        params = data || {};
+                        setUpFilters(params);
+
+                        for (var key in params) {
+                            if (params.hasOwnProperty(key)) {
+                                $location.search(key, params[key]);
+                            }
+                        }
+
+                        $rootScope.$broadcast('getContent');
+                    }, () => {
+                        setUpFilters(params);
+                    });
+                } else {
+                    setUpFilters(params);
+                }
             }
 
 
@@ -124,6 +150,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                     this.filters[key] = value;
                     $location.search(key, value);
                 }
+
+                wfPreferencesService.setPreference('location', this.filters);
             }
 
             get(key) {
