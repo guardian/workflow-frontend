@@ -57,7 +57,23 @@ function wfContentListController($rootScope, $scope, statuses, sections, wfConte
         $rootScope.$emit('contentItem.columnsChanged');
     };
 
-    this.compact = false;
+    (function handleCompactView () {
+
+        $scope.compactView = {
+            visible: false // compact view off by default
+        };
+
+        wfPreferencesService.getPreference('compactView').then((data) => { // query prefs for compact view
+            $scope.compactView = data;
+            setUpWatch();
+        }, setUpWatch);
+
+        function setUpWatch () {
+            $scope.$watch('compactView', (newValue, oldValue) => { // store any change to compact view as a pref
+                wfPreferencesService.setPreference('compactView', newValue);
+            }, true);
+        }
+    })();
 
     (function handleHeadlineVisibility (controller) {
 
