@@ -118,7 +118,7 @@ wfStubModal.run([
          */
         function setUpPreferedStub (contentType) {
 
-            var lastUsedSection = 'Technology'; // tech by default
+            var defaultSection = 'Technology'; // tech by default
 
             function createStubData (contentType, section) {
 
@@ -133,10 +133,10 @@ wfStubModal.run([
 
             return wfPreferencesService.getPreference('preferedStub').then((data) => {
 
-                return createStubData(contentType, data.section || lastUsedSection);
+                return createStubData(contentType, data.section || defaultSection);
             }, () => {
 
-                return createStubData(contentType, lastUsedSection);
+                return createStubData(contentType, defaultSection);
             });
         }
 
@@ -195,10 +195,6 @@ wfStubModal.run([
 
                 } else {
                     promise = wfContentService.createStub(stub);
-                }
-
-                if (stub.section) {
-                    lastUsedSection = stub.section.name;
                 }
 
                 promise.then(() => {
