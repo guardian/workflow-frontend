@@ -14,13 +14,13 @@ import 'lib/prodoffice-service';
 
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService']);
 
-function StubModalInstanceCtrl($scope, $modalInstance, $window, config, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService) {
+function StubModalInstanceCtrl($scope, $modalInstance, $window, config, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService) {
     var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
 
     $scope.mode = mode;
     $scope.modalTitle = ({
         'create': `Create ${contentName}`,
-        'edit': `Edit ${contentName}`, 
+        'edit': `Edit ${contentName}`,
         'import': 'Import from Composer'
     })[mode];
 
@@ -32,6 +32,18 @@ function StubModalInstanceCtrl($scope, $modalInstance, $window, config, stub, mo
     $scope.sections = sections;
     $scope.legalStates = legalStatesService.getLegalStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
+
+    $scope.$watch('stub.section', (newValue, oldValue) => {
+
+        wfPreferencesService.getPreference('preferedStub').then((data) => {
+            data.section = newValue.name;
+            wfPreferencesService.setPreference('preferedStub', data);
+        }, () => {
+            wfPreferencesService.setPreference('preferedStub', {
+                section: newValue.name
+            });
+        })
+    }, true);
 
     $scope.composerUrlChanged = () => {
         wfComposerService.getComposerContent($scope.formData.composerUrl).then(
@@ -84,13 +96,10 @@ wfStubModal.run([
     'wfContentService',
     'wfFiltersService',
     'wfProdOfficeService',
+    'wfPreferencesService',
     'sections',
     'config',
-    function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, sections, config) {
-
-        function currentFilteredSection() {
-            return wfFiltersService.get('section');
-        }
+    function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, wfPreferencesService, sections, config) {
 
         function currentFilteredOffice() {
             return wfFiltersService.get('prodOffice');
@@ -100,41 +109,48 @@ wfStubModal.run([
             return sections.filter((section) => section.name === sectionName)[0];
         }
 
-        var lastUsedSection = 'Technology'; // tech by default
+        /**
+         * Return a promise for stub data based off the users stored preferences.
+         * Currently only modifies section for content creation
+         *
+         * @param contentType
+         * @returns {Promise}
+         */
+        function setUpPreferedStub (contentType) {
 
-        function defaultStub(contentType) {
-            function defaultSection() {
-                var filteredSection = currentFilteredSection(),
-                    splitSections;
+            var lastUsedSection = 'Technology'; // tech by default
 
-                if (!filteredSection) {
-                    return lastUsedSection;
-                }
+            function createStubData (contentType, section) {
 
-                splitSections = filteredSection.split(',');
-
-                if (splitSections.indexOf(lastUsedSection) !== -1) {
-                    return lastUsedSection;
-                }
-
-                return splitSections[0] || lastUsedSection;
+                return {
+                    contentType: contentType,
+                    section: getSectionFromSections(section),
+                    priority: 0,
+                    needsLegal: 'NA',
+                    prodOffice: currentFilteredOffice() ||  'UK'
+                };
             }
 
-            return {
-                contentType: contentType,
-                section: getSectionFromSections(defaultSection()),
-                priority: 0,
-                needsLegal: 'NA',
-                prodOffice: currentFilteredOffice() ||  'UK' 
-            };
+            return wfPreferencesService.getPreference('preferedStub').then((data) => {
+
+                return createStubData(contentType, data.section || lastUsedSection);
+            }, () => {
+
+                return createStubData(contentType, lastUsedSection);
+            });
         }
+
 
         $rootScope.$on('stub:edit', function (event, stub) {
             open(stub, 'edit');
         });
 
         $rootScope.$on('stub:create', function (event, contentType) {
-            open(defaultStub(contentType), 'create');
+
+            setUpPreferedStub(contentType).then((stub) => {
+
+                open(stub, 'create')
+            });
         });
 
         $rootScope.$on('stub.created', (event, msg) => {
@@ -145,7 +161,11 @@ wfStubModal.run([
         });
 
         $rootScope.$on('content:import', function (event) {
-            open(defaultStub(), 'import');
+
+            setUpPreferedStub(null).then((stub) => {
+
+                open(stub, 'import')
+            });
         });
 
         function open(stub, mode) {

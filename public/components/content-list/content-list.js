@@ -75,7 +75,21 @@ function wfContentListController($rootScope, $scope, statuses, sections, wfConte
         }
     })();
 
-    this.showHeadline = false;
+    (function handleHeadlineVisibility (controller) {
+
+        controller.showHeadline = false;
+
+        wfPreferencesService.getPreference('showHeadline').then((data) => {
+            controller.showHeadline = data;
+            setUpWatch();
+        }, setUpWatch);
+
+        function setUpWatch () {
+            $scope.$watch('contentList.showHeadline', (newValue, oldValue) => {
+                wfPreferencesService.setPreference('showHeadline', newValue);
+            }, true);
+        }
+    })(this);
 
     this.newItem = function () {
         $scope.$emit('stub:create');
