@@ -87,6 +87,8 @@ angular.module('wfFiltersService', ['wfDateService'])
 
             constructor() {
 
+                // TODO: Refactor filters service to promise based architecture to allow for deferred loading of filters based on preferences
+
                 var self = this;
 
                 var params = $location.search();
