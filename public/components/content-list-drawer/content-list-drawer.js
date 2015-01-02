@@ -94,6 +94,7 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                         elem.addClass(hiddenClass);
                         elem.one(transitionEndEvents, () => {
                             show(contentItem, contentListItemElement);
+                            $scope.$apply();
                         });
                     } else {
                         show(contentItem, contentListItemElement);
