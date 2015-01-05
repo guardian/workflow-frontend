@@ -1,0 +1,152 @@
+{
+  "content": {
+    "id": "id",
+    "identifiers": {
+      "path": "music/2014/dec/08/nopennnnnn"
+    },
+    "type": "article",
+    "published": true,
+    "mainBlock": {
+      "id": "548594deb0c6c5d052cef4cd",
+      "lastModified": 1418040545365,
+      "dateCreated": 1418040542083,
+      "lastModifiedBy": {
+        "email": "robert.kenny@guardian.co.uk",
+        "firstName": "Robert",
+        "lastName": "Kenny"
+      },
+      "createdBy": {
+        "email": "robert.kenny@guardian.co.uk",
+        "firstName": "Robert",
+        "lastName": "Kenny"
+      },
+      "elements": [
+        {
+          "elementType": "embed",
+          "fields": {
+            "html": "<iframe width=\"420\" height=\"315\" src=\"//www.youtube.com/embed/gPytoa--430\" frameborder=\"0\" allowfullscreen></iframe>",
+            "safeEmbedCode": "true",
+            "alt": "foo"
+          },
+          "assets": []
+        }
+      ],
+      "published": false,
+      "attributes": {}
+    },
+    "contentChangeDetails": {
+      "lastModified": {
+        "date": 1418055772712,
+        "user": {
+          "email": "robert.kenny@guardian.co.uk",
+          "firstName": "Robert",
+          "lastName": "Kenny"
+        }
+      },
+      "created": {
+        "date": 1418037037795,
+        "user": {
+          "email": "robert.kenny@guardian.co.uk",
+          "firstName": "Robert",
+          "lastName": "Kenny"
+        }
+      },
+      "published": {
+        "date": 1418040564963,
+        "user": {
+          "email": "robert.kenny@guardian.co.uk",
+          "firstName": "Robert",
+          "lastName": "Kenny"
+        }
+      },
+      "lastMajorRevisionPublished": {
+        "date": 1418040564963,
+        "user": {
+          "email": "robert.kenny@guardian.co.uk",
+          "firstName": "Robert",
+          "lastName": "Kenny"
+        }
+      },
+      "revision": 82
+    },
+    "collaborators": [
+      {
+        "email": "robert.kenny@guardian.co.uk",
+        "firstName": "Robert",
+        "lastName": "Kenny"
+      }
+    ],
+    "fields": {
+      "headline": "nn",
+      "linkText": "Nopennnnnnnnnnnnnnnnn",
+      "slug": "nopennnnnn",
+      "trailText": "ddsfsdsdf"
+    },
+    "settings": {
+      "relatedContentOff": "false",
+      "blockAds": "false",
+      "isInappropriateForSponsorship": "false",
+      "productionOffice": "UK",
+      "timeZone": "Europe/London"
+    },
+    "toolSettings": {
+      "slugLinked": "true",
+      "linkTextLinked": "true",
+      "trailTextLinked": "true"
+    },
+    "taxonomy": {
+      "tags": [
+        {
+          "tag": {
+            "id": 52599,
+            "type": "Keyword",
+            "internalName": "D'Banj",
+            "externalName": "D'Banj",
+            "slug": "d-banj",
+            "section": {
+              "id": 201,
+              "name": "Music",
+              "pathPrefix": "music",
+              "slug": "music"
+            }
+          },
+          "isLead": false
+        },
+        {
+          "tag": {
+            "id": 26951,
+            "type": "Keyword",
+            "internalName": "Bat for Lashes (Band)",
+            "externalName": "Bat for Lashes",
+            "slug": "batforlashes",
+            "section": {
+              "id": 201,
+              "name": "Music",
+              "pathPrefix": "music",
+              "slug": "music"
+            }
+          },
+          "isLead": false
+        }
+      ],
+      "contributors": [],
+      "publication": {
+        "id": 30447,
+        "type": "Publication",
+        "internalName": "DONOTUSE Smart Healthcare",
+        "externalName": "Smart Healthcare",
+        "slug": "smarthealthcare",
+        "section": {
+          "id": 701,
+          "name": "Smart Healthcare",
+          "slug": "smart-healthcare"
+        }
+      },
+      "references": []
+    },
+    "updateType": "draft"
+  },
+  "whatChanged": "field",
+  "published": true,
+  "eventTime": 1418055772761
+}

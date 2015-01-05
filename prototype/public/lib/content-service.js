@@ -12,6 +12,14 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
             var httpRequest = wfHttpSessionService.request;
 
             class ContentService {
+                getTypes() {
+                    return { 
+                        "article": "Article",
+                        "liveblog": "Live blog",
+                        "gallery": "Gallery",
+                        "interactive": "Interactive"
+                    }
+                };
 
                 /**
                  * Async retrieves content from service.
@@ -32,9 +40,11 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Async creates a stub in workflow.
                  */
                 createStub(stubData) {
+                    var params = {};
                     return httpRequest({
                         method: 'POST',
                         url: '/api/stubs',
+                        params: params,
                         data: stubData
                     });
                 }
@@ -48,9 +58,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 createInComposer(stub) {
                     return wfComposerService.create(stub.contentType).then( (response) => {
 
-                        var composerId = response.data.data.id;
-
-                        stub.composerId = composerId;
+                        wfComposerService.parseComposerData(response.data, stub);
 
                         if (stub.id) {
                             return this.updateStub(stub);
@@ -169,7 +177,9 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'due.from': wfFormatDateTimeFilter(dateRange['from'], "ISO8601") || null,
                         'due.until': wfFormatDateTimeFilter(dateRange['until'], "ISO8601") || null,
                         'created.from': wfFormatDateTimeFilter(createdRange['from'], "ISO8601") || null,
-                        'created.until': wfFormatDateTimeFilter(createdRange['until'], "ISO8601") || null
+                        'created.until': wfFormatDateTimeFilter(createdRange['until'], "ISO8601") || null,
+                        'text': modelParams['text'] || null,
+                        'assignee': modelParams['assignee'] || null
                     };
 
                     return params;

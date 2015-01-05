@@ -1,14 +1,16 @@
 /**
  * Dashboard layout styles.
  */
+@import "layouts/global/vars";
 @import "components/content-list/content-list";
 @import "components/content-list-item/content-list-item";
+@import "components/presence-indicator/presence-indicators";
 @import "components/content-list-drawer/content-list-drawer";
 @import "components/stubs-list/stubs-list";
 @import "components/details-panel/details-panel";
+@import "components/stub-modal/stub-modal";
 @import "sidebar";
 @import "toolbar";
-@import "components/toolbar-sections-dropdown/toolbar-sections-dropdown";
 
 .content-list-column {
     overflow: auto;
@@ -22,6 +24,8 @@
     flex-grow: 1;
     border-left: 5px solid #f1f1f1;
     border-top: 1px solid #ededed;
+
+    position: relative;
 }
 
 /**

@@ -1,29 +1,32 @@
 package controllers
 
+import models.ApiResponse.ApiResponse
 import models.Flag.Flag
+import models._
+
 import play.api.libs.ws.WS
-
-import scala.concurrent.ExecutionContext.Implicits.global
-
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._
 import play.api.libs.json._
-
-import lib.Responses._
-import lib._
-import models.{Section, WorkflowContent, Stub}
-import org.joda.time.DateTime
-import com.gu.workflow.db.{SectionDB, CommonDB}
-import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
-import scala.concurrent.duration._
-import akka.actor.Props
-import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.concurrent.Akka
 
+import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
+import lib.Responses._
+import lib._
 
+import org.joda.time.DateTime
+
+import com.gu.workflow.db.{SectionDB, CommonDB}
+import com.gu.workflow.query._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
+import scala.concurrent.duration._
+
+import akka.actor.Props
+
 
 case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
 
@@ -41,6 +44,7 @@ case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
   lazy val parser = action.parser
 }
 
+
 object Api extends Controller with PanDomainAuthActions {
 
   def allowCORSAccess(methods: String, args: Any*) = CORSable(PrototypeConfiguration.apply.composerUrl) {
@@ -51,31 +55,50 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def content = APIAuthAction { implicit req =>
+  def queryStringMultiOption[A](param: Option[String],
+                                // default transformer just makes
+                                // Option using Sum.apply
+                                f: String => Option[A] = (s: String) => Some(s)): List[A] =
+    // conver the query string into a list of filters by separating on
+    // "," and pass to the transformation function to get the required
+    // type. If the param doesn't exist in the query string, assume
+    // the empty list
+    param map {
+      _.split(",").toList.map(f).collect { case Some(a) => a }
+    } getOrElse Nil
+
+  // can be hidden behind multiple auth endpoints
+  val getContentBlock = { implicit req: Request[AnyContent] =>
     val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
     val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
-    val sections = req.getQueryString("section").map(_.split(",").toList.map(Section(_))) // "Section1,Section2,..,SectionN" -> List(Section("Section1"), .., Section("SectionN"))
-    val contentType = req.getQueryString("content-type")
-    val flags = req.queryString.get("flags") getOrElse Nil
-    val prodOffice = req.getQueryString("prodOffice")
+    val sections = queryStringMultiOption(req.getQueryString("section"),
+                                          s => Some(Section(s)))
+    val contentType = queryStringMultiOption(req.getQueryString("content-type"))
+    val flags = queryStringMultiOption(req.getQueryString("flags"),
+                                       WfQuery.queryStringToFlag.get(_))
+    val prodOffice = queryStringMultiOption(req.getQueryString("prodOffice"))
     val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
     val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
-    val status = req.getQueryString("status").flatMap(StatusDatabase.find)
+    val status = queryStringMultiOption(req.getQueryString("status"), StatusDatabase.find(_))
+    val published = req.getQueryString("state").map(_ == "published")
+    val text = req.getQueryString("text")
+    val assignee = queryStringMultiOption(req.getQueryString("assignee"))
+
+    val queryData = WfQuery(
+      section       = sections,
+      status        = status,
+      contentType   = contentType,
+      prodOffice    = prodOffice,
+      dueTimes      = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
+      creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
+      flags         = flags,
+      published     = published,
+      text          = text,
+      assignedTo    = assignee
+    )
 
     def getContent = {
-      val content = PostgresDB.getContent(
-        section = sections,
-        dueFrom = dueFrom,
-        dueUntil = dueUntil,
-        status = status,
-        contentType = contentType,
-        published = req.getQueryString("state").map(_ == "published"),
-        flags = flags,
-        prodOffice = prodOffice,
-        createdFrom = createdFrom,
-        createdUntil = createdUntil
-      )
-
+      val content = PostgresDB.getContent(queryData)
 
       val publishedContent = content.filter(d => d.wc.status == models.Status("Final"))
         .sortBy(s => (s.wc.timePublished, s.wc.lastModified))(publishedOrdering)
@@ -85,39 +108,32 @@ object Api extends Controller with PanDomainAuthActions {
       publishedContent ::: unpublishedContent
     }
 
-    def getStubs = {
-      CommonDB.getStubs(
-        dueFrom = dueFrom,
-        dueUntil = dueUntil,
-        section = sections,
-        contentType = contentType,
-        unlinkedOnly = true,
-        prodOffice = prodOffice,
-        createdFrom = createdFrom,
-        createdUntil = createdUntil).sortBy(s => (s.priority, s.due))(unpublishedOrdering)
-    }
+    def getStubs =
+      CommonDB.getStubs(queryData, unlinkedOnly = true)
 
-    val stubs = status match {
-      case Some(models.Status("Stub")) | None => getStubs
-      case _ => Nil
-    }
+    val stubs =
+      if((status.isEmpty || status.exists(_ == models.Status("Stub"))) &&
+           // stubs are never 'published'
+           (published != Some(true))) getStubs else Nil
 
-    val content = status match {
-      case Some(models.Status("Stub")) => Nil
-      case _ => getContent
-    }
-
+    val content = getContent
 
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
 
+  def content = APIAuthAction(getContentBlock)
+
   def getContentbyId(composerId: String) =
     CORSable(PrototypeConfiguration.apply.composerUrl) {
-      APIAuthAction { implicit req =>
-        val data = PostgresDB.getContentByComposerId(composerId)
-        data.map{s => Ok(renderJsonResponse(s))}.getOrElse(NotFound)
-      }
+      APIAuthAction { contentById(composerId) }
     }
+
+  def contentById(composerId: String) = { implicit req: Request[AnyContent] =>
+    val data = PostgresDB.getContentByComposerId(composerId)
+    data.map{s => Ok(renderJsonResponse(s))}.getOrElse(NotFound)
+  }
+
+  def sharedAuthGetContentById(composerId: String) = SharedSecretAuthAction(contentById(composerId))
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   val iso8601DateTimeNoMillis = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -129,18 +145,25 @@ object Api extends Controller with PanDomainAuthActions {
 
   def stubs = APIAuthAction { implicit req =>
     stubFilters.bindFromRequest.fold(
-    formWithErrors => BadRequest(formWithErrors.errorsAsJson), { case (dueFrom, dueUntil) => Ok(renderJsonResponse(CommonDB.getStubs(dueFrom, dueUntil)))}
+      formWithErrors => BadRequest(formWithErrors.errorsAsJson), {
+        case (dueFrom, dueUntil) => Ok(renderJsonResponse(
+                                         CommonDB.getStubs(
+                                           WfQuery(dueTimes = List(WfQueryTime(dueFrom, dueUntil)))
+                                         )
+                                       ))
+      }
     )
   }
 
-  def newStub = APIAuthAction { implicit request =>
-    (for {
-       jsValue <- readJsonFromRequest(request.body).right
-       stub <- extract[Stub](jsValue).right
-     } yield {
-      PostgresDB.createStub(stub)
-       NoContent
-     }).merge
+
+  def createContent() = APIAuthAction { implicit request =>
+   ApiResponse(for {
+      jsValue <- readJsonFromRequestApiResponse(request.body).right
+      contentItem <- extractApiResponse[ContentItem](jsValue).right
+      stubId <- PostgresDB.createContent(contentItem).right
+    } yield {
+     stubId
+    })
   }
 
   def putStub(stubId: Long) = APIAuthAction { implicit request =>
@@ -284,8 +307,18 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
+  def sharedAuthGetContent = SharedSecretAuthAction(getContentBlock)
+
   private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
     requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
+  }
+
+  //duplicated from the method above to give a standard API response. should move all api methods onto to this
+  private def readJsonFromRequestApiResponse(requestBody: AnyContent): ApiResponse[JsValue] = {
+    requestBody.asJson match {
+      case Some(jsValue) => Right(jsValue)
+      case None => Left((ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")))
+    }
   }
 
   /* JsError's may contain a number of different errors for differnt
@@ -304,6 +337,16 @@ object Api extends Controller with PanDomainAuthActions {
       case error@JsError(_) =>
         val errMsg = errorMsgs(error)
         Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
+    }
+  }
+
+  //duplicated from the method above to give a standard API response. should move all api methods onto to this
+  private def extractApiResponse[A: Reads](jsValue: JsValue): ApiResponse[A] = {
+    jsValue.validate[A] match {
+      case JsSuccess(a, _) => Right(a)
+      case error@JsError(_) =>
+        val errMsg = errorMsgs(error)
+        Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
     }
   }
 

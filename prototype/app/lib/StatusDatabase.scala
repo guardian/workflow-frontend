@@ -20,7 +20,7 @@ object StatusDatabase {
 
   def statuses = store.future()
 
-  def find(name: String) = store.get().find(_.name == name)
+  def find(name: String) = store.get().find(_.name.toUpperCase == name.toUpperCase)
 
   def get(name: String) = find(name).get
 

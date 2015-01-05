@@ -1,0 +1,12 @@
+{
+  "Type" : "Notification",
+  "MessageId" : "a0c40c4d-e8cf-5825-ab69-40aa127e58e1",
+  "TopicArn" : "arn:aws:sns:eu-west-1:308506855511:dev-fc-metadata-events",
+  "Subject" : "fc-update.v1",
+  "Message" : "{\"content\":{\"identifiers\":{\"path\":\"global/2014/nov/20/546df848aa248d0c8b6e2f2e\",\"composerId\":\"546df848aa248d0c8b6e2f2e\"},\"type\":\"article\",\"lastModified\":1416493196840,\"lastModifiedBy\":{\"email\":\"robert.kenny@guardian.co.uk\",\"firstName\":\"Robert\",\"lastName\":\"Kenny\"},\"revision\":6,\"fields\":{\"headline\":\"foo\"},\"settings\":{\"relatedContentOff\":\"false\",\"blockAds\":\"false\",\"isInappropriateForSponsorship\":\"false\",\"productionOffice\":\"UK\",\"timeZone\":\"Europe/London\"},\"updateType\":\"live\"},\"whatChanged\":\"field\",\"published\":false,\"eventTime\":1416493196845}",
+  "Timestamp" : "2014-11-20T14:19:29.397Z",
+  "SignatureVersion" : "1",
+  "Signature" : "N9jCqOCOqJBJcuZ5ODvWfS8w3BVTgVBFybteX7W/HQMV9uMbQYeoYhtx81ev49glxcRSFAMR3oCe7xOb081TVIVeGn7p1gJZyF8L4tIPaCAS4pU9eSPyX3oKxTGefWhsh3dEthFINcLwiF4l92ViUObSC7a2dnZ6ESmUOlAa9tCvMS8CY1EV/36SMFQkVVMy0Vpt1U8+v4ttPnhM7faJQy8Al0HxCRZZ8akRjG6mcZBCrqv62Z9UVAAG0cuk+A6TlZPuVtfDhL27NTIjrPIJJsLbivpzI1S+wPCzeypIysikNXRwkGcm7UOMoylw5Vqa+MS1HJFNHYAvZOoO97ndSQ==",
+  "SigningCertURL" : "https://sns.eu-west-1.amazonaws.com/SimpleNotificationService-d6d679a1d18e95c2f9ffcf11f4f9e198.pem",
+  "UnsubscribeURL" : "https://sns.eu-west-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-west-1:308506855511:dev-fc-metadata-events:d2be5bd6-b96b-4f29-90b0-490e31bef3fb"
+}

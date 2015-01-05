@@ -1,3 +1,4 @@
+
 <tr class="content-list-drawer content-list-drawer--hidden">
     <td colspan="100" class="content-list-drawer__full-width">
 
@@ -27,6 +28,7 @@
                     <li class="drawer__section">
                         <span class="drawer__section-title">Last modified</span>
                         <span class="drawer__section-data-row">{{ (contentItem.lastModified | wfLocaliseDateTime | wfFormatDateTime) || "-" }}</span>
+                        <span class="drawer__section-data-row" ng-show="contentItem.lastModifiedBy">by {{ contentItem.lastModifiedBy }}</span>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">First published</span>
@@ -54,12 +56,20 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">In use by</span>
-                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                        <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true">
+                        </wf-presence-indicators>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Assigned to</span>
                         <span class="drawer__section-data-row--editable" editable-text="contentItem.item.assignee" buttons="no" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.item.assignee || "None" }}</span>
                     </li>
+
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">InCopy</span>
+                        <span class="drawer__section-data-row">{{ contentItem.incopyTitle }}</span>
+                        <span class="drawer__section-data-row" ng-if="contentItem.isOwnedByInCopy"><i>Locked</i></span>
+                    </li>
+
                 </ul>
 
                 <ul class="drawer__column">
@@ -69,7 +79,7 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Content type</span>
-                        <span class="drawer__section-data-row">{{ contentItem.contentTypeTitle }}</span>
+                        <span class="drawer__section-data-row">{{ ncontentItem.contentTypeTitle }}</span>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Comments</span>
@@ -105,43 +115,70 @@
                         </span>
                     </li>
                     <li class="drawer__section">
+                        <span class="drawer__section-title">Standfirst</span>
+                        <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !contentItem.standfirst}">
+                            {{ contentItem.standfirst || "None" }}
+                        </span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Tags</span>
+                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                    </li>
+                    <li class="drawer__section">
                         <span class="drawer__section-title">Note</span>
                         <span class="drawer__section-data-row--editable" editable-textarea="contentItem.note" onbeforesave="onBeforeSaveNote($data)">{{ contentItem.note || 'Add note' }}</span>
                     </li>
                 </ul>
 
                 <ul class="drawer__column">
-                    <li class="drawer__section">
-                        <span class="drawer__section-title">Main image</span>
-                    <span class="drawer__section-data-row">
-                        <img src="" alt=""/>
+                    <li class="drawer__section drawer__section-mainmedia" 
+                    ng-class="{'drawer__section-mainmedia--nopreview': contentItem.mainMediaNoPreview}">
+
+                        <span class="drawer__section-title">Main media</span>
+                        <div ng-if="contentItem.mainMediaType == 'image'" class="drawer__section-image-container">
+                            <img ng-src="{{ contentItem.mainMediaUrl}}" alt=""/>
+                        </div>
+                        <div ng-if="contentItem.mainMediaNoPreview" class="drawer__section-image-container">
+                            {{contentItem.mainMediaType}}
+                        </div>
+                        <div ng-if="!contentItem.mainMediaType" class="drawer__section-data-row drawer__section-data-row--empty">
+                            None
+                        </div>
                     </span>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Caption</span>
-                        <span class="drawer__section-data-row">{{ contentItem.mainImageTitle }}</span>
+                        <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !contentItem.mainMediaCaption}">
+                            {{ contentItem.mainMediaCaption || "None" }}
+                        </span>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Alt text</span>
-                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                        <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !contentItem.mainMediaAltText}">
+                            {{ contentItem.mainMediaAltText || "None" }}
+                        </span>
                     </li>
+                </ul>
+
+                <ul class="drawer__column">
                     <li class="drawer__section">
                         <span class="drawer__section-title">Trail picture</span>
-                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
-                    </li>
-                    <li class="drawer__section">
-                        <span class="drawer__section-title">Standfirst</span>
-                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                        <div ng-if="contentItem.trailImageUrl" class="drawer__section-image-container">
+                            <img ng-src="{{ contentItem.trailImageUrl }}" alt=""/>
+                        </div>
+                        <div ng-if="!contentItem.trailImageUrl" class="drawer__section-data-row drawer__section-data-row--empty">
+                            None
+                        </div>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Trail text</span>
-                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
-                    </li>
-                    <li class="drawer__section">
-                        <span class="drawer__section-title">Tags</span>
-                        <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
+                        <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !contentItem.trailtext}">
+                            {{ contentItem.trailtext || "None" }}
+                        </span>
                     </li>
                 </ul>
+
+
 
                 <ul class="drawer__column--control">
                     <li class="drawer__control">
@@ -152,9 +189,15 @@
                     </li>
                     <li class="drawer__control" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}">
                     <span class="drawer__section-data-row drawer__control-item drawer__control-item--delete" ng-click="deleteContentItem()">
-                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete" wf-icon-dark="awaitingDeleteConfirmation"></i>
-                            {{ awaitingDeleteConfirmation ? 'Delete' : 'Delete from workflow' }}
+                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
+                            {{ awaitingDeleteConfirmation ? 'Delete' : 'Delete from Workflow' }}
                         </span>
+                    </li>
+                    <li class="drawer__control" ng-show="incopyExportEnabled">
+                        <a href="{{ incopyExportUrl }}" class="drawer__section-data-row drawer__control-item drawer__control-item--incopy">
+                            <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="incopy"></i>
+                            {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
+                        </a>
                     </li>
                  </ul>
             </div>
@@ -162,3 +205,4 @@
 
     </td>
 </tr>
+

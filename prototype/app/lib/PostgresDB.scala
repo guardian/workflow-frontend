@@ -1,5 +1,6 @@
 package lib
 
+import models.ApiResponse.ApiResponse
 import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
@@ -9,13 +10,12 @@ import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
 import com.gu.workflow.db.CommonDB._
+import com.gu.workflow.query._
 
 object PostgresDB {
 
   import play.api.Play.current
   import play.api.db.slick.DB
-
-  val queryStringToFlag = Map("needsLegal" -> Flag.Required, "approved" -> Flag.Complete, "notRequired" -> Flag.NotRequired)
 
   def getContent(
                   section:      Option[List[Section]]  = None,
@@ -29,59 +29,66 @@ object PostgresDB {
                   prodOffice:   Option[String]   = None,
                   createdFrom:  Option[DateTime] = None,
                   createdUntil: Option[DateTime] = None
-                  ): List[DashboardRow] =
+  ): List[DashboardRow] =
+    getContent(WfQuery.fromOptions(
+                 section, desk, dueFrom, dueUntil, status, contentType,
+                 published, flags, prodOffice, createdFrom, createdUntil
+               )
+    )
+
+  def getContent(q: WfQuery): List[DashboardRow] =
     DB.withTransaction { implicit session =>
 
-      val flagFilters = flags.flatMap(queryStringToFlag.get(_)).seq
-      val flagFilterOpt = if(flagFilters.isEmpty) None else Some(flagFilters)
-
-      val stubsQuery =
-        stubs |>
-        flagFilterOpt.foldl[StubQuery]((q, filters) => q.filter(_.needsLegal inSet(filters))) |>
-        dueFrom.foldl[StubQuery]  ((q, dueFrom)  => q.filter(_.due >= dueFrom)) |>
-        dueUntil.foldl[StubQuery] ((q, dueUntil) => q.filter(_.due < dueUntil)) |>
-        section.foldl[StubQuery]  { case (q, sections: List[Section]) => q.filter(_.section.inSet(sections.map(_.name))) } |>
-        prodOffice.foldl[StubQuery] ((q, prodOffice) => q.filter(_.prodOffice === prodOffice)) |>
-        createdFrom.foldl[StubQuery] ((q, createdFrom) => q.filter(_.createdAt >= createdFrom)) |>
-        createdUntil.foldl[StubQuery] ((q, createdUntil) => q.filter(_.createdAt < createdUntil))
-
-      val contentQuery =
-        content |>
-          status.foldl[ContentQuery] { case (q, Status(s)) => q.filter(_.status === s) } |>
-          contentType.foldl[ContentQuery] ((q, contentType) => q.filter(_.contentType === contentType)) |>
-          published.foldl[ContentQuery] ((q, published) => q.filter(_.published === published))
-
       val query = for {
-        s <- stubsQuery
-        c <- contentQuery
+        s <- WfQuery.stubsQuery(q)
+        c <- WfQuery.contentQuery(q)
         if s.composerId === c.composerId
       } yield (s, c)
 
-
-      query.filter( {case (s,c) => showContentItem(s, c) })
+      query.filter( {case (s,c) => displayContentItem(s, c) })
            .list.map {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
           val content = WorkflowContent.fromContentRow(contentData)
+
           DashboardRow(stub, content)
       }
-
-
     }
 
-  private def ensureContentExistsWithId(composerId: String, contentType: String)(implicit session: Session) {
+  private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
-      content +=
-        ((composerId, None, new DateTime, None, Status.Writers.name, contentType, false, None, false, None, None))
+      val wc = WorkflowContent.default(composerId: String, contentType: String, activeInInCopy)
+      content += WorkflowContent.newContentRow(wc, None)
     }
   }
 
-  def createStub(stub: Stub): Unit =
+
+  /**
+   * Creates a new content item in Workflow.
+   *
+   * @param stub
+   * @param contentItem
+   * @return Either: Left(Long) if item exists already with composerId.
+   *         Right(Long) of newly created item.
+   */
+  def createContent(contentItem: ContentItem): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
-      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
-      stubs += Stub.newStubRow(stub)
+
+      val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
+
+      existing match {
+        case Some(stubId) => Left(ApiError("StubExists",s"Stub ${stubId} already exists", 409, "conflict"))
+        case None => {
+          contentItem.wcOpt.foreach(
+            content += WorkflowContent.newContentRow(_, None)
+          )
+
+          Right((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
+        }
+      }
     }
+  }
 
   def getContentByComposerId(composerId: String): Option[DashboardRow] = {
     DB.withTransaction { implicit session =>
@@ -208,7 +215,16 @@ object PostgresDB {
 
   def deleteStub(id: Long) {
     DB.withTransaction { implicit session =>
-      stubs.filter(_.pk === id).delete
+
+      archiveContentQuery((s, c) => s.pk === id)
+
+      val queryCurrentStub = stubs.filter(_.pk === id)
+
+      // Delete from Content table
+      content.filter(c => c.composerId in queryCurrentStub.map(_.composerId)).delete
+
+      // Delete from Stub table
+      queryCurrentStub.delete
     }
   }
 
@@ -218,15 +234,6 @@ object PostgresDB {
         wc <- content if wc.composerId === composerId
       } yield wc.status
       q.update(status)
-    }
-  }
-
-  def updateContent(composerId: String, pub: PublishedData) = {
-    DB.withTransaction { implicit session =>
-      val q = for {
-        wc <- content if wc.composerId === composerId
-      } yield (wc.published, wc.timePublished)
-      q.update(pub.published, pub.publishedTime)
     }
   }
 }

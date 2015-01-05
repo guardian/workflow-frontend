@@ -7,29 +7,38 @@ Development prerequisites
 -------------------------
 
   * Install [SBT](http://www.scala-sbt.org/)
+
   * Get an account in the [aws-cms-workflow](https://aws-cms-workflow.signin.aws.amazon.com/console) AWS account
+
   * Set your region in the AWS console (drop-down menu in the top right corner) - you probably want to choose Ireland.
+
   * Create your own CloudFormation stack, using the developer template in `cloudformation/dev-template.json`. NB: Enter
     a unique stack name in the "Stage" parameter, e.g. "DEV-{username}"
 
 	* Copy `prototype/conf/application.local-example.conf` to `prototype/conf/application.local.conf`
+
   * Copy `prole/conf/application.local-example.conf` to `prole/conf/application.local.conf`
+
   * Deploy your cloud-formation script on AWS and query the stack outputs (can be found in the Outputs tab for your stack in the AWS Console), and copy the values
     into `prototype/conf/application.local.conf` and `prole/conf/application.local.conf`
+
   * Find Google OAuth2 credentials found at https://console.developers.google.com/project/apps~gu-workflow and add these to `prototype/conf/local.conf`
+
   * Download our private keys from the `workflow-private` S3 bucket and put in /etc/gu/workflow-keys.conf.
     You will need an AWS account so ask another dev.
-    If you have the AWS CLI set up you can run
-      ```
-      aws s3 cp s3://workflow-private/keys.conf /etc/gu/workflow-keys.conf
-      ```
+    If you have the AWS CLI set up you can run:
+
+        aws s3 cp s3://workflow-private/keys.conf /etc/gu/workflow-keys.conf
 
   * Setup and install client-side dependencies:
 
-    ```
-      cd prototype
-      ./setup.sh
-    ```
+        cd prototype
+        ./setup.sh
+
+  * In `~/.bash_profile` add:
+
+        export AWS_ACCESS_KEY=<access-key-id>
+        export AWS_SECRET_KEY=<secret-key>
 
 
 Running the application
@@ -55,10 +64,12 @@ this already if you work with composer, identity, r2 or similar):
 4. Get the [dev-nginx](https://github.com/guardian/dev-nginx) repo checked out on your machine
 
 5. Set up certs if you've not already done so (see dev-nginx readme)
- 
+
 6. Configure the workflow route in nginx
 
     sudo <path_of_dev-nginx>/setup-app.rb <path_of_workflowt>/nginx/nginx-mapping.yml
+
+
 
 ### the apps
 
@@ -110,4 +121,68 @@ Start the Selenium server
 
 Run the tests
 
-    $ protractor test/conf.js
+    export TESTUSER_USERNAME=<username>
+    export TESTUSER_PASSWORD=<password>
+    $ protractor ~/test/conf.js
+
+Run the tests through saucelabs
+
+    export SAUCE_USERNAME=<username>
+    export SAUCE_ACCESS_KEY=<access_key>
+    $ node ~/test/sauce-connect+run.js
+
+Updating AMIs
+-------------
+
+We use [packer](https://packer.io/) to create new AMIs, you can download it here: http://www.packer.io/downloads.html.
+To create an AMI, you must set AWS_ACCESS_KEY and AWS_SECRET_KEY as described above.
+The prototype app also requires a set of keys. Download them from the private s3 bucket
+
+    aws s3 cp s3://workflow-private/packer-ami-key.pem /etc/gu/packer-ami-key.pem
+    aws s3 cp s3://workflow-private/packer-ami-certificate.pem /etc/gu/packer-ami-certificate.pem
+
+###Building
+To add your requirements to the new AMI, you should update provisioning.json. This will probably involve editing the
+provisioners section, but more information can be found in the packer docs. Once you are ready, run the following:
+You should get the latest ubuntu ami image from [https://cloud-images.ubuntu.com/trusty/current/]
+Prole needs a 64 bit ebs instance eu-west-1 region
+Prototype needs a 64 instance-storage eu-west-1 region
+
+    packer build prototype/provisioning.json
+    packer build prole/provisioning.json
+
+This will take several minutes to build the new AMI. Once complete, you should see something like:
+
+    eu-west-1: ami-xxxxxxxx
+
+You can then add the ami instance to cloud formation.
+
+Shared Auth API
+---------------
+
+It is possible to use some endpoints by providing a shared secret as a cookie
+call `workflow-secret`. This cookie should be an HMAC SHA1 signature of the
+current time (in ms since the epoch) with the last 16 bits masked to 0 signed
+with the shared key, as configured in the config file under `api.sharedsecret`.
+
+For example, here is a simple shell script that uses the `openssl` command-line
+tool, which is almost always present (including on stock Macs), to generate the
+appropriate cookie value.
+
+```
+#!/bin/bash
+
+if [[ -z "$1" ]]
+then
+    echo "Please provide a key as the first arg"
+    exit
+fi
+
+KEY=$1
+
+# everything before here is optional niceties
+NOW=$(date '+%s')
+PLAINTEXT=$((($NOW * 1000) & ~65535))
+echo -n "$PLAINTEXT" | openssl sha1 -hmac "$KEY"
+```
+
