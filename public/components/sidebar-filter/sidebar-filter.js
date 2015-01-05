@@ -1,59 +1,198 @@
 import angular from 'angular';
 
+import _ from 'lodash';
 import 'lib/filters-service';
 
 angular.module('wfSidebarFilter', ['wfFiltersService'])
-    .directive('wfSidebarFilter', ['wfFiltersService', function (wfFiltersService) {
+    .directive('wfSidebarFilter', ['wfFiltersService', '$injector', '$timeout', 'wfPreferencesService', function (wfFiltersService, $injector, $timeout, wfPreferencesService) {
 
     return {
         restrict: 'E',
         replace: true,
         templateUrl: '/assets/components/sidebar-filter/sidebar-filter.html',
         scope: {
-            filter: '=wfFilter',
-            listIsOpen: '@wfListIsOpen'
+            filter: '=wfFilter'
         },
         link: function ($scope, elem, attrs) {
 
-            $scope.defaultFilter = { caption: "All", value: null };
-            $scope.selectedFilter = wfFiltersService.get($scope.filter.namespace);
+            function isMultiSelect() {
+                if(typeof $scope.filter["multi"] === "boolean")
+                    return $scope.filter["multi"]
+                else
+                    return false
+            }
 
-            if (!$scope.selectedFilter) {
-                $scope.selectedFilter = null;
+            $scope.defaultFilter = { caption: "All", value: null };
+            var currentSelection = wfFiltersService.get($scope.filter.namespace);
+
+            if (!currentSelection) {
+                $scope.selectedFilters = [];
+            } else {
+                $scope.selectedFilters = currentSelection.split(",")
+            }
+
+            if ($scope.filter.customLinkFunction) { // Custom linking function for non-standard filters
+                $injector.invoke(
+                    $scope.filter.customLinkFunction, // function
+                    this, // scope for execution
+                    {
+                        '$scope': $scope // local variables to be used before dependency resolution
+                    }
+                );
             }
 
             $scope.filterIsSelected = function(filter) {
-                return (filter != null && filter.value === $scope.selectedFilter);
+                if ($scope.selectedFilters.length < 1) {
+                    return filter.value === $scope.defaultFilter.value
+                } else {
+                    return (filter != null && _.contains($scope.selectedFilters, filter.value));
+                }
+            };
+
+            $scope.defaultFilterClick = function(filter) {
+                // this is a replace operartion, instead of an add
+                $scope.selectedFilters = [];
+                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
+            };
+
+            $scope.selectFilter = function(filter) {
+                if(isMultiSelect()) {
+                    $scope.selectedFilters.push(filter);
+                } else {
+                    $scope.selectedFilters = [filter];
+                }
             };
 
             $scope.filterClick = function(filter) {
                 if($scope.filterIsSelected(filter)) {
-                    $scope.selectedFilter = null;
+                    $scope.selectedFilters =
+                        _.filter($scope.selectedFilters,
+                                 flt => flt !== filter.value);
                 } else {
-                    $scope.selectedFilter = filter.value;
+                    $scope.selectFilter(filter.value);
                 }
-
-                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilter);
+                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
             };
 
             $scope.toggleSidebarSection = function () {
-                $scope.list = $scope.list || elem[0].querySelector('.sidebar__filter-list');
-
-                if (!$scope.listHeight) {
-                    $scope.listHeight = $scope.list.offsetHeight;
-                    $scope.list.style.maxHeight = $scope.listHeight + 'px';
-                    getComputedStyle($scope.list).maxHeight; // Force reflow in FF & IE
-                }
 
                 if ($scope.listIsOpen) {
                     $scope.listIsOpen = false;
                     $scope.list.style.maxHeight = '0px';
+                    updatePreference('listIsOpen', false);
                 } else {
                     $scope.listIsOpen = true;
                     $scope.list.style.maxHeight = $scope.listHeight + 'px';
+                    updatePreference('listIsOpen', true);
                 }
 
             };
+
+            /**
+             * Update a generic filter preference
+             * @param key
+             * @param value
+             */
+            function updatePreference (key, value) {
+
+                $scope.filterPrefs = $scope.filterPrefs
+                    .filter((filter) => filter && filter !== null) // TODO: Figure out where nulls in the prefs come from
+                    .map((filter) => {
+                        if (filter && filter.namespace === $scope.filter.namespace) {
+                            filter[key] = value;
+                        }
+                        return filter;
+                    });
+
+                wfPreferencesService
+                    .setPreference('filters', $scope.filterPrefs);
+            };
+
+            /**
+             * After rendering set up the filter list display.
+             *  - Request the preference for the display of the filters
+             *  - Set the filter preferences locally along with the display data for the filter
+             *  - Trigger the render at setUpListDisplay
+             */
+            $timeout(() => {
+
+                function setUpListDisplay () {
+                    $scope.list = $scope.list || elem[0].querySelector('.sidebar__filter-list');
+
+                    if (!$scope.listHeight) {
+                        $scope.listHeight = $scope.list.offsetHeight;
+                        $scope.list.style.maxHeight = $scope.listHeight + 'px';
+                        getComputedStyle($scope.list).maxHeight; // Force reflow in FF & IE
+                    }
+
+                    if (!$scope.listIsOpen) {
+                        $scope.list.style.maxHeight = '0px';
+                    }
+                }
+
+                wfPreferencesService
+                    .getPreference('filters')
+                    .then(function reslove (data) {
+
+                        $scope.filterPrefs = data;
+                        var thisFilterPref = data.filter((filter) => filter && filter.namespace === $scope.filter.namespace);
+
+                        if ($scope.selectedFilters.length > 0) { // If this filter has an option selected on load then display it open by default
+
+                            $scope.listIsOpen = true;
+                        } else { // Else display the users set preference
+                            if (thisFilterPref.length > 0) {
+
+                                $scope.listIsOpen = thisFilterPref[0].listIsOpen;
+                            } else { // Else display the default preference
+
+                                $scope.filterPrefs.push({
+                                    namespace: $scope.filter.namespace,
+                                    listIsOpen: $scope.filter.listIsOpen
+                                });
+                                $scope.listIsOpen = $scope.filter.listIsOpen;
+                            }
+                        }
+
+                        setUpListDisplay();
+                    }, function reject () {
+                        $scope.filterPrefs = [];
+                        $scope.filterPrefs.push({
+                            namespace: $scope.filter.namespace,
+                            listIsOpen: $scope.filter.listIsOpen
+                        });
+                        $scope.listIsOpen = $scope.filter.listIsOpen;
+
+                        setUpListDisplay();
+                    });
+
+            }, 0);
         }
     };
-}]);
+
+    }]).directive("wfToolbarFreetext", ['wfFiltersService', '$rootScope', '$timeout', function(wfFiltersService, $rootScope,$timeout) {
+        // how long to wait (ms) after seeing a change before
+        // committing it? (e.g. we want to activate the change
+        // once the user has finished typing).
+        var delay = 500;
+
+        return {
+            link: function ($scope, elem, attrs) {
+                $scope.value = "";
+                var timeout = null;
+                $scope.update = function() {
+
+                    if(timeout != null) {
+                        $timeout.cancel(timeout);
+                    }
+
+                    timeout = $timeout(() => {
+                        $rootScope.$broadcast(
+                            "filtersChanged.freeText",
+                            ($scope.value.length < 1) ? null : $scope.value
+                        );
+                    }, delay);
+                }
+            }
+        }
+    }]);

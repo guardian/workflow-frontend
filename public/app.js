@@ -25,11 +25,14 @@ import 'components/icons/icons';
 
 import 'layouts/dashboard/dashboard';
 import 'layouts/dashboard/dashboard-user';
+import 'layouts/dashboard/dashboard-create';
 import 'layouts/dashboard/dashboard-toolbar';
 import 'layouts/dashboard/dashboard-sidebar';
 
 import 'lib/date-service';
 import 'lib/filters-service';
+import 'lib/column-service';
+import 'lib/preferences-service';
 import 'lib/analytics';
 import 'lib/feature-switches';
 
@@ -50,6 +53,7 @@ angular.module('workflow',
         'wfSentry',
         'wfDashboard',
         'wfDashboardUser',
+        'wfDashboardCreate',
         'wfDashboardToolbar',
         'wfDashboardSidebar',
         'wfIcons',
@@ -57,12 +61,19 @@ angular.module('workflow',
         'wfDateService',
         'wfAnalytics',
         'wfFiltersService',
+        'wfColumnService',
+        'wfPreferencesService',
         'wfFeatureSwitches',
         'xeditable'
     ])
-    .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', function ($stateProvider, $urlRouterProvider, $compileProvider) {
         // TODO: remember user's state and redirect there on default '' route
         $urlRouterProvider.when('', '/dashboard');
+
+        $compileProvider.aHrefSanitizationWhitelist(
+            RegExp($compileProvider.aHrefSanitizationWhitelist().source +
+                   "|^\\s*" + _wfConfig.incopyExportUrl.match("^.*?:")[0])
+        );
 
         $stateProvider.state('dashboard', {
             url: '/dashboard',
@@ -74,6 +85,10 @@ angular.module('workflow',
                 'view-toolbar': {
                     templateUrl: '/assets/layouts/dashboard/dashboard-toolbar.html',
                     controller: 'wfDashboardToolbarController'
+                },
+                'view-create': {
+                    templateUrl: '/assets/layouts/dashboard/dashboard-create.html',
+                    controller: 'wfDashboardCreateController'
                 },
                 'view-user': {
                     templateUrl: '/assets/layouts/dashboard/dashboard-user.html',
@@ -95,6 +110,7 @@ angular.module('workflow',
             'composerViewContent': _wfConfig.composer.view,
             'composerContentDetails': _wfConfig.composer.details,
             'presenceUrl': _wfConfig.presenceUrl,
+            'incopyExportUrl': _wfConfig.incopyExportUrl,
             'maxNoteLength': 500
         }
     )

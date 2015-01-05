@@ -8,6 +8,7 @@ import 'lib/content-service';
 import 'lib/date-service';
 import 'lib/presence';
 import 'lib/prodoffice-service';
+import 'lib/column-service';
 import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
 
@@ -15,17 +16,80 @@ import { wfContentListDrawer } from 'components/content-list-drawer/content-list
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
-    .controller('wfContentListController', ['$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', wfContentListController])
+    .controller('wfContentListController', ['$rootScope', '$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
-    .directive('wfContentListItem', ['$rootScope', wfContentListItem])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', wfContentListDrawer]);
+    .directive('wfContentListItem', ['$rootScope', '$q', '$compile', '$http', '$templateCache', 'wfColumnService', wfContentListItem])
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer])
+    .directive("bindCompiledHtml", function($compile, $timeout) {
+        return {
+            scope: {
+                rawHtml: '=bindCompiledHtml'
+            },
+            link: function(scope, elem, attrs) {
+                scope.$watch('rawHtml', function(value) {
+                    if (!value) return;
+                    var newElem;
+                    try { // Crappy javascript :-(
+                        newElem = $compile(value)(scope.$parent);
+                    } catch (e) {
+                        newElem = value;
+                    }
+                    elem.contents().remove();
+                    elem.append(newElem);
+                });
+            }
+        };
+    });
 
 
-function wfContentListController($scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService) {
+
+function wfContentListController($rootScope, $scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService) {
 
     /*jshint validthis:true */
 
-    this.showHeadline = false;
+    wfColumnService.getColumns().then((data) => {
+        $scope.columns = data;
+    });
+
+    $scope.showColumnMenu = false;
+    $scope.colChange = function () {
+        wfColumnService.setColumns($scope.columns);
+        $rootScope.$emit('contentItem.columnsChanged');
+    };
+
+    (function handleCompactView () {
+
+        $scope.compactView = {
+            visible: false // compact view off by default
+        };
+
+        wfPreferencesService.getPreference('compactView').then((data) => { // query prefs for compact view
+            $scope.compactView = data;
+            setUpWatch();
+        }, setUpWatch);
+
+        function setUpWatch () {
+            $scope.$watch('compactView', (newValue, oldValue) => { // store any change to compact view as a pref
+                wfPreferencesService.setPreference('compactView', newValue);
+            }, true);
+        }
+    })();
+
+    (function handleHeadlineVisibility (controller) {
+
+        controller.showHeadline = false;
+
+        wfPreferencesService.getPreference('showHeadline').then((data) => {
+            controller.showHeadline = data;
+            setUpWatch();
+        }, setUpWatch);
+
+        function setUpWatch () {
+            $scope.$watch('contentList.showHeadline', (newValue, oldValue) => {
+                wfPreferencesService.setPreference('showHeadline', newValue);
+            }, true);
+        }
+    })(this);
 
     this.newItem = function () {
         $scope.$emit('stub:create');

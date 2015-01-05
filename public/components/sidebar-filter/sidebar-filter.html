@@ -1,17 +1,21 @@
 <div class="sidebar__section">
     <div class="sidebar__header" ng-click="toggleSidebarSection()">
         <h5 class="query sidebar__heading" data-toggle="collapse" data-target="#type" ng-class="{'sidebar__heading--open': listIsOpen}">{{ filter.title }}</h5>
+        <div class="sidebar__header-spacer"></div>
         <div ng-class="{'sidebar__filter--active': filterIsSelected(defaultFilter)}" class="sidebar__filter sidebar__filter--default">
-            <a href="" class="sidebar__filter-link" ng-click="filterClick(defaultFilter); $event.stopPropagation();">{{defaultFilter.caption}}</a>
+            <a href="" class="sidebar__filter-link" ng-click="defaultFilterClick(defaultFilter); $event.stopPropagation();">{{defaultFilter.caption}}</a>
         </div>
     </div>
 
     <ul id="type" class="sidebar__filter-list">
-        <li ng-repeat="filterOption in filter.filterOptions" ng-class="{'sidebar__filter--active': filterIsSelected(filterOption)}" class="sidebar__filter">
-            <a href="" class="sidebar__filter-link" ng-click="filterClick(filterOption)">
+        <li ng-repeat="filterOption in filter.filterOptions" ng-class="{'sidebar__filter--active': filterIsSelected(filterOption)}" class="sidebar__filter" ng-switch on="filterOption.url.length > 0">
+            <a ng-switch-when="false" href="" class="sidebar__filter-link" ng-click="filterClick(filterOption)">
                 <i class="sidebar__filter-icon" ng-if="filterOption.icon" wf-icon="{{filterOption.icon}}"></i>
                 {{filterOption.caption}}
             </a>
+            <div ng-switch-when="true" class="sidebar__filter-custom--{{ filterOption.value }}">
+                <div ng-include="filterOption.url"></div>
+            </div>
         </li>
     </ul>
 </div>

@@ -20,26 +20,4 @@
 
 <div wf-toolbar-sections-dropdown ng-model="selectedSections" sections="sections" selectedDesk="selectedDesk"></div>
 
-<div class="dashboard-toolbar__deadline">
-    <form>
-        <label class="dashboard-toolbar__deadline-label">Deadline</label>
-
-        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value>All</button>
-        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="today">Today</button>
-        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="tomorrow">Tomorrow</button>
-        <button type="button" ng-model="selectedDate" wf-toolbar-option="deadline" wf-toolbar-option-value="weekend">This weekend</button>
-
-        <label class="dashboard-toolbar__deadline-select-label">
-            <select ng-class="{'dashboard-toolbar__deadline-select': !deadlineSelectActive(), 'dashboard-toolbar__deadline-select--active': deadlineSelectActive()}" ng-model="selectedDate" ng-options="date as (date | wfLocaliseDateTime | wfFormatDateTime:'ddd D MMM') for date in dateOptions" title="Choose date">
-                <option value="">Choose date</option>
-            </select>
-        </label>
-    </form>
-</div>
-<div wf-presence-connection-status class="dashboard-toolbar__presence-connection-status"
-     ng-show="presenceEnabled" title="{{connectionMessage}}">
-    <span class="dashboard-toolbar__presence-connection-status-label">Presence</span>
-    <span class="dashboard-toolbar__presence-connection-status-indicator--{{connectionStatus}}">
-        {{connectionStatus | uppercase}}
-    </span>
-</div>
+<div class="dashboard-toolbar__section"><input wf-toolbar-freetext ng-model="value" placeholder="Search" ng-change="update()" type="text" value=""/></div>
