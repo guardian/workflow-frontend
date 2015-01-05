@@ -13,8 +13,7 @@
  */
 var wfContentListDrawer = function ($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches) {
 
-    var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
-        hiddenClass = 'content-list-drawer--hidden';
+    var hiddenClass = 'content-list-drawer--hidden';
 
     function buildIncopyUrl(fields) {
         return config.incopyExportUrl
@@ -22,6 +21,26 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                 return fields[fieldName] || "";
             });
     }
+
+
+    function getTransitionEndEventName(elem) {
+        var i,
+            transitions = {
+                'transition':'transitionend',
+                'OTransition':'otransitionend',  // oTransitionEnd in very old Opera
+                'MozTransition':'transitionend',
+                'WebkitTransition':'webkitTransitionEnd'
+            };
+
+        for (i in transitions) {
+            if (transitions.hasOwnProperty(i) && elem.style[i] !== undefined) {
+                return transitions[i];
+            }
+        }
+
+        //TODO: throw 'TransitionEnd event is not supported in this browser';
+    }
+
 
     return {
         restrict: 'A',
@@ -36,18 +55,83 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
         controllerAs: 'contentListDrawerController',
         controller: function ($scope, $element) {
 
+            var transitionEndEventName = getTransitionEndEventName($element[0]);
+
             /**
              * Hide the drawer from view using css3 transition and remove the selected class form the row.
              * Accessible on $scope for use on 'hide' button in drawer
              */
-            this.hide = function () {
-                $element.one(transitionEndEvents,() => {
+            this.hide = () => new Promise((resolve, reject) => {
+                if (this.isHidden()) {
+                    return resolve();
+                }
+
+                $element.one(transitionEndEventName, () => {
                     $scope.contentList.selectedItem = null;
-                    $scope.$apply();
+                    resolve();
                 });
+
                 $element.addClass(hiddenClass);
+            });
+
+
+            /**
+             * Shows the drawer.
+             * @returns {Promise} resolves when CSS transition ends.
+             */
+            this.show = () => new Promise((resolve, reject) => {
+                if (!this.isHidden()) {
+                    resolve();
+                }
+
+                // Note depends on CSS transition to exist
+                $element.one(transitionEndEventName, resolve);
+
+                var w = $window.getComputedStyle($element[0], null).width; // force reflow styles
+
+                $element.removeClass(hiddenClass);
+            });
+
+
+            /**
+             * Shows a new contentItem moving the drawer to the row beneath its element.
+             */
+            this.showContent = (contentItem, $contentListItemElement) => {
+
+                return this.hide().then(() => {
+                    $contentListItemElement.after($element);
+
+                    $scope.contentItem = contentItem;
+                    $scope.contentList.selectedItem = contentItem;
+                    $scope.$apply();
+
+                    return this.show();
+                });
+
+            };
+
+            this.isHidden = () => $element.hasClass(hiddenClass);
+
+
+            this.toggle = () => this.isHidden() ? this.show() : this.hide();
+
+
+            /**
+             * Toggles drawer display and can display a different contentItem
+             * if one is already being displayed.
+             */
+            this.toggleContent = (contentItem, $contentListItemElement) => {
+                var selectedItem = $scope.contentList.selectedItem;
+
+                if (selectedItem && selectedItem.id !== contentItem.id) {
+                    return this.hide().then(() => this.showContent(contentItem, $contentListItemElement));
+                }
+
+                return this.isHidden() ? this.showContent(contentItem, $contentListItemElement) : this.hide();
             };
         },
+
+
         link: function ($scope, elem, attrs, contentListDrawerController) {
 
             var $parent = elem.parent(); // Store parent location for holding unbound elem
@@ -57,26 +141,6 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
             featureSwitches.withSwitch("incopy-export",
                                        val => $scope.incopyExportEnabled = val);
 
-            /**
-             * Show the content details drawer after moving it to a new position,
-             * use a timeout to allow the browser to reflow styles ensuring
-             * that the css animation triggers.
-             *
-             * @param {Object} contentItem
-             * @param {Object} contentListItemElement - JQL wrapped DOM node
-             */
-            function show (contentItem, contentListItemElement) {
-                contentListItemElement.after(elem);
-
-                $scope.contentItem = contentItem;
-                $scope.contentList.selectedItem = contentItem;
-
-                $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
-
-                var w = $window.getComputedStyle(elem[0], null).width; // force reflow styles
-
-                elem.removeClass(hiddenClass);
-            }
 
             /**
              * Listen for event triggered by click in external contentItemRow directive to show or hide drawer
@@ -89,19 +153,8 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                     return;
                 }
 
-                if ($scope.contentList.selectedItem !== contentItem) { // open
-                    if (!elem.hasClass(hiddenClass)) {
-                        elem.addClass(hiddenClass);
-                        elem.one(transitionEndEvents, () => {
-                            show(contentItem, contentListItemElement);
-                            $scope.$apply();
-                        });
-                    } else {
-                        show(contentItem, contentListItemElement);
-                    }
-                } else { // close
-                    contentListDrawerController.hide();
-                }
+                contentListDrawerController.toggleContent(contentItem, contentListItemElement);
+
             });
 
             /**
