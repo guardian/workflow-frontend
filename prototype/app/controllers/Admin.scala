@@ -1,6 +1,8 @@
 package controllers
 
 import com.gu.workflow.db.{DeskDB, SectionDB, SectionDeskMappingDB}
+import play.api.Logger
+import play.api.libs.ws.WS
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -10,6 +12,8 @@ import play.api.data.Form
 
 import lib._
 import models.{Status => WorkflowStatus, Section, Desk}
+
+import scala.util.{Failure, Success}
 
 object Admin extends Controller with PanDomainAuthActions {
 
@@ -48,6 +52,31 @@ object Admin extends Controller with PanDomainAuthActions {
         selectedDeskOption)
     )
   }
+
+  def syncComposer = Action {
+    val visibleContent = PostgresDB.getContent()
+    Ok(views.html.syncComposer(visibleContent.size))
+  }
+
+  def syncComposerPost = Action { req =>
+    val visibleContent = PostgresDB.getContent()
+    val contentIds = visibleContent.map(_.wc.composerId)
+    val contentId = contentIds.head
+    val composerDomain = PrototypeConfiguration.cached.composerUrl
+    val composerUrl = composerDomain + "/api/content/"
+    val cookie = req.headers.get("Cookie").getOrElse("")
+
+    import play.api.Play.current
+
+    WS.url(composerUrl + contentId).withHeaders(("Cookie",cookie)).get() onComplete {
+      case Success(res) if(res.status==200) => println(s"${res.json}")
+      case Success(res)  => println(s"received status ${res.status} from composer for content item ${contentId}")
+      case Failure(error) => println(s"error ${error}")
+    }
+
+    Redirect("/admin/syncComposer")
+  }
+
 
   val addSectionForm = Form(
     mapping(
