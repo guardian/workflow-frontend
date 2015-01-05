@@ -122,6 +122,42 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                 }
             });
 
+
+            $rootScope.$on('content.render', ($event, data) => {
+
+                // selectedItem no longer in table
+                if (!data.selectedItem) {
+                    // TODO: move to generic "hide drawer" method
+                    elem.addClass(hiddenClass);
+                    $parent.append(elem);
+
+                    $scope.contentList.selectedItem = null;
+
+                    // Update selectedItem from new polled data - updates changed data
+                } else if ($scope.contentItem !== data.selectedItem) {
+
+                    if ($scope.contentItem.id !== data.selectedItem.id) {
+                        // TODO toggle show different item (edge case, rarely should fire)
+                        //      generally covered by above event on "contentItem.select"
+
+                        $scope.contentItem = data.selectedItem;
+
+                    } else if ($scope.contentItem.status !== data.selectedItem.status) {
+                        // Item has moved status, hide drawer and select nothing
+                        // TODO: move to generic "hide drawer" method
+                        elem.addClass(hiddenClass);
+                        $parent.append(elem);
+
+                        $scope.contentList.selectedItem = null;
+
+                    } else {
+                        $scope.contentItem = data.selectedItem;
+                    }
+
+                }
+            });
+
+
             /**
              * Send event to the contentList controller and analytics to persist and record
              * scope changed value from non-standard scope updates (ng xeditable and datepicker...)
