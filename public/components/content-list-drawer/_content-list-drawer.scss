@@ -70,11 +70,22 @@
     &--confirm {
         color: white;
         background-color: $c-red;
+
+        .wf-icon-type--delete {
+            fill: #fff;
+        }
     }
 
     .drawer__control-item {
         &--delete {
             height: 50px;
+        }
+        &--incopy,
+        &--incopy:visited,
+        &--incopy:hover {
+            // overwrite link styling
+            color: inherit;
+            text-decoration: inherit;
         }
         cursor: pointer;
         position: relative;
@@ -97,6 +108,10 @@
     }
 }
 
+.drawer__section-mainmedia--nopreview {
+    text-transform: capitalize;
+}
+
 .drawer__section-title {
     @extend %fs-data-3;
     font-weight: bold;
@@ -104,10 +119,20 @@
     padding: 2px 0;
 }
 
+.drawer__section-image-container {
+    max-width: 160px;
+    max-height: 80px;
+    overflow: hidden;
+
+    img {
+        width: 160px;
+    }
+}
+
 .drawer__section-data-row {
     @extend %fs-data-3;
     display: block;
-    text-transform: capitalize;
+    word-wrap: break-word;
     .glyphicon,
     .content-list-item__icon--composer {
         margin-right: 4px;
@@ -129,6 +154,10 @@
 }
 
 .drawer__section-data-row--coming-soon {
+    color: $c-grey-400;
+}
+
+.drawer__section-data-row--empty {
     color: $c-grey-400;
 }
 

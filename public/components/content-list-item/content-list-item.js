@@ -57,14 +57,38 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.update(item);
         }
 
+        htmlToPlaintext(text) {
+            return String(text).replace(/<[^>]+>/gm, '');
+        }
+
+        truncateString(string, length, ellipsis, stripHtml) {
+            if(typeof string !== 'string') return string;
+
+            var defaultLength = 140;
+            var defaultEllipsis = "...";
+
+            var maxLength = typeof length !== 'undefined' ? length : defaultLength;
+            var ellipsis = typeof ellipsis !== 'undefined' ? ellipsis : defaultEllipsis;
+            var stripHtml = typeof stripHtml !== 'undefined' ? stripHtml : true;
+
+            // Strip HTML out here so length calculation is correct
+            string = stripHtml ? this.htmlToPlaintext(string) : string;
+
+            var truncateString = () => {
+                return `${string.substring(0,(maxLength - ellipsis.length))}${ellipsis}`;
+            }
+
+            return (string.length + ellipsis.length) >= maxLength ?  truncateString() : string;
+        }
+
         update(item) {
-
+            
             // TODO: Stubs have a different structure to content items
-
             this.id = item.id || item.stubId;
             this.composerId = item.composerId;
 
             this.headline = item.headline;
+            this.standfirst = this.truncateString(item.standfirst);
             this.workingTitle = item.workingTitle || item.title;
 
             this.priority = item.priority;
@@ -72,9 +96,20 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.hasComments = !!item.commentable;
             this.commentsTitle = this.hasComments ? 'on' : 'off';
 
-            // TODO: pull main image from composer
-            this.hasMainImage = false;
-            this.mainImageTitle = 'Main image (Coming soon)';
+            this.hasMainMedia = Boolean(item.mainMedia) && Boolean(item.mainMedia.mediaType);
+            if(this.hasMainMedia) {
+                this.mainMediaType    = item.mainMedia.mediaType; 
+                this.mainMediaTitle   = 'Main media (' + (item.mainMediaType || 'none')  + ')';
+                this.mainMediaUrl     = item.mainMedia.url;
+                this.mainMediaCaption = this.truncateString(item.mainMedia.caption);
+                this.mainMediaAltText = this.truncateString(item.mainMedia.altText);
+            }
+
+            // Currently we don't pull in any preview information about non-image main media
+            this.mainMediaNoPreview = this.mainMediaType && this.mainMediaType != 'image';
+
+            this.trailtext = this.truncateString(item.trailtext);
+            this.trailImageUrl = item.trailImageUrl;
 
             this.assignee = item.assignee && toInitials(item.assignee) || '';
             this.assigneeFull = item.assignee || 'unassigned';
@@ -96,15 +131,40 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.deadline = item.due;
             this.created = item.createdAt;
             this.lastModified = item.lastModified;
+            this.lastModifiedBy = item.lastModifiedBy;
 
+            this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
-            this.publishedState = item.published ? 'Published' : ''; // TODO: Taken down, Embargoed
-            this.publishedTime = item.timePublished;
+
+            var lifecycleState = this.lifecycleState(item);
+            this.lifecycleState = lifecycleState.display;
+            this.lifecycleStateTime = lifecycleState.time;
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
 
+            this.isOwnedByInCopy = item.activeInInCopy;
+            this.storyBundleId = item.storyBundleId;
+            /* it may be linked with InCopy but owned by composer */
+            this.linkedWithIncopy = (typeof item.storyBundleId === "string" &&
+                                     item.storyBundleId.length > 0);
+            this.incopyTitle = this.linkedWithIncopy ?
+                'Linked with InCopy Story Bundle ' + this.storyBundleId :
+                'Not linked with InCopy';
+
             this.item = item;
+        }
+
+        lifecycleState(item) {
+            // Highest priority at the top!
+            var states = [
+                { "display": "Taken down", "active": item.takenDown, "time": item.timeTakenDown},
+                { "display": "Embargoed", "active": false, "time": undefined },
+                { "display": "Published", "active": item.published, "time": item.timePublished},
+                { "display": "", "active": true, "time": undefined} // Base state
+            ]
+
+            return (states.filter(function(o) { return o.active === true; })[0]);
         }
     }
 
@@ -118,11 +178,11 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
  * Directive allowing the contentListItems to interact with the details drawer
  * @param $rootScope
  */
-var wfContentListItem = function ($rootScope) {
+var wfContentListItem = function ($rootScope, $q, $compile, $http, $templateCache, wfColumnService) {
     return {
         restrict: 'A',
         replace: true,
-        templateUrl: '/assets/components/content-list-item/content-list-item.html',
+        templateUrl: '/assets/components/content-list-item/content-list-item-container.html',
         scope: {
             contentItem: '=',
             contentList: '=',
@@ -130,6 +190,45 @@ var wfContentListItem = function ($rootScope) {
             statusValues: '='
         },
         link: function ($scope, elem, attrs) {
+
+            wfColumnService.getColumns().then((data) => {
+                $scope.columns = data;
+                renderColumns();
+            });
+
+            function renderColumns () {
+
+
+                var columns = [{
+                    templateUrl: '/assets/components/content-list-item/content-list-item-start.html',
+                    active: true
+                }].concat(
+                    $scope.columns,
+                    [{
+                        templateUrl: '/assets/components/content-list-item/content-list-item-end.html',
+                        active: true
+                    }]
+                );
+
+                var promises = columns.map((col) => {
+
+                    return $http.get(col.templateUrl, {cache: $templateCache}).success((html) => {
+
+                        if (col.active) {
+                            columns[columns.indexOf(col)] = html; // ensure that ajax request results returning at any time and inserted in the correct order
+                        } else { // nasty...
+                            columns[columns.indexOf(col)] = '';
+                        }
+                    });
+                });
+
+                $q.all(promises).then(() => {
+                    var compiled = $compile(columns.join(''))($scope);
+                    elem.empty().append(compiled);
+                });
+            }
+
+            $rootScope.$on('contentItem.columnsChanged', renderColumns);
 
             /**
              * Emit an event telling the details drawer to move itself to this element, update and display.

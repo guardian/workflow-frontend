@@ -11,10 +11,17 @@
  * @param contentService
  * @param prodOfficeService
  */
-var wfContentListDrawer = function ($rootScope, config, $timeout, $window, contentService, prodOfficeService) {
+var wfContentListDrawer = function ($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches) {
 
     var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
         hiddenClass = 'content-list-drawer--hidden';
+
+    function buildIncopyUrl(fields) {
+        return config.incopyExportUrl
+            .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
+                return fields[fieldName] || "";
+            });
+    }
 
     return {
         restrict: 'A',
@@ -46,6 +53,9 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
             var $parent = elem.parent(); // Store parent location for holding unbound elem
 
             $scope.prodOffices = prodOfficeService.getProdOffices();
+            $scope.incopyExportEnabled = false;
+            featureSwitches.withSwitch("incopy-export",
+                                       val => $scope.incopyExportEnabled = val);
 
             /**
              * Show the content details drawer after moving it to a new position,
@@ -60,6 +70,8 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
 
                 $scope.contentItem = contentItem;
                 $scope.contentList.selectedItem = contentItem;
+
+                $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
 
                 var w = $window.getComputedStyle(elem[0], null).width; // force reflow styles
 
@@ -188,7 +200,6 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                         $scope.$apply();
                     }, errorMessage);
             };
-
             function errorMessage(err) {
                 $scope.$apply(() => { throw new Error('Error deleting content: ' + (err.message || err)); });
 
