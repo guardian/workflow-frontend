@@ -2,12 +2,25 @@ import java.util.TimeZone
 import play.api.libs.concurrent.Akka
 import play.api.mvc.WithFilters
 import play.api.{Logger, GlobalSettings, Application}
-import lib.{SyncComposer, ComposerQuery, PrototypeConfiguration, RedirectToHTTPSFilter}
+import lib.{SyncComposer, ComposerQuery, PrototypeConfiguration, RedirectToHTTPSFilter, ContentId}
 import scala.concurrent.duration._
 import akka.actor.Props
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object Global extends WithFilters(RedirectToHTTPSFilter) with GlobalSettings {
+
+  override def onStart(app: Application) {
+    import play.api.Play.current
+
+    Logger.info("About to start published re-sync")
+    Akka.system.scheduler.scheduleOnce(
+      delay = 0.seconds,
+      receiver = Akka.system.actorOf(
+        Props[SyncComposer]
+      ),
+      message = ContentId
+    )
+  }
 
   override def beforeStart(app: Application) {
 
