@@ -44,6 +44,35 @@ object ContentUpdateEvent {
     (__ \ "elements").read[List[Element]]
   )(Block.apply _)
 
+  def userReads(json: JsValue): JsResult[Option[String]] = {
+    for {
+      firstOpt <- (json  \ "firstName").validate[Option[String]]
+      lastOpt  <- (json \ "lastName").validate[Option[String]]
+    }
+    yield firstOpt.flatMap(f => lastOpt.map(l => f + " " + l))
+  }
+
+
+
+  def readFromApi(json: JsValue): JsResult[ContentUpdateEvent] = {
+    val js = json \ "data"
+    for {
+      composerId <- (js \ "id").validate[String]
+      mainBlock <- (js \ "preview" \ "data" \ "mainBlock" \ "data" \ "block").validate[Option[Block]]
+      contentType <- (js \ "type").validate[String]
+      published <- (js \ "published").validate[Boolean]
+      user <- userReads(js \ "contentChangeDetails" \ "data" \ "lastModified" \ "user")
+      lastModified <-  (js \ "contentChangeDetails" \ "data" \ "lastModified" \ "date").validate[Long].map(t => new DateTime(t))
+      tags <- (js \ "preview" \ "data" \ "taxonomy" \"tags" \ "data").validate[Option[List[Tag]]]
+      commentable <- (js \ "preview" \ "data" \ "settings" \ "data" \ "commentable" \ "data").validate[Option[String]].map(s => s.exists(_=="true"))
+      lastMajorRevisionDate <- (js \ "contentChangeDetails" \ "lastMajorRevisionPublished" \ "data" \ "date").validate[Option[Long]].map(optT => optT.map(t => new DateTime(t)))
+      publicationDate <- (js \ "contentChangeDetails" \ "published" \ "date").validate[Option[Long]].map(optT => optT.map(t => new DateTime(t)))
+      thumbnail <- (js \ "preview" \ "data" \ "thumbnail" \ "data").validate[Option[Thumbnail]]
+      revision <- (js \ "contentChangeDetails" \ "data" \ "revision").validate[Long]
+      status = Writers
+    } yield ContentUpdateEvent(composerId, Map(), Map(), mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags, status, commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision )
+  }
+
   implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (
     (__ \ "content" \ "id").read[String] ~
     (__ \ "content" \ "identifiers").read[Map[String, String]] ~
