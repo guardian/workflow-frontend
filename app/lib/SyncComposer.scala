@@ -39,7 +39,7 @@ class SyncComposer extends Actor {
                   case JsSuccess(pub, _) => {
                     println(s"success parse ${pub}")
                     println("updating content")
-                    PostgresDB.updateContent(pub.composerId, pub)
+//                    PostgresDB.updateContent(pub.composerId, pub)
                     contentIds = tail
                     println(s"recalling self with ${contentIds.size}")
                     self ! ComposerQuery
