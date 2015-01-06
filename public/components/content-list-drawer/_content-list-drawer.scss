@@ -1,3 +1,6 @@
+$drawer-anim-duration: 0.5s;
+$drawer-height: 380px;
+
 .content-list .content-list-drawer { // over qualified to ensure overide
     overflow: hidden;
     &::before, &::after {
@@ -15,15 +18,14 @@
     vertical-align: top;
 }
 
+
+
 .content-list-drawer__container {
     overflow: hidden;
-    height: 380px;
+    height: $drawer-height;
     background-color: $c-grey-100;
-    -webkit-transition: height 0.5s ease-in-out;
-    -moz-transition: height 0.5s ease-in-out;
-    -ms-transition: height 0.5s ease-in-out;
-    -o-transition: height 0.5s ease-in-out;
-    transition: height 0.5s ease-in-out;
+
+    @include transition(height $drawer-anim-duration ease-out);
 }
 
 .content-list .content-list-drawer--hidden .content-list-drawer__container {
@@ -34,6 +36,16 @@
     display: flex;
     height: 100%;
     border: 3px solid $c-grey-200;
+
+    position: relative;
+
+    top: 0;
+
+    @include transition(top $drawer-anim-duration ease-out);
+
+    .content-list-drawer--hidden & {
+        top: -$drawer-height;
+    }
 }
 
 .drawer__column {
