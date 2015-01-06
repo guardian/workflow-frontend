@@ -11,7 +11,7 @@
  * @param contentService
  * @param prodOfficeService
  */
-var wfContentListDrawer = function ($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -289,6 +289,4 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
 
         }
     };
-};
-
-export { wfContentListDrawer };
+}
