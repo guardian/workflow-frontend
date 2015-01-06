@@ -52,12 +52,28 @@ object ContentUpdateEvent {
     yield firstOpt.flatMap(f => lastOpt.map(l => f + " " + l))
   }
 
+  def readsMap(json: JsValue): JsResult[Map[String, String]] = {
+
+    def pure[A](a: A): JsResult[A] = JsSuccess(a)
+
+    json.validate[Map[String, JsValue]]
+      .map( suc => suc.map ( {
+          case (k,v) => (k, (v \ "data").validate[String])
+    }))
+      .flatMap(ofa => ofa.foldLeft(pure(Map[String,String]()))({
+            case (acc, (k, jv)) => {
+                jv.flatMap(j => acc.map(a => a.updated(k,j)))
+            }}))
+
+  }
 
 
   def readFromApi(json: JsValue): JsResult[ContentUpdateEvent] = {
     val js = json \ "data"
     for {
       composerId <- (js \ "id").validate[String]
+      identifiers <- readsMap(js \ "identifiers")
+      fields <- readsMap(js \ "preview" \ "data" \ "fields")
       mainBlock <- (js \ "preview" \ "data" \ "mainBlock" \ "data" \ "block").validate[Option[Block]]
       contentType <- (js \ "type").validate[String]
       published <- (js \ "published").validate[Boolean]
@@ -70,7 +86,7 @@ object ContentUpdateEvent {
       thumbnail <- (js \ "preview" \ "data" \ "thumbnail" \ "data").validate[Option[Thumbnail]]
       revision <- (js \ "contentChangeDetails" \ "data" \ "revision").validate[Long]
       status = Writers
-    } yield ContentUpdateEvent(composerId, Map(), Map(), mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags, status, commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision )
+    } yield ContentUpdateEvent(composerId, identifiers, fields, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags, status, commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision )
   }
 
   implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (
