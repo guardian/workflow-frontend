@@ -55,13 +55,13 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def syncComposer = Action {
+  def syncComposer = (AuthAction andThen WhiteListAuthFilter) {
     val visibleContent = PostgresDB.getContent()
     Ok(views.html.syncComposer(visibleContent.size))
   }
 
 
-  def syncComposerPost = Action { req =>
+  def syncComposerPost = (AuthAction andThen WhiteListAuthFilter) { req =>
     val visibleContent = PostgresDB.getContent()
     val contentIds = visibleContent.map(_.wc.composerId)
     val composerDomain = PrototypeConfiguration.cached.composerUrl
@@ -72,7 +72,6 @@ object Admin extends Controller with PanDomainAuthActions {
     Logger.info(s"updating ${contentIds.size}")
     def recursiveCallComposer(contentIds: List[String]): Unit = contentIds match {
       case contentId :: tail => {
-        Logger.info(s"updating a contentId with ${contentId}")
         WS.url(composerUrl + contentId + "?includePreview=true").withHeaders(("Cookie", cookie)).get() onComplete {
           case Success(res) if (res.status == 200) => {
             ContentUpdateEvent.readFromApi(res.json) match {
@@ -92,7 +91,6 @@ object Admin extends Controller with PanDomainAuthActions {
             recursiveCallComposer(tail)
           }
         }
-
       }
       case Nil => ()
     }
@@ -220,7 +218,7 @@ object Admin extends Controller with PanDomainAuthActions {
     }
   }
 
-  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[Result]) = 
+  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[Result]) =
     (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
 
     statusForm.bindFromRequest.fold(
