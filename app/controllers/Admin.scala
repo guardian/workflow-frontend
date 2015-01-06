@@ -15,10 +15,6 @@ object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
 
-  def whitelist = (AuthAction andThen WhiteListAuthFilter) {
-    Ok("you are on the admin whitelist!")
-  }
-
   def index(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter) {
 
     val deskList = DeskDB.deskList
