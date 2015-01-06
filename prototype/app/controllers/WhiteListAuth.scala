@@ -15,7 +15,7 @@ object WhiteListAuthFilter extends ActionFilter[UserRequest] {
     if(whitelist.contains(user.email)) {
       None
     } else {
-      Some(Results.Forbidden(views.html.unauthorisedUser(user.toJson))) 
+      Some(Results.Forbidden(views.html.unauthorisedUser())) 
     }
   }
 
