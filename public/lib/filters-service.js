@@ -120,7 +120,7 @@ angular.module('wfFiltersService', ['wfDateService'])
 
                         for (var key in params) {
                             if (params.hasOwnProperty(key)) {
-                                $location.search(key, params[key]);
+                                self.update(key, params[key], true);
                             }
                         }
 
@@ -134,7 +134,8 @@ angular.module('wfFiltersService', ['wfDateService'])
             }
 
 
-            update(key, value) {
+            update(key, value, doNotUpdateprefs) {
+
                 if (value !== null && (value === undefined || value.length === 0)) { // empty String or Array
                     value = null; // Remove query param
                 }
@@ -153,7 +154,10 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $location.search(key, value);
                 }
 
-                wfPreferencesService.setPreference('location', this.filters);
+                if (!doNotUpdateprefs) {
+                    wfPreferencesService.setPreference('location', this.sanitizeFilters(this.filters));
+                }
+
             }
 
             get(key) {
@@ -168,6 +172,20 @@ angular.module('wfFiltersService', ['wfDateService'])
                 _.forOwn(this.filters, (value, key) => {
                     this.update(key, null);
                 });
+            }
+
+            /**
+             * Remove null or undefined keys from filters object for storage in user prefs
+             * @param filters
+             * @returns $scope.filter.namespace
+             */
+            sanitizeFilters (filters) {
+                Object.keys(filters).map((key) => {
+                    if (filters[key] === null || filters[key] === undefined) {
+                        delete filters[key];
+                    }
+                });
+                return filters;
             }
 
         }
