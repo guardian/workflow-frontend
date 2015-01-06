@@ -2,7 +2,7 @@ import java.util.TimeZone
 import play.api.libs.concurrent.Akka
 import play.api.mvc.WithFilters
 import play.api.{Logger, GlobalSettings, Application}
-import lib.{SyncComposer, ComposerQuery, PrototypeConfiguration, RedirectToHTTPSFilter, ContentId}
+import lib.{PrototypeConfiguration, RedirectToHTTPSFilter}
 import scala.concurrent.duration._
 import akka.actor.Props
 import scala.concurrent.ExecutionContext.Implicits.global
