@@ -55,25 +55,36 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
         controllerAs: 'contentListDrawerController',
         controller: function ($scope, $element) {
 
+            var $parent = $element.parent();
             var transitionEndEventName = getTransitionEndEventName($element[0]);
 
             /**
              * Hide the drawer from view using css3 transition and remove the selected class form the row.
              * Accessible on $scope for use on 'hide' button in drawer
              */
-            this.hide = () => new Promise((resolve, reject) => {
+            this.hide = (immediate) => new Promise((resolve, reject) => {
                 if (this.isHidden()) {
                     return resolve();
                 }
 
-                $element.one(transitionEndEventName, () => {
+                function doHide() {
                     $scope.contentList.selectedItem = null;
+                    $parent.append($element);
                     resolve();
-                });
+                }
+
+                if (!immediate) {
+                    $element.one(transitionEndEventName, doHide);
+                }
 
                 $element.addClass(hiddenClass);
+
+                if (immediate) {
+                    doHide();
+                }
             });
 
+            this.hideImmediately = () => this.hide(true);
 
             /**
              * Shows the drawer.
@@ -164,14 +175,16 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
 
                 if (eventData.contentItem === $scope.contentItem && eventData.data.hasOwnProperty('status')) {
 
-                    // Move element out of ng-repeat list so it doesn't get removed and unbound
-                    elem.addClass(hiddenClass);
-                    $parent.append(elem);
+                    contentListDrawerController.hideImmediately();
 
-                    $timeout(() => { // Reset local state on next digest cycle
-                        $scope.contentItem = null;
-                        $scope.contentList.selectedItem = null;
-                    }, 1);
+                    // // Move element out of ng-repeat list so it doesn't get removed and unbound
+                    // elem.addClass(hiddenClass);
+                    // $parent.append(elem);
+
+                    // $timeout(() => { // Reset local state on next digest cycle
+                    //     $scope.contentItem = null;
+                    //     $scope.contentList.selectedItem = null;
+                    // }, 1);
                 }
             });
 
@@ -181,10 +194,7 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                 // selectedItem no longer in table
                 if (!data.selectedItem) {
                     // TODO: move to generic "hide drawer" method
-                    elem.addClass(hiddenClass);
-                    $parent.append(elem);
-
-                    $scope.contentList.selectedItem = null;
+                    contentListDrawerController.hideImmediately();
 
                     // Update selectedItem from new polled data - updates changed data
                 } else if ($scope.contentItem !== data.selectedItem) {
@@ -197,11 +207,8 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
 
                     } else if ($scope.contentItem.status !== data.selectedItem.status) {
                         // Item has moved status, hide drawer and select nothing
-                        // TODO: move to generic "hide drawer" method
-                        elem.addClass(hiddenClass);
-                        $parent.append(elem);
 
-                        $scope.contentList.selectedItem = null;
+                        contentListDrawerController.hideImmediately();
 
                     } else {
                         $scope.contentItem = data.selectedItem;
@@ -282,9 +289,7 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                 contentService.remove($scope.contentItem.id)
                     .then(() => {
 
-                        // Hide drawer and put it back under $parent so bindings remain
-                        elem.addClass(hiddenClass);
-                        $parent.append(elem);
+                        contentListDrawerController.hideImmediately();
 
                         $scope.$emit('content.deleted', { contentItem: $scope.contentItem });
                         $scope.$apply();
