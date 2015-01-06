@@ -145,8 +145,6 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
 
         link: function ($scope, elem, attrs, contentListDrawerController) {
 
-            var $parent = elem.parent(); // Store parent location for holding unbound elem
-
             $scope.prodOffices = prodOfficeService.getProdOffices();
             $scope.incopyExportEnabled = false;
             featureSwitches.withSwitch("incopy-export",
@@ -172,19 +170,8 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
              * Ensure the drawer state is representative if a contentItem changes status
              */
             $rootScope.$on('contentItem.update', ($event, eventData) => {
-
                 if (eventData.contentItem === $scope.contentItem && eventData.data.hasOwnProperty('status')) {
-
                     contentListDrawerController.hideImmediately();
-
-                    // // Move element out of ng-repeat list so it doesn't get removed and unbound
-                    // elem.addClass(hiddenClass);
-                    // $parent.append(elem);
-
-                    // $timeout(() => { // Reset local state on next digest cycle
-                    //     $scope.contentItem = null;
-                    //     $scope.contentList.selectedItem = null;
-                    // }, 1);
                 }
             });
 
