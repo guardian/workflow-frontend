@@ -1,6 +1,18 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Workflow",
+  "Conditions": {
+    "NotPROD": {
+      "Fn::Not": [{
+        "Fn::Equals" : [
+          {
+            "Ref": "Stage"
+          },
+          "PROD"
+        ]
+      }]
+    }
+  },
   "Mappings": {
     "PrototypeNumInstances": {
       "CODE": {
@@ -412,6 +424,56 @@
             "PropagateAtLaunch": "true"
           }
         ]
+      }
+    },
+    "PrototypeScheduledActionUp": {
+      "Type": "AWS::AutoScaling::ScheduledAction",
+      "Condition": "NotPROD",
+      "Properties": {
+        "AutoScalingGroupName": {
+          "Ref": "PrototypeAutoscalingGroup"
+        },
+        "MinSize": {
+          "Fn::FindInMap": [
+            "PrototypeNumInstances",
+            {
+              "Ref": "Stage"
+            },
+            "MinSize"
+          ]
+        },
+        "MaxSize": {
+          "Fn::FindInMap": [
+            "PrototypeNumInstances",
+            {
+              "Ref": "Stage"
+            },
+            "MaxSize"
+          ]
+        },
+        "DesiredCapacity": {
+          "Fn::FindInMap": [
+            "PrototypeNumInstances",
+            {
+              "Ref": "Stage"
+            },
+            "DesiredCapacity"
+          ]
+        },
+        "Recurrence": "30 06 * * *"
+      }
+    },
+    "PrototypeScheduledActionDown": {
+      "Type": "AWS::AutoScaling::ScheduledAction",
+      "Condition": "NotPROD",
+      "Properties": {
+        "AutoScalingGroupName": {
+          "Ref": "PrototypeAutoscalingGroup"
+        },
+        "MaxSize": "0",
+        "MinSize": "0",
+        "DesiredCapacity": "0",
+        "Recurrence": "00 00 * * *"
       }
     },
     "PrototypeLaunchConfig": {
