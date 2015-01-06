@@ -55,9 +55,6 @@ $drawer-height: 380px;
     display: inline-block;
     vertical-align: top;
     padding: 12px 0 0 12px;
-    &:last-child {
-        margin-right: 0;
-    }
 }
 
 .drawer__column--wide {
@@ -65,24 +62,21 @@ $drawer-height: 380px;
     flex: 3 0 0;
 }
 
-.drawer__icon--content-type {
-    display: inline-block;
-    position: relative;
-    top: -1px;
-    width: 14px;
-    height: 14px;
-    margin-right: 3px;
-}
-
 .drawer__column--control {
     @extend .drawer__column;
-    flex: 0.8 0 0;
+    flex: 0;
+    min-width: 120px;
     border-left: 1px solid #fff;
     padding: 0;
     margin: 0 0 0 12px;
     background: $c-grey-200;
     border-top: 1px solid #fff;
+
+    @media screen and (max-width: 1400px) {
+        min-width: 38px;
+    }
 }
+
 
 .drawer__control {
     padding: 12px;
@@ -98,9 +92,8 @@ $drawer-height: 380px;
     }
 
     .drawer__control-item {
-        &--delete {
-            height: 50px;
-        }
+        height: 32px;
+
         &--incopy,
         &--incopy:visited,
         &--incopy:hover {
@@ -117,7 +110,21 @@ $drawer-height: 380px;
             top: 1px;
             left: 0;
         }
+
+        @media screen and (max-width: 1400px) {
+            padding-left: 50px;
+            white-space: nowrap;
+        }
     }
+}
+
+.drawer__icon--content-type {
+    display: inline-block;
+    position: relative;
+    top: -1px;
+    width: 14px;
+    height: 14px;
+    margin-right: 3px;
 }
 
 .drawer__section {
