@@ -21,7 +21,7 @@ object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
 
-  def index(selectedDeskIdOption: Option[Long]) = AuthAction {
+  def index(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter) {
 
     val deskList = DeskDB.deskList
 
@@ -126,7 +126,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )(assignSectionToDeskFormData.apply)(assignSectionToDeskFormData.unapply)
   )
 
-  def assignSectionToDesk = AuthAction { implicit request =>
+  def assignSectionToDesk = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     assignSectionToDeskForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to update section assignments"),
       sectionAssignment => {
@@ -140,7 +140,7 @@ object Admin extends Controller with PanDomainAuthActions {
     SECTION routes
    */
 
-  def addSection = AuthAction { implicit request =>
+  def addSection = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to add section"),
       section => {
@@ -150,7 +150,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeSection = AuthAction { implicit request =>
+  def removeSection = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to remove section"),
       section => {
@@ -165,7 +165,7 @@ object Admin extends Controller with PanDomainAuthActions {
     DESK routes
    */
 
-  def addDesk = AuthAction { implicit request =>
+  def addDesk = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => BadRequest(s"failed to add desk ${formWithErrors.errors}"),
       desk => {
@@ -175,7 +175,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeDesk = AuthAction { implicit request =>
+  def removeDesk = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to remove desk"),
       desk => {
@@ -192,7 +192,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )(WorkflowStatus.apply)(WorkflowStatus.unapply)
   )
 
-  def status = AuthAction.async {
+  def status = (AuthAction andThen WhiteListAuthFilter).async {
     for (statuses <- StatusDatabase.statuses) yield Ok(views.html.status(statuses, statusForm))
   }
 
@@ -220,7 +220,9 @@ object Admin extends Controller with PanDomainAuthActions {
     }
   }
 
-  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[Result]) = Action.async { implicit request =>
+  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[Result]) = 
+    (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+
     statusForm.bindFromRequest.fold(
       formWithErrors => {
         Future.successful(BadRequest(error))
