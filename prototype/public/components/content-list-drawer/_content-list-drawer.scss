@@ -1,6 +1,8 @@
 $drawer-anim-duration: 0.5s;
 $drawer-height: 380px;
 
+$drawer-breakpoint-small: 1400px;
+
 .content-list .content-list-drawer { // over qualified to ensure overide
     overflow: hidden;
     &::before, &::after {
@@ -62,6 +64,16 @@ $drawer-height: 380px;
     flex: 3 0 0;
 }
 
+.drawer__column--media {
+    @extend .drawer__column;
+    flex: 0;
+    min-width: 160px + 24px;
+
+    @media screen and (max-width: $drawer-breakpoint-small) {
+        min-width: 100px + 24px;
+    }
+}
+
 .drawer__column--control {
     @extend .drawer__column;
     flex: 0;
@@ -72,7 +84,7 @@ $drawer-height: 380px;
     background: $c-grey-200;
     border-top: 1px solid #fff;
 
-    @media screen and (max-width: 1400px) {
+    @media screen and (max-width: $drawer-breakpoint-small) {
         min-width: 38px;
     }
 }
@@ -111,7 +123,7 @@ $drawer-height: 380px;
             left: 0;
         }
 
-        @media screen and (max-width: 1400px) {
+        @media screen and (max-width: $drawer-breakpoint-small) {
             padding-left: 50px;
             white-space: nowrap;
         }
@@ -153,7 +165,11 @@ $drawer-height: 380px;
     overflow: hidden;
 
     img {
-        width: 160px;
+        width: 100%;
+    }
+
+    @media screen and (max-width: $drawer-breakpoint-small) {
+        max-width: 100px;
     }
 }
 
