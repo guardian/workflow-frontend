@@ -79,7 +79,7 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Content type</span>
-                        <span class="drawer__section-data-row">{{ ncontentItem.contentTypeTitle }}</span>
+                        <span class="drawer__section-data-row"><i class="drawer__icon--content-type" wf-icon="{{ contentItem.contentType }}"/> {{ contentItem.contentTypeTitle }}</span>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Comments</span>
@@ -131,7 +131,7 @@
                 </ul>
 
                 <ul class="drawer__column">
-                    <li class="drawer__section drawer__section-mainmedia" 
+                    <li class="drawer__section drawer__section-mainmedia"
                     ng-class="{'drawer__section-mainmedia--nopreview': contentItem.mainMediaNoPreview}">
 
                         <span class="drawer__section-title">Main media</span>

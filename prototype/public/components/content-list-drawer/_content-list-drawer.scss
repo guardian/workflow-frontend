@@ -65,6 +65,15 @@ $drawer-height: 380px;
     flex: 3 0 0;
 }
 
+.drawer__icon--content-type {
+    display: inline-block;
+    position: relative;
+    top: -1px;
+    width: 14px;
+    height: 14px;
+    margin-right: 3px;
+}
+
 .drawer__column--control {
     @extend .drawer__column;
     flex: 0.8 0 0;
