@@ -101,7 +101,8 @@ case class WorkflowContent(
   storyBundleId: Option[String],
   activeInInCopy: Boolean,
   takenDown: Boolean,
-  timeTakenDown: Option[DateTime]
+  timeTakenDown: Option[DateTime],
+  wc: Int
 )
 
 object WorkflowContent {
@@ -143,7 +144,8 @@ object WorkflowContent {
       storyBundleId = e.storyBundleId,
       false, // assume not active in incopy
       takenDown = false,
-      timeTakenDown = None
+      timeTakenDown = None,
+      wc = e.wc 
     )
   }
 
@@ -167,33 +169,35 @@ object WorkflowContent {
       storyBundleId=None,
       activeInInCopy=activeInInCopy,
       takenDown=false,
-      timeTakenDown=None)
+      timeTakenDown=None,
+      wc=0)
   }
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
-    case composerId ::
-        path ::
-        lastMod ::
-        lastModBy ::
-        status ::
-        contentType ::
-        commentable ::
-        headline ::
-        standfirst ::
-        trailtext ::
-        mainMedia ::
-        mainMediaUrl ::
+    case (composerId      ::
+        path             ::
+        lastMod          ::
+        lastModBy        ::
+        status           ::
+        contentType      ::
+        commentable      ::
+        headline         ::
+        standfirst       ::
+        trailtext        ::
+        mainMedia        ::
+        mainMediaUrl     ::
         mainMediaCaption ::
         mainMediaAltText ::
-        trailImageUrl ::
-        published ::
-        timePublished ::
-        _ ::
-        storyBundleId ::
-        activeInInCopy ::
-        takenDown ::
-        timeTakenDown ::
-        HNil => {
+        trailImageUrl    ::
+        published        ::
+        timePublished    ::
+        _                ::
+        storyBundleId    ::
+        activeInInCopy   ::
+        takenDown        ::
+        timeTakenDown    ::
+        wc               ::
+        HNil) => {
       val media = WorkflowContentMainMedia(
         mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
 
@@ -203,37 +207,38 @@ object WorkflowContent {
         trailImageUrl, contentType, None, 
         Status(status), lastMod, lastModBy, commentable, 
         published, timePublished, storyBundleId,
-        activeInInCopy, takenDown, timeTakenDown)
+        activeInInCopy, takenDown, timeTakenDown, wc)
     }
   }
 
-  def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow = {
+  def newContentRow(wc: WorkflowContent, revision: Option[Long]) = {
     val mainMedia = wc.mainMedia.getOrElse(
       WorkflowContentMainMedia(None, None, None, None)
     )
 
-    wc.composerId ::
-    wc.path ::
-    wc.lastModified ::
-    wc.lastModifiedBy ::
-    wc.status.name ::
-    wc.contentType ::
-    wc.commentable ::
-    wc.headline ::
-    wc.standfirst ::
-    wc.trailtext ::
+    wc.composerId       ::
+    wc.path             ::
+    wc.lastModified     ::
+    wc.lastModifiedBy   ::
+    wc.status.name      ::
+    wc.contentType      ::
+    wc.commentable      ::
+    wc.headline         ::
+    wc.standfirst       ::
+    wc.trailtext        ::
     mainMedia.mediaType ::
-    mainMedia.url ::
-    mainMedia.caption ::
-    mainMedia.altText ::
-    wc.trailImageUrl ::
-    wc.published ::
-    wc.timePublished ::
-    revision ::
-    wc.storyBundleId ::
-    wc.activeInInCopy ::
-    false ::
-    None ::
+    mainMedia.url       ::
+    mainMedia.caption   ::
+    mainMedia.altText   ::
+    wc.trailImageUrl    ::
+    wc.published        ::
+    wc.timePublished    ::
+    revision            ::
+    wc.storyBundleId    ::
+    wc.activeInInCopy   ::
+    wc.takenDown        ::
+    wc.timeTakenDown    ::
+    wc.wc               ::
     HNil
   }
 
@@ -261,7 +266,8 @@ object WorkflowContent {
       (__ \ "storyBundleId").readNullable[String] ~
       (__ \ "activeInInCopy").read[Boolean] ~
       (__ \ "takenDown").read[Boolean] ~
-      (__ \ "timeTakenDown").readNullable[DateTime]
+      (__ \ "timeTakenDown").readNullable[DateTime] ~
+      (__ \ "wc").read[Int]
       )(WorkflowContent.apply _)
 }
 
