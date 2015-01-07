@@ -25,7 +25,7 @@ object Schema {
     DateTime            // createdAt
   )
 
-  case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
+  class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
     def pk           = column [Long]             ("pk", O.PrimaryKey, O.AutoInc)
     def workingTitle = column [String]           ("working_title")
     def section      = column [String]           ("section")
@@ -50,19 +50,19 @@ object Schema {
       String,          // content_type
       Boolean,         // commentable
       Option[String],  // headline
-      Option[String],  // standfirst 
+      Option[String],  // standfirst
       Option[String],  // trailtext
-      Option[String],  // mainMedia 
-      Option[String],  // mainMediaUrl 
+      Option[String],  // mainMedia
+      Option[String],  // mainMediaUrl
       Option[String],  // mainMediaCaption
       Option[String],  // mainMediaAltText
-      Option[String],  // trailImageUrl 
+      Option[String],  // trailImageUrl
       Boolean,         // published
       Option[DateTime],// timePublished
       Option[Long],    // revision
       Option[String],  // storyBundleId
       Boolean,         // activeInInCopy
-      Boolean,         // takenDown 
+      Boolean,         // takenDown
       Option[DateTime] // timeTakenDown
     )
 
@@ -90,7 +90,7 @@ object Schema {
     def storyBundleId    = column [Option[String]]    ("storybundleid")
     def activeInInCopy   = column [Boolean]           ("activeinincopy")
     def * = (composerId, path, lastModified, lastModifiedBy, status,
-             contentType, commentable, headline, standfirst, trailtext, 
+             contentType, commentable, headline, standfirst, trailtext,
              mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText, trailImageUrl, published, timePublished,
              revision, storyBundleId, activeInInCopy, takenDown, timeTakenDown)
   }
