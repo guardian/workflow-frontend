@@ -66,7 +66,7 @@ object Schema {
       Boolean          :: // activeInInCopy
       Boolean          :: // takenDown
       Option[DateTime] :: // timeTakenDown
-      Int              :: //wc
+      Int              :: // wordCount
       HNil
 
   case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
@@ -92,7 +92,7 @@ object Schema {
     def revision         = column [Option[Long]]      ("revision")
     def storyBundleId    = column [Option[String]]    ("storybundleid")
     def activeInInCopy   = column [Boolean]           ("activeinincopy")
-    def wc               = column [Int]               ("wordcount")
+    def wordCount        = column [Int]               ("wordcount")
     def * = composerId       ::
             path             ::
             lastModified     ::
@@ -115,7 +115,7 @@ object Schema {
             activeInInCopy   ::
             takenDown        ::
             timeTakenDown    ::
-            wc ::
+            wordCount ::
             HNil
   }
 

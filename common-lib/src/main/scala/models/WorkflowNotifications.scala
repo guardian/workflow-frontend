@@ -24,7 +24,7 @@ case class ContentUpdateEvent (
   thumbnail: Option[Thumbnail],
   storyBundleId: Option[String],
   revision: Long,
-  wc: Int
+  wordCount: Int
 ) extends WorkflowNotification
 
 object ContentUpdateEvent {
@@ -86,7 +86,7 @@ object ContentUpdateEvent {
       thumbnail <- (js \ "preview" \ "data" \ "thumbnail" \ "data").validate[Option[Thumbnail]]
       revision <- (js \ "contentChangeDetails" \ "data" \ "revision").validate[Long]
       status = Writers
-    } yield ContentUpdateEvent(composerId, identifiers, fields, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags, status, commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wc=0)
+    } yield ContentUpdateEvent(composerId, identifiers, fields, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags, status, commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount=0)
   }
 
   implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (

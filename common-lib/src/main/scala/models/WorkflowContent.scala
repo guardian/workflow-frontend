@@ -20,7 +20,7 @@ object Asset {
 
   def getImageAssetUrl(assets: List[Asset]): Option[String] = {
     val imageAssets = assets.filter(_.assetType == "image")
-    val smallestAsset = imageAssets.reduceLeft((l,r) => 
+    val smallestAsset = imageAssets.reduceLeft((l,r) =>
         if(getImageAssetSize(l).get < getImageAssetSize(r).get){ l } else { r })
 
     Some(smallestAsset.url)
@@ -40,10 +40,10 @@ case class WorkflowContentMainMedia(
 )
 
 object WorkflowContentMainMedia {
-  implicit val workFlowContentMainMediaWrites: Writes[WorkflowContentMainMedia] = 
+  implicit val workFlowContentMainMediaWrites: Writes[WorkflowContentMainMedia] =
     Json.writes[WorkflowContentMainMedia]
 
-  implicit val workFlowContentMainMedia: Reads[WorkflowContentMainMedia] = 
+  implicit val workFlowContentMainMedia: Reads[WorkflowContentMainMedia] =
     Json.reads[WorkflowContentMainMedia]
 
   def getMainMedia(blockOption: Option[Block]) = {
@@ -102,7 +102,7 @@ case class WorkflowContent(
   activeInInCopy: Boolean,
   takenDown: Boolean,
   timeTakenDown: Option[DateTime],
-  wc: Int
+  wordCount: Int
 )
 
 object WorkflowContent {
@@ -112,7 +112,7 @@ object WorkflowContent {
     for {
       t <- thumbnail
       urlOption <- Asset.getImageAssetUrl(t.assets)
-    } yield urlOption 
+    } yield urlOption
   }
 
   def getSectionFromTags(tagsOption: Option[List[Tag]]): Option[Section] = {
@@ -145,7 +145,7 @@ object WorkflowContent {
       false, // assume not active in incopy
       takenDown = false,
       timeTakenDown = None,
-      wc = e.wc
+      wordCount = e.wordCount
     )
   }
 
@@ -170,7 +170,7 @@ object WorkflowContent {
       activeInInCopy=activeInInCopy,
       takenDown=false,
       timeTakenDown=None,
-      wc=0)
+      wordCount=0)
   }
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
@@ -196,7 +196,7 @@ object WorkflowContent {
         activeInInCopy   ::
         takenDown        ::
         timeTakenDown    ::
-        wc               ::
+        wordCount        ::
         HNil) => {
       val media = WorkflowContentMainMedia(
         mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
@@ -207,7 +207,7 @@ object WorkflowContent {
         trailImageUrl, contentType, None,
         Status(status), lastMod, lastModBy, commentable,
         published, timePublished, storyBundleId,
-        activeInInCopy, takenDown, timeTakenDown, wc)
+        activeInInCopy, takenDown, timeTakenDown, wordCount)
     }
   }
 
@@ -238,11 +238,11 @@ object WorkflowContent {
     wc.activeInInCopy   ::
     wc.takenDown        ::
     wc.timeTakenDown    ::
-    wc.wc               ::
+    wc.wordCount        ::
     HNil
   }
 
-  implicit val workFlowContentWrites: Writes[WorkflowContent] = 
+  implicit val workFlowContentWrites: Writes[WorkflowContent] =
     Json.writes[WorkflowContent]
 
   implicit val workFlowContentReads: Reads[WorkflowContent] =
@@ -254,7 +254,7 @@ object WorkflowContent {
       (__ \ "mainMedia").readNullable[WorkflowContentMainMedia] ~
       (__ \ "trailImageUrl").readNullable[String] ~
       (__ \ "contentType").read[String] ~
-      (__ \ "section" \ "name").readNullable[String].map { 
+      (__ \ "section" \ "name").readNullable[String].map {
         _.map(s => Section(s))
       } ~
       (__ \ "status").read[String].map { s => Status(s) } ~
