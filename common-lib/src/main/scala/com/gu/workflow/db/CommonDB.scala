@@ -69,14 +69,14 @@ object CommonDB {
           c.commentable, c.headline, c.standfirst,
           c.trailtext, c.mainMedia, c.mainMediaUrl,
           c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl,
-          c.published, c.timePublished, c.revision, c.storyBundleId)
+          c.published, c.timePublished, c.revision, c.storyBundleId, wc.wc)
         )
         .update((
           wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType,
           wc.commentable, wc.headline, wc.standfirst,
           wc.trailtext, mainMedia.mediaType, mainMedia.url,
           mainMedia.caption, mainMedia.altText, wc.trailImageUrl,
-          wc.published, wc.timePublished, Some(revision), wc.storyBundleId)
+          wc.published, wc.timePublished, Some(revision), wc.storyBundleId, wc.wc)
         )
   }
 

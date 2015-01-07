@@ -145,7 +145,7 @@ object WorkflowContent {
       false, // assume not active in incopy
       takenDown = false,
       timeTakenDown = None,
-      wc = e.wc 
+      wc = e.wc
     )
   }
 
@@ -204,8 +204,8 @@ object WorkflowContent {
       WorkflowContent(
         composerId, path, headline,
         standfirst, trailtext, Some(media),
-        trailImageUrl, contentType, None, 
-        Status(status), lastMod, lastModBy, commentable, 
+        trailImageUrl, contentType, None,
+        Status(status), lastMod, lastModBy, commentable,
         published, timePublished, storyBundleId,
         activeInInCopy, takenDown, timeTakenDown, wc)
     }

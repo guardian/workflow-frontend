@@ -43,7 +43,7 @@ object Schema {
     def * = (pk, workingTitle, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice, createdAt)
   }
 
-  type ContentRow = 
+  type ContentRow =
       String           :: // composer_id
       Option[String]   :: // path
       DateTime         :: // last_modified
@@ -66,6 +66,7 @@ object Schema {
       Boolean          :: // activeInInCopy
       Boolean          :: // takenDown
       Option[DateTime] :: // timeTakenDown
+      Int              :: //wc
       HNil
 
   case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
@@ -114,6 +115,7 @@ object Schema {
             activeInInCopy   ::
             takenDown        ::
             timeTakenDown    ::
+            wc ::
             HNil
   }
 

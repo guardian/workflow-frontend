@@ -23,7 +23,8 @@ case class ContentUpdateEvent (
   publicationDate: Option[DateTime],
   thumbnail: Option[Thumbnail],
   storyBundleId: Option[String],
-  revision: Long
+  revision: Long,
+  wc: Int
 ) extends WorkflowNotification
 
 object ContentUpdateEvent {
@@ -85,7 +86,7 @@ object ContentUpdateEvent {
       thumbnail <- (js \ "preview" \ "data" \ "thumbnail" \ "data").validate[Option[Thumbnail]]
       revision <- (js \ "contentChangeDetails" \ "data" \ "revision").validate[Long]
       status = Writers
-    } yield ContentUpdateEvent(composerId, identifiers, fields, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags, status, commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision )
+    } yield ContentUpdateEvent(composerId, identifiers, fields, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags, status, commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wc=0)
   }
 
   implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (
@@ -113,7 +114,8 @@ object ContentUpdateEvent {
     ) ~
     (__ \ "content" \ "thumbnail").readNullable[Thumbnail] ~
     (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String] ~
-    (__ \ "content" \ "contentChangeDetails" \ "revision").readNullable[Long].map(optLong => optLong.getOrElse(0L))
+    (__ \ "content" \ "contentChangeDetails" \ "revision").readNullable[Long].map(optLong => optLong.getOrElse(0L)) ~
+      (__ \ "content" \ "wc").read[Int]
     )(ContentUpdateEvent.apply _)
 
   def readUser = new Reads[Option[String]] {
