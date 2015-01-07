@@ -59,48 +59,34 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             var transitionEndEventName = getTransitionEndEventName($element[0]);
 
             /**
-             * Hide the drawer from view using css3 transition and remove the selected class form the row.
-             * Accessible on $scope for use on 'hide' button in drawer
+             * Hide the drawer from view.
+             * @returns {Promise}
              */
-            this.hide = (immediate) => new Promise((resolve, reject) => {
+            this.hide = () => new Promise((resolve, reject) => {
                 if (this.isHidden()) {
                     return resolve();
                 }
 
-                function doHide() {
-                    $scope.contentList.selectedItem = null;
-                    $parent.append($element);
-                    resolve();
-                }
-
-                if (!immediate) {
-                    $element.one(transitionEndEventName, doHide);
-                }
-
                 $element.addClass(hiddenClass);
 
-                if (immediate) {
-                    doHide();
-                }
+                $scope.contentList.selectedItem = null;
+                $parent.append($element);
+                resolve();
             });
 
-            this.hideImmediately = () => this.hide(true);
 
             /**
              * Shows the drawer.
-             * @returns {Promise} resolves when CSS transition ends.
+             * @returns {Promise}
              */
             this.show = () => new Promise((resolve, reject) => {
                 if (!this.isHidden()) {
                     resolve();
                 }
 
-                // Note depends on CSS transition to exist
-                $element.one(transitionEndEventName, resolve);
-
-                var w = $window.getComputedStyle($element[0], null).width; // force reflow styles
-
                 $element.removeClass(hiddenClass);
+
+                resolve();
             });
 
 
@@ -171,7 +157,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              */
             $rootScope.$on('contentItem.update', ($event, eventData) => {
                 if (eventData.contentItem === $scope.contentItem && eventData.data.hasOwnProperty('status')) {
-                    contentListDrawerController.hideImmediately();
+                    contentListDrawerController.hide();
                 }
             });
 
@@ -181,7 +167,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 // selectedItem no longer in table
                 if (!data.selectedItem) {
                     // TODO: move to generic "hide drawer" method
-                    contentListDrawerController.hideImmediately();
+                    contentListDrawerController.hide();
 
                     // Update selectedItem from new polled data - updates changed data
                 } else if ($scope.contentItem !== data.selectedItem) {
@@ -195,7 +181,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                     } else if ($scope.contentItem.status !== data.selectedItem.status) {
                         // Item has moved status, hide drawer and select nothing
 
-                        contentListDrawerController.hideImmediately();
+                        contentListDrawerController.hide();
 
                     } else {
                         $scope.contentItem = data.selectedItem;
@@ -276,7 +262,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 contentService.remove($scope.contentItem.id)
                     .then(() => {
 
-                        contentListDrawerController.hideImmediately();
+                        contentListDrawerController.hide();
 
                         $scope.$emit('content.deleted', { contentItem: $scope.contentItem });
                         $scope.$apply();
