@@ -25,7 +25,7 @@ object Schema {
     DateTime            // createdAt
   )
 
-  class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
+  case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
     def pk           = column [Long]             ("pk", O.PrimaryKey, O.AutoInc)
     def workingTitle = column [String]           ("working_title")
     def section      = column [String]           ("section")
@@ -177,12 +177,12 @@ object Schema {
     )
   }
 
-  type StubQuery = Query[DBStub, StubRow]
-  type ContentQuery = Query[DBContent, ContentRow]
-  type SectionQuery = Query[DBSection, SectionRow]
-  type DeskQuery = Query[DBDesk, SectionRow]
-  type DeskSectionMappingQuery = Query[DBDeskSectionMapping, deskSectionMappingRow]
-  type ArchiveQuery = Query[DBArchive, ArchiveRow]
+  type StubQuery = Query[DBStub, StubRow, Seq]
+  type ContentQuery = Query[DBContent, ContentRow, Seq]
+  type SectionQuery = Query[DBSection, SectionRow, Seq]
+  type DeskQuery = Query[DBDesk, SectionRow, Seq]
+  type DeskSectionMappingQuery = Query[DBDeskSectionMapping, deskSectionMappingRow, Seq]
+  type ArchiveQuery = Query[DBArchive, ArchiveRow, Seq]
 
   val stubs: StubQuery = TableQuery(DBStub)
   val content: ContentQuery = TableQuery(DBContent)
