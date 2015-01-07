@@ -23,25 +23,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
     }
 
 
-    function getTransitionEndEventName(elem) {
-        var i,
-            transitions = {
-                'transition':'transitionend',
-                'OTransition':'otransitionend',  // oTransitionEnd in very old Opera
-                'MozTransition':'transitionend',
-                'WebkitTransition':'webkitTransitionEnd'
-            };
-
-        for (i in transitions) {
-            if (transitions.hasOwnProperty(i) && elem.style[i] !== undefined) {
-                return transitions[i];
-            }
-        }
-
-        //TODO: throw 'TransitionEnd event is not supported in this browser';
-    }
-
-
     return {
         restrict: 'A',
         replace: true,
@@ -56,7 +37,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
         controller: function ($scope, $element) {
 
             var $parent = $element.parent();
-            var transitionEndEventName = getTransitionEndEventName($element[0]);
 
             /**
              * Hide the drawer from view.
