@@ -63,7 +63,7 @@ object CommonDB {
 
       content
         .filter(_.composerId === wc.composerId)
-        .filter(c => c.revision < revision || c.revision.isNull)
+        .filter(c => c.revision <= revision || c.revision.isNull)
         .map(c => (
           c.path, c.lastModified, c.lastModifiedBy, c.contentType, 
           c.commentable, c.headline, c.standfirst, 
