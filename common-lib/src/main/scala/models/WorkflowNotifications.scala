@@ -79,9 +79,9 @@ object ContentUpdateEvent {
       user <- userReads(js \ "contentChangeDetails" \ "data" \ "lastModified" \ "user")
       lastModified <-  (js \ "contentChangeDetails" \ "data" \ "lastModified" \ "date").validate[Long].map(t => new DateTime(t))
       tags <- (js \ "preview" \ "data" \ "taxonomy" \"tags" \ "data").validate[Option[List[Tag]]]
-      commentable <- (js \ "preview" \ "data" \ "settings" \ "data" \ "commentable" \ "data").validate[Option[String]].map(s => s.exists(_=="true"))
-      lastMajorRevisionDate <- (js \ "contentChangeDetails" \ "lastMajorRevisionPublished" \ "data" \ "date").validate[Option[Long]].map(optT => optT.map(t => new DateTime(t)))
-      publicationDate <- (js \ "contentChangeDetails" \ "published" \ "date").validate[Option[Long]].map(optT => optT.map(t => new DateTime(t)))
+      commentable <- (js \ "preview" \ "data" \ "settings" \ "commentable" \ "data").validate[Option[String]].map(s => s.exists(_=="true"))
+      lastMajorRevisionDate <- (js \ "contentChangeDetails" \ "data" \ "lastMajorRevisionPublished" \ "data" \ "date").validate[Option[Long]].map(optT => optT.map(t => new DateTime(t)))
+      publicationDate <- (js \ "contentChangeDetails" \ "data" \ "published" \ "date").validate[Option[Long]].map(optT => optT.map(t => new DateTime(t)))
       thumbnail <- (js \ "preview" \ "data" \ "thumbnail" \ "data").validate[Option[Thumbnail]]
       revision <- (js \ "contentChangeDetails" \ "data" \ "revision").validate[Long]
       status = Writers
