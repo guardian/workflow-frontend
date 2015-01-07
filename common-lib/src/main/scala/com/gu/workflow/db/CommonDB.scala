@@ -55,7 +55,7 @@ object CommonDB {
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
     DB.withTransaction { implicit session =>
       val contentExists = content.filter(_.composerId === wc.composerId).exists.run
-      if (contentExists) updateContent(wc, revision)      else createContent(wc, Some(revision))
+      if (contentExists) updateContent(wc, revision) else createContent(wc, Some(revision))
     }
 
   def updateContent(wc: WorkflowContent, revision: Long)(implicit session: Session): Int = {
@@ -63,7 +63,7 @@ object CommonDB {
 
       content
         .filter(_.composerId === wc.composerId)
-        .filter(c => c.revision < revision || c.revision.isEmpty)
+        .filter(c => c.revision <= revision || c.revision.isEmpty)
         .map(c => (
           c.path, c.lastModified, c.lastModifiedBy, c.contentType,
           c.commentable, c.headline, c.standfirst,
