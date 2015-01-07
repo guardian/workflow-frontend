@@ -53,18 +53,17 @@ object ContentUpdateEvent {
   }
 
   def readsMap(json: JsValue): JsResult[Map[String, String]] = {
-
     def pure[A](a: A): JsResult[A] = JsSuccess(a)
 
     json.validate[Map[String, JsValue]]
       .map( suc => suc.map ( {
-          case (k,v) => (k, (v \ "data").validate[String])
-    }))
+        case (k,v) => (k, (v \ "data").validate[String])
+      }))
       .flatMap(ofa => ofa.foldLeft(pure(Map[String,String]()))({
-            case (acc, (k, jv)) => {
-                jv.flatMap(j => acc.map(a => a.updated(k,j)))
-            }}))
-
+        case (acc, (k, jv)) => {
+          jv.flatMap(j => acc.map(a => a.updated(k,j)))
+        }
+      }))
   }
 
 
