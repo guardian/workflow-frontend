@@ -23,8 +23,14 @@ class ContentUpdateEventModelSpec extends FunSuite with ShouldMatchers with Reso
     val JsSuccess(ws,_) =  ContentUpdateEvent.readFromApi(Json.parse(resource))
 
     ws.composerId should equal("5495b697e4b08b9165ec75ba")
+    ws.`type` should equal ("article")
+    ws.revision should equal (729L)
+    ws.commentable should equal (true)
+    ws.storyBundleId should equal (None)
     ws.user should equal(Some("scheduled launch"))
     ws.published should equal (true)
+    ws.lastMajorRevisionDate should equal (Some(new DateTime("2014-12-30T11:30:11.172Z")))
+    ws.publicationDate should equal (Some(new DateTime("2014-12-30T11:30:11.172Z")))
     ws.identifiers should equal (Map("path" -> "football/blog/2014/dec/30/us-soccer-2014-10-memorable-moments-klinsmann-altidore-world-cup","pageId" ->  "2213457"))
     ws.fields should equal (Map( "trailText" -> "trailText", "headline" -> "headline", "linkText" -> "linkText", "standfirst" -> "standfirst", "slug" -> "slug", "byline" -> "byline"))
 
