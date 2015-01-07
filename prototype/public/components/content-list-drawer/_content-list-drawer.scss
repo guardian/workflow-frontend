@@ -1,5 +1,4 @@
 $drawer-anim-duration: 0.5s;
-$drawer-height: 380px;
 $drawer-background-color: $c-grey-100;
 
 $drawer-breakpoint-small: 1400px;
@@ -21,34 +20,19 @@ $drawer-breakpoint-small: 1400px;
     vertical-align: top;
 }
 
-
-
 .content-list-drawer__container {
-    overflow: hidden;
-    height: $drawer-height;
     background-color: $drawer-background-color;
 
-    @include transition(height $drawer-anim-duration ease-out);
+    .content-list-drawer--hidden & {
+        display: none;
+    }
 }
 
-.content-list .content-list-drawer--hidden .content-list-drawer__container {
-    height: 0;
-}
 
 .content-list-drawer__container-inner {
     display: flex;
     height: 100%;
     border: 3px solid $c-grey-200;
-
-    position: relative;
-
-    top: 0;
-
-    @include transition(top $drawer-anim-duration ease-out);
-
-    .content-list-drawer--hidden & {
-        top: -$drawer-height;
-    }
 }
 
 .drawer__column {
