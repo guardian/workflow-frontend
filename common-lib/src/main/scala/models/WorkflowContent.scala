@@ -6,6 +6,9 @@ import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
+import scala.slick.collection.heterogenous._
+import syntax._
+
 case class Asset(assetType: String, mimeType:String, url:String, fields: Map[String, String])
 object Asset {
   def getImageAssetSize(asset: Asset): Option[Long] = {
@@ -168,15 +171,29 @@ object WorkflowContent {
   }
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
-    case (
-      composerId, path, lastMod, lastModBy, 
-      status, contentType, commentable,
-      headline, standfirst, trailtext,
-      mainMedia, mainMediaUrl, mainMediaCaption,
-      mainMediaAltText, trailImageUrl, published,
-      timePublished, _, storyBundleId, activeInInCopy,
-      takenDown, timeTakenDown
-    ) => {
+    case composerId ::
+        path ::
+        lastMod ::
+        lastModBy ::
+        status ::
+        contentType ::
+        commentable ::
+        headline ::
+        standfirst ::
+        trailtext ::
+        mainMedia ::
+        mainMediaUrl ::
+        mainMediaCaption ::
+        mainMediaAltText ::
+        trailImageUrl ::
+        published ::
+        timePublished ::
+        _ ::
+        storyBundleId ::
+        activeInInCopy ::
+        takenDown ::
+        timeTakenDown ::
+        HNil => {
       val media = WorkflowContentMainMedia(
         mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
 
@@ -195,15 +212,29 @@ object WorkflowContent {
       WorkflowContentMainMedia(None, None, None, None)
     )
 
-    (
-      wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy,
-      wc.status.name, wc.contentType, wc.commentable, 
-      wc.headline, wc.standfirst, wc.trailtext, 
-      mainMedia.mediaType, mainMedia.url, mainMedia.caption, 
-      mainMedia.altText, wc.trailImageUrl, wc.published, 
-      wc.timePublished, revision, wc.storyBundleId, 
-      wc.activeInInCopy, false, None
-    )
+    wc.composerId ::
+    wc.path ::
+    wc.lastModified ::
+    wc.lastModifiedBy ::
+    wc.status.name ::
+    wc.contentType ::
+    wc.commentable ::
+    wc.headline ::
+    wc.standfirst ::
+    wc.trailtext ::
+    mainMedia.mediaType ::
+    mainMedia.url ::
+    mainMedia.caption ::
+    mainMedia.altText ::
+    wc.trailImageUrl ::
+    wc.published ::
+    wc.timePublished ::
+    revision ::
+    wc.storyBundleId ::
+    wc.activeInInCopy ::
+    false ::
+    None ::
+    HNil
   }
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] = 

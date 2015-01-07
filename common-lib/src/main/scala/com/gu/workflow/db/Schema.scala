@@ -6,6 +6,8 @@ import org.joda.time.DateTime
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.{Query, TableQuery}
 import com.github.tototoshi.slick.PostgresJodaSupport._
+import scala.slick.collection.heterogenous._
+import syntax._
 
 
 object Schema {
@@ -41,31 +43,30 @@ object Schema {
     def * = (pk, workingTitle, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice, createdAt)
   }
 
-  type ContentRow = (
-      String,          // composer_id
-      Option[String],  // path
-      DateTime,        // last_modified
-      Option[String],  // last_modified_by
-      String,          // status
-      String,          // content_type
-      Boolean,         // commentable
-      Option[String],  // headline
-      Option[String],  // standfirst
-      Option[String],  // trailtext
-      Option[String],  // mainMedia
-      Option[String],  // mainMediaUrl
-      Option[String],  // mainMediaCaption
-      Option[String],  // mainMediaAltText
-      Option[String],  // trailImageUrl
-      Boolean,         // published
-      Option[DateTime],// timePublished
-      Option[Long],    // revision
-      Option[String],  // storyBundleId
-      Boolean,         // activeInInCopy
-      Boolean,         // takenDown
-      Option[DateTime], // timeTakenDown
-      Int              // wordcount
-    )
+  type ContentRow = 
+      String ::           // composer_id
+      Option[String] ::   // path
+      DateTime ::         // last_modified
+      Option[String] ::   // last_modified_by
+      String ::           // status
+      String ::           // content_type
+      Boolean ::          // commentable
+      Option[String] ::   // headline
+      Option[String] ::   // standfirst
+      Option[String] ::   // trailtext
+      Option[String] ::   // mainMedia
+      Option[String] ::   // mainMediaUrl
+      Option[String] ::   // mainMediaCaption
+      Option[String] ::   // mainMediaAltText
+      Option[String] ::   // trailImageUrl
+      Boolean ::          // published
+      Option[DateTime] :: // timePublished
+      Option[Long] ::     // revision
+      Option[String] ::   // storyBundleId
+      Boolean ::          // activeInInCopy
+      Boolean ::          // takenDown
+      Option[DateTime] :: // timeTakenDown
+      HNil
 
   case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
     def composerId       = column [String]            ("composer_id", O.PrimaryKey)
@@ -91,10 +92,29 @@ object Schema {
     def storyBundleId    = column [Option[String]]    ("storybundleid")
     def activeInInCopy   = column [Boolean]           ("activeinincopy")
     def wc               = column [Int]               ("wc")
-    def * = (composerId, path, lastModified, lastModifiedBy, status,
-             contentType, commentable, headline, standfirst, trailtext,
-             mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText, trailImageUrl, published, timePublished,
-             revision, storyBundleId, activeInInCopy, takenDown, timeTakenDown, wc)
+    def * = composerId ::
+            path ::
+            lastModified ::
+            lastModifiedBy ::
+            status ::
+            contentType ::
+            commentable ::
+            headline ::
+            standfirst ::
+            trailtext ::
+            mainMedia ::
+            mainMediaUrl ::
+            mainMediaCaption ::
+            mainMediaAltText ::
+            trailImageUrl ::
+            published ::
+            timePublished ::
+            revision ::
+            storyBundleId ::
+            activeInInCopy ::
+            takenDown ::
+            timeTakenDown ::
+            HNil
   }
 
   type SectionRow = (
