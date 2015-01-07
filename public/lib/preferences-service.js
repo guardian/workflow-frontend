@@ -111,7 +111,12 @@ angular.module('wfPreferencesService', [])
                 getPreference(name) {
                     var self = this;
                     if (this.preferences) {
-                        return Promise.resolve(this.preferences[name]);
+                        if (this.preferences[name] !== undefined) {
+                            return Promise.resolve(this.preferences[name]);
+                        } else {
+                            $log.info('No preference set for: ' + name);
+                            return Promise.reject();
+                        }
                     } else {
                         return this.prefsPromise.then(function resolve (data) {
                             if (data[name]) {
