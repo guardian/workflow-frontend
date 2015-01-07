@@ -68,7 +68,7 @@ object WfQuery {
     }
 
   def fuzzyMatch[DB, Row](patterns: Seq[String])(getField: DB => Column[Option[String]]):
-      Query[DB, Row] => Query[DB, Row] =
+      Query[DB, Row, Seq] => Query[DB, Row, Seq] =
     searchSet(patterns, getField) { col: Column[Option[String]] =>
       patterns.foldLeft(FalseCol.?) { (sofar, pattern) =>
         sofar || (col.toUpperCase like ("%" + pattern.toUpperCase + "%"))
@@ -77,7 +77,7 @@ object WfQuery {
 
   def matchTextFields[DB, Row](patterns: Seq[String])
                      (fields: Seq[DB => Column[Option[String]]]):
-      Query[DB, Row] => Query[DB, Row] = patterns match {
+      Query[DB, Row, Seq] => Query[DB, Row, Seq] = patterns match {
     case Nil   => queryPassThrough[DB, Row]
     case patts => (query) =>
       fields.map(getField => fuzzyMatch[DB, Row](patts)(getField)(query))
