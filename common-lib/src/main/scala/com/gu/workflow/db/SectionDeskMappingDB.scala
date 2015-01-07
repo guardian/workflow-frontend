@@ -29,7 +29,7 @@ object SectionDeskMappingDB {
 
   def getSectionsInDesks: List[SectionsInDeskMapping] = {
     DB.withTransaction { implicit session =>
-      desks.list().map({
+      desks.list.map({
         case (pk, name) => {
           SectionsInDeskMapping(pk,
             getSectionsWithRelation(Desk(name, selected = false, pk))
@@ -46,7 +46,7 @@ object SectionDeskMappingDB {
 
       val listOfSectionIdsInDesk = deskSectionMapping.filter(_.desk_id === desk.id).run
 
-      sections.list().map({
+      sections.list.map({
 
         case (pk, name) if listOfSectionIdsInDesk.exists({
 

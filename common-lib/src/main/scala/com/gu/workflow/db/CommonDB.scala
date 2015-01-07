@@ -18,7 +18,7 @@ object CommonDB {
   def getStubs(query: WfQuery, unlinkedOnly: Boolean = false): List[Stub] =
     DB.withTransaction { implicit session =>
 
-      val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isNull) else stubsQuery(query)
+      val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isEmpty) else stubsQuery(query)
 
       q.filter(s => dueDateNotExpired(s.due))
         .list.map(row => Stub.fromStubRow(row))
@@ -32,7 +32,7 @@ object CommonDB {
     content.filter(_.composerId === composerId).firstOption.map(WorkflowContent.fromContentRow(_))
   }
 
-  def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isNull || due > DateTime.now().minusDays(7)
+  def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isEmpty || due > DateTime.now().minusDays(7)
 
   def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
     withinDisplayTime(s, c) ||
@@ -46,10 +46,10 @@ object CommonDB {
     def lastModifiedWithinWeek = c.lastModified > DateTime.now().minusDays(7)
     def dueDateInFuture = s.due > DateTime.now()
     //content item has been published within last 24 hours
-    ((publishedWithinLastDay || c.timePublished.isNull) &&
+    ((publishedWithinLastDay || c.timePublished.isEmpty) &&
 
-      (dueDateWithinLastWeek || s.due.isNull) &&
-      (lastModifiedWithinWeek || c.lastModified.isNull || dueDateInFuture || c.timePublished.isNull))
+      (dueDateWithinLastWeek  || s.due.isEmpty) &&
+      (lastModifiedWithinWeek || dueDateInFuture || c.timePublished.isEmpty))
   }
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
@@ -63,19 +63,19 @@ object CommonDB {
 
       content
         .filter(_.composerId === wc.composerId)
-        .filter(c => c.revision < revision || c.revision.isNull)
+        .filter(c => c.revision < revision || c.revision.isEmpty)
         .map(c => (
-          c.path, c.lastModified, c.lastModifiedBy, c.contentType, 
-          c.commentable, c.headline, c.standfirst, 
+          c.path, c.lastModified, c.lastModifiedBy, c.contentType,
+          c.commentable, c.headline, c.standfirst,
           c.trailtext, c.mainMedia, c.mainMediaUrl,
-          c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl, 
+          c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl,
           c.published, c.timePublished, c.revision, c.storyBundleId)
         )
         .update((
-          wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType, 
-          wc.commentable, wc.headline, wc.standfirst, 
-          wc.trailtext, mainMedia.mediaType, mainMedia.url, 
-          mainMedia.caption, mainMedia.altText, wc.trailImageUrl, 
+          wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType,
+          wc.commentable, wc.headline, wc.standfirst,
+          wc.trailtext, mainMedia.mediaType, mainMedia.url,
+          mainMedia.caption, mainMedia.altText, wc.trailImageUrl,
           wc.published, wc.timePublished, Some(revision), wc.storyBundleId)
         )
   }

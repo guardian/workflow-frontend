@@ -61,7 +61,7 @@ object WfQuery {
       // either of the date boundaries might be missing, in which
       // case, we want to return true
       options.foldLeft(FalseCol) { (sofar, dateblock) =>
-        sofar || (!date.isNull &&
+        sofar || (!date.isEmpty &&
           (date >= dateblock.from).getOrElse(true) &&
              (date < dateblock.until).getOrElse(true))
       }
