@@ -1,5 +1,6 @@
 $drawer-anim-duration: 0.5s;
 $drawer-height: 380px;
+$drawer-background-color: $c-grey-100;
 
 $drawer-breakpoint-small: 1400px;
 
@@ -25,7 +26,7 @@ $drawer-breakpoint-small: 1400px;
 .content-list-drawer__container {
     overflow: hidden;
     height: $drawer-height;
-    background-color: $c-grey-100;
+    background-color: $drawer-background-color;
 
     @include transition(height $drawer-anim-duration ease-out);
 }
@@ -181,10 +182,14 @@ $drawer-breakpoint-small: 1400px;
     .content-list-item__icon--composer {
         margin-right: 4px;
     }
+
+    &--empty {
+        color: $c-grey-400;
+    }
 }
 
 .drawer__section-control {
-    max-width: 100%;
+    width: 100%;
 }
 
 .drawer__section-data-row--editable {
@@ -201,9 +206,7 @@ $drawer-breakpoint-small: 1400px;
     color: $c-grey-400;
 }
 
-.drawer__section-data-row--empty {
-    color: $c-grey-400;
-}
+
 
 .editable-wrap { // TODO: Restyle editable inputs + controls
     width: 100%;
