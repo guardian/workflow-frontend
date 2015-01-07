@@ -39,6 +39,8 @@ GET            /api/statuses                          controllers.Api.statusus
 
 # Admin
 GET            /admin                                 controllers.Admin.index(selectedDesk: Option[Long])
+GET            /admin/syncComposer                    controllers.Admin.syncComposer
+POST           /admin/syncComposer                    controllers.Admin.syncComposerPost
 
 POST           /admin/sections                        controllers.Admin.addSection
 DELETE         /admin/sections                        controllers.Admin.removeSection

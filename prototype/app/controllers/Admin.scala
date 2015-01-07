@@ -1,6 +1,10 @@
 package controllers
 
-import com.gu.workflow.db.{DeskDB, SectionDB, SectionDeskMappingDB}
+import com.gu.workflow.db.{CommonDB, DeskDB, SectionDB, SectionDeskMappingDB}
+import org.joda.time.DateTime
+import play.api.Logger
+import play.api.libs.json.{JsError, Reads, JsValue, JsResult, JsSuccess}
+import play.api.libs.ws.WS
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -9,7 +13,9 @@ import play.api.mvc._
 import play.api.data.Form
 
 import lib._
-import models.{Status => WorkflowStatus, Section, Desk}
+import models.{Status => WorkflowStatus, WorkflowContent, ContentUpdateEvent, Section, Desk}
+
+import scala.util.{Failure, Success}
 
 object Admin extends Controller with PanDomainAuthActions {
 
@@ -48,6 +54,50 @@ object Admin extends Controller with PanDomainAuthActions {
         selectedDeskOption)
     )
   }
+
+  def syncComposer = (AuthAction andThen WhiteListAuthFilter) {
+    val visibleContent = PostgresDB.getContent()
+    Ok(views.html.syncComposer(visibleContent.size))
+  }
+
+
+  def syncComposerPost = (AuthAction andThen WhiteListAuthFilter) { req =>
+    val visibleContent = PostgresDB.getContent()
+    val contentIds = visibleContent.map(_.wc.composerId)
+    val composerDomain = PrototypeConfiguration.cached.composerUrl
+    val composerUrl = composerDomain + "/api/content/"
+    val cookie = req.headers.get("Cookie").getOrElse("")
+
+    import play.api.Play.current
+    Logger.info(s"updating ${contentIds.size}")
+    def recursiveCallComposer(contentIds: List[String]): Unit = contentIds match {
+      case contentId :: tail => {
+        WS.url(composerUrl + contentId + "?includePreview=true").withHeaders(("Cookie", cookie)).get() onComplete {
+          case Success(res) if (res.status == 200) => {
+            ContentUpdateEvent.readFromApi(res.json) match {
+              case JsSuccess(content, _) =>  {
+                CommonDB.createOrModifyContent(WorkflowContent.fromContentUpdateEvent(content), content.revision)
+              }
+              case JsError(error) => Logger.error(s"error parsing composer api ${error} with contentId ${contentId}")
+            }
+            recursiveCallComposer(tail)
+          }
+          case Success(res) => {
+            Logger.error(s"received status ${res.status} from composer for content item ${contentId}")
+            recursiveCallComposer(tail)
+          }
+          case Failure(error) => {
+            Logger.error(s"error calling composer api ${error} with contentId ${contentId}")
+            recursiveCallComposer(tail)
+          }
+        }
+      }
+      case Nil => ()
+    }
+    recursiveCallComposer(contentIds)
+    Redirect("/admin/syncComposer")
+  }
+
 
   val addSectionForm = Form(
     mapping(
@@ -168,7 +218,7 @@ object Admin extends Controller with PanDomainAuthActions {
     }
   }
 
-  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[Result]) = 
+  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[Result]) =
     (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
 
     statusForm.bindFromRequest.fold(
