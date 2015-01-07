@@ -92,7 +92,7 @@ object Schema {
     def revision         = column [Option[Long]]      ("revision")
     def storyBundleId    = column [Option[String]]    ("storybundleid")
     def activeInInCopy   = column [Boolean]           ("activeinincopy")
-    def wc               = column [Int]               ("wc")
+    def wc               = column [Int]               ("wordcount")
     def * = composerId       ::
             path             ::
             lastModified     ::
