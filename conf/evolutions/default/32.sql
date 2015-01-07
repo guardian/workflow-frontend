@@ -1,8 +1,8 @@
 # --- !Ups
 
-ALTER TABLE content ADD COLUMN wc INTEGER;
+ALTER TABLE content ADD COLUMN wordCount INTEGER default 0;
 
 # --- !Downs
 
-ALTER TABLE content DROP COLUMN wc;
+ALTER TABLE content DROP COLUMN wordCount;
 
