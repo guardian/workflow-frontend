@@ -24,6 +24,7 @@ class ContentUpdateEventModelSpec extends FunSuite with ShouldMatchers with Reso
 
     ws.composerId should equal("5495b697e4b08b9165ec75ba")
     ws.user should equal(Some("scheduled launch"))
+    ws.published should equal (true)
     ws.identifiers should equal (Map("path" -> "football/blog/2014/dec/30/us-soccer-2014-10-memorable-moments-klinsmann-altidore-world-cup","pageId" ->  "2213457"))
     ws.fields should equal (Map( "trailText" -> "trailText", "headline" -> "headline", "linkText" -> "linkText", "standfirst" -> "standfirst", "slug" -> "slug", "byline" -> "byline"))
 
