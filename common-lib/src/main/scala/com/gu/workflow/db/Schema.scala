@@ -50,19 +50,19 @@ object Schema {
       String,          // content_type
       Boolean,         // commentable
       Option[String],  // headline
-      Option[String],  // standfirst 
+      Option[String],  // standfirst
       Option[String],  // trailtext
-      Option[String],  // mainMedia 
-      Option[String],  // mainMediaUrl 
+      Option[String],  // mainMedia
+      Option[String],  // mainMediaUrl
       Option[String],  // mainMediaCaption
       Option[String],  // mainMediaAltText
-      Option[String],  // trailImageUrl 
+      Option[String],  // trailImageUrl
       Boolean,         // published
       Option[DateTime],// timePublished
       Option[Long],    // revision
       Option[String],  // storyBundleId
       Boolean,         // activeInInCopy
-      Boolean,         // takenDown 
+      Boolean,         // takenDown
       Option[DateTime] // timeTakenDown
     )
 
@@ -90,7 +90,7 @@ object Schema {
     def storyBundleId    = column [Option[String]]    ("storybundleid")
     def activeInInCopy   = column [Boolean]           ("activeinincopy")
     def * = (composerId, path, lastModified, lastModifiedBy, status,
-             contentType, commentable, headline, standfirst, trailtext, 
+             contentType, commentable, headline, standfirst, trailtext,
              mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText, trailImageUrl, published, timePublished,
              revision, storyBundleId, activeInInCopy, takenDown, timeTakenDown)
   }
@@ -177,12 +177,12 @@ object Schema {
     )
   }
 
-  type StubQuery = Query[DBStub, StubRow]
-  type ContentQuery = Query[DBContent, ContentRow]
-  type SectionQuery = Query[DBSection, SectionRow]
-  type DeskQuery = Query[DBDesk, SectionRow]
-  type DeskSectionMappingQuery = Query[DBDeskSectionMapping, deskSectionMappingRow]
-  type ArchiveQuery = Query[DBArchive, ArchiveRow]
+  type StubQuery = Query[DBStub, StubRow, Seq]
+  type ContentQuery = Query[DBContent, ContentRow, Seq]
+  type SectionQuery = Query[DBSection, SectionRow, Seq]
+  type DeskQuery = Query[DBDesk, SectionRow, Seq]
+  type DeskSectionMappingQuery = Query[DBDeskSectionMapping, deskSectionMappingRow, Seq]
+  type ArchiveQuery = Query[DBArchive, ArchiveRow, Seq]
 
   val stubs: StubQuery = TableQuery(DBStub)
   val content: ContentQuery = TableQuery(DBContent)
