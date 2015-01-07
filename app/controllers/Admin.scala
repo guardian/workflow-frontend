@@ -72,10 +72,13 @@ object Admin extends Controller with PanDomainAuthActions {
     Logger.info(s"updating ${contentIds.size}")
     def recursiveCallComposer(contentIds: List[String]): Unit = contentIds match {
       case contentId :: tail => {
+        Logger.info(s"updating $contentId")
+
         WS.url(composerUrl + contentId + "?includePreview=true").withHeaders(("Cookie", cookie)).get() onComplete {
           case Success(res) if (res.status == 200) => {
             ContentUpdateEvent.readFromApi(res.json) match {
               case JsSuccess(content, _) =>  {
+                Logger.info(s"published: ${content.published} @ ${content.publicationDate} (revision: ${content.revision})")
                 CommonDB.createOrModifyContent(WorkflowContent.fromContentUpdateEvent(content), content.revision)
               }
               case JsError(error) => Logger.error(s"error parsing composer api ${error} with contentId ${contentId}")
