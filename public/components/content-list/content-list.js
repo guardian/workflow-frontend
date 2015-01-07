@@ -157,7 +157,10 @@ function wfContentListController($rootScope, $scope, statuses, sections, wfConte
 
         $scope.refreshContentError = false;
 
-        $scope.$emit('content.render', $scope.content);
+        $scope.$emit('content.render', {
+            content: $scope.content,
+            selectedItem: this.selectedItem
+        });
 
         $scope.$apply();
     };
