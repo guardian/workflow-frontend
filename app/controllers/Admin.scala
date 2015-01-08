@@ -76,14 +76,17 @@ object Admin extends Controller with PanDomainAuthActions {
 
         WS.url(composerUrl + contentId + "?includePreview=true").withHeaders(("Cookie", cookie)).get() onComplete {
           case Success(res) if (res.status == 200) => {
-            ContentUpdateEvent.readFromApi(res.json) match {
-              case JsSuccess(content, _) =>  {
-                Logger.info(s"published: ${content.published} @ ${content.publicationDate} (revision: ${content.revision})")
-                CommonDB.createOrModifyContent(WorkflowContent.fromContentUpdateEvent(content), content.revision)
+            CommonDB.getContentForComposerId(contentId).map { wfContent =>
+              ContentUpdateEvent.readFromApi(res.json, wfContent) match {
+                case JsSuccess(content, _) =>  {
+                  Logger.info(s"published: ${content.published} @ ${content.publicationDate} (revision: ${content.revision})")
+                  CommonDB.createOrModifyContent(WorkflowContent.fromContentUpdateEvent(content), content.revision)
+                }
+                case JsError(error) => Logger.error(s"error parsing composer api ${error} with contentId ${contentId}")
               }
-              case JsError(error) => Logger.error(s"error parsing composer api ${error} with contentId ${contentId}")
+              recursiveCallComposer(tail)
             }
-            recursiveCallComposer(tail)
+
           }
           case Success(res) => {
             Logger.error(s"received status ${res.status} from composer for content item ${contentId}")
