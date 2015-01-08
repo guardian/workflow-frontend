@@ -6,8 +6,8 @@ object Dependencies {
 
   val databaseDependencies = Seq(
     jdbc,
-    "com.typesafe.play" %% "play-slick" % "0.7.0",
-    "com.github.tototoshi" %% "slick-joda-mapper" % "1.1.0",
+    "com.typesafe.play" %% "play-slick" % "0.8.1",
+    "com.github.tototoshi" %% "slick-joda-mapper" % "1.2.0",
     "org.postgresql" % "postgresql" % "9.3-1100-jdbc4"
   )
 
