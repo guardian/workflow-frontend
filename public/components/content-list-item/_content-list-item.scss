@@ -41,18 +41,6 @@
         }
     }
 
-    &.ng-enter {
-        -webkit-animation: content-list-item--enter-sequence 2s ease-out;
-        animation: content-list-item--enter-sequence 2s ease-out;
-    }
-
-    &.ng-leave {
-        -webkit-animation: content-list-item--leave-sequence 0.5s ease-out;
-        animation: content-list-item--leave-sequence 0.5s ease-out;
-    }
-
-
-
     &__icon {
         &--priority,
         &--comments,
@@ -246,6 +234,23 @@
     }
 }
 
+// Animations
+
+.content-list.content-list--animations-enabled {
+    .content-list-item {
+        &.ng-enter {
+            -webkit-transform: translate3d(0, 0, 0);
+            -webkit-animation: content-list-item--enter-sequence 2s ease-out;
+            animation: content-list-item--enter-sequence 2s ease-out;
+        }
+
+        &.ng-leave {
+            -webkit-transform: translate3d(0, 0, 0);
+            -webkit-animation: content-list-item--leave-sequence 0.5s ease-out;
+            animation: content-list-item--leave-sequence 0.5s ease-out;
+        }
+    }
+}
 
 // Transition keyframes for changing content in the list
 @include keyframes(content-list-item--enter-sequence) {
