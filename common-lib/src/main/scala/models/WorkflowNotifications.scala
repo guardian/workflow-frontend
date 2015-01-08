@@ -68,7 +68,7 @@ object ContentUpdateEvent {
   }
 
 
-  def readFromApi(json: JsValue): JsResult[ContentUpdateEvent] = {
+  def readFromApi(json: JsValue, wf: WorkflowContent): JsResult[ContentUpdateEvent] = {
     val js = json \ "data"
     for {
       composerId <- (js \ "id").validate[String]
@@ -86,7 +86,7 @@ object ContentUpdateEvent {
       thumbnail <- (js \ "preview" \ "data" \ "thumbnail" \ "data").validate[Option[Thumbnail]]
       revision <- (js \ "contentChangeDetails" \ "data" \ "revision").validate[Long]
       status = Writers
-    } yield ContentUpdateEvent(composerId, identifiers, fields, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags, status, commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount=0)
+    } yield ContentUpdateEvent(composerId, identifiers, fields, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags, status, commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount=wf.wordCount)
   }
 
   implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (
