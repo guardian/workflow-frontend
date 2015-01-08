@@ -17,7 +17,7 @@ object Asset {
 
   def getImageAssetUrl(assets: List[Asset]): Option[String] = {
     val imageAssets = assets.filter(_.assetType == "image")
-    val smallestAsset = imageAssets.reduceLeft((l,r) => 
+    val smallestAsset = imageAssets.reduceLeft((l,r) =>
         if(getImageAssetSize(l).get < getImageAssetSize(r).get){ l } else { r })
 
     Some(smallestAsset.url)
@@ -37,10 +37,10 @@ case class WorkflowContentMainMedia(
 )
 
 object WorkflowContentMainMedia {
-  implicit val workFlowContentMainMediaWrites: Writes[WorkflowContentMainMedia] = 
+  implicit val workFlowContentMainMediaWrites: Writes[WorkflowContentMainMedia] =
     Json.writes[WorkflowContentMainMedia]
 
-  implicit val workFlowContentMainMedia: Reads[WorkflowContentMainMedia] = 
+  implicit val workFlowContentMainMedia: Reads[WorkflowContentMainMedia] =
     Json.reads[WorkflowContentMainMedia]
 
   def getMainMedia(blockOption: Option[Block]) = {
@@ -108,7 +108,7 @@ object WorkflowContent {
     for {
       t <- thumbnail
       urlOption <- Asset.getImageAssetUrl(t.assets)
-    } yield urlOption 
+    } yield urlOption
   }
 
   def getSectionFromTags(tagsOption: Option[List[Tag]]): Option[Section] = {
@@ -169,7 +169,7 @@ object WorkflowContent {
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (
-      composerId, path, lastMod, lastModBy, 
+      composerId, path, lastMod, lastModBy,
       status, contentType, commentable,
       headline, standfirst, trailtext,
       mainMedia, mainMediaUrl, mainMediaCaption,
@@ -183,8 +183,8 @@ object WorkflowContent {
       WorkflowContent(
         composerId, path, headline,
         standfirst, trailtext, Some(media),
-        trailImageUrl, contentType, None, 
-        Status(status), lastMod, lastModBy, commentable, 
+        trailImageUrl, contentType, None,
+        Status(status), lastMod, lastModBy, commentable,
         published, timePublished, storyBundleId,
         activeInInCopy, takenDown, timeTakenDown)
     }
@@ -197,16 +197,16 @@ object WorkflowContent {
 
     (
       wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy,
-      wc.status.name, wc.contentType, wc.commentable, 
-      wc.headline, wc.standfirst, wc.trailtext, 
-      mainMedia.mediaType, mainMedia.url, mainMedia.caption, 
-      mainMedia.altText, wc.trailImageUrl, wc.published, 
-      wc.timePublished, revision, wc.storyBundleId, 
+      wc.status.name, wc.contentType, wc.commentable,
+      wc.headline, wc.standfirst, wc.trailtext,
+      mainMedia.mediaType, mainMedia.url, mainMedia.caption,
+      mainMedia.altText, wc.trailImageUrl, wc.published,
+      wc.timePublished, revision, wc.storyBundleId,
       wc.activeInInCopy, false, None
     )
   }
 
-  implicit val workFlowContentWrites: Writes[WorkflowContent] = 
+  implicit val workFlowContentWrites: Writes[WorkflowContent] =
     Json.writes[WorkflowContent]
 
   implicit val workFlowContentReads: Reads[WorkflowContent] =
@@ -218,18 +218,18 @@ object WorkflowContent {
       (__ \ "mainMedia").readNullable[WorkflowContentMainMedia] ~
       (__ \ "trailImageUrl").readNullable[String] ~
       (__ \ "contentType").read[String] ~
-      (__ \ "section" \ "name").readNullable[String].map { 
+      (__ \ "section" \ "name").readNullable[String].map {
         _.map(s => Section(s))
       } ~
-      (__ \ "status").read[String].map { s => Status(s) } ~
+      (__ \ "status").readNullable[String].map { sOpt => Status(sOpt.getOrElse("Writers")) } ~
       (__ \ "lastModified").read[DateTime] ~
       (__ \ "lastModifiedBy").readNullable[String] ~
       (__ \ "commentable").read[Boolean] ~
       (__ \ "published").read[Boolean] ~
       (__ \ "timePublished").readNullable[DateTime] ~
       (__ \ "storyBundleId").readNullable[String] ~
-      (__ \ "activeInInCopy").read[Boolean] ~
-      (__ \ "takenDown").read[Boolean] ~
+      (__ \ "activeInInCopy").readNullable[Boolean].map(_.getOrElse(false)) ~
+      (__ \ "takenDown").readNullable[Boolean].map(_.getOrElse(false)) ~
       (__ \ "timeTakenDown").readNullable[DateTime]
       )(WorkflowContent.apply _)
 }
