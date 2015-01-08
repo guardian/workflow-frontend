@@ -267,7 +267,9 @@ object WorkflowContent {
       (__ \ "activeInInCopy").read[Boolean] ~
       (__ \ "takenDown").read[Boolean] ~
       (__ \ "timeTakenDown").readNullable[DateTime] ~
-      (__ \ "wc").read[Int]
+      (__ \ "wordCount").readNullable[Int].map {
+        c => c.getOrElse(0)
+      }
       )(WorkflowContent.apply _)
 }
 
