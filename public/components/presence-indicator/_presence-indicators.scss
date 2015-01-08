@@ -4,19 +4,15 @@
 
 // Compact view
 
-.content-list--compact {
-    $topIconOffset: 3px;
-    $rightIconOffset: 8px;
-}
-
 $topIconOffset: 8px !default;
 $rightIconOffset: 14px !default;
+$topIconOffsetCompact: 3px;
+$rightIconOffsetCompact: 8px;
 $iconsToStack: 8;
 $iconExpandIntervalDistance: 24;
 $stackColorLightenIncrement: 14%;
 $iconAnimationTransTime: 0.5s;
 $iconAnimationEasingFunction: ease-in-out;
-
 
 .content-list-item__presence {
     display: inline-block;
@@ -88,6 +84,11 @@ $iconAnimationEasingFunction: ease-in-out;
             }
         }
     }
+}
+
+.content-list--compact .content-list-item__presence-list .content-list-item__presence--present {
+    top: $topIconOffsetCompact;
+    right: $rightIconOffsetCompact;
 }
 
 // Presence in the drawer
