@@ -45,6 +45,11 @@ $iconAnimationEasingFunction: ease-in-out;
 
 }
 
+.content-list--compact .content-list-item__presence-list .content-list-item__presence--present {
+    top: $topIconOffsetCompact;
+    right: $rightIconOffsetCompact;
+}
+
 .content-list-item__presence-list {
 
     .content-list-item__presence--present {
@@ -84,11 +89,6 @@ $iconAnimationEasingFunction: ease-in-out;
             }
         }
     }
-}
-
-.content-list--compact .content-list-item__presence-list .content-list-item__presence--present {
-    top: $topIconOffsetCompact;
-    right: $rightIconOffsetCompact;
 }
 
 // Presence in the drawer
