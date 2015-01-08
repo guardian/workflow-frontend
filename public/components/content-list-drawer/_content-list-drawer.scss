@@ -67,6 +67,7 @@ $drawer-breakpoint-small: 1400px;
     margin: 0 0 0 12px;
     background: $c-grey-200;
     border-top: 1px solid #fff;
+    overflow: hidden;
 
     @media screen and (max-width: $drawer-breakpoint-small) {
         min-width: 38px;
