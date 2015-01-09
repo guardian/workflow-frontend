@@ -6,7 +6,7 @@ import angular from 'angular';
 
 angular.module('wfEditableField', [])
     .directive('wfEditable', [wfEditableDirectiveFactory])
-    .directive('wfEditableField', wfEditableTextFieldDirectiveFactory);
+    .directive('wfEditableField', [wfEditableTextFieldDirectiveFactory]);
 
 
 function wfEditableDirectiveFactory() {
@@ -16,7 +16,9 @@ function wfEditableDirectiveFactory() {
         templateUrl: '/assets/components/editable-field/editable-field.html',
         scope: {
             modelValue: '=wfEditableModel',
-            editableType: '@wfEditableType'
+            editableType: '@wfEditableType',
+            onEditableUpdate: '&wfEditableOnUpdate',
+            onEditableCancel: '&wfEditableOnCancel'
         },
 
         controllerAs: 'editableController',
@@ -34,7 +36,6 @@ function wfEditableDirectiveFactory() {
             $scope.cancel = () => {
                 $scope.$broadcast('wfEditable.cancel');
             };
-
         }
     };
 }
@@ -45,23 +46,26 @@ function wfEditableTextFieldDirectiveFactory() {
         restrict: 'A',
         require: ['ngModel', '^^wfEditable'],
 
-        link: function($scope, $element, $attrs, controllers) {
-
-            var ngModel = controllers[0],
-                wfEditable = controllers[1];
-
-
-            console.log('linking text field directive', arguments);
+        link: function($scope, $element, $attrs, [ ngModel, wfEditable ]) {
 
             // resets / sets the ng-model-options (prevents default behaviour)
             ngModel.$options = ngModel.$options || {};
 
             function commit() {
+                $scope.onEditableUpdate({
+                    newValue: ngModel.$viewValue,
+                    oldValue: ngModel.$modelValue
+                });
+
+                // TODO: could check for promise from onEditableUpdate to
+                //       display loader, before committing view value.
+
                 ngModel.$commitViewValue();
                 wfEditable.setEditMode(false);
             }
 
             function cancel() {
+                $scope.onEditableCancel();
                 ngModel.$rollbackViewValue();
                 wfEditable.setEditMode(false);
             }
@@ -69,19 +73,13 @@ function wfEditableTextFieldDirectiveFactory() {
             $scope.$on('wfEditable.commit', commit);
             $scope.$on('wfEditable.cancel', cancel);
 
-
             // $element.on('blur', cancel);
-
 
             $element.on('keyup', (event) => {
                 if (event.keyCode == 27) {
                     cancel();
                 }
             });
-
-            // TODO
-            //  events for escape / blur / cancel
-            //  events for commit / ok / enter / command + enter
         }
     };
 }
