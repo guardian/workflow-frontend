@@ -1,5 +1,6 @@
-<span class="editable__value" ng-show="!isEditMode" ng-click="editableController.setEditMode(true)">{{ modelValue }}</span>
-<input type="text" class="editable__text-field" wf-editable-field ng-model="modelValue" ng-show="isEditMode" />
+<span class="editable__value" ng-show="!isEditMode" ng-click="editableController.setEditMode(true)" tabindex="0">{{ modelValue }}</span>
+<input type="text" class="editable__text-field" wf-editable-field ng-model="modelValue" ng-show="isEditMode" ng-if="::editableType !== 'textarea'" />
+<textarea class="editable__text-field" wf-editable-field ng-model="modelValue" ng-show="isEditMode" ng-if="::editableType === 'textarea'"></textarea>
 <span class="editable__controls" ng-show="isEditMode">
     <button class="editable__control editable__control--save" ng-click="commit()" title="Save changes">
         <i class="editable__control-icon editable__control-icon--save" wf-icon="check"></i>

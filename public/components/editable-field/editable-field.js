@@ -16,13 +16,15 @@ function wfEditableDirectiveFactory() {
         templateUrl: '/assets/components/editable-field/editable-field.html',
         scope: {
             modelValue: '=wfEditableModel',
-            editableType: '@wfEditableType',
             onEditableUpdate: '&wfEditableOnUpdate',
             onEditableCancel: '&wfEditableOnCancel'
         },
 
         controllerAs: 'editableController',
         controller: function wfEditableFieldController($scope, $element, $attrs) {
+
+            // one time bind of wfEditableType
+            $scope.editableType = $attrs.wfEditableType;
 
             this.setEditMode = (flag) => $scope.isEditMode = !!flag;
 
