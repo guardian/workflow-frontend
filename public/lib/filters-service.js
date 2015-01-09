@@ -53,6 +53,16 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('filtersChanged.desk', function(event, data) {
+                    if (data !== -1) {
+                        self.update('desk',  data);
+                    } else {
+                        self.update('desk',  null);
+                    }
+
+                    // Desk ignored so no need to request content
+                });
+
                 var keywords = {
                     "type"       : "content-type",
                     "status"     : "status",
