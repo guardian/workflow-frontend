@@ -303,18 +303,6 @@ object Api extends Controller with PanDomainAuthActions {
     NoContent
   }
 
-
-  def linkStub(stubId: Long, composerId: String, contentType: String) = APIAuthAction { req =>
-
-    if (PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
-
-    else {
-      PostgresDB.updateStubWithComposerId(stubId, composerId, contentType)
-      NoContent
-    }
-
-  }
-
   def statusus = CORSable(composerUrl)  {
     APIAuthAction.async { implicit req =>
       for(statuses <- StatusDatabase.statuses) yield {
