@@ -13,7 +13,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
             class ContentService {
                 getTypes() {
-                    return { 
+                    return {
                         "article": "Article",
                         "liveblog": "Live blog",
                         "gallery": "Gallery",

@@ -32,8 +32,6 @@ PUT            /api/stubs/:stubId/section             controllers.Api.putStubSec
 PUT            /api/stubs/:stubId/workingTitle        controllers.Api.putStubWorkingTitle(stubId: Long)
 PUT            /api/stubs/:stubId/priority            controllers.Api.putStubPriority(stubId: Long)
 DELETE         /api/stubs/:stubId                     controllers.Api.deleteStub(stubId: Long)
-POST           /api/stubs/:stubId                     controllers.Api.linkStub(stubId: Long, composerId: String, contentType: String)
-
 
 GET            /api/statuses                          controllers.Api.statusus
 GET            /api/sections                          controllers.Api.sections
