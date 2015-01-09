@@ -1,6 +1,10 @@
 package controllers
 
-import com.gu.workflow.db.{DeskDB, SectionDB, SectionDeskMappingDB}
+import com.gu.workflow.db.{CommonDB, DeskDB, SectionDB, SectionDeskMappingDB}
+import org.joda.time.DateTime
+import play.api.Logger
+import play.api.libs.json.{JsError, Reads, JsValue, JsResult, JsSuccess}
+import play.api.libs.ws.WS
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -9,13 +13,15 @@ import play.api.mvc._
 import play.api.data.Form
 
 import lib._
-import models.{Status => WorkflowStatus, Section, Desk}
+import models.{Status => WorkflowStatus, WorkflowContent, ContentUpdateEvent, Section, Desk}
+
+import scala.util.{Failure, Success}
 
 object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
 
-  def index(selectedDeskIdOption: Option[Long]) = AuthAction {
+  def index(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter) {
 
     val deskList = DeskDB.deskList
 
@@ -49,6 +55,53 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
+  def syncComposer = (AuthAction andThen WhiteListAuthFilter) {
+    val visibleContent = PostgresDB.getContent()
+    Ok(views.html.syncComposer(visibleContent.size))
+  }
+
+
+  def syncComposerPost = (AuthAction andThen WhiteListAuthFilter) { req =>
+    val visibleContent = PostgresDB.getContent()
+    val contentIds = visibleContent.map(_.wc.composerId)
+    val composerDomain = PrototypeConfiguration.cached.composerUrl
+    val composerUrl = composerDomain + "/api/content/"
+    val cookie = req.headers.get("Cookie").getOrElse("")
+
+    import play.api.Play.current
+    Logger.info(s"updating ${contentIds.size}")
+    def recursiveCallComposer(contentIds: List[String]): Unit = contentIds match {
+      case contentId :: tail => {
+        Logger.info(s"updating $contentId")
+
+        WS.url(composerUrl + contentId + "?includePreview=true").withHeaders(("Cookie", cookie)).get() onComplete {
+          case Success(res) if (res.status == 200) => {
+            ContentUpdateEvent.readFromApi(res.json) match {
+              case JsSuccess(content, _) =>  {
+                Logger.info(s"published: ${content.published} @ ${content.publicationDate} (revision: ${content.revision})")
+                CommonDB.createOrModifyContent(WorkflowContent.fromContentUpdateEvent(content), content.revision)
+              }
+              case JsError(error) => Logger.error(s"error parsing composer api ${error} with contentId ${contentId}")
+            }
+            recursiveCallComposer(tail)
+          }
+          case Success(res) => {
+            Logger.error(s"received status ${res.status} from composer for content item ${contentId}")
+            recursiveCallComposer(tail)
+          }
+          case Failure(error) => {
+            Logger.error(s"error calling composer api ${error} with contentId ${contentId}")
+            recursiveCallComposer(tail)
+          }
+        }
+      }
+      case Nil => ()
+    }
+    recursiveCallComposer(contentIds)
+    Redirect("/admin/syncComposer")
+  }
+
+
   val addSectionForm = Form(
     mapping(
       "name" -> nonEmptyText,
@@ -74,7 +127,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )(assignSectionToDeskFormData.apply)(assignSectionToDeskFormData.unapply)
   )
 
-  def assignSectionToDesk = AuthAction { implicit request =>
+  def assignSectionToDesk = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     assignSectionToDeskForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to update section assignments"),
       sectionAssignment => {
@@ -88,7 +141,7 @@ object Admin extends Controller with PanDomainAuthActions {
     SECTION routes
    */
 
-  def addSection = AuthAction { implicit request =>
+  def addSection = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to add section"),
       section => {
@@ -98,7 +151,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeSection = AuthAction { implicit request =>
+  def removeSection = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to remove section"),
       section => {
@@ -113,7 +166,7 @@ object Admin extends Controller with PanDomainAuthActions {
     DESK routes
    */
 
-  def addDesk = AuthAction { implicit request =>
+  def addDesk = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => BadRequest(s"failed to add desk ${formWithErrors.errors}"),
       desk => {
@@ -123,7 +176,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeDesk = AuthAction { implicit request =>
+  def removeDesk = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed to remove desk"),
       desk => {
@@ -140,7 +193,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )(WorkflowStatus.apply)(WorkflowStatus.unapply)
   )
 
-  def status = AuthAction.async {
+  def status = (AuthAction andThen WhiteListAuthFilter).async {
     for (statuses <- StatusDatabase.statuses) yield Ok(views.html.status(statuses, statusForm))
   }
 
@@ -168,7 +221,9 @@ object Admin extends Controller with PanDomainAuthActions {
     }
   }
 
-  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[Result]) = Action.async { implicit request =>
+  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[Result]) =
+    (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+
     statusForm.bindFromRequest.fold(
       formWithErrors => {
         Future.successful(BadRequest(error))

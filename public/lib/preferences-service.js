@@ -2,8 +2,8 @@ import angular from 'angular';
 import moment from 'moment';
 
 angular.module('wfPreferencesService', [])
-    .factory('wfPreferencesService', ['$rootScope', '$http', '$log',
-        function($rootScope, $http, $log) {
+    .factory('wfPreferencesService', ['$rootScope', '$http', '$log', '$window',
+        function($rootScope, $http, $log, $window) {
 
             class PreferencesService {
 
@@ -12,6 +12,8 @@ angular.module('wfPreferencesService', [])
                  * from prefs app
                  */
                 constructor() {
+
+                    var self = this;
 
                     this.user = _wfConfig.user.email;
 
@@ -22,6 +24,9 @@ angular.module('wfPreferencesService', [])
                         $log.error('Could not fetch preferences', arguments);
                         return Promise.reject();
                     });
+
+                    // Debugging tool for prefs
+                    $window.workflowPrefsDebug = this.debug.bind(this);
                 }
 
                 /**
@@ -106,7 +111,12 @@ angular.module('wfPreferencesService', [])
                 getPreference(name) {
                     var self = this;
                     if (this.preferences) {
-                        return Promise.resolve(this.preferences[name]);
+                        if (this.preferences[name] !== undefined) {
+                            return Promise.resolve(this.preferences[name]);
+                        } else {
+                            $log.info('No preference set for: ' + name);
+                            return Promise.reject();
+                        }
                     } else {
                         return this.prefsPromise.then(function resolve (data) {
                             if (data[name]) {
@@ -119,6 +129,10 @@ angular.module('wfPreferencesService', [])
                             return Promise.reject();
                         });
                     }
+                }
+
+                debug() {
+                    return $log.debug(this.preferences);
                 }
             }
 

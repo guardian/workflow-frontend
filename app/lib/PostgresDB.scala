@@ -208,7 +208,7 @@ object PostgresDB {
 
   def stubLinkedToComposer(id: Long): Boolean = {
     DB.withTransaction { implicit session =>
-      val q = stubs.filter(stub => stub.pk === id && stub.composerId.isNotNull)
+      val q = stubs.filter(stub => stub.pk === id && stub.composerId.isDefined)
       q.length.run > 0
     }
   }
