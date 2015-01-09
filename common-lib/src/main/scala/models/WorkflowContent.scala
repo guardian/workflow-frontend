@@ -224,7 +224,7 @@ object WorkflowContent {
       (__ \ "status").readNullable[String].map { sOpt => Status(sOpt.getOrElse("Writers")) } ~
       (__ \ "lastModified").read[DateTime] ~
       (__ \ "lastModifiedBy").readNullable[String] ~
-      (__ \ "commentable").read[Boolean] ~
+      (__ \ "commentable").readNullable[Boolean].map(_.getOrElse(false)) ~
       (__ \ "published").read[Boolean] ~
       (__ \ "timePublished").readNullable[DateTime] ~
       (__ \ "storyBundleId").readNullable[String] ~
