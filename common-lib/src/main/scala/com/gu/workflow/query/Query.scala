@@ -34,41 +34,41 @@ object WfQuery {
   private val TrueCol : Column[Boolean] = LiteralColumn(true)
   private val FalseCol: Column[Boolean] = LiteralColumn(false)
 
-  def queryPassThrough[DB, Row]: (Query[DB, Row]) => Query[DB, Row] =
+  def queryPassThrough[DB, Row]: (Query[DB, Row, Seq]) => Query[DB, Row, Seq] =
     (query) => query
 
   def searchSet[A, DB, Row](options: Seq[_], getField: DB => A)(pred: A => Column[Boolean]):
-      (Query[DB, Row]) => Query[DB, Row] = options match {
+      (Query[DB, Row, Seq]) => Query[DB, Row, Seq] = options match {
     case Nil  => queryPassThrough[DB, Row]
     case opts => (startQuery => startQuery.filter(table => pred(getField(table))))
   }
 
   def simpleInSet[A : BaseTypedType, DB, Row](options: Seq[A])(getField: DB => Column[A]):
-      (Query[DB, Row]) => Query[DB, Row] =
+      (Query[DB, Row, Seq]) => Query[DB, Row, Seq] =
     searchSet(options, getField)(_ inSet options)
 
   // can I find a better way to implement the option logic?
   def optInSet[A : BaseTypedType, DB, Row](options: Seq[A])(getField: DB => Column[Option[A]]):
-      (Query[DB, Row]) => Query[DB, Row] =
+      (Query[DB, Row, Seq]) => Query[DB, Row, Seq] =
     searchSet(options, getField)(col => (col inSet options).getOrElse(false))
 
 
   def dateInSet[DB, Row](options: Seq[WfQueryTime])
                (getField: DB => Column[Option[DateTime]]):
-       (Query[DB, Row]) => Query[DB, Row] =
+       (Query[DB, Row, Seq]) => Query[DB, Row, Seq] =
     searchSet(options, getField) { date =>
       // build up a query that compares each dateblock to the date
       // either of the date boundaries might be missing, in which
       // case, we want to return true
       options.foldLeft(FalseCol) { (sofar, dateblock) =>
-        sofar || (!date.isNull &&
+        sofar || (!date.isEmpty &&
           (date >= dateblock.from).getOrElse(true) &&
              (date < dateblock.until).getOrElse(true))
       }
     }
 
   def fuzzyMatch[DB, Row](patterns: Seq[String])(getField: DB => Column[Option[String]]):
-      Query[DB, Row] => Query[DB, Row] =
+      Query[DB, Row, Seq] => Query[DB, Row, Seq] =
     searchSet(patterns, getField) { col: Column[Option[String]] =>
       patterns.foldLeft(FalseCol.?) { (sofar, pattern) =>
         sofar || (col.toUpperCase like ("%" + pattern.toUpperCase + "%"))
@@ -77,7 +77,7 @@ object WfQuery {
 
   def matchTextFields[DB, Row](patterns: Seq[String])
                      (fields: Seq[DB => Column[Option[String]]]):
-      Query[DB, Row] => Query[DB, Row] = patterns match {
+      Query[DB, Row, Seq] => Query[DB, Row, Seq] = patterns match {
     case Nil   => queryPassThrough[DB, Row]
     case patts => (query) =>
       fields.map(getField => fuzzyMatch[DB, Row](patts)(getField)(query))

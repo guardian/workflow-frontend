@@ -11,7 +11,7 @@ object DeskDB {
 
   def deskList: List[Desk] = {
     DB.withTransaction { implicit session =>
-      desks.list().map( {case (pk, name) => Desk(name, selected = false, pk)})
+      desks.list.map( {case (pk, name) => Desk(name, selected = false, pk)})
     }
   }
 

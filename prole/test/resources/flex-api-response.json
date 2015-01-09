@@ -1,0 +1,977 @@
+{
+    "data": {
+        "id": "5495b697e4b08b9165ec75ba",
+        "type": "article",
+        "published": true,
+        "scheduledLaunchDate": {
+            "uri": "/api/content/5495b697e4b08b9165ec75ba/scheduledLaunch"
+        },
+        "contentChangeDetails": {
+            "uri": "/api/content/5495b697e4b08b9165ec75ba/changeDetails",
+            "data": {
+                "lastModified": {
+                    "date": 1419939011172,
+                    "user": {
+                        "email": "liveblogging.dev@guardian.co.uk",
+                        "firstName": "scheduled",
+                        "lastName": "launch"
+                    }
+                },
+                "created": {
+                    "date": 1419097751814,
+                    "user": {
+                        "email": "chris.taylor@guardian.co.uk",
+                        "firstName": "Chris",
+                        "lastName": "Taylor"
+                    }
+                },
+                "published": {
+                    "date": 1419939011172,
+                    "user": {
+                        "email": "liveblogging.dev@guardian.co.uk",
+                        "firstName": "scheduled",
+                        "lastName": "launch"
+                    }
+                },
+                "lastMajorRevisionPublished": {
+                    "uri": "/api/content/5495b697e4b08b9165ec75ba/changeDetails/lastMajorRevisionPublished",
+                    "data": {
+                        "date": 1419939011172,
+                        "user": {
+                            "email": "liveblogging.dev@guardian.co.uk",
+                            "firstName": "scheduled",
+                            "lastName": "launch"
+                        }
+                    }
+                },
+                "revision": 729
+            }
+        },
+        "identifiers": {
+            "path": {
+                "uri": "/api/content/5495b697e4b08b9165ec75ba/identifiers/path",
+                "data": "football/blog/2014/dec/30/us-soccer-2014-10-memorable-moments-klinsmann-altidore-world-cup"
+            },
+            "pageId": {
+                "uri": "/api/content/5495b697e4b08b9165ec75ba/identifiers/pageId",
+                "data": "2213457"
+            }
+        },
+        "collaborators": [
+            {
+                "email": "tom.gottlieb.freelance@guardian.co.uk",
+                "firstName": "Tom",
+                "lastName": "Gottlieb"
+            },
+            {
+                "email": "tom.lutz@guardian.co.uk",
+                "firstName": "Tom",
+                "lastName": "Lutz"
+            },
+            {
+                "email": "chris.taylor@guardian.co.uk",
+                "firstName": "Chris",
+                "lastName": "Taylor"
+            }
+        ],
+        "toolSettings": {
+            "linkTextLinked": {
+                "uri": "/api/content/5495b697e4b08b9165ec75ba/toolSettings/linkTextLinked",
+                "data": "true"
+            },
+            "slugLinked": {
+                "uri": "/api/content/5495b697e4b08b9165ec75ba/toolSettings/slugLinked",
+                "data": "false"
+            },
+            "trailTextLinked": {
+                "uri": "/api/content/5495b697e4b08b9165ec75ba/toolSettings/trailTextLinked",
+                "data": "true"
+            }
+        },
+        "preview": {
+            "uri": "/api/content/5495b697e4b08b9165ec75ba/preview",
+            "data": {
+                "contentChangeDetails": {
+                    "uri": "/api/content/5495b697e4b08b9165ec75ba/changeDetails",
+                    "data": {
+                        "lastModified": {
+                            "date": 1419939011172,
+                            "user": {
+                                "email": "liveblogging.dev@guardian.co.uk",
+                                "firstName": "scheduled",
+                                "lastName": "launch"
+                            }
+                        },
+                        "created": {
+                            "date": 1419097751814,
+                            "user": {
+                                "email": "chris.taylor@guardian.co.uk",
+                                "firstName": "Chris",
+                                "lastName": "Taylor"
+                            }
+                        },
+                        "published": {
+                            "date": 1419939011172,
+                            "user": {
+                                "email": "liveblogging.dev@guardian.co.uk",
+                                "firstName": "scheduled",
+                                "lastName": "launch"
+                            }
+                        },
+                        "lastMajorRevisionPublished": {
+                            "uri": "http://10.252.48.128:8080/api/content/5495b697e4b08b9165ec75ba/changeDetails/lastMajorRevisionPublished",
+                            "data": {
+                                "date": 1419939011172,
+                                "user": {
+                                    "email": "liveblogging.dev@guardian.co.uk",
+                                    "firstName": "scheduled",
+                                    "lastName": "launch"
+                                }
+                            }
+                        },
+                        "revision": 729
+                    }
+                },
+                "fields": {
+                    "trailText": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/fields/trailText",
+                        "data": "trailText"
+                    },
+                    "headline": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/fields/headline",
+                        "data": "headline"
+                    },
+                    "linkText": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/fields/linkText",
+                        "data": "linkText"
+                    },
+                    "standfirst": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/fields/standfirst",
+                        "data": "standfirst"
+                    },
+                    "slug": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/fields/slug",
+                        "data": "slug"
+                    },
+                    "byline": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/fields/byline",
+                        "data": "byline"
+                    }
+                },
+                "thumbnail": {
+                    "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/thumbnail",
+                    "data": {
+                        "fields": {
+                            "copyright": "Getty Images",
+                            "displayCredit": "true",
+                            "source": "Getty Images",
+                            "photographer": "Laurence Griffiths",
+                            "imageType": "Photograph",
+                            "suppliersReference": "491717955ML00170_Ghana_v_US",
+                            "alt": "John Brooks",
+                            "mediaId": "601b1e0973a91d2a4d25a254554a7f7a80b475b4",
+                            "picdarUrn": "GD*44911936"
+                        },
+                        "assets": [
+                            {
+                                "assetType": "image",
+                                "mimeType": "image/jpeg",
+                                "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102282193/baedf9a5-dad3-4850-a3a6-ff552e3d5881-220x132.jpeg",
+                                "fields": {
+                                    "width": "220",
+                                    "height": "132",
+                                    "name": "220x132"
+                                }
+                            },
+                            {
+                                "assetType": "image",
+                                "mimeType": "image/jpeg",
+                                "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102282426/baedf9a5-dad3-4850-a3a6-ff552e3d5881-460x276.jpeg",
+                                "fields": {
+                                    "width": "460",
+                                    "height": "276",
+                                    "name": "460x276"
+                                }
+                            },
+                            {
+                                "assetType": "image",
+                                "mimeType": "image/jpeg",
+                                "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102282671/baedf9a5-dad3-4850-a3a6-ff552e3d5881-540x324.jpeg",
+                                "fields": {
+                                    "width": "540",
+                                    "height": "324",
+                                    "name": "540x324"
+                                }
+                            },
+                            {
+                                "assetType": "image",
+                                "mimeType": "image/jpeg",
+                                "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102282830/baedf9a5-dad3-4850-a3a6-ff552e3d5881-140x84.jpeg",
+                                "fields": {
+                                    "width": "140",
+                                    "height": "84",
+                                    "name": "140x84"
+                                }
+                            },
+                            {
+                                "assetType": "image",
+                                "mimeType": "image/jpeg",
+                                "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102283118/baedf9a5-dad3-4850-a3a6-ff552e3d5881-1020x612.jpeg",
+                                "fields": {
+                                    "width": "1020",
+                                    "height": "612",
+                                    "name": "1020x612"
+                                }
+                            },
+                            {
+                                "assetType": "image",
+                                "mimeType": "image/jpeg",
+                                "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102283461/baedf9a5-dad3-4850-a3a6-ff552e3d5881-300x180.jpeg",
+                                "fields": {
+                                    "width": "300",
+                                    "height": "180",
+                                    "name": "300x180"
+                                }
+                            },
+                            {
+                                "assetType": "image",
+                                "mimeType": "image/jpeg",
+                                "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102283609/baedf9a5-dad3-4850-a3a6-ff552e3d5881-380x228.jpeg",
+                                "fields": {
+                                    "width": "380",
+                                    "height": "228",
+                                    "name": "380x228"
+                                }
+                            },
+                            {
+                                "assetType": "image",
+                                "mimeType": "image/jpeg",
+                                "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102283792/baedf9a5-dad3-4850-a3a6-ff552e3d5881-620x372.jpeg",
+                                "fields": {
+                                    "width": "620",
+                                    "height": "372",
+                                    "name": "620x372"
+                                }
+                            },
+                            {
+                                "assetType": "image",
+                                "mimeType": "image/jpeg",
+                                "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102284431/baedf9a5-dad3-4850-a3a6-ff552e3d5881-2060x1236.jpeg",
+                                "fields": {
+                                    "width": "2060",
+                                    "height": "1236",
+                                    "name": "2060x1236"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "mainBlock": {
+                    "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/mainblock",
+                    "data": {
+                        "block": {
+                            "id": "5495c7e0e4b031a69b07a92f",
+                            "lastModified": 1419371988052,
+                            "dateCreated": 1419102176848,
+                            "createdBy": {
+                                "email": "chris.taylor@guardian.co.uk",
+                                "firstName": "Chris",
+                                "lastName": "Taylor"
+                            },
+                            "lastModifiedBy": {
+                                "email": "tom.gottlieb.freelance@guardian.co.uk",
+                                "firstName": "Tom",
+                                "lastName": "Gottlieb"
+                            },
+                            "elements": [
+                                {
+                                    "elementType": "image",
+                                    "fields": {
+                                        "copyright": "Getty Images",
+                                        "displayCredit": "true",
+                                        "source": "Getty Images",
+                                        "photographer": "Laurence Griffiths",
+                                        "imageType": "Photograph",
+                                        "suppliersReference": "491717955ML00170_Ghana_v_US",
+                                        "alt": "John Brooks",
+                                        "caption": "John Brooks scores the US’s second goal during their World Cup match against Ghana in Natal, Brazil.",
+                                        "mediaId": "601b1e0973a91d2a4d25a254554a7f7a80b475b4",
+                                        "picdarUrn": "GD*44911936"
+                                    },
+                                    "assets": [
+                                        {
+                                            "assetType": "image",
+                                            "mimeType": "image/jpeg",
+                                            "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102282193/baedf9a5-dad3-4850-a3a6-ff552e3d5881-220x132.jpeg",
+                                            "fields": {
+                                                "width": "220",
+                                                "height": "132",
+                                                "name": "220x132"
+                                            }
+                                        },
+                                        {
+                                            "assetType": "image",
+                                            "mimeType": "image/jpeg",
+                                            "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102282426/baedf9a5-dad3-4850-a3a6-ff552e3d5881-460x276.jpeg",
+                                            "fields": {
+                                                "width": "460",
+                                                "height": "276",
+                                                "name": "460x276"
+                                            }
+                                        },
+                                        {
+                                            "assetType": "image",
+                                            "mimeType": "image/jpeg",
+                                            "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102282671/baedf9a5-dad3-4850-a3a6-ff552e3d5881-540x324.jpeg",
+                                            "fields": {
+                                                "width": "540",
+                                                "height": "324",
+                                                "name": "540x324"
+                                            }
+                                        },
+                                        {
+                                            "assetType": "image",
+                                            "mimeType": "image/jpeg",
+                                            "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102282830/baedf9a5-dad3-4850-a3a6-ff552e3d5881-140x84.jpeg",
+                                            "fields": {
+                                                "width": "140",
+                                                "height": "84",
+                                                "name": "140x84"
+                                            }
+                                        },
+                                        {
+                                            "assetType": "image",
+                                            "mimeType": "image/jpeg",
+                                            "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102283118/baedf9a5-dad3-4850-a3a6-ff552e3d5881-1020x612.jpeg",
+                                            "fields": {
+                                                "width": "1020",
+                                                "height": "612",
+                                                "name": "1020x612"
+                                            }
+                                        },
+                                        {
+                                            "assetType": "image",
+                                            "mimeType": "image/jpeg",
+                                            "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102283461/baedf9a5-dad3-4850-a3a6-ff552e3d5881-300x180.jpeg",
+                                            "fields": {
+                                                "width": "300",
+                                                "height": "180",
+                                                "name": "300x180"
+                                            }
+                                        },
+                                        {
+                                            "assetType": "image",
+                                            "mimeType": "image/jpeg",
+                                            "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102283609/baedf9a5-dad3-4850-a3a6-ff552e3d5881-380x228.jpeg",
+                                            "fields": {
+                                                "width": "380",
+                                                "height": "228",
+                                                "name": "380x228"
+                                            }
+                                        },
+                                        {
+                                            "assetType": "image",
+                                            "mimeType": "image/jpeg",
+                                            "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102283792/baedf9a5-dad3-4850-a3a6-ff552e3d5881-620x372.jpeg",
+                                            "fields": {
+                                                "width": "620",
+                                                "height": "372",
+                                                "name": "620x372"
+                                            }
+                                        },
+                                        {
+                                            "assetType": "image",
+                                            "mimeType": "image/jpeg",
+                                            "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102284431/baedf9a5-dad3-4850-a3a6-ff552e3d5881-2060x1236.jpeg",
+                                            "fields": {
+                                                "width": "2060",
+                                                "height": "1236",
+                                                "name": "2060x1236"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "published": false,
+                            "attributes": {}
+                        }
+                    }
+                },
+                "blocks": {
+                    "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/blocks",
+                    "data": [
+                        {
+                            "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/blocks/5495b69de4b031a69b07a926",
+                            "data": {
+                                "block": {
+                                    "id": "5495b69de4b031a69b07a926",
+                                    "lastModified": 1419371951022,
+                                    "dateCreated": 1419097757278,
+                                    "createdBy": {
+                                        "email": "chris.taylor@guardian.co.uk",
+                                        "firstName": "Chris",
+                                        "lastName": "Taylor"
+                                    },
+                                    "lastModifiedBy": {
+                                        "email": "tom.gottlieb.freelance@guardian.co.uk",
+                                        "firstName": "Tom",
+                                        "lastName": "Gottlieb"
+                                    },
+                                    "elements": [
+                                        {
+                                            "elementType": "text",
+                                            "fields": {
+                                                "text": "<h2><strong>1) Michael Bradley leads the reverse migration</strong></h2><p>Before the 2014 MLS season started, the league held a media day at New Jersey’s Red Bull Arena. As each team paraded their prize playing assets into temporarily repurposed executive boxes filled with media, the trend was unmistak<gu-note title=\"Chris Taylor 20/12/2014 at 12:50\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T17:50:25.556Z\" data-note-id=\"5306cf10-0727-4cbd-afa6-ba25503a408b\" class=\"note note--start note--end\">e</gu-note>able – the US internationals were coming home.</p><p>And it wasn’t just the Parkhurst<gu-note title=\"Chris Taylor 20/12/2014 at 12:50\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T17:50:34.956Z\" data-note-id=\"f4a7f99f-8ded-495b-f3cc-a4a552e15d11\" class=\"note note--start note--end\">’</gu-note>s, the Goodson<gu-note title=\"Chris Taylor 20/12/2014 at 12:50\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T17:50:38.844Z\" data-note-id=\"fa37990b-f055-43a7-f3cd-e621fc0ceed5\" class=\"note note--start note--end\">’</gu-note>s or the Edu<gu-note title=\"Chris Taylor 20/12/2014 at 12:50\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T17:50:41.244Z\" data-note-id=\"812071b1-3418-4fd5-ede1-6ecb110dc3f3\" class=\"note note--start note--end\">’</gu-note>s of this world who were coming back (none of this trio would make the World Cup squad, incidentally), but Michael Bradley, coming to Toronto with less international name recognition than fellow marquee signing Jermain Defoe, though arguably a lot more local expectation. <br></p><p>Looking back on that day in the light of what followed, and recalling Bradley’s then-golden boy status with the national team and the sense of expectation around his role for Toronto, it’s clear that this was a high-water mark for the man expected to set the tempo for the US team at the World Cup, but who too often seemed deployed out of place for club and country as the year went on.</p><p>Injury hampered Bradley before and during the World Cup and helped derail his ambitions at Toronto. By the end of the year, the most newsworthy item <gu-note title=\"Chris Taylor 20/12/2014 at 13:37\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:37:46.712Z\" data-note-id=\"017cff98-44be-4ded-db52-c325a722becc\" class=\"note note--start note--end\">around</gu-note>concerning him was Jürgen Klinsmann’s comments about the player’s underwhelming season <gu-note title=\"Tom Gottlieb 23/12/2014 at 16:46\" data-note-edited-by=\"Tom Gottlieb\" data-note-edited-date=\"2014-12-23T21:46:16.657Z\" data-note-id=\"2e8b5d6c-5e49-4c6b-d751-afeac2f6eb54\" class=\"note note--start note--end\">with Toronto </gu-note>proving to be the final straw for <gu-note title=\"Chris Taylor 20/12/2014 at 13:38\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:38:23.925Z\" data-note-id=\"05942094-f003-47a7-a62a-afb85bfd3493\" class=\"note note--start note--end\">a</gu-note>the simmering resentment towards the former Germany international <gu-note title=\"Chris Taylor 20/12/2014 at 13:38\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:38:15.475Z\" data-note-id=\"291e9022-d27d-4246-db19-bb0556f490d0\" class=\"note note--start note--end\">held</gu-note>felt by MLS owners and execs. More of that in a moment. Toronto and the US will hope there’s much more from Bradley next year.</p><h2><strong>2) The long goodbye</strong></h2><p>Not so much a moment as a series of them, starting with the most shocking one – Landon Donovan’s surprise omission from the World Cup squad. The manner of it – Donovan was called into the provisional squad, then left out – had the feel of a calculated insult given that the player was nothing if not a known quantity for Klinsmann (and the coach’s son’s Twitter habits didn’t help). As Donovan’s presence, or rather absence, continued to be a storyline through the World Cup and beyond, it was hard to shake the sense that Klinsmann’s polarizing of public opinion over the player had left him vulnerable as he started the next phase of the team’s development<gu-note title=\"Chris Taylor 20/12/2014 at 13:40\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:40:23.163Z\" data-note-id=\"f9b02736-366e-4e2b-bcd6-b66daa3700f8\" class=\"note note--start note--end\"> of the team</gu-note>. That next stage, with its emphasis on <gu-note title=\"Chris Taylor 20/12/2014 at 13:40\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:40:40.801Z\" data-note-id=\"c9376a8f-863c-42cf-a07b-9224b62b5a77\" class=\"note note--start note--end\">the type of </gu-note>deeper structural development for the overall US soccer system, is the sort of work that tends to encounter local resistance. And as US Soccer appeared to circumvent Klinsmann to give Donovan a farewell game against Ecuador in the fall, the coach looked oddly vulnerable at a time he needed his mandate to be at its strongest. The awkward embrace between coach and player at the end of the game said it all. Donovan has gone, for now, but he may haunt Klinsmann for a while to come.</p><h2><strong>3) Fabian Johnson’s goal against Turkey</strong></h2><p>There<gu-note title=\"Chris Taylor 20/12/2014 at 13:19\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:19:08.395Z\" data-note-id=\"545feecf-dceb-4a2a-d394-f828ba0be856\" class=\"note note--start note--end\">’</gu-note> had been signs in the 2-2 draw with Mexico two months earlier (that had seen a switch to the 4-2-3-1 that would lead the side into the World Cup) that Klinsmann’s team was coming together, though there<gu-note title=\"Chris Taylor 20/12/2014 at 13:20\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:20:02.517Z\" data-note-id=\"98942efc-8433-4db3-fe84-ab3f94850dc5\" class=\"note note--start note--end\">’</gu-note> had also been signs of the team’s propensity to let winning positions slip. </p><p>But when Fabian Johnson raced on to Michael Bradley’s deft chip over the top of the Turkey defense<gu-note title=\"Chris Taylor 20/12/2014 at 13:42\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:42:18.388Z\" data-note-id=\"7fdfa708-41d4-490c-d90f-2167c4fb7abd\" class=\"note note--start note--end\">,</gu-note> to fire a perfect first-time shot into the net at Red Bull Arena<gu-note title=\"Chris Taylor 20/12/2014 at 13:42\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:42:23.189Z\" data-note-id=\"8a6805db-0b49-4dc6-bcb3-90469cd47484\" class=\"note note--start note--end\">,</gu-note> in the penultimate warm-up game, it looked like the USA might just be peaking at the right time. Johnson’s pace and ability to attack from the full-back position was emblematic of Klinsmann’s desire for his team to defend compactly and spring forward at speed, and at that moment the US machine looked to be running in perfect order, albeit in demo mode. Now if only Altidore could score ...</p><h2><strong>4) Altidore breaks through, then breaks down</strong></h2><p>It wasn’t the most elegant of finishes, but it was perfectly timed. A few days after the Turkey game, the US played its final warm-up game in the humidity of Jacksonville, Florida. And Jozy Altidore, back in his home state, scored his first goal in six international matches, off yet another surging run and pass from Johnson. When he added a second on yet another great US counter – and with the type of finish Sunderland fans may be inclined to believe lives only in the realm of fiction – it looked like the last piece of the jigsaw had fallen into place at exactly the right moment. </p><p>Ghana, the hamstring and the lack of a striking Plan B all lay ahead, but at that moment it looked like the US were sure to break their run of two World Cups without their strikers scoring a goal.<br></p>"
+                                            },
+                                            "assets": []
+                                        },
+                                        {
+                                            "elementType": "image",
+                                            "fields": {
+                                                "copyright": "Corbis",
+                                                "displayCredit": "true",
+                                                "source": "Ira L Black/Corbis",
+                                                "role": "supporting",
+                                                "imageType": "Photograph",
+                                                "suppliersReference": "59060396",
+                                                "alt": "jozy altidore",
+                                                "caption": "Jozy Altidore in action against Turkey on 1 June.",
+                                                "mediaId": "b1382800cead97cc8bd1447d93ab7647f49d42ac",
+                                                "picdarUrn": "GD*44217093"
+                                            },
+                                            "assets": [
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102704699/25776061-f0c1-4f0e-be53-2e750aea2a3c-220x132.jpeg",
+                                                    "fields": {
+                                                        "width": "220",
+                                                        "height": "132",
+                                                        "name": "220x132"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102704879/25776061-f0c1-4f0e-be53-2e750aea2a3c-460x276.jpeg",
+                                                    "fields": {
+                                                        "width": "460",
+                                                        "height": "276",
+                                                        "name": "460x276"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102705095/25776061-f0c1-4f0e-be53-2e750aea2a3c-540x324.jpeg",
+                                                    "fields": {
+                                                        "width": "540",
+                                                        "height": "324",
+                                                        "name": "540x324"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102705241/25776061-f0c1-4f0e-be53-2e750aea2a3c-140x84.jpeg",
+                                                    "fields": {
+                                                        "width": "140",
+                                                        "height": "84",
+                                                        "name": "140x84"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102705457/25776061-f0c1-4f0e-be53-2e750aea2a3c-1020x612.jpeg",
+                                                    "fields": {
+                                                        "width": "1020",
+                                                        "height": "612",
+                                                        "name": "1020x612"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102705885/25776061-f0c1-4f0e-be53-2e750aea2a3c-300x180.jpeg",
+                                                    "fields": {
+                                                        "width": "300",
+                                                        "height": "180",
+                                                        "name": "300x180"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102706014/25776061-f0c1-4f0e-be53-2e750aea2a3c-380x228.jpeg",
+                                                    "fields": {
+                                                        "width": "380",
+                                                        "height": "228",
+                                                        "name": "380x228"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102706183/25776061-f0c1-4f0e-be53-2e750aea2a3c-620x372.jpeg",
+                                                    "fields": {
+                                                        "width": "620",
+                                                        "height": "372",
+                                                        "name": "620x372"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102706681/25776061-f0c1-4f0e-be53-2e750aea2a3c-2060x1236.jpeg",
+                                                    "fields": {
+                                                        "width": "2060",
+                                                        "height": "1236",
+                                                        "name": "2060x1236"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "elementType": "text",
+                                            "fields": {
+                                                "text": "<h2><strong>5) John Brooks’s goal v Ghana</strong></h2><p>When the US’s spirited, if inelegant, game-long rearguard action against Ghana was broken by a late goal for the Ghanaians, it looked like they<gu-note title=\"Chris Taylor 20/12/2014 at 13:44\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:44:40.690Z\" data-note-id=\"f1bfe6ce-00ee-44ea-c697-078da40d8b32\" class=\"note note--start note--end\">’</gu-note> would be spending the rest of the game hanging on desperately for a point. Enter Klinsmann’s duo of substitutes: John Brooks and Graham Zusi. With time running out<gu-note title=\"Chris Taylor 20/12/2014 at 13:44\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:44:58.065Z\" data-note-id=\"21c4b968-2eff-424b-f4a6-e2acbf5c7929\" class=\"note note--start note--end\"> in the game</gu-note>, the latter took what turned out to be perhaps his only decent set piece of the tournament, and saw it headed home by the young defender Brooks, whose touchingly enthusiastic disbelief at this turn of events was one of the defining images of the US campaign. It also set the seal on a game won by a US team playing more in the mould of their industrious forerunners than the stylish attacking soccer Klinsmann had promised. But in the immediate aftermath, nobody was complaining.<br></p><h2><strong>6) Jermaine Jones batters one</strong></h2><p>After the US gave up an early goal, they<gu-note title=\"Chris Taylor 20/12/2014 at 13:23\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:23:56.006Z\" data-note-id=\"896a7206-8640-4524-e808-7d5ab0fd2a9c\" class=\"note note--start note--end\">’</gu-note> settled well against Portugal in their second group game but still trailed into the second half, until Jermaine Jones capped some building pressure with that swerving shot from just outside the box. Momentum went the US’s way, another goal followed, and until giving up the late goal that allowed a hitherto resigned-looking Portugal to steal a draw, the US looked to be headed for maximum points from their opening two group-of-death games.</p><p>But the Jones<gu-note title=\"Chris Taylor 20/12/2014 at 13:25\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:25:23.293Z\" data-note-id=\"8c9544d2-7842-414a-c0e5-77d43ae091db\" class=\"note note--start note--end\">’</gu-note> goal, for execution and for its impression of emphatic self-belief, helped seal the positive impression the US were making on neutrals at that point – and, incidentally, probably did more than any other contribution to land Jones his lucrative contract with New England after the World Cup.<br></p><h2><strong>7) Almost the perfect set piece</strong></h2><p>Hard to pick out just one of Tim Howard’s saves against Belgium as the key moment from the game, and at this point it also seems cruel to make Chris Wondolowski’s late miss the thumbnail of a match that saw the US eliminated, as good a chance for the notional poacher as it surely was. And while Julian Green’s goal pointed to a bright future and brought the US back within a goal when they trailed by two in extra time, it didn’t in the end make the difference. </p><p>The might-have-been moment came after that, with the US having stormed back while playing a combination of that historically familiar nothing-to-lose style, with Michael Bradley finally showing some <gu-note title=\"Chris Taylor 20/12/2014 at 13:48\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:48:52.067Z\" data-note-id=\"144a2d1e-1d92-4a61-ceb5-9a7508fd9ec4\" class=\"note note--start note--end\">liberated-looking </gu-note>creative movement and touches higher up the field. Bradley was involved in Green’s goal, and then again <gu-note title=\"Chris Taylor 20/12/2014 at 13:49\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:49:10.330Z\" data-note-id=\"7ae55784-38c6-437d-d185-ce4505e43606\" class=\"note note--start note--end\">then again </gu-note>as the US worked a perfect training-ground free-kick to leave Clint Dem<gu-note title=\"Chris Taylor 20/12/2014 at 13:29\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:29:47.258Z\" data-note-id=\"262471bc-26b2-4e7b-be43-305e6ce70fed\" class=\"note note--start note--end\">s</gu-note>psey 1v1 with the keeper – only for Thibaut Courtois to <gu-note title=\"Chris Taylor 20/12/2014 at 13:30\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:30:04.383Z\" data-note-id=\"a73a27c3-09c5-4010-92e1-95caf95d4ab0\" class=\"note note--start note--end\">just </gu-note>read the move just in time to smother Dempsey’s attempt to poke the ball past him. Belgium were rocking at that point, while the US looked rampant. A few minutes later they were out.</p><p>Landon Donovan, in pundit mode, claimed that the US should have played with more freedom sooner than when they<gu-note title=\"Chris Taylor 20/12/2014 at 13:30\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:30:31.695Z\" data-note-id=\"1508631a-01f0-4678-8059-0872141c3365\" class=\"note note--start note--end\">’</gu-note> had trailed 2-0 – as much a comment on Klinsmann’s philosophy as individual game tactics. Having seen what a freewheeling Belgian attack did to a bunkered defense, it was hard to agree with him entirely, but the US had given Belgium a hell of a scare late on; they still looked shellshocked <gu-note title=\"Chris Taylor 20/12/2014 at 13:32\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:32:01.159Z\" data-note-id=\"1e0156f5-fdd4-4c4b-eb42-616102a76856\" class=\"note note--start note--end\">facing</gu-note>when they faced Argentina in the next round.<br></p><h2><strong>8) Carli Lloyd steps out of the shadows</strong></h2><p>Carli Lloyd has matured into one of the most dangerous midfielders in the world over the last couple of years, and a lot of the US’s hopes at next year’s World Cup depend on her. At the Concacaf tournament that doubled <gu-note title=\"Chris Taylor 20/12/2014 at 13:50\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:50:19.143Z\" data-note-id=\"65aca8d4-0565-4578-9870-c8307f24d9bb\" class=\"note note--start note--end\">up </gu-note>as qualification for the World Cup, Lloyd was in imperious form that reached its peak in the final, when she and Abby Wambach combined mercilessly to put goal after goal past a frustrated Costa Rica. Wambach, plagued by a slow recovery from injury this year, had been unplayable on the night, but Lloyd, in front of home Philadelphia fans, had written more than her share of the story, as she <gu-note title=\"Chris Taylor 20/12/2014 at 13:50\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:50:59.531Z\" data-note-id=\"714d1bc1-d508-4db5-eb6a-2aa7513e5bec\" class=\"note note--start note--end\">rounds</gu-note>comes into <gu-note title=\"Chris Taylor 20/12/2014 at 13:51\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:51:04.080Z\" data-note-id=\"268d3ffc-b0c4-46aa-9b05-b2af62f2b28c\" class=\"note note--start note--end\">some of </gu-note>the form of her life.</p>"
+                                            },
+                                            "assets": []
+                                        },
+                                        {
+                                            "elementType": "image",
+                                            "fields": {
+                                                "copyright": "AFP",
+                                                "displayCredit": "true",
+                                                "source": "AFP/Getty Images",
+                                                "photographer": "Evaristo Sa",
+                                                "role": "supporting",
+                                                "imageType": "Photograph",
+                                                "suppliersReference": "Mvd6654833",
+                                                "alt": "carli lloyd",
+                                                "caption": "Carli Lloyd in action against Brazil on 14 December.",
+                                                "mediaId": "158d7000ff3e4760c174e01bf5ad2d78135c8f57",
+                                                "picdarUrn": "GD*48933261"
+                                            },
+                                            "assets": [
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102586336/e806e4e2-0aec-44a1-8468-48c468eb205f-220x132.jpeg",
+                                                    "fields": {
+                                                        "width": "220",
+                                                        "height": "132",
+                                                        "name": "220x132"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102586753/e806e4e2-0aec-44a1-8468-48c468eb205f-460x276.jpeg",
+                                                    "fields": {
+                                                        "width": "460",
+                                                        "height": "276",
+                                                        "name": "460x276"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102586996/e806e4e2-0aec-44a1-8468-48c468eb205f-540x324.jpeg",
+                                                    "fields": {
+                                                        "width": "540",
+                                                        "height": "324",
+                                                        "name": "540x324"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102587163/e806e4e2-0aec-44a1-8468-48c468eb205f-140x84.jpeg",
+                                                    "fields": {
+                                                        "width": "140",
+                                                        "height": "84",
+                                                        "name": "140x84"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102587403/e806e4e2-0aec-44a1-8468-48c468eb205f-1020x612.jpeg",
+                                                    "fields": {
+                                                        "width": "1020",
+                                                        "height": "612",
+                                                        "name": "1020x612"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102587643/e806e4e2-0aec-44a1-8468-48c468eb205f-300x180.jpeg",
+                                                    "fields": {
+                                                        "width": "300",
+                                                        "height": "180",
+                                                        "name": "300x180"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102587786/e806e4e2-0aec-44a1-8468-48c468eb205f-380x228.jpeg",
+                                                    "fields": {
+                                                        "width": "380",
+                                                        "height": "228",
+                                                        "name": "380x228"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102587947/e806e4e2-0aec-44a1-8468-48c468eb205f-620x372.jpeg",
+                                                    "fields": {
+                                                        "width": "620",
+                                                        "height": "372",
+                                                        "name": "620x372"
+                                                    }
+                                                },
+                                                {
+                                                    "assetType": "image",
+                                                    "mimeType": "image/jpeg",
+                                                    "url": "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/12/20/1419102588446/e806e4e2-0aec-44a1-8468-48c468eb205f-2060x1236.jpeg",
+                                                    "fields": {
+                                                        "width": "2060",
+                                                        "height": "1236",
+                                                        "name": "2060x1236"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "elementType": "text",
+                                            "fields": {
+                                                "text": "<p>The win that confirmed their participation at the World Cup as top Concacaf seeds also set up the US players for their next battle – an attempt to force Fifa and the Canadian Soccer Association into human rights court, to defend a mass lawsuit by top world players (Wambach is prominent <gu-note title=\"Chris Taylor 20/12/2014 at 13:33\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:33:28.597Z\" data-note-id=\"5e735cc9-b738-483a-e1fa-cbd9a3407d28\" class=\"note note--start note--end\">in the suit</gu-note>among them) claiming that Fifa’s sanctioning of artificial fields for the tournament is discriminatory. One of the moments of 2015 may be the one where the players get their moment in court.<br></p><h2><strong>9) Garber v Klinsmann</strong></h2><p>With the aftermath of the Donovan decision and Klinsmann’s repeated comments about players challenging themselves (or not), the end of the year finally saw the MLS commissioner – or perhaps more significantly, the owners he speaks for – snap back. </p><p>And it was quite the snap. At a hastily arranged press conference, Don Garber demanded Klinsmann stop commenting on MLS, the US Soccer-sanctioned division one league; chided him for his treatment of Donovan; and suggested that Klinsmann’s comments were contrary to the spirit of common enterprise that existed between US Soccer and MLS. Klinsmann, for his part, was unrepentant, also making comments about the MLS schedule and its incompatibility with Fifa dates and the European calendar. </p><p>The furor crystallized what was always likely to be a problem – the head coach and technical director of US Soccer being the same person (Klinsmann). Klinsmann’s comments about his players may have been valid from a head coach, but in Garber’s view, commenting <gu-note title=\"Chris Taylor 20/12/2014 at 13:52\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:52:55.031Z\" data-note-id=\"1b11c306-90ac-4f58-fc7a-d883b9d36a00\" class=\"note note--start note--end\">in any negative manner</gu-note>negatively about the league and the developmental environment it offers to young players in particular<gu-note title=\"Chris Taylor 20/12/2014 at 13:34\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:34:51.635Z\" data-note-id=\"c56067b6-d49a-492e-9edd-2a143079e970\" class=\"note note--start note--end\">,</gu-note> makes the technical director a very legitimate target for complaint. Nobody expected the complaint to be this vehement, though.<br></p><h2><strong>10) Ireland</strong></h2><p>Failing to hold on to a slightly fortuitous lead against Colombia in the penultimate game of the year illustrated yet again that the US suffered from a lack of concentration at the end of games, a pattern that had left them with one win in eight <gu-note title=\"Chris Taylor 20/12/2014 at 13:35\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:35:21.762Z\" data-note-id=\"fe8fd27b-4b82-463d-8e0c-e1343354f81e\" class=\"note note--start note--end\">games</gu-note>matches. </p><p>Still, when the Irish team sheet was released for the game in Dublin a few days later, with what <gu-note title=\"Chris Taylor 20/12/2014 at 13:35\" data-note-edited-by=\"Chris Taylor\" data-note-edited-date=\"2014-12-20T18:35:41.086Z\" data-note-id=\"2b897aaf-5d0d-40bc-9f56-a44da494bd91\" class=\"note note--start note--end\">looked like</gu-note>appeared to be a total B team, the US looked like ending their mini-European tour and indeed their year with a fairly straightforward workout, and perhaps an encouraging win. </p><p>But yet again, late goals did for the US – this time in embarrassing fashion, with a 4-1 loss. Klinsmann’s men ended the year with a few new players coming through, but also a contingent of exhausted-looking MLS players, many of whom had dipped in the wake of the World Cup. The game also seemed to mark a general loss of momentum that wasn’t helped by the perception of Klinsmann’s multiple roles.</p><p>Which battles he chooses to fight, and when, in 2015, will set the tone just as much as another round of challenging friendlies.</p>"
+                                            },
+                                            "assets": []
+                                        }
+                                    ],
+                                    "published": false,
+                                    "attributes": {}
+                                }
+                            }
+                        }
+                    ],
+                    "links": [
+                        {
+                            "rel": "item",
+                            "href": "/api/content/5495b697e4b08b9165ec75ba/preview/blocks/{id}"
+                        }
+                    ]
+                },
+                "taxonomy": {
+                    "tags": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/taxonomy/tags",
+                        "data": [
+                            {
+                                "tag": {
+                                    "id": 22711,
+                                    "type": "Keyword",
+                                    "internalName": "USA football team",
+                                    "externalName": "USA",
+                                    "slug": "usfootballteam",
+                                    "section": {
+                                        "id": 198,
+                                        "name": "Football",
+                                        "pathPrefix": "football",
+                                        "slug": "football"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 46881,
+                                    "type": "Keyword",
+                                    "internalName": "MLS (football)",
+                                    "externalName": "MLS",
+                                    "slug": "mls",
+                                    "section": {
+                                        "id": 198,
+                                        "name": "Football",
+                                        "pathPrefix": "football",
+                                        "slug": "football"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 20748,
+                                    "type": "Keyword",
+                                    "internalName": "US sports",
+                                    "externalName": "US sports",
+                                    "slug": "us-sport",
+                                    "section": {
+                                        "id": 191,
+                                        "name": "Sport",
+                                        "pathPrefix": "sport",
+                                        "slug": "sport"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 9013,
+                                    "type": "Keyword",
+                                    "internalName": "Football",
+                                    "externalName": "Football",
+                                    "slug": "football",
+                                    "section": {
+                                        "id": 198,
+                                        "name": "Football",
+                                        "pathPrefix": "football",
+                                        "slug": "football"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 8822,
+                                    "type": "Keyword",
+                                    "internalName": "Sport",
+                                    "externalName": "Sport",
+                                    "slug": "sport",
+                                    "section": {
+                                        "id": 191,
+                                        "name": "Sport",
+                                        "pathPrefix": "sport",
+                                        "slug": "sport"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 27000,
+                                    "type": "Blog",
+                                    "internalName": "Sport blog",
+                                    "externalName": "Sportblog",
+                                    "slug": "blog",
+                                    "section": {
+                                        "id": 191,
+                                        "name": "Sport",
+                                        "pathPrefix": "sport",
+                                        "slug": "sport"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 56681,
+                                    "type": "Keyword",
+                                    "internalName": "World Cup (football)",
+                                    "externalName": "World Cup",
+                                    "slug": "world-cup-football",
+                                    "section": {
+                                        "id": 198,
+                                        "name": "Football",
+                                        "pathPrefix": "football",
+                                        "slug": "football"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 21858,
+                                    "type": "Keyword",
+                                    "internalName": "Toronto FC (Football club)",
+                                    "externalName": "Toronto FC",
+                                    "slug": "torontofc",
+                                    "section": {
+                                        "id": 198,
+                                        "name": "Football",
+                                        "pathPrefix": "football",
+                                        "slug": "football"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 11032,
+                                    "type": "Keyword",
+                                    "internalName": "Women's football",
+                                    "externalName": "Women's football",
+                                    "slug": "womensfootball",
+                                    "section": {
+                                        "id": 198,
+                                        "name": "Football",
+                                        "pathPrefix": "football",
+                                        "slug": "football"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 67416,
+                                    "type": "Keyword",
+                                    "internalName": "Women's World Cup 2015",
+                                    "externalName": "Women's World Cup 2015",
+                                    "slug": "women-s-world-cup-2015",
+                                    "section": {
+                                        "id": 198,
+                                        "name": "Football",
+                                        "pathPrefix": "football",
+                                        "slug": "football"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 26903,
+                                    "type": "Content Type",
+                                    "internalName": "Article (Content type)",
+                                    "externalName": "Article",
+                                    "slug": "article",
+                                    "section": {
+                                        "id": 281,
+                                        "name": "Global",
+                                        "pathPrefix": "global",
+                                        "slug": "global"
+                                    }
+                                },
+                                "isLead": false
+                            },
+                            {
+                                "tag": {
+                                    "id": 20402,
+                                    "type": "Tone",
+                                    "internalName": "Analysis (Tone)",
+                                    "externalName": "Analysis",
+                                    "slug": "analysis",
+                                    "section": {
+                                        "id": 281,
+                                        "name": "Global",
+                                        "pathPrefix": "global",
+                                        "slug": "global"
+                                    }
+                                },
+                                "isLead": false
+                            }
+                        ]
+                    },
+                    "contributors": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/taxonomy/contributors",
+                        "data": [
+                            {
+                                "id": 48198,
+                                "type": "Contributor",
+                                "internalName": "Graham Parker",
+                                "externalName": "Graham Parker",
+                                "slug": "graham-parker",
+                                "section": {
+                                    "id": 281,
+                                    "name": "Global",
+                                    "pathPrefix": "global",
+                                    "slug": "global"
+                                }
+                            }
+                        ]
+                    },
+                    "publication": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/taxonomy/publication",
+                        "data": {
+                            "id": 4,
+                            "type": "Publication",
+                            "internalName": "guardian.co.uk publication",
+                            "externalName": "theguardian.com",
+                            "slug": "guardian",
+                            "section": {
+                                "id": 281,
+                                "name": "Global",
+                                "pathPrefix": "global",
+                                "slug": "global"
+                            }
+                        }
+                    },
+                    "newspaper": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/taxonomy/newspaper"
+                    },
+                    "references": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/taxonomy/references",
+                        "data": []
+                    }
+                },
+                "settings": {
+                    "relatedContentOff": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/settings/relatedContentOff",
+                        "data": "false"
+                    },
+                    "blockAds": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/settings/blockAds",
+                        "data": "false"
+                    },
+                    "isInappropriateForSponsorship": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/settings/isInappropriateForSponsorship",
+                        "data": "false"
+                    },
+                    "commentable": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/settings/commentable",
+                        "data": "true"
+                    },
+                    "managedByComposer": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/settings/managedByComposer",
+                        "data": "true"
+                    },
+                    "productionOffice": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/settings/productionOffice",
+                        "data": "US"
+                    },
+                    "timeZone": {
+                        "uri": "/api/content/5495b697e4b08b9165ec75ba/preview/settings/timeZone",
+                        "data": "America/New_York"
+                    }
+                }
+            },
+            "links": [
+                {
+                    "rel": "setting-item",
+                    "href": "/api/content/5495b697e4b08b9165ec75ba/preview/settings/{settingKey}"
+                },
+                {
+                    "rel": "field-item",
+                    "href": "/api/content/5495b697e4b08b9165ec75ba/preview/fields/{fieldKey}"
+                }
+            ]
+        },
+        "live": {
+            "uri": "/api/content/5495b697e4b08b9165ec75ba/live",
+            "links": [
+                {
+                    "rel": "setting-item",
+                    "href": "/api/content/5495b697e4b08b9165ec75ba/live/settings/{settingKey}"
+                },
+                {
+                    "rel": "field-item",
+                    "href": "/api/content/5495b697e4b08b9165ec75ba/live/fields/{fieldKey}"
+                }
+            ]
+        }
+    },
+    "links": [
+        {
+            "rel": "tool-setting-item",
+            "href": "/api/content/5495b697e4b08b9165ec75ba/toolSettings/{toolSettingKey}"
+        },
+        {
+            "rel": "identifier-item",
+            "href": "/api/content/5495b697e4b08b9165ec75ba/identifiers/{identifierKey}"
+        }
+    ]
+}
