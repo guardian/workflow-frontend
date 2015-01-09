@@ -17,7 +17,7 @@ import lib._
 
 import org.joda.time.DateTime
 
-import com.gu.workflow.db.{SectionDB, CommonDB}
+import com.gu.workflow.db.{DeskDB, SectionDeskMappingDB, SectionDB, CommonDB}
 import com.gu.workflow.query._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -320,6 +320,12 @@ object Api extends Controller with PanDomainAuthActions {
       for(statuses <- StatusDatabase.statuses) yield {
         Ok(renderJsonResponse(statuses))
       }
+    }
+  }
+
+  def sections = CORSable(composerUrl) {
+    AuthAction  { implicit request =>
+      ApiResponse(Right(SectionDB.sectionList))
     }
   }
 
