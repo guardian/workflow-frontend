@@ -4,6 +4,7 @@
 
 # Application
 GET            /                                      controllers.Application.index
+GET            /dashboard                             controllers.Application.index
 
 # Login
 GET            /oauthCallback                         controllers.Login.oauthCallback
