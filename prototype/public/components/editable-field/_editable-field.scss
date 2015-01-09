@@ -1,0 +1,46 @@
+.editable {
+
+    &__value {
+        border-bottom: dashed 1px #333;
+    }
+
+    &__text-field {
+        border: 1px solid $c-grey-300;
+        padding: 3px 5px;
+    }
+
+    &__controls {
+
+    }
+
+    &__control {
+        border: none;
+        padding: 4px 5px;
+
+        &--save {
+            background: $c-blue;
+
+            &:focus, &:hover {
+                background: $c-highlight-blue;
+            }
+        }
+
+        &--cancel {
+            background: $c-grey-650;
+
+            &:focus, &:hover {
+                background: $c-grey-500;
+            }
+        }
+
+        &-icon {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+
+            & .wf-icon--active {
+                fill: #fff;
+            }
+        }
+    }
+}
