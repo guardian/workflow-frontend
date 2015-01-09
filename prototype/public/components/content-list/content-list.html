@@ -39,7 +39,7 @@
             </th>
         </tr>
 
-        <tr wf-content-list-item ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections" data-id="wf_id={{contentItem.id}}"></tr>
+        <tr wf-content-list-item ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections" data-id="{{contentItem.id}}"></tr>
 
     </tbody>
 
