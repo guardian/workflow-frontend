@@ -1,8 +1,10 @@
 <span class="editable__value" ng-show="!isEditMode" ng-click="editableController.setEditMode(true)">{{ modelValue }}</span>
-<span class="editable__field" ng-show="isEditMode">
-    <input type="text" wf-editable-field ng-model="modelValue"/>
-    <span class="editable__controls">
-        <button ng-click="commit()" title="Save changes"><i wf-icon="check"></i></button>
-        <button ng-click="cancel()" title="Cancel changes"><i wf-icon="cross"></i></button>
-    </span>
+<input type="text" class="editable__text-field" wf-editable-field ng-model="modelValue" ng-show="isEditMode" />
+<span class="editable__controls" ng-show="isEditMode">
+    <button class="editable__control editable__control--save" ng-click="commit()" title="Save changes">
+        <i class="editable__control-icon editable__control-icon--save" wf-icon="check"></i>
+    </button>
+    <button class="editable__control editable__control--cancel" ng-click="cancel()" title="Cancel changes">
+        <i class="editable__control-icon editable__control-icon--cancel" wf-icon="cross"></i>
+    </button>
 </span>
