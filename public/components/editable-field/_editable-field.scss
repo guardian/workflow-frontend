@@ -1,4 +1,6 @@
 .editable {
+    position: relative;
+    padding-right: 55px;
 
     &__value {
         border-bottom: dashed 1px #333;
@@ -7,10 +9,17 @@
     &__text-field {
         border: 1px solid $c-grey-300;
         padding: 3px 5px;
+        width: 100%;
+
+        &--textarea {
+            height: 40px;
+        }
     }
 
     &__controls {
-
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 
     &__control {

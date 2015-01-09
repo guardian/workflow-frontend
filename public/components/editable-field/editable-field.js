@@ -31,6 +31,8 @@ function wfEditableDirectiveFactory() {
         },
 
         link: function($scope, $element, $attrs) {
+            $element.addClass('editable');
+
             $scope.commit = () => {
                 $scope.$broadcast('wfEditable.commit');
             };
