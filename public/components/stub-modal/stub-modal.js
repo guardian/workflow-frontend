@@ -12,9 +12,9 @@ import 'lib/filters-service';
 import 'lib/prodoffice-service';
 
 
-var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService']);
+var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService',]);
 
-function StubModalInstanceCtrl($scope, $modalInstance, $window, config, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService) {
+function StubModalInstanceCtrl($scope, $modalInstance, $window, config, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
     var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
 
     $scope.mode = mode;
@@ -29,7 +29,35 @@ function StubModalInstanceCtrl($scope, $modalInstance, $window, config, stub, mo
 
     $scope.disabled = !!stub.composerId;
 
-    $scope.sections = sections;
+    $scope.sections = getSectionsList(sections);
+    $scope.stub.section = (function findSelectedSectionInAvailableSections () {
+        var sect = $scope.stub.section;
+        var filteredSections = $scope.sections.filter((el) => el.name === sect.name);
+        if (filteredSections.length === 0) {
+            return $scope.sections[0];
+        } else {
+            return filteredSections[0];
+        }
+    })();
+
+    /**
+     * If the user currently has a desk selected then only
+     * show the sections that are part of that desk in the dropdown
+     * @param sections
+     * @returns Filtered list of sections
+     */
+    function getSectionsList (sections) {
+
+        var deskId = wfFiltersService.get('desk');
+
+        if (deskId) {
+            var sectionsIdsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
+            sections = sections.filter((el) => sectionsIdsInThisDesk[0].sectionIds.indexOf(el.id) != -1)
+        }
+
+        return sections
+    };
+
     $scope.legalStates = legalStatesService.getLegalStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
 
