@@ -6,7 +6,7 @@ import angular from 'angular';
 
 angular.module('wfEditableField', [])
     .directive('wfEditable', [wfEditableDirectiveFactory])
-    .directive('wfEditableField', [wfEditableTextFieldDirectiveFactory]);
+    .directive('wfEditableField', ['$timeout', wfEditableTextFieldDirectiveFactory]);
 
 
 var KEYCODE_ESC = 27,
@@ -32,7 +32,14 @@ function wfEditableDirectiveFactory() {
             // one time bind of wfEditableType
             $scope.editableType = $attrs.wfEditableType;
 
-            this.setEditMode = (flag) => $scope.isEditMode = !!flag;
+            this.setEditMode = (flag) => {
+                var newMode = !!flag;
+                if ($scope.isEditMode !== flag) {
+                    $scope.$broadcast('wfEditable.changedEditMode', newMode, $scope.isEditMode);
+                }
+
+                $scope.isEditMode = newMode;
+            };
 
         },
 
@@ -46,7 +53,6 @@ function wfEditableDirectiveFactory() {
             $scope.cancel = () => {
                 $scope.$broadcast('wfEditable.cancel');
             };
-
         }
     };
 }
@@ -83,6 +89,12 @@ function wfEditableTextFieldDirectiveFactory() {
 
             $scope.$on('wfEditable.commit', commit);
             $scope.$on('wfEditable.cancel', cancel);
+
+            $scope.$on('wfEditable.changedEditMode', ($event, mode) => {
+                if (mode === true) {
+                    $timeout(() => $element[0].select());
+                }
+            });
 
             // $element.on('blur', cancel);
 
