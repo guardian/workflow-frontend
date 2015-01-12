@@ -125,14 +125,18 @@ object Api extends Controller with PanDomainAuthActions {
 
   def content = APIAuthAction(getContentBlock)
 
-  def getContentbyId(composerId: String) =
-    CORSable(PrototypeConfiguration.apply.composerUrl) {
-      APIAuthAction { contentById(composerId) }
+  def getContentbyId(composerId: String) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+      APIAuthAction { implicit request =>
+        contentById(composerId)
+      }
     }
 
-  def contentById(composerId: String) = { implicit req: Request[AnyContent] =>
-    val data = PostgresDB.getContentByComposerId(composerId)
-    data.map{s => Ok(renderJsonResponse(s))}.getOrElse(NotFound)
+  def contentById(composerId: String) = {
+    ApiResponse(for{
+      data <- PostgresDB.getContentByComposerId(composerId).right
+    }yield {
+      data
+    })
   }
 
   def sharedAuthGetContentById(composerId: String) = SharedSecretAuthAction(contentById(composerId))

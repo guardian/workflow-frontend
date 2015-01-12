@@ -90,7 +90,7 @@ object PostgresDB {
     }
   }
 
-  def getContentByComposerId(composerId: String): Option[DashboardRow] = {
+  def getContentByComposerId(composerId: String): ApiResponse[DashboardRow] = {
     DB.withTransaction { implicit session =>
 
       val query = for {
@@ -99,12 +99,16 @@ object PostgresDB {
         if s.composerId === c.composerId
       } yield (s, c)
 
-      query.firstOption map {case (stubData, contentData) =>
+      val dashboardRowOpt = query.firstOption map {case (stubData, contentData) =>
         val stub    = Stub.fromStubRow(stubData)
         val content = WorkflowContent.fromContentRow(contentData).copy(
           section = Some(Section(stub.section))
         )
         DashboardRow(stub, content)
+      }
+      dashboardRowOpt match {
+        case None => Left(ApiError("ComposerIdNotFound", s"Composer Id ${composerId} does not exist", 404, "notfound"))
+        case Some(d) => Right(d)
       }
     }
   }
