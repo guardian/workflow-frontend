@@ -9,6 +9,12 @@ angular.module('wfEditableField', [])
     .directive('wfEditableField', [wfEditableTextFieldDirectiveFactory]);
 
 
+var KEYCODE_ESC = 27,
+    KEYCODE_CTRL = 17,
+    KEYCODE_COMMAND = 224,
+    KEYCODE_ENTER = 13;
+
+
 function wfEditableDirectiveFactory() {
 
     return {
@@ -40,6 +46,7 @@ function wfEditableDirectiveFactory() {
             $scope.cancel = () => {
                 $scope.$broadcast('wfEditable.cancel');
             };
+
         }
     };
 }
@@ -79,15 +86,21 @@ function wfEditableTextFieldDirectiveFactory() {
 
             // $element.on('blur', cancel);
 
-            $element.on('keyup', (event) => {
-                if (event.keyCode == 27) {
+            $element.on('keydown', ($event) => {
+                if ($event.keyCode == KEYCODE_ESC) {
                     cancel();
+
+                } else if ($event.keyCode === KEYCODE_ENTER) {
+                    if ($scope.editableType === 'textarea') {
+                        if ($event.metaKey || $event.ctrlKey || $event.altKey) {
+                            commit();
+                        }
+
+                    } else {
+                        commit();
+                    }
                 }
             });
         }
     };
 }
-
-
-
-
