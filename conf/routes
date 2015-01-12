@@ -39,6 +39,10 @@ DELETE         /api/stubs/:stubId                     controllers.Api.deleteStub
 GET            /api/statuses                          controllers.Api.statusus
 GET            /api/sections                          controllers.Api.sections
 
+# API V1
+
+GET            /api/v1/content                        controllers.ApiV1.content
+
 
 # Admin
 GET            /admin                                 controllers.Admin.index(selectedDesk: Option[Long])

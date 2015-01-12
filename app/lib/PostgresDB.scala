@@ -1,5 +1,6 @@
 package lib
 
+import lib.OrderingImplicits._
 import models.ApiResponse.ApiResponse
 import models.Flag.Flag
 import models._
@@ -54,6 +55,44 @@ object PostgresDB {
           DashboardRow(stub, content)
       }
     }
+
+  def getContentItems(q: WfQuery): ApiResponse[List[ContentItem]] = {
+    DB.withTransaction { implicit session =>
+      //todo - make this an left outer join
+      val q1 = for {
+        s<- WfQuery.stubsQuery(q)
+        c<- WfQuery.contentQuery(q)
+        if(s.composerId ===c.composerId)
+      } yield (s,c)
+
+      val getStubs: Boolean= (q.status.isEmpty || q.status.exists(_ == models.Status("Stub"))) && q.published != Some(true)
+
+      val q2 = for {
+        s <- WfQuery.stubsQuery(q)
+        if s.composerId.isEmpty
+      } yield s
+
+      val list1 = q1.filter( {case (s,c) => displayContentItem(s, c) })
+        .list.map {
+        case (stubData, contentData) =>
+          val stub    = Stub.fromStubRow(stubData)
+          val content = WorkflowContent.fromContentRow(contentData)
+
+          ContentItem(stub, Some(content))
+      }
+      val list2 = q2.filter({case s => dueDateNotExpired(s.due)})
+        .list.map(row => ContentItem(Stub.fromStubRow(row), None))
+
+      val lists = list1 ::: list2
+//      todo - sort out ordering
+//      val publishedContent = lists.filter(c => c.wc.status == models.Status("Final"))
+//        .sortBy(s => (s.wc.timePublished, s.wc.lastModified))(publishedOrdering)
+//      val unpublishedContent = lists.filterNot(d => d.wc.status == models.Status("Final"))
+//        .sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering)
+
+      Right(list1 ::: list2)
+    }
+  }
 
   private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
