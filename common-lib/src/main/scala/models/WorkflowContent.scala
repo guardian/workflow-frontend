@@ -244,5 +244,20 @@ case object ContentItem {
       } yield ContentItem(stub, wcOpt)
     }
   }
+  implicit val contentItemWrites = new Writes[ContentItem] {
+    /*
+      Dashboard row translates an id to stubId, and title to workingTitle
+      Not sure if this is strictly necessary, so haven't included here yet
+     */
+    def writes(c: ContentItem) = c match {
+      case ContentItem(s, Some(wc)) => {
+        /*
+          Note contentType exists in both objects, the behavior of ++ will take wc as source of truth
+        */
+        Json.toJson(s).as[JsObject] ++ Json.toJson(wc).as[JsObject]
+      }
+      case ContentItem(s, None) => Json.toJson(s)
+    }
+  }
 }
 
