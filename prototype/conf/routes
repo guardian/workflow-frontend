@@ -7,7 +7,7 @@ GET            /                                      controllers.Application.in
 
 OPTIONS        /api/*url                              controllers.Api.allowCORSAccess(methods = "PUT, POST", url: String)
 
-GET            /dashboard                             controllers.Application.index
+GET            /dashboard                             controllers.Application.dashboard
 
 
 # Login
