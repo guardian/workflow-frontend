@@ -12,7 +12,7 @@ import play.api.libs.json.Json
 
 object Application extends Controller with PanDomainAuthActions {
 
-  def index = Action {
+  def index = AuthAction {
     Redirect(routes.Application.dashboard)
   }
 
