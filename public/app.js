@@ -128,4 +128,5 @@ angular.module('workflow',
 // Bootstrap App
 angular.element(document).ready(function () {
     angular.bootstrap(document, ['workflow']);
+    window.name='gu_workflow';
 });
