@@ -16,7 +16,7 @@ import { wfContentListDrawer } from 'components/content-list-drawer/content-list
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
-    .controller('wfContentListController', ['$rootScope', '$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
+    .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', '$q', '$compile', '$http', '$templateCache', 'wfColumnService', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer])
@@ -43,9 +43,20 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 
 
-function wfContentListController($rootScope, $scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService) {
+function wfContentListController($rootScope, $scope, $anchorScroll, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService) {
 
     /*jshint validthis:true */
+
+    $scope.animationsEnabled = true;
+
+    $rootScope.$on('getContent', () => {
+        $scope.animationsEnabled = false;
+    });
+
+    $rootScope.$on('content.rendered', () => {
+        $anchorScroll();
+        $scope.animationsEnabled = true;
+    });
 
     wfColumnService.getColumns().then((data) => {
         $scope.columns = data;
@@ -163,6 +174,7 @@ function wfContentListController($rootScope, $scope, statuses, sections, wfConte
         });
 
         $scope.$apply();
+        $scope.$emit('content.rendered');
     };
 
 
