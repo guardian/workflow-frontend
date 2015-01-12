@@ -6,7 +6,20 @@
         border-bottom: dashed 1px #333;
     }
 
+    // edit mode
+    &--edit {
+        .editable__value {
+            display: none;
+        }
+
+        .editable__text-field,
+        .editable__controls {
+            display: block;
+        }
+    }
+
     &__text-field {
+        display: none;
         border: 1px solid $c-grey-300;
         padding: 3px 5px;
         width: 100%;
@@ -17,6 +30,7 @@
     }
 
     &__controls {
+        display: none;
         position: absolute;
         top: 0;
         right: 0;

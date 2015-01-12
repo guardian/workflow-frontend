@@ -38,6 +38,12 @@ function wfEditableDirectiveFactory() {
                     $scope.$broadcast('wfEditable.changedEditMode', newMode, $scope.isEditMode);
                 }
 
+                if (newMode) {
+                    $element.addClass('editable--edit');
+                } else {
+                    $element.removeClass('editable--edit');
+                }
+
                 $scope.isEditMode = newMode;
             };
 
