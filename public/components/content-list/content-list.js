@@ -47,6 +47,16 @@ function wfContentListController($rootScope, $scope, statuses, sections, wfConte
 
     /*jshint validthis:true */
 
+    $scope.animationsEnabled = true;
+
+    $rootScope.$on('getContent', () => {
+        $scope.animationsEnabled = false;
+    });
+
+    $rootScope.$on('content.rendered', () => {
+        $scope.animationsEnabled = true;
+    });
+
     wfColumnService.getColumns().then((data) => {
         $scope.columns = data;
     });
@@ -163,6 +173,7 @@ function wfContentListController($rootScope, $scope, statuses, sections, wfConte
         });
 
         $scope.$apply();
+        $scope.$emit('content.rendered');
     };
 
 
