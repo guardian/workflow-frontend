@@ -25,6 +25,7 @@ function wfEditableDirectiveFactory() {
             onEditableUpdate: '&wfEditableOnUpdate',
             onEditableCancel: '&wfEditableOnCancel'
         },
+        transclude: true,
 
         controllerAs: 'editableController',
         controller: function wfEditableFieldController($scope, $element, $attrs) {
