@@ -54,7 +54,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, se
     });
 
     $rootScope.$on('content.rendered', () => {
-        $anchorScroll();
         $scope.animationsEnabled = true;
     });
 
@@ -227,7 +226,13 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, se
     poller.onPoll(this.render);
     poller.onError(this.renderError);
 
-    poller.startPolling();
+    poller.startPolling().then(function(){
+         var myListener = $rootScope.$on('content.rendered',
+                           function(event, data){
+                                  $anchorScroll();
+                                  myListener();
+                           });
+    });
 
     $scope.$on('destroy', function () {
         poller.stopPolling();
