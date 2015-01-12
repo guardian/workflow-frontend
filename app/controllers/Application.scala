@@ -12,7 +12,11 @@ import play.api.libs.json.Json
 
 object Application extends Controller with PanDomainAuthActions {
 
-  def index = app("Workflow")
+  def index = Action {
+    Redirect(routes.Application.dashboard)
+  }
+
+  def dashboard = app("Workflow")
 
   def app(title: String) = AuthAction.async { request =>
 
