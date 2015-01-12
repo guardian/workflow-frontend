@@ -79,7 +79,7 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Content type</span>
-                        <span class="drawer__section-data-row">{{ ncontentItem.contentTypeTitle }}</span>
+                        <span class="drawer__section-data-row"><i class="drawer__icon--content-type" wf-icon="{{ contentItem.contentType }}"/> {{ contentItem.contentTypeTitle }}</span>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Comments</span>
@@ -130,8 +130,8 @@
                     </li>
                 </ul>
 
-                <ul class="drawer__column">
-                    <li class="drawer__section drawer__section-mainmedia" 
+                <ul class="drawer__column--media">
+                    <li class="drawer__section drawer__section-mainmedia"
                     ng-class="{'drawer__section-mainmedia--nopreview': contentItem.mainMediaNoPreview}">
 
                         <span class="drawer__section-title">Main media</span>
@@ -160,7 +160,7 @@
                     </li>
                 </ul>
 
-                <ul class="drawer__column">
+                <ul class="drawer__column--media">
                     <li class="drawer__section">
                         <span class="drawer__section-title">Trail picture</span>
                         <div ng-if="contentItem.trailImageUrl" class="drawer__section-image-container">
@@ -182,24 +182,24 @@
 
                 <ul class="drawer__column--control">
                     <li class="drawer__control">
-                        <span class="drawer__section-data-row drawer__control-item" ng-click="contentListDrawerController.hide()">
+                        <span class="drawer__section-data-row drawer__control-item" ng-click="contentListDrawerController.hide()" title="Close details">
                             <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="cross"></i>
                             Close details
                         </span>
                     </li>
                     <li class="drawer__control" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}">
-                    <span class="drawer__section-data-row drawer__control-item drawer__control-item--delete" ng-click="deleteContentItem()">
+                    <span class="drawer__section-data-row drawer__control-item drawer__control-item--delete" ng-click="deleteContentItem()" title="Delete from Workflow">
                         <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
                             {{ awaitingDeleteConfirmation ? 'Delete' : 'Delete from Workflow' }}
                         </span>
                     </li>
                     <li class="drawer__control" ng-show="incopyExportEnabled">
-                        <a href="{{ incopyExportUrl }}" class="drawer__section-data-row drawer__control-item drawer__control-item--incopy">
+                        <a href="{{ incopyExportUrl }}" class="drawer__section-data-row drawer__control-item drawer__control-item--incopy" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InCopy">
                             <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="incopy"></i>
                             {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
                         </a>
                     </li>
-                 </ul>
+                </ul>
             </div>
         </div>
 

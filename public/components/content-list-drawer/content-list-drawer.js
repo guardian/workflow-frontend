@@ -11,10 +11,9 @@
  * @param contentService
  * @param prodOfficeService
  */
-var wfContentListDrawer = function ($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches) {
 
-    var transitionEndEvents = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
-        hiddenClass = 'content-list-drawer--hidden';
+    var hiddenClass = 'content-list-drawer--hidden';
 
     function buildIncopyUrl(fields) {
         return config.incopyExportUrl
@@ -22,6 +21,7 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                 return fields[fieldName] || "";
             });
     }
+
 
     return {
         restrict: 'A',
@@ -36,47 +36,86 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
         controllerAs: 'contentListDrawerController',
         controller: function ($scope, $element) {
 
+            var $parent = $element.parent();
+
             /**
-             * Hide the drawer from view using css3 transition and remove the selected class form the row.
-             * Accessible on $scope for use on 'hide' button in drawer
+             * Hide the drawer from view.
+             * @returns {Promise}
              */
-            this.hide = function () {
-                $element.one(transitionEndEvents,() => {
-                    $scope.contentList.selectedItem = null;
-                    $scope.$apply();
-                });
+            this.hide = () => new Promise((resolve, reject) => {
+                if (this.isHidden()) {
+                    return resolve();
+                }
+
                 $element.addClass(hiddenClass);
+
+                $scope.contentList.selectedItem = null;
+                $parent.append($element);
+                resolve();
+            });
+
+
+            /**
+             * Shows the drawer.
+             * @returns {Promise}
+             */
+            this.show = () => new Promise((resolve, reject) => {
+                if (!this.isHidden()) {
+                    resolve();
+                }
+
+                $element.removeClass(hiddenClass);
+
+                resolve();
+            });
+
+
+            /**
+             * Shows a new contentItem moving the drawer to the row beneath its element.
+             */
+            this.showContent = (contentItem, $contentListItemElement) => {
+
+                return this.hide().then(() => {
+                    $contentListItemElement.after($element);
+
+                    $scope.contentItem = contentItem;
+                    $scope.contentList.selectedItem = contentItem;
+                    $scope.$apply();
+
+                    return this.show();
+                });
+
+            };
+
+            this.isHidden = () => $element.hasClass(hiddenClass);
+
+
+            this.toggle = () => this.isHidden() ? this.show() : this.hide();
+
+
+            /**
+             * Toggles drawer display and can display a different contentItem
+             * if one is already being displayed.
+             */
+            this.toggleContent = (contentItem, $contentListItemElement) => {
+                var selectedItem = $scope.contentList.selectedItem;
+
+                if (selectedItem && selectedItem.id !== contentItem.id) {
+                    return this.hide().then(() => this.showContent(contentItem, $contentListItemElement));
+                }
+
+                return this.isHidden() ? this.showContent(contentItem, $contentListItemElement) : this.hide();
             };
         },
-        link: function ($scope, elem, attrs, contentListDrawerController) {
 
-            var $parent = elem.parent(); // Store parent location for holding unbound elem
+
+        link: function ($scope, elem, attrs, contentListDrawerController) {
 
             $scope.prodOffices = prodOfficeService.getProdOffices();
             $scope.incopyExportEnabled = false;
             featureSwitches.withSwitch("incopy-export",
                                        val => $scope.incopyExportEnabled = val);
 
-            /**
-             * Show the content details drawer after moving it to a new position,
-             * use a timeout to allow the browser to reflow styles ensuring
-             * that the css animation triggers.
-             *
-             * @param {Object} contentItem
-             * @param {Object} contentListItemElement - JQL wrapped DOM node
-             */
-            function show (contentItem, contentListItemElement) {
-                contentListItemElement.after(elem);
-
-                $scope.contentItem = contentItem;
-                $scope.contentList.selectedItem = contentItem;
-
-                $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
-
-                var w = $window.getComputedStyle(elem[0], null).width; // force reflow styles
-
-                elem.removeClass(hiddenClass);
-            }
 
             /**
              * Listen for event triggered by click in external contentItemRow directive to show or hide drawer
@@ -89,36 +128,16 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                     return;
                 }
 
-                if ($scope.contentList.selectedItem !== contentItem) { // open
-                    if (!elem.hasClass(hiddenClass)) {
-                        elem.addClass(hiddenClass);
-                        elem.one(transitionEndEvents, () => {
-                            show(contentItem, contentListItemElement);
-                            $scope.$apply();
-                        });
-                    } else {
-                        show(contentItem, contentListItemElement);
-                    }
-                } else { // close
-                    contentListDrawerController.hide();
-                }
+                contentListDrawerController.toggleContent(contentItem, contentListItemElement);
+
             });
 
             /**
              * Ensure the drawer state is representative if a contentItem changes status
              */
             $rootScope.$on('contentItem.update', ($event, eventData) => {
-
                 if (eventData.contentItem === $scope.contentItem && eventData.data.hasOwnProperty('status')) {
-
-                    // Move element out of ng-repeat list so it doesn't get removed and unbound
-                    elem.addClass(hiddenClass);
-                    $parent.append(elem);
-
-                    $timeout(() => { // Reset local state on next digest cycle
-                        $scope.contentItem = null;
-                        $scope.contentList.selectedItem = null;
-                    }, 1);
+                    contentListDrawerController.hide();
                 }
             });
 
@@ -128,10 +147,7 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                 // selectedItem no longer in table
                 if (!data.selectedItem) {
                     // TODO: move to generic "hide drawer" method
-                    elem.addClass(hiddenClass);
-                    $parent.append(elem);
-
-                    $scope.contentList.selectedItem = null;
+                    contentListDrawerController.hide();
 
                     // Update selectedItem from new polled data - updates changed data
                 } else if ($scope.contentItem !== data.selectedItem) {
@@ -144,11 +160,8 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
 
                     } else if ($scope.contentItem.status !== data.selectedItem.status) {
                         // Item has moved status, hide drawer and select nothing
-                        // TODO: move to generic "hide drawer" method
-                        elem.addClass(hiddenClass);
-                        $parent.append(elem);
 
-                        $scope.contentList.selectedItem = null;
+                        contentListDrawerController.hide();
 
                     } else {
                         $scope.contentItem = data.selectedItem;
@@ -229,9 +242,7 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
                 contentService.remove($scope.contentItem.id)
                     .then(() => {
 
-                        // Hide drawer and put it back under $parent so bindings remain
-                        elem.addClass(hiddenClass);
-                        $parent.append(elem);
+                        contentListDrawerController.hide();
 
                         $scope.$emit('content.deleted', { contentItem: $scope.contentItem });
                         $scope.$apply();
@@ -244,6 +255,4 @@ var wfContentListDrawer = function ($rootScope, config, $timeout, $window, conte
 
         }
     };
-};
-
-export { wfContentListDrawer };
+}
