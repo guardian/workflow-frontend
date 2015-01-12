@@ -86,6 +86,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             // TODO: Stubs have a different structure to content items
             this.id = item.id || item.stubId;
             this.composerId = item.composerId;
+            this.wordCount = item.wordCount;
 
             this.headline = item.headline;
             this.standfirst = this.truncateString(item.standfirst);

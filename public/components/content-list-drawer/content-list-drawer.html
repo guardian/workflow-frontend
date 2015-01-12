@@ -97,9 +97,9 @@
                         <span class="drawer__section-title">Legal status</span>
                         <select class="drawer__section-control" ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
                     </li>
-                    <li class="drawer__section">
+                    <li class="drawer__section" ng-show="contentItem.contentType == 'article'">
                         <span class="drawer__section-title">Word count</span>
-                        <span class="drawer__section-control">{{ contentItem.item.wordCount }} </span>
+                        <span class="drawer__section-control">{{ contentItem.wordCount }} </span>
                     </li>
                 </ul>
 
