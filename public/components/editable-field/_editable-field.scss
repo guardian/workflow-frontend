@@ -27,18 +27,18 @@
         padding: 4px 5px;
 
         &--save {
-            background: $c-blue;
+            background: $c-highlight-blue;
 
             &:focus, &:hover {
-                background: $c-highlight-blue;
+                background: $c-blue;
             }
         }
 
         &--cancel {
-            background: $c-grey-650;
+            background: $c-grey-500;
 
             &:focus, &:hover {
-                background: $c-grey-500;
+                background: $c-grey-650;
             }
         }
 
