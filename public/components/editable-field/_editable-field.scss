@@ -1,6 +1,5 @@
 .editable {
     position: relative;
-    padding-right: 55px;
 
     &__edit-button {
         background: none;
@@ -20,6 +19,8 @@
 
     // edit mode
     &--edit {
+        padding-right: 55px;
+
         .editable__edit-button {
             display: none;
         }
