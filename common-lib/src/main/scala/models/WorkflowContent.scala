@@ -6,6 +6,9 @@ import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
+import scala.slick.collection.heterogenous._
+import syntax._
+
 case class Asset(assetType: String, mimeType:String, url:String, fields: Map[String, String])
 object Asset {
   def getImageAssetSize(asset: Asset): Option[Long] = {
@@ -98,7 +101,8 @@ case class WorkflowContent(
   storyBundleId: Option[String],
   activeInInCopy: Boolean,
   takenDown: Boolean,
-  timeTakenDown: Option[DateTime]
+  timeTakenDown: Option[DateTime],
+  wordCount: Int
 )
 
 object WorkflowContent {
@@ -140,7 +144,8 @@ object WorkflowContent {
       storyBundleId = e.storyBundleId,
       false, // assume not active in incopy
       takenDown = false,
-      timeTakenDown = None
+      timeTakenDown = None,
+      wordCount = e.wordCount
     )
   }
 
@@ -164,19 +169,36 @@ object WorkflowContent {
       storyBundleId=None,
       activeInInCopy=activeInInCopy,
       takenDown=false,
-      timeTakenDown=None)
+      timeTakenDown=None,
+      wordCount=0)
   }
 
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
-    case (
-      composerId, path, lastMod, lastModBy,
-      status, contentType, commentable,
-      headline, standfirst, trailtext,
-      mainMedia, mainMediaUrl, mainMediaCaption,
-      mainMediaAltText, trailImageUrl, published,
-      timePublished, _, storyBundleId, activeInInCopy,
-      takenDown, timeTakenDown
-    ) => {
+    case (composerId      ::
+        path             ::
+        lastMod          ::
+        lastModBy        ::
+        status           ::
+        contentType      ::
+        commentable      ::
+        headline         ::
+        standfirst       ::
+        trailtext        ::
+        mainMedia        ::
+        mainMediaUrl     ::
+        mainMediaCaption ::
+        mainMediaAltText ::
+        trailImageUrl    ::
+        published        ::
+        timePublished    ::
+        _                ::
+        storyBundleId    ::
+        activeInInCopy   ::
+        takenDown        ::
+        timeTakenDown    ::
+        wordCount        ::
+        HNil) => {
+      
       val media = WorkflowContentMainMedia(
         mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
 
@@ -186,24 +208,38 @@ object WorkflowContent {
         trailImageUrl, contentType, None,
         Status(status), lastMod, lastModBy, commentable,
         published, timePublished, storyBundleId,
-        activeInInCopy, takenDown, timeTakenDown)
+        activeInInCopy, takenDown, timeTakenDown, wordCount)
     }
   }
 
-  def newContentRow(wc: WorkflowContent, revision: Option[Long]): Schema.ContentRow = {
+  def newContentRow(wc: WorkflowContent, revision: Option[Long]) = {
     val mainMedia = wc.mainMedia.getOrElse(
       WorkflowContentMainMedia(None, None, None, None)
     )
-
-    (
-      wc.composerId, wc.path, wc.lastModified, wc.lastModifiedBy,
-      wc.status.name, wc.contentType, wc.commentable,
-      wc.headline, wc.standfirst, wc.trailtext,
-      mainMedia.mediaType, mainMedia.url, mainMedia.caption,
-      mainMedia.altText, wc.trailImageUrl, wc.published,
-      wc.timePublished, revision, wc.storyBundleId,
-      wc.activeInInCopy, false, None
-    )
+    wc.composerId       ::
+    wc.path             ::
+    wc.lastModified     ::
+    wc.lastModifiedBy   ::
+    wc.status.name      ::
+    wc.contentType      ::
+    wc.commentable      ::
+    wc.headline         ::
+    wc.standfirst       ::
+    wc.trailtext        ::
+    mainMedia.mediaType ::
+    mainMedia.url       ::
+    mainMedia.caption   ::
+    mainMedia.altText   ::
+    wc.trailImageUrl    ::
+    wc.published        ::
+    wc.timePublished    ::
+    revision            ::
+    wc.storyBundleId    ::
+    wc.activeInInCopy   ::
+    wc.takenDown        ::
+    wc.timeTakenDown    ::
+    wc.wordCount        ::
+    HNil
   }
 
   implicit val workFlowContentWrites: Writes[WorkflowContent] =
@@ -229,8 +265,11 @@ object WorkflowContent {
       (__ \ "timePublished").readNullable[DateTime] ~
       (__ \ "storyBundleId").readNullable[String] ~
       (__ \ "activeInInCopy").readNullable[Boolean].map(_.getOrElse(false)) ~
-      (__ \ "takenDown").readNullable[Boolean].map(_.getOrElse(false)) ~
-      (__ \ "timeTakenDown").readNullable[DateTime]
+      (__ \ "takenDown").readNullable[Boolean].map(_.getOrElse(false))~
+      (__ \ "timeTakenDown").readNullable[DateTime] ~
+      (__ \ "wordCount").readNullable[Int].map {
+        c => c.getOrElse(0)
+      }
       )(WorkflowContent.apply _)
 }
 

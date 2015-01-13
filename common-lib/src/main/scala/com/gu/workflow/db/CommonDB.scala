@@ -60,24 +60,9 @@ object CommonDB {
 
   def updateContent(wc: WorkflowContent, revision: Long)(implicit session: Session): Int = {
       val mainMedia = wc.mainMedia.getOrElse(WorkflowContentMainMedia())
-
-      content
-        .filter(_.composerId === wc.composerId)
-        .filter(c => c.revision <= revision || c.revision.isEmpty)
-        .map(c => (
-          c.path, c.lastModified, c.lastModifiedBy, c.contentType,
-          c.commentable, c.headline, c.standfirst,
-          c.trailtext, c.mainMedia, c.mainMediaUrl,
-          c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl,
-          c.published, c.timePublished, c.revision, c.storyBundleId)
-        )
-        .update((
-          wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType,
-          wc.commentable, wc.headline, wc.standfirst,
-          wc.trailtext, mainMedia.mediaType, mainMedia.url,
-          mainMedia.caption, mainMedia.altText, wc.trailImageUrl,
-          wc.published, wc.timePublished, Some(revision), wc.storyBundleId)
-        )
+      content.filter(_.composerId === wc.composerId)
+              .filter(c => c.revision <= revision || c.revision.isEmpty)
+              .update(WorkflowContent.newContentRow(wc, Some(revision)))
   }
 
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {

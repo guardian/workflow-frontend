@@ -128,6 +128,9 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                     return;
                 }
 
+                // TODO: move build incopy URL to decorator
+                $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
+
                 contentListDrawerController.toggleContent(contentItem, contentListItemElement);
 
             });
