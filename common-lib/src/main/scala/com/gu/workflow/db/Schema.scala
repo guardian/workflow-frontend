@@ -69,6 +69,33 @@ object Schema {
       Int              :: // wordCount
       HNil
 
+  type OptionContentRow =
+    Option[String]           :: // composer_id
+    Option[String]           :: // path
+    Option[DateTime]         :: // last_modified
+    Option[String]           :: // last_modified_by
+    Option[String]           :: // status
+    Option[String]           :: // content_type
+    Option[Boolean]          :: // commentable
+    Option[String]           :: // headline
+    Option[String]           :: // standfirst
+    Option[String]           :: // trailtext
+    Option[String]           :: // mainMedia
+    Option[String]           :: // mainMediaUrl
+    Option[String]           :: // mainMediaCaption
+    Option[String]           :: // mainMediaAltText
+    Option[String]           :: // trailImageUrl
+    Option[Boolean]          :: // published
+    Option[DateTime]         :: // timePublished
+    Option[Long]             :: // revision
+    Option[String]           :: // storyBundleId
+    Option[Boolean]          :: // activeInInCopy
+    Option[Boolean]          :: // takenDown
+    Option[DateTime]         :: // timeTakenDown
+    Option[Int]              :: // wordCount
+    HNil
+
+
   case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
     def composerId       = column [String]            ("composer_id", O.PrimaryKey)
     def path             = column [Option[String]]    ("path")
@@ -116,6 +143,33 @@ object Schema {
             takenDown        ::
             timeTakenDown    ::
             wordCount ::
+            HNil
+
+    /*This is so content table can return none for the content query where composerId is not set */
+
+    def ? = composerId.?       ::
+            path               ::
+            lastModified.?     ::
+            lastModifiedBy     ::
+            status.?           ::
+            contentType.?      ::
+            commentable.?      ::
+            headline           ::
+            standfirst         ::
+            trailtext          ::
+            mainMedia          ::
+            mainMediaUrl       ::
+            mainMediaCaption   ::
+            mainMediaAltText   ::
+            trailImageUrl      ::
+            published.?        ::
+            timePublished      ::
+            revision           ::
+            storyBundleId      ::
+            activeInInCopy.?   ::
+            takenDown.?        ::
+            timeTakenDown      ::
+            wordCount.?        ::
             HNil
   }
 

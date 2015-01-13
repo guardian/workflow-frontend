@@ -212,6 +212,47 @@ object WorkflowContent {
     }
   }
 
+  def fromOptionalContentRow(row: Schema.OptionContentRow): Option[WorkflowContent] = row match {
+    case (Some(composerId)      ::
+          path                  ::
+          Some(lastMod)         ::
+          lastModBy             ::
+          Some(status)          ::
+          Some(contentType)     ::
+          Some(commentable)     ::
+          headline              ::
+          standfirst            ::
+          trailtext             ::
+          mainMedia             ::
+          mainMediaUrl          ::
+          mainMediaCaption      ::
+          mainMediaAltText      ::
+          trailImageUrl         ::
+          Some(published)       ::
+          timePublished         ::
+          revision              ::
+          storyBundleId         ::
+          Some(activeInInCopy)   ::
+          Some(takenDown)        ::
+          timeTakenDown           ::
+          Some(wordCount)        ::
+          HNil) => {
+
+      val media = WorkflowContentMainMedia(
+        mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
+
+      Some(WorkflowContent(
+        composerId, path, headline,
+        standfirst, trailtext, Some(media),
+        trailImageUrl, contentType, None,
+        Status(status), lastMod, lastModBy, commentable,
+        published, timePublished, storyBundleId,
+        activeInInCopy, takenDown, timeTakenDown, wordCount))
+    }
+    case _ => None
+
+  }
+
   def newContentRow(wc: WorkflowContent, revision: Option[Long]) = {
     val mainMedia = wc.mainMedia.getOrElse(
       WorkflowContentMainMedia(None, None, None, None)
