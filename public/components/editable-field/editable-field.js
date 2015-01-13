@@ -144,16 +144,16 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
 
             $element.on('keydown', ($event) => {
                 if ($event.keyCode == KEYCODE_ESC) {
-                    cancel();
+                    $scope.$apply(cancel);
 
                 } else if ($event.keyCode === KEYCODE_ENTER) {
                     if ($scope.editableType === 'textarea') {
                         if ($event.metaKey || $event.ctrlKey || $event.altKey) {
-                            commit();
+                            $scope.$apply(commit);
                         }
 
                     } else {
-                        commit();
+                        $scope.$apply(commit);
                     }
                 }
             });
