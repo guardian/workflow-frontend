@@ -1,5 +1,6 @@
 package lib
 
+import com.wordnik.swagger.annotations.ApiResponses
 import lib.OrderingImplicits._
 import models.ApiResponse.ApiResponse
 import models.Flag.Flag
@@ -65,7 +66,7 @@ object PostgresDB {
       val leftJoinQ = for {
         (s, c)<- WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId)
         //TODO - come back to filter logic
-        if((c.status === Status("Hold").name) || !(c.published && c.timePublished > DateTime.now().minusDays(1)) || c.published===false)
+//        if((c.status === Status("Hold").name) || !(c.published && c.timePublished > DateTime.now().minusDays(1)) || c.published===false)
       } yield (s,  c.?)
 
       val content: List[ContentItem] = leftJoinQ.list.map { case (s, c) => {
@@ -123,7 +124,7 @@ object PostgresDB {
       }}
       contentOpt match {
         case Some(contentItem) => Right(contentItem)
-        case None => Left(ApiError("NotFound", s"Stub ${id} does not exist", 404, "notfound"))
+        case None => Left(ApiErrors.notFound)
       }
     }
   }
