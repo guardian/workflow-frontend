@@ -2,20 +2,25 @@
     position: relative;
     padding-right: 55px;
 
-    &__value {
+    &__edit-button {
         background: none;
         border: none;
-        border-bottom: dashed 1px #333;
         padding: 0;
+        text-align: inherit;
+        cursor: pointer;
 
         &:focus {
             outline: 1px dotted;
         }
     }
 
+    &__view-value {
+        border-bottom: dashed 1px #333;
+    }
+
     // edit mode
     &--edit {
-        .editable__value {
+        .editable__edit-button {
             display: none;
         }
 
