@@ -35,21 +35,6 @@ function wfEditableDirectiveFactory($timeout) {
 
             this.setEditMode = (newMode) => $scope.isEditMode = !!newMode;
 
-            var nextEditMode, debounceTimeout;
-            /**
-             * Debounce change to edit mode til next JS thread loop. Prevents
-             * flashing of changing states when blur then focus to controls in directive.
-             */
-            this.debounceSetEditMode = (newMode) => {
-                nextEditMode = newMode;
-                if (!debounceTimeout) {
-                    debounceTimeout = $timeout(() => {
-                        this.setEditMode(nextEditMode);
-                        debounceTimeout = undefined;
-                    }, 0, true);
-                }
-            };
-
         },
 
         link: function($scope, $element, $attrs, editableController) {
@@ -77,25 +62,43 @@ function wfEditableDirectiveFactory($timeout) {
             };
 
 
-            /** Adds a DOM event listener with capture for non-bubbling events (blur, focus) */
-            function addEventCaptureListener(eventName, listener) {
-                $element[0].addEventListener(eventName, listener, true);
+            $scope.$on('wfEditable.changedEditMode', ($event, newValue) => {
+                if (newValue) { // entered edit mode
+                    addImplicitCancelListeners();
+                } else {
+                    removeImplicitCancelListeners();
+                }
+            });
+
+
+            /**
+             * Search parent elements on "element" to find "parent" up a hierarchy of "levels".
+             */
+            function isElementChildOf(element, parent, levels) {
+                return element.parentElement === parent || levels !== 0 && isElementChildOf(element.parentElement, parent, levels - 1);
             }
 
-            /** Adds a capture listener to change edit mode */
-            function addChangeEditModeListeners(eventName, editMode) {
-                addEventCaptureListener(eventName, (event) => {
-                    var $target = angular.element(event.target);
-
-                    if (!$target.hasClass('editable__value')) {
-                        // debounce needed when blur then focus to other controls in edit mode
-                        editableController.debounceSetEditMode(editMode);
-                    }
-                });
+            function checkForImplicitCancelListener(event) {
+                if (!isElementChildOf(event.target, $element[0], 3)) {
+                    editableController.setEditMode(false);
+                    $scope.$apply();
+                }
             }
 
-            addChangeEditModeListeners('blur', false);
-            addChangeEditModeListeners('focus', true);
+            /**
+             * Adds body listeners for an implicit cancel event - either a click
+             * on the body outside the control, or focus outside of the control.
+             */
+            function addImplicitCancelListeners() {
+                document.body.addEventListener('click', checkForImplicitCancelListener);
+                document.body.addEventListener('focus', checkForImplicitCancelListener, true);
+            }
+
+            function removeImplicitCancelListeners() {
+                document.body.removeEventListener('click', checkForImplicitCancelListener);
+                document.body.removeEventListener('focus', checkForImplicitCancelListener, true);
+            }
+
         }
     };
 }
@@ -138,8 +141,6 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
                     $timeout(() => $element[0].select());
                 }
             });
-
-            // $element.on('blur', cancel);
 
             $element.on('keydown', ($event) => {
                 if ($event.keyCode == KEYCODE_ESC) {
