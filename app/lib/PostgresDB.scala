@@ -58,20 +58,21 @@ object PostgresDB {
       }
     }
 
+
+
   def getContentItems(q: WfQuery): ApiResponse[List[ContentItem]] = {
     DB.withTransaction { implicit session =>
       val leftJoinQ = for {
         (s, c)<- WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId)
+        //TODO - come back to filter logic
+        if((c.status === Status("Hold").name) || !(c.published && c.timePublished > DateTime.now().minusDays(1)) || c.published===false)
       } yield (s,  c.?)
-      val content = leftJoinQ.list.map { case (s, c) => {
+
+      val content: List[ContentItem] = leftJoinQ.list.map { case (s, c) => {
         ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
       }}
+      //TODO - come back to sorting logic
 
-//      todo - sort out ordering
-//      val publishedContent = content.filter(case {s, Some(wc)} => wc.status == models.Status("Final"))
-//        .sortBy(s => (wc.timePublished, s.wc.lastModified))(publishedOrdering)
-//      val unpublishedContent = content.filterNot(d => d.wc.status == models.Status("Final"))
-//        .sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering)
 
       Right(content)
     }
