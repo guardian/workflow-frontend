@@ -2,7 +2,7 @@ package lib
 
 import com.wordnik.swagger.annotations.ApiResponses
 import lib.OrderingImplicits._
-import models.ApiResponse.ApiResponse
+import models.Response.Response
 import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
@@ -61,7 +61,7 @@ object PostgresDB {
 
 
 
-  def getContentItems(q: WfQuery): ApiResponse[List[ContentItem]] = {
+  def getContentItems(q: WfQuery): Response[List[ContentItem]] = {
     DB.withTransaction { implicit session =>
       val leftJoinQ = for {
         (s, c)<- WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId)
@@ -96,7 +96,7 @@ object PostgresDB {
    * @return Either: Left(Long) if item exists already with composerId.
    *         Right(Long) of newly created item.
    */
-  def createContent(contentItem: ContentItem): ApiResponse[Long] = {
+  def createContent(contentItem: ContentItem): Response[Long] = {
     DB.withTransaction { implicit session =>
 
       val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
@@ -114,7 +114,7 @@ object PostgresDB {
     }
   }
 
-  def getContentById(id: Long): ApiResponse[ContentItem] = {
+  def getContentById(id: Long): Response[ContentItem] = {
     DB.withTransaction { implicit session =>
       val contentOpt: Option[ContentItem] = (for {
         (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
@@ -129,7 +129,7 @@ object PostgresDB {
     }
   }
 
-  def getContentByComposerId(composerId: String): ApiResponse[DashboardRow] = {
+  def getContentByComposerId(composerId: String): Response[DashboardRow] = {
     DB.withTransaction { implicit session =>
 
       val query = for {
@@ -255,8 +255,8 @@ object PostgresDB {
       q.length.run > 0
     }
   }
-
-  def deleteStub(id: Long) {
+  //todo - rename to delete contentitem
+  def deleteStub(id: Long): Response[Long] = {
     DB.withTransaction { implicit session =>
 
       archiveContentQuery((s, c) => s.pk === id)
@@ -267,7 +267,8 @@ object PostgresDB {
       content.filter(c => c.composerId in queryCurrentStub.map(_.composerId)).delete
 
       // Delete from Stub table
-      queryCurrentStub.delete
+      val deleted = queryCurrentStub.delete
+      if(deleted == 0) Right(id) else Left(ApiErrors.notFound)
     }
   }
 
