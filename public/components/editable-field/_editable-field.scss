@@ -3,7 +3,14 @@
     padding-right: 55px;
 
     &__value {
+        background: none;
+        border: none;
         border-bottom: dashed 1px #333;
+        padding: 0;
+
+        &:focus {
+            outline: 1px dotted;
+        }
     }
 
     // edit mode
