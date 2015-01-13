@@ -113,6 +113,21 @@ object PostgresDB {
     }
   }
 
+  def getContentById(id: Long): ApiResponse[ContentItem] = {
+    DB.withTransaction { implicit session =>
+      val contentOpt: Option[ContentItem] = (for {
+        (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
+        if s.pk === id
+      } yield (s,  c.?)).firstOption.map { case (s, c) => {
+        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
+      }}
+      contentOpt match {
+        case Some(contentItem) => Right(contentItem)
+        case None => Left(ApiError("NotFound", s"Stub ${id} does not exist", 404, "notfound"))
+      }
+    }
+  }
+
   def getContentByComposerId(composerId: String): ApiResponse[DashboardRow] = {
     DB.withTransaction { implicit session =>
 
