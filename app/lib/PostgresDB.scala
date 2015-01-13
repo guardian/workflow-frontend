@@ -7,6 +7,8 @@ import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
 import play.api.libs.json.{JsObject, Writes}
+import scala.slick.collection.heterogenous._
+import syntax._
 import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
@@ -58,39 +60,20 @@ object PostgresDB {
 
   def getContentItems(q: WfQuery): ApiResponse[List[ContentItem]] = {
     DB.withTransaction { implicit session =>
-      //todo - make this an left outer join
-      val q1 = for {
-        s<- WfQuery.stubsQuery(q)
-        c<- WfQuery.contentQuery(q)
-        if(s.composerId ===c.composerId)
-      } yield (s,c)
+      val leftJoinQ = for {
+        (s, c)<- WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId)
+      } yield (s,  c.?)
+      val content = leftJoinQ.list.map { case (s, c) => {
+        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
+      }}
 
-      val getStubs: Boolean= (q.status.isEmpty || q.status.exists(_ == models.Status("Stub"))) && q.published != Some(true)
-
-      val q2 = for {
-        s <- WfQuery.stubsQuery(q)
-        if s.composerId.isEmpty
-      } yield s
-
-      val list1 = q1.filter( {case (s,c) => displayContentItem(s, c) })
-        .list.map {
-        case (stubData, contentData) =>
-          val stub    = Stub.fromStubRow(stubData)
-          val content = WorkflowContent.fromContentRow(contentData)
-
-          ContentItem(stub, Some(content))
-      }
-      val list2 = q2.filter({case s => dueDateNotExpired(s.due)})
-        .list.map(row => ContentItem(Stub.fromStubRow(row), None))
-
-      val lists = list1 ::: list2
 //      todo - sort out ordering
-//      val publishedContent = lists.filter(c => c.wc.status == models.Status("Final"))
-//        .sortBy(s => (s.wc.timePublished, s.wc.lastModified))(publishedOrdering)
-//      val unpublishedContent = lists.filterNot(d => d.wc.status == models.Status("Final"))
+//      val publishedContent = content.filter(case {s, Some(wc)} => wc.status == models.Status("Final"))
+//        .sortBy(s => (wc.timePublished, s.wc.lastModified))(publishedOrdering)
+//      val unpublishedContent = content.filterNot(d => d.wc.status == models.Status("Final"))
 //        .sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering)
 
-      Right(list1 ::: list2)
+      Right(content)
     }
   }
 
