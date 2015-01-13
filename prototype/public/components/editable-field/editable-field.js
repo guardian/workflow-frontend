@@ -5,7 +5,7 @@
 import angular from 'angular';
 
 angular.module('wfEditableField', [])
-    .directive('wfEditable', [wfEditableDirectiveFactory])
+    .directive('wfEditable', ['$timeout', wfEditableDirectiveFactory])
     .directive('wfEditableField', ['$timeout', wfEditableTextFieldDirectiveFactory]);
 
 
@@ -15,7 +15,7 @@ var KEYCODE_ESC = 27,
     KEYCODE_ENTER = 13;
 
 
-function wfEditableDirectiveFactory() {
+function wfEditableDirectiveFactory($timeout) {
 
     return {
         restrict: 'E',
@@ -33,25 +33,40 @@ function wfEditableDirectiveFactory() {
             // one time bind of wfEditableType
             $scope.editableType = $attrs.wfEditableType;
 
-            this.setEditMode = (flag) => {
-                var newMode = !!flag;
-                if ($scope.isEditMode !== flag) {
-                    $scope.$broadcast('wfEditable.changedEditMode', newMode, $scope.isEditMode);
-                }
+            this.setEditMode = (newMode) => $scope.isEditMode = !!newMode;
 
-                if (newMode) {
-                    $element.addClass('editable--edit');
-                } else {
-                    $element.removeClass('editable--edit');
+            var nextEditMode, debounceTimeout;
+            /**
+             * Debounce change to edit mode til next JS thread loop. Prevents
+             * flashing of changing states when blur then focus to controls in directive.
+             */
+            this.debounceSetEditMode = (newMode) => {
+                nextEditMode = newMode;
+                if (!debounceTimeout) {
+                    debounceTimeout = $timeout(() => {
+                        this.setEditMode(nextEditMode);
+                        debounceTimeout = undefined;
+                    }, 0, true);
                 }
-
-                $scope.isEditMode = newMode;
             };
 
         },
 
-        link: function($scope, $element, $attrs) {
-            $element.addClass('editable');
+        link: function($scope, $element, $attrs, editableController) {
+            $attrs.$addClass('editable');
+
+            $scope.$watch('isEditMode', (newValue, oldValue) => {
+                if (newValue) {
+                    $attrs.$addClass('editable--edit');
+                } else {
+                    $attrs.$removeClass('editable--edit');
+                }
+
+                // Broadcast changed edit mode when value changes on the applied scope.
+                if (newValue !== oldValue) {
+                    $scope.$broadcast('wfEditable.changedEditMode', newValue, oldValue);
+                }
+            });
 
             $scope.commit = () => {
                 $scope.$broadcast('wfEditable.commit');
@@ -60,12 +75,33 @@ function wfEditableDirectiveFactory() {
             $scope.cancel = () => {
                 $scope.$broadcast('wfEditable.cancel');
             };
+
+
+            /** Adds a DOM event listener with capture for non-bubbling events (blur, focus) */
+            function addEventCaptureListener(eventName, listener) {
+                $element[0].addEventListener(eventName, listener, true);
+            }
+
+            /** Adds a capture listener to change edit mode */
+            function addChangeEditModeListeners(eventName, editMode) {
+                addEventCaptureListener(eventName, (event) => {
+                    var $target = angular.element(event.target);
+
+                    if (!$target.hasClass('editable__value')) {
+                        // debounce needed when blur then focus to other controls in edit mode
+                        editableController.debounceSetEditMode(editMode);
+                    }
+                });
+            }
+
+            addChangeEditModeListeners('blur', false);
+            addChangeEditModeListeners('focus', true);
         }
     };
 }
 
 
-function wfEditableTextFieldDirectiveFactory() {
+function wfEditableTextFieldDirectiveFactory($timeout) {
     return {
         restrict: 'A',
         require: ['ngModel', '^^wfEditable'],
