@@ -23,7 +23,10 @@ function wfEditableDirectiveFactory($timeout) {
         scope: {
             modelValue: '=wfEditableModel',
             onEditableUpdate: '&wfEditableOnUpdate',
-            onEditableCancel: '&wfEditableOnCancel'
+            onEditableCancel: '&wfEditableOnCancel',
+            validateRequired: '=wfEditableRequired',
+            validateMinlength: '=wfEditableMinlength',
+            validateMaxlength: '=wfEditableMaxlength'
         },
         transclude: true,
 
@@ -34,6 +37,8 @@ function wfEditableDirectiveFactory($timeout) {
             $scope.editableType = $attrs.wfEditableType;
 
             this.setEditMode = (newMode) => $scope.isEditMode = !!newMode;
+
+            this.setErrors = (errors) => $scope.editableErrors = errors;
 
         },
 
@@ -115,21 +120,29 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
             ngModel.$options = ngModel.$options || {};
 
             function commit() {
-                $scope.onEditableUpdate({
-                    newValue: ngModel.$viewValue,
-                    oldValue: ngModel.$modelValue
-                });
+                var newValue = ngModel.$viewValue,
+                    oldValue = ngModel.$modelValue;
 
                 // TODO: could check for promise from onEditableUpdate to
                 //       display loader, before committing view value.
 
                 ngModel.$commitViewValue();
-                wfEditable.setEditMode(false);
+
+                wfEditable.setErrors(ngModel.$error);
+
+                if (ngModel.$valid) {
+                    $scope.onEditableUpdate({
+                        newValue: newValue,
+                        oldValue: oldValue
+                    });
+                    wfEditable.setEditMode(false);
+                }
             }
 
             function cancel() {
                 $scope.onEditableCancel();
                 ngModel.$rollbackViewValue();
+                wfEditable.setErrors(ngModel.$error);
                 wfEditable.setEditMode(false);
             }
 
