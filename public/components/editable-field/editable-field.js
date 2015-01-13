@@ -1,5 +1,15 @@
 /**
  * Module containing directives for an editable field.
+ *
+ * @example
+ * <!-- Simple text field example: -->
+ * <wf-editable wf-editable-model="myModel">myModel value: {{ myModel || 'Not set' }}</wf-editable>
+ *
+ * <!-- Required field: -->
+ * <wf-editable wf-editable-model="myModel" wf-editable-required="true">myModel value: {{ myModel || 'Not set' }}</wf-editable>
+ *
+ * <!-- Call function when model updates: -->
+ * <wf-editable wf-editable-model="myModel" wf-editable-on-update="sendToServer(newValue)" wf-editable-required="true">myModel value: {{ myModel || 'Not set' }}</wf-editable>
  */
 
 import angular from 'angular';
