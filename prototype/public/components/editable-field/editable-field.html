@@ -1,6 +1,6 @@
-<span class="editable__value" ng-click="editableController.setEditMode(true)" tabindex="0">
+<button class="editable__value" ng-click="editableController.setEditMode(true)">
     <ng-transclude></ng-transclude>
-</span>
+</button>
 <input type="text" class="editable__text-field" wf-editable-field ng-model="modelValue" ng-if="::editableType !== 'textarea'" />
 <textarea class="editable__text-field editable__text-field--textarea" wf-editable-field ng-model="modelValue" ng-if="::editableType === 'textarea'"></textarea>
 <span class="editable__controls">
