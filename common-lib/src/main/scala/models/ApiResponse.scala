@@ -10,6 +10,9 @@ case object ApiError {
   implicit val apiErrorFormat = Json.format[ApiError]
 }
 
+object ApiErrors {
+  lazy val notFound = new ApiError("NotFound", "Content does not exist", 404, "notfound")
+}
 
 
 object ApiResponse extends Results {

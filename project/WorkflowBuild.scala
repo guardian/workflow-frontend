@@ -51,6 +51,7 @@ object WorkflowBuild extends Build {
   lazy val root = playProject("prototype")
     .settings(
       libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
+      ++ apiDocDependencies
     )
     .settings(FrontEnd.PrototypeProject.settings: _*)
     .settings(playDefaultPort := 9090)

@@ -41,9 +41,14 @@ GET            /api/sections                          controllers.Api.sections
 
 # API V1
 
-GET            /api/v1/content                        controllers.ApiV1.content
-GET            /api/v1/content/:id                    controllers.ApiV1.contentById(id: Long)
+GET            /api/v1/content                        controllers.ContentApi.content
+GET            /api/v1/content/:id                    controllers.ContentApi.contentById(id: Long)
 
+
+#Swagger
+
+GET            /api/v1/docs                           controllers.ApiHelpController.getResources
+GET            /api/v1/docs/content                   controllers.ApiHelpController.getResource(path = "/content")
 
 # Admin
 GET            /admin                                 controllers.Admin.index(selectedDesk: Option[Long])

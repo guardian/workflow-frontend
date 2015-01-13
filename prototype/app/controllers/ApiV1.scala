@@ -1,16 +1,22 @@
 package controllers
 
+import javax.ws.rs.PathParam
+
 import com.gu.workflow.db.CommonDB
 import com.gu.workflow.query.WfQuery
 import controllers.Api._
 import lib.OrderingImplicits._
 import lib.{PostgresDB, StatusDatabase, Formatting, PrototypeConfiguration}
-import models.{ApiResponse, Section}
+import models.{ApiErrors, ApiResponse, Section}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Request, Controller}
+import com.wordnik.swagger.annotations._
+import com.wordnik.swagger.core.util.ScalaJsonUtil
 
+import scala.util.Either
 
-object ApiV1 extends Controller with PanDomainAuthActions {
+@Api(value = "/content", description = "Operations about content")
+object ContentApi extends Controller with PanDomainAuthActions {
 
 
   val composerUrl = PrototypeConfiguration.apply.composerUrl
@@ -74,7 +80,19 @@ object ApiV1 extends Controller with PanDomainAuthActions {
 
   def content = APIAuthAction(getContentBlock)
 
-  def contentById(id: Long) = APIAuthAction {
+
+  @ApiOperation(
+    nickname = "getContentById",
+    value = "Find contentItem by ID",
+    notes = "Returns a content item",
+    response = classOf[models.ContentItem],
+    httpMethod = "GET"
+  )
+  //todo - figure out how to make this read error messages from one place
+  @ApiResponses(Array(
+    new ApiResponse(code = 404, message = "Content does not exist")
+  ))
+  def contentById(@ApiParam(value = "ID of the content item to fetch") @PathParam("id") id: Long) = APIAuthAction {
     ApiResponse(
       for {
         cItem <- PostgresDB.getContentById(id).right
