@@ -20,7 +20,8 @@
         }
 
         .editable__text-field,
-        .editable__controls {
+        .editable__controls,
+        .editable__error {
             display: block;
         }
     }
@@ -33,6 +34,10 @@
 
         &--textarea {
             height: 40px;
+        }
+
+        &.ng-invalid {
+            border-color: $c-red;
         }
     }
 
@@ -72,5 +77,10 @@
                 fill: #fff;
             }
         }
+    }
+
+    &__error {
+        display: none;
+        font-style: italic;
     }
 }
