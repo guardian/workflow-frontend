@@ -42,6 +42,7 @@ GET            /api/sections                          controllers.Api.sections
 # API V1
 
 GET            /api/v1/content                        controllers.ApiV1.content
+GET            /api/v1/content/:id                    controllers.ApiV1.contentById(id: Long)
 
 
 # Admin

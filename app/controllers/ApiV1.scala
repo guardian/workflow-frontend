@@ -73,4 +73,14 @@ object ApiV1 extends Controller with PanDomainAuthActions {
   }
 
   def content = APIAuthAction(getContentBlock)
+
+  def contentById(id: Long) = APIAuthAction {
+    ApiResponse(
+      for {
+        cItem <- PostgresDB.getContentById(id).right
+      } yield {
+        cItem
+      }
+    )
+  }
 }
