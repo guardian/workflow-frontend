@@ -1,5 +1,5 @@
-<button class="editable__value" ng-click="editableController.setEditMode(true)">
-    <ng-transclude></ng-transclude>
+<button class="editable__edit-button" ng-click="editableController.setEditMode(true)">
+    <ng-transclude class="editable__view-value"></ng-transclude>
 </button>
 <input type="text" class="editable__text-field" wf-editable-field ng-model="modelValue" ng-required="validateRequired" ng-minlength="validateMinlength" ng-maxlength="validateMaxlength" ng-if="::editableType !== 'textarea'" />
 <textarea class="editable__text-field editable__text-field--textarea" wf-editable-field ng-model="modelValue" ng-required="validateRequired" ng-minlength="validateMinlength" ng-maxlength="validateMaxlength" ng-if="::editableType === 'textarea'"></textarea>
