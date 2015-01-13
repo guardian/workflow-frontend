@@ -11,14 +11,16 @@ case object ApiError {
 }
 
 object ApiErrors {
-  lazy val notFound = new ApiError("NotFound", "Content does not exist", 404, "notfound")
+  lazy val notFound = new ApiError("ContentNotFound", "Content does not exist", 404, "notfound")
+  lazy val invalidContentSend = new ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")
+  def jsonParseError(errMsg: String) = new ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")
 }
 
 
-object ApiResponse extends Results {
-  type ApiResponse[T] = Either[ApiError, T]
+object Response extends Results {
+  type Response[T] = Either[ApiError, T]
 
-  def apply[T](action: => ApiResponse[T])(implicit tjs: Writes[T]): Result = {
+  def apply[T](action: => Response[T])(implicit tjs: Writes[T]): Result = {
     action.fold({
       apiError => Status(apiError.statusCode) {
         JsObject(Seq(

@@ -1,15 +1,15 @@
 package controllers
 
 import javax.ws.rs.PathParam
-
+import models.Response.Response
 import com.gu.workflow.db.CommonDB
 import com.gu.workflow.query.WfQuery
 import controllers.Api._
 import lib.OrderingImplicits._
 import lib.{PostgresDB, StatusDatabase, Formatting, PrototypeConfiguration}
-import models.{ApiErrors, ApiResponse, Section}
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, Request, Controller}
+import models._
+import play.api.libs.json._
+import play.api.mvc._
 import com.wordnik.swagger.annotations._
 import com.wordnik.swagger.core.util.ScalaJsonUtil
 
@@ -70,7 +70,7 @@ object ContentApi extends Controller with PanDomainAuthActions {
       text          = text,
       assignedTo    = assignee
     )
-    ApiResponse(for{
+    Response(for{
       content <- PostgresDB.getContentItems(queryData).right
     }yield {
       content
@@ -88,17 +88,84 @@ object ContentApi extends Controller with PanDomainAuthActions {
     response = classOf[models.ContentItem],
     httpMethod = "GET"
   )
-  //todo - figure out how to make this read error messages from one place
   @ApiResponses(Array(
-    new ApiResponse(code = 404, message = "Content does not exist")
+    new ApiResponse(code = 404, message = "ContentNotFound")
   ))
   def contentById(@ApiParam(value = "ID of the content item to fetch") @PathParam("id") id: Long) = APIAuthAction {
-    ApiResponse(
+   Response(
       for {
         cItem <- PostgresDB.getContentById(id).right
       } yield {
         cItem
       }
     )
+  }
+
+  @ApiOperation(
+    nickname = "createContentItem",
+    value = "Create new content item",
+    response = classOf[Long],
+    httpMethod = "POST"
+  )
+  @ApiResponses(Array(
+    new ApiResponse(code = 409, message = "Conflict"),
+    new ApiResponse(code = 400, message = "InvalidContentType"),
+    new ApiResponse(code = 400, message = "JsonParseError")
+  ))
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(value = "Content object", required = true, dataType = "ContentItem", paramType = "body")))
+  def createContent() = CORSable(composerUrl) {
+    APIAuthAction { implicit request =>
+      Response(for {
+        jsValue <- readJsonFromRequest(request.body).right
+        contentItem <- extract[ContentItem](jsValue).right
+        stubId <- PostgresDB.createContent(contentItem).right
+      } yield {
+        stubId
+      })
+    }
+  }
+
+  @ApiOperation(
+    nickname = "deleteContentItem",
+    value = "Delete new content item",
+    response = classOf[Long],
+    httpMethod = "DELETE"
+  )
+  @ApiResponses(Array(
+    new ApiResponse(code = 404, message = "ContentNotFound")
+  ))
+  def deleteContent(@ApiParam(value = "ID of the content item to delete") @PathParam("id") id: Long) = {
+    APIAuthAction { implicit request =>
+      Response(for {
+        stubId <- PostgresDB.deleteStub(id).right
+      }yield stubId)
+    }
+  }
+
+  //duplicated from the method above to give a standard API response. should move all api methods onto to this
+  private def readJsonFromRequest(requestBody: AnyContent):  models.Response.Response[JsValue] = {
+    requestBody.asJson match {
+      case Some(jsValue) => Right(jsValue)
+      case None => Left(ApiErrors.invalidContentSend)
+    }
+  }
+
+  /* JsError's may contain a number of different errors for differnt
+   * paths. This will aggregate them into a single string */
+  private def errorMsgs(error: JsError) =
+    (for ((path, msgs) <- error.errors; msg <- msgs)
+    yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
+
+
+
+  //duplicated from the method above to give a standard API response. should move all api methods onto to this
+  private def extract[A: Reads](jsValue: JsValue): models.Response.Response[A] = {
+    jsValue.validate[A] match {
+      case JsSuccess(a, _) => Right(a)
+      case error@JsError(_) =>
+        val errMsg = errorMsgs(error)
+        Left(ApiErrors.jsonParseError(errMsg.toString))
+    }
   }
 }
