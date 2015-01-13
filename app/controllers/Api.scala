@@ -1,6 +1,6 @@
 package controllers
 
-import models.ApiResponse.ApiResponse
+import models.Response.Response
 import models.Flag.Flag
 import models._
 
@@ -132,7 +132,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
 
   def contentById(composerId: String) = {
-    ApiResponse(for{
+    Response(for{
       data <- PostgresDB.getContentByComposerId(composerId).right
     }yield {
       data
@@ -166,7 +166,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def createContent() =  CORSable(composerUrl) {
     APIAuthAction { implicit request =>
-      ApiResponse(for {
+      Response(for {
         jsValue <- readJsonFromRequestApiResponse(request.body).right
         contentItem <- extractApiResponse[ContentItem](jsValue).right
         stubId <- PostgresDB.createContent(contentItem).right
@@ -317,7 +317,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def sections = CORSable(composerUrl) {
     AuthAction  { implicit request =>
-      ApiResponse(Right(SectionDB.sectionList))
+      Response(Right(SectionDB.sectionList))
     }
   }
 
@@ -328,7 +328,7 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   //duplicated from the method above to give a standard API response. should move all api methods onto to this
-  private def readJsonFromRequestApiResponse(requestBody: AnyContent): ApiResponse[JsValue] = {
+  private def readJsonFromRequestApiResponse(requestBody: AnyContent): Response[JsValue] = {
     requestBody.asJson match {
       case Some(jsValue) => Right(jsValue)
       case None => Left((ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")))
@@ -355,7 +355,7 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   //duplicated from the method above to give a standard API response. should move all api methods onto to this
-  private def extractApiResponse[A: Reads](jsValue: JsValue): ApiResponse[A] = {
+  private def extractApiResponse[A: Reads](jsValue: JsValue): Response[A] = {
     jsValue.validate[A] match {
       case JsSuccess(a, _) => Right(a)
       case error@JsError(_) =>
