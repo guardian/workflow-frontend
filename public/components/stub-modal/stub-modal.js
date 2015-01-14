@@ -121,14 +121,17 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
             $rootScope.$broadcast(eventName, { 'contentItem': stub });
             $rootScope.$broadcast('getContent');
+            $modalInstance.close({
+                    addToComposer: addToComposer,
+                    stub: $scope.stub
+            });
         }, (err) => {
+            $scope.contentUpdateError = true;
+            $scope.errorMsg = err.message || err;
             $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
         });
 
-        $modalInstance.close({
-            addToComposer: addToComposer,
-            stub: $scope.stub
-        });
+
     };
 
     $scope.cancel = function () {
