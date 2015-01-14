@@ -78,9 +78,8 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
             (requestConfig.url || '') + (requestParams && requestParams.length > 0 ? '?' + requestParams.join('&') : '')
 
         ].join(' '));
-
         // TODO extras for sentry logging
-
+        error.friendlyMessage = err.data.error.friendlyMessage
         return error;
     }
 
