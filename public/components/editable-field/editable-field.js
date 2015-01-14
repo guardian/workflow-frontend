@@ -161,7 +161,7 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
 
             $scope.$on('wfEditable.changedEditMode', ($event, mode) => {
                 if (mode === true) {
-                    $timeout(() => $element[0].select());
+                    $timeout(() => $element[0].select(), 100);
                 }
             });
 
