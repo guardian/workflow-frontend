@@ -39,7 +39,6 @@ import 'lib/feature-switches';
 // 3rd party libs
 import 'angular-ui-router';
 import 'angular-bootstrap';
-import 'angular-xeditable';
 import 'angular-animate/angular-animate.min';
 
 // App-wide Styles
@@ -63,8 +62,7 @@ angular.module('workflow',
         'wfFiltersService',
         'wfColumnService',
         'wfPreferencesService',
-        'wfFeatureSwitches',
-        'xeditable'
+        'wfFeatureSwitches'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', function ($stateProvider, $urlRouterProvider, $compileProvider) {
         // TODO: remember user's state and redirect there on default '' route
@@ -117,12 +115,8 @@ angular.module('workflow',
     .constant({ 'statuses': _wfConfig.statuses })
     .constant({ 'sections': _wfConfig.sections })
     .constant({ 'desks': _wfConfig.desks })
-    .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
+    .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks });
 
-    // XEditable options, TODO: mode out to dashboard controller somewhere...
-    .run(function (editableOptions) {
-        editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
-    });
 
 // Bootstrap App
 angular.element(document).ready(function () {
