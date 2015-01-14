@@ -14,7 +14,7 @@ import 'lib/prodoffice-service';
 
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService',]);
 
-function StubModalInstanceCtrl($scope, $modalInstance, $window, config, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
+function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
     var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
 
     $scope.mode = mode;
@@ -93,6 +93,38 @@ function StubModalInstanceCtrl($scope, $modalInstance, $window, config, stub, mo
     };
 
     $scope.ok = function (addToComposer) {
+        var stub = $scope.stub; 
+        var promise;
+
+        stub.status = 'Writers'; 
+
+        if (addToComposer) {
+            promise = wfContentService.createInComposer(stub);
+        } else if (stub.id) {
+            promise = wfContentService.updateStub(stub);
+        } else {
+            promise = wfContentService.createStub(stub);
+        }
+
+        promise.then((response) => {
+            // Map modal mode to event name
+            var eventName = ({
+                'create': 'stub.created',
+                'edit': 'stub.edited',
+                'import': 'content.imported'
+            }[$scope.mode]);
+
+            if(stub.composerId) {
+                var composerUrl = config.composerViewContent + '/' + stub.composerId;
+                $window.open(composerUrl);
+            }
+
+            $rootScope.$broadcast(eventName, { 'contentItem': stub });
+            $rootScope.$broadcast('getContent');
+        }, (err) => {
+            $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
+        });
+
         $modalInstance.close({
             addToComposer: addToComposer,
             stub: $scope.stub
@@ -174,18 +206,16 @@ wfStubModal.run([
         });
 
         $rootScope.$on('stub:create', function (event, contentType) {
-
             setUpPreferedStub(contentType).then((stub) => {
-
                 open(stub, 'create')
             });
         });
 
         $rootScope.$on('stub.created', (event, msg) => {
-            if(msg.contentItem.composerId) {
-                var composerUrl = config.composerViewContent + '/' + msg.contentItem.composerId;
-                $window.open(composerUrl);
-            }
+            //if(msg.contentItem.composerId) {
+            //    var composerUrl = config.composerViewContent + '/' + msg.contentItem.composerId;
+            //    $window.open(composerUrl);
+            //}
         });
 
         $rootScope.$on('content:import', function (event) {
@@ -209,35 +239,36 @@ wfStubModal.run([
             });
 
             modalInstance.result.then(function (modalCloseResult) {
-                var stub = modalCloseResult.stub;
-                var addToComposer = modalCloseResult.addToComposer;
-
-                stub.status = 'Writers'; // TODO: allow status to be selected
-
-                var promise;
-                if (addToComposer) {
-                    promise = wfContentService.createInComposer(stub);
-
-                } else if (stub.id) {
-                    promise = wfContentService.updateStub(stub);
-
-                } else {
-                    promise = wfContentService.createStub(stub);
-                }
-
-                promise.then(() => {
-                    // Map modal mode to event name
-                    var eventName = ({
-                        'create': 'stub.created',
-                        'edit': 'stub.edited',
-                        'import': 'content.imported'
-                    }[mode]);
-
-                    $rootScope.$broadcast(eventName, { 'contentItem': stub });
-                    $rootScope.$broadcast('getContent');
-                }, (err) => {
-                    $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
-                });
+                console.log("resolved");
+//                var stub = modalCloseResult.stub;
+//                var addToComposer = modalCloseResult.addToComposer;
+//
+//                stub.status = 'Writers'; // TODO: allow status to be selected
+//
+//                var promise;
+//                if (addToComposer) {
+//                    promise = wfContentService.createInComposer(stub);
+//
+//                } else if (stub.id) {
+//                    promise = wfContentService.updateStub(stub);
+//
+//                } else {
+//                    promise = wfContentService.createStub(stub);
+//                }
+//
+//                promise.then(() => {
+//                    // Map modal mode to event name
+//                    var eventName = ({
+//                        'create': 'stub.created',
+//                        'edit': 'stub.edited',
+//                        'import': 'content.imported'
+//                    }[mode]);
+//
+//                    $rootScope.$broadcast(eventName, { 'contentItem': stub });
+//                    $rootScope.$broadcast('getContent');
+//                }, (err) => {
+//                    $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
+//                });
 
             });
 
