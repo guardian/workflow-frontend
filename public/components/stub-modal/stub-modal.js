@@ -133,7 +133,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }, (err) => {
             $scope.actionSuccess = false;
             $scope.contentUpdateError = true;
-            $scope.errorMsg = err.message || err;
+            $scope.errorMsg = err.friendlyMessage || err.message || err;
             $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
         });
     };
