@@ -144,7 +144,8 @@
       },
       "references": []
     },
-    "updateType": "draft"
+    "updateType": "draft",
+    "wc": 16
   },
   "whatChanged": "field",
   "published": true,

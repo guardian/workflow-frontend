@@ -99,7 +99,6 @@ object ContentUpdateEvent {
     (__ \ "content" \ "taxonomy").readNullable(
       (__ \ "tags").read[List[Tag]]
     ) ~
-    (__ \ "content" \ "published").read[Boolean].map(p => if (p) Final else Writers) ~
     (__ \ "content" \ "settings" \ "commentable").readNullable[String].map {
       s => s.exists(_=="true")
     } ~
