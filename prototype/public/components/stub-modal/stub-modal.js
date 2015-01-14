@@ -106,7 +106,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             promise = wfContentService.createStub(stub);
         }
     
-        $scope.actionStarted = true;
+        $scope.actionInProgress = true;
+
         promise.then((response) => {
             var eventName = ({
                 'create': 'stub.created',
@@ -120,22 +121,21 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             if(stub.composerId && ($scope.mode != 'import')) {
                 $scope.composerUrl = config.composerViewContent + '/' + stub.composerId;
             } else {
-                // We've created a stub only, close the modal.
-                $scope.cancel();
-            }
-
-            $modalInstance.close({
+                $modalInstance.close({
                     addToComposer: addToComposer,
                     stub: $scope.stub
-            });
+                });
+            }
 
             $scope.actionSuccess = true;
         }, (err) => {
-            $scope.actionSuccess = false;
-            $scope.contentUpdateError = true;
             $scope.errorMsg = err.message || err;
             $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
+
+            $scope.actionSuccess = false;
         });
+
+        $scope.actionInProgress = false;
     };
 
     $scope.cancel = function () {
