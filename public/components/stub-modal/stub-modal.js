@@ -107,9 +107,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
     
         $scope.actionStarted = true;
-
         promise.then((response) => {
-            // Map modal mode to event name
             var eventName = ({
                 'create': 'stub.created',
                 'edit': 'stub.edited',
@@ -126,15 +124,18 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                 $scope.cancel();
             }
 
+            $modalInstance.close({
+                    addToComposer: addToComposer,
+                    stub: $scope.stub
+            });
+
             $scope.actionSuccess = true;
         }, (err) => {
             $scope.actionSuccess = false;
+            $scope.contentUpdateError = true;
+            $scope.errorMsg = err.message || err;
+            $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
         });
-
-        //$modalInstance.close({
-        //    addToComposer: addToComposer,
-        //    stub: $scope.stub
-        //});
     };
 
     $scope.cancel = function () {
