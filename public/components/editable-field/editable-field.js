@@ -20,10 +20,10 @@ angular.module('wfEditableField', [])
 
 
 var KEYCODE_ESC = 27,
-    KEYCODE_CTRL = 17,
-    KEYCODE_COMMAND = 224,
-    KEYCODE_ENTER = 13;
+    KEYCODE_ENTER = 13,
 
+    CLASS_EDITABLE = 'editable',
+    CLASS_EDITABLE_EDITMODE = 'editable--edit';
 
 function wfEditableDirectiveFactory($timeout) {
 
@@ -53,13 +53,13 @@ function wfEditableDirectiveFactory($timeout) {
         },
 
         link: function($scope, $element, $attrs, editableController) {
-            $attrs.$addClass('editable');
+            $attrs.$addClass(CLASS_EDITABLE);
 
             $scope.$watch('isEditMode', (newValue, oldValue) => {
                 if (newValue) {
-                    $attrs.$addClass('editable--edit');
+                    $attrs.$addClass(CLASS_EDITABLE_EDITMODE);
                 } else {
-                    $attrs.$removeClass('editable--edit');
+                    $attrs.$removeClass(CLASS_EDITABLE_EDITMODE);
                 }
 
                 // Broadcast changed edit mode when value changes on the applied scope.
