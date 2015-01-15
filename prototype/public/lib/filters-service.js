@@ -62,11 +62,18 @@ angular.module('wfFiltersService', ['wfDateService'])
                     "assignedto" : "assignee"
                 };
 
+                var savedFilters = null;
+
                 function enterSearchMode(data) {
+                    savedFilters = _.clone(self.filters);
                     $rootScope.$broadcast("search-mode.enter");
                 }
 
                 function exitSearchMode(data) {
+                    if(savedFilters != null) {
+                        _.forOwn(savedFilters,
+                                 (value, key) => self.update(key, value));
+                    }
                     $rootScope.$broadcast("search-mode.exit");
                 }
 
