@@ -62,10 +62,24 @@ angular.module('wfFiltersService', ['wfDateService'])
                     "assignedto" : "assignee"
                 };
 
+                function enterSearchMode(data) {
+                    console.log("entering search phase", data);
+                }
+
+                function exitSearchMode(data) {
+                    console.log("exiting search phase", data);
+                }
+
                 $rootScope.$on('filtersChanged.freeText', function(event, data) {
                     var newValue = data.newValue;
                     var oldValue = data.oldValue;
-                    //self.clearAll();
+
+                    if(oldValue == null && newValue != null) {
+                        enterSearchMode(data);
+                    } else if(newValue == null && oldValue != null) {
+                        exitSearchMode(data);
+                    }
+
                     if(newValue != null) {
                         var rest =
                             newValue.replace(/\s*([A-Za-z-]+):(\S+)\s*/g, (match, field, value) => {
