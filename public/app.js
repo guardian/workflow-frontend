@@ -66,7 +66,7 @@ angular.module('workflow',
         'wfFeatureSwitches',
         'xeditable'
     ])
-    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', function ($stateProvider, $urlRouterProvider, $compileProvider) {
+    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
         // TODO: remember user's state and redirect there on default '' route
         $urlRouterProvider.when('', '/dashboard');
 
@@ -95,6 +95,9 @@ angular.module('workflow',
                     controller: 'wfDashboardUserController'
                 }
             }
+        });
+        $locationProvider.html5Mode({
+            enabled: true
         });
 
     }])
@@ -127,4 +130,5 @@ angular.module('workflow',
 // Bootstrap App
 angular.element(document).ready(function () {
     angular.bootstrap(document, ['workflow']);
+    window.name='gu_workflow';
 });
