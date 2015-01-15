@@ -189,7 +189,6 @@ object WorkflowContent {
     val mainMedia = wc.mainMedia.getOrElse(
       WorkflowContentMainMedia(None, None, None, None)
     )
-
     wc.composerId       ::
     wc.path             ::
     wc.lastModified     ::
@@ -231,19 +230,20 @@ object WorkflowContent {
       (__ \ "section" \ "name").readNullable[String].map {
         _.map(s => Section(s))
       } ~
-      (__ \ "status").read[String].map { s => Status(s) } ~
+      (__ \ "status").readNullable[String].map { sOpt => Status(sOpt.getOrElse("Writers")) } ~
       (__ \ "lastModified").read[DateTime] ~
       (__ \ "lastModifiedBy").readNullable[String] ~
-      (__ \ "commentable").read[Boolean] ~
+      (__ \ "commentable").readNullable[Boolean].map(_.getOrElse(false)) ~
       (__ \ "published").read[Boolean] ~
       (__ \ "timePublished").readNullable[DateTime] ~
       (__ \ "storyBundleId").readNullable[String] ~
-      (__ \ "activeInInCopy").read[Boolean] ~
-      (__ \ "takenDown").read[Boolean] ~
+      (__ \ "activeInInCopy").readNullable[Boolean].map(_.getOrElse(false)) ~
+      (__ \ "takenDown").readNullable[Boolean].map(_.getOrElse(false)) ~
       (__ \ "timeTakenDown").readNullable[DateTime] ~
       (__ \ "wordCount").readNullable[Int].map {
         c => c.getOrElse(0)
       }
+
       )(WorkflowContent.apply _)
 }
 

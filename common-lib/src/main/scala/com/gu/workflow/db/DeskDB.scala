@@ -1,7 +1,7 @@
 package com.gu.workflow.db
 
 import com.gu.workflow.db.Schema._
-import models.Desk
+import models.{Section, Desk}
 import scala.slick.driver.PostgresDriver.simple._
 
 object DeskDB {
