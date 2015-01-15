@@ -63,7 +63,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                 };
 
                 $rootScope.$on('filtersChanged.freeText', function(event, data) {
-                    self.clearAll();
+                    //self.clearAll();
                     if(data != null) {
                         var rest =
                             data.replace(/\s*([A-Za-z-]+):(\S+)\s*/g, (match, field, value) => {
