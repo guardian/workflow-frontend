@@ -66,6 +66,7 @@ angular.module('wfFiltersService', ['wfDateService'])
 
                 function enterSearchMode(data) {
                     savedFilters = _.clone(self.filters);
+                    self.clearAll();
                     $rootScope.$broadcast("search-mode.enter");
                 }
 

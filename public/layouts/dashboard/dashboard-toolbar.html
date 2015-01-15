@@ -23,6 +23,8 @@
 <div class="dashboard-toolbar__section" ng-controller="wfToolbarFreetextController">
     <form>
         <input ng-model="value" placeholder="Search" ng-change="update()" type="text" value=""/>
-        <input class="dashboard-toolbar__section-search-reset" type="button" ng-click="reset()" value="X"/>
+        <span class="dashboard-toolbar__section-search-reset" ng-click="reset()">
+            <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="cross"></i>
+        </span>
     </form>
 </div>
