@@ -1,4 +1,3 @@
-
 import angular from 'angular';
 
 import 'angular-bootstrap';
@@ -25,11 +24,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     })[mode];
 
     $scope.formData = {};
-    $scope.stub = stub;
-
     $scope.disabled = !!stub.composerId;
-
     $scope.sections = getSectionsList(sections);
+
+    $scope.stub = stub;
     $scope.stub.section = (function findSelectedSectionInAvailableSections () {
         var sect = $scope.stub.section;
         var filteredSections = $scope.sections.filter((el) => el.name === sect.name);
@@ -47,7 +45,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
      * @returns Filtered list of sections
      */
     function getSectionsList (sections) {
-
         var deskId = wfFiltersService.get('desk');
 
         if (deskId) {
@@ -62,7 +59,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
 
     $scope.$watch('stub.section', (newValue, oldValue) => {
-
         wfPreferencesService.getPreference('preferedStub').then((data) => {
             data.section = newValue.name;
             wfPreferencesService.setPreference('preferedStub', data);
@@ -78,11 +74,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             (composerContent) => {
                 if (composerContent) {
                     var stub = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
-
-                    // preset working title
                     stub.title = stub.headline;
-
-
                 } else {
                     $scope.stub.composerId = null;
                     $scope.stub.contentType = null;
@@ -128,17 +120,18 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             }
 
             $scope.actionSuccess = true;
+            $scope.actionInProgress = false;
         }, (err) => {
-
             $scope.actionSuccess = false;
             $scope.contentUpdateError = true;
+
             $scope.errorMsg = err.friendlyMessage || err.message || err;
             $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
 
             $scope.actionSuccess = false;
+            $scope.actionInProgress = false;
         });
 
-        $scope.actionInProgress = false;
     };
 
     $scope.cancel = function () {
@@ -155,7 +148,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                 $scope.$apply(() => { throw err; });
             });
     };
-
 }
 
 wfStubModal.run([
@@ -187,7 +179,6 @@ wfStubModal.run([
          * @returns {Promise}
          */
         function setUpPreferedStub (contentType) {
-
             var defaultSection = 'Technology'; // tech by default
 
             function createStubData (contentType, section) {
@@ -221,23 +212,13 @@ wfStubModal.run([
             });
         });
 
-        $rootScope.$on('stub.created', (event, msg) => {
-            //if(msg.contentItem.composerId) {
-            //    var composerUrl = config.composerViewContent + '/' + msg.contentItem.composerId;
-            //    $window.open(composerUrl);
-            //}
-        });
-
         $rootScope.$on('content:import', function (event) {
-
             setUpPreferedStub(null).then((stub) => {
-
                 open(stub, 'import')
             });
         });
 
         function open(stub, mode) {
-
             var modalInstance = $modal.open({
                 templateUrl: '/assets/components/stub-modal/stub-modal.html',
                 controller: StubModalInstanceCtrl,
@@ -247,40 +228,5 @@ wfStubModal.run([
                     mode: () => mode
                 }
             });
-
-            modalInstance.result.then(function (modalCloseResult) {
-                console.log("resolved");
-//                var stub = modalCloseResult.stub;
-//                var addToComposer = modalCloseResult.addToComposer;
-//
-//                stub.status = 'Writers'; // TODO: allow status to be selected
-//
-//                var promise;
-//                if (addToComposer) {
-//                    promise = wfContentService.createInComposer(stub);
-//
-//                } else if (stub.id) {
-//                    promise = wfContentService.updateStub(stub);
-//
-//                } else {
-//                    promise = wfContentService.createStub(stub);
-//                }
-//
-//                promise.then(() => {
-//                    // Map modal mode to event name
-//                    var eventName = ({
-//                        'create': 'stub.created',
-//                        'edit': 'stub.edited',
-//                        'import': 'content.imported'
-//                    }[mode]);
-//
-//                    $rootScope.$broadcast(eventName, { 'contentItem': stub });
-//                    $rootScope.$broadcast('getContent');
-//                }, (err) => {
-//                    $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
-//                });
-
-            });
-
-        }
+        };
     }]);
