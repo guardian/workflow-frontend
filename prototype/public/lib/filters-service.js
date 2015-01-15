@@ -63,11 +63,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                 };
 
                 function enterSearchMode(data) {
-                    console.log("entering search phase", data);
+                    $rootScope.$broadcast("search-mode.enter");
                 }
 
                 function exitSearchMode(data) {
-                    console.log("exiting search phase", data);
+                    $rootScope.$broadcast("search-mode.exit");
                 }
 
                 $rootScope.$on('filtersChanged.freeText', function(event, data) {
