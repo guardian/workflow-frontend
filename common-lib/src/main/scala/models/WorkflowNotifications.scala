@@ -17,7 +17,6 @@ case class ContentUpdateEvent (
   user: Option[String],
   lastModified: DateTime,
   tags: Option[List[Tag]],
-  status: Status,
   commentable: Boolean,
   lastMajorRevisionDate: Option[DateTime],
   publicationDate: Option[DateTime],
@@ -67,7 +66,6 @@ object ContentUpdateEvent {
       }))
   }
 
-
   def readFromApi(json: JsValue, wf: WorkflowContent): JsResult[ContentUpdateEvent] = {
     val js = json \ "data"
     for {
@@ -85,8 +83,7 @@ object ContentUpdateEvent {
       publicationDate <- (js \ "contentChangeDetails" \ "data" \ "published" \ "date").validate[Option[Long]].map(optT => optT.map(t => new DateTime(t)))
       thumbnail <- (js \ "preview" \ "data" \ "thumbnail" \ "data").validate[Option[Thumbnail]]
       revision <- (js \ "contentChangeDetails" \ "data" \ "revision").validate[Long]
-      status = Writers
-    } yield ContentUpdateEvent(composerId, identifiers, fields, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags, status, commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount=wf.wordCount)
+    } yield ContentUpdateEvent(composerId, identifiers, fields, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags,commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount=wf.wordCount)
   }
 
   implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (
@@ -102,7 +99,6 @@ object ContentUpdateEvent {
     (__ \ "content" \ "taxonomy").readNullable(
       (__ \ "tags").read[List[Tag]]
     ) ~
-    (__ \ "content" \ "published").read[Boolean].map(p => if (p) Final else Writers) ~
     (__ \ "content" \ "settings" \ "commentable").readNullable[String].map {
       s => s.exists(_=="true")
     } ~

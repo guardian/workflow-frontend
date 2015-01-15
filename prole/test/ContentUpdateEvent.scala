@@ -1,4 +1,4 @@
-import models.ContentUpdateEvent
+import models.{WorkflowContent, ContentUpdateEvent}
 import org.joda.time.DateTime
 import org.scalatest.{FunSuite, ShouldMatchers}
 import lib.ResourcesHelper
@@ -11,6 +11,7 @@ class ContentUpdateEventModelSpec extends FunSuite with ShouldMatchers with Reso
     val JsSuccess(ws, _) = Json.parse(resource).validate[ContentUpdateEvent]
 
     ws.composerId should equal("id")
+    ws.wordCount should equal(16)
 
     (for {
       b <- ws.mainBlock
@@ -20,7 +21,7 @@ class ContentUpdateEventModelSpec extends FunSuite with ShouldMatchers with Reso
 
   test("parse content update notification from api") {
     val resource = slurp("flex-api-response.json").getOrElse(throw new RuntimeException("could not find test resource"))
-    val JsSuccess(ws,_) =  ContentUpdateEvent.readFromApi(Json.parse(resource))
+    val JsSuccess(ws,_) =  ContentUpdateEvent.readFromApi(Json.parse(resource), WorkflowContent.default("5495b697e4b08b9165ec75ba"))
 
     ws.composerId should equal("5495b697e4b08b9165ec75ba")
     ws.`type` should equal ("article")
