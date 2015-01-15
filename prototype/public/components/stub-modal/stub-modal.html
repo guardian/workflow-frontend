@@ -3,14 +3,6 @@
     <h4 class="modal-title">{{ modalTitle }}</h4>
 </div>
 
-<div class="alert alert-danger" ng-show="actionSuccess === false">
-    <p>There was an error performing this request: {{ errorMsg }} </p>
-</div>
-
-<div class="alert alert-success" ng-show="actionSuccess">
-    <p>Action completed successfully!</p>
-</div>
-
 <form name="stubForm">
     <fieldset ng-disabled="actionSuccess">
     <input type="hidden" ng-model="stub.id"/>
@@ -106,4 +98,12 @@
 <div class="modal-footer" ng-show="actionSuccess && composerUrl">
    <button type="button" class="btn btn-default pull-left" ng-click="cancel()">Dismiss</button>
     <a ng-href="{{composerUrl}}" class="btn btn-primary pull-right" target="_blank" ng-click="cancel()">View in Composer</a>
+</div>
+
+<div class="modal-footer alert alert-danger" ng-show="actionSuccess === false">
+    <p>There was an error performing this request: {{ errorMsg }} </p>
+</div>
+
+<div class="modal-footer alert alert-success" ng-show="actionSuccess">
+    <p>Action completed successfully!</p>
 </div>
