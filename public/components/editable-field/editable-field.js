@@ -95,7 +95,7 @@ function wfEditableDirectiveFactory($timeout) {
 
             function checkForImplicitCancelListener(event) {
                 if (!isElementChildOf(event.target, $element[0], 3)) {
-                    editableController.setEditMode(false);
+                    $scope.$broadcast('wfEditable.implicitCancel');
                     $scope.$apply();
                 }
             }
@@ -105,12 +105,12 @@ function wfEditableDirectiveFactory($timeout) {
              * on the body outside the control, or focus outside of the control.
              */
             function addImplicitCancelListeners() {
-                document.body.addEventListener('click', checkForImplicitCancelListener);
+                document.body.addEventListener('mousedown', checkForImplicitCancelListener);
                 document.body.addEventListener('focus', checkForImplicitCancelListener, true);
             }
 
             function removeImplicitCancelListeners() {
-                document.body.removeEventListener('click', checkForImplicitCancelListener);
+                document.body.removeEventListener('mousedown', checkForImplicitCancelListener);
                 document.body.removeEventListener('focus', checkForImplicitCancelListener, true);
             }
 
@@ -156,8 +156,17 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
                 wfEditable.setEditMode(false);
             }
 
+            function implicitCancel() {
+                if (ngModel.$viewValue == ngModel.$modelValue) {
+                    wfEditable.setEditMode(false);
+                } else {
+                    wfEditable.setErrors({ notSaved: true });
+                }
+            }
+
             $scope.$on('wfEditable.commit', commit);
             $scope.$on('wfEditable.cancel', cancel);
+            $scope.$on('wfEditable.implicitCancel', implicitCancel);
 
             $scope.$on('wfEditable.changedEditMode', ($event, mode) => {
                 if (mode === true) {
