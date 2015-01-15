@@ -8,8 +8,10 @@ sealed trait WorkflowNotification
 
 case class ContentUpdateEvent (
   composerId: String,
-  identifiers: Map[String, String],
-  fields: Map[String, String],
+  path: Option[String],
+  headline: Option[String],
+  standfirst: Option[String],
+  trailText: Option[String],
   mainBlock: Option[Block],
   `type`: String,
   whatChanged: String,
@@ -70,8 +72,10 @@ object ContentUpdateEvent {
     val js = json \ "data"
     for {
       composerId <- (js \ "id").validate[String]
-      identifiers <- readsMap(js \ "identifiers")
-      fields <- readsMap(js \ "preview" \ "data" \ "fields")
+      path <- readsMap(js \ "identifiers").map(m => m.get("path"))
+      headline <- readsMap(js \ "preview" \ "data" \ "fields").map(m => m.get("headline"))
+      standfirst <- readsMap(js \ "preview" \ "data" \ "fields").map(m => m.get("standfirst"))
+      trailText <- readsMap(js \ "preview" \ "data" \ "fields").map(m => m.get("trailText"))
       mainBlock <- (js \ "preview" \ "data" \ "mainBlock" \ "data" \ "block").validate[Option[Block]]
       contentType <- (js \ "type").validate[String]
       published <- (js \ "published").validate[Boolean]
@@ -83,13 +87,15 @@ object ContentUpdateEvent {
       publicationDate <- (js \ "contentChangeDetails" \ "data" \ "published" \ "date").validate[Option[Long]].map(optT => optT.map(t => new DateTime(t)))
       thumbnail <- (js \ "preview" \ "data" \ "thumbnail" \ "data").validate[Option[Thumbnail]]
       revision <- (js \ "contentChangeDetails" \ "data" \ "revision").validate[Long]
-    } yield ContentUpdateEvent(composerId, identifiers, fields, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags,commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount=wf.wordCount)
+    } yield ContentUpdateEvent(composerId, path, headline, standfirst, trailText, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags,commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount=wf.wordCount)
   }
 
   implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (
     (__ \ "content" \ "id").read[String] ~
-    (__ \ "content" \ "identifiers").read[Map[String, String]] ~
-    (__ \ "content" \ "fields").read[Map[String, String]] ~
+    (__ \ "content" \ "identifiers").read[Map[String, String]].map(m => m.get("path")) ~
+    (__ \ "content" \ "fields").read[Map[String, String]].map(m => m.get("headline")) ~
+    (__ \ "content" \ "fields").read[Map[String, String]].map(m => m.get("standfirst")) ~
+    (__ \ "content" \ "fields").read[Map[String, String]].map(m => m.get("trailText")) ~
     (__ \ "content" \ "mainBlock").readNullable[Block] ~
     (__ \ "content" \ "type").read[String] ~
     (__ \ "whatChanged").read[String] ~

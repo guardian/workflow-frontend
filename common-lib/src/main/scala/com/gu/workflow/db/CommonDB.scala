@@ -79,11 +79,11 @@ object CommonDB {
         c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl,
         c.published, c.timePublished, c.revision, c.wordCount)
         )
-        .update((e.identifiers.get("path"), e.lastModified, e.user, e.`type`,
-          e.commentable, e.identifiers.get("headline"), e.identifiers.get("standfirst"),
-          e.identifiers.get("trailtext"), mainMedia.mediaType, mainMedia.url, mainMedia.caption,
+        .update(e.path, e.lastModified, e.user, e.`type`,
+          e.commentable, e.headline, e.standfirst,
+          e.trailText, mainMedia.mediaType, mainMedia.url, mainMedia.caption,
           mainMedia.altText, WorkflowContent.getTrailImageUrl(e.thumbnail), e.published, e.publicationDate,
-          Some(e.revision), e.wordCount))
+          Some(e.revision), e.wordCount)
     }
 
   }

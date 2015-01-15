@@ -11,6 +11,9 @@ class ContentUpdateEventModelSpec extends FunSuite with ShouldMatchers with Reso
     val JsSuccess(ws, _) = Json.parse(resource).validate[ContentUpdateEvent]
 
     ws.composerId should equal("id")
+    ws.path should equal (Some("music/2014/dec/08/nopennnnnn"))
+    ws.headline should equal (Some("nn"))
+    ws.trailText should equal (Some("ddsfsdsdf"))
     ws.wordCount should equal(16)
 
     (for {
@@ -32,8 +35,10 @@ class ContentUpdateEventModelSpec extends FunSuite with ShouldMatchers with Reso
     ws.published should equal (true)
     ws.lastMajorRevisionDate should equal (Some(new DateTime("2014-12-30T11:30:11.172Z")))
     ws.publicationDate should equal (Some(new DateTime("2014-12-30T11:30:11.172Z")))
-    ws.identifiers should equal (Map("path" -> "football/blog/2014/dec/30/us-soccer-2014-10-memorable-moments-klinsmann-altidore-world-cup","pageId" ->  "2213457"))
-    ws.fields should equal (Map( "trailText" -> "trailText", "headline" -> "headline", "linkText" -> "linkText", "standfirst" -> "standfirst", "slug" -> "slug", "byline" -> "byline"))
+    ws.path should equal (Some("football/blog/2014/dec/30/us-soccer-2014-10-memorable-moments-klinsmann-altidore-world-cup"))
+    ws.headline should equal (Some("headline"))
+    ws.trailText should equal (Some("trailText"))
+    ws.standfirst should equal (Some("standfirst"))
 
   }
 }
