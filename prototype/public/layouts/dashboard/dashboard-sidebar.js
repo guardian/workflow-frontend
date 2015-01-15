@@ -13,4 +13,15 @@ angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wf
         $scope.statuses = statuses;
 
         $scope.filters = filterDefaults(statuses, wfFiltersService);
+
+        function enableSidebar() {
+            $scope.enabled = "active";
+        }
+        
+        function disableSidebar() {
+            $scope.enabled = "inactive";
+        }
+
+        // default to enabled
+        enableSidebar();
     }]);
