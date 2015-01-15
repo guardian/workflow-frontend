@@ -97,7 +97,8 @@ angular.module('workflow',
             }
         });
         $locationProvider.html5Mode({
-            enabled: true
+            enabled: true,
+            requireBase: false
         });
 
     }])
