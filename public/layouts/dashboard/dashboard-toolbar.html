@@ -20,4 +20,9 @@
 
 <div wf-toolbar-sections-dropdown ng-model="selectedSections" sections="sections" selectedDesk="selectedDesk"></div>
 
-<div class="dashboard-toolbar__section"><input wf-toolbar-freetext ng-model="value" placeholder="Search" ng-change="update()" type="text" value=""/></div>
+<div class="dashboard-toolbar__section" ng-controller="wfToolbarFreetextController">
+    <form>
+        <input ng-model="value" placeholder="Search" ng-change="update()" type="text" value=""/>
+        <input class="dashboard-toolbar__section-search-reset" type="button" ng-click="reset()" value="X"/>
+    </form>
+</div>
