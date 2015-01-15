@@ -323,6 +323,6 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 }
 
 .dashboard-toolbar__section-search-reset {
-    background-color: transparent;
-    border: none;
+    margin-left: 5px;
+    cursor: pointer;
 }
