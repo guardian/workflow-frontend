@@ -180,6 +180,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             link: function ($scope, elem, attrs) {
                 $scope.value = "";
                 var timeout = null;
+                var oldValue = null;
                 $scope.update = function() {
 
                     if(timeout != null) {
@@ -187,10 +188,14 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                     }
 
                     timeout = $timeout(() => {
+                        var newValue = ($scope.value.length < 1) ? null :
+                            $scope.value;
+
                         $rootScope.$broadcast(
                             "filtersChanged.freeText",
-                            ($scope.value.length < 1) ? null : $scope.value
+                            {newValue: newValue, oldValue: oldValue}
                         );
+                        oldValue = newValue;
                     }, delay);
                 }
             }
