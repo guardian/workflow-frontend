@@ -9,6 +9,7 @@ OPTIONS        /api/*url                              controllers.Api.allowCORSA
 
 GET            /dashboard                             controllers.Application.dashboard
 
+GET            /about                                 controllers.Application.about
 
 # Login
 GET            /oauthCallback                         controllers.Login.oauthCallback
@@ -70,5 +71,6 @@ GET            /sharedsecret/content/:id              controllers.Api.sharedAuth
 
 # Management
 GET            /management/healthcheck                controllers.Management.healthCheck
+
 # Map static resources from the /public folder to the /assets URL path
 GET            /assets/*file                          controllers.Assets.at(path="/public", file)
