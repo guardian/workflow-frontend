@@ -152,7 +152,7 @@ wfStubModal.run([
 
                 return {
                     contentType: contentType,
-                    section: getSectionFromSections(section),
+                    section: getSectionFromSections(section) || defaultSection,
                     priority: 0,
                     needsLegal: 'NA',
                     prodOffice: currentFilteredOffice() ||  'UK'
