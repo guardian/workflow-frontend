@@ -122,32 +122,6 @@ object WorkflowContent {
     } yield tag.section
   }
 
-  def fromContentUpdateEvent(e: ContentUpdateEvent): WorkflowContent = {
-    val mainMedia = WorkflowContentMainMedia.getMainMedia(e.mainBlock)
-
-    WorkflowContent(
-      e.composerId,
-      e.identifiers.get("path"),
-      e.fields.get("headline"),
-      e.fields.get("standfirst"),
-      e.fields.get("trailText"),
-      mainMedia,
-      getTrailImageUrl(e.thumbnail),
-      e.`type`,
-      getSectionFromTags(e.tags),
-      e.status, // not written to the database but the DTO requires a value.
-      e.lastModified,
-      e.user,
-      commentable=e.commentable,
-      published = e.published,
-      timePublished = e.publicationDate,
-      storyBundleId = e.storyBundleId,
-      false, // assume not active in incopy
-      takenDown = false,
-      timeTakenDown = None,
-      wordCount = e.wordCount
-    )
-  }
 
   def default(composerId: String, contentType: String = "article", activeInInCopy: Boolean = false): WorkflowContent = {
     WorkflowContent(
@@ -215,7 +189,6 @@ object WorkflowContent {
     val mainMedia = wc.mainMedia.getOrElse(
       WorkflowContentMainMedia(None, None, None, None)
     )
-
     wc.composerId       ::
     wc.path             ::
     wc.lastModified     ::
@@ -257,19 +230,20 @@ object WorkflowContent {
       (__ \ "section" \ "name").readNullable[String].map {
         _.map(s => Section(s))
       } ~
-      (__ \ "status").read[String].map { s => Status(s) } ~
+      (__ \ "status").readNullable[String].map { sOpt => Status(sOpt.getOrElse("Writers")) } ~
       (__ \ "lastModified").read[DateTime] ~
       (__ \ "lastModifiedBy").readNullable[String] ~
-      (__ \ "commentable").read[Boolean] ~
+      (__ \ "commentable").readNullable[Boolean].map(_.getOrElse(false)) ~
       (__ \ "published").read[Boolean] ~
       (__ \ "timePublished").readNullable[DateTime] ~
       (__ \ "storyBundleId").readNullable[String] ~
-      (__ \ "activeInInCopy").read[Boolean] ~
-      (__ \ "takenDown").read[Boolean] ~
+      (__ \ "activeInInCopy").readNullable[Boolean].map(_.getOrElse(false)) ~
+      (__ \ "takenDown").readNullable[Boolean].map(_.getOrElse(false)) ~
       (__ \ "timeTakenDown").readNullable[DateTime] ~
       (__ \ "wordCount").readNullable[Int].map {
         c => c.getOrElse(0)
       }
+
       )(WorkflowContent.apply _)
 }
 
