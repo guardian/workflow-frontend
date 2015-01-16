@@ -168,8 +168,9 @@ object Api extends Controller with PanDomainAuthActions {
     APIAuthAction { implicit request =>
       ApiResponse(for {
         jsValue <- readJsonFromRequestApiResponse(request.body).right
-        contentItem <- extractApiResponse[ContentItem](jsValue).right
-        stubId <- PostgresDB.createContent(contentItem).right
+        stub <- extractApiResponse[Stub](jsValue).right
+        wcOpt <- (if(stub.composerId.isDefined) extractApiResponseOption[WorkflowContent](jsValue) else extractApiResponse[Option[WorkflowContent]](jsValue)).right
+        stubId <- PostgresDB.createContent(ContentItem(stub, wcOpt)).right
       } yield {
         stubId
       })
@@ -353,6 +354,15 @@ object Api extends Controller with PanDomainAuthActions {
   private def extractApiResponse[A: Reads](jsValue: JsValue): ApiResponse[A] = {
     jsValue.validate[A] match {
       case JsSuccess(a, _) => Right(a)
+      case error@JsError(_) =>
+        val errMsg = errorMsgs(error)
+        Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
+    }
+  }
+  //todo - add a transformer to take an ApiResponse[A] to ApiResponse[Option[A]]
+  private def extractApiResponseOption[A: Reads](jsValue: JsValue): ApiResponse[Option[A]] = {
+    jsValue.validate[A] match {
+      case JsSuccess(a, _) => Right(Some(a))
       case error@JsError(_) =>
         val errMsg = errorMsgs(error)
         Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
