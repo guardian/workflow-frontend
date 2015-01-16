@@ -19,7 +19,7 @@ import { wfContentListDrawer } from 'components/content-list-drawer/content-list
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
-    .controller('wfContentListController', ['$rootScope', '$scope', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
+    .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', '$q', '$compile', '$http', '$templateCache', 'wfColumnService', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer])
@@ -46,7 +46,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 
 
-function wfContentListController($rootScope, $scope, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService) {
+function wfContentListController($rootScope, $scope, $anchorScroll, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService) {
 
     /*jshint validthis:true */
 
@@ -229,7 +229,13 @@ function wfContentListController($rootScope, $scope, statuses, sections, wfConte
     poller.onPoll(this.render);
     poller.onError(this.renderError);
 
-    poller.startPolling();
+    poller.startPolling().then(function(){
+         var myListener = $rootScope.$on('content.rendered',
+                           function(event, data){
+                                  $anchorScroll();
+                                  myListener();
+                           });
+    });
 
     $scope.$on('destroy', function () {
         poller.stopPolling();
