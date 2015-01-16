@@ -18,6 +18,10 @@ object Application extends Controller with PanDomainAuthActions {
 
   def dashboard = app("Workflow")
 
+  def about = AuthAction { request =>
+      Ok(views.html.about())
+  }
+
   def app(title: String) = AuthAction.async { request =>
 
     for {
