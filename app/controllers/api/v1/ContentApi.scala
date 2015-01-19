@@ -2,7 +2,7 @@ package controllers
 
 import javax.ws.rs.PathParam
 import models.Response.Response
-import com.gu.workflow.db.CommonDB
+import com.gu.workflow.db.{CommonDB, Archive}
 import com.gu.workflow.query.WfQuery
 import controllers.Api._
 import lib.OrderingImplicits._
@@ -15,31 +15,9 @@ import com.wordnik.swagger.core.util.ScalaJsonUtil
 
 import scala.util.Either
 
+
 @Api(value = "/content", description = "Operations about content")
-object ContentApi extends Controller with PanDomainAuthActions {
-
-
-  val composerUrl = PrototypeConfiguration.apply.composerUrl
-
-  def allowCORSAccess(methods: String, args: Any*) = CORSable(composerUrl) {
-
-    Action { implicit req =>
-      val requestedHeaders = req.headers("Access-Control-Request-Headers")
-      NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
-    }
-  }
-
-  def queryStringMultiOption[A](param: Option[String],
-                                // default transformer just makes
-                                // Option using Sum.apply
-                                f: String => Option[A] = (s: String) => Some(s)): List[A] =
-  // conver the query string into a list of filters by separating on
-  // "," and pass to the transformation function to get the required
-  // type. If the param doesn't exist in the query string, assume
-  // the empty list
-    param map {
-      _.split(",").toList.map(f).collect { case Some(a) => a }
-    } getOrElse Nil
+object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
@@ -80,7 +58,6 @@ object ContentApi extends Controller with PanDomainAuthActions {
 
   def content = APIAuthAction(getContentBlock)
 
-
   @ApiOperation(
     nickname = "getContentById",
     value = "Find contentItem by ID",
@@ -92,13 +69,19 @@ object ContentApi extends Controller with PanDomainAuthActions {
     new ApiResponse(code = 404, message = "ContentNotFound")
   ))
   def contentById(@ApiParam(value = "ID of the content item to fetch") @PathParam("id") id: Long) = APIAuthAction {
-   Response(
-      for {
-        cItem <- PostgresDB.getContentById(id).right
-      } yield {
-        cItem
+    val contentOpt: Option[ContentItem] = PostgresDB.getContentById(id)
+
+    val contentEither = contentOpt match {
+      case Some(contentItem) => Right(contentItem)
+      case None => {
+        Archive.getArchiveContentForStubId(id) match {
+          case Some(c: ArchiveContent) => Left(contentMovedToArchive(c))
+          case None => Left(ApiErrors.notFound)
+        }
       }
-    )
+    }
+
+    Response(contentEither)
   }
 
   @ApiOperation(
@@ -140,32 +123,6 @@ object ContentApi extends Controller with PanDomainAuthActions {
       Response(for {
         stubId <- PostgresDB.deleteStub(id).right
       }yield stubId)
-    }
-  }
-
-  //duplicated from the method above to give a standard API response. should move all api methods onto to this
-  private def readJsonFromRequest(requestBody: AnyContent):  models.Response.Response[JsValue] = {
-    requestBody.asJson match {
-      case Some(jsValue) => Right(jsValue)
-      case None => Left(ApiErrors.invalidContentSend)
-    }
-  }
-
-  /* JsError's may contain a number of different errors for differnt
-   * paths. This will aggregate them into a single string */
-  private def errorMsgs(error: JsError) =
-    (for ((path, msgs) <- error.errors; msg <- msgs)
-    yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
-
-
-
-  //duplicated from the method above to give a standard API response. should move all api methods onto to this
-  private def extract[A: Reads](jsValue: JsValue): models.Response.Response[A] = {
-    jsValue.validate[A] match {
-      case JsSuccess(a, _) => Right(a)
-      case error@JsError(_) =>
-        val errMsg = errorMsgs(error)
-        Left(ApiErrors.jsonParseError(errMsg.toString))
     }
   }
 }
