@@ -88,5 +88,7 @@
     &__error {
         display: none;
         font-style: italic;
+        margin-right: -55px;
+        white-space: nowrap;
     }
 }
