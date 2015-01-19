@@ -4,7 +4,7 @@ import play.api.libs.json._
 import play.api.mvc.{Results, Result}
 
 
-case class ApiError(message: String, friendlyMessage: String, statusCode: Int, statusString: String)
+case class ApiError(message: String, friendlyMessage: String, statusCode: Int, statusString: String, data: Option[JsObject] = None)
 
 case object ApiError {
   implicit val apiErrorFormat = Json.format[ApiError]
@@ -29,7 +29,6 @@ object Response extends Results {
         JsObject(Seq(
           "status" -> JsString(apiError.statusString),
           "statusCode" -> JsNumber(apiError.statusCode),
-          "data" -> JsArray(),
           "error" -> Json.toJson(apiError)
         ))
       }
