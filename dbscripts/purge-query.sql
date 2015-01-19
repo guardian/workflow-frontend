@@ -35,7 +35,7 @@ and pk not in
    or (x3."status" = 'Hold')))
 
 --create a temporary table
-create table Temp(stub_id Integer, composer_id varchar(32));
+create table Temp(stub_id Integer, composer_id varchar(32) null);
 
 --insert ids into a temp table
 insert into Temp(stub_id, composer_id) select x2.pk, x3.composer_id from stub x2, content x3 where x2.composer_id = x3.composer_id and pk in
@@ -68,3 +68,17 @@ delete from content where composer_id in (select x2.composer_id from stub x2, co
 delete from stub where stub.pk in (select stub_id from Temp);
 
 
+--stubs only
+
+select x2.pk from "stub" x2 where x2."composer_id" is null;
+select x2.pk from "stub" x2 where x2."composer_id" is null and ((x2."due" is null) or (x2."due" > now() - interval '7 days'))
+
+select x2.pk from stub x2 where pk in
+(select x2.pk from "stub" x2 where x2."composer_id" is null) and pk not in
+(select x2.pk from "stub" x2 where x2."composer_id" is null and ((x2."due" is null) or (x2."due" > now() - interval '7 days')));
+
+insert into Temp(stub_id) select x2.pk from stub x2 where pk in
+                          (select x2.pk from "stub" x2 where x2."composer_id" is null) and pk not in
+                          (select x2.pk from "stub" x2 where x2."composer_id" is null and ((x2."due" is null) or (x2."due" > now() - interval '7 days')));
+
+delete from stub where stub.pk in (select stub_id from Temp);
