@@ -47,9 +47,12 @@ object CommonDB {
     def dueDateInFuture = s.due > DateTime.now()
     //content item has been published within last 24 hours
     ((publishedWithinLastDay || c.timePublished.isEmpty) &&
-
       (dueDateWithinLastWeek  || s.due.isEmpty) &&
       (lastModifiedWithinWeek || dueDateInFuture || c.timePublished.isEmpty))
+  }
+
+  def hideContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
+      c.status === Status("Final").name && c.published && c.lastModified < DateTime.now().minusDays(1)
   }
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =

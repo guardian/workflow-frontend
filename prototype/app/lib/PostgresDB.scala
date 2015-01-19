@@ -45,7 +45,7 @@ object PostgresDB {
         if s.composerId === c.composerId
       } yield (s, c)
 
-      query.filter( {case (s,c) => displayContentItem(s, c) })
+      query.filter( {case (s,c) => !hideContentItem(s, c) })
            .list.map {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
