@@ -11,9 +11,12 @@ case object ApiError {
 }
 
 object ApiErrors {
-  lazy val notFound = new ApiError("ContentNotFound", "Content does not exist", 404, "notfound")
-  lazy val invalidContentSend = new ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")
-  def jsonParseError(errMsg: String) = new ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")
+  lazy val notFound                  = ApiError("ContentNotFound", "Content does not exist", 404, "notfound")
+  lazy val invalidContentSend        = ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")
+
+  def jsonParseError(errMsg: String) = ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")
+  def updateError(id: Long)          = ApiError("UpdateError", s"Item with ID, ${id} does not exist", 404, "notfound")
+  def composerIdNotFound(id: String) = ApiError("ComposerIdNotFound", s"Composer Id ${id} does not exist in workflow", 404, "notfound")
 }
 
 

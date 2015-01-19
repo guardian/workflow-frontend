@@ -65,6 +65,29 @@ object CommonDB {
               .update(WorkflowContent.newContentRow(wc, Some(revision)))
   }
 
+  def updateContentFromUpdateEvent(e: ContentUpdateEvent): Int = {
+    val mainMedia = WorkflowContentMainMedia.getMainMedia(e.mainBlock).getOrElse(
+      WorkflowContentMainMedia(None, None, None, None)
+    )
+    DB.withTransaction { implicit session =>
+      content.filter(_.composerId === e.composerId)
+        .filter(c => c.revision <= e.revision || c.revision.isEmpty)
+        .map(c => (
+        c.path, c.lastModified, c.lastModifiedBy, c.contentType,
+        c.commentable, c.headline, c.standfirst,
+        c.trailtext, c.mainMedia, c.mainMediaUrl,
+        c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl,
+        c.published, c.timePublished, c.revision, c.wordCount)
+        )
+        .update(e.path, e.lastModified, e.user, e.`type`,
+          e.commentable, e.headline, e.standfirst,
+          e.trailText, mainMedia.mediaType, mainMedia.url, mainMedia.caption,
+          mainMedia.altText, WorkflowContent.getTrailImageUrl(e.thumbnail), e.published, e.publicationDate,
+          Some(e.revision), e.wordCount)
+    }
+
+  }
+
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {
       content += WorkflowContent.newContentRow(wc, revision)
   }
