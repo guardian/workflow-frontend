@@ -20,8 +20,7 @@ object CommonDB {
 
       val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isEmpty) else stubsQuery(query)
 
-      q.filter(s => dueDateNotExpired(s.due))
-        .list.map(row => Stub.fromStubRow(row))
+      q .list.map(row => Stub.fromStubRow(row))
     }
 
   def getStubForComposerId(composerId: String): Option[Stub] = DB.withTransaction { implicit session =>
