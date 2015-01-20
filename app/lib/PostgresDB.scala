@@ -71,7 +71,7 @@ object PostgresDB {
       val content: List[ContentItem] = leftJoinQ.list.map { case (s, c) => {
         ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
       }}
-      Right(content)
+      Right(ApiSuccess(content))
     }
   }
 
@@ -104,7 +104,7 @@ object PostgresDB {
             content += WorkflowContent.newContentRow(_, None)
           )
 
-          Right((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
+          Right(ApiSuccess((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub)))
         }
       }
     }
@@ -121,7 +121,18 @@ object PostgresDB {
     }
   }
 
-  def getContentByComposerId(composerId: String): Response[DashboardRow] = {
+  def getContentByCompserId(composerId: String): Option[ContentItem] = {
+    DB.withTransaction { implicit session =>
+      (for {
+        (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
+        if s.composerId === composerId
+      } yield (s,  c.?)).firstOption.map { case (s, c) => {
+        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
+      }}
+    }
+  }
+
+  def getDashboardRowByComposerId(composerId: String): Response[DashboardRow] = {
     DB.withTransaction { implicit session =>
 
       val query = for {
@@ -139,7 +150,7 @@ object PostgresDB {
       }
       dashboardRowOpt match {
         case None => Left(ApiErrors.composerIdNotFound(composerId))
-        case Some(d) => Right(d)
+        case Some(d) => Right(ApiSuccess(d))
       }
     }
   }
@@ -155,7 +166,7 @@ object PostgresDB {
         .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
 
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(id)
+      else Right(ApiSuccess(id))
     }
   }
 
@@ -170,7 +181,7 @@ object PostgresDB {
         .update((Some(composerId), Some(contentType)))
 
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(id)
+      else Right(ApiSuccess(id))
     }
   }
 
@@ -181,7 +192,7 @@ object PostgresDB {
         .map(s => s.assignee)
         .update(assignee)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(id)
+      else Right(ApiSuccess(id))
     }
   }
 
@@ -192,7 +203,7 @@ object PostgresDB {
         .map(s => s.due)
         .update(dueDate)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(id)
+      else Right(ApiSuccess(id))
     }
   }
 
@@ -204,7 +215,7 @@ object PostgresDB {
         .map(s => s.note)
         .update(note)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(id)
+      else Right(ApiSuccess(id))
     }
   }
 
@@ -215,7 +226,7 @@ object PostgresDB {
         .map(s => s.prodOffice)
         .update(prodOffice)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(id)
+      else Right(ApiSuccess(id))
     }
   }
 
@@ -226,7 +237,7 @@ object PostgresDB {
         .map(s => s.section)
         .update(section)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(id)
+      else Right(ApiSuccess(id))
     }
   }
 
@@ -237,7 +248,7 @@ object PostgresDB {
         .map(s => s.workingTitle)
         .update(workingTitle)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(id)
+      else Right(ApiSuccess(id))
     }
   }
 
@@ -248,7 +259,7 @@ object PostgresDB {
         .map(s => s.priority)
         .update(priority)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(id)
+      else Right(ApiSuccess(id))
     }
   }
 
@@ -259,7 +270,7 @@ object PostgresDB {
         .map(s => s.needsLegal)
         .update(status)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(id)
+      else Right(ApiSuccess(id))
     }
   }
 
@@ -282,7 +293,7 @@ object PostgresDB {
 
       // Delete from Stub table
       val deleted = queryCurrentStub.delete
-      if(deleted == 0) Right(id) else Left(ApiErrors.notFound)
+      if(deleted == 0) Right(ApiSuccess(id)) else Left(ApiErrors.notFound)
     }
   }
 
@@ -293,7 +304,7 @@ object PostgresDB {
       } yield wc.status
       val updatedRow = q.update(status)
       if(updatedRow==0) Left(ApiErrors.composerIdNotFound(composerId))
-      else Right(composerId)
+      else Right(ApiSuccess(composerId))
     }
   }
 }
