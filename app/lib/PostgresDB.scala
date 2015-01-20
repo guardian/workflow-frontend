@@ -63,18 +63,14 @@ object PostgresDB {
 
   def getContentItems(q: WfQuery): Response[List[ContentItem]] = {
     DB.withTransaction { implicit session =>
-      val leftJoinQ = for {
-        (s, c)<- WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId)
-        //TODO - come back to filter logic
-//        if((c.status === Status("Hold").name) || !(c.published && c.timePublished > DateTime.now().minusDays(1)) || c.published===false)
-      } yield (s,  c.?)
+      val leftJoinQ = (for {
+        (s, c)<- (WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId))
+        if(!hideContentItem(s,c))
+      } yield (s,  c.?))
 
       val content: List[ContentItem] = leftJoinQ.list.map { case (s, c) => {
         ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
       }}
-      //TODO - come back to sorting logic
-
-
       Right(content)
     }
   }
