@@ -1,13 +1,14 @@
 package controllers
 
 import javax.ws.rs.PathParam
+import com.gu.workflow.lib.{StatusDatabase, Formatting}
 import models.Flag.Flag
 import models.Response.Response
 import com.gu.workflow.db.{CommonDB, Archive}
 import com.gu.workflow.query.WfQuery
 import controllers.Api._
 import lib.OrderingImplicits._
-import lib.{PostgresDB, StatusDatabase, Formatting, PrototypeConfiguration}
+import lib.PostgresDB
 import models._
 import org.joda.time.DateTime
 import play.api.libs.json._
@@ -24,37 +25,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
 
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
-    val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
-    val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
-    val sections = queryStringMultiOption(req.getQueryString("section"),
-      s => Some(Section(s)))
-    val contentType = queryStringMultiOption(req.getQueryString("content-type"))
-    val flags = queryStringMultiOption(req.getQueryString("flags"),
-      WfQuery.queryStringToFlag.get(_))
-    val prodOffice = queryStringMultiOption(req.getQueryString("prodOffice"))
-    val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
-    val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
-    val status = queryStringMultiOption(req.getQueryString("status"), StatusDatabase.find(_))
-    val published = req.getQueryString("state").map(_ == "published")
-    val text = req.getQueryString("text")
-    val assignee = queryStringMultiOption(req.getQueryString("assignee"))
-
-    val composerId = req.getQueryString("composerId")
-
-
-    val queryData = WfQuery(
-      section       = sections,
-      status        = status,
-      contentType   = contentType,
-      prodOffice    = prodOffice,
-      dueTimes      = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
-      creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
-      flags         = flags,
-      published     = published,
-      text          = text,
-      assignedTo    = assignee,
-      composerId    = composerId
-    )
+    val queryData = WfQuery.fromRequest(req)
     //Note content items are not UI ordered yet
     Response(for{
       content <- PostgresDB.getContentItems(queryData).right

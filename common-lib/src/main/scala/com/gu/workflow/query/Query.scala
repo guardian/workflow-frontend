@@ -1,20 +1,24 @@
 package com.gu.workflow.query
 
+
+import play.api.mvc.{Request, AnyContent}
+
 import scala.slick.ast.BaseTypedType
 import scala.slick.driver.PostgresDriver.simple._
 import com.github.tototoshi.slick.PostgresJodaSupport._
-import scala.slick.lifted.{Query, Column, StringColumnExtensionMethods}
+import scala.slick.lifted.{Query, Column}
 import models._
 import models.Flag.Flag
 import org.joda.time.DateTime
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
+import com.gu.workflow.lib._
+
 
 case class WfQueryTime(
   from  : Option[DateTime],
   until : Option[DateTime]
 )
-
 case class WfQuery(
   section       : Seq[Section]     = Nil,
   desk          : Seq[Desk]        = Nil,
@@ -119,6 +123,44 @@ object WfQuery {
     dateTimeToQueryTime(createdFrom, createdUntil),
     composerId
   )
+
+  def queryStringMultiOption[A](queryParam: Map[String, Seq[String]], id: String, f: String => Option[A] = (s: String) => Some(s)): List[A] = {
+    queryParam.get(id).map(seq => seq.map(f).flatten.toList).getOrElse(Nil)
+  }
+
+
+  def fromRequest(req: Request[AnyContent]): WfQuery = {
+      val params = req.queryString
+
+      val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
+      val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
+      val sections = queryStringMultiOption(params, "section", s => Some(Section(s)))
+      val contentType = queryStringMultiOption(params, "content-type")
+      val flags = queryStringMultiOption(params,  "flags", WfQuery.queryStringToFlag.get(_))
+      val prodOffice = queryStringMultiOption(params, "prodOffice")
+      val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
+      val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
+      val status = queryStringMultiOption(params,"status", StatusDatabase.find(_))
+      val published = req.getQueryString("state").map(_ == "published")
+      val text = req.getQueryString("text")
+      val assignee = queryStringMultiOption(params, "assignee")
+      val composerId = req.getQueryString("composerId")
+
+
+     WfQuery(
+        section       = sections,
+        status        = status,
+        contentType   = contentType,
+        prodOffice    = prodOffice,
+        dueTimes      = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
+        creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
+        flags         = flags,
+        published     = published,
+        text          = text,
+        assignedTo    = assignee,
+        composerId    = composerId
+      )
+  }
 
   val queryStringToFlag = Map("needsLegal" -> Flag.Required,
                               "approved" -> Flag.Complete,

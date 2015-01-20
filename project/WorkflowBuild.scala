@@ -40,7 +40,7 @@ object WorkflowBuild extends Build {
 
   lazy val commonLib = project("common-lib")
     .settings(
-      libraryDependencies ++= databaseDependencies
+      libraryDependencies ++= databaseDependencies ++ akkaDependencies
     )
 
   lazy val prole = playProject("prole")

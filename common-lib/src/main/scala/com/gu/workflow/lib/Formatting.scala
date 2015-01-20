@@ -1,4 +1,4 @@
-package lib
+package com.gu.workflow.lib
 
 import org.joda.time.DateTime
 import org.joda.time.format.{DateTimeFormat, ISODateTimeFormat}
