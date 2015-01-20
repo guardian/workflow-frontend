@@ -3,8 +3,6 @@
 
 **Target:** "400 users"
 
-Under Max load, workflow will just hold up at the current size of the dataset within the DB, responding in around 1-2s per API request. Although as data grows, performance will take a hit.
-
 ## Result Summary
 Under Max load, workflow will just hold up with the current stack config and at the current size of the dataset within the DB - responding in around 1-2s per API request. Although as data grows, performance will take a hit.
 
