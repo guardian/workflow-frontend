@@ -15,6 +15,41 @@ import com.wordnik.swagger.core.util.ScalaJsonUtil
 
 import scala.util.Either
 
+case class ContentApiQuery(
+  filters: ContentApiFilters,
+  ordering: Option[String]
+)
+
+case object ContentApiQuery {
+
+  def apply(r: Request): ContentApiQuery ={
+    ContentApiQuery(
+      ContentApiFilters(),
+      None
+    )
+  }
+
+}
+
+case class ContentApiFilters(
+  section       : Seq[Section]     = Nil,
+  desk          : Seq[Desk]        = Nil,
+  dueTimes      : Seq[ContentApiFilterTime] = Nil,
+  status        : Seq[Status]      = Nil,
+  contentType   : Seq[String]      = Nil,
+  published     : Option[Boolean]  = None,
+  flags         : Seq[Flag]        = Nil,
+  prodOffice    : Seq[String]      = Nil,
+  creationTimes : Seq[ContentApiFilterTime] = Nil,
+  text          : Option[String]   = None,
+  assignedTo    : Seq[String]      = Nil,
+  showHidden    : Option[Boolean]  = None
+)
+
+case class ContentApiFilterTime(
+  from  : Option[DateTime],
+  until : Option[DateTime]
+)
 
 @Api(value = "/content", description = "Operations about content")
 object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi {
@@ -39,14 +74,14 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
     val queryData = WfQuery(
       section       = sections,
       status        = status,
-      contentType   = contentType,
-      prodOffice    = prodOffice,
-      dueTimes      = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
-      creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
+      contenttype   = contenttype,
+      prodoffice    = prodoffice,
+      duetimes      = wfquery.datetimetoquerytime(duefrom, dueuntil),
+      creationtimes = wfquery.datetimetoquerytime(createdfrom, createduntil),
       flags         = flags,
       published     = published,
       text          = text,
-      assignedTo    = assignee
+      assignedto    = assignee
     )
     Response(for{
       content <- PostgresDB.getContentItems(queryData).right
