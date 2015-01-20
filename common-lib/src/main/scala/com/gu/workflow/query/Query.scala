@@ -26,7 +26,8 @@ case class WfQuery(
   prodOffice    : Seq[String]      = Nil,
   creationTimes : Seq[WfQueryTime] = Nil,
   text          : Option[String]   = None,
-  assignedTo    : Seq[String]      = Nil
+  assignedTo    : Seq[String]      = Nil,
+  composerId    : Option[String]   = None
 )
 
 object WfQuery {
@@ -104,7 +105,8 @@ object WfQuery {
     flags:        Seq[String]      = Nil,
     prodOffice:   Option[String]   = None,
     createdFrom:  Option[DateTime] = None,
-                  createdUntil: Option[DateTime] = None
+    createdUntil: Option[DateTime] = None,
+    composerId:   Option[String]   = None
   ): WfQuery = WfQuery(
     section getOrElse Nil,
     optToSeq(desk),
@@ -114,7 +116,8 @@ object WfQuery {
     published,
     flags.map(queryStringToFlag(_)),
     optToSeq(prodOffice),
-    dateTimeToQueryTime(createdFrom, createdUntil)
+    dateTimeToQueryTime(createdFrom, createdUntil),
+    composerId
   )
 
   val queryStringToFlag = Map("needsLegal" -> Flag.Required,
@@ -140,5 +143,6 @@ object WfQuery {
   def contentQuery(q: WfQuery) = content |>
     simpleInSet(q.status.map(_.toString.toUpperCase))(_.status.toUpperCase) |>
     simpleInSet(q.contentType.map(_.toUpperCase))(_.contentType.toUpperCase) |>
-    q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published))
+    q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published)) |>
+    q.composerId.foldl[ContentQuery]((query, composerId) => query.filter(_.composerId === composerId))
 }

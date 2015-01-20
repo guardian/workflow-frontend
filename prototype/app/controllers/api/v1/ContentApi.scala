@@ -1,6 +1,7 @@
 package controllers
 
 import javax.ws.rs.PathParam
+import models.Flag.Flag
 import models.Response.Response
 import com.gu.workflow.db.{CommonDB, Archive}
 import com.gu.workflow.query.WfQuery
@@ -8,48 +9,15 @@ import controllers.Api._
 import lib.OrderingImplicits._
 import lib.{PostgresDB, StatusDatabase, Formatting, PrototypeConfiguration}
 import models._
+import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.mvc._
 import com.wordnik.swagger.annotations._
 import com.wordnik.swagger.core.util.ScalaJsonUtil
+import models.Status
 
 import scala.util.Either
 
-case class ContentApiQuery(
-  filters: ContentApiFilters,
-  ordering: Option[String]
-)
-
-case object ContentApiQuery {
-
-  def apply(r: Request): ContentApiQuery ={
-    ContentApiQuery(
-      ContentApiFilters(),
-      None
-    )
-  }
-
-}
-
-case class ContentApiFilters(
-  section       : Seq[Section]     = Nil,
-  desk          : Seq[Desk]        = Nil,
-  dueTimes      : Seq[ContentApiFilterTime] = Nil,
-  status        : Seq[Status]      = Nil,
-  contentType   : Seq[String]      = Nil,
-  published     : Option[Boolean]  = None,
-  flags         : Seq[Flag]        = Nil,
-  prodOffice    : Seq[String]      = Nil,
-  creationTimes : Seq[ContentApiFilterTime] = Nil,
-  text          : Option[String]   = None,
-  assignedTo    : Seq[String]      = Nil,
-  showHidden    : Option[Boolean]  = None
-)
-
-case class ContentApiFilterTime(
-  from  : Option[DateTime],
-  until : Option[DateTime]
-)
 
 @Api(value = "/content", description = "Operations about content")
 object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi {
@@ -71,18 +39,23 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
     val text = req.getQueryString("text")
     val assignee = queryStringMultiOption(req.getQueryString("assignee"))
 
+    val composerId = req.getQueryString("composerId")
+
+
     val queryData = WfQuery(
       section       = sections,
       status        = status,
-      contenttype   = contenttype,
-      prodoffice    = prodoffice,
-      duetimes      = wfquery.datetimetoquerytime(duefrom, dueuntil),
-      creationtimes = wfquery.datetimetoquerytime(createdfrom, createduntil),
+      contentType   = contentType,
+      prodOffice    = prodOffice,
+      dueTimes      = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
+      creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
       flags         = flags,
       published     = published,
       text          = text,
-      assignedto    = assignee
+      assignedTo    = assignee,
+      composerId    = composerId
     )
+    //Note content items are not UI ordered yet
     Response(for{
       content <- PostgresDB.getContentItems(queryData).right
     }yield {
