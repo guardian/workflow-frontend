@@ -1,9 +1,12 @@
-Workflow load testing analysis
+# Workflow load testing analysis
+**Date:** November 2014
 
-Target: "400 users"
+**Target:** "400 users"
 
 Under Max load, workflow will just hold up at the current size of the dataset within the DB, responding in around 1-2s per API request. Although as data grows, performance will take a hit.
 
+## Result Summary
+Under Max load, workflow will just hold up with the current stack config and at the current size of the dataset within the DB - responding in around 1-2s per API request. Although as data grows, performance will take a hit.
 
 ## Test overview
 
@@ -65,82 +68,130 @@ Static assets:
 
 ## Test results
 
-Initial request: 400 requests / second (worst case scenario).
+### Initial request
+Initial page load
 
-Average: 1.32s
-CPU: 57%
+URL | /
+--- | ---
+Load | 400 requests / second
+Average | 1.32s
+CPU | 57%
+
+### API poll every 10 seconds
+400 users Poll every 10 seconds = 40 requests / second
+
+URL | /api/content
+--- | ---
+Load | 40 r/s
+DB size | ~300 rows
+Average | 0.145s
+Min | 0.066s
+Max | 2.2s
+Max CPU | 84%
+
+![Results graph](images/2014-11-test-api-40ps.png)
+
+### API poll every 5 seconds
+400 users Poll every 5 seconds = 80 requests / second
+
+URL | /api/content
+--- | ---
+Load | 80 r/s
+DB size | ~300 rows
+Average | 0.947s
+Min | 0.070s
+Max | 5.9s
+Max CPU | 99%
+
+![Results graph](images/2014-11-test-api-80ps.png)
+
+### API poll every 5 seconds (prod data)
+400 users poll every 5 seconds = 80 requests / second. ~2200rows (prod dump of ~2k rows)
+
+URL | /api/content
+--- | ---
+Load | 80 r/s
+DB size | ~2200rows (prod dump of ~2k rows)
+Average | 1.107s
+Min | 0.114s
+Max | 13s
+Max CPU | 98% (peaks then levels off ~50%)
+Max DB CPU | 100%
+Throughput | 58/s (target: 80/s)
+
+![Results graph](images/2014-11-test-api-80ps-2k-rows.png)
 
 
-API: 400 users Poll every 10 seconds = 40 requests / second. ~300rows (code)
+### API poll every 5 seconds (5000 rows)
+400 users Poll every 5 seconds = 80 requests / second. ~5000rows (prod dump + 2800 extra published rows filtered out)
 
-Average: 0.145s
-Min: 0.066s
-Max: 2.2s
-Max CPU: 84%
-
-
-API: 400 users Poll every 5 seconds = 80 requests / second. ~300rows (code)
-
-Average: 0.947s
-Min: 0.070s
-Max: 5.9s
-Max CPU: 99%
-
-
-API: 400 users Poll every 5 seconds = 80 requests / second. ~2200rows (prod dump of ~2k rows)
-
-Average: 1.107s
-Min: 0.114s
-Max: 13s
-Max CPU: 98% (peaks then levels off ~50%)
-Max DB CPU: 100%
-Throughput: 58/s (target: 80/s)
-
-
-API: 400 users Poll every 5 seconds = 80 requests / second. ~5000rows (prod dump + 2800 extra published rows filtered out)
-
-Average: 2.191s
-Min: 0.051s
-Max: 23.69s
-Max CPU: 89%
-Max DB CPU: 100%
-Throughput: 33.5/s (target: 80/s)
+URL | /api/content
+--- | ---
+Load | 80 r/s
+DB size | ~5000rows (prod dump + 2800 extra published rows filtered out)
+Average | 2.191s
+Min | 0.051s
+Max | 23.69s
+Max CPU | 89%
+Max DB CPU | 100%
+Throughput | 33.5/s (target: 80/s)
 
 Some ELB 503s (backend at capacity) and timeouts.
 
 
-API: 400 users Poll every 5 seconds = 80 requests / second. ~2200rows (prod dump + 1000 extra visible)
-60% fail!
+### API poll every 5 seconds (2200 + 1000 extra rows)
+400 users Poll every 5 seconds = 80 requests / second. ~2200rows (prod dump + 1000 extra visible)
 
-Average: 7.46s
-Min: 0.033s
-Max: 84.7s
-Max CPU: 90%
-Max DB CPU: 100%
-Throughput: 10/s (target: 80/s)
+*60% failed requests!*
 
-
-API: 400 users Poll every 5 seconds = 80 requests / second. ~2200rows, 100 visible (prod dump (38 visible) + 62 extra visible)
-
-Average: 1.78
-Min: 0.170s
-Max: 6.9s
-Max CPU: 98%
-Max DB CPU: 100%
-Throughput: 42.3/s (target: 80/s)
+URL | /api/content
+--- | ---
+Load | 80 r/s
+DB size | ~5000rows (prod dump + 2800 extra published rows filtered out)
+Average | 7.46s
+Min | 0.033s
+Max | 84.7s
+Max CPU | 90%
+Max DB CPU | 100%
+Throughput | 10/s (target: 80/s)
 
 
-API: 400 users Poll every 5 seconds = 80 requests / second + random queries. ~1000rows
+### API poll every 5 seconds (100 visible)
+400 users Poll every 5 seconds = 80 requests / second. ~2200rows, 100 visible (prod dump (38 visible) + 62 extra visible)
 
-Average: 1.022
-Min: 0.121s
-Max: 8.1s
-Max CPU: 97%
-Max DB CPU: 100%
-Throughput: 64.8/s (target: 80/s)
+URL | /api/content
+--- | ---
+Load | 80 r/s
+DB size | ~2200rows, 100 visible (prod dump (38 visible) + 62 extra visible)
+Average | 1.78
+Min | 0.170s
+Max | 6.9s
+Max CPU | 98%
+Max DB CPU | 100%
+Throughput | 42.3/s (target: 80/s)
 
 
-Assets test: 2 users + 4 keep-alive threads each (browser simulation), 84 total requests
+### API poll every 5 seconds (1000 rows)
+400 users Poll every 5 seconds = 80 requests / second + random queries. ~1000rows
 
-Average: 0.037s
-CPU: 17-39% (higher on more threads)
+URL | /api/content
+--- | ---
+Load | 80 r/s
+DB size | 1000 rows
+Average | 1.022
+Min | 0.121s
+Max | 8.1s
+Max CPU | 97%
+Max DB CPU | 100%
+Throughput | 64.8/s (target: 80/s)
+
+![Results graph](images/2014-11-test-api-80ps-1k-rows.png)
+
+### Static assets
+2 users + 4 keep-alive threads each (browser simulation), 84 total requests
+
+URL | /api/content
+--- | ---
+Load | 2 r/s
+Average | 0.037s
+CPU | 17-39% (higher on more threads)
