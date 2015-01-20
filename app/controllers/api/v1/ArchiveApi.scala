@@ -31,7 +31,7 @@ object ArchiveApi extends Controller with PanDomainAuthActions with WorkflowApi 
   def contentById(@ApiParam(value = "ID of the content item to fetch") @PathParam("id") id: Long) = APIAuthAction {
     Response(
       Archive.getArchiveContentForStubId(id) match {
-        case Some(c: ArchiveContent) => Right(c)
+        case Some(c: ArchiveContent) => Right(ApiSuccess(c))
         case None => Left(ApiErrors.notFound)
       }
     )
