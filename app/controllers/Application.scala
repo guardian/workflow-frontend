@@ -1,6 +1,7 @@
 package controllers
 
 import com.gu.workflow.db.{SectionDeskMappingDB, SectionDB, DeskDB}
+import com.gu.workflow.lib.StatusDatabase
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

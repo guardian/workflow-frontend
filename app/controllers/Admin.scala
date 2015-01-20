@@ -1,6 +1,7 @@
 package controllers
 
 import com.gu.workflow.db.{CommonDB, DeskDB, SectionDB, SectionDeskMappingDB}
+import com.gu.workflow.lib.StatusDatabase
 import models.Response._
 import org.joda.time.DateTime
 import play.api.Logger
