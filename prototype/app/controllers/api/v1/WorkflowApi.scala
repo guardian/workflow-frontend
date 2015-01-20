@@ -53,7 +53,7 @@ trait WorkflowApi {
   //duplicated from the method above to give a standard API response. should move all api methods onto to this
   def readJsonFromRequest(requestBody: AnyContent):  models.Response.Response[JsValue] = {
     requestBody.asJson match {
-      case Some(jsValue) => Right(jsValue)
+      case Some(jsValue) => Right(ApiSuccess(data=jsValue))
       case None => Left(ApiErrors.invalidContentSend)
     }
   }
@@ -65,9 +65,9 @@ trait WorkflowApi {
     yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
 
   //duplicated from the method above to give a standard API response. should move all api methods onto to this
-  def extract[A: Reads](jsValue: JsValue): models.Response.Response[A] = {
+  def  extract[A: Reads](jsValue: JsValue): models.Response.Response[A] = {
     jsValue.validate[A] match {
-      case JsSuccess(a, _) => Right(a)
+      case JsSuccess(a, _) => Right(ApiSuccess(a))
       case error@JsError(_) =>
         val errMsg = errorMsgs(error)
         Left(ApiErrors.jsonParseError(errMsg.toString))

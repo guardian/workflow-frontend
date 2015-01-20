@@ -2,7 +2,6 @@ package controllers
 
 import javax.ws.rs.PathParam
 import com.gu.workflow.lib.{StatusDatabase, Formatting}
-import models.Flag.Flag
 import models.Response.Response
 import com.gu.workflow.db.{CommonDB, Archive}
 import com.gu.workflow.query.WfQuery
@@ -17,7 +16,7 @@ import com.wordnik.swagger.annotations._
 import com.wordnik.swagger.core.util.ScalaJsonUtil
 import models.Status
 
-import scala.util.Either
+import scala.util.{Try, Either}
 
 
 @Api(value = "/content", description = "Operations about content")
@@ -36,31 +35,49 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
   }
 
   def content = APIAuthAction(getContentBlock)
+  //@ApiParam(value = "ID of the content item to fetch") @PathParam("id")
+  def contentById(id: String) = APIAuthAction { request =>
+    Try(id.toLong).toOption match {
+      case Some(l) => contentByStubId(l)
+      case None => contentByComposerId(id)
+    }
+  }
 
-  @ApiOperation(
-    nickname = "getContentById",
-    value = "Find contentItem by ID",
-    notes = "Returns a content item",
-    response = classOf[models.ContentItem],
-    httpMethod = "GET"
-  )
-  @ApiResponses(Array(
-    new ApiResponse(code = 404, message = "ContentNotFound")
-  ))
-  def contentById(@ApiParam(value = "ID of the content item to fetch") @PathParam("id") id: Long) = APIAuthAction {
+  def contentByStubId(id: Long): Result =  {
     val contentOpt: Option[ContentItem] = PostgresDB.getContentById(id)
 
-    val contentEither = contentOpt match {
-      case Some(contentItem) => Right(contentItem)
+    Response(contentOpt match {
+      case Some(contentItem) => Right(ApiSuccess(contentItem))
       case None => {
         Archive.getArchiveContentForStubId(id) match {
           case Some(c: ArchiveContent) => Left(contentMovedToArchive(c))
           case None => Left(ApiErrors.notFound)
         }
       }
-    }
+    })
+  }
 
-    Response(contentEither)
+
+
+  def contentByComposerId(id: String) =  {
+    val contentOpt: Option[ContentItem] = PostgresDB.getContentByCompserId(id)
+
+    contentOpt match {
+      case Some(contentItem) => {
+        Response(contentItem.stub.id.map { id =>
+          Right(ApiSuccess(contentItem,
+                status = "Redirect",
+                statusCode = 301,
+                headers = List(("location", s"/api/v1/content/${id}"))))
+        }.getOrElse(Left(ApiErrors.notFound)))
+      }
+      case None => {
+        Response(Archive.getArchiveContentForComposerId(id) match {
+          case Some(c: ArchiveContent) => Left(contentMovedToArchive(c))
+          case None => Left(ApiErrors.notFound)
+        })
+      }
+    }
   }
 
   @ApiOperation(
@@ -80,12 +97,16 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
     APIAuthAction { implicit request =>
       Response(for {
         jsValue <- readJsonFromRequest(request.body).right
-        contentItem <- extract[ContentItem](jsValue).right
-        stubId <- PostgresDB.createContent(contentItem).right
+        contentItem <- extract[ContentItem](jsValue.data).right
+        stubId <- PostgresDB.createContent(contentItem.data).right
       } yield {
         stubId
       })
     }
+  }
+
+  def modifyContent(id: Long) = Action {
+    NotImplemented
   }
 
   @ApiOperation(

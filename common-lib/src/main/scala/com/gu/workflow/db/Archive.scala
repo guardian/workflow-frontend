@@ -16,5 +16,9 @@ object Archive {
   def getArchiveContentForStubId(id: Long): Option[ArchiveContent]  = DB.withTransaction { implicit session =>
     archive.filter(_.stubId === id).firstOption.map(ArchiveContent.fromArchiveRow(_))
   }
+
+  def getArchiveContentForComposerId(id: String): Option[ArchiveContent]  = DB.withTransaction { implicit session =>
+    archive.filter(_.composerId === id).firstOption.map(ArchiveContent.fromArchiveRow(_))
+  }
 }
 

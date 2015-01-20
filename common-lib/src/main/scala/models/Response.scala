@@ -6,6 +6,8 @@ import play.api.mvc.{Results, Result}
 
 case class ApiError(message: String, friendlyMessage: String, statusCode: Int, statusString: String, data: Option[JsObject] = None)
 
+case class ApiSuccess[T](data: T, status: String = "Ok", statusCode: Int = 200, headers: List[(String,String)]= Nil)
+
 case object ApiError {
   implicit val apiErrorFormat = Json.format[ApiError]
 }
@@ -21,7 +23,7 @@ object ApiErrors {
 
 
 object Response extends Results {
-  type Response[T] = Either[ApiError, T]
+  type Response[T] = Either[ApiError, ApiSuccess[T]]
 
   def apply[T](action: => Response[T])(implicit tjs: Writes[T]): Result = {
     action.fold({
@@ -33,14 +35,14 @@ object Response extends Results {
         ))
       }
     },
-    t => {
-      Ok {
+    apiSuccess => {
+      Status(apiSuccess.statusCode) {
         JsObject(Seq(
-          "status" -> JsString("ok"),
-          "statusCode" -> JsNumber(200),
-          "data" -> Json.toJson(t)
+          "status" -> JsString(apiSuccess.status),
+          "statusCode" -> JsNumber(apiSuccess.statusCode),
+          "data" -> Json.toJson(apiSuccess.data)
         ))
-      }
+      }.withHeaders(apiSuccess.headers:_*)
     })
   }
 }
