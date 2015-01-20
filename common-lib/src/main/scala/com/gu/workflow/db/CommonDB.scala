@@ -32,7 +32,7 @@ object CommonDB {
   }
 
   def hideContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
-      c.status === Status("Final").name && c.published && c.lastModified < DateTime.now().minusHours(36)
+      c.status === Status("Final").name && c.published && c.lastModified < DateTime.now().minusHours(24)
   }
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =

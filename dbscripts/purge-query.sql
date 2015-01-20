@@ -1,6 +1,6 @@
 --new purge query
 select x2.pk from "stub" x2, "content" x3 where (x2."composer_id" = x3."composer_id")
-and (not (((x3."status" = 'Final') and x3."published") and (x3."last_modified" < now() - interval '36 hours')))
+and (not (((x3."status" = 'Final') and x3."published") and (x3."last_modified" < now() - interval '24 hours')))
 
 --old purge query
 select x2.pk from "stub" x2, "content" x3 where (x2."composer_id" = x3."composer_id")
@@ -15,18 +15,18 @@ or (x3."status" = 'Hold'))
 select x2.pk from stub x2 where x2.pk in
 (select x2.pk from "stub" x2, "content" x3 where (x2."composer_id" = x3."composer_id")
    and (((((x3."time_published" > now() - interval '1 day') or (x3."time_published" is null))
-   and ((x2."due" > '2015-01-12 11:01:52.815') or (x2."due" is null)))
+   and ((x2."due" >now() - interval '7 days') or (x2."due" is null)))
    and (((x3."last_modified" > now() - interval '7 days') or (x2."due" > now())) or (x3."time_published" is null)))
    or (x3."status" = 'Hold')))
 and x2.pk not in
 (select x2.pk from "stub" x2, "content" x3 where (x2."composer_id" = x3."composer_id")
-and (not (((x3."status" = 'Final') and x3."published") and (x3."last_modified" <  now() -  interval '36 hours'))))
+and (not (((x3."status" = 'Final') and x3."published") and (x3."last_modified" <  now() - interval '24 hours'))))
 
 
 --in new and not old (ids to archive)
 select x2.pk, x3.composer_id from stub x2, content x3 where x2.composer_id = x3.composer_id and pk in
 (select x2.pk from "stub" x2, "content" x3 where (x2."composer_id" = x3."composer_id")
-and (not (((x3."status" = 'Final') and x3."published") and (x3."last_modified" <   now() -  interval '36 hours'))))
+and (not (((x3."status" = 'Final') and x3."published") and (x3."last_modified" <  now() - interval '24 hours'))))
 and pk not in
 (select x2.pk from "stub" x2, "content" x3 where (x2."composer_id" = x3."composer_id")
    and (((((x3."time_published" > now() - interval '1 day') or (x3."time_published" is null))
@@ -44,7 +44,7 @@ and (not (((x3."status" = 'Final') and x3."published") and (x3."last_modified" <
 and pk not in
 (select x2.pk from "stub" x2, "content" x3 where (x2."composer_id" = x3."composer_id")
    and (((((x3."time_published" > now() - interval '1 day') or (x3."time_published" is null))
-   and ((x2."due" > '2015-01-12 11:01:52.815') or (x2."due" is null)))
+   and ((x2."due" > now() - interval '7 days') or (x2."due" is null)))
    and (((x3."last_modified" > now() - interval '7 days') or (x2."due" > now())) or (x3."time_published" is null)))
    or (x3."status" = 'Hold')));
 
