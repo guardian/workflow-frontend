@@ -132,9 +132,10 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 }
 
                 function parseDate(input) {
-                    if (!input) {
-                        return;
+                    if (!input || input === '') {
+                        return null;
                     }
+
                     try {
                         return wfDateParser.parseDate(input);
 
