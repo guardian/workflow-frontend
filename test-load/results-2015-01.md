@@ -65,3 +65,15 @@ Load (r/s) | Min | Max | Average | Max CPU | Max DB CPU | Throughput | Notes
 -----------|----:|----:|--------:|--------:|-----------:|-----------:|----
 40         |     |     |         |         |            |            | 1000 DB rows (100 visible in API)
 80         |     |     |         |         |            |            | 1000 DB rows (100 visible in API)
+
+### Asset requests
+Tests response times of asset requests in browser. Browser uses 4 threads to load assets per user.
+
+Target: All 400 users hit page within a minute = 400 requests per minute = 6.7 users/s
+
+Load (r/s)     | Min | Max  | Average | Max CPU | Max DB CPU | Throughput | Notes
+---------------|----:|-----:|--------:|--------:|-----------:|-----------:|----
+588 (7 users)  | 13  | 1126 | 43      | 45%     | ~1%        | 521.6/s    | 84 asset requests across 4 threads
+840 (10 users) | 13  | 557  | 45      | 68%     | ~1%        | 725.2/s    | 84 asset requests across 4 threads
+
+Expected throughput @ 840/s. 86% of ideal target reached. Result would be slow load of assets at max capacity.
