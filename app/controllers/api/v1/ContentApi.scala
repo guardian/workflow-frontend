@@ -31,10 +31,11 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
     }yield {
       content
     })
-
   }
 
-  def content = APIAuthAction(getContentBlock)
+  def content = APIAuthAction { request =>
+    NotImplemented
+  }
 
   @ApiOperation(
     nickname = "contentById",
