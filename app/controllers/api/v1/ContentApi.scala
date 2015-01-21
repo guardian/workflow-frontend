@@ -62,22 +62,23 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
   def contentByComposerId(id: String) =  {
     val contentOpt: Option[ContentItem] = PostgresDB.getContentByCompserId(id)
 
-    contentOpt match {
+    val contentEither = contentOpt match {
       case Some(contentItem) => {
-        Response(contentItem.stub.id.map { id =>
+        contentItem.stub.id.map { id =>
           Right(ApiSuccess(contentItem,
                 status = "Redirect",
                 statusCode = 301,
                 headers = List(("location", s"/api/v1/content/${id}"))))
-        }.getOrElse(Left(ApiErrors.notFound)))
+        }.getOrElse(Left(ApiErrors.notFound))
       }
       case None => {
-        Response(Archive.getArchiveContentForComposerId(id) match {
+        Archive.getArchiveContentForComposerId(id) match {
           case Some(c: ArchiveContent) => Left(contentMovedToArchive(c))
           case None => Left(ApiErrors.notFound)
-        })
+        }
       }
     }
+		Response(contentEither)
   }
 
   @ApiOperation(
