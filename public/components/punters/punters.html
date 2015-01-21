@@ -1,5 +1,9 @@
 <div class="punters__container">
 
+    <label for="stub_assignee">Assign to</label>
+
+    <button type="button" class="btn btn-primary btn-xs pull-right" ng-disabled="tokens && tokens.length > 0" ng-click="assignToMe();">Assign to me</button>
+
     <div class="form-control punters__autocomplete-field">
         <ul class="punters__token-list">
             <li class="punters__token" ng-repeat="user in tokens" ng-click="removeToken($index);">

@@ -33,9 +33,14 @@ function punters (wfGoogleApiService, $http) {
      * @returns {*}
      */
     function filterList(list, shouldNotContain) {
-        return list.filter((item) => {
-           return shouldNotContain.indexOf(item) === -1;
-        });
+
+        if (list && list.filter) {
+            return list.filter((item) => {
+                return shouldNotContain.indexOf(item) === -1;
+            });
+        } else {
+            return list;
+        }
     }
 
     return {
@@ -169,27 +174,47 @@ function punters (wfGoogleApiService, $http) {
                             if ($scope.tokens.length > 0) {
                                 $scope.tokens.pop();
                             }
+                            resetAutocomplete();
                         } else if (input.value.length === 1) { // remove the list
                             resetAutocomplete();
+                        } else {
+                            searchForUsers();
                         }
                         break;
 
                     default:
-                        if (input.value && input.value.length > 0) {
-                            searchUsers(input.value).then((data) => {
-                                if (data && data.length > 0) {
-                                    console.log(data);
-                                    $scope.foundUsers = filterList(data, $scope.tokens);
-                                    if (selectedTokenIndex > $scope.foundUsers.length -1) {
-                                        selectedTokenIndex = 0;
-                                    }
-                                    updateSelectedItem(selectedTokenIndex);
-                                }
-                            });
-                        } else {
-                            resetAutocomplete();
-                        }
+                        searchForUsers();
                 }
+
+                function searchForUsers () {
+                    if (input.value && input.value.length > 0) {
+                        searchUsers(input.value).then((data) => {
+                            if (data && data.length > 0) {
+                                $scope.foundUsers = filterList(data, $scope.tokens);
+                                if (selectedTokenIndex > $scope.foundUsers.length -1) {
+                                    selectedTokenIndex = 0;
+                                }
+                                updateSelectedItem(selectedTokenIndex);
+                            }
+                        });
+                    } else {
+                        resetAutocomplete();
+                    }
+                }
+            };
+
+            $scope.assignToMe = function () {
+
+                input.focus();
+
+                input.value = "";
+                resetAutocomplete();
+
+                searchUsers(_wfConfig.user.email).then((data) => { // dirty...
+                    if (data && data.length > 0) {
+                        $scope.addToken(data[0]);
+                    }
+                });
             };
         }
     };
