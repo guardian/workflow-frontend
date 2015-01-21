@@ -11,7 +11,7 @@
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -80,6 +80,14 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                     $scope.contentItem = contentItem;
                     $scope.contentList.selectedItem = contentItem;
+
+                    // Enhance assignee with Image
+                    wfGoogleApiService.searchUsers($scope.contentItem.item.assigneeEmail).then((data) => {
+                        if (data && data.length) {
+                            $scope.assigneeImage = data[0].thumbnailPhotoUrl;
+                        }
+                    });
+
                     $scope.$apply();
 
                     return this.show();
@@ -115,7 +123,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             $scope.incopyExportEnabled = false;
             featureSwitches.withSwitch("incopy-export",
                                        val => $scope.incopyExportEnabled = val);
-
 
             /**
              * Listen for event triggered by click in external contentItemRow directive to show or hide drawer

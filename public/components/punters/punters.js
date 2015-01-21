@@ -1,38 +1,7 @@
 /**
  * Created by cfinch on 09/01/2015.
  */
-function punters (wfGoogleApiService, $http) {
-
-    /**
-     * Search for users via google api
-     *
-     * TODO: refactor in to separate service
-     *
-     * @param value search term
-     * @returns $http promise
-     */
-    function searchUsers(value) {
-
-        var url = 'https://www.googleapis.com/admin/directory/v1/users',
-            searchParam = '?query=' + escape(value),
-            otherParams = '&domain=guardian.co.uk&viewType=domain_public';
-
-        var searchUrl = url + searchParam + otherParams;
-
-        var req = {
-            method: 'GET',
-            url: searchUrl,
-            headers: {
-                'Authorization': 'Bearer ' + window.gapi.auth['access_token']
-            }
-        };
-
-        return $http(req).then((response) => {
-            return response.data.users;
-        }, () => {
-            console.error('Could not query Google API for users');
-        });
-    }
+function punters (wfGoogleApiService) {
 
     /**
      * Filter one array based on another
@@ -209,7 +178,7 @@ function punters (wfGoogleApiService, $http) {
 
                 function searchForUsers () {
                     if (input.value && input.value.length > 0) {
-                        searchUsers(input.value).then((data) => {
+                        wfGoogleApiService.searchUsers(input.value).then((data) => {
                             if (data && data.length > 0) {
                                 $scope.foundUsers = filterList(data, $scope.tokens);
                                 if (selectedTokenIndex > $scope.foundUsers.length -1) {
@@ -231,7 +200,7 @@ function punters (wfGoogleApiService, $http) {
                 input.value = "";
                 resetAutocomplete();
 
-                searchUsers(_wfConfig.user.email).then((data) => { // dirty...
+                wfGoogleApiService.searchUsers(_wfConfig.user.email).then((data) => { // dirty...
                     if (data && data.length > 0) {
                         $scope.addToken(data[0]);
                     }

@@ -61,6 +61,7 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Assigned to</span>
+                        <img class="drawer__user-image" ng-class="{ 'drawer__user-image--placeholder': !assigneeImage }" ng-src="{{ assigneeImage }}" height="38" width="38" alt="contentItem.item.assignee"/>
                         <span class="drawer__section-data-row--editable" editable-text="contentItem.item.assignee" buttons="no" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.item.assignee || "None" }}</span>
                     </li>
 
