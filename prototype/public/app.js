@@ -35,12 +35,13 @@ import 'lib/column-service';
 import 'lib/preferences-service';
 import 'lib/analytics';
 import 'lib/feature-switches';
+import 'lib/google-api';
 
 // 3rd party libs
 import 'angular-ui-router';
 import 'angular-bootstrap';
 import 'angular-xeditable';
-import 'angular-animate/angular-animate.min';
+import 'angular-animate/angular-animate.min'
 
 // App-wide Styles
 import 'bootstrap@3.2.0/css/bootstrap.min.css!';
@@ -64,6 +65,7 @@ angular.module('workflow',
         'wfColumnService',
         'wfPreferencesService',
         'wfFeatureSwitches',
+        'wfGoogleApiService',
         'xeditable'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', function ($stateProvider, $urlRouterProvider, $compileProvider) {
@@ -120,8 +122,10 @@ angular.module('workflow',
     .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
 
     // XEditable options, TODO: mode out to dashboard controller somewhere...
-    .run(function (editableOptions) {
+    .run(function ($window, editableOptions, wfGoogleApiService) {
         editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
+
+        wfGoogleApiService.load();
     });
 
 // Bootstrap App
