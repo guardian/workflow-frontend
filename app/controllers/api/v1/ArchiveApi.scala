@@ -28,12 +28,14 @@ object ArchiveApi extends Controller with PanDomainAuthActions with WorkflowApi 
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "ContentNotFound")
   ))
-  def contentById(@ApiParam(value = "ID of the content item to fetch") @PathParam("id") id: Long) = APIAuthAction {
-    Response(
-      Archive.getArchiveContentForStubId(id) match {
-        case Some(c: ArchiveContent) => Right(ApiSuccess(c))
-        case None => Left(ApiErrors.notFound)
-      }
-    )
+  def contentById(@ApiParam(value = "ID of the content item to fetch") @PathParam("id") id: Long) =  CORSable(composerUrl) {
+    APIAuthAction {
+      Response(
+        Archive.getArchiveContentForStubId(id) match {
+          case Some(c: ArchiveContent) => Right(ApiSuccess(c))
+          case None => Left(ApiErrors.notFound)
+        }
+      )
+    }
   }
 }
