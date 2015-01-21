@@ -46,7 +46,7 @@
       <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
         <collectionProp name="CookieManager.cookies">
           <elementProp name="gutoolsAuth" elementType="Cookie" testname="gutoolsAuth">
-            <stringProp name="Cookie.value">Zmlyc3ROYW1lPUphbWVzJmxhc3ROYW1lPVBhbXBsaW4mZW1haWw9amFtZXMucGFtcGxpbkBndWFyZGlhbi5jby51ayZhdmF0YXJVcmw9aHR0cHM6Ly9saDYuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1YdloyRkZ2LUVway9BQUFBQUFBQUFBSS9BQUFBQUFBQUFGby9ScWZmRXNoU0RwTS9waG90by5qcGc/c3o9NTAmc3lzdGVtPXdvcmtmbG93JmF1dGhlZEluPXdvcmtmbG93LHByZWZlcmVuY2VzJmV4cGlyZXM9MTQyMTY4Mjk1NDAwMCZtdWx0aWZhY3Rvcj10cnVl&gt;&gt;e0b06e06a1860b61dab32e02a01c83aa318b5747</stringProp>
+            <stringProp name="Cookie.value">Zmlyc3ROYW1lPUphbWVzJmxhc3ROYW1lPVBhbXBsaW4mZW1haWw9amFtZXMucGFtcGxpbkBndWFyZGlhbi5jby51ayZhdmF0YXJVcmw9aHR0cHM6Ly9saDYuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1YdloyRkZ2LUVway9BQUFBQUFBQUFBSS9BQUFBQUFBQUFGby9ScWZmRXNoU0RwTS9waG90by5qcGc/c3o9NTAmc3lzdGVtPXdvcmtmbG93JmF1dGhlZEluPXdvcmtmbG93LHByZWZlcmVuY2VzJmV4cGlyZXM9MTQyMTg0Mjk0OTAwMCZtdWx0aWZhY3Rvcj10cnVl&gt;&gt;e4d1e62817939fd91635aa612392a450942f2371</stringProp>
             <stringProp name="Cookie.domain">workflow.code.dev-gutools.co.uk</stringProp>
             <stringProp name="Cookie.path"></stringProp>
             <boolProp name="Cookie.secure">true</boolProp>
@@ -69,18 +69,18 @@
         <stringProp name="variableName">CACHEBUST</stringProp>
       </RandomVariableConfig>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Initial thread" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Initial thread" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">20</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">0</stringProp>
+        <stringProp name="ThreadGroup.num_threads">7</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1415206674000</longProp>
         <longProp name="ThreadGroup.end_time">1415206690000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">600</stringProp>
+        <stringProp name="ThreadGroup.duration">300</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <stringProp name="TestPlan.comments">Initial page request - less threads as user shouldn&apos;t refresh</stringProp>
       </ThreadGroup>
@@ -217,7 +217,7 @@
         </ConstantThroughputTimer>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Asset thread 1" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Asset thread 1" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -663,7 +663,7 @@
         </ConstantThroughputTimer>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Asset thread 2" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Asset thread 2" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -1109,7 +1109,7 @@
         </ConstantThroughputTimer>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Asset thread 3" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Asset thread 3" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -1555,7 +1555,7 @@
         </ConstantThroughputTimer>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Asset thread 4" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Asset thread 4" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
