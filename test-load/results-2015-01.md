@@ -19,6 +19,13 @@ Testing considerations:
 - 84 client-side assets from original test, retested for comparison
 - 120 assets now requested on page load
 
+Setup:
+- Tests run on CODE environment: https://workflow.code.dev-gutools.co.uk/
+- Each test runs for ~5 mins
+- CODE app scaled to 2 m3.medium EC2 instances (same config as PROD)
+- Run using Apache JMeter from Guardian UK Office London
+- System Monitoring via AWS Cloudwatch / Workflow Radiator pointed to CODE
+
 
 ## Observations
 TODO
@@ -31,7 +38,7 @@ r/s = Simulated requests per second
 ### Initial request (dashboard)
 Tests response times of initial page GET request.
 
-Endpoint makes database queries, retrieving statuses, desks, and sections.
+Endpoint makes database queries, retrieving desks, and sections.
 
 **Target:** All 400 users hit page within a minute = 400 requests per minute = 6.7 r/s
 
@@ -41,6 +48,8 @@ Load (r/s) | Min | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
 -----------|----:|------:|--------:|--------:|-----------:|-----------:|------
 7          | 123 | 9468  | 246     | 40%     | 6.8%       | 5.1/s      |
 20         | 119 | 60162 | 1159    | 94%     | 16%        | 13.9/s     |
+
+45 rows in `sections` table. 28 in `desks`. 67 in `section_desk_mapping`. From PROD DB dump 2015-01-19.
 
 Observed high CPU usage on EC2s. Probably caused by synchronous waits from DB calls.
 
@@ -54,16 +63,25 @@ Tests response times of initial API request during page load. Compares effect of
 
 **URL:** https://workflow.code.dev-gutools.co.uk/api/content
 
-Load (r/s) | Min | Max | Average | Max CPU | Max DB CPU | Throughput | Notes
------------|----:|----:|--------:|--------:|-----------:|-----------:|----
-7          |     |     |         |         |            |            | 1000 DB rows (100 visible in API)
-20         |     |     |         |         |            |            | 1000 DB rows (100 visible in API)
-7          |     |     |         |         |            |            | 1000 DB rows (200 visible in API)
-20         |     |     |         |         |            |            | 1000 DB rows (200 visible in API)
-7          |     |     |         |         |            |            | 1000 DB rows (500 visible in API)
-20         |     |     |         |         |            |            | 1000 DB rows (500 visible in API)
-20         |     |     |         |         |            |            | 2000 DB rows (100 visible in API)
-20         |     |     |         |         |            |            | 5000 DB rows (100 visible in API)
+Load (r/s) | Min  | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
+-----------|-----:|------:|--------:|--------:|-----------:|-----------:|----
+7          | 120  | 4205  | 277     | 30%     | 3%         | 6/s        | 1000 DB rows (100 visible in API)
+20         | 129  | 45230 | 783     | 99%     | 5.6%       | 16/s       | 1000 DB rows (100 visible in API)
+7          | 182  | 21455 | 403     | 56%     | 3%         | 6.3%       | 1000 DB rows (200 visible in API)
+20         |      |       |         |         |            |            | 1000 DB rows (200 visible in API)
+7          |      |       |         |         |            |            | 1100 DB rows (200 visible in API)
+20         |      |       |         |         |            |            | 1100 DB rows (200 visible in API)
+7          |      |       |         |         |            |            | 1000 DB rows (500 visible in API)
+20         |      |       |         |         |            |            | 1000 DB rows (500 visible in API)
+7          |      |       |         |         |            |            | 2000 DB rows (100 visible in API)
+20         |      |       |         |         |            |            | 2000 DB rows (100 visible in API)
+7          |      |       |         |         |            |            | 5000 DB rows (100 visible in API)
+20         |      |       |         |         |            |            | 5000 DB rows (100 visible in API)
+7          | ~300 | 3699  | 513   | 76%     | 7.6%       | 6.8/s      | PROD dump 2015-01-19 (232 visible in API)
+
+"DB rows" are number of rows in both the `content` and `stub` table.
+
+PROD dump from 2015-01-19 has 5777 in `content` table, 5788 in `stub`. 227 content and 5 stubs visible in API.
 
 
 ### API poll every 5 seconds

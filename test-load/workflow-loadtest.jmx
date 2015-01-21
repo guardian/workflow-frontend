@@ -46,7 +46,7 @@
       <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
         <collectionProp name="CookieManager.cookies">
           <elementProp name="gutoolsAuth" elementType="Cookie" testname="gutoolsAuth">
-            <stringProp name="Cookie.value">Zmlyc3ROYW1lPUphbWVzJmxhc3ROYW1lPVBhbXBsaW4mZW1haWw9amFtZXMucGFtcGxpbkBndWFyZGlhbi5jby51ayZhdmF0YXJVcmw9aHR0cHM6Ly9saDYuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1YdloyRkZ2LUVway9BQUFBQUFBQUFBSS9BQUFBQUFBQUFGby9ScWZmRXNoU0RwTS9waG90by5qcGc/c3o9NTAmc3lzdGVtPXdvcmtmbG93JmF1dGhlZEluPXdvcmtmbG93LHByZWZlcmVuY2VzJmV4cGlyZXM9MTQyMTg0Mjk0OTAwMCZtdWx0aWZhY3Rvcj10cnVl&gt;&gt;e4d1e62817939fd91635aa612392a450942f2371</stringProp>
+            <stringProp name="Cookie.value">Zmlyc3ROYW1lPUphbWVzJmxhc3ROYW1lPVBhbXBsaW4mZW1haWw9amFtZXMucGFtcGxpbkBndWFyZGlhbi5jby51ayZhdmF0YXJVcmw9aHR0cHM6Ly9saDYuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1YdloyRkZ2LUVway9BQUFBQUFBQUFBSS9BQUFBQUFBQUFGby9ScWZmRXNoU0RwTS9waG90by5qcGc/c3o9NTAmc3lzdGVtPXdvcmtmbG93JmF1dGhlZEluPXdvcmtmbG93LHByZWZlcmVuY2VzJmV4cGlyZXM9MTQyMTg1MTI5OTAwMCZtdWx0aWZhY3Rvcj10cnVl&gt;&gt;9df7ee468bef55cb2b40849f8050fa6abb5f27c0</stringProp>
             <stringProp name="Cookie.domain">workflow.code.dev-gutools.co.uk</stringProp>
             <stringProp name="Cookie.path"></stringProp>
             <boolProp name="Cookie.secure">true</boolProp>
@@ -69,7 +69,7 @@
         <stringProp name="variableName">CACHEBUST</stringProp>
       </RandomVariableConfig>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Initial thread" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Initial thread" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -125,14 +125,14 @@
           <hashTree/>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="API requests thread" enabled="false">
-        <stringProp name="TestPlan.comments">API Requests post load (4 API requests on load)</stringProp>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="API requests thread" enabled="true">
+        <stringProp name="TestPlan.comments">API Requests post load</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.num_threads">20</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1415283481000</longProp>
         <longProp name="ThreadGroup.end_time">1415283481000</longProp>
@@ -2140,6 +2140,7 @@
           </value>
         </objProp>
         <stringProp name="filename"></stringProp>
+        <boolProp name="ResultCollector.success_only_logging">true</boolProp>
       </ResultCollector>
       <hashTree/>
       <ResultCollector guiclass="RespTimeGraphVisualizer" testclass="ResultCollector" testname="Response Time Graph" enabled="true">
@@ -2172,6 +2173,7 @@
           </value>
         </objProp>
         <stringProp name="filename"></stringProp>
+        <boolProp name="ResultCollector.success_only_logging">true</boolProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>
