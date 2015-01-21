@@ -170,29 +170,40 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         }
     };
 
-    }]).directive("wfToolbarFreetext", ['wfFiltersService', '$rootScope', '$timeout', function(wfFiltersService, $rootScope,$timeout) {
+    }]).controller("wfToolbarFreetextController", ['wfFiltersService', '$rootScope', '$scope', '$timeout', function(wfFiltersService, $rootScope, $scope, $timeout) {
         // how long to wait (ms) after seeing a change before
         // committing it? (e.g. we want to activate the change
         // once the user has finished typing).
-        var delay = 500;
+        var defaultDelay = 500;
 
-        return {
-            link: function ($scope, elem, attrs) {
-                $scope.value = "";
-                var timeout = null;
-                $scope.update = function() {
+        $scope.value = "";
+        var timeout = null;
+        var oldValue = null;
 
-                    if(timeout != null) {
-                        $timeout.cancel(timeout);
-                    }
+        $scope.reset = function () {
+            $scope.value = "";
+            $scope.update(0);
+        };
 
-                    timeout = $timeout(() => {
-                        $rootScope.$broadcast(
-                            "filtersChanged.freeText",
-                            ($scope.value.length < 1) ? null : $scope.value
-                        );
-                    }, delay);
-                }
+        $scope.update = function(delay) {
+
+            if(arguments.length < 1) {
+                delay = defaultDelay;
             }
+
+            if(timeout != null) {
+                $timeout.cancel(timeout);
+            }
+
+            timeout = $timeout(() => {
+                var newValue = ($scope.value.length < 1) ? null :
+                    $scope.value;
+
+                $rootScope.$broadcast(
+                    "filtersChanged.freeText",
+                    {newValue: newValue, oldValue: oldValue}
+                );
+                oldValue = newValue;
+            }, delay);
         }
     }]);

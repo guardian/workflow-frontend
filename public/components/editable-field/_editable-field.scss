@@ -1,0 +1,94 @@
+.editable {
+    position: relative;
+
+    &__edit-button {
+        background: none;
+        border: none;
+        padding: 0;
+        text-align: inherit;
+        cursor: pointer;
+
+        &:focus {
+            outline: 1px dotted;
+        }
+    }
+
+    &__view-value {
+        border-bottom: dashed 1px #333;
+    }
+
+    // edit mode
+    &--edit {
+        padding-right: 55px;
+
+        .editable__edit-button {
+            display: none;
+        }
+
+        .editable__text-field,
+        .editable__controls,
+        .editable__error {
+            display: block;
+        }
+    }
+
+    &__text-field {
+        display: none;
+        border: 1px solid $c-grey-300;
+        padding: 3px 5px;
+        width: 100%;
+
+        &--textarea {
+            height: 40px;
+        }
+
+        &.ng-invalid {
+            border-color: $c-red;
+        }
+    }
+
+    &__controls {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    &__control {
+        border: none;
+        padding: 4px 5px;
+
+        &--save {
+            background: $c-highlight-blue;
+
+            &:focus, &:hover {
+                background: $c-blue;
+            }
+        }
+
+        &--cancel {
+            background: $c-grey-500;
+
+            &:focus, &:hover {
+                background: $c-grey-650;
+            }
+        }
+
+        &-icon {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+
+            & .wf-icon--active {
+                fill: #fff;
+            }
+        }
+    }
+
+    &__error {
+        display: none;
+        font-style: italic;
+        margin-right: -55px;
+        white-space: nowrap;
+    }
+}
