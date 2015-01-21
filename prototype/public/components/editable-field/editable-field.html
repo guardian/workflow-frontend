@@ -1,0 +1,17 @@
+<button class="editable__edit-button" ng-click="editableController.setEditMode(true)">
+    <ng-transclude class="editable__view-value"></ng-transclude>
+</button>
+<input type="text" class="editable__text-field" wf-editable-field ng-model="modelValue" ng-required="validateRequired" ng-minlength="validateMinlength" ng-maxlength="validateMaxlength" ng-if="::editableType !== 'textarea'" />
+<textarea class="editable__text-field editable__text-field--textarea" wf-editable-field ng-model="modelValue" ng-required="validateRequired" ng-minlength="validateMinlength" ng-maxlength="validateMaxlength" ng-if="::editableType === 'textarea'"></textarea>
+<span class="editable__controls">
+    <button class="editable__control editable__control--save" ng-click="commit()" title="Save changes">
+        <i class="editable__control-icon editable__control-icon--save" wf-icon="check"></i>
+    </button>
+    <button class="editable__control editable__control--cancel" ng-click="cancel()" title="Cancel changes">
+        <i class="editable__control-icon editable__control-icon--cancel" wf-icon="cross"></i>
+    </button>
+</span>
+<div class="editable__error" ng-show="editableErrors.required">This field is required</div>
+<div class="editable__error" ng-show="editableErrors.minlength">Minimum {{ validateMinlength }} characters required</div>
+<div class="editable__error" ng-show="editableErrors.maxlength">Maximum {{ validateMaxlength }} characters permitted</div>
+<div class="editable__error" ng-show="editableErrors.notSaved">Changes unsaved</div>
