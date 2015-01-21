@@ -327,4 +327,13 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
+  private def extractApiResponseOption[A: Reads](jsValue: JsValue): Response[Option[A]] = {
+    jsValue.validate[A] match {
+      case JsSuccess(a, _) => Right(ApiSuccess(Some(a)))
+      case error@JsError(_) =>
+        val errMsg = errorMsgs(error)
+        Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
+    }
+  }
+
 }

@@ -51,6 +51,7 @@ DELETE         /api/v1/content/:id                    controllers.ContentApi.del
 
 #Archive
 GET            /api/v1/archive/:id                    controllers.ArchiveApi.contentById(id: Long)
+GET            /api/v1/archive/:id/restore            controllers.ArchiveApi.restoreById(id: Long)
 
 #Swagger
 GET            /api/v1/docs                           controllers.ApiHelpController.getResources
