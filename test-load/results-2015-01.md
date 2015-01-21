@@ -67,17 +67,19 @@ Load (r/s) | Min  | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
 -----------|-----:|------:|--------:|--------:|-----------:|-----------:|----
 7          | 120  | 4205  | 277     | 30%     | 3%         | 6/s        | 1000 DB rows (100 visible in API)
 20         | 129  | 45230 | 783     | 99%     | 5.6%       | 16/s       | 1000 DB rows (100 visible in API)
-7          | 182  | 21455 | 403     | 56%     | 3%         | 6.3%       | 1000 DB rows (200 visible in API)
-20         |      |       |         |         |            |            | 1000 DB rows (200 visible in API)
-7          |      |       |         |         |            |            | 1100 DB rows (200 visible in API)
-20         |      |       |         |         |            |            | 1100 DB rows (200 visible in API)
-7          |      |       |         |         |            |            | 1000 DB rows (500 visible in API)
-20         |      |       |         |         |            |            | 1000 DB rows (500 visible in API)
-7          |      |       |         |         |            |            | 2000 DB rows (100 visible in API)
+7          | 182  | 21455 | 403     | 56%     | 3%         | 6.3/s      | 1000 DB rows (200 visible in API)
+20         | 352  | 10900 | 1979    | 100%    | 4.6%       | 9.9/s      | 1000 DB rows (200 visible in API)
+7          | 183  | 3452  | 360     | 55%     | 3.7%       | 6/s        | 1100 DB rows (200 visible in API)
+20         | 249  | 47237 | 1997    | 99%     | 4.3%       | 9.9/s      | 1100 DB rows (200 visible in API)
+7          | 333  | 4994  | 1493    | 99%     | 3.77%      | 4.5/s      | 1000 DB rows (500 visible in API)
+20 (DNT)   |      |       |         |         |            |            | 1000 DB rows (500 visible in API)
+7          | 122  | 9640  | 237     | 35%     | 6.5%       | 6.7/s      | 2000 DB rows (100 visible in API)
 20         |      |       |         |         |            |            | 2000 DB rows (100 visible in API)
 7          |      |       |         |         |            |            | 5000 DB rows (100 visible in API)
 20         |      |       |         |         |            |            | 5000 DB rows (100 visible in API)
-7          | ~300 | 3699  | 513   | 76%     | 7.6%       | 6.8/s      | PROD dump 2015-01-19 (232 visible in API)
+7          | ~300 | 3699  | 513     | 76%     | 7.6%       | 6.8/s      | PROD dump 2015-01-19 (232 visible in API)
+
+DNT = Did Not Test
 
 "DB rows" are number of rows in both the `content` and `stub` table.
 
