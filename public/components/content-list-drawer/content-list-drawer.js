@@ -111,6 +111,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
         link: function ($scope, elem, attrs, contentListDrawerController) {
 
+            $scope.maxNoteLength = config.maxNoteLength;
+
             $scope.prodOffices = prodOfficeService.getProdOffices();
             $scope.incopyExportEnabled = false;
             featureSwitches.withSwitch("incopy-export",
