@@ -1,10 +1,10 @@
 import angular from 'angular';
 
 angular.module('wfGoogleApiService', [])
-    .service('wfGoogleApiService', ['$window', function ($window) {
+    .service('wfGoogleApiService', ['$window', '$http', function ($window, $http) {
 
         return {
-            load: function load() {
+            load: function () {
 
                 if (typeof gapi.client === 'undefined') {
 
@@ -21,6 +21,37 @@ angular.module('wfGoogleApiService', [])
                         window.gapi.auth = gapi.auth.getToken();
                     });
                 }
+            },
+
+            /**
+             * Search for users via google api
+             *
+             * TODO: refactor in to separate service
+             *
+             * @param value search term
+             * @returns $http promise
+             */
+            searchUsers: function (value) {
+
+                var url = 'https://www.googleapis.com/admin/directory/v1/users',
+                    searchParam = '?query=' + escape(value),
+                    otherParams = '&domain=guardian.co.uk&viewType=domain_public';
+
+                var searchUrl = url + searchParam + otherParams;
+
+                var req = {
+                    method: 'GET',
+                    url: searchUrl,
+                    headers: {
+                        'Authorization': 'Bearer ' + window.gapi.auth['access_token']
+                    }
+                };
+
+                return $http(req).then((response) => {
+                    return response.data.users;
+                }, () => {
+                    console.error('Could not query Google API for users');
+                });
             }
         };
     }]);
