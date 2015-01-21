@@ -35,8 +35,18 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
   }
 
   def content = APIAuthAction(getContentBlock)
-  //@ApiParam(value = "ID of the content item to fetch") @PathParam("id")
-  def contentById(id: String) = APIAuthAction { request =>
+
+  @ApiOperation(
+    nickname = "contentById",
+    value = "Get content by either Stub or Composer ID",
+    response = classOf[Long],
+    httpMethod = "GET"
+  )
+  @ApiResponses(Array(
+    new ApiResponse(code = 404, message = "NotFound")
+  ))
+  def contentById(
+    @ApiParam(value = "ID of the content item to fetch (Stub ID or Composer ID)") @PathParam("id") id: String) = APIAuthAction { request =>
     Try(id.toLong).toOption match {
       case Some(l) => contentByStubId(l)
       case None => contentByComposerId(id)
@@ -56,8 +66,6 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
       }
     })
   }
-
-
 
   def contentByComposerId(id: String) =  {
     val contentOpt: Option[ContentItem] = PostgresDB.getContentByCompserId(id)
