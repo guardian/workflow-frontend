@@ -18,6 +18,10 @@ import scala.util.Either
 @Api(value = "/archive", description = "Operations about archived content")
 object ArchiveApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
+  def restoreById(id: Long) = APIAuthAction {
+    NotImplemented
+  }
+
   @ApiOperation(
     nickname = "getContentById",
     value = "Find archived contentItem by ID",
