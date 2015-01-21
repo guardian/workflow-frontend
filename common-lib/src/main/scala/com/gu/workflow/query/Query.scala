@@ -16,17 +16,18 @@ case class WfQueryTime(
 )
 
 case class WfQuery(
-  section       : Seq[Section]     = Nil,
-  desk          : Seq[Desk]        = Nil,
-  dueTimes      : Seq[WfQueryTime] = Nil,
-  status        : Seq[Status]      = Nil,
-  contentType   : Seq[String]      = Nil,
-  published     : Option[Boolean]  = None,
-  flags         : Seq[Flag]  = Nil,
-  prodOffice    : Seq[String]      = Nil,
-  creationTimes : Seq[WfQueryTime] = Nil,
-  text          : Option[String]   = None,
-  assignedTo    : Seq[String]      = Nil
+  section         : Seq[Section]     = Nil,
+  desk            : Seq[Desk]        = Nil,
+  dueTimes        : Seq[WfQueryTime] = Nil,
+  status          : Seq[Status]      = Nil,
+  contentType     : Seq[String]      = Nil,
+  published       : Option[Boolean]  = None,
+  flags           : Seq[Flag]  = Nil,
+  prodOffice      : Seq[String]      = Nil,
+  creationTimes   : Seq[WfQueryTime] = Nil,
+  text            : Option[String]   = None,
+  assignedTo      : Seq[String]      = Nil,
+  assignedToEmail : Seq[String]      = Nil
 )
 
 object WfQuery {

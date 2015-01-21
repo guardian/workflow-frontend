@@ -3,6 +3,14 @@
  */
 function punters (wfGoogleApiService, $http) {
 
+    /**
+     * Search for users via google api
+     *
+     * TODO: refactor in to separate service
+     *
+     * @param value search term
+     * @returns $http promise
+     */
     function searchUsers(value) {
 
         var url = 'https://www.googleapis.com/admin/directory/v1/users',
@@ -124,13 +132,25 @@ function punters (wfGoogleApiService, $http) {
                 $scope.foundUsers = filterList($scope.foundUsers, $scope.tokens);
 
                 // Update model
+
+                // Email address
+                if (!!$scope.stub.assigneeEmail && $scope.stub.assigneeEmail.length > 0) {
+                    $scope.stub.assigneeEmail = $scope.stub.assigneeEmail.split(',');
+                } else {
+                    $scope.stub.assigneeEmail = [];
+                }
+
+                $scope.stub.assigneeEmail.push(user.primaryEmail);
+                $scope.stub.assigneeEmail = $scope.stub.assigneeEmail.join(',');
+
+                // Name
                 if (!!$scope.stub.assignee && $scope.stub.assignee.length > 0) {
                     $scope.stub.assignee = $scope.stub.assignee.split(',');
                 } else {
                     $scope.stub.assignee = [];
                 }
 
-                $scope.stub.assignee.push(user.primaryEmail);
+                $scope.stub.assignee.push(user.name.fullName);
                 $scope.stub.assignee = $scope.stub.assignee.join(',');
 
                 input.value = ""; // clear input when token is added
@@ -141,7 +161,8 @@ function punters (wfGoogleApiService, $http) {
                 $scope.tokens.splice($index, 1);
 
                 // Update model
-                $scope.stub.assignee = $scope.stub.assignee.split(',').splice(-1,1).join(',');
+                $scope.stub.assigneeEmail = $scope.stub.assigneeEmail.split(',').splice($index,1).join(',');
+                $scope.stub.assignee = $scope.stub.assignee.split(',').splice($index,1).join(',');
             };
 
             /**
