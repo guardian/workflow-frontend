@@ -1,12 +1,13 @@
 package com.gu.workflow.db
 
-import models.Flag
+import models.{Status, Flag}
 import models.Flag._
 import org.joda.time.DateTime
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.{Query, TableQuery}
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import scala.slick.collection.heterogenous._
+import scala.slick.model.Column
 import syntax._
 
 
@@ -96,7 +97,7 @@ object Schema {
     HNil
 
 
-  case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
+  case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content"){
     def composerId       = column [String]            ("composer_id", O.PrimaryKey)
     def path             = column [Option[String]]    ("path")
     def lastModified     = column [DateTime]          ("last_modified")

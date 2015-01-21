@@ -5,6 +5,9 @@ import com.gu.workflow.db.Schema
 import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import scala.slick.driver.PostgresDriver.simple._
+import com.github.tototoshi.slick.PostgresJodaSupport._
+import org.joda.time._
 
 import scala.slick.collection.heterogenous._
 import syntax._
@@ -147,6 +150,14 @@ object WorkflowContent {
       wordCount=0)
   }
 
+  //implemented to work on DB object and model object
+  def visibleOnUi(wc: WorkflowContent) = {
+    !(wc.published && wc.lastModified.isBefore(DateTime.now().minusHours(24)) && wc.status.name == "Final")
+  }
+
+  def visibleOnUi(c: Schema.DBContent) = {
+    !(c.published && c.lastModified <  DateTime.now().minusHours(24) && c.status === "Final")
+  }
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId      ::
         path             ::
@@ -309,7 +320,7 @@ case object ContentItem {
         /*
           Note contentType exists in both objects, the behavior of ++ will take wc as source of truth
         */
-        Json.toJson(s).as[JsObject] ++ Json.toJson(wc).as[JsObject]
+        Json.toJson(s).as[JsObject] ++ Json.toJson(wc).as[JsObject] ++ Json.obj("visibleOnUi" -> JsBoolean(WorkflowContent.visibleOnUi(wc)))
       }
       case ContentItem(s, None) => Json.toJson(s)
     }
