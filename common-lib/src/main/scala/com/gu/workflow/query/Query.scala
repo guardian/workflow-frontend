@@ -26,7 +26,8 @@ case class WfQuery(
   prodOffice    : Seq[String]      = Nil,
   creationTimes : Seq[WfQueryTime] = Nil,
   text          : Option[String]   = None,
-  assignedTo    : Seq[String]      = Nil
+  assignedTo    : Seq[String]      = Nil,
+  inIncopy      : Option[Boolean]  = None
 )
 
 object WfQuery {
@@ -140,5 +141,6 @@ object WfQuery {
   def contentQuery(q: WfQuery) = content |>
     simpleInSet(q.status.map(_.toString.toUpperCase))(_.status.toUpperCase) |>
     simpleInSet(q.contentType.map(_.toUpperCase))(_.contentType.toUpperCase) |>
-    q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published))
+    q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published)) |>
+    q.inIncopy.foldl[ContentQuery]((query, inIncopy) => query.filter(_.activeInInCopy === inIncopy))
 }
