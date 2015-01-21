@@ -83,18 +83,20 @@ object Api extends Controller with PanDomainAuthActions {
     val published = req.getQueryString("state").map(_ == "published")
     val text = req.getQueryString("text")
     val assignee = queryStringMultiOption(req.getQueryString("assignee"))
+    val assigneeEmail = queryStringMultiOption(req.getQueryString("assigneeEmail"))
 
     val queryData = WfQuery(
-      section       = sections,
-      status        = status,
-      contentType   = contentType,
-      prodOffice    = prodOffice,
-      dueTimes      = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
-      creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
-      flags         = flags,
-      published     = published,
-      text          = text,
-      assignedTo    = assignee
+      section         = sections,
+      status          = status,
+      contentType     = contentType,
+      prodOffice      = prodOffice,
+      dueTimes        = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
+      creationTimes   = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
+      flags           = flags,
+      published       = published,
+      text            = text,
+      assignedTo      = assignee,
+      assignedToEmail = assigneeEmail
     )
 
     def getContent = {
