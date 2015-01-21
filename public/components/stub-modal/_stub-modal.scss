@@ -20,7 +20,7 @@
 
 .modal-body__header {
     background-color: $c-grey-100;
-    border-bottom: 1px solid $c-grey-200; 
+    border-bottom: 1px solid $c-grey-200;
     text-decoration: none;
     cursor: pointer;
     padding: 0px;
@@ -58,7 +58,9 @@
 
     -webkit-transition: all 0.25s;
     -moz-transition: all 0.25s;
-    transition: all 0.25s;    
+    transition: all 0.25s;
+
+    z-index: 2;
 }
 
 .modal-body__advanced--open {
@@ -67,4 +69,8 @@
     opacity:1;
 
     overflow: visible;
+}
+
+.modal-footer {
+    z-index: 1;
 }
