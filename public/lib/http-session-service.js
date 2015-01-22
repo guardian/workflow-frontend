@@ -78,9 +78,12 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
             (requestConfig.url || '') + (requestParams && requestParams.length > 0 ? '?' + requestParams.join('&') : '')
 
         ].join(' '));
-
         // TODO extras for sentry logging
 
+        //is there a better way of checking if a field exists?
+        if(err.data && err.data.error && err.data.error.friendlyMessage ) {
+            error.friendlyMessage = err.data.error.friendlyMessage
+        }
         return error;
     }
 
