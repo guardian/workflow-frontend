@@ -80,10 +80,10 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
         ].join(' '));
         // TODO extras for sentry logging
 
-        //is there a better way of checking if a field exists?
-        if(err.data && err.data.error && err.data.error.friendlyMessage ) {
+        if(err.data && err.data.error && err.data.error.friendlyMessage) {
             error.friendlyMessage = err.data.error.friendlyMessage
         }
+        error.status = err.status;
         return error;
     }
 
