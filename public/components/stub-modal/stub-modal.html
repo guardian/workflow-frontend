@@ -81,6 +81,15 @@
     </div>
 
     <div class="modal-footer" ng-if="mode === 'import'" ng-hide="actionInProgress">
+        <div class="pull-left" ng-show="wfComposerState ==='visible'">
+            <p>This content is already tracked <a href="/dashboard/#stubId-{{stubId}}" ng-click="cancel()">view here</a></p>
+        </div>
+        <div class="pull-left" ng-show="wfComposerState ==='invisible'">
+            <p>This content is already tracked and not visible</p>
+        </div>
+        <div class="pull-left" ng-show="wfComposerState ==='archived'">
+            <p>This content is archived. Import to create a new item.</p>
+        </div>
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         <button type="submit" class="btn btn-primary" ng-click="ok()" ng-disabled="stubForm.$invalid || !validImport">
             Import
