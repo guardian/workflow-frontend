@@ -48,7 +48,7 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
              * @returns {Array} An Array of Section objects
              */
             function updateSections (selectedSections) {
-                return $scope.sections.map((section) => {
+                var sections = $scope.sections.map((section) => {
                     section.selected = selectedSections.indexOf(section.id) !== -1;
                     return section;
                 }).sort((a, b) => {
@@ -57,9 +57,15 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
                     } else if (a.selected && !b.selected) { // Unselected below
                         return -1;
                     } else {
-                        return a.name > b.name; // Both in Alphabetic order
+                        return a.name > b.name ? 1 : -1; // Both in Alphabetic order
                     }
                 });
+
+                // Pin 'Proffessional Networks' to the bottom of the list
+                var isPN = (s) => { return (s.name.indexOf("(PN)") > -1) && !s.selected; }
+                var pnSections = sections.filter(isPN);
+
+                return sections.filter((s) => {return !isPN(s);}).concat(pnSections);
             }
 
             /**
