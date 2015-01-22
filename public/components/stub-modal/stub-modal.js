@@ -69,12 +69,31 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         })
     }, true);
 
+    $scope.validImport = false;
+
     $scope.composerUrlChanged = () => {
         wfComposerService.getComposerContent($scope.formData.composerUrl).then(
             (composerContent) => {
+                //check validity
                 if (composerContent) {
-                    var stub = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
-                    stub.title = stub.headline;
+
+                    var contentItem = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
+                    var composerId = contentItem.composerId;
+
+                    if(composerId) {
+                        wfContentService.getById(composerId).then(
+                            function(res){
+                                //conditionally send link or explain archived
+                            },
+                            function(err) {
+                                if(err.status === 404) {
+                                    $scope.validImport = true;
+                                }
+                            });
+
+                        stub.title = contentItem.headline;
+
+                    }
                 } else {
                     $scope.stub.composerId = null;
                     $scope.stub.contentType = null;
