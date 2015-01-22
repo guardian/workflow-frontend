@@ -20,7 +20,7 @@ object CommonDB {
 
       val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isEmpty) else stubsQuery(query)
 
-      q.filter(s => dueDateNotExpired(s.due)).sortBy(s => (s.priority, s.workingTitle))
+      q.filter(s => dueDateNotExpired(s.due)).sortBy(s => (s.priority.desc, s.workingTitle))
         .list.map(row => Stub.fromStubRow(row))
     }
 
