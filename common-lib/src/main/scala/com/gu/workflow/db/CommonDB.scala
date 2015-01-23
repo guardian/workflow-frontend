@@ -20,8 +20,7 @@ object CommonDB {
 
       val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isEmpty) else stubsQuery(query)
 
-      q.filter(s => dueDateNotExpired(s.due)).sortBy(s => (s.priority.desc, s.workingTitle))
-        .list.map(row => Stub.fromStubRow(row))
+      q.list.map(row => Stub.fromStubRow(row)).sortBy(s => (s.priority.desc, s.workingTitle))
     }
 
   def getStubForComposerId(composerId: String): Option[Stub] = DB.withTransaction { implicit session =>
@@ -32,24 +31,8 @@ object CommonDB {
     content.filter(_.composerId === composerId).firstOption.map(WorkflowContent.fromContentRow(_))
   }
 
-  def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isEmpty || due > DateTime.now().minusDays(7)
-
-  def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
-    withinDisplayTime(s, c) ||
-      //or item has a status of hold
-      c.status === Status("Hold").name
-  }
-
-  def withinDisplayTime(s: Schema.DBStub, c: Schema.DBContent) = {
-    def publishedWithinLastDay = c.timePublished > DateTime.now().minusDays(1)
-    def dueDateWithinLastWeek = s.due > DateTime.now().minusDays(7)
-    def lastModifiedWithinWeek = c.lastModified > DateTime.now().minusDays(7)
-    def dueDateInFuture = s.due > DateTime.now()
-    //content item has been published within last 24 hours
-    ((publishedWithinLastDay || c.timePublished.isEmpty) &&
-
-      (dueDateWithinLastWeek  || s.due.isEmpty) &&
-      (lastModifiedWithinWeek || dueDateInFuture || c.timePublished.isEmpty))
+  def hideContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
+      c.status === Status("Final").name && c.published && c.lastModified < DateTime.now().minusHours(24)
   }
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
