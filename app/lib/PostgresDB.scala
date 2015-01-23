@@ -78,7 +78,7 @@ object PostgresDB {
       val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
 
       existing match {
-        case Some(stubId) => Left(ApiError("StubExists",s"Stub ${stubId} already exists", 409, "conflict"))
+        case Some(stubId) => Left(ApiError("WorkflowContentExists", s"This item is already tracked in Workflow", 409, "conflict"))
         case None => {
           contentItem.wcOpt.foreach(
             content += WorkflowContent.newContentRow(_, None)
