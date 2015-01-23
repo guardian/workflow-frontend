@@ -81,12 +81,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                     $scope.contentItem = contentItem;
                     $scope.contentList.selectedItem = contentItem;
 
-                    // Enhance assignee with Image
-                    wfGoogleApiService.searchUsers($scope.contentItem.item.assigneeEmail).then((data) => {
-                        if (data && data.length) {
-                            $scope.assigneeImage = data[0].thumbnailPhotoUrl;
-                        }
-                    });
+                    this.updateAssigneeUserImage();
 
                     $scope.$apply();
 
@@ -114,6 +109,15 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                 return this.isHidden() ? this.showContent(contentItem, $contentListItemElement) : this.hide();
             };
+
+            this.updateAssigneeUserImage = function () {
+                // Enhance assignee with Image
+                wfGoogleApiService.searchUsers($scope.contentItem.assigneeEmail).then((data) => {
+                    if (data && data.length) {
+                        $scope.assigneeImage = data[0].thumbnailPhotoUrl;
+                    }
+                });
+            }
         },
 
 
@@ -258,8 +262,28 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             function errorMessage(err) {
                 $scope.$apply(() => { throw new Error('Error deleting content: ' + (err.message || err)); });
 
-            }
+            };
 
+            $scope.toggleAssigneeEditing = function () {
+                $scope.editingAssignee = !$scope.editingAssignee;
+            };
+
+            $rootScope.$on('punters.punterSelected', () => {
+
+                $scope.toggleAssigneeEditing(); // Close Field
+
+                var msg = {
+                    contentItem: $scope.contentItem,
+                    data: {
+                        assignee: $scope.contentItem.assignee,
+                        assigneeEmail: $scope.contentItem.assigneeEmail
+                    }
+                };
+
+                $scope.$emit('contentItem.update', msg);
+
+                contentListDrawerController.updateAssigneeUserImage();
+            });
         }
     };
 }

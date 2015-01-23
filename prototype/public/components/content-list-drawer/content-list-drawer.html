@@ -59,12 +59,16 @@
                         <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true">
                         </wf-presence-indicators>
                     </li>
-                    <li class="drawer__section">
-                        <span class="drawer__section-title">Assigned to</span>
-                        <img class="drawer__user-image" ng-class="{ 'drawer__user-image--placeholder': !assigneeImage }" ng-src="{{ assigneeImage }}" height="38" width="38" alt="contentItem.item.assignee"/>
-                        <span class="drawer__section-data-row--editable" editable-text="contentItem.item.assignee" buttons="no" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.item.assignee || "None" }}</span>
+                    <li class="drawer__section" ng-switch="!!editingAssignee">
+                        <div ng-switch-when="false">
+                            <span class="drawer__section-title">Assigned to</span>
+                            <img class="drawer__user-image" ng-class="{ 'drawer__user-image--placeholder': !assigneeImage }" ng-src="{{ assigneeImage }}" height="38" width="38" alt="contentItem.item.assignee"/>
+                            <span class="drawer__section-data-row--editable" ng-click="toggleAssigneeEditing();" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.assignee || "None" }}</span>
+                        </div>
+                        <div ng-switch-when="true">
+                            <punters stub="contentItem" indrawer="true"></punters>
+                        </div>
                     </li>
-
                     <li class="drawer__section">
                         <span class="drawer__section-title">InCopy</span>
                         <span class="drawer__section-data-row">{{ contentItem.incopyTitle }}</span>

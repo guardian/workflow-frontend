@@ -14,7 +14,7 @@ import { punters } from 'components/punters/punters';
 
 
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService'])
-    .directive('punters', ['wfGoogleApiService', punters]);
+    .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
 function StubModalInstanceCtrl($scope, $modalInstance, $window, config, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService) {
     var contentName = wfContentService.getTypes()[stub.contentType] || "News item";

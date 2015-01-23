@@ -142,6 +142,15 @@ object PostgresDB {
     }
   }
 
+  def updateStubWithAssigneeEmail(id: Long, assigneeEmail: Option[String]): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.assigneeEmail)
+        .update(assigneeEmail)
+    }
+  }
+
   def updateStubDueDate(id: Long, dueDate: Option[DateTime]): Int = {
     DB.withTransaction { implicit session =>
       stubs
