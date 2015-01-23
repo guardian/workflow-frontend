@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="2.6" jmeter="2.11 r1554548">
+<jmeterTestPlan version="1.2" properties="2.7" jmeter="2.12 r1636949">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -46,7 +46,7 @@
       <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
         <collectionProp name="CookieManager.cookies">
           <elementProp name="gutoolsAuth" elementType="Cookie" testname="gutoolsAuth">
-            <stringProp name="Cookie.value">Zmlyc3ROYW1lPUphbWVzJmxhc3ROYW1lPVBhbXBsaW4mZW1haWw9amFtZXMucGFtcGxpbkBndWFyZGlhbi5jby51ayZhdmF0YXJVcmw9aHR0cHM6Ly9saDYuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1YdloyRkZ2LUVway9BQUFBQUFBQUFBSS9BQUFBQUFBQUFGby9ScWZmRXNoU0RwTS9waG90by5qcGc/c3o9NTAmc3lzdGVtPXdvcmtmbG93JmF1dGhlZEluPXdvcmtmbG93LHByZWZlcmVuY2VzJmV4cGlyZXM9MTQyMjAxOTE2NTAwMCZtdWx0aWZhY3Rvcj10cnVl&gt;&gt;09975c50fc532f5374080b1913415068910cbd3f</stringProp>
+            <stringProp name="Cookie.value">Zmlyc3ROYW1lPUphbWVzJmxhc3ROYW1lPVBhbXBsaW4mZW1haWw9amFtZXMucGFtcGxpbkBndWFyZGlhbi5jby51ayZhdmF0YXJVcmw9aHR0cHM6Ly9saDYuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1YdloyRkZ2LUVway9BQUFBQUFBQUFBSS9BQUFBQUFBQUFGby9ScWZmRXNoU0RwTS9waG90by5qcGc/c3o9NTAmc3lzdGVtPXdvcmtmbG93JmF1dGhlZEluPXdvcmtmbG93LHByZWZlcmVuY2VzJmV4cGlyZXM9MTQyMjAzNTI3NzAwMCZtdWx0aWZhY3Rvcj10cnVl&gt;&gt;ba8b1fbaa6b4af631af03033020ffed9492788df</stringProp>
             <stringProp name="Cookie.domain">workflow.code.dev-gutools.co.uk</stringProp>
             <stringProp name="Cookie.path"></stringProp>
             <boolProp name="Cookie.secure">true</boolProp>
@@ -2073,6 +2073,7 @@
             <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
             <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
           </value>
         </objProp>
         <stringProp name="filename"></stringProp>
@@ -2105,6 +2106,7 @@
             <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
             <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
           </value>
         </objProp>
         <stringProp name="filename"></stringProp>
@@ -2137,6 +2139,7 @@
             <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
             <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
           </value>
         </objProp>
         <stringProp name="filename"></stringProp>
@@ -2170,6 +2173,7 @@
             <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
             <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
           </value>
         </objProp>
         <stringProp name="filename"></stringProp>

@@ -27,10 +27,6 @@ Setup:
 - System Monitoring via AWS Cloudwatch / Workflow Radiator pointed to CODE
 
 
-## Observations
-TODO
-
-
 ## Test results
 r/s = Simulated requests per second
 
@@ -88,7 +84,9 @@ DNT = Did Not Test
 
 PROD dump from 2015-01-19 has 5777 in `content` table, 5788 in `stub`. 227 content and 5 stubs visible in API.
 
-Tests show higher instance CPU on larger API responses (rows visible)
+Tests show higher instance CPU, slower response times on larger API responses (rows visible)
+
+Result: Pass at target load.
 
 ### API poll every 5 seconds
 Tests response times of polled API request.
@@ -105,6 +103,26 @@ Load (r/s) | Min | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
 
 Tests show max throughput wall at ~16/s for the API on current config. Minimal DB CPU suggests instances are the bottleneck.
 
+Double checked performance via remote test, confirmed.
+
+Result: Acceptable. Responses will be slow at max low.
+
+#### 2 instances cross-zone
+Retested via remote with Cross-Zone Load Balancing: on!
+Load (r/s) | Min | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
+-----------|----:|------:|--------:|--------:|-----------:|-----------:|----
+40         | 270 | 3064  | 1135    | 99%     | 14%        | 32.8/s     | 1000 DB rows (100 visible in API)
+
+Result: Acceptable. Better performance at 82% of target.
+
+#### 3 instances cross-zone
+3 instances. 1 per EU-West-1 AZ. Cross-Zone Load Balancing: on!
+Load (r/s) | Min | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
+-----------|----:|------:|--------:|--------:|-----------:|-----------:|----
+40         | 33  | 5149  | 105     | 76%     | 17%        | 39.4/s     | 1000 DB rows (100 visible in API)
+80         | 224 | 4878  | 1511    | 99%     | 8%         | 50.2/s     | 1000 DB rows (100 visible in API)
+
+Result: Pass! Great performance at target load.
 
 ### Asset requests
 Tests response times of asset requests in browser. Browser uses 4 threads to load assets per user.
