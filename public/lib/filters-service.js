@@ -158,6 +158,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                             }
                         }
 
+                        $rootScope.$broadcast('filtersChanged.fromPreferences');
                         $rootScope.$broadcast('getContent');
                     }, () => {
                         setUpFilters(params);
