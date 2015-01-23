@@ -8,6 +8,7 @@ import com.gu.workflow.syntax._
 import models._
 import com.gu.workflow.query._
 import com.gu.workflow.db.Schema._
+import com.gu.workflow.lib._
 
 object CommonDB {
 
@@ -32,7 +33,9 @@ object CommonDB {
   }
 
   def hideContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
-      c.status === Status("Final").name && c.published && c.lastModified < DateTime.now().minusHours(24)
+      c.status === Status("Final").name &&
+        c.published &&
+        c.lastModified < Util.roundDateTime(DateTime.now().minusHours(24),Duration.standardMinutes(5))
   }
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
