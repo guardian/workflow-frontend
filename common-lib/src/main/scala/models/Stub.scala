@@ -39,8 +39,8 @@ object Stub {
                             (__ \ "assigneeEmail").readNullable[String] and
                             (__ \ "composerId").readNullable[String] and
                             (__ \ "contentType").readNullable[String] and
-                            (__ \ "priority").read[Int] and
-                            (__ \ "needsLegal").read[Flag] and
+                            (__ \ "priority").readNullable[Int].map(_.getOrElse(0)) and
+                            (__ \ "needsLegal").readNullable[Flag].map(f  => f.getOrElse(Flag.NotRequired)) and
                             (__ \"note").readNullable[String](noteReads) and
                             (__ \"prodOffice").read[String](prodOfficeReads) and
                             (__ \ "createdAt").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) }

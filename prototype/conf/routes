@@ -5,6 +5,12 @@
 # Application
 GET            /                                      controllers.Application.index
 
+OPTIONS        /api/*url                              controllers.Api.allowCORSAccess(methods = "PUT, POST", url: String)
+
+GET            /dashboard                             controllers.Application.dashboard
+
+GET            /about                                 controllers.Application.about
+
 # Login
 GET            /oauthCallback                         controllers.Login.oauthCallback
 GET            /login/status                          controllers.Login.status
@@ -16,7 +22,6 @@ GET            /api/content                           controllers.Api.content
 POST           /api/content                           controllers.Api.createContent
 GET            /api/content/:composerId               controllers.Api.getContentbyId(composerId: String)
 PUT            /api/content/:composerId/status        controllers.Api.putContentStatus(composerId: String)
-OPTIONS        /api/content/:composerId/status        controllers.Api.allowCORSAccess(methods = "PUT", composerId: String)
 DELETE         /api/content/:composerId               controllers.Api.deleteContent(composerId: String)
 
 GET            /api/stubs                             controllers.Api.stubs
@@ -26,17 +31,16 @@ PUT            /api/stubs/:stubId/assignee            controllers.Api.putStubAss
 PUT            /api/stubs/:stubId/assigneeEmail       controllers.Api.putStubAssigneeEmail(stubId: Long)
 PUT            /api/stubs/:stubId/dueDate             controllers.Api.putStubDueDate(stubId: Long)
 PUT            /api/stubs/:stubId/note                controllers.Api.putStubNote(stubId: Long)
-OPTIONS        /api/stubs/:stubId/note                controllers.Api.allowCORSAccess(methods = "PUT", stubId: String)
 PUT            /api/stubs/:stubId/needsLegal          controllers.Api.putStubLegalStatus(stubId: Long)
-OPTIONS        /api/stubs/:stubId/needsLegal          controllers.Api.allowCORSAccess(methods = "PUT", stubId: String)
 PUT            /api/stubs/:stubId/prodOffice          controllers.Api.putStubProdOffice(stubId: Long)
 PUT            /api/stubs/:stubId/section             controllers.Api.putStubSection(stubId: Long)
 PUT            /api/stubs/:stubId/workingTitle        controllers.Api.putStubWorkingTitle(stubId: Long)
 PUT            /api/stubs/:stubId/priority            controllers.Api.putStubPriority(stubId: Long)
 DELETE         /api/stubs/:stubId                     controllers.Api.deleteStub(stubId: Long)
-POST           /api/stubs/:stubId                     controllers.Api.linkStub(stubId: Long, composerId: String, contentType: String)
 
 GET            /api/statuses                          controllers.Api.statusus
+GET            /api/sections                          controllers.Api.sections
+
 
 # Admin
 GET            /admin                                 controllers.Admin.index(selectedDesk: Option[Long])
@@ -68,5 +72,6 @@ GET            /sharedsecret/content/:id              controllers.Api.sharedAuth
 
 # Management
 GET            /management/healthcheck                controllers.Management.healthCheck
+
 # Map static resources from the /public folder to the /assets URL path
 GET            /assets/*file                          controllers.Assets.at(path="/public", file)

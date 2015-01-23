@@ -59,7 +59,6 @@
     -webkit-transition: all 0.25s;
     -moz-transition: all 0.25s;
     transition: all 0.25s;
-
     z-index: 2;
 }
 
@@ -73,4 +72,26 @@
 
 .modal-footer {
     z-index: 1;
+}
+
+// Display errors for deadline field
+// FIXME Should have generic field validation for form
+//       Error message should be exposed properly from date-time-picker via form.field.$error
+.modal-body__deadline {
+
+    &.ng-invalid-parse {
+        input,
+        button {
+            border-color: $c-red;
+        }
+
+        .help-block::after {
+            content: "Unrecognised date";
+            font-style: italic;
+        }
+    }
+}
+
+.modal-footer.alert {
+    margin-bottom: 0px;
 }

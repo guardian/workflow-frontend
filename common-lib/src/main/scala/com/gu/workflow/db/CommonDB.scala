@@ -20,8 +20,7 @@ object CommonDB {
 
       val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isEmpty) else stubsQuery(query)
 
-      q.filter(s => dueDateNotExpired(s.due))
-        .list.map(row => Stub.fromStubRow(row))
+      q.list.map(row => Stub.fromStubRow(row))
     }
 
   def getStubForComposerId(composerId: String): Option[Stub] = DB.withTransaction { implicit session =>
@@ -32,24 +31,8 @@ object CommonDB {
     content.filter(_.composerId === composerId).firstOption.map(WorkflowContent.fromContentRow(_))
   }
 
-  def dueDateNotExpired(due: Column[Option[DateTime]]) = due.isEmpty || due > DateTime.now().minusDays(7)
-
-  def displayContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
-    withinDisplayTime(s, c) ||
-      //or item has a status of hold
-      c.status === Status("Hold").name
-  }
-
-  def withinDisplayTime(s: Schema.DBStub, c: Schema.DBContent) = {
-    def publishedWithinLastDay = c.timePublished > DateTime.now().minusDays(1)
-    def dueDateWithinLastWeek = s.due > DateTime.now().minusDays(7)
-    def lastModifiedWithinWeek = c.lastModified > DateTime.now().minusDays(7)
-    def dueDateInFuture = s.due > DateTime.now()
-    //content item has been published within last 24 hours
-    ((publishedWithinLastDay || c.timePublished.isEmpty) &&
-
-      (dueDateWithinLastWeek  || s.due.isEmpty) &&
-      (lastModifiedWithinWeek || dueDateInFuture || c.timePublished.isEmpty))
+  def hideContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
+      c.status === Status("Final").name && c.published && c.lastModified < DateTime.now().minusHours(24)
   }
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
@@ -60,24 +43,40 @@ object CommonDB {
 
   def updateContent(wc: WorkflowContent, revision: Long)(implicit session: Session): Int = {
       val mainMedia = wc.mainMedia.getOrElse(WorkflowContentMainMedia())
+      content.filter(_.composerId === wc.composerId)
+              .filter(c => c.revision <= revision || c.revision.isEmpty)
+              .update(WorkflowContent.newContentRow(wc, Some(revision)))
+  }
 
-      content
-        .filter(_.composerId === wc.composerId)
-        .filter(c => c.revision <= revision || c.revision.isEmpty)
-        .map(c => (
+  def updateContentFromUpdateEvent(e: ContentUpdateEvent): Int = {
+    val mainMedia = WorkflowContentMainMedia.getMainMedia(e.mainBlock).getOrElse(
+      WorkflowContentMainMedia(None, None, None, None)
+    )
+
+    DB.withTransaction { implicit session =>
+      val q = content.filter(_.composerId === e.composerId)
+        .filter(c => c.revision <= e.revision || c.revision.isEmpty)
+
+      val workflowContent = q.firstOption.map(WorkflowContent.fromContentRow(_))
+      val takenDown = workflowContent.map { c => c.takenDown }.getOrElse(false)
+      def isTakenDown(published: Boolean, takenDown: Boolean): Boolean = {
+        if(published) { false } else { takenDown }
+      }
+
+      q.map(c => (
           c.path, c.lastModified, c.lastModifiedBy, c.contentType,
           c.commentable, c.headline, c.standfirst,
           c.trailtext, c.mainMedia, c.mainMediaUrl,
           c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl,
-          c.published, c.timePublished, c.revision, c.storyBundleId)
-        )
-        .update((
-          wc.path, wc.lastModified, wc.lastModifiedBy, wc.contentType,
-          wc.commentable, wc.headline, wc.standfirst,
-          wc.trailtext, mainMedia.mediaType, mainMedia.url,
-          mainMedia.caption, mainMedia.altText, wc.trailImageUrl,
-          wc.published, wc.timePublished, Some(revision), wc.storyBundleId)
-        )
+          c.published, c.timePublished, c.revision, c.wordCount, c.takenDown)
+         )
+         .update((e.path, e.lastModified, e.user, e.`type`,
+           e.commentable, e.headline, e.standfirst,
+           e.trailText, mainMedia.mediaType, mainMedia.url, mainMedia.caption,
+           mainMedia.altText, WorkflowContent.getTrailImageUrl(e.thumbnail), e.published, e.publicationDate,
+           Some(e.revision), e.wordCount, isTakenDown(e.published, takenDown)))
+    }
+
   }
 
   def createContent(wc: WorkflowContent, revision: Option[Long])(implicit session: Session) {

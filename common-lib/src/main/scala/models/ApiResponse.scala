@@ -10,6 +10,11 @@ case object ApiError {
   implicit val apiErrorFormat = Json.format[ApiError]
 }
 
+object ApiErrors {
+  def updateError(id: Long) = ApiError("UpdateError", s"Item with ID, ${id} does not exist", 404, "notfound")
+  def composerIdNotFound(id: String) = ApiError("ComposerIdNotFound", s"Composer Id ${id} does not exist in workflow", 404, "notfound")
+}
+
 
 
 object ApiResponse extends Results {

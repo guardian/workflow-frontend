@@ -80,10 +80,15 @@
       "Type": "String",
       "Default": "ami-a89a28df"
     },
-    "FCMetadataTopic": {
+    "FCContentUpdateDraft": {
       "Description": "ARN of the topic for Flexible Content metadata events",
       "Type": "String",
-      "Default": "arn:aws:sns:eu-west-1:308506855511:prod-fc-metadata-events"
+      "Default": "arn:aws:sns:eu-west-1:743583969668:fc-draft-content-PROD"
+    },
+    "FCContentUpdateLive": {
+      "Description": "ARN of the topic for Flexible Content metadata events",
+      "Type": "String",
+      "Default": "arn:aws:sns:eu-west-1:743583969668:fc-live-content-PROD"
     },
     "FCLifecycleTopic": {
       "Description": "ARN of the topic for Flexible Content lifecycle events",
@@ -1024,10 +1029,13 @@
                 "ArnEquals": {
                   "aws:SourceArn": [
                     {
-                      "Ref": "FCMetadataTopic"
+                      "Ref": "FCLifecycleTopic"
                     },
                     {
-                      "Ref": "FCLifecycleTopic"
+                       "Ref": "FCContentUpdateDraft"
+                    },
+                    {
+                        "Ref": "FCContentUpdateLive"
                     }
                   ]
                 }

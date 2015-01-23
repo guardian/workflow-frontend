@@ -40,8 +40,7 @@ import 'lib/google-api';
 // 3rd party libs
 import 'angular-ui-router';
 import 'angular-bootstrap';
-import 'angular-xeditable';
-import 'angular-animate/angular-animate.min'
+import 'angular-animate/angular-animate.min';
 
 // App-wide Styles
 import 'bootstrap@3.2.0/css/bootstrap.min.css!';
@@ -65,10 +64,9 @@ angular.module('workflow',
         'wfColumnService',
         'wfPreferencesService',
         'wfFeatureSwitches',
-        'wfGoogleApiService',
-        'xeditable'
+        'wfGoogleApiService'
     ])
-    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', function ($stateProvider, $urlRouterProvider, $compileProvider) {
+    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
         // TODO: remember user's state and redirect there on default '' route
         $urlRouterProvider.when('', '/dashboard');
 
@@ -98,6 +96,10 @@ angular.module('workflow',
                 }
             }
         });
+        $locationProvider.html5Mode({
+            enabled: true,
+            requireBase: false
+        });
 
     }])
 
@@ -119,7 +121,7 @@ angular.module('workflow',
     .constant({ 'statuses': _wfConfig.statuses })
     .constant({ 'sections': _wfConfig.sections })
     .constant({ 'desks': _wfConfig.desks })
-    .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
+    .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks });
 
     // XEditable options, TODO: mode out to dashboard controller somewhere...
     .run(function ($window, editableOptions, wfGoogleApiService) {
@@ -131,4 +133,5 @@ angular.module('workflow',
 // Bootstrap App
 angular.element(document).ready(function () {
     angular.bootstrap(document, ['workflow']);
+    window.name='gu_workflow';
 });

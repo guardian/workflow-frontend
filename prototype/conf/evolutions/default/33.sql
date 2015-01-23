@@ -1,7 +1,6 @@
 # --- !Ups
-
-ALTER TABLE stub ADD COLUMN assign_to_email TEXT;
+ALTER TABLE content ALTER COLUMN content_type SET NOT NULL
 
 # --- !Downs
 
-ALTER TABLE stub DROP COLUMN assign_to_email;
+ALTER TABLE content ALTER COLUMN content_type DROP NOT NULL

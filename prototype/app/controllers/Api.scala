@@ -17,7 +17,7 @@ import lib._
 
 import org.joda.time.DateTime
 
-import com.gu.workflow.db.{SectionDB, CommonDB}
+import com.gu.workflow.db.{DeskDB, SectionDeskMappingDB, SectionDB, CommonDB}
 import com.gu.workflow.query._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -47,7 +47,9 @@ case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
 
 object Api extends Controller with PanDomainAuthActions {
 
-  def allowCORSAccess(methods: String, args: Any*) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+  val composerUrl = PrototypeConfiguration.apply.composerUrl
+
+  def allowCORSAccess(methods: String, args: Any*) = CORSable(composerUrl) {
 
     Action { implicit req =>
       val requestedHeaders = req.headers("Access-Control-Request-Headers")
@@ -125,14 +127,18 @@ object Api extends Controller with PanDomainAuthActions {
 
   def content = APIAuthAction(getContentBlock)
 
-  def getContentbyId(composerId: String) =
-    CORSable(PrototypeConfiguration.apply.composerUrl) {
-      APIAuthAction { contentById(composerId) }
+  def getContentbyId(composerId: String) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+      APIAuthAction { implicit request =>
+        contentById(composerId)
+      }
     }
 
-  def contentById(composerId: String) = { implicit req: Request[AnyContent] =>
-    val data = PostgresDB.getContentByComposerId(composerId)
-    data.map{s => Ok(renderJsonResponse(s))}.getOrElse(NotFound)
+  def contentById(composerId: String) = {
+    ApiResponse(for{
+      data <- PostgresDB.getContentByComposerId(composerId).right
+    }yield {
+      data
+    })
   }
 
   def sharedAuthGetContentById(composerId: String) = SharedSecretAuthAction(contentById(composerId))
@@ -145,48 +151,54 @@ object Api extends Controller with PanDomainAuthActions {
 
   val STUB_NOTE_MAXLEN = 500
 
-  def stubs = APIAuthAction { implicit req =>
-    stubFilters.bindFromRequest.fold(
+  def stubs = CORSable(composerUrl) {
+    APIAuthAction { implicit req =>
+      stubFilters.bindFromRequest.fold(
       formWithErrors => BadRequest(formWithErrors.errorsAsJson), {
         case (dueFrom, dueUntil) => Ok(renderJsonResponse(
-                                         CommonDB.getStubs(
-                                           WfQuery(dueTimes = List(WfQueryTime(dueFrom, dueUntil)))
-                                         )
-                                       ))
+          CommonDB.getStubs(
+            WfQuery(dueTimes = List(WfQueryTime(dueFrom, dueUntil)))
+          )
+        ))
       }
-    )
+      )
+    }
   }
 
 
-  def createContent() = APIAuthAction { implicit request =>
-   ApiResponse(for {
-      jsValue <- readJsonFromRequestApiResponse(request.body).right
-      contentItem <- extractApiResponse[ContentItem](jsValue).right
-      stubId <- PostgresDB.createContent(contentItem).right
-    } yield {
-     stubId
-    })
+  def createContent() =  CORSable(composerUrl) {
+    APIAuthAction { implicit request =>
+      ApiResponse(for {
+        jsValue <- readJsonFromRequestApiResponse(request.body).right
+        stub <- extractApiResponse[Stub](jsValue).right
+        wcOpt <- (if(stub.composerId.isDefined) extractApiResponseOption[WorkflowContent](jsValue) else extractApiResponse[Option[WorkflowContent]](jsValue)).right
+        stubId <- PostgresDB.createContent(ContentItem(stub, wcOpt)).right
+      } yield {
+        stubId
+      })
+    }
   }
 
-  def putStub(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      stub <- extract[Stub](jsValue).right
-    } yield {
-      PostgresDB.updateStub(stubId, stub)
-      NoContent
-    }).merge
+  def putStub(stubId: Long) =  CORSable(composerUrl) {
+    APIAuthAction { implicit request =>
+      ApiResponse(for {
+        jsValue <- readJsonFromRequestApiResponse(request.body).right
+        stub <- extractApiResponse[Stub](jsValue).right
+        id <- PostgresDB.updateStub(stubId, stub).right
+      } yield {
+        id
+      })
+    }
   }
 
   def putStubAssignee(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      assignee <- extract[String](jsValue \ "data").right
+    ApiResponse(for {
+      jsValue <- readJsonFromRequestApiResponse(request.body).right
+      assignee <- extractApiResponse[String](jsValue \ "data").right
+      id <- PostgresDB.updateStubWithAssignee(stubId, Some(assignee).filter(_.nonEmpty)).right
     } yield {
-      val assignOpt = Some(assignee).filter(_.nonEmpty)
-      PostgresDB.updateStubWithAssignee(stubId, assignOpt)
-      NoContent
-    }).merge
+      id
+    })
   }
 
   def putStubAssigneeEmail(stubId: Long) = APIAuthAction { implicit request =>
@@ -201,92 +213,96 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def putStubDueDate(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
+    ApiResponse(for {
+      jsValue <- readJsonFromRequestApiResponse(request.body).right
+      dueDateOpt <- extractApiResponse[Option[String]](jsValue \ "data").right
+      id <- PostgresDB.updateStubDueDate(stubId, dueDateOpt.filter(_.length!=0).map(new DateTime(_))).right
     } yield {
-      val dueDate = (jsValue \ "data").asOpt[String] filter {
-        _.length != 0
-      } map {
-        new DateTime(_)
-      }
-      PostgresDB.updateStubDueDate(stubId, dueDate)
-      NoContent
-    }).merge
+      id
+    })
   }
 
-  def putStubNote(stubId: Long) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+  def putStubNote(stubId: Long) = CORSable(composerUrl) {
     APIAuthAction { implicit request =>
-      (for {
-        jsValue <- readJsonFromRequest(request.body).right
-        note <- extract[String](jsValue \ "data")(Stub.noteReads).right
+      ApiResponse(for {
+        jsValue <- readJsonFromRequestApiResponse(request.body).right
+        note <- extractApiResponse[String](jsValue \ "data")(Stub.noteReads).right
+        id <- PostgresDB.updateStubNote(stubId, note).right
       } yield {
-        PostgresDB.updateStubNote(stubId, note)
-        NoContent
-      }).merge
+        id
+      })
     }
   }
 
-  def putStubProdOffice(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      prodOffice <- extract[String](jsValue \ "data")(Stub.prodOfficeReads).right
-    } yield {
-      PostgresDB.updateStubProdOffice(stubId, prodOffice)
-      NoContent
-    }).merge
-  }
-
-  def putContentStatus(composerId: String) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+  def putStubProdOffice(stubId: Long) = CORSable(composerUrl) {
     APIAuthAction { implicit request =>
-      (for {
-        jsValue <- readJsonFromRequest(request.body).right
-        status <- extract[String](jsValue \ "data").right
+      ApiResponse(for {
+        jsValue <- readJsonFromRequestApiResponse(request.body).right
+        prodOffice <- extractApiResponse[String](jsValue \ "data")(Stub.prodOfficeReads).right
+        id <- PostgresDB.updateStubProdOffice(stubId, prodOffice).right
       } yield {
-        PostgresDB.updateContentStatus(status, composerId)
-        NoContent
-      }).merge
+        id
+      })
     }
   }
 
-  def putStubSection(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      section <- extract[String](jsValue \ "data" \ "name")(Stub.sectionReads).right
-    } yield {
-      PostgresDB.updateStubSection(stubId, section)
-      NoContent
-    }).merge
-  }
-
-  def putStubWorkingTitle(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      workingTitle <- extract[String](jsValue \ "data")(Stub.workingTitleReads).right
-    } yield {
-      PostgresDB.updateStubWorkingTitle(stubId, workingTitle)
-      NoContent
-    }).merge
-  }
-
-  def putStubPriority(stubId: Long) = APIAuthAction { implicit request =>
-    (for {
-      jsValue <- readJsonFromRequest(request.body).right
-      priority <- extract[Int](jsValue \ "data").right
-    } yield {
-      PostgresDB.updateStubPriority(stubId, priority)
-      NoContent
-    }).merge
-  }
-
-  def putStubLegalStatus(stubId: Long) = CORSable(PrototypeConfiguration.apply.composerUrl) {
+  def putContentStatus(composerId: String) = CORSable(composerUrl) {
     APIAuthAction { implicit request =>
-      (for {
-        jsValue <- readJsonFromRequest(request.body).right
-        status <- extract[Flag](jsValue \ "data").right
+      ApiResponse(for {
+        jsValue <- readJsonFromRequestApiResponse(request.body).right
+        status <- extractApiResponse[String](jsValue \ "data").right
+        id <- PostgresDB.updateContentStatus(status, composerId).right
       } yield {
-        PostgresDB.updateStubLegalStatus(stubId, status)
-        NoContent
-      }).merge
+        id
+      })
+    }
+  }
+
+  def putStubSection(stubId: Long) =  CORSable(composerUrl) {
+    APIAuthAction { implicit request =>
+      ApiResponse(for {
+        jsValue <- readJsonFromRequestApiResponse(request.body).right
+        section <- extractApiResponse[String](jsValue \ "data" \ "name")(Stub.sectionReads).right
+        id <- PostgresDB.updateStubSection(stubId, section).right
+      } yield {
+        id
+      })
+    }
+  }
+
+  def putStubWorkingTitle(stubId: Long) =  CORSable(composerUrl) {
+    APIAuthAction { implicit request =>
+      ApiResponse(for {
+        jsValue <- readJsonFromRequestApiResponse(request.body).right
+        workingTitle <- extractApiResponse[String](jsValue \ "data")(Stub.workingTitleReads).right
+        id <- PostgresDB.updateStubWorkingTitle(stubId, workingTitle).right
+      } yield {
+        id
+      })
+    }
+  }
+
+  def putStubPriority(stubId: Long) = CORSable(composerUrl) {
+    APIAuthAction { implicit request =>
+      ApiResponse(for {
+        jsValue <- readJsonFromRequestApiResponse(request.body).right
+        priority <- extractApiResponse[Int](jsValue \ "data").right
+        id <- PostgresDB.updateStubPriority(stubId, priority).right
+      } yield {
+        id
+      })
+    }
+  }
+
+  def putStubLegalStatus(stubId: Long) = CORSable(composerUrl) {
+    APIAuthAction { implicit request =>
+      ApiResponse(for {
+        jsValue <- readJsonFromRequestApiResponse(request.body).right
+        status <- extractApiResponse[Flag](jsValue \ "data").right
+        id <- PostgresDB.updateStubLegalStatus(stubId, status).right
+      } yield {
+        id
+      })
     }
   }
 
@@ -300,23 +316,17 @@ object Api extends Controller with PanDomainAuthActions {
     NoContent
   }
 
-
-  def linkStub(stubId: Long, composerId: String, contentType: String) = APIAuthAction { req =>
-
-    if (PostgresDB.stubLinkedToComposer(stubId)) BadRequest(s"stub with id $stubId is linked to a composer item")
-
-    else {
-      PostgresDB.updateStubWithComposerId(stubId, composerId, contentType)
-      NoContent
-    }
-
-  }
-
-  def statusus = CORSable(PrototypeConfiguration.apply.composerUrl) {
+  def statusus = CORSable(composerUrl)  {
     APIAuthAction.async { implicit req =>
       for(statuses <- StatusDatabase.statuses) yield {
         Ok(renderJsonResponse(statuses))
       }
+    }
+  }
+
+  def sections = CORSable(composerUrl) {
+    AuthAction  { implicit request =>
+      ApiResponse(Right(SectionDB.sectionList))
     }
   }
 
@@ -357,6 +367,15 @@ object Api extends Controller with PanDomainAuthActions {
   private def extractApiResponse[A: Reads](jsValue: JsValue): ApiResponse[A] = {
     jsValue.validate[A] match {
       case JsSuccess(a, _) => Right(a)
+      case error@JsError(_) =>
+        val errMsg = errorMsgs(error)
+        Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
+    }
+  }
+  //todo - add a transformer to take an ApiResponse[A] to ApiResponse[Option[A]]
+  private def extractApiResponseOption[A: Reads](jsValue: JsValue): ApiResponse[Option[A]] = {
+    jsValue.validate[A] match {
+      case JsSuccess(a, _) => Right(Some(a))
       case error@JsError(_) =>
         val errMsg = errorMsgs(error)
         Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))

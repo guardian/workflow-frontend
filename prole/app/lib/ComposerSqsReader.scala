@@ -13,9 +13,9 @@ import play.api.libs.json.{JsError, JsSuccess}
 import play.api.Logger
 import com.gu.workflow.db.CommonDB
 import models.{
-  WorkflowContent, 
+  WorkflowContent,
   ContentUpdateEvent,
-  LifecycleEvent, 
+  LifecycleEvent,
   Stub
 }
 
@@ -24,7 +24,7 @@ class ComposerSqsReader extends Actor {
 
   def receive = {
     case PollMessages =>
-      try { processMessages } 
+      try { processMessages }
       catch { case e: Exception => Logger.error("error polling for messages, recheduling", e); reschedule }
   }
 
@@ -40,16 +40,16 @@ class ComposerSqsReader extends Actor {
   private def processMessages {
     for(m <- msg) {
       ComposerSqsReader.updateLastRead()
-      
+
       if(AWSWorkflowQueue.parseMessage(m) match {
         case Some(e: LifecycleEvent)     => processLifecycleEvent(e)
-        case Some(c: ContentUpdateEvent) => processContentUpdateEvent(c) 
+        case Some(c: ContentUpdateEvent) => processContentUpdateEvent(c)
         case _ => false
       }) {
         CloudWatch.recordMessageProcessed
         AWSWorkflowQueue.deleteMessage(m)
       } else {
-        Logger.error(s"message not parsed: $m")  
+        Logger.error(s"message not parsed: $m")
       }
     }
 
@@ -73,7 +73,7 @@ class ComposerSqsReader extends Actor {
 
   private def recordUntrackedContent(id: String): Unit = {
     CloudWatch.recordUntrackedContentMessage
-    Logger.trace(s"update to non tracked content recieved ($id), ignoring") 
+    Logger.trace(s"update to non tracked content recieved ($id), ignoring")
   }
 
   private def stub(id: String): Option[Stub] = {
@@ -85,10 +85,8 @@ class ComposerSqsReader extends Actor {
 
   private def contentUpdate(e: ContentUpdateEvent): Boolean = {
     try {
-      CommonDB.createOrModifyContent(
-        WorkflowContent.fromContentUpdateEvent(e),
-        e.revision
-      ); true
+      CommonDB.updateContentFromUpdateEvent(e)
+      true
     } catch {
       case sqle: SQLException => recordWriteStatusError(e, sqle); false
     }
@@ -106,7 +104,7 @@ class ComposerSqsReader extends Actor {
       try {
         e.event match {
           case "delete" => {
-            CommonDB.deleteContent(e.composerId) 
+            CommonDB.deleteContent(e.composerId)
             Logger.info(s"content deleted successfully: ${e.composerId}")
 
             true
