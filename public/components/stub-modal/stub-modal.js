@@ -83,6 +83,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
                     if(composerId) {
                         $scope.composerUrl = config.composerViewContent + '/' + composerId;
+                        $scope.stub.title = contentItem.headline;
 
                         wfContentService.getById(composerId).then(
                             function(res){
@@ -97,17 +98,14 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                             function(err) {
                                 if(err.status === 404) {
                                     $scope.validImport = true;
-                                    $scope.archivedContent = err.data.archive;
-
-                                    console.log(err);
+                                    if(err.data.archive) { $scope.wfComposerState = 'archived'; }
                                 }
                             });
-                        stub.title = contentItem.headline;
                     }
                 } else {
+                    $scope.stub.title = null;
                     $scope.stub.composerId = null;
                     $scope.stub.contentType = null;
-                    $scope.stub.title = null;
                 }
             }
         );
@@ -154,7 +152,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $scope.actionSuccess = false;
             $scope.contentUpdateError = true;
 
-            $scope.errorMsg = err.data.friendlyMessage || err.message || err;
+            $scope.errorMsg = err.friendlyMessage || err.message || err;
             $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
 
             $scope.actionSuccess = false;
