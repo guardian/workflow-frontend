@@ -12,8 +12,8 @@ object StatusDatabase {
     Status.Stub,
     Status("Writers"),
     Status("Desk"),
-    Status("Subs"),
     Status("Production Editor"),
+    Status("Subs"),
     Status("Revise"),
     Status("Final"),
     Status("Hold")
