@@ -6,8 +6,8 @@ import _ from 'lodash';
 import './date-service';
 
 angular.module('wfFiltersService', ['wfDateService'])
-    .factory('wfFiltersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter',
-        function($rootScope, $location, wfDateParser, wfFormatDateTimeFilter) {
+    .factory('wfFiltersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfPreferencesService',
+        function($rootScope, $location, wfDateParser, wfFormatDateTimeFilter, wfPreferencesService) {
 
         class FiltersService
         {
@@ -43,7 +43,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
-                $rootScope.$on('filtersChanged.deadline', function(event, data) { // TODO: fix deadline/selectedDate namespacing
+                $rootScope.$on('filtersChanged.selectedDate', function(event, data) { // TODO: fix deadline/selectedDate namespacing
                     self.update('selectedDate', data);
                     $rootScope.$broadcast('getContent');
                 });
@@ -53,6 +53,16 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('filtersChanged.desk', function(event, data) {
+                    if (data !== -1) {
+                        self.update('desk',  data);
+                    } else {
+                        self.update('desk',  null);
+                    }
+
+                    // Desk ignored so no need to request content
+                });
+
                 var keywords = {
                     "type"       : "content-type",
                     "status"     : "status",
@@ -60,13 +70,37 @@ angular.module('wfFiltersService', ['wfDateService'])
                     "who"        : "assignee",
                     "assignee"   : "assignee",
                     "assignedto" : "assignee"
+                };
+
+                var savedFilters = null;
+
+                function enterSearchMode(data) {
+                    savedFilters = _.clone(self.filters);
+                    self.clearAll();
+                    $rootScope.$broadcast("search-mode.enter");
+                }
+
+                function exitSearchMode(data) {
+                    if(savedFilters != null) {
+                        _.forOwn(savedFilters,
+                                 (value, key) => self.update(key, value));
+                    }
+                    $rootScope.$broadcast("search-mode.exit");
                 }
 
                 $rootScope.$on('filtersChanged.freeText', function(event, data) {
-                    self.clearAll();
-                    if(data != null) {
+                    var newValue = data.newValue;
+                    var oldValue = data.oldValue;
+
+                    if(oldValue == null && newValue != null) {
+                        enterSearchMode(data);
+                    } else if(newValue == null && oldValue != null) {
+                        exitSearchMode(data);
+                    }
+
+                    if(newValue != null) {
                         var rest =
-                            data.replace(/\s*([A-Za-z-]+):(\S+)\s*/g, (match, field, value) => {
+                            newValue.replace(/\s*([A-Za-z-]+):(\S+)\s*/g, (match, field, value) => {
                                 if(_.has(keywords, field)) {
                                     self.update(keywords[field], value);
                                 }
@@ -79,34 +113,64 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
-
             }
 
             init() {
                 this.attachListeners()
             }
 
-            constructor()
-            {
+            constructor() {
+
+                // TODO: Refactor filters service to promise based architecture to allow for deferred loading of filters based on preferences
+
+                var self = this;
+
                 var params = $location.search();
 
-                var selectedDate = params['selectedDate'];
+                var setUpFilters = function (params) {
 
-                this.filters = {
-                   'status': params['status'],
-                   'state': params['state'],
-                   'section': params['section'],
-                   'content-type': params['content-type'],
-                   'selectedDate': wfDateParser.parseQueryString(selectedDate),
-                   'flags': params['flags'],
-                   'prodOffice': params['prodOffice'],
-                   'created': params['created'],
-                   'assignee': params['assignee']
+                    var selectedDate = params['selectedDate'];
+
+                    self.filters = {
+                        'status': params['status'],
+                        'state': params['state'],
+                        'section': params['section'],
+                        'content-type': params['content-type'],
+                        'selectedDate': wfDateParser.parseQueryString(selectedDate),
+                        'flags': params['flags'],
+                        'prodOffice': params['prodOffice'],
+                        'created': params['created'],
+                        'assignee': params['assignee']
+                    };
                 };
+
+                setUpFilters(params); // base setting
+
+                if (Object.keys(params).length === 0) { // if no params in URL attempt to load filters from user prefs
+
+                    wfPreferencesService.getPreference('location').then((data) => {
+                        params = data || {};
+                        setUpFilters(params);
+
+                        for (var key in params) {
+                            if (params.hasOwnProperty(key)) {
+                                self.update(key, params[key], true);
+                            }
+                        }
+
+                        $rootScope.$broadcast('filtersChanged.fromPreferences');
+                        $rootScope.$broadcast('getContent');
+                    }, () => {
+                        setUpFilters(params);
+                    });
+                } else {
+                    setUpFilters(params);
+                }
             }
 
 
-            update(key, value) {
+            update(key, value, doNotUpdateprefs) {
+
                 if (value !== null && (value === undefined || value.length === 0)) { // empty String or Array
                     value = null; // Remove query param
                 }
@@ -124,6 +188,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                     this.filters[key] = value;
                     $location.search(key, value);
                 }
+
+                if (!doNotUpdateprefs) {
+                    wfPreferencesService.setPreference('location', this.sanitizeFilters(this.filters));
+                }
+
             }
 
             get(key) {
@@ -138,6 +207,20 @@ angular.module('wfFiltersService', ['wfDateService'])
                 _.forOwn(this.filters, (value, key) => {
                     this.update(key, null);
                 });
+            }
+
+            /**
+             * Remove null or undefined keys from filters object for storage in user prefs
+             * @param filters
+             * @returns $scope.filter.namespace
+             */
+            sanitizeFilters (filters) {
+                Object.keys(filters).map((key) => {
+                    if (filters[key] === null || filters[key] === undefined) {
+                        delete filters[key];
+                    }
+                });
+                return filters;
             }
 
         }

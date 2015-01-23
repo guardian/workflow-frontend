@@ -2,9 +2,10 @@
     <button type="button" class="close" data-dismiss="modal" ng-click="cancel()">&times;</button>
     <h4 class="modal-title">{{ modalTitle }}</h4>
 </div>
-<form name="stubForm">
-    <input type="hidden" ng-model="stub.id"/>
 
+<form name="stubForm">
+    <fieldset ng-disabled="actionSuccess">
+    <input type="hidden" ng-model="stub.id"/>
     <div class="modal-body">
         <div class="form-group" ng-if="mode === 'import'">
             <label for="stub_title">Composer URL *<em class="stubModal__import-help">Copy / paste the Composer URL of the content to import</em></label>
@@ -35,7 +36,7 @@
     </div>
     <div class="modal-body modal-body__advanced" ng-class="{'modal-body__advanced--open' : expanded}">
         <div class="form-group">
-            <div wf-date-time-picker label="Production deadline" help-text="true" ng-model="stub.due"></div>
+            <div wf-date-time-picker class="modal-body__deadline" label="Production deadline" help-text="true" ng-model="stub.due"></div>
             <div class="form-group clearfix">
                 <div class="pull-left">
                     <label for="stub_priority">Priority</label>
@@ -62,7 +63,8 @@
             </div>
         </div>
     </div>
-    <div class="modal-footer" ng-if="mode !== 'import'">
+
+    <div class="modal-footer" ng-if="mode !== 'import'" ng-hide="actionInProgress || (actionSuccess && composerUrl)">
         <div class="pull-left">
             <button type="button" class="btn btn-default pull-left" data-dismiss="modal" ng-click="delete()" ng-if="stub.id">Delete</button>
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
@@ -76,10 +78,30 @@
             </button>
         </div>
     </div>
-    <div class="modal-footer" ng-if="mode === 'import'">
+
+    <div class="modal-footer" ng-if="mode === 'import'" ng-hide="actionInProgress">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         <button type="submit" class="btn btn-primary" ng-click="ok()" ng-disabled="stubForm.$invalid || !stub.composerId">
             Import
         </button>
     </div>
+
+    <div class="modal-footer" ng-show="actionInProgress">
+        Loading ...
+    </div>
+
+    </fieldset>
 </form>
+
+<div class="modal-footer" ng-show="actionSuccess && composerUrl">
+   <button type="button" class="btn btn-default pull-left" ng-click="cancel()">Dismiss</button>
+    <a ng-href="{{composerUrl}}" class="btn btn-primary pull-right" target="_blank" ng-click="cancel()">View in Composer</a>
+</div>
+
+<div class="modal-footer alert alert-danger" ng-show="actionSuccess === false">
+    <p>There was an error performing this request: {{ errorMsg }} </p>
+</div>
+
+<div class="modal-footer alert alert-success" ng-show="actionSuccess">
+    <p>Completed successfully!</p>
+</div>

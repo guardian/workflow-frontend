@@ -22,11 +22,18 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
         // Sections =============================
 
-        $scope.selectedSections = (function buildSelectedSections () {
+        function buildSelectedSections () {
             var sectionsString = wfFiltersService.get('section');
             var sectionsStringArray = sectionsString ? sectionsString.split(',') : [];
             return sections.filter((el) => sectionsStringArray.indexOf(el.name) != -1);
-        })();
+        }
+
+        $scope.selectedSections = buildSelectedSections();
+
+        $scope.$on('filtersChanged.fromPreferences', function() {
+            $scope.selectedSections = buildSelectedSections();
+            $scope.selectedDesk = updateSelectedDeskBasedOnSections($scope.selectedSections);
+        });
 
         $scope.sections = sections;
 

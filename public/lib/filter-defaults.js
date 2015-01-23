@@ -77,7 +77,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
         },
         {
             title: 'Deadline',
-            namespace: 'deadline',
+            namespace: 'selectedDate',
             listIsOpen: false,
             filterOptions: [
                 { caption: 'Today', value: 'today' },

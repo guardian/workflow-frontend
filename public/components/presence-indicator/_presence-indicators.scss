@@ -4,19 +4,16 @@
 
 // Compact view
 
-.content-list--compact {
-    $topIconOffset: 3px;
-    $rightIconOffset: 8px;
-}
-
 $topIconOffset: 8px !default;
 $rightIconOffset: 14px !default;
+$topIconOffsetCompact: 3px;
+$rightIconOffsetCompact: 8px;
 $iconsToStack: 8;
 $iconExpandIntervalDistance: 24;
+$iconExpandIntervalDistanceCompact: 18;
 $stackColorLightenIncrement: 14%;
 $iconAnimationTransTime: 0.5s;
 $iconAnimationEasingFunction: ease-in-out;
-
 
 .content-list-item__presence {
     display: inline-block;
@@ -48,6 +45,23 @@ $iconAnimationEasingFunction: ease-in-out;
     }
 
 }
+
+// Compact View modifiers ============================================================================
+
+.content-list--compact .content-list-item__presence-list .content-list-item__presence--present {
+    top: $topIconOffsetCompact;
+    right: $rightIconOffsetCompact;
+}
+
+.content-list--compact .content-list-item__presence-list:hover .content-list-item__presence--present {
+    @for $i from 1 to $iconsToStack + 50 {
+        &:nth-of-type(#{$i+1}) {
+            right: ($i * $iconExpandIntervalDistanceCompact) + $rightIconOffsetCompact;
+        }
+    }
+}
+
+// !Compact View modifiers ===========================================================================
 
 .content-list-item__presence-list {
 

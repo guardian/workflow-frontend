@@ -13,7 +13,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
             class ContentService {
                 getTypes() {
-                    return { 
+                    return {
                         "article": "Article",
                         "liveblog": "Live blog",
                         "gallery": "Gallery",
@@ -236,7 +236,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
 
             startPolling() {
-                this.refresh();
+                return this.refresh();
             }
 
 
@@ -255,7 +255,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
             refresh() {
                 this.stopPolling();
 
-                wfContentService.get(this._paramsProvider())
+                return wfContentService.get(this._paramsProvider())
                     .then(this._callback)
                     .then( () => {
                         this._timer = $timeout(this.refresh.bind(this), POLLING_DELAY);
