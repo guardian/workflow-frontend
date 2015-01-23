@@ -123,6 +123,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
         link: function ($scope, elem, attrs, contentListDrawerController) {
 
+            $scope.maxNoteLength = config.maxNoteLength;
+
             $scope.prodOffices = prodOfficeService.getProdOffices();
             $scope.incopyExportEnabled = false;
             featureSwitches.withSwitch("incopy-export",
@@ -138,6 +140,9 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                     $scope.$emit('stub:edit', contentItem.item);
                     return;
                 }
+
+                // TODO: move build incopy URL to decorator
+                $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
 
                 contentListDrawerController.toggleContent(contentItem, contentListItemElement);
 

@@ -333,8 +333,10 @@
     .content-list-item__icon--presence,
     .content-list-item__icon--assignee {
         @extend %fs-data-1;
+        font-size: 9px;
         width: 16px;
         height: 16px;
-        line-height: 18px;
+        line-height: 16px;
+        display: inline-block;
     }
 }

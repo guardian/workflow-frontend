@@ -12,7 +12,17 @@
     flex-direction: column;
 }
 
-.sidebar-filters {
+%sidebar-filters {
     flex-grow: 1;
     flex-shrink: 0;
+}
+
+.sidebar-filters--active {
+    @extend %sidebar-filters;
+}
+
+.sidebar-filters--inactive {
+    @extend %sidebar-filters;
+    opacity: 0.25;
+    pointer-events: none;
 }

@@ -1,9 +1,10 @@
 package controllers
 
 import com.gu.workflow.db.{CommonDB, DeskDB, SectionDB, SectionDeskMappingDB}
+import models.ApiResponse._
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.libs.json.{JsError, Reads, JsValue, JsResult, JsSuccess}
+import play.api.libs.json._
 import play.api.libs.ws.WS
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -76,14 +77,17 @@ object Admin extends Controller with PanDomainAuthActions {
 
         WS.url(composerUrl + contentId + "?includePreview=true").withHeaders(("Cookie", cookie)).get() onComplete {
           case Success(res) if (res.status == 200) => {
-            ContentUpdateEvent.readFromApi(res.json) match {
-              case JsSuccess(content, _) =>  {
-                Logger.info(s"published: ${content.published} @ ${content.publicationDate} (revision: ${content.revision})")
-                CommonDB.createOrModifyContent(WorkflowContent.fromContentUpdateEvent(content), content.revision)
+            CommonDB.getContentForComposerId(contentId).map { wfContent =>
+              ContentUpdateEvent.readFromApi(res.json, wfContent) match {
+                case JsSuccess(contentEvent, _) =>  {
+                  Logger.info(s"published: ${contentEvent.published} @ ${contentEvent.publicationDate} (revision: ${contentEvent.revision})")
+                  CommonDB.updateContentFromUpdateEvent(contentEvent)
+                }
+                case JsError(error) => Logger.error(s"error parsing composer api ${error} with contentId ${contentId}")
               }
-              case JsError(error) => Logger.error(s"error parsing composer api ${error} with contentId ${contentId}")
+              recursiveCallComposer(tail)
             }
-            recursiveCallComposer(tail)
+
           }
           case Success(res) => {
             Logger.error(s"received status ${res.status} from composer for content item ${contentId}")
