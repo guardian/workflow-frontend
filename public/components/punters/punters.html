@@ -10,7 +10,7 @@
                 <span class="punters__autocomplete-item-name">{{ user.name.fullName }}</span>
                 <span class="punters__token-remove">x</span>
             </li>
-            <li class="punters__input-token">
+            <li class="punters__input-token" ng-show="!tokens || tokens && tokens.length === 0">
                 <input type="text" id="stub_assignee" name="assignee" value="" class="punters__text-input" ng-keydown="keyDown($event);">
             </li>
         </ul>
