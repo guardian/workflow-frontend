@@ -62,13 +62,10 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
         }
 
         var requestConfig = err.config || {},
-
         requestParams = requestConfig.params &&
             Object.keys(requestConfig.params)
                 .filter((param, idx, params) => requestConfig.params[param] !== undefined && requestConfig.params[param] !== null)
                 .map((param) => `${param}=${requestConfig.params[param]}`),
-
-
         error = new Error([
             'Request error:',
             err.status || '?',
@@ -76,13 +73,18 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
             'from',
             requestConfig.method || '',
             (requestConfig.url || '') + (requestParams && requestParams.length > 0 ? '?' + requestParams.join('&') : '')
-
         ].join(' '));
-        // TODO extras for sentry logging
 
-        if(err.data && err.data.error && err.data.error.friendlyMessage) {
-            error.friendlyMessage = err.data.error.friendlyMessage
+        // Append to error object Workflow API JSON error conventions
+
+        console.log(err.data.error);
+
+        if(err.data && err.data.error) {
+            error.data = err.data.error.data;
+        } else {
+            err.data = {};
         }
+
         error.status = err.status;
         return error;
     }
