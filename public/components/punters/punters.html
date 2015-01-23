@@ -1,8 +1,8 @@
 <div class="punters__container">
 
-    <label for="stub_assignee">Assign to</label>
+    <label for="stub_assignee" ng-class="{ 'drawer__section-title': indrawer }">Assign to</label>
 
-    <button type="button" class="btn btn-primary btn-xs pull-right" ng-disabled="tokens && tokens.length > 0" ng-click="assignToMe();">Assign to me</button>
+    <button type="button" class="btn btn-primary btn-xs punters__button" ng-class="{ 'pull-right' : !indrawer, 'punters__button--inline': indrawer }" ng-disabled="tokens && tokens.length > 0" ng-click="assignToMe();">{{ indrawer ? 'Me' : 'Assign to me' }}</button>
 
     <div class="form-control punters__autocomplete-field">
         <ul class="punters__token-list">

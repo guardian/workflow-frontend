@@ -23,6 +23,7 @@ GET            /api/stubs                             controllers.Api.stubs
 POST           /api/stubs                             controllers.Api.createContent
 PUT            /api/stubs/:stubId                     controllers.Api.putStub(stubId: Long)
 PUT            /api/stubs/:stubId/assignee            controllers.Api.putStubAssignee(stubId: Long)
+PUT            /api/stubs/:stubId/assigneeEmail       controllers.Api.putStubAssigneeEmail(stubId: Long)
 PUT            /api/stubs/:stubId/dueDate             controllers.Api.putStubDueDate(stubId: Long)
 PUT            /api/stubs/:stubId/note                controllers.Api.putStubNote(stubId: Long)
 OPTIONS        /api/stubs/:stubId/note                controllers.Api.allowCORSAccess(methods = "PUT", stubId: String)
