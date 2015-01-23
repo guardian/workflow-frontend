@@ -13,6 +13,7 @@ object StatusDatabase {
     Status("Writers"),
     Status("Desk"),
     Status("Subs"),
+    Status("Production Editor"),
     Status("Revise"),
     Status("Final"),
     Status("Hold")
