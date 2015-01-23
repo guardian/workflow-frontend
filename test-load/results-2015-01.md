@@ -75,8 +75,11 @@ Load (r/s) | Min  | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
 20 (DNT)   |      |       |         |         |            |            | 1000 DB rows (500 visible in API)
 7          | 122  | 9640  | 237     | 35%     | 6.5%       | 6.7/s      | 2000 DB rows (100 visible in API)
 20         |      |       |         |         |            |            | 2000 DB rows (100 visible in API)
-7          |      |       |         |         |            |            | 5000 DB rows (100 visible in API)
-20         |      |       |         |         |            |            | 5000 DB rows (100 visible in API)
+7          | 104  | 2378  | 137     | 36%     | 12%        | 7/s        | 5000 DB rows (100 visible in API)
+20         | 276  | 6155  | 1180    | 99%     | 26%        | 15.9/s     | 5000 DB rows (100 visible in API)
+7          | 107  | 1045  | 136     | 33%     | 21%        | 7/s        | 10000 DB rows (100 visible in API)
+20         | 300  | 2986  | 1098    | 99%     | 49%        | 16.9/s     | 10000 DB rows (100 visible in API)
+7          | 825  | 3064  | 1965    | 20%     | 100%       | 3.5/s      | 100000 DB rows (100 visible in API)
 7          | ~300 | 3699  | 513     | 76%     | 7.6%       | 6.8/s      | PROD dump 2015-01-19 (232 visible in API)
 
 DNT = Did Not Test
@@ -85,6 +88,7 @@ DNT = Did Not Test
 
 PROD dump from 2015-01-19 has 5777 in `content` table, 5788 in `stub`. 227 content and 5 stubs visible in API.
 
+Tests show higher instance CPU on larger API responses (rows visible)
 
 ### API poll every 5 seconds
 Tests response times of polled API request.
@@ -93,10 +97,13 @@ Tests response times of polled API request.
 
 **URL:** https://workflow.code.dev-gutools.co.uk/api/content
 
-Load (r/s) | Min | Max | Average | Max CPU | Max DB CPU | Throughput | Notes
------------|----:|----:|--------:|--------:|-----------:|-----------:|----
-40         |     |     |         |         |            |            | 1000 DB rows (100 visible in API)
-80         |     |     |         |         |            |            | 1000 DB rows (100 visible in API)
+Load (r/s) | Min | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
+-----------|----:|------:|--------:|--------:|-----------:|-----------:|----
+20         | 343 | 1020  | 2363    | 99%     | 8%         | 17.6/s     | 1000 DB rows (100 visible in API)
+40         | 176 | 7264  | 2284    | 99%     | 8%         | 17.1/s     | 1000 DB rows (100 visible in API)
+80         | 112 | 11252 | 4470    | 99%     | 8%         | 16.5%      | 1000 DB rows (100 visible in API)
+
+Tests show max throughput wall at ~16/s for the API on current config. Minimal DB CPU suggests instances are the bottleneck.
 
 
 ### Asset requests
