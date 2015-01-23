@@ -76,11 +76,9 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
         ].join(' '));
 
         // Append to error object Workflow API JSON error conventions
-
-        console.log(err.data.error);
-
         if(err.data && err.data.error) {
-            error.data = err.data.error.data;
+            error.friendlyMessage = err.data.error.friendlyMessage;
+            error.data = err.data.error.data || {};
         } else {
             err.data = {};
         }
