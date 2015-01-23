@@ -1,7 +1,7 @@
 /**
  * Created by cfinch on 09/01/2015.
  */
-function punters (wfGoogleApiService) {
+function punters ($rootScope, wfGoogleApiService) {
 
     /**
      * Filter one array based on another
@@ -25,7 +25,8 @@ function punters (wfGoogleApiService) {
         replace: true,
         templateUrl: '/assets/components/punters/punters.html',
         scope: {
-            stub: '='
+            stub: '=',
+            indrawer: '='
         },
         link: function ($scope, $elem) {
 
@@ -97,33 +98,48 @@ function punters (wfGoogleApiService) {
             }
 
             $scope.addToken = function (user) {
-                $scope.tokens.push(user);
-                $scope.foundUsers = filterList($scope.foundUsers, $scope.tokens);
 
-                // Update model
+                if ($scope.tokens.length === 0) { // artificial limit to 1 token for time being
 
-                // Email address
-                if (!!$scope.stub.assigneeEmail && $scope.stub.assigneeEmail.length > 0) {
-                    $scope.stub.assigneeEmail = $scope.stub.assigneeEmail.split(',');
-                } else {
-                    $scope.stub.assigneeEmail = [];
+                    $scope.tokens.push(user);
+                    $scope.foundUsers = filterList($scope.foundUsers, $scope.tokens);
+
+                    // Update model
+
+                    $scope.stub.assigneeEmail = user.primaryEmail;
+                    $scope.stub.assignee = user.name.fullName;
+
+                    /*
+                    Uncomment here for multiple users...
+                    ---------------------------------------------------------------------------
+
+                    // Email address
+                    if (!!$scope.stub.assigneeEmail && $scope.stub.assigneeEmail.length > 0) {
+                        $scope.stub.assigneeEmail = $scope.stub.assigneeEmail.split(',');
+                    } else {
+                        $scope.stub.assigneeEmail = [];
+                    }
+
+                    $scope.stub.assigneeEmail.push(user.primaryEmail);
+                    $scope.stub.assigneeEmail = $scope.stub.assigneeEmail.join(',');
+
+                    // Name
+                    if (!!$scope.stub.assignee && $scope.stub.assignee.length > 0) {
+                        $scope.stub.assignee = $scope.stub.assignee.split(',');
+                    } else {
+                        $scope.stub.assignee = [];
+                    }
+
+                    $scope.stub.assignee.push(user.name.fullName);
+                    $scope.stub.assignee = $scope.stub.assignee.join(',');
+                     ---------------------------------------------------------------------------
+                     */
+
+                    input.value = ""; // clear input when token is added
+                    resetAutocomplete();
+
+                    $rootScope.$emit('punters.punterSelected');
                 }
-
-                $scope.stub.assigneeEmail.push(user.primaryEmail);
-                $scope.stub.assigneeEmail = $scope.stub.assigneeEmail.join(',');
-
-                // Name
-                if (!!$scope.stub.assignee && $scope.stub.assignee.length > 0) {
-                    $scope.stub.assignee = $scope.stub.assignee.split(',');
-                } else {
-                    $scope.stub.assignee = [];
-                }
-
-                $scope.stub.assignee.push(user.name.fullName);
-                $scope.stub.assignee = $scope.stub.assignee.join(',');
-
-                input.value = ""; // clear input when token is added
-                resetAutocomplete();
             };
 
             $scope.removeToken = function ($index) {

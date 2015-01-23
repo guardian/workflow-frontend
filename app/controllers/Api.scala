@@ -189,6 +189,17 @@ object Api extends Controller with PanDomainAuthActions {
     }).merge
   }
 
+  def putStubAssigneeEmail(stubId: Long) = APIAuthAction { implicit request =>
+    (for {
+      jsValue <- readJsonFromRequest(request.body).right
+      assigneeEmail <- extract[String](jsValue \ "data").right
+    } yield {
+      val assignOpt = Some(assigneeEmail).filter(_.nonEmpty)
+      PostgresDB.updateStubWithAssigneeEmail(stubId, assignOpt)
+      NoContent
+    }).merge
+  }
+
   def putStubDueDate(stubId: Long) = APIAuthAction { implicit request =>
     (for {
       jsValue <- readJsonFromRequest(request.body).right
