@@ -33,6 +33,7 @@ function punters ($rootScope, wfGoogleApiService) {
             var field = $elem[0].querySelector('.punters__autocomplete-field'),
                 list = $elem[0].querySelector('.punters__autocomplete-list'),
                 input = $elem[0].querySelector('.punters__text-input'),
+                $input = angular.element(input),
                 selectedTokenIndex = 0;
 
             $scope.tokens = [];
@@ -41,10 +42,10 @@ function punters ($rootScope, wfGoogleApiService) {
              * Emulate focus and blur styles from inputs on div container for autocomplete
              */
             (function emulateInputFocusBehaviour () {
-                input.addEventListener('focus', () => {
+                $input.on('focus', () => {
                     field.classList.add('punters__autocomplete-field--focus');
                 });
-                input.addEventListener('blur', () => {
+                $input.on('blur', () => {
                     field.classList.remove('punters__autocomplete-field--focus');
                 });
             })();
@@ -108,32 +109,6 @@ function punters ($rootScope, wfGoogleApiService) {
 
                     $scope.stub.assigneeEmail = user.primaryEmail;
                     $scope.stub.assignee = user.name.fullName;
-
-                    /*
-                    Uncomment here for multiple users...
-                    ---------------------------------------------------------------------------
-
-                    // Email address
-                    if (!!$scope.stub.assigneeEmail && $scope.stub.assigneeEmail.length > 0) {
-                        $scope.stub.assigneeEmail = $scope.stub.assigneeEmail.split(',');
-                    } else {
-                        $scope.stub.assigneeEmail = [];
-                    }
-
-                    $scope.stub.assigneeEmail.push(user.primaryEmail);
-                    $scope.stub.assigneeEmail = $scope.stub.assigneeEmail.join(',');
-
-                    // Name
-                    if (!!$scope.stub.assignee && $scope.stub.assignee.length > 0) {
-                        $scope.stub.assignee = $scope.stub.assignee.split(',');
-                    } else {
-                        $scope.stub.assignee = [];
-                    }
-
-                    $scope.stub.assignee.push(user.name.fullName);
-                    $scope.stub.assignee = $scope.stub.assignee.join(',');
-                     ---------------------------------------------------------------------------
-                     */
 
                     input.value = ""; // clear input when token is added
                     resetAutocomplete();
