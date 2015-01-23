@@ -4,8 +4,11 @@
 **Target:** "400 users"
 
 ## Result Summary
-TODO
-
+- Current setup generally acceptable at ~80% of target load.
+- API performs better with less visible rows, and less filtered out (purged) rows.
+- Current DB provisioning adequate. Performance related to table size.
+- Massive API performance improvements with Cross-Zone Load Balancing enabled on ELB. Recommend enabling it.
+- API Targets met when scaling to 3 instances, 1 per zone, with Cross-Zone Load Balancing enabled in ELB.
 
 ## Test overview
 
@@ -24,6 +27,7 @@ Setup:
 - Each test runs for ~5 mins
 - CODE app scaled to 2 m3.medium EC2 instances (same config as PROD)
 - Run using Apache JMeter from Guardian UK Office London
+  - Some tests run on Remote EC2 to avoid possible bandwidth restrictions, see: http://blog.ionelmc.ro/2012/02/16/how-to-run-jmeter-over-ssh-tunnel/
 - System Monitoring via AWS Cloudwatch / Workflow Radiator pointed to CODE
 
 
@@ -50,6 +54,8 @@ Load (r/s) | Min | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
 Observed high CPU usage on EC2s. Probably caused by synchronous waits from DB calls.
 
 Expected throughput of 7/s. 73% of target reached. Result would be slow page load under heavy load.
+
+![Results graph](images/2015-01-results-initial-page.png)
 
 
 ### Initial API request
@@ -84,6 +90,26 @@ DNT = Did Not Test
 
 PROD dump from 2015-01-19 has 5777 in `content` table, 5788 in `stub`. 227 content and 5 stubs visible in API.
 
+**1000 rows @ 7r/s**
+
+![Results graph](images/2015-01-results-initial-api-1000-data.png)
+
+**2000 rows @ 7r/s**
+![Results graph](images/2015-01-results-initial-api-2000-data.png)
+
+**5000 rows @ 7r/s**
+![Results graph](images/2015-01-results-initial-api-5000-data.png)
+
+**10,000 rows @ 7r/s**
+![Results graph](images/2015-01-results-initial-api-10000-data.png)
+
+**100,000 rows @ 7r/s**
+![Results graph](images/2015-01-results-initial-api-100000-data.png)
+
+**Prod data @ 7r/s**
+![Results graph](images/2015-01-results-initial-api-prod-data.png)
+
+
 Tests show higher instance CPU, slower response times on larger API responses (rows visible)
 
 Result: Pass at target load.
@@ -101,6 +127,12 @@ Load (r/s) | Min | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
 40         | 176 | 7264  | 2284    | 99%     | 8%         | 17.1/s     | 1000 DB rows (100 visible in API)
 80         | 112 | 11252 | 4470    | 99%     | 8%         | 16.5%      | 1000 DB rows (100 visible in API)
 
+**Poll @ 20r/s**
+![Results graph](images/2015-01-results-poll-api-20-users.png)
+
+**Poll @ 40r/s**
+![Results graph](images/2015-01-results-poll-api-40-users.png)
+
 Tests show max throughput wall at ~16/s for the API on current config. Minimal DB CPU suggests instances are the bottleneck.
 
 Double checked performance via remote test, confirmed.
@@ -109,6 +141,7 @@ Result: Acceptable. Responses will be slow at max low.
 
 #### 2 instances cross-zone
 Retested via remote with Cross-Zone Load Balancing: on!
+
 Load (r/s) | Min | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
 -----------|----:|------:|--------:|--------:|-----------:|-----------:|----
 40         | 270 | 3064  | 1135    | 99%     | 14%        | 32.8/s     | 1000 DB rows (100 visible in API)
@@ -117,10 +150,14 @@ Result: Acceptable. Better performance at 82% of target.
 
 #### 3 instances cross-zone
 3 instances. 1 per EU-West-1 AZ. Cross-Zone Load Balancing: on!
+
 Load (r/s) | Min | Max   | Average | Max CPU | Max DB CPU | Throughput | Notes
 -----------|----:|------:|--------:|--------:|-----------:|-----------:|----
 40         | 33  | 5149  | 105     | 76%     | 17%        | 39.4/s     | 1000 DB rows (100 visible in API)
 80         | 224 | 4878  | 1511    | 99%     | 8%         | 50.2/s     | 1000 DB rows (100 visible in API)
+
+**Poll @ 40r/s**
+![Results graph](images/2015-01-results-poll-api-3-instances-40-users.png)
 
 Result: Pass! Great performance at target load.
 
