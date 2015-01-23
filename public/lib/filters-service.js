@@ -72,11 +72,35 @@ angular.module('wfFiltersService', ['wfDateService'])
                     "assignedto" : "assignee"
                 };
 
-                $rootScope.$on('filtersChanged.freeText', function(event, data) {
+                var savedFilters = null;
+
+                function enterSearchMode(data) {
+                    savedFilters = _.clone(self.filters);
                     self.clearAll();
-                    if(data != null) {
+                    $rootScope.$broadcast("search-mode.enter");
+                }
+
+                function exitSearchMode(data) {
+                    if(savedFilters != null) {
+                        _.forOwn(savedFilters,
+                                 (value, key) => self.update(key, value));
+                    }
+                    $rootScope.$broadcast("search-mode.exit");
+                }
+
+                $rootScope.$on('filtersChanged.freeText', function(event, data) {
+                    var newValue = data.newValue;
+                    var oldValue = data.oldValue;
+
+                    if(oldValue == null && newValue != null) {
+                        enterSearchMode(data);
+                    } else if(newValue == null && oldValue != null) {
+                        exitSearchMode(data);
+                    }
+
+                    if(newValue != null) {
                         var rest =
-                            data.replace(/\s*([A-Za-z-]+):(\S+)\s*/g, (match, field, value) => {
+                            newValue.replace(/\s*([A-Za-z-]+):(\S+)\s*/g, (match, field, value) => {
                                 if(_.has(keywords, field)) {
                                     self.update(keywords[field], value);
                                 }

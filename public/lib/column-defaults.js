@@ -66,7 +66,7 @@ var columnDefaults = [{
     prettyName: 'Presence',
     labelHTML: '<i class="content-list-head__heading-icon--presence" wf-icon="presence"/>',
     colspan: 1,
-    title: 'In use by (Coming soon)',
+    title: 'In use by',
     templateUrl: templateRoot + 'presence.html',
     active: true
 },{

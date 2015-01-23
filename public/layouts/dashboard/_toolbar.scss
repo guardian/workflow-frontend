@@ -323,3 +323,8 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
         font-weight: 900;
     }
 }
+
+.dashboard-toolbar__section-search-reset {
+    margin-left: 5px;
+    cursor: pointer;
+}
