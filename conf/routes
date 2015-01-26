@@ -9,7 +9,9 @@ OPTIONS        /api/*url                              controllers.Api.allowCORSA
 
 GET            /dashboard                             controllers.Application.dashboard
 
+#static user pages
 GET            /about                                 controllers.Application.about
+GET            /faqs                                  controllers.Application.faqs
 
 # Login
 GET            /oauthCallback                         controllers.Login.oauthCallback
