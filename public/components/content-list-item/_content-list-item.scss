@@ -144,7 +144,8 @@
         &--created,
         &--section,
         &--incopy,
-        &--wordcount {
+        &--wordcount,
+        &--needsLegal {
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }

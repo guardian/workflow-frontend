@@ -124,6 +124,14 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
+    active: false
+},{
+    name: 'needsLegal',
+    prettyName: 'Needs Legal',
+    labelHTML: 'Needs Legal',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'needsLegal.html',
     active: true
 },{
     name: 'links',
