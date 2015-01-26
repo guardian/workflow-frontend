@@ -118,6 +118,14 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'notes.html',
     active: true
 },{
+    name: 'wordcount',
+    prettyName: 'Wordcount',
+    labelHTML: 'Wordcount',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'wordcount.html',
+    active: true
+},{
     name: 'links',
     prettyName: 'Open in...',
     labelHTML: 'Open in',
