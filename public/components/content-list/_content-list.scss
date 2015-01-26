@@ -45,7 +45,8 @@ $compact-display-td-padding: 2px 5px;
             &--notes,
             &--links,
             &--published-state,
-            &--wordcount {
+            &--wordcount,
+            &--needsLegal {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 

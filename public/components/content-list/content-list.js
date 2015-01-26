@@ -64,6 +64,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, se
         $scope.columns = data;
     });
 
+
     $scope.showColumnMenu = false;
     $scope.colChange = function () {
         wfColumnService.setColumns($scope.columns);
