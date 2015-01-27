@@ -136,7 +136,9 @@ object WfQuery {
     dateInSet(q.creationTimes)(_.createdAt) |>
     simpleInSet(q.flags)(_.needsLegal) |>
     fuzzyMatch(q.assignedTo)(_.assignee) |>
-    matchTextFields(optToSeq(q.text))(textFields)
+    matchTextFields(optToSeq(q.text))(textFields) |>
+    // stubs can't be linked to incopy
+    q.inIncopy.foldl[StubQuery]((query, inIncopy) => if(inIncopy) query.take(0) else query)
 
   def contentQuery(q: WfQuery) = content |>
     simpleInSet(q.status.map(_.toString.toUpperCase))(_.status.toUpperCase) |>

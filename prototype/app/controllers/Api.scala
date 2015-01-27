@@ -85,7 +85,7 @@ object Api extends Controller with PanDomainAuthActions {
     val published = req.getQueryString("state").map(_ == "published")
     val text = req.getQueryString("text")
     val assignee = queryStringMultiOption(req.getQueryString("assignee"))
-    val inIncopy = req.getQueryString("inincopy").map(_ == "true")
+    val inIncopy = req.getQueryString("incopy").map(_ == "true")
 
     val queryData = WfQuery(
       section       = sections,
