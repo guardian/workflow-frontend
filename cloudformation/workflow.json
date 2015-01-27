@@ -3,14 +3,16 @@
   "Description": "Workflow",
   "Conditions": {
     "NotPROD": {
-      "Fn::Not": [{
-        "Fn::Equals" : [
-          {
-            "Ref": "Stage"
-          },
-          "PROD"
-        ]
-      }]
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "Stage"
+            },
+            "PROD"
+          ]
+        }
+      ]
     }
   },
   "Mappings": {
@@ -1039,10 +1041,10 @@
                       "Ref": "FCLifecycleTopic"
                     },
                     {
-                       "Ref": "FCContentUpdateDraft"
+                      "Ref": "FCContentUpdateDraft"
                     },
                     {
-                        "Ref": "FCContentUpdateLive"
+                      "Ref": "FCContentUpdateLive"
                     }
                   ]
                 }
@@ -1112,6 +1114,15 @@
     }
   },
   "Outputs": {
+    "DbHost": {
+      "Description": "Hostname of RDS Endpoint",
+      "Value": {
+        "Fn::GetAtt": [
+          "PostgresInstance",
+          "Endpoint.Address"
+        ]
+      }
+    },
     "PrototypeLoadBalancerDNS": {
       "Description": "Load balancer DNS",
       "Value": {
