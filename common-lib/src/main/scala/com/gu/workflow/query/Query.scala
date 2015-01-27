@@ -105,7 +105,7 @@ object WfQuery {
     flags:        Seq[String]      = Nil,
     prodOffice:   Option[String]   = None,
     createdFrom:  Option[DateTime] = None,
-                  createdUntil: Option[DateTime] = None
+    createdUntil: Option[DateTime] = None
   ): WfQuery = WfQuery(
     section getOrElse Nil,
     optToSeq(desk),
