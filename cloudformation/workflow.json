@@ -322,6 +322,7 @@
     "PrototypeLoadBalancer": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
+        "CrossZone": true,
         "AvailabilityZones": {
           "Fn::GetAZs": ""
         },
