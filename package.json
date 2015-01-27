@@ -39,6 +39,7 @@
       "node-uuid": "npm:uuid-v4.js@1.0.2",
       "raven-js": "1.1.16",
       "sugar": "npm:sugar@1.4.1",
+      "text": "^0.0.2",
       "ua-parser": "github:faisalman/ua-parser-js@0.7.1",
       "underscore": "github:jashkenas/underscore@1.7.0"
     }
