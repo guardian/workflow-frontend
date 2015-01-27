@@ -1,7 +1,5 @@
 # --- !Ups
-
-ALTER TABLE stub ADD COLUMN assign_to_email TEXT;
+ALTER TABLE content ALTER COLUMN status TYPE character varying(32);
 
 # --- !Downs
-
-ALTER TABLE stub DROP COLUMN assign_to_email;
+ALTER TABLE content ALTER COLUMN status TYPE character varying(16);

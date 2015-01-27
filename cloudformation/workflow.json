@@ -322,6 +322,7 @@
     "PrototypeLoadBalancer": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
+        "CrossZone": true,
         "AvailabilityZones": {
           "Fn::GetAZs": ""
         },
@@ -774,6 +775,11 @@
                 "mkdir /home/workflow/logs\n",
                 "chown -R workflow /home/workflow\n",
                 "chgrp -R workflow /home/workflow\n",
+                "stage=$(echo ",
+                {
+                  "Ref": "Stage"
+                },
+                "| tr '[:upper:]' '[:lower:]')\n",
                 "sed -i \\\n",
                 "    -e 's,@AWS_ACCESS_KEY@,",
                 {
@@ -815,6 +821,7 @@
                   "Ref": "DBPassword"
                 },
                 ",g' \\\n",
+                "    -e 's,@STAGE@,'$stage',g' \\\n",
                 "    /etc/init/prole.conf\n",
                 "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py",
                 "\n",
