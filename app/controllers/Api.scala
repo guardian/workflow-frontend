@@ -68,14 +68,7 @@ object Api extends Controller with PanDomainAuthActions {
     val published = queryData.published
 
     def getContent = {
-      val content = PostgresDB.getContent(queryData)
-
-      val publishedContent = content.filter(d => d.wc.status == models.Status("Final"))
-        .sortBy(s => (s.wc.timePublished, s.wc.lastModified))(publishedOrdering)
-      val unpublishedContent = content.filterNot(d => d.wc.status == models.Status("Final"))
-        .sortBy(d => (d.stub.priority, d.stub.due))(unpublishedOrdering)
-
-      publishedContent ::: unpublishedContent
+       PostgresDB.getContent(queryData)
     }
 
     def getStubs =

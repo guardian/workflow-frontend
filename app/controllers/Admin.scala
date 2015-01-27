@@ -192,48 +192,4 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  val statusForm = Form(
-    mapping(
-      "name" -> nonEmptyText
-    )(WorkflowStatus.apply)(WorkflowStatus.unapply)
-  )
-
-  def status = (AuthAction andThen WhiteListAuthFilter).async {
-    for (statuses <- StatusDatabase.statuses) yield Ok(views.html.status(statuses, statusForm))
-  }
-
-  def addStatus = processStatusUpdate("failed to add status") { status =>
-    StatusDatabase.add(status).map{ _ =>
-      Redirect(routes.Admin.status)
-    }
-  }
-
-  def removeStatus = processStatusUpdate("failed to remove status") { status =>
-    StatusDatabase.remove(status).map{ _ =>
-      Redirect(routes.Admin.status)
-    }
-  }
-
-  def moveStatusUp = processStatusUpdate("failed to move status") { status =>
-    StatusDatabase.moveUp(status).map{ _ =>
-      Redirect(routes.Admin.status)
-    }
-  }
-
-  def moveStatusDown = processStatusUpdate("failed to move status") { status =>
-    StatusDatabase.moveDown(status).map{ _ =>
-      Redirect(routes.Admin.status)
-    }
-  }
-
-  def processStatusUpdate(error: String)(block: WorkflowStatus => Future[Result]) =
-    (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
-
-    statusForm.bindFromRequest.fold(
-      formWithErrors => {
-        Future.successful(BadRequest(error))
-      },
-      block
-    )
-  }
 }
