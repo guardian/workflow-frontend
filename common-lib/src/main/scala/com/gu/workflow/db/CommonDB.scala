@@ -8,6 +8,7 @@ import com.gu.workflow.syntax._
 import models._
 import com.gu.workflow.query._
 import com.gu.workflow.db.Schema._
+import com.gu.workflow.lib._
 
 object CommonDB {
 
@@ -20,7 +21,7 @@ object CommonDB {
 
       val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isEmpty) else stubsQuery(query)
 
-      q.list.map(row => Stub.fromStubRow(row))
+      q.sortBy(s => (s.priority.desc, s.workingTitle)).list.map(row => Stub.fromStubRow(row))
     }
 
   def getStubForComposerId(composerId: String): Option[Stub] = DB.withTransaction { implicit session =>
@@ -32,7 +33,9 @@ object CommonDB {
   }
 
   def hideContentItem(s: Schema.DBStub, c: Schema.DBContent) = {
-      c.status === Status("Final").name && c.published && c.lastModified < DateTime.now().minusHours(24)
+      c.status === Status("Final").name &&
+        c.published &&
+        c.lastModified < Util.roundDateTime(DateTime.now().minusHours(24),Duration.standardMinutes(5))
   }
 
   def createOrModifyContent(wc: WorkflowContent, revision: Long): Unit =
@@ -68,13 +71,15 @@ object CommonDB {
           c.commentable, c.headline, c.standfirst,
           c.trailtext, c.mainMedia, c.mainMediaUrl,
           c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl,
-          c.published, c.timePublished, c.revision, c.wordCount, c.takenDown)
+          c.published, c.timePublished, c.revision, c.wordCount, c.takenDown,
+          c.storyBundleId)
          )
          .update((e.path, e.lastModified, e.user, e.`type`,
            e.commentable, e.headline, e.standfirst,
            e.trailText, mainMedia.mediaType, mainMedia.url, mainMedia.caption,
            mainMedia.altText, WorkflowContent.getTrailImageUrl(e.thumbnail), e.published, e.publicationDate,
-           Some(e.revision), e.wordCount, isTakenDown(e.published, takenDown)))
+                  Some(e.revision), e.wordCount, isTakenDown(e.published, takenDown),
+                  e.storyBundleId))
     }
 
   }
