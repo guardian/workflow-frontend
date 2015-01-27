@@ -97,14 +97,15 @@ object CommonDB {
     }
   }
 
-  def deleteContent(composerId: String) = {
+  def deleteContent(composerId: String, archive:Boolean=false) = {
     DB.withTransaction { implicit session =>
-      archiveContentQuery((s, c) => s.composerId === composerId)
+      if(archive) {
+        archiveContentQuery((s, c) => s.composerId === composerId)
+      }
       content.filter(_.composerId === composerId).delete
       stubs.filter(_.composerId === composerId).delete
     }
   }
-
 
   def archiveContentQuery(p: (DBStub, DBContent) => Column[Option[Boolean]])(implicit session: Session) =
     archive
