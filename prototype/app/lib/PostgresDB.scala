@@ -44,9 +44,10 @@ object PostgresDB {
     DB.withTransaction { implicit session =>
 
       val query = for {
-        s <- WfQuery.stubsQuery(q)
+        s <- (WfQuery.stubsQuery(q)).sortBy(s => (s.priority.desc, s.workingTitle))
         c <- WfQuery.contentQuery(q)
         if s.composerId === c.composerId
+
       } yield (s, c)
 
       query.filter( {case (s,c) => WorkflowContent.visibleOnUi(c) })
