@@ -169,8 +169,6 @@ var wfContentListItem = function ($rootScope) {
         replace: true,
         template: (tElement, tAttrs) => {
 
-            console.log('trying to load..', $rootScope.contentItemTemplate.length);
-
             return $rootScope.contentItemTemplate;
         },
         scope: {
