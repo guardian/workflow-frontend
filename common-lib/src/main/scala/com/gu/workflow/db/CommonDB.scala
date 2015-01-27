@@ -71,13 +71,15 @@ object CommonDB {
           c.commentable, c.headline, c.standfirst,
           c.trailtext, c.mainMedia, c.mainMediaUrl,
           c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl,
-          c.published, c.timePublished, c.revision, c.wordCount, c.takenDown)
+          c.published, c.timePublished, c.revision, c.wordCount, c.takenDown,
+          c.storyBundleId)
          )
          .update((e.path, e.lastModified, e.user, e.`type`,
            e.commentable, e.headline, e.standfirst,
            e.trailText, mainMedia.mediaType, mainMedia.url, mainMedia.caption,
            mainMedia.altText, WorkflowContent.getTrailImageUrl(e.thumbnail), e.published, e.publicationDate,
-           Some(e.revision), e.wordCount, isTakenDown(e.published, takenDown)))
+                  Some(e.revision), e.wordCount, isTakenDown(e.published, takenDown),
+                  e.storyBundleId))
     }
 
   }
