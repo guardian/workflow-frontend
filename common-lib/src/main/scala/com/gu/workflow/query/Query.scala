@@ -142,5 +142,5 @@ object WfQuery {
     simpleInSet(q.status.map(_.toString.toUpperCase))(_.status.toUpperCase) |>
     simpleInSet(q.contentType.map(_.toUpperCase))(_.contentType.toUpperCase) |>
     q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published)) |>
-    q.inIncopy.foldl[ContentQuery]((query, inIncopy) => query.filter(_.activeInInCopy === inIncopy))
+    q.inIncopy.foldl[ContentQuery]((query, inIncopy) => query.filter(_.storyBundleId.nonEmpty === inIncopy))
 }
