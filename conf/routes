@@ -71,12 +71,6 @@ DELETE         /admin/desks                           controllers.Admin.removeDe
 
 POST           /admin/assign                          controllers.Admin.assignSectionToDesk
 
-GET            /admin/status                          controllers.Admin.status
-POST           /admin/status/add                      controllers.Admin.addStatus
-POST           /admin/status/remove                   controllers.Admin.removeStatus
-POST           /admin/status/moveUp                   controllers.Admin.moveStatusUp
-POST           /admin/status/moveDown                 controllers.Admin.moveStatusDown
-
 # feature-switching based enpoinds
 GET            /feature/:featureName                  controllers.Feature.featureSwitchToggle(featureName)
 GET            /feature/:featureName/on               controllers.Feature.featureSwitchOn(featureName)
