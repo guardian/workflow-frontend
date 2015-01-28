@@ -105,16 +105,21 @@ object CommonDB {
     }
   }
 
-  def archiveOldContent(implicit session: Session) = {
-    val pred = (s: DBStub, c: DBContent) => {
-    c.timePublished < DateTime.now().minus(Duration.standardDays(30)) &&
-      !WorkflowContent.visibleOnUi(c)
+  def archiveOldContent: Int = {
+    DB.withTransaction { implicit session =>
+
+      val pred = (s: DBStub, c: DBContent) => {
+        c.timePublished < DateTime.now().minus(Duration.standardDays(30)) &&
+          !WorkflowContent.visibleOnUi(c)
+      }
+      val composerIds = archiveContentQuery(pred, wasDeleted=false)
+      deleteContentItems(composerIds)
+
     }
-    val composerIds = archiveContentQuery(pred, wasDeleted=false)
-    deleteContentItems(composerIds)
+
   }
 
-  def deleteContentItems(composerIds: Seq[String]) = {
+  def deleteContentItems(composerIds: Seq[String]): Int = {
     DB.withTransaction { implicit session =>
       content.filter(_.composerId inSet composerIds).delete
       stubs.filter(_.composerId inSet composerIds).delete
