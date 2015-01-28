@@ -82,6 +82,23 @@ object WorkflowContentMainMedia {
   }
 }
 
+case class EmbargoDetails(
+  embargoedUntil: Option[DateTime],
+  embargoedIndefinitely: Boolean
+)
+
+object EmbargoDetails {
+
+  implicit val embargoDetailsWrites: Writes[EmbargoDetails] =
+    Json.writes[EmbargoDetails]
+
+  implicit val embargoDetailsReads: Reads[EmbargoDetails] =
+    ((__ \ "embargoedUntil").readNullable[DateTime] ~
+     (__ \ "embargoedIndefinitely").readNullable[Boolean].map(_.getOrElse(false))
+    )(EmbargoDetails.apply _)
+
+}
+
 case class WorkflowContent(
   composerId: String,
   path: Option[String],
@@ -103,8 +120,7 @@ case class WorkflowContent(
   takenDown: Boolean,
   timeTakenDown: Option[DateTime],
   wordCount: Int,
-  embargoedUntil: Option[DateTime],
-  embargoedIndefinitely: Boolean
+  embargoDetails: Option[EmbargoDetails]
 )
 
 object WorkflowContent {
@@ -146,8 +162,7 @@ object WorkflowContent {
       takenDown             = false,
       timeTakenDown         = None,
       wordCount             = 0,
-      embargoedUntil        = None,
-      embargoedIndefinitely = false
+      embargoDetails        = None
     )
   }
 
@@ -185,6 +200,8 @@ object WorkflowContent {
       val media = WorkflowContentMainMedia(
         mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
 
+      val embargoDetails = EmbargoDetails(embargoedUntil, embargoedIndefinitely)
+
       WorkflowContent(
         composerId,
         path,
@@ -206,8 +223,7 @@ object WorkflowContent {
         takenDown,
         timeTakenDown,
         wordCount,
-        embargoedUntil,
-        embargoedIndefinitely
+        Some(embargoDetails)
       )
     }
   }
@@ -216,6 +232,10 @@ object WorkflowContent {
 
     val mainMedia = wc.mainMedia.getOrElse(
       WorkflowContentMainMedia(None, None, None, None)
+    )
+
+    val embargoDetails = wc.embargoDetails.getOrElse(
+      EmbargoDetails(None, false)
     )
 
     wc.composerId            ::
@@ -241,8 +261,8 @@ object WorkflowContent {
     wc.takenDown             ::
     wc.timeTakenDown         ::
     wc.wordCount             ::
-    wc.embargoedUntil        ::
-    wc.embargoedIndefinitely ::
+    embargoDetails.embargoedUntil        ::
+    embargoDetails.embargoedIndefinitely ::
     HNil
   }
 
@@ -274,9 +294,8 @@ object WorkflowContent {
       (__ \ "wordCount").readNullable[Int].map {
         c => c.getOrElse(0)
       } ~
-      (__ \ "embargoedUntil").readNullable[DateTime] ~
-      (__ \ "embargoedIndefinitely").readNullable[Boolean].map(_.getOrElse(false))
-      )(WorkflowContent.apply _)
+      (__ \ "embargoDetails").readNullable[EmbargoDetails]
+     )(WorkflowContent.apply _)
 }
 
 case class ContentItem(stub: Stub, wcOpt: Option[WorkflowContent])
