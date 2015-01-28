@@ -105,17 +105,34 @@ object CommonDB {
     }
   }
 
+  def archiveOldContent(implicit session: Session) = {
+    val pred = (s: DBStub, c: DBContent) => {
+      c.timePublished < DateTime.now().minus(Duration.standardDays(30)) &&
+        WorkflowContent.visibleOnUi(c)
+    }
+    val composerIds = archiveContentQuery(pred, wasDeleted=false)
+    deleteContentItems(composerIds)
+  }
 
-  def archiveContentQuery(p: (DBStub, DBContent) => Column[Option[Boolean]])(implicit session: Session) =
-    archive
+  def deleteContentItems(composerIds: Seq[String]) = {
+    DB.withTransaction { implicit session =>
+      content.filter(_.composerId inSet composerIds).delete
+      stubs.filter(_.composerId inSet composerIds).delete
+    }
+
+  }
+
+  def archiveContentQuery(p: (DBStub, DBContent) => Column[Option[Boolean]], wasDeleted:Boolean=true)(implicit session: Session): Seq[String] = {
+    (archive
       .map(
         a => (
           a.stubId, a.composerId, a.wasDeleted, a.workingTitle, a.section,
           a.contentType, a.prodOffice, a.createdAt, a.lastModified, a.status,
           a.headline, a.path, a.published, a.timePublished, a.revision,
           a.storybundleid, a.activeinincopy, a.takendown, a.timeTakendown
-        )
+          )
       )
+      .returning(archive.map(a => a.composerId))
       .insert(
         for {
           (s, c) <- stubs outerJoin content on (_.composerId === _.composerId)
@@ -123,10 +140,11 @@ object CommonDB {
         }
         yield
           (
-            s.pk, s.composerId, true /* was_deleted */, s.workingTitle, s.section,
+            s.pk, s.composerId, wasDeleted, s.workingTitle, s.section,
             s.contentType, s.prodOffice, s.createdAt, c.lastModified, c.status,
             c.headline, c.path, c.published, c.timePublished, c.revision,
             c.storyBundleId, c.activeInInCopy, c.takenDown, c.timeTakenDown
-          )
-      )
+            )
+      )).flatten
+  }
 }
