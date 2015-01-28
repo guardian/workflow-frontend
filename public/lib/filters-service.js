@@ -102,13 +102,13 @@ angular.module('wfFiltersService', ['wfDateService'])
                         var rest =
                             newValue.replace(/\s*([A-Za-z-]+):(\S+)\s*/g, (match, field, value) => {
                                 if(_.has(keywords, field)) {
-                                    self.update(keywords[field], value, true);
+                                    self.update(keywords[field], value, true, true);
                                 }
                                 return "";
                             });
-                        self.update('text', rest, true);
+                        self.update('text', rest, true, true);
                     } else {
-                        self.update('text', null, true);
+                        self.update('text', null, true, true);
                     }
                     $rootScope.$broadcast('getContent');
                 });
@@ -169,7 +169,7 @@ angular.module('wfFiltersService', ['wfDateService'])
             }
 
 
-            update(key, value, doNotUpdateprefs) {
+            update(key, value, doNotUpdateprefs, doNotUpdateUrl) {
 
                 if (value !== null && (value === undefined || value.length === 0)) { // empty String or Array
                     value = null; // Remove query param
@@ -182,11 +182,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                 if (key === 'selectedDate') {
                     var dateStr = wfDateParser.setQueryString(value);
                     this.filters[key] = dateStr;
-                    $location.search(key, dateStr);
+                    doNotUpdateUrl || $location.search(key, dateStr);
                 }
                 else {
                     this.filters[key] = value;
-                    $location.search(key, value);
+                    doNotUpdateUrl || $location.search(key, value);
                 }
 
                 if (!doNotUpdateprefs) {
