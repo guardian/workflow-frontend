@@ -25,7 +25,9 @@ case class ContentUpdateEvent (
   thumbnail: Option[Thumbnail],
   storyBundleId: Option[String],
   revision: Long,
-  wordCount: Int
+  wordCount: Int,
+  embargoedUntil: Option[DateTime],
+  embargoedIndefinitely: Boolean
 ) extends WorkflowNotification
 
 object ContentUpdateEvent {
@@ -87,7 +89,10 @@ object ContentUpdateEvent {
       publicationDate <- (js \ "contentChangeDetails" \ "data" \ "published" \ "date").validate[Option[Long]].map(optT => optT.map(t => new DateTime(t)))
       thumbnail <- (js \ "preview" \ "data" \ "thumbnail" \ "data").validate[Option[Thumbnail]]
       revision <- (js \ "contentChangeDetails" \ "data" \ "revision").validate[Long]
-    } yield ContentUpdateEvent(composerId, path, headline, standfirst, trailText, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags,commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount=wf.wordCount)
+      wordCount = wf.wordCount
+      embargoedUntil <- (js \ "preview" \ "data" \ "settings" \ "embargoedUntil" \ "data").validate[Option[String]].map(optT => optT.map(t => new DateTime(t)))
+      embargoedIndefinitely <- (js \ "preview" \ "data" \ "settings" \ "embargoedIndefinitely" \ "data").validate[Option[String]].map(s => s.exists(_=="true"))
+    } yield ContentUpdateEvent(composerId, path, headline, standfirst, trailText, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags,commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount, embargoedUntil, embargoedIndefinitely)
   }
 
   implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (
@@ -117,7 +122,14 @@ object ContentUpdateEvent {
     (__ \ "content" \ "thumbnail").readNullable[Thumbnail] ~
     (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String] ~
     (__ \ "content" \ "contentChangeDetails" \ "revision").readNullable[Long].map(optLong => optLong.getOrElse(0L)) ~
-      (__ \ "content" \ "wc").read[Int]
+    (__ \ "content" \ "wc").read[Int] ~
+    (__ \ "content" \ "settings").readNullable(
+      (__ \ "embargoedUntil").readNullable[String].map(t => new DateTime(t))
+    ) ~
+    (__ \ "content" \ "settings" \ "embargoedIndefinitely").readNullable[String].map {
+      s => s.exists(_=="true")
+    }
+
     )(ContentUpdateEvent.apply _)
 
   def readUser = new Reads[Option[String]] {
