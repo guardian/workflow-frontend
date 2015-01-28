@@ -51,7 +51,11 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                 $rootScope.$watch('contentItemTemplate', () => {
 
-                    var contentListTemplate = '<tr wf-content-list-item ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections" id="stub-{{contentItem.id}}" href="stub-{{contentItem.id}}" template="contentItemTemplate"></tr>';
+                    var contentListHeading = '<tr class="content-list__group-heading-row"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span></th></tr>';
+
+                    var contentListContent = '<tr wf-content-list-item ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections" id="stub-{{contentItem.id}}" href="stub-{{contentItem.id}}" template="contentItemTemplate"></tr>';
+
+                    var contentListTemplate = contentListHeading + contentListContent;
 
                     elem.append(contentListTemplate);
                     $compile(elem.contents())($scope);
@@ -83,13 +87,18 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, se
     wfColumnService.getContentItemTemplate().then((template) => {
 
         $rootScope.contentItemTemplate = template;
-
     });
 
     $scope.showColumnMenu = false;
     $scope.colChange = function () {
-        wfColumnService.setColumns($scope.columns);
-        $rootScope.$emit('contentItem.columnsChanged');
+        wfColumnService.setColumns($scope.columns).then(() => {
+            if (confirm('Configuring columns requires a refresh, reload the page?')) {
+                window.location.reload();
+            }
+        });
+    };
+    $scope.colChangeSelect = function () {
+        $scope.columnsEdited = true;
     };
 
     (function handleCompactView () {
