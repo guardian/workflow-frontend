@@ -26,7 +26,11 @@ angular.module('wfColumnService', [])
 
                             self.columns = self.availableColums;
 
-                            data.forEach((colName) => {
+                            self.columns.forEach((col) => { // set all to inactive
+                                col.active = false;
+                            });
+
+                            data.forEach((colName) => { // activate preferences columns
                                 self.columns.some((availCol) => {
                                     if (availCol.name == colName) {
                                         availCol.active = true; // set active
