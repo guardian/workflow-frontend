@@ -605,18 +605,6 @@
                   "Ref": "PresenceClientLib"
                 },
                 ",g' \\\n",
-                "    -e 's,@DB_URL@,jdbc:postgresql://",
-                {
-                  "Fn::GetAtt": [
-                    "PostgresInstance",
-                    "Endpoint.Address"
-                  ]
-                },
-                ":",
-                {
-                  "Ref": "DBPort"
-                },
-                "/workflow,g' \\\n",
                 "    -e 's,@DB_USER@,",
                 {
                   "Ref": "DBUser"
@@ -801,18 +789,6 @@
                   "Ref": "FCNotificationsQueue"
                 },
                 ",g' \\\n",
-                "    -e 's,@DB_URL@,jdbc:postgresql://",
-                {
-                  "Fn::GetAtt": [
-                    "PostgresInstance",
-                    "Endpoint.Address"
-                  ]
-                },
-                ":",
-                {
-                  "Ref": "DBPort"
-                },
-                "/workflow,g' \\\n",
                 "    -e 's,@DB_USER@,",
                 {
                   "Ref": "DBUser"
