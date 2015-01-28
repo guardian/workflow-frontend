@@ -20,6 +20,7 @@ object Status {
   def Stub = Status("Stub")
   def Writers = Status("Writers")
   def Subs = Status("Subs")
+  def ProductionEditor = Status("Production Editor")
   def Revise = Status("Revise")
   def Final = Status("Final")
   def Hold = Status("Hold")

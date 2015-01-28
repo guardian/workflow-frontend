@@ -620,18 +620,6 @@
                   "Ref": "PresenceClientLib"
                 },
                 ",g' \\\n",
-                "    -e 's,@DB_URL@,jdbc:postgresql://",
-                {
-                  "Fn::GetAtt": [
-                    "PostgresInstance",
-                    "Endpoint.Address"
-                  ]
-                },
-                ":",
-                {
-                  "Ref": "DBPort"
-                },
-                "/workflow,g' \\\n",
                 "    -e 's,@DB_USER@,",
                 {
                   "Ref": "DBUser"
@@ -800,6 +788,11 @@
                 "mkdir /home/workflow/logs\n",
                 "chown -R workflow /home/workflow\n",
                 "chgrp -R workflow /home/workflow\n",
+                "stage=$(echo ",
+                {
+                  "Ref": "Stage"
+                },
+                "| tr '[:upper:]' '[:lower:]')\n",
                 "sed -i \\\n",
                 "    -e 's,@AWS_ACCESS_KEY@,",
                 {
@@ -819,18 +812,6 @@
                   "Ref": "FCNotificationsQueue"
                 },
                 ",g' \\\n",
-                "    -e 's,@DB_URL@,jdbc:postgresql://",
-                {
-                  "Fn::GetAtt": [
-                    "PostgresInstance",
-                    "Endpoint.Address"
-                  ]
-                },
-                ":",
-                {
-                  "Ref": "DBPort"
-                },
-                "/workflow,g' \\\n",
                 "    -e 's,@DB_USER@,",
                 {
                   "Ref": "DBUser"
@@ -841,6 +822,7 @@
                   "Ref": "DBPassword"
                 },
                 ",g' \\\n",
+                "    -e 's,@STAGE@,'$stage',g' \\\n",
                 "    /etc/init/prole.conf\n",
                 "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py",
                 "\n",
@@ -1131,6 +1113,15 @@
     }
   },
   "Outputs": {
+    "DbHost": {
+      "Description": "Hostname of RDS Endpoint",
+      "Value": {
+        "Fn::GetAtt": [
+          "PostgresInstance",
+          "Endpoint.Address"
+        ]
+      }
+    },
     "PrototypeLoadBalancerDNS": {
       "Description": "Load balancer DNS",
       "Value": {
