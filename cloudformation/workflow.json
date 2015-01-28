@@ -16,38 +16,44 @@
     }
   },
   "Mappings": {
-    "PrototypeNumInstances": {
+    "PrototypeConfig": {
       "CODE": {
         "MinSize": 1,
         "MaxSize": 2,
-        "DesiredCapacity": 1
+        "DesiredCapacity": 1,
+        "InstanceType": "m3.medium"
       },
       "RELEASE": {
         "MinSize": 1,
         "MaxSize": 2,
-        "DesiredCapacity": 1
+        "DesiredCapacity": 1,
+        "InstanceType": "m3.medium"
       },
       "PROD": {
-        "MinSize": 2,
-        "MaxSize": 4,
-        "DesiredCapacity": 2
+        "MinSize": 3,
+        "MaxSize": 6,
+        "DesiredCapacity": 3,
+        "InstanceType": "c3.large"
       }
     },
-    "ProleNumInstances": {
+    "ProleConfig": {
       "CODE": {
         "MinSize": 1,
         "MaxSize": 2,
-        "DesiredCapacity": 1
+        "DesiredCapacity": 1,
+        "InstanceType": "t2.micro"
       },
       "RELEASE": {
         "MinSize": 1,
         "MaxSize": 2,
-        "DesiredCapacity": 1
+        "DesiredCapacity": 1,
+        "InstanceType": "t2.micro"
       },
       "PROD": {
         "MinSize": 1,
         "MaxSize": 2,
-        "DesiredCapacity": 1
+        "DesiredCapacity": 1,
+        "InstanceType": "t2.micro"
       }
     }
   },
@@ -372,6 +378,7 @@
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "AvailabilityZones": [
+          "eu-west-1c",
           "eu-west-1a",
           "eu-west-1b"
         ],
@@ -380,7 +387,7 @@
         },
         "MinSize": {
           "Fn::FindInMap": [
-            "PrototypeNumInstances",
+            "PrototypeConfig",
             {
               "Ref": "Stage"
             },
@@ -389,7 +396,7 @@
         },
         "MaxSize": {
           "Fn::FindInMap": [
-            "PrototypeNumInstances",
+            "PrototypeConfig",
             {
               "Ref": "Stage"
             },
@@ -398,7 +405,7 @@
         },
         "DesiredCapacity": {
           "Fn::FindInMap": [
-            "PrototypeNumInstances",
+            "PrototypeConfig",
             {
               "Ref": "Stage"
             },
@@ -443,7 +450,7 @@
         },
         "MinSize": {
           "Fn::FindInMap": [
-            "PrototypeNumInstances",
+            "PrototypeConfig",
             {
               "Ref": "Stage"
             },
@@ -452,7 +459,7 @@
         },
         "MaxSize": {
           "Fn::FindInMap": [
-            "PrototypeNumInstances",
+            "PrototypeConfig",
             {
               "Ref": "Stage"
             },
@@ -461,7 +468,7 @@
         },
         "DesiredCapacity": {
           "Fn::FindInMap": [
-            "PrototypeNumInstances",
+            "PrototypeConfig",
             {
               "Ref": "Stage"
             },
@@ -559,7 +566,15 @@
             "Ref": "SSHSecurityGroup"
           }
         ],
-        "InstanceType": "m3.medium",
+        "InstanceType": {
+          "Fn::FindInMap": [
+            "PrototypeConfig",
+            {
+              "Ref": "Stage"
+            },
+            "InstanceType"
+          ]
+        },
         "IamInstanceProfile": {
           "Ref": "DistributionInstanceProfile"
         },
@@ -740,7 +755,15 @@
             "Ref": "SSHSecurityGroup"
           }
         ],
-        "InstanceType": "t2.micro",
+        "InstanceType": {
+          "Fn::FindInMap": [
+            "ProleConfig",
+            {
+              "Ref": "Stage"
+            },
+            "InstanceType"
+          ]
+        },
         "IamInstanceProfile": {
           "Ref": "DistributionInstanceProfile"
         },
@@ -872,7 +895,7 @@
         },
         "MinSize": {
           "Fn::FindInMap": [
-            "ProleNumInstances",
+            "ProleConfig",
             {
               "Ref": "Stage"
             },
@@ -881,7 +904,7 @@
         },
         "MaxSize": {
           "Fn::FindInMap": [
-            "ProleNumInstances",
+            "ProleConfig",
             {
               "Ref": "Stage"
             },
@@ -890,7 +913,7 @@
         },
         "DesiredCapacity": {
           "Fn::FindInMap": [
-            "ProleNumInstances",
+            "ProleConfig",
             {
               "Ref": "Stage"
             },
