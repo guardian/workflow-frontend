@@ -38,6 +38,14 @@ function punters ($rootScope, wfGoogleApiService) {
 
             $scope.tokens = [];
 
+            // On load, pre-fill a token if someone already assigned
+            if ($scope.stub.assigneeEmail) {
+
+                wfGoogleApiService.searchUsers($scope.stub.assigneeEmail).then((data) => {
+                    $scope.addToken(data[0], true);
+                });
+            }
+
             /**
              * Emulate focus and blur styles from inputs on div container for autocomplete
              */
@@ -98,7 +106,7 @@ function punters ($rootScope, wfGoogleApiService) {
                 selectedTokenIndex = 0; // reset selected token
             }
 
-            $scope.addToken = function (user) {
+            $scope.addToken = function (user, dontSendEvent) {
 
                 if ($scope.tokens.length === 0) { // artificial limit to 1 token for time being
 
@@ -113,7 +121,9 @@ function punters ($rootScope, wfGoogleApiService) {
                     input.value = ""; // clear input when token is added
                     resetAutocomplete();
 
-                    $rootScope.$emit('punters.punterSelected');
+                    if (!dontSendEvent) {
+                        $rootScope.$emit('punters.punterSelected');
+                    }
                 }
             };
 

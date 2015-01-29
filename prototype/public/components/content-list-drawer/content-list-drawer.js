@@ -50,6 +50,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 $element.addClass(hiddenClass);
 
                 $scope.contentList.selectedItem = null;
+                $scope.assigneeImage = null
                 $parent.append($element);
                 resolve();
             });
