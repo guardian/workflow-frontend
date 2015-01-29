@@ -4,22 +4,52 @@ angular.module('wfGoogleApiService', [])
     .service('wfGoogleApiService', ['$window', '$http', function ($window, $http) {
 
         return {
+
+            /**
+             * If the client had already authorised then authorize invisibly with immediate: true, else trigger auth pop up
+             */
             load: function () {
+
+                var scope = 'https://www.googleapis.com/auth/admin.directory.user.readonly',
+                    client_id = '715812401369-s2qbnkoiaup21bocaarrbf0mpat2ifjk.apps.googleusercontent.com';
 
                 if (typeof gapi.client === 'undefined') {
 
                     setTimeout(load, 500);
                 } else {
 
-                    var config = {
-                        'client_id': '715812401369-s2qbnkoiaup21bocaarrbf0mpat2ifjk.apps.googleusercontent.com',
-                        'scope': 'https://www.googleapis.com/auth/admin.directory.user.readonly',
-                        immediate: true
-                    };
-                    gapi.auth.authorize(config, function() {
+                    checkAuth();
+                }
 
+                function checkAuth () {
+
+                    gapi.auth.authorize({
+                        'client_id': client_id,
+                        'scope': scope,
+                        immediate: true
+                    }, handleAuthResult);
+                }
+
+                function authPrompt () {
+
+                    gapi.auth.authorize({
+                        'client_id': client_id,
+                        'scope': scope,
+                        immediate: false
+                    }, handleAuthResult);
+                }
+
+                function handleAuthResult (authResult) {
+
+                    if (authResult && !authResult.error) {
+
+                        console.info('Client authorised via google');
                         window.gapi.auth = gapi.auth.getToken();
-                    });
+                    } else {
+
+                        console.info('Client not authorised, triggering auth popup');
+                        authPrompt();
+                    }
                 }
             },
 
