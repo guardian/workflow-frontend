@@ -1,17 +1,17 @@
 import angular from 'angular';
 
 angular.module('wfGoogleApiService', [])
-    .service('wfGoogleApiService', ['$window', '$http', function ($window, $http) {
+    .service('wfGoogleApiService', ['$window', '$http', '$rootScope', function ($window, $http, $rootScope) {
 
-        return {
+        var scope = 'https://www.googleapis.com/auth/admin.directory.user.readonly',
+            client_id = '715812401369-s2qbnkoiaup21bocaarrbf0mpat2ifjk.apps.googleusercontent.com';
+
+        var apiService = {
 
             /**
              * If the client had already authorised then authorize invisibly with immediate: true, else trigger auth pop up
              */
             load: function () {
-
-                var scope = 'https://www.googleapis.com/auth/admin.directory.user.readonly',
-                    client_id = '715812401369-s2qbnkoiaup21bocaarrbf0mpat2ifjk.apps.googleusercontent.com';
 
                 if (typeof gapi.client === 'undefined') {
 
@@ -27,30 +27,32 @@ angular.module('wfGoogleApiService', [])
                         'client_id': client_id,
                         'scope': scope,
                         immediate: true
-                    }, handleAuthResult);
+                    }, apiService.handleAuthResult);
                 }
 
-                function authPrompt () {
+            },
 
-                    gapi.auth.authorize({
-                        'client_id': client_id,
-                        'scope': scope,
-                        immediate: false
-                    }, handleAuthResult);
+            handleAuthResult: (authResult) => {
+
+                if (authResult && !authResult.error) {
+
+                    console.info('Client authorised via google');
+                    $rootScope.$emit('wfGoogleApiService.userIsAuthorized');
+                    window.gapi.auth = gapi.auth.getToken();
+                } else {
+
+                    console.info('Client not authorised, triggering auth popup');
+                    $rootScope.$emit('wfGoogleApiService.userIsNotAuthorized');
                 }
+            },
 
-                function handleAuthResult (authResult) {
+            authPrompt: () => {
 
-                    if (authResult && !authResult.error) {
-
-                        console.info('Client authorised via google');
-                        window.gapi.auth = gapi.auth.getToken();
-                    } else {
-
-                        console.info('Client not authorised, triggering auth popup');
-                        authPrompt();
-                    }
-                }
+                gapi.auth.authorize({
+                    'client_id': client_id,
+                    'scope': scope,
+                    immediate: false
+                }, apiService.handleAuthResult);
             },
 
             /**
@@ -84,4 +86,28 @@ angular.module('wfGoogleApiService', [])
                 });
             }
         };
+
+        return apiService;
+
+    }]).directive('googleAuthBanner', ['wfGoogleApiService', '$rootScope', function (wfGoogleApiService, $rootScope) {
+
+        return {
+            restrict: 'E',
+            scope: {},
+            template: '<div class="alert alert-info" ng-if="visible">Workflow can now read your contacts! <button class="btn btn-xs btn-primary " ng-click="auth()">Authorise Workflow</button></div>',
+            link: ($scope, elem) => {
+
+                $scope.visible = true;
+
+                $scope.auth = function () {
+
+                    wfGoogleApiService.authPrompt();
+                };
+
+                $rootScope.$on('wfGoogleApiService.userIsAuthorized', () => {
+
+                    $scope.visible = false;
+                });
+            }
+        }
     }]);
