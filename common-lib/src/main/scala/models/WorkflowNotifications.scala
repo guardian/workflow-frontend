@@ -26,8 +26,7 @@ case class ContentUpdateEvent (
   storyBundleId: Option[String],
   revision: Long,
   wordCount: Int,
-  embargoedUntil: Option[DateTime],
-  embargoedIndefinitely: Boolean
+  launchScheduleDetails: LaunchScheduleDetails
 ) extends WorkflowNotification
 
 object ContentUpdateEvent {
@@ -92,7 +91,9 @@ object ContentUpdateEvent {
       wordCount = wf.wordCount
       embargoedUntil <- (js \ "preview" \ "data" \ "settings" \ "embargoedUntil" \ "data").validate[Option[String]].map(optT => optT.map(t => new DateTime(t)))
       embargoedIndefinitely <- (js \ "preview" \ "data" \ "settings" \ "embargoedIndefinitely" \ "data").validate[Option[String]].map(s => s.exists(_=="true"))
-    } yield ContentUpdateEvent(composerId, path, headline, standfirst, trailText, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags,commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount, embargoedUntil, embargoedIndefinitely)
+      scheduledLaunchDate <- (js \ "scheduledLaunchDate").validate[Option[Long]].map(optT => optT.map(t => new DateTime(t)))
+      launchScheduleDetails = LaunchScheduleDetails(scheduledLaunchDate, embargoedUntil, embargoedIndefinitely)
+    } yield ContentUpdateEvent(composerId, path, headline, standfirst, trailText, mainBlock, contentType, whatChanged="apiUpdate", published, user,lastModified, tags,commentable,lastMajorRevisionDate, publicationDate, thumbnail, storyBundleId = None, revision, wordCount, launchScheduleDetails)
   }
 
   implicit val contentUpdateEventReads: Reads[ContentUpdateEvent] = (
@@ -123,11 +124,7 @@ object ContentUpdateEvent {
     (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String] ~
     (__ \ "content" \ "contentChangeDetails" \ "revision").readNullable[Long].map(optLong => optLong.getOrElse(0L)) ~
     (__ \ "content" \ "wc").read[Int] ~
-    (__ \ "content" \ "settings" \ "embargoedUntil").readNullable[String].map(s => s.map(t => new DateTime(t))) ~
-    (__ \ "content" \ "settings" \ "embargoedIndefinitely").readNullable[String].map {
-      s => s.exists(_=="true")
-    }
-
+    (__ \ "content").read[LaunchScheduleDetails]
     )(ContentUpdateEvent.apply _)
 
   def readUser = new Reads[Option[String]] {

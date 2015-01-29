@@ -82,21 +82,21 @@ object WorkflowContentMainMedia {
   }
 }
 
-case class EmbargoDetails(
+case class LaunchScheduleDetails(
+  scheduledLaunchDate: Option[DateTime],
   embargoedUntil: Option[DateTime],
   embargoedIndefinitely: Boolean
 )
 
-object EmbargoDetails {
+object LaunchScheduleDetails {
+  implicit val launchScheduleDetailsWrites: Writes[LaunchScheduleDetails] =
+    Json.writes[LaunchScheduleDetails]
 
-  implicit val embargoDetailsWrites: Writes[EmbargoDetails] =
-    Json.writes[EmbargoDetails]
-
-  implicit val embargoDetailsReads: Reads[EmbargoDetails] =
-    ((__ \ "embargoedUntil").readNullable[DateTime] ~
-     (__ \ "embargoedIndefinitely").readNullable[Boolean].map(_.getOrElse(false))
-    )(EmbargoDetails.apply _)
-
+  implicit val launchScheduleDetailsReads: Reads[LaunchScheduleDetails] =
+    ((__ \ "scheduledLaunchDate").readNullable[DateTime] ~
+     (__ \ "settings" \ "embargoedUntil").readNullable[String].map(s => s.map(t => new DateTime(t))) ~
+     (__ \ "settings" \ "embargoedIndefinitely").readNullable[String].map(s => s.exists(_=="true"))
+    )(LaunchScheduleDetails.apply _)
 }
 
 case class WorkflowContent(
@@ -120,7 +120,7 @@ case class WorkflowContent(
   takenDown: Boolean,
   timeTakenDown: Option[DateTime],
   wordCount: Int,
-  embargoDetails: Option[EmbargoDetails]
+  launchScheduleDetails: Option[LaunchScheduleDetails]
 )
 
 object WorkflowContent {
@@ -162,7 +162,7 @@ object WorkflowContent {
       takenDown             = false,
       timeTakenDown         = None,
       wordCount             = 0,
-      embargoDetails        = None
+      launchScheduleDetails = None
     )
   }
 
@@ -194,13 +194,18 @@ object WorkflowContent {
         wordCount             ::
         embargoedUntil        ::
         embargoedIndefinitely ::
+        scheduledLaunchDate   ::
         HNil
       ) => {
 
       val media = WorkflowContentMainMedia(
         mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
 
-      val embargoDetails = EmbargoDetails(embargoedUntil, embargoedIndefinitely)
+      val launchScheduleDetails = LaunchScheduleDetails(
+        scheduledLaunchDate,
+        embargoedUntil,
+        embargoedIndefinitely
+      )
 
       WorkflowContent(
         composerId,
@@ -223,7 +228,7 @@ object WorkflowContent {
         takenDown,
         timeTakenDown,
         wordCount,
-        Some(embargoDetails)
+        Some(launchScheduleDetails)
       )
     }
   }
@@ -234,8 +239,8 @@ object WorkflowContent {
       WorkflowContentMainMedia(None, None, None, None)
     )
 
-    val embargoDetails = wc.embargoDetails.getOrElse(
-      EmbargoDetails(None, false)
+    val launchScheduleDetails = wc.launchScheduleDetails.getOrElse(
+      LaunchScheduleDetails(None, None, false)
     )
 
     wc.composerId            ::
@@ -261,8 +266,9 @@ object WorkflowContent {
     wc.takenDown             ::
     wc.timeTakenDown         ::
     wc.wordCount             ::
-    embargoDetails.embargoedUntil        ::
-    embargoDetails.embargoedIndefinitely ::
+    launchScheduleDetails.embargoedUntil        ::
+    launchScheduleDetails.embargoedIndefinitely ::
+    launchScheduleDetails.scheduledLaunchDate   ::
     HNil
   }
 
@@ -294,7 +300,7 @@ object WorkflowContent {
       (__ \ "wordCount").readNullable[Int].map {
         c => c.getOrElse(0)
       } ~
-      (__ \ "embargoDetails").readNullable[EmbargoDetails]
+      (__ \ "launchScheduleDetails").readNullable[LaunchScheduleDetails]
      )(WorkflowContent.apply _)
 }
 

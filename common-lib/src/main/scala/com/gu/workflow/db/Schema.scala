@@ -69,6 +69,7 @@ object Schema {
       Int              :: // wordCount
       Option[DateTime] :: // embargoedUntil
       Boolean          :: // embargoedIndefinitely
+      Option[DateTime] :: // scheduledLaunchDate
       HNil
 
   case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
@@ -96,7 +97,8 @@ object Schema {
     def activeInInCopy        = column [Boolean]           ("activeinincopy")
     def wordCount             = column [Int]               ("wordcount")
     def embargoedUntil        = column [Option[DateTime]]  ("embargoed_until")
-    def embargoedIndefinitely = column [Boolean]      ("embargoed_indefinitely")
+    def embargoedIndefinitely = column [Boolean]           ("embargoed_indefinitely")
+    def scheduledLaunchDate   = column [Option[DateTime]]  ("scheduled_launch_date")
     def * = composerId            ::
             path                  ::
             lastModified          ::
@@ -122,6 +124,7 @@ object Schema {
             wordCount             ::
             embargoedUntil        ::
             embargoedIndefinitely ::
+            scheduledLaunchDate   ::
             HNil
   }
 
