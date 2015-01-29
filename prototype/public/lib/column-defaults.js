@@ -126,14 +126,6 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'wordcount.html',
     active: false
 },{
-    name: 'needsLegal',
-    prettyName: 'Needs Legal',
-    labelHTML: 'Needs Legal',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'needsLegal.html',
-    active: true
-},{
     name: 'links',
     prettyName: 'Open in...',
     labelHTML: 'Open in',
@@ -148,6 +140,14 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'published-state.html',
+    active: true
+},{
+    name: 'needsLegal',
+    prettyName: 'Needs Legal',
+    labelHTML: 'Legal?',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'needsLegal.html',
     active: true
 }];
 
