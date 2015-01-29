@@ -15,8 +15,10 @@ object Dependencies {
 
   val akkaDependencies = Seq("com.typesafe.akka" %% "akka-agent" % "2.3.4")
 
-  val googleOAuthDependencies = Seq("com.gu" %% "pan-domain-auth-play" % "0.1.10")
+  val googleOAuthDependencies = Seq("com.gu" %% "pan-domain-auth-play" % "0.2.2")
 
   val testDependencies = Seq("org.scalatest" %% "scalatest" % "2.1.5" % "test")
+
+  val apiDocDependencies = Seq("com.wordnik" %% "swagger-play2" % "1.3.12")
 
 }
