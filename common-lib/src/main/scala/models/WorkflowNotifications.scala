@@ -123,9 +123,7 @@ object ContentUpdateEvent {
     (__ \ "content" \ "identifiers" \ "storyBundleId").readNullable[String] ~
     (__ \ "content" \ "contentChangeDetails" \ "revision").readNullable[Long].map(optLong => optLong.getOrElse(0L)) ~
     (__ \ "content" \ "wc").read[Int] ~
-    (__ \ "content" \ "settings").readNullable(
-      (__ \ "embargoedUntil").readNullable[String].map(t => new DateTime(t))
-    ) ~
+    (__ \ "content" \ "settings" \ "embargoedUntil").readNullable[String].map(s => s.map(t => new DateTime(t))) ~
     (__ \ "content" \ "settings" \ "embargoedIndefinitely").readNullable[String].map {
       s => s.exists(_=="true")
     }
