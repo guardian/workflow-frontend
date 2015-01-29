@@ -5,6 +5,9 @@ import com.gu.workflow.db.Schema
 import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import scala.slick.driver.PostgresDriver.simple._
+import com.github.tototoshi.slick.PostgresJodaSupport._
+import org.joda.time._
 
 import scala.slick.collection.heterogenous._
 import syntax._
@@ -166,6 +169,14 @@ object WorkflowContent {
     )
   }
 
+  //implemented to work on DB object and model object
+  def visibleOnUi(wc: WorkflowContent) = {
+    !(wc.published && wc.lastModified.isBefore(DateTime.now().minusHours(24)) && wc.status.name == "Final")
+  }
+
+  def visibleOnUi(c: Schema.DBContent) = {
+    !(c.published && c.lastModified <  DateTime.now().minusHours(24) && c.status === "Final")
+  }
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
 
     case (
@@ -231,6 +242,54 @@ object WorkflowContent {
         Some(launchScheduleDetails)
       )
     }
+  }
+
+  def fromOptionalContentRow(row: Schema.OptionContentRow): Option[WorkflowContent] = row match {
+    case (Some(composerId)          ::
+          path                      ::
+          Some(lastMod)             ::
+          lastModBy                 ::
+          Some(status)              ::
+          Some(contentType)         ::
+          Some(commentable)         ::
+          headline                  ::
+          standfirst                ::
+          trailtext                 ::
+          mainMedia                 ::
+          mainMediaUrl              ::
+          mainMediaCaption          ::
+          mainMediaAltText          ::
+          trailImageUrl             ::
+          Some(published)           ::
+          timePublished             ::
+          revision                  ::
+          storyBundleId             ::
+          Some(activeInInCopy)      ::
+          Some(takenDown)           ::
+          timeTakenDown             ::
+          Some(wordCount)           ::
+          embargoedUntil            ::
+          Some(embargoedIndefinitely) ::
+          scheduledLaunchDate       ::
+          HNil) => {
+
+      val media = WorkflowContentMainMedia(
+        mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
+
+      val launchScheduleDetails = LaunchScheduleDetails(
+        scheduledLaunchDate, embargoedUntil, embargoedIndefinitely)
+
+      Some(WorkflowContent(
+        composerId, path, headline,
+        standfirst, trailtext, Some(media),
+        trailImageUrl, contentType, None,
+        Status(status), lastMod, lastModBy, commentable,
+        published, timePublished, storyBundleId,
+        activeInInCopy, takenDown, timeTakenDown, wordCount,
+        Some(launchScheduleDetails)))
+    }
+    case _ => None
+
   }
 
   def newContentRow(wc: WorkflowContent, revision: Option[Long]) = {
@@ -312,6 +371,21 @@ case object ContentItem {
         stub <- json.validate[Stub]
         wcOpt <- json.validate[Option[WorkflowContent]]
       } yield ContentItem(stub, wcOpt)
+    }
+  }
+  implicit val contentItemWrites = new Writes[ContentItem] {
+    /*
+      Dashboard row translates an id to stubId, and title to workingTitle
+      Not sure if this is strictly necessary, so haven't included here yet
+     */
+    def writes(c: ContentItem) = c match {
+      case ContentItem(s, Some(wc)) => {
+        /*
+          Note contentType exists in both objects, the behavior of ++ will take wc as source of truth
+        */
+        Json.toJson(s).as[JsObject] ++ Json.toJson(wc).as[JsObject] ++ Json.obj("visibleOnUi" -> JsBoolean(WorkflowContent.visibleOnUi(wc)))
+      }
+      case ContentItem(s, None) => Json.toJson(s)
     }
   }
 }

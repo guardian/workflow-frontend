@@ -19,4 +19,6 @@ object Dependencies {
 
   val testDependencies = Seq("org.scalatest" %% "scalatest" % "2.1.5" % "test")
 
+  val apiDocDependencies = Seq("com.wordnik" %% "swagger-play2" % "1.3.12")
+
 }
