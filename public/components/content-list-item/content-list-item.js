@@ -61,8 +61,6 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.update(item);
         }
 
-
-
         update(item) {
 
             // TODO: Stubs have a different structure to content items
@@ -118,6 +116,25 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
+
+            this.launchScheduleDetails = item.launchScheduleDetails || {};
+
+            this.hasEmbargoedDate =
+                    this.launchScheduleDetails.embargoedUntil &&
+                    this.launchScheduleDetails.embargoedUntil > (new Date()).getTime();
+
+            this.isEmbargoed = this.hasEmbargoedDate || this.launchScheduleDetails.embargoedIndefinitely;
+
+            this.embargoedText = (() => { if(this.launchScheduleDetails.embargoedIndefinitely) {
+                    return "Indefinitely";
+                } else if(this.hasEmbargoedDate) {
+                    return wfFormatDateTimeFilter(
+                        wfLocaliseDateTimeFilter(this.launchScheduleDetails.embargoedUntil)
+                    );
+                } else {
+                    return "-";
+                }
+            })();
 
             var lifecycleState = this.lifecycleState(item);
             this.lifecycleState = lifecycleState.display;
