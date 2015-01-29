@@ -124,30 +124,28 @@ object WfQuery {
     composerId
   )
 
-  def queryStringMultiOption[A](queryParam: Map[String, Seq[String]], id: String, f: String => Option[A] = (s: String) => Some(s)): List[A] = {
-    queryParam.get(id).map(seq => seq.map(f).flatten.toList).getOrElse(Nil)
+  def queryStringMultiOption[A](param: Option[String], f: String => Option[A] = (s: String) => Some(s)): List[A] = {
+    param map {
+      _.split(",").toList.map(f).collect { case Some(a) => a }
+    } getOrElse Nil
   }
 
-
   def fromRequest(req: Request[AnyContent]): WfQuery = {
-      val params = req.queryString
-
       val dueFrom = req.getQueryString("due.from").flatMap(Formatting.parseDate)
       val dueUntil = req.getQueryString("due.until").flatMap(Formatting.parseDate)
-      val sections = queryStringMultiOption(params, "section", s => Some(Section(s)))
-      val contentType = queryStringMultiOption(params, "content-type")
-      val flags = queryStringMultiOption(params,  "flags", WfQuery.queryStringToFlag.get(_))
-      val prodOffice = queryStringMultiOption(params, "prodOffice")
+      val sections = queryStringMultiOption(req.getQueryString("section"), s => Some(Section(s)))
+      val contentType = queryStringMultiOption(req.getQueryString("content-type"))
+      val flags = queryStringMultiOption(req.getQueryString("flags"), WfQuery.queryStringToFlag.get(_))
+      val prodOffice = queryStringMultiOption(req.getQueryString("prodOffice"))
       val createdFrom = req.getQueryString("created.from").flatMap(Formatting.parseDate)
       val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
-      val status = queryStringMultiOption(params,"status", StatusDatabase.find(_))
+      val status = queryStringMultiOption(req.getQueryString("status"), StatusDatabase.find(_))
       val published = req.getQueryString("state").map(_ == "published")
       val text = req.getQueryString("text")
-      val assignee = queryStringMultiOption(params, "assignee")
+      val assignee = queryStringMultiOption(req.getQueryString("assignee"))
       val composerId = req.getQueryString("composerId")
 
-
-     WfQuery(
+      WfQuery(
         section       = sections,
         status        = status,
         contentType   = contentType,
