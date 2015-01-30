@@ -94,9 +94,13 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.trailtext = stripHtml(item.trailtext);
             this.trailImageUrl = item.trailImageUrl;
 
-            this.assignee = item.assignee || 'unassigned';
-            this.assigneeEmail = item.assigneeEmail;
-            this.assigneeInitials = item.assignee && toInitials(item.assignee) || '';
+            if (item.assignee) {
+                this.assignee = item.assignee;
+                if (item.assigneeEmail) {
+                    this.assigneeEmail = item.assigneeEmail;
+                    this.assigneeInitials = item.assignee && toInitials(item.assignee) || '';
+                }
+            }
 
             this.contentType = item.contentType;
             this.contentTypeTitle = toTitleCase(item.contentType);
