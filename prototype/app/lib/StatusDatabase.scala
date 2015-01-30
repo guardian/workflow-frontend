@@ -1,10 +1,9 @@
-package com.gu.workflow.lib
-
-import akka.agent.Agent
-import models.Status
+package lib
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import akka.agent.Agent
+import models.Status
 
 
 object StatusDatabase {
