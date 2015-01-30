@@ -13,6 +13,14 @@
                     ]
                 }
             ]
+        },
+        "IsPROD" : {
+            "Fn::Equals": [
+                {
+                    "Ref": "Stage"
+                },
+                "PROD"
+            ]
         }
     },
     "Mappings": {
@@ -966,6 +974,7 @@
         },
         "ArchiverScheduledActionUp": {
             "Type": "AWS::AutoScaling::ScheduledAction",
+            "Condition": "IsPROD",
             "Properties": {
                 "AutoScalingGroupName": {
                     "Ref": "ArchiverAutoscalingGroup"
@@ -997,11 +1006,12 @@
                         "DesiredCapacity"
                     ]
                 },
-                "Recurrence": "30 13 * * *"
+                "Recurrence": "00 02 * * *"
             }
         },
         "ArchiverScheduledActionDown": {
             "Type": "AWS::AutoScaling::ScheduledAction",
+            "Condition": "IsPROD",
             "Properties": {
                 "AutoScalingGroupName": {
                     "Ref": "ArchiverAutoscalingGroup"
@@ -1009,7 +1019,7 @@
                 "MaxSize": "0",
                 "MinSize": "0",
                 "DesiredCapacity": "0",
-                "Recurrence": "00 14 * * *"
+                "Recurrence": "00 03 * * *"
             }
         },
         "ProleLoadBalancer": {
