@@ -59,8 +59,9 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                     $rootScope.compiledTemplate = $rootScope.compiledTemplate || $compile(contentListTemplate);
 
-                    var linked = $rootScope.compiledTemplate($scope);
-                    elem.append(linked);
+                    $rootScope.compiledTemplate($scope, function(clonedElement, $scope){
+                        elem.append(clonedElement);
+                    });
                 });
             }
         };
