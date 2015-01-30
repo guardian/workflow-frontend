@@ -1,0 +1,24 @@
+{
+    "defaultStacks": ["workflow"],
+    "packages": {
+        "prole": {
+            "type": "autoscaling",
+            "data": {
+                "port": 9000,
+                "bucket": "workflow-dist",
+                "publicReadAcl": false
+            }
+        }
+    },
+    "recipes": {
+        "default": {
+            "depends": ["uploadArtifacts", "deploy"]
+        },
+        "deploy": {
+            "actionsBeforeApp": ["archiver.deploy"]
+        },
+        "uploadArtifacts": {
+            "actionsBeforeApp": ["archiver.uploadArtifacts"]
+        }
+    }
+}
