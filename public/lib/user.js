@@ -19,17 +19,19 @@ angular.module('wfUser', [])
     .factory('wfUser', [function () {
         var user = window._wfConfig.user;
         if (!user) return {};
-        
-        // Decorate user object
-        user.displayName = user.firstName + " " + user.lastName; 
 
-        return user; 
+        // Decorate user object
+        user.displayName = user.firstName + " " + user.lastName;
+
+        return user;
     }])
 
 
     .factory('wfUserSession', ['$timeout', '$window', function ($timeout, $window) {
 
         var SESSION_CHECK_URL = '/login/status',
+
+            IFRAME_TIMEOUT = 6000,
 
             $sessionCheckFrame,
 
@@ -75,7 +77,7 @@ angular.module('wfUser', [])
 
                     reject(new Error('Timeout loading URL in iframe: ' + SESSION_CHECK_URL));
 
-                }, 3000);
+                }, IFRAME_TIMEOUT);
 
 
                 $sessionCheckFrame.one('load', function (ev) {
