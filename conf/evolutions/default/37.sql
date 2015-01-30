@@ -1,5 +1,8 @@
 # --- !Ups
-alter table archive add column archived_at TIMESTAMP not null default now();
+ALTER TABLE content
+    ADD COLUMN scheduled_launch_date timestamp without time zone
 
 # --- !Downs
-alter table archive drop column archived_at;
+ALTER TABLE content
+    DROP COLUMN scheduled_launch_date
+
