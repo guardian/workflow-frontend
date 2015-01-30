@@ -159,29 +159,32 @@ object Schema {
 
     /*This is so content table can return none for the content query where composerId is not set */
 
-    def ? = composerId.?       ::
-            path               ::
-            lastModified.?     ::
-            lastModifiedBy     ::
-            status.?           ::
-            contentType.?      ::
-            commentable.?      ::
-            headline           ::
-            standfirst         ::
-            trailtext          ::
-            mainMedia          ::
-            mainMediaUrl       ::
-            mainMediaCaption   ::
-            mainMediaAltText   ::
-            trailImageUrl      ::
-            published.?        ::
-            timePublished      ::
-            revision           ::
-            storyBundleId      ::
-            activeInInCopy.?   ::
-            takenDown.?        ::
-            timeTakenDown      ::
-            wordCount.?        ::
+    def ? = composerId.?            ::
+            path                    ::
+            lastModified.?          ::
+            lastModifiedBy          ::
+            status.?                ::
+            contentType.?           ::
+            commentable.?           ::
+            headline                ::
+            standfirst              ::
+            trailtext               ::
+            mainMedia               ::
+            mainMediaUrl            ::
+            mainMediaCaption        ::
+            mainMediaAltText        ::
+            trailImageUrl           ::
+            published.?             ::
+            timePublished           ::
+            revision                ::
+            storyBundleId           ::
+            activeInInCopy.?        ::
+            takenDown.?             ::
+            timeTakenDown           ::
+            wordCount.?             ::
+            embargoedUntil          ::
+            embargoedIndefinitely.? ::
+            scheduledLaunchDate     ::
             HNil
   }
 

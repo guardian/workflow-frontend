@@ -242,30 +242,39 @@ object WorkflowContent {
   }
 
   def fromOptionalContentRow(row: Schema.OptionContentRow): Option[WorkflowContent] = row match {
-    case (Some(composerId)      ::
-          path                  ::
-          Some(lastMod)         ::
-          lastModBy             ::
-          Some(status)          ::
-          Some(contentType)     ::
-          Some(commentable)     ::
-          headline              ::
-          standfirst            ::
-          trailtext             ::
-          mainMedia             ::
-          mainMediaUrl          ::
-          mainMediaCaption      ::
-          mainMediaAltText      ::
-          trailImageUrl         ::
-          Some(published)       ::
-          timePublished         ::
-          revision              ::
-          storyBundleId         ::
-          Some(activeInInCopy)   ::
-          Some(takenDown)        ::
-          timeTakenDown           ::
-          Some(wordCount)        ::
+    case (Some(composerId)            ::
+          path                        ::
+          Some(lastMod)               ::
+          lastModBy                   ::
+          Some(status)                ::
+          Some(contentType)           ::
+          Some(commentable)           ::
+          headline                    ::
+          standfirst                  ::
+          trailtext                   ::
+          mainMedia                   ::
+          mainMediaUrl                ::
+          mainMediaCaption            ::
+          mainMediaAltText            ::
+          trailImageUrl               ::
+          Some(published)             ::
+          timePublished               ::
+          revision                    ::
+          storyBundleId               ::
+          Some(activeInInCopy)        ::
+          Some(takenDown)             ::
+          timeTakenDown               ::
+          Some(wordCount)             ::
+          embargoedUntil              ::
+          Some(embargoedIndefinitely) ::
+          scheduledLaunchDate         ::
           HNil) => {
+
+      val launchScheduleDetails = LaunchScheduleDetails(
+        scheduledLaunchDate,
+        embargoedUntil,
+        embargoedIndefinitely
+      )
 
       val media = WorkflowContentMainMedia(
         mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
@@ -276,7 +285,8 @@ object WorkflowContent {
         trailImageUrl, contentType, None,
         Status(status), lastMod, lastModBy, commentable,
         published, timePublished, storyBundleId,
-        activeInInCopy, takenDown, timeTakenDown, wordCount))
+        activeInInCopy, takenDown, timeTakenDown, wordCount, Some(launchScheduleDetails)
+        ))
     }
     case _ => None
 
@@ -379,4 +389,3 @@ case object ContentItem {
     }
   }
 }
-
