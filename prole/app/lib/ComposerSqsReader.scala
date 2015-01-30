@@ -104,7 +104,7 @@ class ComposerSqsReader extends Actor {
       try {
         e.event match {
           case "delete" => {
-            CommonDB.deleteContent(e.composerId, archive=false)
+            CommonDB.fullyDelete(e.composerId)
             Logger.info(s"content deleted successfully: ${e.composerId}")
 
             true

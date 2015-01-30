@@ -97,11 +97,26 @@ object CommonDB {
     }
   }
 
-  def deleteContent(composerId: String, archive:Boolean=false) = {
+  def removeFromUI(composerId: String) = {
     DB.withTransaction { implicit session =>
-      if(archive) {
-        archiveContentQuery((s, c) => s.composerId === composerId)
-      }
+      archiveContentQuery((s, c) => s.composerId === composerId)
+      deleteContent(composerId)
+    }
+  }
+
+  def fullyDelete(composerId: String)(implicit session: Session) = {
+    deleteContent(composerId)
+    deleteArchiveContent(composerId)
+  }
+
+  def deleteArchiveContent(composerId: String) = {
+    DB.withTransaction { implicit session =>
+      archive.filter(_.composerId === composerId).delete
+    }
+  }
+
+  def deleteContent(composerId: String) = {
+    DB.withTransaction { implicit session =>
       content.filter(_.composerId === composerId).delete
       stubs.filter(_.composerId === composerId).delete
     }
