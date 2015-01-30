@@ -21,7 +21,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .filter('getPriorityString', wfGetPriorityStringFilter)
     .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
-    .directive('wfContentListItem', ['$rootScope', '$q', '$compile', '$http', '$templateCache', 'wfColumnService', wfContentListItem])
+    .directive('wfContentListItem', ['$rootScope', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer])
     .directive("bindCompiledHtml", function($compile, $timeout) {
         return {
@@ -59,9 +59,8 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                     $rootScope.compiledTemplate = $rootScope.compiledTemplate || $compile(contentListTemplate);
 
-                    $rootScope.compiledTemplate($scope, function(clonedElement, $scope){
-                        elem.append(clonedElement);
-                    });
+                    var linked = $rootScope.compiledTemplate($scope);
+                    elem.append(linked);
                 });
             }
         };
@@ -87,10 +86,21 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, se
         $scope.columns = data;
     });
 
+    wfColumnService.getContentItemTemplate().then((template) => {
+
+        $rootScope.contentItemTemplate = template;
+    });
+
     $scope.showColumnMenu = false;
     $scope.colChange = function () {
-        wfColumnService.setColumns($scope.columns);
-        $rootScope.$emit('contentItem.columnsChanged');
+        wfColumnService.setColumns($scope.columns).then(() => {
+            if (confirm('Configuring columns requires a refresh, reload the page?')) {
+                window.location.reload();
+            }
+        });
+    };
+    $scope.colChangeSelect = function () {
+        $scope.columnsEdited = true;
     };
 
     (function handleCompactView () {
@@ -253,11 +263,11 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, se
     poller.onError(this.renderError);
 
     poller.startPolling().then(function(){
-         var myListener = $rootScope.$on('content.rendered',
-                           function(event, data){
-                                  $anchorScroll();
-                                  myListener();
-                           });
+        var myListener = $rootScope.$on('content.rendered',
+            function(event, data){
+                $anchorScroll();
+                myListener();
+            });
     });
 
     $scope.$on('destroy', function () {
