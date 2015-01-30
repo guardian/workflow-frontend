@@ -10,7 +10,6 @@ class Archiver extends Actor {
     case Archive => {
       try {
         val archivedItems = CommonDB.archiveOldContent
-        Logger.error("test alarm goes off on exception")
         Logger.info(s"archived ${archivedItems} items at ${DateTime.now().toString}")
       }
       catch {
