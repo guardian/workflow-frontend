@@ -4,8 +4,6 @@ import org.joda.time.DateTime
 import play.api.Logger
 import play.api.libs.json._
 
-//TODO - deprecate dashboard row in favour of ContentItem when the UI moves on to the API method
-
 case class DashboardRow(stub: Stub, wc: WorkflowContent)
 
 object DashboardRow {

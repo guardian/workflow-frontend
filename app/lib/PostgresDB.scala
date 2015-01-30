@@ -1,15 +1,11 @@
 package lib
 
-import com.wordnik.swagger.annotations.ApiResponses
-import lib.OrderingImplicits._
-import models.Response.Response
+import models.ApiResponse.ApiResponse
 import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
 import play.api.libs.json.{JsObject, Writes}
-import scala.slick.collection.heterogenous._
-import syntax._
 import scala.slick.driver.PostgresDriver.simple._
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.syntax._
@@ -50,7 +46,7 @@ object PostgresDB {
 
       } yield (s, c)
 
-      query.filter( {case (s,c) => WorkflowContent.visibleOnUi(c) })
+      query.filter( {case (s,c) => !hideContentItem(s, c) })
            .list.map {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
@@ -59,22 +55,6 @@ object PostgresDB {
           DashboardRow(stub, content)
       }
     }
-
-
-
-  def getContentItems(q: WfQuery): Response[List[ContentItem]] = {
-    DB.withTransaction { implicit session =>
-      val leftJoinQ = (for {
-        (s, c)<- (WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId))
-        if(WorkflowContent.visibleOnUi(c))
-      } yield (s,  c.?))
-
-      val content: List[ContentItem] = leftJoinQ.list.map { case (s, c) => {
-        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
-      }}
-      Right(ApiSuccess(content))
-    }
-  }
 
   private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
@@ -93,7 +73,7 @@ object PostgresDB {
    * @return Either: Left(Long) if item exists already with composerId.
    *         Right(Long) of newly created item.
    */
-  def createContent(contentItem: ContentItem): Response[Long] = {
+  def createContent(contentItem: ContentItem): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
 
       val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
@@ -105,35 +85,13 @@ object PostgresDB {
             content += WorkflowContent.newContentRow(_, None)
           )
 
-          Right(ApiSuccess((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub)))
+          Right((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
         }
       }
     }
   }
 
-  def getContentById(id: Long): Option[ContentItem] = {
-    DB.withTransaction { implicit session =>
-      (for {
-        (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
-        if s.pk === id
-      } yield (s,  c.?)).firstOption.map { case (s, c) => {
-        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
-      }}
-    }
-  }
-
-  def getContentByCompserId(composerId: String): Option[ContentItem] = {
-    DB.withTransaction { implicit session =>
-      (for {
-        (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
-        if s.composerId === composerId
-      } yield (s,  c.?)).firstOption.map { case (s, c) => {
-        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
-      }}
-    }
-  }
-
-  def getDashboardRowByComposerId(composerId: String): Response[DashboardRow] = {
+  def getContentByComposerId(composerId: String): ApiResponse[DashboardRow] = {
     DB.withTransaction { implicit session =>
 
       val query = for {
@@ -151,12 +109,12 @@ object PostgresDB {
       }
       dashboardRowOpt match {
         case None => Left(ApiErrors.composerIdNotFound(composerId))
-        case Some(d) => Right(ApiSuccess(d))
+        case Some(d) => Right(d)
       }
     }
   }
 
-  def updateStub(id: Long, stub: Stub): Response[Long] = {
+  def updateStub(id: Long, stub: Stub): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
       //TODO - remove this
       stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
@@ -167,11 +125,11 @@ object PostgresDB {
         .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
 
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      else Right(id)
     }
   }
 
-  def updateStubWithComposerId(id: Long, composerId: String, contentType: String): Response[Long] = {
+  def updateStubWithComposerId(id: Long, composerId: String, contentType: String): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
       //TODO - remove this
       ensureContentExistsWithId(composerId, contentType)
@@ -182,33 +140,33 @@ object PostgresDB {
         .update((Some(composerId), Some(contentType)))
 
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      else Right(id)
     }
   }
 
-  def updateStubWithAssignee(id: Long, assignee: Option[String]): Response[Long] = {
+  def updateStubWithAssignee(id: Long, assignee: Option[String]): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
       val updatedRow = stubs
         .filter(_.pk === id)
         .map(s => s.assignee)
         .update(assignee)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      else Right(id)
     }
   }
 
-  def updateStubDueDate(id: Long, dueDate: Option[DateTime]): Response[Long] = {
+  def updateStubDueDate(id: Long, dueDate: Option[DateTime]): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
       val updatedRow = stubs
         .filter(_.pk === id)
         .map(s => s.due)
         .update(dueDate)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      else Right(id)
     }
   }
 
-  def updateStubNote(id: Long, input: String): Response[Long] = {
+  def updateStubNote(id: Long, input: String): ApiResponse[Long] = {
     val note: Option[String] = if(input.length > 0) Some(input) else None
     DB.withTransaction { implicit session =>
       val updatedRow = stubs
@@ -216,62 +174,62 @@ object PostgresDB {
         .map(s => s.note)
         .update(note)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      else Right(id)
     }
   }
 
-  def updateStubProdOffice(id: Long, prodOffice: String): Response[Long] = {
+  def updateStubProdOffice(id: Long, prodOffice: String): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
       val updatedRow = stubs
         .filter(_.pk === id)
         .map(s => s.prodOffice)
         .update(prodOffice)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      else Right(id)
     }
   }
 
-  def updateStubSection(id: Long, section: String): Response[Long] = {
+  def updateStubSection(id: Long, section: String): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
       val updatedRow = stubs
         .filter(_.pk === id)
         .map(s => s.section)
         .update(section)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      else Right(id)
     }
   }
 
-  def updateStubWorkingTitle(id: Long, workingTitle: String): Response[Long] = {
+  def updateStubWorkingTitle(id: Long, workingTitle: String): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
       val updatedRow = stubs
         .filter(_.pk === id)
         .map(s => s.workingTitle)
         .update(workingTitle)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      else Right(id)
     }
   }
 
-  def updateStubPriority(id: Long, priority: Int): Response[Long] = {
+  def updateStubPriority(id: Long, priority: Int): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
       val updatedRow = stubs
         .filter(_.pk === id)
         .map(s => s.priority)
         .update(priority)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      else Right(id)
     }
   }
 
-  def updateStubLegalStatus(id: Long, status: Flag): Response[Long] = {
+  def updateStubLegalStatus(id: Long, status: Flag): ApiResponse[Long] = {
     DB.withTransaction { implicit session =>
       val updatedRow = stubs
         .filter(_.pk === id)
         .map(s => s.needsLegal)
         .update(status)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      else Right(id)
     }
   }
 
@@ -281,8 +239,8 @@ object PostgresDB {
       q.length.run > 0
     }
   }
-  //todo - rename to delete contentitem
-  def deleteStub(id: Long): Response[Long] = {
+
+  def deleteStub(id: Long) {
     DB.withTransaction { implicit session =>
 
       archiveContentQuery((s, c) => s.pk === id)
@@ -293,19 +251,18 @@ object PostgresDB {
       content.filter(c => c.composerId in queryCurrentStub.map(_.composerId)).delete
 
       // Delete from Stub table
-      val deleted = queryCurrentStub.delete
-      if(deleted == 0) Right(ApiSuccess(id)) else Left(ApiErrors.notFound)
+      queryCurrentStub.delete
     }
   }
 
-  def updateContentStatus(status: String, composerId: String): Response[String] = {
+  def updateContentStatus(status: String, composerId: String): ApiResponse[String] = {
     DB.withTransaction { implicit session =>
       val q = for {
         wc <- content if wc.composerId === composerId
       } yield wc.status
       val updatedRow = q.update(status)
       if(updatedRow==0) Left(ApiErrors.composerIdNotFound(composerId))
-      else Right(ApiSuccess(composerId))
+      else Right(composerId)
     }
   }
 }
