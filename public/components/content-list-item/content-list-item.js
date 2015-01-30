@@ -114,16 +114,11 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.lastModified = item.lastModified;
             this.lastModifiedBy = item.lastModifiedBy;
 
-            this.isTakenDown = item.takenDown;
-            this.isPublished = item.published;
-
             this.launchScheduleDetails = item.launchScheduleDetails || {};
 
             this.hasEmbargoedDate =
                     this.launchScheduleDetails.embargoedUntil &&
                     this.launchScheduleDetails.embargoedUntil > (new Date()).getTime();
-
-            this.isEmbargoed = this.hasEmbargoedDate || this.launchScheduleDetails.embargoedIndefinitely;
 
             this.embargoedText = (() => { if(this.launchScheduleDetails.embargoedIndefinitely) {
                     return "Indefinitely";
@@ -136,9 +131,16 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
                 }
             })();
 
-            var lifecycleState = this.lifecycleState(item);
-            this.lifecycleState = lifecycleState.display;
-            this.lifecycleStateTime = lifecycleState.time;
+            this.isTakenDown = item.takenDown;
+            this.isPublished = item.published;
+            this.isEmbargoed = this.hasEmbargoedDate || this.launchScheduleDetails.embargoedIndefinitely;
+            this.isScheduled = Boolean(this.launchScheduleDetails.scheduledLaunchDate);
+
+            var lifecycleState      = this.lifecycleState(item);
+            this.lifecycleState     = lifecycleState.display;
+            this.lifecycleStateSupl = lifecycleState.supl();
+
+console.log(this.lifecycleState, this.lifecycleStateSupl);
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -157,14 +159,26 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 
         lifecycleState(item) {
             // Highest priority at the top!
+
+            var dateFormatter = (date) => { return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(date), 'ddd DD MMM HH:mm'); }
+
             var states = [
-                { "display": "Taken down", "active": item.takenDown, "time": item.timeTakenDown},
-                { "display": "Embargoed", "active": false, "time": undefined },
-                { "display": "Published", "active": item.published, "time": item.timePublished},
-                { "display": "", "active": true, "time": undefined} // Base state
+                { "display": "Taken down", "active": item.takenDown,   "supl": () => {
+                    return dateFormatter(item.timeTakenDown); }
+                },
+                { "display": "Embargoed",  "active": this.isEmbargoed, "supl": () => {
+                    return this.embargoedText; }
+                },
+                { "display": "Scheduled",  "active": this.isScheduled, "supl": () => {
+                    return dateFormatter(this.launchScheduleDetails.scheduledLaunchDate); }
+                },
+                { "display": "Published",  "active": item.published,   "supl": () => {
+                    return dateFormatter(item.timePublished); }
+                },
+                { "display": "", "active": true, "supl": () => { return false; } } // Base state
             ];
 
-            return (states.filter(function(o) { return o.active === true; })[0]);
+            return states.filter((o) => { return o.active === true; })[0];
         }
     }
 
