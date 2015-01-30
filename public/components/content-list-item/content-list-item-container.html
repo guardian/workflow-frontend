@@ -1,6 +1,3 @@
-<tr class="content-list-item" ng-click="selectItem(contentItem)" ng-class="
-    {
-        'content-list-item--selected': contentList.selectedItem === contentItem,
-        'content-list-item--published': contentItem.isPublished && !contentItem.isTakenDown,
-        'content-list-item--takendown': contentItem.isTakenDown
-    }"></tr>
+<tr class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-click="selectItem(contentItem)"
+    ng-class="(contentList.selectedItem === contentItem) ? 'content-list-item--selected' : ''"
+></tr>
