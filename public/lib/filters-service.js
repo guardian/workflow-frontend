@@ -76,7 +76,7 @@ angular.module('wfFiltersService', ['wfDateService'])
 
                 function enterSearchMode(data) {
                     savedFilters = _.clone(self.filters);
-                    self.clearAll();
+                    self.clearAll(true);
                     $rootScope.$broadcast("search-mode.enter");
                 }
 
@@ -102,13 +102,13 @@ angular.module('wfFiltersService', ['wfDateService'])
                         var rest =
                             newValue.replace(/\s*([A-Za-z-]+):(\S+)\s*/g, (match, field, value) => {
                                 if(_.has(keywords, field)) {
-                                    self.update(keywords[field], value);
+                                    self.update(keywords[field], value, true, true);
                                 }
                                 return "";
                             });
-                        self.update('text', rest);
+                        self.update('text', rest, true, true);
                     } else {
-                        self.update('text', null);
+                        self.update('text', null, true, true);
                     }
                     $rootScope.$broadcast('getContent');
                 });
@@ -175,7 +175,7 @@ angular.module('wfFiltersService', ['wfDateService'])
             }
 
 
-            update(key, value, doNotUpdateprefs) {
+            update(key, value, doNotUpdateprefs, doNotUpdateUrl) {
 
                 if (value !== null && (value === undefined || value.length === 0)) { // empty String or Array
                     value = null; // Remove query param
@@ -188,11 +188,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                 if (key === 'selectedDate') {
                     var dateStr = wfDateParser.setQueryString(value);
                     this.filters[key] = dateStr;
-                    $location.search(key, dateStr);
+                    doNotUpdateUrl || $location.search(key, dateStr);
                 }
                 else {
                     this.filters[key] = value;
-                    $location.search(key, value);
+                    doNotUpdateUrl || $location.search(key, value);
                 }
 
                 if (!doNotUpdateprefs) {
@@ -209,9 +209,9 @@ angular.module('wfFiltersService', ['wfDateService'])
                 return this.filters;
             }
 
-            clearAll() {
+            clearAll(noPrefs) {
                 _.forOwn(this.filters, (value, key) => {
-                    this.update(key, null);
+                    this.update(key, null, noPrefs);
                 });
             }
 
