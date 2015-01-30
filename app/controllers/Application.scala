@@ -1,6 +1,7 @@
 package controllers
 
 import com.gu.workflow.db.{SectionDeskMappingDB, SectionDB, DeskDB}
+import com.gu.workflow.lib.StatusDatabase
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -20,6 +21,10 @@ object Application extends Controller with PanDomainAuthActions {
 
   def about = AuthAction { request =>
       Ok(views.html.about())
+  }
+
+  def faqs = AuthAction { request =>
+    Ok(views.html.faqs())
   }
 
   def app(title: String) = AuthAction.async { request =>
