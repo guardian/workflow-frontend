@@ -1,7 +1,7 @@
 {
     "defaultStacks": ["workflow"],
     "packages": {
-        "prole": {
+        "archiver": {
             "type": "autoscaling",
             "data": {
                 "port": 9000,
