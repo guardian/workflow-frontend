@@ -62,7 +62,7 @@
                     <li class="drawer__section" ng-switch="!!editingAssignee">
                         <div ng-switch-when="false">
                             <span class="drawer__section-title">Assigned to</span>
-                            <img class="drawer__user-image" ng-class="{ 'drawer__user-image--placeholder': !assigneeImage }" ng-src="{{ assigneeImage }}" height="38" width="38" alt="contentItem.item.assignee"/>
+                            <img class="drawer__user-image" ng-if="assigneeImage.length > 1" ng-class="{ 'drawer__user-image--placeholder': !assigneeImage }" ng-src="{{ assigneeImage }}" height="38" width="38" alt="contentItem.item.assignee"/>
                             <span class="drawer__section-data-row--editable drawer__user-name" ng-click="toggleAssigneeEditing();" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.assignee || "None" }}</span>
                         </div>
                         <div ng-switch-when="true">
