@@ -1,8 +1,9 @@
 # --- !Ups
 
-UPDATE content SET composer_last_modified = (SELECT last_modified FROM content c1 WHERE content.composer_id = c1.composer_id);
+UPDATE stub SET wf_last_modified = (SELECT last_modified FROM content WHERE content.composer_id = stub.composer_id);
+UPDATE stub SET wf_last_modified = now() where wf_last_modified is null;
 
 
 # --- !Downs
 
-UPDATE content SET composer_last_modified = null;
+UPDATE stub SET wf_last_modified = null;

@@ -1,5 +1,5 @@
 # --- !Ups
-alter table content add column composer_last_modified TIMESTAMP;
+alter table stub add column wf_last_modified TIMESTAMP;
 
 # --- !Downs
-alter table content drop column composer_last_modified;
+alter table stub drop column wf_last_modified;
