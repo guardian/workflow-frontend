@@ -82,8 +82,8 @@
     </td>
     <td class="content-list-item__field--published-state" title="Published state: {{ contentItem.publishedState || 'Draft' }}{{ contentItem.publishedTime && ' on ' + (contentItem.publishedTime | wfLocaliseDateTime | wfFormatDateTime:'long') }}">
         <div class="content-list-item__field-primary--published-state">{{ contentItem.lifecycleState }}</div>
-        <div class="content-list-item__field-supl--published-state" ng-if="contentItem.isPublished">{{
-            contentItem.lifecycleStateTime| wfLocaliseDateTime | wfFormatDateTime:'ddd DD MMM HH:mm' }}
+        <div class="content-list-item__field-supl--published-state">
+            {{ contentItem.lifecycleStateSupl }}
         </div>
     </td>
     <td class="content-list-item__notifier"></td>
