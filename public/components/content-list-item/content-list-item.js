@@ -166,7 +166,7 @@ console.log(this.lifecycleState, this.lifecycleStateSupl);
                 { "display": "Taken down", "active": item.takenDown,   "supl": () => {
                     return dateFormatter(item.timeTakenDown); }
                 },
-                { "display": "Embargoed",  "active": this.isEmbargoed, "supl": () => {
+                { "display": "Embargoed until",  "active": this.isEmbargoed, "supl": () => {
                     return this.embargoedText; }
                 },
                 { "display": "Scheduled",  "active": this.isScheduled, "supl": () => {
