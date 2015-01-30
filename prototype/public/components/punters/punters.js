@@ -22,7 +22,6 @@ function punters ($rootScope, wfGoogleApiService) {
 
     return {
         restrict: 'E',
-        replace: true,
         templateUrl: '/assets/components/punters/punters.html',
         scope: {
             stub: '=',
