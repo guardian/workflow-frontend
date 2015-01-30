@@ -50,7 +50,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 $element.addClass(hiddenClass);
 
                 $scope.contentList.selectedItem = null;
-                console.log('hiding?');
                 $scope.assigneeImage = ' ';
                 $parent.append($element);
                 resolve();
@@ -113,12 +112,17 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             };
 
             this.updateAssigneeUserImage = function () {
+
                 // Enhance assignee with Image
-                wfGoogleApiService.searchUsers($scope.contentItem.assigneeEmail).then((data) => {
-                    if (data && data.length) {
-                        $scope.assigneeImage = data[0].thumbnailPhotoUrl;
-                    }
-                });
+                if ($scope.contentItem.assigneeEmail) {
+                    wfGoogleApiService.searchUsers($scope.contentItem.assigneeEmail).then((data) => {
+                        if (data && data.length) {
+                            $scope.assigneeImage = data[0].thumbnailPhotoUrl;
+                        }
+                    });
+                } else {
+                    $scope.assigneeImage = ' ';
+                }
             }
         },
 
