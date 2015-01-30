@@ -964,6 +964,54 @@
                 }
             }
         },
+        "ArchiverScheduledActionUp": {
+            "Type": "AWS::AutoScaling::ScheduledAction",
+            "Properties": {
+                "AutoScalingGroupName": {
+                    "Ref": "ArchiverAutoscalingGroup"
+                },
+                "MinSize": {
+                    "Fn::FindInMap": [
+                        "ArchiverConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MinSize"
+                    ]
+                },
+                "MaxSize": {
+                    "Fn::FindInMap": [
+                        "ArchiverConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MaxSize"
+                    ]
+                },
+                "DesiredCapacity": {
+                    "Fn::FindInMap": [
+                        "ArchiverConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "DesiredCapacity"
+                    ]
+                },
+                "Recurrence": "30 13 * * *"
+            }
+        },
+        "ArchiverScheduledActionDown": {
+            "Type": "AWS::AutoScaling::ScheduledAction",
+            "Properties": {
+                "AutoScalingGroupName": {
+                    "Ref": "ArchiverAutoscalingGroup"
+                },
+                "MaxSize": "0",
+                "MinSize": "0",
+                "DesiredCapacity": "0",
+                "Recurrence": "00 14 * * *"
+            }
+        },
         "ProleLoadBalancer": {
             "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
             "Properties": {
