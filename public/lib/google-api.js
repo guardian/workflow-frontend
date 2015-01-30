@@ -65,15 +65,14 @@ angular.module('wfGoogleApiService', [])
              */
             searchUsers: function (value) {
 
-                var url = 'https://www.googleapis.com/admin/directory/v1/users',
-                    searchParam = '?query=' + escape(value),
-                    otherParams = '&domain=guardian.co.uk&viewType=domain_public';
-
-                var searchUrl = url + searchParam + otherParams;
-
                 var req = {
                     method: 'GET',
-                    url: searchUrl,
+                    url: 'https://www.googleapis.com/admin/directory/v1/users',
+                    params: {
+                        query: value,
+                        domain: 'guardian.co.uk',
+                        viewType: 'domain_public'
+                    },
                     headers: {
                         'Authorization': 'Bearer ' + window.gapi.auth['access_token']
                     }
