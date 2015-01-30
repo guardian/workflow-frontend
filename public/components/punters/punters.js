@@ -114,7 +114,6 @@ function punters ($rootScope, wfGoogleApiService) {
                     $scope.foundUsers = filterList($scope.foundUsers, $scope.tokens);
 
                     // Update model
-
                     $scope.stub.assigneeEmail = user.primaryEmail;
                     $scope.stub.assignee = user.name.fullName;
 

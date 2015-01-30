@@ -276,19 +276,22 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
             $rootScope.$on('punters.punterSelected', () => {
 
-                $scope.toggleAssigneeEditing(); // Close Field
+                if ($scope && $scope.contentItem) {
 
-                var msg = {
-                    contentItem: $scope.contentItem,
-                    data: {
-                        assignee: $scope.contentItem.assignee,
-                        assigneeEmail: $scope.contentItem.assigneeEmail
-                    }
-                };
+                    $scope.toggleAssigneeEditing(); // Close Field
 
-                $scope.$emit('contentItem.update', msg);
+                    var msg = {
+                        contentItem: $scope.contentItem,
+                        data: {
+                            assignee: $scope.contentItem.assignee,
+                            assigneeEmail: $scope.contentItem.assigneeEmail
+                        }
+                    };
 
-                contentListDrawerController.updateAssigneeUserImage();
+                    $scope.$emit('contentItem.update', msg);
+
+                    contentListDrawerController.updateAssigneeUserImage();
+                }
             });
         }
     };
