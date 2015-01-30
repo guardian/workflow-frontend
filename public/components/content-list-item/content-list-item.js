@@ -138,9 +138,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 
             var lifecycleState      = this.lifecycleState(item);
             this.lifecycleState     = lifecycleState.display;
+            this.lifecycleStateKey  = lifecycleState.key;
             this.lifecycleStateSupl = lifecycleState.supl();
-
-console.log(this.lifecycleState, this.lifecycleStateSupl);
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -163,19 +162,19 @@ console.log(this.lifecycleState, this.lifecycleStateSupl);
             var dateFormatter = (date) => { return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(date), 'ddd DD MMM HH:mm'); }
 
             var states = [
-                { "display": "Taken down", "active": item.takenDown,   "supl": () => {
+                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "supl": () => {
                     return dateFormatter(item.timeTakenDown); }
                 },
-                { "display": "Embargoed until",  "active": this.isEmbargoed, "supl": () => {
+                { "display": "Embargoed until", "key": "embargoed", "active": this.isEmbargoed, "supl": () => {
                     return this.embargoedText; }
                 },
-                { "display": "Scheduled",  "active": this.isScheduled, "supl": () => {
+                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "supl": () => {
                     return dateFormatter(this.launchScheduleDetails.scheduledLaunchDate); }
                 },
-                { "display": "Published",  "active": item.published,   "supl": () => {
+                { "display": "Published", "key": "published", "active": item.published, "supl": () => {
                     return dateFormatter(item.timePublished); }
                 },
-                { "display": "", "active": true, "supl": () => { return false; } } // Base state
+                { "display": "", "key": "draft", "active": true, "supl": () => { return false; } } // Base state
             ];
 
             return states.filter((o) => { return o.active === true; })[0];
