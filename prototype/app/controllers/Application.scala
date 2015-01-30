@@ -23,6 +23,10 @@ object Application extends Controller with PanDomainAuthActions {
       Ok(views.html.about())
   }
 
+  def faqs = AuthAction { request =>
+    Ok(views.html.faqs())
+  }
+
   def app(title: String) = AuthAction.async { request =>
 
     for {
