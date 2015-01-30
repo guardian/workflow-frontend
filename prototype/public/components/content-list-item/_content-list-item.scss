@@ -24,7 +24,7 @@
     }
 
     &__notifier {
-        width: 4px;
+        width: 8px;
         padding: 0;
     }
 
@@ -38,6 +38,17 @@
         background: $c-grey-300;
         .content-list-item__notifier {
             background: repeating-linear-gradient( 45deg, $c-grey-300, $c-grey-300 3px, $c-grey-600 3px, $c-grey-600 6px)
+        }
+    }
+    &--scheduled {
+        .content-list-item__notifier {
+            background: repeating-linear-gradient( 0deg, $c-light-orange, $c-light-orange 3px, $c-orange 3px, $c-orange 6px)
+        }
+    }
+    &--embargoed {
+        background:$c-light-orange;
+        .content-list-item__notifier {
+            background: repeating-linear-gradient( 135deg, $c-grey-300, $c-grey-300 6px, $c-red 6px, $c-red 12px)
         }
     }
 
