@@ -5,8 +5,8 @@ import startTemplate        from "components/content-list-item/content-list-item
 import endTemplate          from "components/content-list-item/content-list-item-end.html!text";
 
 angular.module('wfColumnService', [])
-    .factory('wfColumnService', ['$rootScope', '$sce', '$http', '$templateCache', '$q', 'wfPreferencesService',
-        function($rootScope, $sce, $http, $templateCache, $q, wfPreferencesService) {
+    .factory('wfColumnService', ['wfPreferencesService',
+        function(wfPreferencesService) {
 
             class ColumnService {
 
