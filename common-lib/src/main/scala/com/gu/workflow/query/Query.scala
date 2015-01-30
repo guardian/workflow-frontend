@@ -15,10 +15,19 @@ import com.gu.workflow.syntax._
 import com.gu.workflow.lib._
 
 
+sealed trait ContentState { def name: String }
+case object PublishedState extends ContentState { val name = "published" }
+case object TakenDownState extends ContentState { val name = "takendown" }
+case object ScheduledState extends ContentState { val name = "scheduled" }
+case object EmbargoedState extends ContentState { val name = "embargoed" }
+case object DraftState     extends ContentState { val name = "draft"     }
+case class UnknownState(name: String) extends ContentState
+
 case class WfQueryTime(
   from  : Option[DateTime],
   until : Option[DateTime]
 )
+
 case class WfQuery(
   section       : Seq[Section]     = Nil,
   desk          : Seq[Desk]        = Nil,
@@ -31,9 +40,9 @@ case class WfQuery(
   creationTimes : Seq[WfQueryTime] = Nil,
   text          : Option[String]   = None,
   assignedTo    : Seq[String]      = Nil,
-  composerId    : Option[String]   = None
+  composerId    : Option[String]   = None,
+  state         : Option[ContentState] = None
 )
-
 object WfQuery {
   // correctly typed shorthand
   private val TrueCol : Column[Boolean] = LiteralColumn(true)
@@ -141,6 +150,14 @@ object WfQuery {
       val createdUntil = req.getQueryString("created.until").flatMap(Formatting.parseDate)
       val status = queryStringMultiOption(req.getQueryString("status"), StatusDatabase.find(_))
       val published = req.getQueryString("state").map(_ == "published")
+      val state: Option[ContentState] = req.getQueryString("state").map(_ match {
+        case "published" => PublishedState
+        case "takendown" => TakenDownState
+        case "scheduled" => ScheduledState
+        case "embargoed" => EmbargoedState
+        case "draft"     => DraftState
+        case default     => UnknownState(default)
+      })
       val text = req.getQueryString("text")
       val assignee = queryStringMultiOption(req.getQueryString("assignee"))
       val composerId = req.getQueryString("composerId")
@@ -156,7 +173,8 @@ object WfQuery {
         published     = published,
         text          = text,
         assignedTo    = assignee,
-        composerId    = composerId
+        composerId    = composerId,
+        state         = state
       )
   }
 
@@ -180,9 +198,14 @@ object WfQuery {
     fuzzyMatch(q.assignedTo)(_.assignee) |>
     matchTextFields(optToSeq(q.text))(textFields)
 
-  def contentQuery(q: WfQuery) = content |>
+  def contentQuery(q: WfQuery) = {
+    //TODO: remove this todo
+    println(q)
+
+    content |>
     simpleInSet(q.status.map(_.toString.toUpperCase))(_.status.toUpperCase) |>
     simpleInSet(q.contentType.map(_.toUpperCase))(_.contentType.toUpperCase) |>
     q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published)) |>
     q.composerId.foldl[ContentQuery]((query, composerId) => query.filter(_.composerId === composerId))
+  }
 }
