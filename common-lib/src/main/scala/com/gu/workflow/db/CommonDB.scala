@@ -104,9 +104,11 @@ object CommonDB {
     }
   }
 
-  def fullyDelete(composerId: String)(implicit session: Session) = {
-    deleteContent(composerId)
-    deleteArchiveContent(composerId)
+  def fullyDelete(composerId: String) = {
+    DB.withTransaction { implicit session =>
+      deleteContent(composerId)
+      deleteArchiveContent(composerId)
+    }
   }
 
   def deleteArchiveContent(composerId: String) = {
