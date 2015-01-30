@@ -1,1135 +1,1473 @@
 {
-  "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Workflow",
-  "Conditions": {
-    "NotPROD": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            {
-              "Ref": "Stage"
-            },
-            "PROD"
-          ]
-        }
-      ]
-    }
-  },
-  "Mappings": {
-    "PrototypeConfig": {
-      "CODE": {
-        "MinSize": 1,
-        "MaxSize": 2,
-        "DesiredCapacity": 1,
-        "InstanceType": "m3.medium"
-      },
-      "RELEASE": {
-        "MinSize": 1,
-        "MaxSize": 2,
-        "DesiredCapacity": 1,
-        "InstanceType": "m3.medium"
-      },
-      "PROD": {
-        "MinSize": 3,
-        "MaxSize": 6,
-        "DesiredCapacity": 3,
-        "InstanceType": "c3.large"
-      }
-    },
-    "ProleConfig": {
-      "CODE": {
-        "MinSize": 1,
-        "MaxSize": 2,
-        "DesiredCapacity": 1,
-        "InstanceType": "t2.micro"
-      },
-      "RELEASE": {
-        "MinSize": 1,
-        "MaxSize": 2,
-        "DesiredCapacity": 1,
-        "InstanceType": "t2.micro"
-      },
-      "PROD": {
-        "MinSize": 1,
-        "MaxSize": 2,
-        "DesiredCapacity": 1,
-        "InstanceType": "t2.micro"
-      }
-    }
-  },
-  "Parameters": {
-    "KeyName": {
-      "Description": "The EC2 Key Pair to allow SSH access to the instance",
-      "Type": "String",
-      "Default": "workflow-developers"
-    },
-    "Stage": {
-      "Description": "Environment name",
-      "Type": "String",
-      "AllowedValues": [
-        "CODE",
-        "RELEASE",
-        "PROD"
-      ],
-      "Default": "PROD"
-    },
-    "SSLCertificateId": {
-      "Description": "ARN of the SSL certificate for workflow.gutools.co.uk",
-      "Type": "String",
-      "Default": "arn:aws:iam::753338109777:server-certificate/workflow.gutools.co.uk"
-    },
-    "ImageIdWorkflow": {
-      "Description": "AMI for Workflow (prototype) instances with instance storage.",
-      "Type": "String",
-      "Default": "ami-389a284f"
-    },
-    "ImageIdProle": {
-      "Description": "AMI for Prole instances with EBS storage.",
-      "Type": "String",
-      "Default": "ami-a89a28df"
-    },
-    "FCContentUpdateDraft": {
-      "Description": "ARN of the topic for Flexible Content metadata events",
-      "Type": "String",
-      "Default": "arn:aws:sns:eu-west-1:743583969668:fc-draft-content-PROD"
-    },
-    "FCContentUpdateLive": {
-      "Description": "ARN of the topic for Flexible Content metadata events",
-      "Type": "String",
-      "Default": "arn:aws:sns:eu-west-1:743583969668:fc-live-content-PROD"
-    },
-    "FCLifecycleTopic": {
-      "Description": "ARN of the topic for Flexible Content lifecycle events",
-      "Type": "String",
-      "Default": "arn:aws:sns:eu-west-1:308506855511:prod-fc-lifecycle-events"
-    },
-    "ComposerUrl": {
-      "Description": "The url for composer",
-      "Type": "String",
-      "Default": "https://composer.gutools.co.uk"
-    },
-    "PresenceUrl": {
-      "Description": "The url for the presence service",
-      "Type": "String",
-      "Default": "wss://presence.gutools.co.uk/socket"
-    },
-    "PresenceClientLib": {
-      "Description": "Hosted client lib for presence lib",
-      "Type": "String",
-      "Default": "https://presence.gutools.co.uk/assets/presence-client/1.1/lib"
-    },
-    "DBPort": {
-      "Description": "Port number for the database instance",
-      "Type": "String",
-      "Default": "5432"
-    },
-    "DBUser": {
-      "Description": "Master username for the database",
-      "Type": "String"
-    },
-    "DBPassword": {
-      "Description": "Master password for the database",
-      "Type": "String",
-      "NoEcho": true
-    },
-    "GoogleClientId": {
-      "Description": "Google Application Id for OAuth2",
-      "Type": "String"
-    },
-    "GoogleSecret": {
-      "Description": "Google Application Secret for OAuth2",
-      "Type": "String"
-    },
-    "GuardianIP": {
-      "Description": "Ip range for the office",
-      "Type": "String",
-      "Default": "77.91.248.0/21"
-    },
-    "Host": {
-      "Description": "Hostname of the application",
-      "Type": "String",
-      "Default": "https://workflow.gutools.co.uk"
-    },
-    "PandomainDomain": {
-      "Description": "master domain the app is on",
-      "Type": "String"
-    },
-    "PandomainAwsKey": {
-      "Description": "aws key for pandomain bucket access",
-      "Type": "String"
-    },
-    "PandomainAwsSecret": {
-      "Description": "aws secret for pandomain bucket access",
-      "Type": "String"
-    }
-  },
-  "Resources": {
-    "DistributionInstanceProfile": {
-      "Type": "AWS::IAM::InstanceProfile",
-      "Properties": {
-        "Path": "/",
-        "Roles": [
-          {
-            "Ref": "DistributionRole"
-          }
-        ]
-      }
-    },
-    "DistributionRole": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": [
-                  "ec2.amazonaws.com"
-                ]
-              },
-              "Action": [
-                "sts:AssumeRole"
-              ]
-            }
-          ]
-        },
-        "Path": "/",
-        "Policies": [
-          {
-            "PolicyName": "root",
-            "PolicyDocument": {
-              "Statement": [
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Workflow",
+    "Conditions": {
+        "NotPROD": {
+            "Fn::Not": [
                 {
-                  "Effect": "Allow",
-                  "Action": [
-                    "s3:GetObject"
-                  ],
-                  "Resource": [
-                    "arn:aws:s3:::workflow-dist/*",
-                    "arn:aws:s3:::workflow-private/*"
-                  ]
+                    "Fn::Equals": [
+                        {
+                            "Ref": "Stage"
+                        },
+                        "PROD"
+                    ]
                 }
-              ]
-            }
-          },
-          {
-            "PolicyName": "PushLogs",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
+            ]
+        },
+        "IsPROD" : {
+            "Fn::Equals": [
                 {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:*"
-                  ],
-                  "Resource": [
-                    "arn:aws:logs:*:*:*"
-                  ]
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "SSHSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Allow SSH access from the office",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "22",
-            "ToPort": "22",
-            "CidrIp": {
-              "Ref": "GuardianIP"
-            }
-          }
-        ]
-      }
-    },
-    "AppServerSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Application servers",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 9000,
-            "ToPort": 9000,
-            "CidrIp": {
-              "Ref": "GuardianIP"
-            }
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 9000,
-            "ToPort": 9000,
-            "SourceSecurityGroupName": {
-              "Fn::GetAtt": [
-                "PrototypeLoadBalancer",
-                "SourceSecurityGroup.GroupName"
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "DBSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Application servers",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": {
-              "Ref": "DBPort"
-            },
-            "ToPort": {
-              "Ref": "DBPort"
-            },
-            "CidrIp": {
-              "Ref": "GuardianIP"
-            }
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": {
-              "Ref": "DBPort"
-            },
-            "ToPort": {
-              "Ref": "DBPort"
-            },
-            "SourceSecurityGroupName": {
-              "Ref": "AppServerSecurityGroup"
-            }
-          }
-        ]
-      }
-    },
-    "LoadBalancerSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Prototype application load balancer",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "80",
-            "ToPort": "80",
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "443",
-            "ToPort": "443",
-            "CidrIp": "0.0.0.0/0"
-          }
-        ]
-      }
-    },
-    "PrototypeLoadBalancer": {
-      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-      "Properties": {
-        "CrossZone": true,
-        "AvailabilityZones": {
-          "Fn::GetAZs": ""
-        },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "LoadBalancerSecurityGroup",
-              "GroupId"
-            ]
-          }
-        ],
-        "Listeners": [
-          {
-            "LoadBalancerPort": "80",
-            "InstancePort": "9000",
-            "Protocol": "HTTP"
-          },
-          {
-            "LoadBalancerPort": "443",
-            "InstancePort": "9000",
-            "Protocol": "HTTPS",
-            "SSLCertificateId": {
-              "Ref": "SSLCertificateId"
-            }
-          }
-        ],
-        "HealthCheck": {
-          "Target": "HTTP:9000/management/healthcheck",
-          "HealthyThreshold": "2",
-          "UnhealthyThreshold": "2",
-          "Interval": "10",
-          "Timeout": "5"
-        },
-        "AccessLoggingPolicy": {
-          "EmitInterval": 5,
-          "Enabled": true,
-          "S3BucketName": "workflow-logs",
-          "S3BucketPrefix": {
-            "Ref": "Stage"
-          }
-        }
-      }
-    },
-    "PrototypeAutoscalingGroup": {
-      "Type": "AWS::AutoScaling::AutoScalingGroup",
-      "Properties": {
-        "AvailabilityZones": [
-          "eu-west-1c",
-          "eu-west-1a",
-          "eu-west-1b"
-        ],
-        "LaunchConfigurationName": {
-          "Ref": "PrototypeLaunchConfig"
-        },
-        "MinSize": {
-          "Fn::FindInMap": [
-            "PrototypeConfig",
-            {
-              "Ref": "Stage"
-            },
-            "MinSize"
-          ]
-        },
-        "MaxSize": {
-          "Fn::FindInMap": [
-            "PrototypeConfig",
-            {
-              "Ref": "Stage"
-            },
-            "MaxSize"
-          ]
-        },
-        "DesiredCapacity": {
-          "Fn::FindInMap": [
-            "PrototypeConfig",
-            {
-              "Ref": "Stage"
-            },
-            "DesiredCapacity"
-          ]
-        },
-        "Cooldown": "180",
-        "HealthCheckType": "ELB",
-        "HealthCheckGracePeriod": 300,
-        "LoadBalancerNames": [
-          {
-            "Ref": "PrototypeLoadBalancer"
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Stage",
-            "Value": {
-              "Ref": "Stage"
-            },
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Stack",
-            "Value": "workflow",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "App",
-            "Value": "prototype",
-            "PropagateAtLaunch": "true"
-          }
-        ]
-      }
-    },
-    "PrototypeScheduledActionUp": {
-      "Type": "AWS::AutoScaling::ScheduledAction",
-      "Condition": "NotPROD",
-      "Properties": {
-        "AutoScalingGroupName": {
-          "Ref": "PrototypeAutoscalingGroup"
-        },
-        "MinSize": {
-          "Fn::FindInMap": [
-            "PrototypeConfig",
-            {
-              "Ref": "Stage"
-            },
-            "MinSize"
-          ]
-        },
-        "MaxSize": {
-          "Fn::FindInMap": [
-            "PrototypeConfig",
-            {
-              "Ref": "Stage"
-            },
-            "MaxSize"
-          ]
-        },
-        "DesiredCapacity": {
-          "Fn::FindInMap": [
-            "PrototypeConfig",
-            {
-              "Ref": "Stage"
-            },
-            "DesiredCapacity"
-          ]
-        },
-        "Recurrence": "30 06 * * *"
-      }
-    },
-    "PrototypeScheduledActionDown": {
-      "Type": "AWS::AutoScaling::ScheduledAction",
-      "Condition": "NotPROD",
-      "Properties": {
-        "AutoScalingGroupName": {
-          "Ref": "PrototypeAutoscalingGroup"
-        },
-        "MaxSize": "0",
-        "MinSize": "0",
-        "DesiredCapacity": "0",
-        "Recurrence": "00 00 * * *"
-      }
-    },
-    "PrototypeLaunchConfig": {
-      "Type": "AWS::AutoScaling::LaunchConfiguration",
-      "Metadata": {
-        "AWS::CloudFormation::Authentication": {
-          "distributionAuthentication": {
-            "type": "S3",
-            "roleName": {
-              "Ref": "DistributionRole"
-            },
-            "buckets": [
-              "workflow-dist"
-            ]
-          }
-        },
-        "AWS::CloudFormation::Init": {
-          "config": {
-            "users": {
-              "workflow": {
-                "homeDir": "/home/workflow"
-              }
-            },
-            "files": {
-              "/etc/init/prototype.conf": {
-                "source": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
-                      {
-                        "Ref": "Stage"
-                      },
-                      "/prototype/prototype.conf"
-                    ]
-                  ]
+                    "Ref": "Stage"
                 },
-                "authentication": "distributionAuthentication"
-              },
-              "/home/workflow/prototype.zip": {
-                "source": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
-                      {
-                        "Ref": "Stage"
-                      },
-                      "/prototype/prototype.zip"
-                    ]
-                  ]
-                },
-                "authentication": "distributionAuthentication"
-              },
-              "/etc/gu/workflow-keys.conf": {
-                "source": "https://s3-eu-west-1.amazonaws.com/workflow-private/keys.conf",
-                "authentication": "distributionAuthentication"
-              }
-            }
-          }
+                "PROD"
+            ]
         }
-      },
-      "Properties": {
+    },
+    "Mappings": {
+        "PrototypeConfig": {
+            "CODE": {
+                "MinSize": 1,
+                "MaxSize": 2,
+                "DesiredCapacity": 1,
+                "InstanceType": "m3.medium"
+            },
+            "RELEASE": {
+                "MinSize": 1,
+                "MaxSize": 2,
+                "DesiredCapacity": 1,
+                "InstanceType": "m3.medium"
+            },
+            "PROD": {
+                "MinSize": 3,
+                "MaxSize": 6,
+                "DesiredCapacity": 3,
+                "InstanceType": "c3.large"
+            }
+        },
+        "ProleConfig": {
+            "CODE": {
+                "MinSize": 1,
+                "MaxSize": 2,
+                "DesiredCapacity": 1,
+                "InstanceType": "t2.micro"
+            },
+            "RELEASE": {
+                "MinSize": 1,
+                "MaxSize": 2,
+                "DesiredCapacity": 1,
+                "InstanceType": "t2.micro"
+            },
+            "PROD": {
+                "MinSize": 1,
+                "MaxSize": 2,
+                "DesiredCapacity": 1,
+                "InstanceType": "t2.micro"
+            }
+        },
+        "ArchiverConfig": {
+            "CODE": {
+                "MinSize": 0,
+                "MaxSize": 2,
+                "DesiredCapacity": 1,
+                "InstanceType": "t2.micro"
+            },
+            "RELEASE": {
+                "MinSize": 0,
+                "MaxSize": 2,
+                "DesiredCapacity": 1,
+                "InstanceType": "t2.micro"
+            },
+            "PROD": {
+                "MinSize": 0,
+                "MaxSize": 2,
+                "DesiredCapacity": 1,
+                "InstanceType": "t2.micro"
+            }
+        }
+    },
+    "Parameters": {
         "KeyName": {
-          "Ref": "KeyName"
+            "Description": "The EC2 Key Pair to allow SSH access to the instance",
+            "Type": "String",
+            "Default": "workflow-developers"
         },
-        "ImageId": {
-          "Ref": "ImageIdWorkflow"
+        "Stage": {
+            "Description": "Environment name",
+            "Type": "String",
+            "AllowedValues": [
+                "CODE",
+                "RELEASE",
+                "PROD"
+            ],
+            "Default": "PROD"
         },
-        "SecurityGroups": [
-          {
-            "Ref": "AppServerSecurityGroup"
-          },
-          {
-            "Ref": "SSHSecurityGroup"
-          }
-        ],
-        "InstanceType": {
-          "Fn::FindInMap": [
-            "PrototypeConfig",
-            {
-              "Ref": "Stage"
-            },
-            "InstanceType"
-          ]
+        "SSLCertificateId": {
+            "Description": "ARN of the SSL certificate for workflow.gutools.co.uk",
+            "Type": "String",
+            "Default": "arn:aws:iam::753338109777:server-certificate/workflow.gutools.co.uk"
         },
-        "IamInstanceProfile": {
-          "Ref": "DistributionInstanceProfile"
+        "ImageIdWorkflow": {
+            "Description": "AMI for Workflow (prototype) instances with instance storage.",
+            "Type": "String",
+            "Default": "ami-389a284f"
         },
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "#!/bin/bash -ev\n",
-                "apt-get -y update\n",
-                "cfn-init -s ",
-                {
-                  "Ref": "AWS::StackId"
-                },
-                " -r PrototypeLaunchConfig ",
-                "  --region ",
-                {
-                  "Ref": "AWS::Region"
-                },
-                " || error_exit 'Failed to run cfn-init'\n",
-                "unzip -d /home/workflow /home/workflow/prototype.zip\n",
-                "mkdir /home/workflow/logs\n",
-                "chown -R workflow /home/workflow\n",
-                "chgrp -R workflow /home/workflow\n",
-                "stage=$(echo ",
-                {
-                  "Ref": "Stage"
-                },
-                "| tr '[:upper:]' '[:lower:]')\n",
-                "sed -i \\\n",
-                "    -e 's,@COMPOSER_URL@,",
-                {
-                  "Ref": "ComposerUrl"
-                },
-                ",g' \\\n",
-                "    -e 's,@PRESENCE_URL@,",
-                {
-                  "Ref": "PresenceUrl"
-                },
-                ",g' \\\n",
-                "    -e 's,@PRESENCE_CLIENTLIB@,",
-                {
-                  "Ref": "PresenceClientLib"
-                },
-                ",g' \\\n",
-                "    -e 's,@DB_USER@,",
-                {
-                  "Ref": "DBUser"
-                },
-                ",g' \\\n",
-                "    -e 's,@DB_PASSWORD@,",
-                {
-                  "Ref": "DBPassword"
-                },
-                ",g' \\\n",
-                "    -e 's,@GOOGLE_CLIENT_ID@,",
-                {
-                  "Ref": "GoogleClientId"
-                },
-                ",g' \\\n",
-                "    -e 's,@GOOGLE_SECRET@,",
-                {
-                  "Ref": "GoogleSecret"
-                },
-                ",g' \\\n",
-                "    -e 's,@HOST@,",
-                {
-                  "Ref": "Host"
-                },
-                ",g' \\\n",
-                "    -e 's,@PANDOMAIN_DOMAIN@,",
-                {
-                  "Ref": "PandomainDomain"
-                },
-                ",g' \\\n",
-                "    -e 's,@PANDOMAIN_AWS_KEY@,",
-                {
-                  "Ref": "PandomainAwsKey"
-                },
-                ",g' \\\n",
-                "    -e 's,@PANDOMAIN_AWS_SECRET@,",
-                {
-                  "Ref": "PandomainAwsSecret"
-                },
-                ",g' \\\n",
-                "    -e 's,@STAGE@,'$stage',g' \\\n",
-                "    /etc/init/prototype.conf\n",
-                "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py",
-                "\n",
-                {
-                  "Fn::Join": [
-                    " ",
-                    [
-                      "python awslogs-agent-setup.py -nr",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      "-c /home/workflow/prototype/conf/logger.conf"
-                    ]
-                  ]
-                },
-                "\n",
-                "start prototype\n"
-              ]
-            ]
-          }
+        "ImageIdProle": {
+            "Description": "AMI for Prole instances with EBS storage.",
+            "Type": "String",
+            "Default": "ami-a89a28df"
+        },
+        "FCContentUpdateDraft": {
+            "Description": "ARN of the topic for Flexible Content metadata events",
+            "Type": "String",
+            "Default": "arn:aws:sns:eu-west-1:743583969668:fc-draft-content-PROD"
+        },
+        "FCContentUpdateLive": {
+            "Description": "ARN of the topic for Flexible Content metadata events",
+            "Type": "String",
+            "Default": "arn:aws:sns:eu-west-1:743583969668:fc-live-content-PROD"
+        },
+        "FCLifecycleTopic": {
+            "Description": "ARN of the topic for Flexible Content lifecycle events",
+            "Type": "String",
+            "Default": "arn:aws:sns:eu-west-1:308506855511:prod-fc-lifecycle-events"
+        },
+        "ComposerUrl": {
+            "Description": "The url for composer",
+            "Type": "String",
+            "Default": "https://composer.gutools.co.uk"
+        },
+        "PresenceUrl": {
+            "Description": "The url for the presence service",
+            "Type": "String",
+            "Default": "wss://presence.gutools.co.uk/socket"
+        },
+        "PresenceClientLib": {
+            "Description": "Hosted client lib for presence lib",
+            "Type": "String",
+            "Default": "https://presence.gutools.co.uk/assets/presence-client/1.1/lib"
+        },
+        "DBPort": {
+            "Description": "Port number for the database instance",
+            "Type": "String",
+            "Default": "5432"
+        },
+        "DBUser": {
+            "Description": "Master username for the database",
+            "Type": "String"
+        },
+        "DBPassword": {
+            "Description": "Master password for the database",
+            "Type": "String",
+            "NoEcho": true
+        },
+        "GoogleClientId": {
+            "Description": "Google Application Id for OAuth2",
+            "Type": "String"
+        },
+        "GoogleSecret": {
+            "Description": "Google Application Secret for OAuth2",
+            "Type": "String"
+        },
+        "GuardianIP": {
+            "Description": "Ip range for the office",
+            "Type": "String",
+            "Default": "77.91.248.0/21"
+        },
+        "Host": {
+            "Description": "Hostname of the application",
+            "Type": "String",
+            "Default": "https://workflow.gutools.co.uk"
+        },
+        "PandomainDomain": {
+            "Description": "master domain the app is on",
+            "Type": "String"
+        },
+        "PandomainAwsKey": {
+            "Description": "aws key for pandomain bucket access",
+            "Type": "String"
+        },
+        "PandomainAwsSecret": {
+            "Description": "aws secret for pandomain bucket access",
+            "Type": "String"
         }
-      }
     },
-    "ProleLaunchConfig": {
-      "Type": "AWS::AutoScaling::LaunchConfiguration",
-      "Metadata": {
-        "AWS::CloudFormation::Authentication": {
-          "distributionAuthentication": {
-            "type": "S3",
-            "roleName": {
-              "Ref": "DistributionRole"
-            },
-            "buckets": [
-              "workflow-dist"
-            ]
-          }
-        },
-        "AWS::CloudFormation::Init": {
-          "config": {
-            "users": {
-              "workflow": {
-                "homeDir": "/home/workflow"
-              }
-            },
-            "files": {
-              "/etc/init/prole.conf": {
-                "source": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
-                      {
-                        "Ref": "Stage"
-                      },
-                      "/prole/prole.conf"
-                    ]
-                  ]
-                },
-                "authentication": "distributionAuthentication"
-              },
-              "/home/workflow/prole.zip": {
-                "source": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
-                      {
-                        "Ref": "Stage"
-                      },
-                      "/prole/prole.zip"
-                    ]
-                  ]
-                },
-                "authentication": "distributionAuthentication"
-              }
-            }
-          }
-        }
-      },
-      "Properties": {
-        "KeyName": {
-          "Ref": "KeyName"
-        },
-        "ImageId": {
-          "Ref": "ImageIdProle"
-        },
-        "SecurityGroups": [
-          {
-            "Ref": "AppServerSecurityGroup"
-          },
-          {
-            "Ref": "SSHSecurityGroup"
-          }
-        ],
-        "InstanceType": {
-          "Fn::FindInMap": [
-            "ProleConfig",
-            {
-              "Ref": "Stage"
-            },
-            "InstanceType"
-          ]
-        },
-        "IamInstanceProfile": {
-          "Ref": "DistributionInstanceProfile"
-        },
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "#!/bin/bash -ev\n",
-                "apt-get -y update\n",
-                "cfn-init -s ",
-                {
-                  "Ref": "AWS::StackId"
-                },
-                " -r ProleLaunchConfig ",
-                "  --region ",
-                {
-                  "Ref": "AWS::Region"
-                },
-                " || error_exit 'Failed to run cfn-init'\n",
-                "unzip -d /home/workflow /home/workflow/prole.zip\n",
-                "mkdir /home/workflow/logs\n",
-                "chown -R workflow /home/workflow\n",
-                "chgrp -R workflow /home/workflow\n",
-                "stage=$(echo ",
-                {
-                  "Ref": "Stage"
-                },
-                "| tr '[:upper:]' '[:lower:]')\n",
-                "sed -i \\\n",
-                "    -e 's,@AWS_ACCESS_KEY@,",
-                {
-                  "Ref": "PrototypeKey"
-                },
-                ",g' \\\n",
-                "    -e 's,@AWS_SECRET@,",
-                {
-                  "Fn::GetAtt": [
-                    "PrototypeKey",
-                    "SecretAccessKey"
-                  ]
-                },
-                ",g' \\\n",
-                "    -e 's,@AWS_FLEX_NOTIFICATIONS_QUEUE@,",
-                {
-                  "Ref": "FCNotificationsQueue"
-                },
-                ",g' \\\n",
-                "    -e 's,@DB_USER@,",
-                {
-                  "Ref": "DBUser"
-                },
-                ",g' \\\n",
-                "    -e 's,@DB_PASSWORD@,",
-                {
-                  "Ref": "DBPassword"
-                },
-                ",g' \\\n",
-                "    -e 's,@STAGE@,'$stage',g' \\\n",
-                "    /etc/init/prole.conf\n",
-                "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py",
-                "\n",
-                {
-                  "Fn::Join": [
-                    " ",
-                    [
-                      "python awslogs-agent-setup.py -nr",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      "-c /home/workflow/prole/conf/logger.conf"
-                    ]
-                  ]
-                },
-                "\n",
-                "start prole\n"
-              ]
-            ]
-          }
-        }
-      }
-    },
-    "ProleLoadBalancer": {
-      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-      "Properties": {
-        "AvailabilityZones": {
-          "Fn::GetAZs": ""
-        },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "LoadBalancerSecurityGroup",
-              "GroupId"
-            ]
-          }
-        ],
-        "Listeners": [
-          {
-            "LoadBalancerPort": "80",
-            "InstancePort": "9000",
-            "Protocol": "HTTP"
-          },
-          {
-            "LoadBalancerPort": "443",
-            "InstancePort": "9000",
-            "Protocol": "HTTPS",
-            "SSLCertificateId": {
-              "Ref": "SSLCertificateId"
-            }
-          }
-        ],
-        "HealthCheck": {
-          "Target": "HTTP:9000/management/healthcheck",
-          "HealthyThreshold": "2",
-          "UnhealthyThreshold": "2",
-          "Interval": "10",
-          "Timeout": "5"
-        }
-      }
-    },
-    "ProleAutoscalingGroup": {
-      "Type": "AWS::AutoScaling::AutoScalingGroup",
-      "Properties": {
-        "AvailabilityZones": {
-          "Fn::GetAZs": ""
-        },
-        "LaunchConfigurationName": {
-          "Ref": "ProleLaunchConfig"
-        },
-        "MinSize": {
-          "Fn::FindInMap": [
-            "ProleConfig",
-            {
-              "Ref": "Stage"
-            },
-            "MinSize"
-          ]
-        },
-        "MaxSize": {
-          "Fn::FindInMap": [
-            "ProleConfig",
-            {
-              "Ref": "Stage"
-            },
-            "MaxSize"
-          ]
-        },
-        "DesiredCapacity": {
-          "Fn::FindInMap": [
-            "ProleConfig",
-            {
-              "Ref": "Stage"
-            },
-            "DesiredCapacity"
-          ]
-        },
-        "Cooldown": "180",
-        "HealthCheckType": "ELB",
-        "HealthCheckGracePeriod": 300,
-        "LoadBalancerNames": [
-          {
-            "Ref": "ProleLoadBalancer"
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Stage",
-            "Value": {
-              "Ref": "Stage"
-            },
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Stack",
-            "Value": "workflow",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "App",
-            "Value": "prole",
-            "PropagateAtLaunch": "true"
-          }
-        ]
-      }
-    },
-    "PrototypeGroup": {
-      "Type": "AWS::IAM::Group",
-      "Properties": {
-        "Policies": [
-          {
-            "PolicyName": "PrototypeGroup-Policy",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "sqs:DeleteMessage",
-                    "sqs:ReceiveMessage"
-                  ],
-                  "Resource": "*"
-                },
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "ec2:DescribeTags",
-                    "cloudwatch:PutMetricData"
-                  ],
-                  "Resource": "*"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "PrototypeUser": {
-      "Type": "AWS::IAM::User",
-      "Properties": {
-        "Path": "/",
-        "Groups": [
-          {
-            "Ref": "PrototypeGroup"
-          }
-        ]
-      }
-    },
-    "PrototypeKey": {
-      "Type": "AWS::IAM::AccessKey",
-      "Properties": {
-        "UserName": {
-          "Ref": "PrototypeUser"
-        }
-      }
-    },
-    "FCNotificationDeadLetterQueue": {
-      "Type": "AWS::SQS::Queue",
-      "Properties": {}
-    },
-    "FCNotificationsQueue": {
-      "Type": "AWS::SQS::Queue",
-      "Properties": {
-        "RedrivePolicy": {
-          "maxReceiveCount": 2,
-          "deadLetterTargetArn": {
-            "Fn::GetAtt": [
-              "FCNotificationDeadLetterQueue",
-              "Arn"
-            ]
-          }
-        }
-      }
-    },
-    "FCNotificationsQueuePolicy": {
-      "Type": "AWS::SQS::QueuePolicy",
-      "Properties": {
-        "PolicyDocument": {
-          "Id": "FCNotificationsQueuePolicy",
-          "Statement": [
-            {
-              "Sid": "Allow-SendMessage-To-Queue-From-Topic",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": "*"
-              },
-              "Action": [
-                "sqs:SendMessage"
-              ],
-              "Resource": "*",
-              "Condition": {
-                "ArnEquals": {
-                  "aws:SourceArn": [
+    "Resources": {
+        "DistributionInstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
                     {
-                      "Ref": "FCLifecycleTopic"
-                    },
-                    {
-                      "Ref": "FCContentUpdateDraft"
-                    },
-                    {
-                      "Ref": "FCContentUpdateLive"
+                        "Ref": "DistributionRole"
                     }
-                  ]
+                ]
+            }
+        },
+        "DistributionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "root",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:GetObject"
+                                    ],
+                                    "Resource": [
+                                        "arn:aws:s3:::workflow-dist/*",
+                                        "arn:aws:s3:::workflow-private/*"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "PolicyName": "PushLogs",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:*"
+                                    ],
+                                    "Resource": [
+                                        "arn:aws:logs:*:*:*"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "SSHSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Allow SSH access from the office",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": {
+                            "Ref": "GuardianIP"
+                        }
+                    }
+                ]
+            }
+        },
+        "AppServerSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Application servers",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 9000,
+                        "ToPort": 9000,
+                        "CidrIp": {
+                            "Ref": "GuardianIP"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 9000,
+                        "ToPort": 9000,
+                        "SourceSecurityGroupName": {
+                            "Fn::GetAtt": [
+                                "PrototypeLoadBalancer",
+                                "SourceSecurityGroup.GroupName"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "DBSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Application servers",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": {
+                            "Ref": "DBPort"
+                        },
+                        "ToPort": {
+                            "Ref": "DBPort"
+                        },
+                        "CidrIp": {
+                            "Ref": "GuardianIP"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": {
+                            "Ref": "DBPort"
+                        },
+                        "ToPort": {
+                            "Ref": "DBPort"
+                        },
+                        "SourceSecurityGroupName": {
+                            "Ref": "AppServerSecurityGroup"
+                        }
+                    }
+                ]
+            }
+        },
+        "LoadBalancerSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Prototype application load balancer",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "80",
+                        "ToPort": "80",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "443",
+                        "ToPort": "443",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "PrototypeLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "CrossZone": true,
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                },
+                "SecurityGroups": [
+                    {
+                        "Fn::GetAtt": [
+                            "LoadBalancerSecurityGroup",
+                            "GroupId"
+                        ]
+                    }
+                ],
+                "Listeners": [
+                    {
+                        "LoadBalancerPort": "80",
+                        "InstancePort": "9000",
+                        "Protocol": "HTTP"
+                    },
+                    {
+                        "LoadBalancerPort": "443",
+                        "InstancePort": "9000",
+                        "Protocol": "HTTPS",
+                        "SSLCertificateId": {
+                            "Ref": "SSLCertificateId"
+                        }
+                    }
+                ],
+                "HealthCheck": {
+                    "Target": "HTTP:9000/management/healthcheck",
+                    "HealthyThreshold": "2",
+                    "UnhealthyThreshold": "2",
+                    "Interval": "10",
+                    "Timeout": "5"
+                },
+                "AccessLoggingPolicy": {
+                    "EmitInterval": 5,
+                    "Enabled": true,
+                    "S3BucketName": "workflow-logs",
+                    "S3BucketPrefix": {
+                        "Ref": "Stage"
+                    }
                 }
-              }
             }
-          ]
         },
-        "Queues": [
-          {
-            "Ref": "FCNotificationsQueue"
-          }
-        ]
-      }
+        "PrototypeAutoscalingGroup": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AvailabilityZones": [
+                    "eu-west-1c",
+                    "eu-west-1a",
+                    "eu-west-1b"
+                ],
+                "LaunchConfigurationName": {
+                    "Ref": "PrototypeLaunchConfig"
+                },
+                "MinSize": {
+                    "Fn::FindInMap": [
+                        "PrototypeConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MinSize"
+                    ]
+                },
+                "MaxSize": {
+                    "Fn::FindInMap": [
+                        "PrototypeConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MaxSize"
+                    ]
+                },
+                "DesiredCapacity": {
+                    "Fn::FindInMap": [
+                        "PrototypeConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "DesiredCapacity"
+                    ]
+                },
+                "Cooldown": "180",
+                "HealthCheckType": "ELB",
+                "HealthCheckGracePeriod": 300,
+                "LoadBalancerNames": [
+                    {
+                        "Ref": "PrototypeLoadBalancer"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Stage",
+                        "Value": {
+                            "Ref": "Stage"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Stack",
+                        "Value": "workflow",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "App",
+                        "Value": "prototype",
+                        "PropagateAtLaunch": "true"
+                    }
+                ]
+            }
+        },
+        "PrototypeScheduledActionUp": {
+            "Type": "AWS::AutoScaling::ScheduledAction",
+            "Condition": "NotPROD",
+            "Properties": {
+                "AutoScalingGroupName": {
+                    "Ref": "PrototypeAutoscalingGroup"
+                },
+                "MinSize": {
+                    "Fn::FindInMap": [
+                        "PrototypeConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MinSize"
+                    ]
+                },
+                "MaxSize": {
+                    "Fn::FindInMap": [
+                        "PrototypeConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MaxSize"
+                    ]
+                },
+                "DesiredCapacity": {
+                    "Fn::FindInMap": [
+                        "PrototypeConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "DesiredCapacity"
+                    ]
+                },
+                "Recurrence": "30 06 * * *"
+            }
+        },
+        "PrototypeScheduledActionDown": {
+            "Type": "AWS::AutoScaling::ScheduledAction",
+            "Condition": "NotPROD",
+            "Properties": {
+                "AutoScalingGroupName": {
+                    "Ref": "PrototypeAutoscalingGroup"
+                },
+                "MaxSize": "0",
+                "MinSize": "0",
+                "DesiredCapacity": "0",
+                "Recurrence": "00 00 * * *"
+            }
+        },
+        "PrototypeLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata": {
+                "AWS::CloudFormation::Authentication": {
+                    "distributionAuthentication": {
+                        "type": "S3",
+                        "roleName": {
+                            "Ref": "DistributionRole"
+                        },
+                        "buckets": [
+                            "workflow-dist"
+                        ]
+                    }
+                },
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "users": {
+                            "workflow": {
+                                "homeDir": "/home/workflow"
+                            }
+                        },
+                        "files": {
+                            "/etc/init/prototype.conf": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
+                                            {
+                                                "Ref": "Stage"
+                                            },
+                                            "/prototype/prototype.conf"
+                                        ]
+                                    ]
+                                },
+                                "authentication": "distributionAuthentication"
+                            },
+                            "/home/workflow/prototype.zip": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
+                                            {
+                                                "Ref": "Stage"
+                                            },
+                                            "/prototype/prototype.zip"
+                                        ]
+                                    ]
+                                },
+                                "authentication": "distributionAuthentication"
+                            },
+                            "/etc/gu/workflow-keys.conf": {
+                                "source": "https://s3-eu-west-1.amazonaws.com/workflow-private/keys.conf",
+                                "authentication": "distributionAuthentication"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "ImageId": {
+                    "Ref": "ImageIdWorkflow"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "AppServerSecurityGroup"
+                    },
+                    {
+                        "Ref": "SSHSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Fn::FindInMap": [
+                        "PrototypeConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "InstanceType"
+                    ]
+                },
+                "IamInstanceProfile": {
+                    "Ref": "DistributionInstanceProfile"
+                },
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -ev\n",
+                                "apt-get -y update\n",
+                                "cfn-init -s ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " -r PrototypeLaunchConfig ",
+                                "  --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                " || error_exit 'Failed to run cfn-init'\n",
+                                "unzip -d /home/workflow /home/workflow/prototype.zip\n",
+                                "mkdir /home/workflow/logs\n",
+                                "chown -R workflow /home/workflow\n",
+                                "chgrp -R workflow /home/workflow\n",
+                                "stage=$(echo ",
+                                {
+                                    "Ref": "Stage"
+                                },
+                                "| tr '[:upper:]' '[:lower:]')\n",
+                                "sed -i \\\n",
+                                "    -e 's,@COMPOSER_URL@,",
+                                {
+                                    "Ref": "ComposerUrl"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@PRESENCE_URL@,",
+                                {
+                                    "Ref": "PresenceUrl"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@PRESENCE_CLIENTLIB@,",
+                                {
+                                    "Ref": "PresenceClientLib"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@DB_USER@,",
+                                {
+                                    "Ref": "DBUser"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@DB_PASSWORD@,",
+                                {
+                                    "Ref": "DBPassword"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@GOOGLE_CLIENT_ID@,",
+                                {
+                                    "Ref": "GoogleClientId"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@GOOGLE_SECRET@,",
+                                {
+                                    "Ref": "GoogleSecret"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@HOST@,",
+                                {
+                                    "Ref": "Host"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@PANDOMAIN_DOMAIN@,",
+                                {
+                                    "Ref": "PandomainDomain"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@PANDOMAIN_AWS_KEY@,",
+                                {
+                                    "Ref": "PandomainAwsKey"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@PANDOMAIN_AWS_SECRET@,",
+                                {
+                                    "Ref": "PandomainAwsSecret"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@STAGE@,'$stage',g' \\\n",
+                                "    /etc/init/prototype.conf\n",
+                                "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py",
+                                "\n",
+                                {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "python awslogs-agent-setup.py -nr",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "-c /home/workflow/prototype/conf/logger.conf"
+                                        ]
+                                    ]
+                                },
+                                "\n",
+                                "start prototype\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "ArchiverLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                },
+                "SecurityGroups": [
+                    {
+                        "Fn::GetAtt": [
+                            "LoadBalancerSecurityGroup",
+                            "GroupId"
+                        ]
+                    }
+                ],
+                "Listeners": [
+                    {
+                        "LoadBalancerPort": "80",
+                        "InstancePort": "9000",
+                        "Protocol": "HTTP"
+                    },
+                    {
+                        "LoadBalancerPort": "443",
+                        "InstancePort": "9000",
+                        "Protocol": "HTTPS",
+                        "SSLCertificateId": {
+                            "Ref": "SSLCertificateId"
+                        }
+                    }
+                ],
+                "HealthCheck": {
+                    "Target": "HTTP:9000/management/healthcheck",
+                    "HealthyThreshold": "2",
+                    "UnhealthyThreshold": "2",
+                    "Interval": "10",
+                    "Timeout": "5"
+                }
+            }
+        },
+        "ArchiverAutoscalingGroup": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                },
+                "LaunchConfigurationName": {
+                    "Ref": "ArchiverLaunchConfig"
+                },
+                "MinSize": {
+                    "Fn::FindInMap": [
+                        "ProleConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MinSize"
+                    ]
+                },
+                "MaxSize": {
+                    "Fn::FindInMap": [
+                        "ArchiverConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MaxSize"
+                    ]
+                },
+                "DesiredCapacity": {
+                    "Fn::FindInMap": [
+                        "ArchiverConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "DesiredCapacity"
+                    ]
+                },
+                "Cooldown": "180",
+                "HealthCheckType": "ELB",
+                "HealthCheckGracePeriod": 300,
+                "LoadBalancerNames": [
+                    {
+                        "Ref": "ArchiverLoadBalancer"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Stage",
+                        "Value": {
+                            "Ref": "Stage"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Stack",
+                        "Value": "workflow",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "App",
+                        "Value": "archiver",
+                        "PropagateAtLaunch": "true"
+                    }
+                ]
+            }
+        },
+        "ArchiverLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata": {
+                "AWS::CloudFormation::Authentication": {
+                    "distributionAuthentication": {
+                        "type": "S3",
+                        "roleName": {
+                            "Ref": "DistributionRole"
+                        },
+                        "buckets": [
+                            "workflow-dist"
+                        ]
+                    }
+                },
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "users": {
+                            "workflow": {
+                                "homeDir": "/home/workflow"
+                            }
+                        },
+                        "files": {
+                            "/etc/init/archiver.conf": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
+                                            {
+                                                "Ref": "Stage"
+                                            },
+                                            "/archiver/archiver.conf"
+                                        ]
+                                    ]
+                                },
+                                "authentication": "distributionAuthentication"
+                            },
+                            "/home/workflow/archiver.zip": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
+                                            {
+                                                "Ref": "Stage"
+                                            },
+                                            "/archiver/archiver.zip"
+                                        ]
+                                    ]
+                                },
+                                "authentication": "distributionAuthentication"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "ImageId": {
+                    "Ref": "ImageIdProle"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "AppServerSecurityGroup"
+                    },
+                    {
+                        "Ref": "SSHSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Fn::FindInMap": [
+                        "ArchiverConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "InstanceType"
+                    ]
+                },
+                "IamInstanceProfile": {
+                    "Ref": "DistributionInstanceProfile"
+                },
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -ev\n",
+                                "apt-get -y update\n",
+                                "cfn-init -s ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " -r ArchiverLaunchConfig ",
+                                "  --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                " || error_exit 'Failed to run cfn-init'\n",
+                                "unzip -d /home/workflow /home/workflow/archiver.zip\n",
+                                "mkdir /home/workflow/logs\n",
+                                "chown -R workflow /home/workflow\n",
+                                "chgrp -R workflow /home/workflow\n",
+                                "stage=$(echo ",
+                                {
+                                    "Ref": "Stage"
+                                },
+                                "| tr '[:upper:]' '[:lower:]')\n",
+                                "sed -i \\\n",
+                                "    -e 's,@AWS_ACCESS_KEY@,",
+                                {
+                                    "Ref": "PrototypeKey"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@AWS_SECRET@,",
+                                {
+                                    "Fn::GetAtt": [
+                                        "PrototypeKey",
+                                        "SecretAccessKey"
+                                    ]
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@DB_USER@,",
+                                {
+                                    "Ref": "DBUser"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@DB_PASSWORD@,",
+                                {
+                                    "Ref": "DBPassword"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@STAGE@,'$stage',g'                     \\\n",
+                                "    /etc/init/archiver.conf\n",
+                                "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py",
+                                "\n",
+                                {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "python awslogs-agent-setup.py -nr",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "-c /home/workflow/archiver/conf/logger.conf"
+                                        ]
+                                    ]
+                                },
+                                "\n",
+                                "start archiver\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "ArchiverScheduledActionUp": {
+            "Type": "AWS::AutoScaling::ScheduledAction",
+            "Condition": "IsPROD",
+            "Properties": {
+                "AutoScalingGroupName": {
+                    "Ref": "ArchiverAutoscalingGroup"
+                },
+                "MinSize": {
+                    "Fn::FindInMap": [
+                        "ArchiverConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MinSize"
+                    ]
+                },
+                "MaxSize": {
+                    "Fn::FindInMap": [
+                        "ArchiverConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MaxSize"
+                    ]
+                },
+                "DesiredCapacity": {
+                    "Fn::FindInMap": [
+                        "ArchiverConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "DesiredCapacity"
+                    ]
+                },
+                "Recurrence": "00 02 * * *"
+            }
+        },
+        "ArchiverScheduledActionDown": {
+            "Type": "AWS::AutoScaling::ScheduledAction",
+            "Condition": "IsPROD",
+            "Properties": {
+                "AutoScalingGroupName": {
+                    "Ref": "ArchiverAutoscalingGroup"
+                },
+                "MaxSize": "0",
+                "MinSize": "0",
+                "DesiredCapacity": "0",
+                "Recurrence": "00 03 * * *"
+            }
+        },
+        "ProleLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                },
+                "SecurityGroups": [
+                    {
+                        "Fn::GetAtt": [
+                            "LoadBalancerSecurityGroup",
+                            "GroupId"
+                        ]
+                    }
+                ],
+                "Listeners": [
+                    {
+                        "LoadBalancerPort": "80",
+                        "InstancePort": "9000",
+                        "Protocol": "HTTP"
+                    },
+                    {
+                        "LoadBalancerPort": "443",
+                        "InstancePort": "9000",
+                        "Protocol": "HTTPS",
+                        "SSLCertificateId": {
+                            "Ref": "SSLCertificateId"
+                        }
+                    }
+                ],
+                "HealthCheck": {
+                    "Target": "HTTP:9000/management/healthcheck",
+                    "HealthyThreshold": "2",
+                    "UnhealthyThreshold": "2",
+                    "Interval": "10",
+                    "Timeout": "5"
+                }
+            }
+        },
+        "ProleAutoscalingGroup": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                },
+                "LaunchConfigurationName": {
+                    "Ref": "ProleLaunchConfig"
+                },
+                "MinSize": {
+                    "Fn::FindInMap": [
+                        "ProleConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MinSize"
+                    ]
+                },
+                "MaxSize": {
+                    "Fn::FindInMap": [
+                        "ProleConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "MaxSize"
+                    ]
+                },
+                "DesiredCapacity": {
+                    "Fn::FindInMap": [
+                        "ProleConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "DesiredCapacity"
+                    ]
+                },
+                "Cooldown": "180",
+                "HealthCheckType": "ELB",
+                "HealthCheckGracePeriod": 300,
+                "LoadBalancerNames": [
+                    {
+                        "Ref": "ProleLoadBalancer"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Stage",
+                        "Value": {
+                            "Ref": "Stage"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Stack",
+                        "Value": "workflow",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "App",
+                        "Value": "prole",
+                        "PropagateAtLaunch": "true"
+                    }
+                ]
+            }
+        },
+        "PrototypeGroup": {
+            "Type": "AWS::IAM::Group",
+            "Properties": {
+                "Policies": [
+                    {
+                        "PolicyName": "PrototypeGroup-Policy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "sqs:DeleteMessage",
+                                        "sqs:ReceiveMessage"
+                                    ],
+                                    "Resource": "*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ec2:DescribeTags",
+                                        "cloudwatch:PutMetricData"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "ProleLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata": {
+                "AWS::CloudFormation::Authentication": {
+                    "distributionAuthentication": {
+                        "type": "S3",
+                        "roleName": {
+                            "Ref": "DistributionRole"
+                        },
+                        "buckets": [
+                            "workflow-dist"
+                        ]
+                    }
+                },
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "users": {
+                            "workflow": {
+                                "homeDir": "/home/workflow"
+                            }
+                        },
+                        "files": {
+                            "/etc/init/prole.conf": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
+                                            {
+                                                "Ref": "Stage"
+                                            },
+                                            "/prole/prole.conf"
+                                        ]
+                                    ]
+                                },
+                                "authentication": "distributionAuthentication"
+                            },
+                            "/home/workflow/prole.zip": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "https://s3-eu-west-1.amazonaws.com/workflow-dist/workflow/",
+                                            {
+                                                "Ref": "Stage"
+                                            },
+                                            "/prole/prole.zip"
+                                        ]
+                                    ]
+                                },
+                                "authentication": "distributionAuthentication"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "ImageId": {
+                    "Ref": "ImageIdProle"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "AppServerSecurityGroup"
+                    },
+                    {
+                        "Ref": "SSHSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Fn::FindInMap": [
+                        "ProleConfig",
+                        {
+                            "Ref": "Stage"
+                        },
+                        "InstanceType"
+                    ]
+                },
+                "IamInstanceProfile": {
+                    "Ref": "DistributionInstanceProfile"
+                },
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -ev\n",
+                                "apt-get -y update\n",
+                                "cfn-init -s ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " -r ProleLaunchConfig ",
+                                "  --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                " || error_exit 'Failed to run cfn-init'\n",
+                                "unzip -d /home/workflow /home/workflow/prole.zip\n",
+                                "mkdir /home/workflow/logs\n",
+                                "chown -R workflow /home/workflow\n",
+                                "chgrp -R workflow /home/workflow\n",
+                                "stage=$(echo ",
+                                {
+                                    "Ref": "Stage"
+                                },
+                                "| tr '[:upper:]' '[:lower:]')\n",
+                                "sed -i \\\n",
+                                "    -e 's,@AWS_ACCESS_KEY@,",
+                                {
+                                    "Ref": "PrototypeKey"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@AWS_SECRET@,",
+                                {
+                                    "Fn::GetAtt": [
+                                        "PrototypeKey",
+                                        "SecretAccessKey"
+                                    ]
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@AWS_FLEX_NOTIFICATIONS_QUEUE@,",
+                                {
+                                    "Ref": "FCNotificationsQueue"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@DB_USER@,",
+                                {
+                                    "Ref": "DBUser"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@DB_PASSWORD@,",
+                                {
+                                    "Ref": "DBPassword"
+                                },
+                                ",g' \\\n",
+                                "    -e 's,@STAGE@,'$stage',g' \\\n",
+                                "    /etc/init/prole.conf\n",
+                                "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py",
+                                "\n",
+                                {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "python awslogs-agent-setup.py -nr",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "-c /home/workflow/prole/conf/logger.conf"
+                                        ]
+                                    ]
+                                },
+                                "\n",
+                                "start prole\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "PrototypeUser": {
+            "Type": "AWS::IAM::User",
+            "Properties": {
+                "Path": "/",
+                "Groups": [
+                    {
+                        "Ref": "PrototypeGroup"
+                    }
+                ]
+            }
+        },
+        "PrototypeKey": {
+            "Type": "AWS::IAM::AccessKey",
+            "Properties": {
+                "UserName": {
+                    "Ref": "PrototypeUser"
+                }
+            }
+        },
+        "FCNotificationDeadLetterQueue": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {}
+        },
+        "FCNotificationsQueue": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {
+                "RedrivePolicy": {
+                    "maxReceiveCount": 2,
+                    "deadLetterTargetArn": {
+                        "Fn::GetAtt": [
+                            "FCNotificationDeadLetterQueue",
+                            "Arn"
+                        ]
+                    }
+                }
+            }
+        },
+        "FCNotificationsQueuePolicy": {
+            "Type": "AWS::SQS::QueuePolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "FCNotificationsQueuePolicy",
+                    "Statement": [
+                        {
+                            "Sid": "Allow-SendMessage-To-Queue-From-Topic",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "*"
+                            },
+                            "Action": [
+                                "sqs:SendMessage"
+                            ],
+                            "Resource": "*",
+                            "Condition": {
+                                "ArnEquals": {
+                                    "aws:SourceArn": [
+                                        {
+                                            "Ref": "FCLifecycleTopic"
+                                        },
+                                        {
+                                            "Ref": "FCContentUpdateDraft"
+                                        },
+                                        {
+                                            "Ref": "FCContentUpdateLive"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Queues": [
+                    {
+                        "Ref": "FCNotificationsQueue"
+                    }
+                ]
+            }
+        },
+        "PostgresInstance": {
+            "Type": "AWS::RDS::DBInstance",
+            "Properties": {
+                "AllocatedStorage": "5",
+                "AutoMinorVersionUpgrade": true,
+                "BackupRetentionPeriod": "1",
+                "DBInstanceClass": "db.t2.small",
+                "DBInstanceIdentifier": {
+                    "Fn::Join": [
+                        "-",
+                        [
+                            "workflow",
+                            {
+                                "Ref": "Stage"
+                            }
+                        ]
+                    ]
+                },
+                "DBName": "workflow",
+                "Engine": "postgres",
+                "EngineVersion": "9.3.3",
+                "MasterUsername": {
+                    "Ref": "DBUser"
+                },
+                "MasterUserPassword": {
+                    "Ref": "DBPassword"
+                },
+                "MultiAZ": true,
+                "Port": {
+                    "Ref": "DBPort"
+                },
+                "Tags": [
+                    {
+                        "Key": "Stage",
+                        "Value": {
+                            "Ref": "Stage"
+                        }
+                    },
+                    {
+                        "Key": "Stack",
+                        "Value": "workflow"
+                    }
+                ],
+                "VPCSecurityGroups": [
+                    {
+                        "Fn::GetAtt": [
+                            "DBSecurityGroup",
+                            "GroupId"
+                        ]
+                    }
+                ]
+            }
+        }
     },
-    "PostgresInstance": {
-      "Type": "AWS::RDS::DBInstance",
-      "Properties": {
-        "AllocatedStorage": "5",
-        "AutoMinorVersionUpgrade": true,
-        "BackupRetentionPeriod": "1",
-        "DBInstanceClass": "db.t2.small",
-        "DBInstanceIdentifier": {
-          "Fn::Join": [
-            "-",
-            [
-              "workflow",
-              {
-                "Ref": "Stage"
-              }
-            ]
-          ]
-        },
-        "DBName": "workflow",
-        "Engine": "postgres",
-        "EngineVersion": "9.3.3",
-        "MasterUsername": {
-          "Ref": "DBUser"
-        },
-        "MasterUserPassword": {
-          "Ref": "DBPassword"
-        },
-        "MultiAZ": true,
-        "Port": {
-          "Ref": "DBPort"
-        },
-        "Tags": [
-          {
-            "Key": "Stage",
+    "Outputs": {
+        "DbHost": {
+            "Description": "Hostname of RDS Endpoint",
             "Value": {
-              "Ref": "Stage"
+                "Fn::GetAtt": [
+                    "PostgresInstance",
+                    "Endpoint.Address"
+                ]
             }
-          },
-          {
-            "Key": "Stack",
-            "Value": "workflow"
-          }
-        ],
-        "VPCSecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "DBSecurityGroup",
-              "GroupId"
-            ]
-          }
-        ]
-      }
+        },
+        "PrototypeLoadBalancerDNS": {
+            "Description": "Load balancer DNS",
+            "Value": {
+                "Fn::GetAtt": [
+                    "PrototypeLoadBalancer",
+                    "DNSName"
+                ]
+            }
+        }
     }
-  },
-  "Outputs": {
-    "DbHost": {
-      "Description": "Hostname of RDS Endpoint",
-      "Value": {
-        "Fn::GetAtt": [
-          "PostgresInstance",
-          "Endpoint.Address"
-        ]
-      }
-    },
-    "PrototypeLoadBalancerDNS": {
-      "Description": "Load balancer DNS",
-      "Value": {
-        "Fn::GetAtt": [
-          "PrototypeLoadBalancer",
-          "DNSName"
-        ]
-      }
-    }
-  }
 }
