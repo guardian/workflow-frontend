@@ -1,10 +1,12 @@
-import angular from 'angular';
-import moment from 'moment';
-import { columnDefaults } from 'lib/column-defaults'
+import angular              from 'angular';
+import moment               from 'moment';
+import { columnDefaults }   from 'lib/column-defaults'
+import startTemplate        from "components/content-list-item/content-list-item-start.html!text";
+import endTemplate          from "components/content-list-item/content-list-item-end.html!text";
 
 angular.module('wfColumnService', [])
-    .factory('wfColumnService', ['$rootScope', '$sce', 'wfPreferencesService',
-        function($rootScope, $sce, wfPreferencesService) {
+    .factory('wfColumnService', ['wfPreferencesService',
+        function(wfPreferencesService) {
 
             class ColumnService {
 
@@ -13,40 +15,44 @@ angular.module('wfColumnService', [])
                     var self = this;
 
                     self.availableColums = columnDefaults;
+                    self.contentItemTemplate;
 
                     self.preferencePromise = wfPreferencesService.getPreference('columnConfiguration').then(function resolve (data) {
 
-                        // if the columns from preferences are missing any columns (ie: we've added columns to the defaults)...
+                        if (typeof data[0] !== "string") {
 
-                        if (data.length !== self.availableColums.length) { // prefs are missing some...
-                            var columns = [];
+                            return reject();
+                        } else {
 
-                            self.availableColums.forEach((availCol) => {
-                                var found = false;
-                                data.forEach((col, index) => {
-                                    if (availCol.name === col.name) {
-                                        found = index;
-                                    }
-                                });
+                            self.columns = self.availableColums;
 
-                                if (!found) {
-                                    columns.push(availCol);
-                                } else {
-                                    columns.push(data[found]);
-                                }
+                            self.columns.forEach((col) => { // set all to inactive
+                                col.active = false;
                             });
 
-                            self.columns = columns;
-                        } else {
-                            self.columns = data;
+                            data.forEach((colName) => { // activate preferences columns
+                                self.columns.some((availCol) => {
+                                    if (availCol.name == colName) {
+                                        availCol.active = true; // set active
+                                        return true;
+                                    } else {
+                                        return false;
+                                    }
+                                });
+                            });
+
+                            return self.columns;
                         }
 
-                        return self.columns;
+                    }, reject);
 
-                    }, function reject () {
+                    function reject () {
+
                         self.columns = self.availableColums;
+                        self.setColumns(self.columns);
+
                         return self.columns;
-                    });
+                    }
                 }
 
                 getAvailableColumns() {
@@ -57,9 +63,49 @@ angular.module('wfColumnService', [])
                     return this.columns ? Promise.resolve(this.columns) : this.preferencePromise;
                 }
 
+                getContentItemTemplate(refresh) {
+
+                    var self = this;
+
+                    if (!self.contentItemTemplate || refresh) {
+
+                        self.contentItemTemplate = self.getColumns().then((loadedColumns) => {
+
+                            loadedColumns = loadedColumns.filter((col) => {
+                                return col.active;
+                            }).map((col) => {
+                                return col.template;
+                            });
+
+                            loadedColumns.unshift(startTemplate);
+                            loadedColumns.push(endTemplate);
+
+                            self.contentItemTemplate = loadedColumns.join('');
+
+                            return self.contentItemTemplate;
+                        });
+                    };
+
+
+                    if (typeof self.contentItemTemplate.then === 'function') {
+
+                        return self.contentItemTemplate;
+                    } else {
+
+                        return Promise.resolve(self.contentItemTemplate);
+                    }
+                }
+
                 setColumns(columns) {
                     this.columns = columns;
-                    return wfPreferencesService.setPreference('columnConfiguration', columns);
+
+                    var activeColumns = columns.filter((col) => {
+                        return col.active;
+                    }).map((col) => {
+                        return col.name;
+                    });
+
+                    return wfPreferencesService.setPreference('columnConfiguration', activeColumns);
                 }
             }
 

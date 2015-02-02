@@ -21,7 +21,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .filter('getPriorityString', wfGetPriorityStringFilter)
     .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
-    .directive('wfContentListItem', ['$rootScope', '$q', '$compile', '$http', '$templateCache', 'wfColumnService', wfContentListItem])
+    .directive('wfContentListItem', ['$rootScope', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer])
     .directive("bindCompiledHtml", function($compile, $timeout) {
         return {
@@ -39,6 +39,29 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
                     }
                     elem.contents().remove();
                     elem.append(newElem);
+                });
+            }
+        };
+    })
+    .directive("contentListItemContainer", function ($compile, $rootScope) {
+        return {
+            restrict: 'A',
+            transclude: true,
+            link: ($scope, elem, attrs) => {
+
+                $rootScope.$watch('contentItemTemplate', () => {
+
+                    var contentListHeading = '<tr class="content-list__group-heading-row"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span></th></tr>';
+
+                    var contentListContent = '<tr wf-content-list-item ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections" id="stub-{{contentItem.id}}" href="stub-{{contentItem.id}}" template="contentItemTemplate"></tr>';
+
+                    var contentListTemplate = contentListHeading + contentListContent;
+
+                    $rootScope.compiledTemplate = $rootScope.compiledTemplate || $compile(contentListTemplate);
+
+                    $rootScope.compiledTemplate($scope, function(clonedElement, $scope){
+                        elem.append(clonedElement);
+                    });
                 });
             }
         };
@@ -64,11 +87,21 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, se
         $scope.columns = data;
     });
 
+    wfColumnService.getContentItemTemplate().then((template) => {
+
+        $rootScope.contentItemTemplate = template;
+    });
 
     $scope.showColumnMenu = false;
     $scope.colChange = function () {
-        wfColumnService.setColumns($scope.columns);
-        $rootScope.$emit('contentItem.columnsChanged');
+        wfColumnService.setColumns($scope.columns).then(() => {
+            if (confirm('Configuring columns requires a refresh, reload the page?')) {
+                window.location.reload();
+            }
+        });
+    };
+    $scope.colChangeSelect = function () {
+        $scope.columnsEdited = true;
     };
 
     (function handleCompactView () {
@@ -231,11 +264,11 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, se
     poller.onError(this.renderError);
 
     poller.startPolling().then(function(){
-         var myListener = $rootScope.$on('content.rendered',
-                           function(event, data){
-                                  $anchorScroll();
-                                  myListener();
-                           });
+        var myListener = $rootScope.$on('content.rendered',
+            function(event, data){
+                $anchorScroll();
+                myListener();
+            });
     });
 
     $scope.$on('destroy', function () {
