@@ -198,14 +198,20 @@ object WfQuery {
     fuzzyMatch(q.assignedTo)(_.assignee) |>
     matchTextFields(optToSeq(q.text))(textFields)
 
-  def contentQuery(q: WfQuery) = {
-    //TODO: remove this todo
-    println(q)
+    val stateQuery = (q: ContentQuery, s: ContentState) => s match {
+      case PublishedState => q.filter(_.published)
+      case TakenDownState => q.filter(_.takenDown)
+      case ScheduledState => q.filter((row) => (row.scheduledLaunchDate >= DateTime.now) getOrElse false)
+      case EmbargoedState => q.filter((row) => { row.embargoedIndefinitely || (row.embargoedUntil >= DateTime.now).getOrElse(false) })
+      case DraftState     => q.filterNot((row) => { row.published || row.takenDown})
+      case default        => q
+   }
 
+  def contentQuery(q: WfQuery) = {
     content |>
     simpleInSet(q.status.map(_.toString.toUpperCase))(_.status.toUpperCase) |>
     simpleInSet(q.contentType.map(_.toUpperCase))(_.contentType.toUpperCase) |>
-    q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published)) |>
+    q.state.foldl[ContentQuery](stateQuery) |>
     q.composerId.foldl[ContentQuery]((query, composerId) => query.filter(_.composerId === composerId))
   }
 }
