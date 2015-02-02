@@ -17,7 +17,8 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         "article": "Article",
                         "liveblog": "Live blog",
                         "gallery": "Gallery",
-                        "interactive": "Interactive"
+                        "interactive": "Interactive",
+                        "picture": "Cartoon/Graphic"
                     }
                 };
 
@@ -49,6 +50,12 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     });
                 }
 
+                getById(id) {
+                    return httpRequest({
+                        method: 'GET',
+                        url: '/api/v1/content/' + id
+                    });
+                }
 
                 /**
                  * Creates a draft in Composer from a Stub. Effectively moving

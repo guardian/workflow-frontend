@@ -71,16 +71,43 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         })
     }, true);
 
+    $scope.validImport = false;
+    $scope.wfComposerState;
+
     $scope.composerUrlChanged = () => {
         wfComposerService.getComposerContent($scope.formData.composerUrl).then(
             (composerContent) => {
+                //check validity
                 if (composerContent) {
-                    var stub = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
-                    stub.title = stub.headline;
+
+                    var contentItem = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
+                    var composerId = contentItem.composerId;
+
+                    if(composerId) {
+                        $scope.composerUrl = config.composerViewContent + '/' + composerId;
+                        $scope.stub.title = contentItem.headline;
+
+                        wfContentService.getById(composerId).then(
+                            function(res){
+                                if(res.data.data.visibleOnUi) {
+                                    $scope.wfComposerState = 'visible';
+                                    $scope.stubId = res.data.data.id;
+                                }
+                                else {
+                                    $scope.wfComposerState = 'invisible'
+                                }
+                            },
+                            function(err) {
+                                if(err.status === 404) {
+                                    $scope.validImport = true;
+                                    if(err.data.archive) { $scope.wfComposerState = 'archived'; }
+                                }
+                            });
+                    }
                 } else {
+                    $scope.stub.title = null;
                     $scope.stub.composerId = null;
                     $scope.stub.contentType = null;
-                    $scope.stub.title = null;
                 }
             }
         );
