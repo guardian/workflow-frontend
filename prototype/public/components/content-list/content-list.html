@@ -12,7 +12,7 @@
                 <div class="content-list__compact-button" ng-class="{ 'content-list__compact-button--active': compactView.visible }" ng-click="compactView.visible = !compactView.visible" title="Toggle compact view"></div>
             </th>
 
-            <th ng-repeat="col in columns" ng-if="col.active" class="content-list-head__heading--{{ col.name }}" ng-attr-title="{{ col.title.length > 0 && col.title || undefined }}" colspan="{{ col.colspan }}" bind-compiled-html="col.labelHTML"></span></th>
+            <th ng-repeat="col in columns" ng-if="::col.active" class="content-list-head__heading--{{ col.name }}" ng-attr-title="{{ col.title.length > 0 && col.title || undefined }}" colspan="{{ col.colspan }}" bind-compiled-html="col.labelHTML"></span></th>
 
             <th class="content-list-head__heading--group content-list-head__heading--notifier content-list-head--button-container" colspan="1">
                 <div class="configure-columns" ng-click="showColumnMenu = !showColumnMenu" title="Select columns">
@@ -23,24 +23,20 @@
                     <ul class="column-configurator__list">
                         <li class="column-configurator__list-item" ng-repeat="col in columns" ng-if="col.name!='titles'">
                             <label class="column-configurator__label" for="{{ col.name }}">
-                                <input class="column-configurator__label" type="checkbox" ng-model="col.active" id="{{ col.name }}" name="{{ col.name }}" ng-change="colChange()"/>
+                                <input class="column-configurator__label" type="checkbox" ng-model="col.active" id="{{ col.name }}" name="{{ col.name }}" ng-change="colChangeSelect()"/>
                                 {{ col.prettyName }}
                             </label>
+                        </li>
+                        <li class="column-configurator__list-item">
+                            <button class="btn btn-xs btn-info" ng-click="colChange()" ng-disabled="!columnsEdited">Reload to view changes</button>
                         </li>
                     </ul>
                 </div>
             </th>
         </tr>
     </thead>
-    <tbody ng-repeat="group in content track by group.name">
-        <tr class="content-list__group-heading-row">
-            <th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}">
-                <span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span>
-            </th>
-        </tr>
-
-        <tr wf-content-list-item ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections" id="stub-{{contentItem.id}}" href="stub-{{contentItem.id}}"></tr>
-
+    <tbody class="content-list__item-container" ng-repeat="group in content track by group.name" content-list-item-container>
+        <!-- Find my content in content-list.js:45 -->
     </tbody>
 
     <tbody class="content-list-draw__dock">
