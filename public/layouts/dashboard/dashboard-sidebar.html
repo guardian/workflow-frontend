@@ -1,17 +1,4 @@
 <div class="sidebar-filters--{{enabled}}">
     <wf-sidebar-filter ng-repeat="filter in filters" wf-filter="filter"></wf-sidebar-filter>
 </div>
-<div class="sidebar__location-picker dropup" dropdown ng-controller="wfLocationPickerController as locationPicker" is-open="locationPicker.open">
-    <button class="sidebar__location-picker-button dropdown-toggle" type="button" id="locationDropdownButton" title="Select your timezone">
-        {{ locationPicker.locations[locationPicker.locationKey].title }}
-        <span class="sidebar__location-picker-localtime">{{ locationPicker.now | wfLocaliseDateTime | wfFormatDateTime:'HH:mm' }}</span>
-    </button>
-    <ul class="sidebar__location-picker-menu dropdown-menu" role="menu" aria-labelledby="locationDropdownButton">
-        <li ng-repeat="(key, location) in locationPicker.locations">
-            <a class="sidebar__location-picker-menuitem" role="menuitem" href="" ng-click="locationPicker.locationKey = key; locationPicker.open = false" tabindex="-1">
-                <span class="sidebar__location-picker-localtime--inmenu pull-right">{{ locationPicker.now | wfLocaliseDateTime:key | wfFormatDateTime:'HH:mm z' }}</span>
-                {{ location.title }}
-            </a>
-        </li>
-    </ul>
-</div>
+<wf-location-picker></wf-location-picker>
