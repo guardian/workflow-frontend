@@ -97,14 +97,6 @@ object CommonDB {
     }
   }
 
-  def deleteContent(composerId: String) = {
-    DB.withTransaction { implicit session =>
-      archiveContentQuery((s, c) => s.composerId === composerId)
-      content.filter(_.composerId === composerId).delete
-      stubs.filter(_.composerId === composerId).delete
-    }
-  }
-
   def archiveOldContent: Int = {
     DB.withTransaction { implicit session =>
 
