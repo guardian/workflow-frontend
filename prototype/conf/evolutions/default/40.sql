@@ -1,9 +1,6 @@
+
 # --- !Ups
-
-UPDATE stub SET wf_last_modified = (SELECT last_modified FROM content WHERE content.composer_id = stub.composer_id);
-UPDATE stub SET wf_last_modified = now() where wf_last_modified is null;
-
+alter table stub add column wf_last_modified TIMESTAMP;
 
 # --- !Downs
-
-UPDATE stub SET wf_last_modified = null;
+alter table stub drop column wf_last_modified;
