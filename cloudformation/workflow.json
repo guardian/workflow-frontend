@@ -662,6 +662,9 @@
                 ",g' \\\n",
                 "    -e 's,@STAGE@,'$stage',g' \\\n",
                 "    /etc/init/prototype.conf\n",
+                "sed -i \\\n",
+                "    -e 's,@STAGE@,'$stage',g' \\\n",
+                "    /home/workflow/prototype/conf/logger.conf\n",
                 "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py",
                 "\n",
                 {
@@ -824,6 +827,9 @@
                 ",g' \\\n",
                 "    -e 's,@STAGE@,'$stage',g' \\\n",
                 "    /etc/init/prole.conf\n",
+                "sed -i \\\n",
+                "    -e 's,@STAGE@,'$stage',g' \\\n",
+                "    /home/workflow/prole/conf/logger.conf\n",
                 "wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py",
                 "\n",
                 {
