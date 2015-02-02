@@ -11,11 +11,17 @@
     border: 0;
     border-top: 1px solid $c-grey-300;
     display: block;
-    padding: 6px 5px 6px 23px;
+    padding: 6px 5px 6px 15px;
     text-align: left;
     width: 100%;
-    background: $i-arrow-up right center / 12px no-repeat;
-    background-origin: content-box;
+}
+
+.location-picker__icon--show {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    float: right;
+    margin-right: 5px;
 }
 
 .location-picker__menu {
@@ -56,13 +62,13 @@
 
 .location-picker__localtime {
     color: #666;
-    margin-right: 20px;
+    margin-right: 6px;
     float: right;
 }
 
 .location-picker__menuitem-localtime {
     color: #666;
     line-height: 1em;
-    padding-top: 3px;
+    padding-top: 1px;
     float: right;
 }
