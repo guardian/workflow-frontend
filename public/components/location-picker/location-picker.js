@@ -9,10 +9,12 @@ import angular from 'angular';
 import 'lib/date-service';
 import 'lib/location-service';
 
+import 'components/icons/icons';
+
 var CLASS_LOCATION_PICKER = 'location-picker',
     CLASS_LOCATION_PICKER_OPEN = 'location-picker--open';
 
-angular.module('wfLocationPicker', ['wfLocationService', 'wfDateService'])
+angular.module('wfLocationPicker', ['wfLocationService', 'wfDateService', 'wfIcons'])
     .directive('wfLocationPicker', [wfLocationPickerDirectiveFactory]);
 
 
