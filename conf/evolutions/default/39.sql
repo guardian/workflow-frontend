@@ -1,5 +1,5 @@
 # --- !Ups
-alter table stub add column wf_last_modified TIMESTAMP;
+ALTER TABLE archive ALTER COLUMN status TYPE character varying(32);
 
 # --- !Downs
-alter table stub drop column wf_last_modified;
+ALTER TABLE archive ALTER COLUMN status TYPE character varying(16);
