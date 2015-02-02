@@ -1,0 +1,13 @@
+<button class="location-picker__button" type="button" title="Select your timezone" ng-click="ctrl.toggleOpen()">
+    <i class="location-picker__icon--show" wf-icon="arrow-up"></i>
+    {{ locations[currentLocation].title }}
+    <span class="location-picker__localtime">{{ now | wfLocaliseDateTime:currentLocation | wfFormatDateTime:'HH:mm' }}</span>
+</button>
+<ul class="location-picker__menu">
+    <li class="location-picker__menuitem" ng-repeat="(key, location) in locations">
+        <a class="location-picker__menuitem-link" ng-click="ctrl.setLocation(key)">
+            <span class="location-picker__menuitem-localtime">{{ now | wfLocaliseDateTime:key | wfFormatDateTime:'HH:mm z' }}</span>
+            {{ location.title }}
+        </a>
+    </li>
+</ul>
