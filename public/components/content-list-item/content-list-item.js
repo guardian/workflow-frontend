@@ -157,61 +157,28 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
 }
 
 
+var loadedColumns;
+
 /**
  * Directive allowing the contentListItems to interact with the details drawer
  * @param $rootScope
  */
-var wfContentListItem = function ($rootScope, $q, $compile, $http, $templateCache, wfColumnService) {
+var wfContentListItem = function ($rootScope) {
     return {
         restrict: 'A',
         replace: true,
-        templateUrl: '/assets/components/content-list-item/content-list-item-container.html',
+        template: (tElement, tAttrs) => {
+
+            return $rootScope.contentItemTemplate;
+        },
         scope: {
             contentItem: '=',
             contentList: '=',
             legalValues: '=',
-            statusValues: '='
+            statusValues: '=',
+            template: '='
         },
         link: function ($scope, elem, attrs) {
-
-            wfColumnService.getColumns().then((data) => {
-                $scope.columns = data;
-                renderColumns();
-            });
-
-            function renderColumns () {
-
-
-                var columns = [{
-                    templateUrl: '/assets/components/content-list-item/content-list-item-start.html',
-                    active: true
-                }].concat(
-                    $scope.columns,
-                    [{
-                        templateUrl: '/assets/components/content-list-item/content-list-item-end.html',
-                        active: true
-                    }]
-                );
-
-                var promises = columns.map((col) => {
-
-                    return $http.get(col.templateUrl, {cache: $templateCache}).success((html) => {
-
-                        if (col.active) {
-                            columns[columns.indexOf(col)] = html; // ensure that ajax request results returning at any time and inserted in the correct order
-                        } else { // nasty...
-                            columns[columns.indexOf(col)] = '';
-                        }
-                    });
-                });
-
-                $q.all(promises).then(() => {
-                    var compiled = $compile(columns.join(''))($scope);
-                    elem.empty().append(compiled);
-                });
-            }
-
-            $rootScope.$on('contentItem.columnsChanged', renderColumns);
 
             /**
              * Emit an event telling the details drawer to move itself to this element, update and display.

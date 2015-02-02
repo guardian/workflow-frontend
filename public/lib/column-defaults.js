@@ -1,3 +1,21 @@
+import priorityTemplate         from "components/content-list-item/templates/priority.html!text";
+import contentTypeTemplate      from "components/content-list-item/templates/content-type.html!text";
+import titleTemplate            from "components/content-list-item/templates/title.html!text";
+import commentsTemplate         from "components/content-list-item/templates/comments.html!text";
+import mainImageTemplate        from "components/content-list-item/templates/main-image.html!text";
+import incopyTemplate           from "components/content-list-item/templates/incopy.html!text";
+import presenceTemplate         from "components/content-list-item/templates/presence.html!text";
+import assigneeTemplate         from "components/content-list-item/templates/assignee.html!text";
+import officeTemplate           from "components/content-list-item/templates/office.html!text";
+import deadlineTemplate         from "components/content-list-item/templates/deadline.html!text";
+import sectionTemplate          from "components/content-list-item/templates/section.html!text";
+import statusTemplate           from "components/content-list-item/templates/status.html!text";
+import notesTemplate            from "components/content-list-item/templates/notes.html!text";
+import linksTemplate            from "components/content-list-item/templates/links.html!text";
+import publishedStateTemplate   from "components/content-list-item/templates/published-state.html!text";
+import wordcountTemplate        from "components/content-list-item/templates/wordcount.html!text";
+import needsLegalTemplate       from "components/content-list-item/templates/needsLegal.html!text";
+
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
  * It will be used as default or overridden by an individual users preferences.
@@ -20,6 +38,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'priority.html',
+    template: priorityTemplate,
     active: true
 },{
     name: 'content-type',
@@ -28,6 +47,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'content-type.html',
+    template: contentTypeTemplate,
     active: true
 },{
     name: 'titles',
@@ -36,6 +56,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'title.html',
+    template: titleTemplate,
     active: true
 },{
     name: 'comments',
@@ -44,6 +65,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'comments.html',
+    template: commentsTemplate,
     active: true
 },{
     name: 'main-image',
@@ -52,6 +74,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'main-image.html',
+    template: mainImageTemplate,
     active: true
 },{
     name: 'incopy',
@@ -60,6 +83,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'incopy.html',
+    template: incopyTemplate,
     active: true
 },{
     name: 'presence',
@@ -68,6 +92,7 @@ var columnDefaults = [{
     colspan: 1,
     title: 'In use by',
     templateUrl: templateRoot + 'presence.html',
+    template: presenceTemplate,
     active: true
 },{
     name: 'assignee',
@@ -76,6 +101,7 @@ var columnDefaults = [{
     colspan: 1,
     title: 'Assigned to',
     templateUrl: templateRoot + 'assignee.html',
+    template: assigneeTemplate,
     active: true
 },{
     name: 'office',
@@ -84,6 +110,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'office.html',
+    template: officeTemplate,
     active: true
 },{
     name: 'deadline',
@@ -92,6 +119,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'deadline.html',
+    template: deadlineTemplate,
     active: true
 },{
     name: 'section',
@@ -100,6 +128,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'section.html',
+    template: sectionTemplate,
     active: true
 },{
     name: 'status',
@@ -108,6 +137,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'status.html',
+    template: statusTemplate,
     active: true
 },{
     name: 'notes',
@@ -116,6 +146,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'notes.html',
+    template: notesTemplate,
     active: true
 },{
     name: 'wordcount',
@@ -124,6 +155,7 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
+    template: wordcountTemplate,
     active: false
 },{
     name: 'links',
@@ -132,6 +164,7 @@ var columnDefaults = [{
     colspan: 4,
     title: '',
     templateUrl: templateRoot + 'links.html',
+    template: linksTemplate,
     active: true
 },{
     name: 'published-state',
@@ -140,14 +173,16 @@ var columnDefaults = [{
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'published-state.html',
+    template: publishedStateTemplate,
     active: true
 },{
     name: 'needsLegal',
     prettyName: 'Needs Legal',
-    labelHTML: 'Legal?',
+    labelHTML: '',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'needsLegal.html',
+    template: needsLegalTemplate,
     active: true
 }];
 
