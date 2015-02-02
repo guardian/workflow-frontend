@@ -256,11 +256,13 @@ wfStubModal.run([
                 }
             });
         };
-    }]).directive('wfFocus', function(){
+    }]).directive('wfFocus', ['$timeout', function($timeout){
       return {
           restrict: "A",
           link: function (scope, element, attrs, ctrls) {
-              element[0].focus();
+              if(attrs.focusMe === "true" || attrs.focusMe === undefined) {
+                $timeout(function() { element[0].focus(); }, 500);
+              }
           }
       };
-    });
+    }]);
