@@ -1,10 +1,11 @@
 # --- !Ups
 
-ALTER TABLE stub ALTER COLUMN wf_last_modified SET NOT NULL;
+UPDATE stub SET wf_last_modified = (SELECT last_modified FROM content WHERE content.composer_id = stub.composer_id);
+UPDATE stub SET wf_last_modified = now() where wf_last_modified is null;
 
 
 # --- !Downs
 
-ALTER TABLE stub ALTER COLUMN wf_last_modified DROP NOT NULL;
+UPDATE stub SET wf_last_modified = null;
 
 
