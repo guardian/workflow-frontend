@@ -1,6 +1,6 @@
-<td class="content-list-item__field--needsLegal" title="Needs Legal?">
+<td class="content-list-item__field--needsLegal" title="Needs Legal: {{ contentItem.needsLegal.toLowerCase() }}">
 
-    <i ng-if="contentItem.needsLegal == 'REQUIRED'" class="content-list-item__icon--incopy" wf-icon="needs-legal"/>
-    <i ng-if="contentItem.needsLegal == 'COMPLETE'" class="content-list-item__icon--incopy" wf-icon="needs-legal-checked"/>
+    <i ng-if="contentItem.needsLegal == 'REQUIRED' || contentItem.needsLegal == 'COMPLETE'" class="content-list-item__icon--incopy content-list-item__icon--inline" wf-icon="needs-legal"/>
+    <i ng-if="contentItem.needsLegal == 'COMPLETE'" class="content-list-item__icon--incopy content-list-item__icon--inline" wf-icon="needs-legal-check"/>
 
 </td>
