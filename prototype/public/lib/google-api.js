@@ -96,12 +96,17 @@ angular.module('wfGoogleApiService', [])
             template: '<div class="alert alert-info" ng-if="visible">Workflow can now read your contacts! <button class="btn btn-xs btn-primary " ng-click="auth()">Authorise Workflow</button></div>',
             link: ($scope, elem) => {
 
-                $scope.visible = true;
+                $scope.visible = false;
 
                 $scope.auth = function () {
 
                     wfGoogleApiService.authPrompt();
                 };
+
+                $rootScope.$on('wfGoogleApiService.userIsNotAuthorized', () => {
+
+                    $scope.visible = true;
+                });
 
                 $rootScope.$on('wfGoogleApiService.userIsAuthorized', () => {
 
