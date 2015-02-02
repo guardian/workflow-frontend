@@ -1,12 +1,12 @@
 /**
  * Location picker styles.
  */
-.sidebar__location-picker {
+.location-picker {
     margin-top: 10px;
     position: relative;
 }
 
-.sidebar__location-picker-button {
+.location-picker__button {
     @extend %fs-data-2;
     border: 0;
     border-top: 1px solid $c-grey-300;
@@ -18,29 +18,51 @@
     background-origin: content-box;
 }
 
-.sidebar__location-picker-menu {
-    min-width:0px;
+.location-picker__menu {
+    @extend %fs-data-2;
     width: 100%;
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: $c-grey-100;
+    border: 1px solid $c-grey-300;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+
+    .location-picker--open & {
+        display: block;
+    }
 }
 
-
-/* Bootstrap override - hence specificity */
-.sidebar__location-picker-menu > li > a {
-    padding: 3px 70px 3px 10px;
+.location-picker__menuitem {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
 }
 
-.sidebar__location-picker-menuitem {
-    font-size: 12px;
+.location-picker__menuitem-link {
+    padding: 5px 10px;
+    cursor: pointer;
+    display: block;
+    color: $c-text;
+
+    &:hover, &:focus {
+        color: $c-text;
+        background-color: $c-grey-300;
+        text-decoration: none;
+    }
 }
 
-.sidebar__location-picker-localtime,
-.sidebar__location-picker-localtime--inmenu {
+.location-picker__localtime {
     color: #666;
+    margin-right: 20px;
+    float: right;
 }
 
-.sidebar__location-picker-localtime--inmenu {
-    position: relative;
-    right: -60px;
+.location-picker__menuitem-localtime {
+    color: #666;
     line-height: 1em;
     padding-top: 3px;
+    float: right;
 }
