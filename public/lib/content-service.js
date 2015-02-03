@@ -18,7 +18,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         "liveblog": "Live blog",
                         "gallery": "Gallery",
                         "interactive": "Interactive",
-                        "graphic": "Cartoon/Graphic"
+                        "picture": "Cartoon/Graphic"
                     }
                 };
 
@@ -186,7 +186,8 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'created.from': wfFormatDateTimeFilter(createdRange['from'], "ISO8601") || null,
                         'created.until': wfFormatDateTimeFilter(createdRange['until'], "ISO8601") || null,
                         'text': modelParams['text'] || null,
-                        'assignee': modelParams['assignee'] || null
+                        'assignee': modelParams['assignee'] || null,
+                        'incopy' : modelParams['incopy'] || null
                     };
 
                     return params;
