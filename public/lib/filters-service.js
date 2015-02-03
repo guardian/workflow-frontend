@@ -113,6 +113,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('filtersChanged.incopy', function(event, data) {
+                    self.update('incopy', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
             }
 
             init() {
@@ -132,15 +137,16 @@ angular.module('wfFiltersService', ['wfDateService'])
                     var selectedDate = params['selectedDate'];
 
                     self.filters = {
-                        'status': params['status'],
-                        'state': params['state'],
-                        'section': params['section'],
-                        'content-type': params['content-type'],
-                        'selectedDate': wfDateParser.parseQueryString(selectedDate),
-                        'flags': params['flags'],
-                        'prodOffice': params['prodOffice'],
-                        'created': params['created'],
-                        'assignee': params['assignee']
+                        'status'       : params['status'],
+                        'state'        : params['state'],
+                        'section'      : params['section'],
+                        'content-type' : params['content-type'],
+                        'selectedDate' : wfDateParser.parseQueryString(selectedDate),
+                        'flags'        : params['flags'],
+                        'prodOffice'   : params['prodOffice'],
+                        'created'      : params['created'],
+                        'assignee'     : params['assignee'],
+                        'incopy'       : params['incopy']
                     };
                 };
 
