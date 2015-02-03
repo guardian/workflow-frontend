@@ -77,7 +77,8 @@ object Api extends Controller with PanDomainAuthActions {
     val stubs =
       if((status.isEmpty || status.exists(_ == models.Status("Stub"))) &&
            // stubs are never 'published'
-           (published != Some(true))) getStubs else Nil
+           (published != Some(true)) &&
+           (queryData.inIncopy != Some(true))) getStubs else Nil
 
     val content = getContent
 
@@ -265,7 +266,7 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def deleteContent(composerId: String) = APIAuthAction {
-    CommonDB.deleteContent(composerId)
+    CommonDB.deleteContentItems(Seq(composerId))
     NoContent
   }
 
