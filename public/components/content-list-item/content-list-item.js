@@ -3,12 +3,8 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/',
     PREVIEW_PATH = 'http://preview.gutools.co.uk/',
     LIVE_PATH = 'http://www.theguardian.com/';
 
-function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter, sections) {
+function wfContentItemParser(config, statuses, sections) {
     /*jshint validthis:true */
-
-    function formatAndLocaliseDate(dateValue, dateFormat) {
-        return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(dateValue), dateFormat);
-    }
 
     function getFullOfficeString(office) {
         var offices = {
