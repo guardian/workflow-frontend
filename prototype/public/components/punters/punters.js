@@ -126,12 +126,16 @@ function punters ($rootScope, wfGoogleApiService) {
                 }
             };
 
-            $scope.removeToken = function ($index) {
+            $scope.removeToken = function ($index, dontSendEvent) {
                 $scope.tokens.splice($index, 1);
 
                 // Update model
-                $scope.stub.assigneeEmail = $scope.stub.assigneeEmail.split(',').splice($index,1).join(',');
-                $scope.stub.assignee = $scope.stub.assignee.split(',').splice($index,1).join(',');
+                $scope.stub.assigneeEmail = '';
+                $scope.stub.assignee = '';
+
+                if (!dontSendEvent) {
+                    $rootScope.$emit('punters.punterSelected');
+                }
             };
 
             /**
