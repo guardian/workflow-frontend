@@ -334,9 +334,10 @@
     .content-list-item__icon--assignee {
         @extend %fs-data-1;
         font-size: 9px;
-        width: 16px;
-        height: 16px;
-        line-height: 16px;
+        width: 15px;
+        height: 15px;
+        line-height: 15px;
         display: inline-block;
+        border: 1px solid $c-white;
     }
 }
