@@ -103,7 +103,7 @@ class ComposerSqsReader extends Actor {
     try {
       e.event match {
         case "delete" => {
-          val currentContent = CommonDB.deleteContent(e.composerId)
+          val currentContent = CommonDB.deleteContentItems(Seq(e.composerId))
           Logger.info(s"content deleted ${currentContent} current rows successfully: ${e.composerId}")
 
           val archivedContent = CommonDB.deleteArchiveContent(e.composerId)

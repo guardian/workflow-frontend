@@ -222,7 +222,8 @@ object Schema {
     Option[String],    // storyBundleId
     Boolean,           // activeInInCopy
     Boolean,           // takenDown
-    Option[DateTime]   // timeTakenDown
+    Option[DateTime],  // timeTakenDown
+    DateTime           // archivedAt
   )
 
   case class DBArchive(tag: Tag) extends Table[ArchiveRow](tag, "archive") {
@@ -248,11 +249,13 @@ object Schema {
     def takendown = column [Boolean] ("takendown")
     def timeTakendown = column [Option[DateTime]] ("time_takendown")
 
+    def archivedAt = column[DateTime]("archived_at")
+
     def * = (
       pk.?, stubId, composerId, wasDeleted,
       workingTitle, section, contentType, prodOffice, createdAt,
       lastModified, status, headline, path, published, timePublished, revision,
-      storybundleid, activeinincopy, takendown, timeTakendown
+      storybundleid, activeinincopy, takendown, timeTakendown, archivedAt
     )
   }
 

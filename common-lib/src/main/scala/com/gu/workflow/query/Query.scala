@@ -31,6 +31,7 @@ case class WfQuery(
   creationTimes : Seq[WfQueryTime] = Nil,
   text          : Option[String]   = None,
   assignedTo    : Seq[String]      = Nil,
+  inIncopy      : Option[Boolean]  = None,
   composerId    : Option[String]   = None
 )
 
@@ -144,6 +145,7 @@ object WfQuery {
       val text = req.getQueryString("text")
       val assignee = queryStringMultiOption(req.getQueryString("assignee"))
       val composerId = req.getQueryString("composerId")
+      val inIncopy = req.getQueryString("incopy").map(_ == "true")
 
       WfQuery(
         section       = sections,
@@ -156,6 +158,7 @@ object WfQuery {
         published     = published,
         text          = text,
         assignedTo    = assignee,
+        inIncopy      = inIncopy,
         composerId    = composerId
       )
   }
@@ -184,5 +187,6 @@ object WfQuery {
     simpleInSet(q.status.map(_.toString.toUpperCase))(_.status.toUpperCase) |>
     simpleInSet(q.contentType.map(_.toUpperCase))(_.contentType.toUpperCase) |>
     q.published.foldl[ContentQuery]((query, published) => query.filter(_.published === published)) |>
+    q.inIncopy.foldl[ContentQuery]((query, inIncopy) => query.filter(_.storyBundleId.nonEmpty === inIncopy)) |>
     q.composerId.foldl[ContentQuery]((query, composerId) => query.filter(_.composerId === composerId))
 }
