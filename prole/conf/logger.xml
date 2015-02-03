@@ -1,8 +1,10 @@
 <configuration>
 
+    <property file="${application.home}/conf/logback.${APP_ENV}.properties" />
+
     <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
 
-    <appender name="FILE" class="ch.qos.logback.core.RollingFileAppender">
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${application.home}/logs/application.log</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -21,10 +23,9 @@
         </encoder>
     </appender>
 
-    <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <!-- remoteHost and port are optional (default values shown) -->
-        <remoteHost>wf-elk-ElkLoadBala-1UBT5CYPIS2EK-1710827417.eu-west-1.elb.amazonaws.com</remoteHost>
-        <port>6379</port>
+    <appender name="STASH_TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <remoteHost>${elk_host}</remoteHost>
+        <port>${elk_port}</port>
 
         <!-- encoder is required -->
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
@@ -42,6 +43,7 @@
     <root level="ERROR">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
+        <appender-ref ref="STASH_TCP" />
     </root>
 
 </configuration>
