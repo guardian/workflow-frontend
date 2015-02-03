@@ -53,7 +53,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                     var contentListHeading = '<tr class="content-list__group-heading-row"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span></th></tr>';
 
-                    var contentListContent = '<tr wf-content-list-item ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections" id="stub-{{contentItem.id}}" href="stub-{{contentItem.id}}" template="contentItemTemplate"></tr>';
+                    var contentListContent = '<tr wf-content-list-item class="content-list-item" ng-class="{\'content-list-item--selected\': contentList.selectedItem === contentItem, \'content-list-item--published\': contentItem.isPublished && !contentItem.isTakenDown, \'content-list-item--takendown\': contentItem.isTakenDown}" ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections" id="stub-{{contentItem.id}}" href="stub-{{contentItem.id}}" template="contentItemTemplate"></tr>';
 
                     var contentListTemplate = contentListHeading + contentListContent;
 
