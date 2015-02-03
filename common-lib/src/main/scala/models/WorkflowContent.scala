@@ -299,14 +299,14 @@ case object ContentItem {
   //implemented to work on DB object and model object
   def visibleOnUi(s: Stub, wc: WorkflowContent) = {
     !(wc.published &&
-      (wc.lastModified.isBefore(DateTime.now().minusHours(24)) ||
+      (wc.lastModified.isBefore(DateTime.now().minusHours(24)) &&
       s.lastModified.isBefore(DateTime.now().minusHours(24))) &&
       wc.status.name == "Final")
   }
 
   def visibleOnUi(s: Schema.DBStub, c: Schema.DBContent) = {
     !(c.published &&
-      (c.lastModified <  DateTime.now().minusHours(24) ||
+      (c.lastModified <  DateTime.now().minusHours(24) &&
       s.lastModified <  DateTime.now().minusHours(24)) &&
       c.status === "Final")
   }
