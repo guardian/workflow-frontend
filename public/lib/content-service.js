@@ -82,6 +82,9 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Updates an existing stub by overwriting its fields via PUT.
                  */
                 updateStub(stub) {
+
+                    console.log('update stub', stub);
+
                     return httpRequest({
                         method: 'PUT',
                         url: '/api/stubs/' + stub.id,
