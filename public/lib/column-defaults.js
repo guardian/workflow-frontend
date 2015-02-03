@@ -151,7 +151,7 @@ var columnDefaults = [{
 },{
     name: 'wordcount',
     prettyName: 'Wordcount',
-    labelHTML: 'Wordcount',
+    labelHTML: 'Words',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
