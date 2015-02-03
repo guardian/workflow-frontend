@@ -15,14 +15,15 @@ var SETTING_LOCATION_KEY = 'location',
 
 
 angular.module('wfLocationService', ['wfSettingsService'])
-    .factory('wfLocationService', ['wfSettingsService', wfLocationServiceFactory]);
+    .factory('wfLocationService', ['$rootScope', 'wfSettingsService', wfLocationServiceFactory]);
 
 
-function wfLocationServiceFactory(wfSettingsService) {
+function wfLocationServiceFactory($rootScope, wfSettingsService) {
     class wfLocationService {
 
         constructor() {
             this.locations = locations;
+            this.setCurrentLocation();
         }
 
         isValidLocation(locationKey) {
@@ -37,7 +38,10 @@ function wfLocationServiceFactory(wfSettingsService) {
          * Retrieves the user location from settings and/or validate the input locationKey.
          */
         getLocationKey(locationKey) {
-            locationKey = locationKey || wfSettingsService.get(SETTING_LOCATION_KEY) || this.guessLocation();
+            if (!locationKey) {
+                return this.getCurrentLocationKey();
+                // throw new Error('A locationKey is required');
+            }
 
             if (!this.isValidLocation(locationKey)) {
                 throw new Error('Invalid location: ' + locationKey);
@@ -46,12 +50,32 @@ function wfLocationServiceFactory(wfSettingsService) {
             return locationKey;
         }
 
+        getCurrentLocation() {
+            return this.getLocation(this.getCurrentLocationKey());
+        }
+
+        getCurrentLocationKey() {
+            return wfSettingsService.get(SETTING_LOCATION_KEY);
+        }
+
         setLocation(locationKey) {
             if (!this.isValidLocation(locationKey)) {
                 throw new Error('Invalid location specified: ' + locationKey);
             }
 
             wfSettingsService.set(SETTING_LOCATION_KEY, locationKey);
+
+            return this;
+        }
+
+        /**
+         * Ensures that the current location is set on the rootScope via
+         * the wfSettingsService. Guesses the location if none set.
+         */
+        setCurrentLocation() {
+            if (!wfSettingsService.get(SETTING_LOCATION_KEY)) {
+                this.setLocation(this.guessLocation());
+            }
             return this;
         }
 

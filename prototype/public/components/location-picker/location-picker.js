@@ -42,7 +42,6 @@ function wfLocationPickerDirectiveFactory() {
 
 function wfLocationPickerController ($scope, $rootScope, $timeout, wfLocationService) {
     $scope.locations = wfLocationService.locations;
-    $scope.currentLocation = wfLocationService.getLocationKey();
 
     // Setup timer to update current time every minute
     var timer;
@@ -67,7 +66,6 @@ function wfLocationPickerController ($scope, $rootScope, $timeout, wfLocationSer
     });
 
     this.setLocation = function(newLocation) {
-        $scope.currentLocation = newLocation;
         wfLocationService.setLocation(newLocation);
         $rootScope.$broadcast('location:change', newLocation);
         this.toggleOpen();
