@@ -127,6 +127,16 @@ var filterDefaults = function (statuses, wfFiltersService) {
                     }
                 });
             }]
+        },
+        {
+            title: 'InCopy',
+            namespace: 'incopy',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'In InCopy', value: 'true' },
+                { caption: 'Not in InCopy', value: 'false' }
+            ]
         }
     ];
 };

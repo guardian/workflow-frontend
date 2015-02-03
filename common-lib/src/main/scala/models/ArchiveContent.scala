@@ -23,16 +23,17 @@ case class ArchiveContent(
   storyBundleId:  Option[String],
   activeInInCopy: Boolean,
   takenDown:      Boolean,
-  timeTakenDown:  Option[DateTime]
+  timeTakenDown:  Option[DateTime],
+  archivedAt:     DateTime
 )
 case object ArchiveContent {
   def fromArchiveRow(row: Schema.ArchiveRow): ArchiveContent = row match {
     case(pk, stubId, composerId, wasDeleted, workingTitle, section, contentType, prodOffice,
       createdAt, lastModified, status, headline, path, published, timePublished, revision,
-      storyBundleId, activeInInCopy, takenDown, timeTakenDown) =>
+      storyBundleId, activeInInCopy, takenDown, timeTakenDown, archivedAt) =>
     ArchiveContent(stubId, composerId, wasDeleted, workingTitle, section, contentType, prodOffice,
       createdAt, lastModified, status, headline, path, published, timePublished, revision,
-      storyBundleId, activeInInCopy, takenDown, timeTakenDown)
+      storyBundleId, activeInInCopy, takenDown, timeTakenDown, archivedAt)
   }
 
   implicit val archiveContentWrites: Writes[ArchiveContent] = Json.writes[ArchiveContent]
