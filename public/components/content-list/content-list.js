@@ -14,12 +14,14 @@ import 'components/editable-field/editable-field';
 
 import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
+import { wfLoader } from 'components/loader/loader';
 
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
     .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
+    .directive('wfContentListLoader', ['$rootScope', wfLoader])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer])
