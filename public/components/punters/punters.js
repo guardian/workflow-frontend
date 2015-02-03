@@ -36,6 +36,7 @@ function punters ($rootScope, wfGoogleApiService) {
                 selectedTokenIndex = 0;
 
             $scope.tokens = [];
+            $scope.foundUsers = [];
 
             // On load, pre-fill a token if someone already assigned
             if ($scope.stub.assigneeEmail) {
@@ -154,8 +155,10 @@ function punters ($rootScope, wfGoogleApiService) {
 
                     case 13: // Enter
                         $event.preventDefault();
-                        $scope.addToken($scope.foundUsers[selectedTokenIndex]);
-                        updateSelectedItem(selectedTokenIndex + 1);
+                        if ($scope.foundUsers.length && $scope.foundUsers[selectedTokenIndex]) {
+                            $scope.addToken($scope.foundUsers[selectedTokenIndex]);
+                            updateSelectedItem(selectedTokenIndex + 1);
+                        }
                         break;
 
                     case 8: // Backspace
@@ -176,8 +179,11 @@ function punters ($rootScope, wfGoogleApiService) {
                 }
 
                 function searchForUsers () {
-                    if (input.value && input.value.length > 0) {
-                        wfGoogleApiService.searchUsers(input.value).then((data) => {
+
+                    var v = input.value.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); // Whitespace
+
+                    if (v && v.length > 0) {
+                        wfGoogleApiService.searchUsers(v).then((data) => {
                             if (data && data.length > 0) {
                                 $scope.foundUsers = filterList(data, $scope.tokens);
                                 if (selectedTokenIndex > $scope.foundUsers.length -1) {
