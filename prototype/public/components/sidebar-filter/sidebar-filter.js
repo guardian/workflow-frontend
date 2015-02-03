@@ -50,7 +50,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             };
 
             $scope.defaultFilterClick = function(filter) {
-                // this is a replace operartion, instead of an add
+                // this is a replace operation, instead of an add
                 $scope.selectedFilters = [];
                 $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
             };
