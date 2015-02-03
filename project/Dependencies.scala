@@ -21,6 +21,6 @@ object Dependencies {
 
   val apiDocDependencies = Seq("com.wordnik" %% "swagger-play2" % "1.3.12")
 
-  val logbackDependencies = Seq("net.logstash.logback" %% "logstash-logback-encoder" % "4.0")
+  val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "4.0")
 
 }
