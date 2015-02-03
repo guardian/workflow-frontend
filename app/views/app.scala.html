@@ -2,12 +2,10 @@
 
 @layout(title, user, config) {
   <div class="main" ui-view>
-    @*<div class="splash__message">Loading...</div>*@
+    <div class="splash__message">Loading...</div>
     <noscript class="splash__noscript"><p>Please enable JavaScript to use Workflow.</p></noscript>
   </div>
 
-    <img style="position: absolute; top: 50%;
-    left: 50%; z-index: 999999;" src="/assets/images/loader.gif" alt=""/>
 
   @*** SystemJS package manager setup ***@
   <script src="@routes.Assets.at("jspm_packages/system.js")"></script>
