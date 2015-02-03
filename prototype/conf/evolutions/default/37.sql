@@ -5,3 +5,4 @@ ALTER TABLE content
 # --- !Downs
 ALTER TABLE content
     DROP COLUMN scheduled_launch_date
+
