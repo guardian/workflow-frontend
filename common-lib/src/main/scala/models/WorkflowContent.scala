@@ -150,14 +150,7 @@ object WorkflowContent {
       wordCount=0)
   }
 
-  //implemented to work on DB object and model object
-  def visibleOnUi(wc: WorkflowContent) = {
-    !(wc.published && wc.lastModified.isBefore(DateTime.now().minusHours(24)) && wc.status.name == "Final")
-  }
 
-  def visibleOnUi(c: Schema.DBContent) = {
-    !(c.published && c.lastModified <  DateTime.now().minusHours(24) && c.status === "Final")
-  }
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
     case (composerId      ::
         path             ::
@@ -302,6 +295,21 @@ object WorkflowContent {
 
 case class ContentItem(stub: Stub, wcOpt: Option[WorkflowContent])
 case object ContentItem {
+
+  //implemented to work on DB object and model object
+  def visibleOnUi(s: Stub, wc: WorkflowContent) = {
+    !(wc.published &&
+      (wc.lastModified.isBefore(DateTime.now().minusHours(24)) ||
+      s.lastModified.isBefore(DateTime.now().minusHours(24))) &&
+      wc.status.name == "Final")
+  }
+
+  def visibleOnUi(s: Schema.DBStub, c: Schema.DBContent) = {
+    !(c.published &&
+      (c.lastModified <  DateTime.now().minusHours(24) ||
+      s.lastModified <  DateTime.now().minusHours(24)) &&
+      c.status === "Final")
+  }
   implicit val contentItemReads = new Reads[ContentItem] {
     def reads(json: JsValue) = {
       for {
@@ -320,7 +328,7 @@ case object ContentItem {
         /*
           Note contentType exists in both objects, the behavior of ++ will take wc as source of truth
         */
-        Json.toJson(s).as[JsObject] ++ Json.toJson(wc).as[JsObject] ++ Json.obj("visibleOnUi" -> JsBoolean(WorkflowContent.visibleOnUi(wc)))
+        Json.toJson(s).as[JsObject] ++ Json.toJson(wc).as[JsObject] ++ Json.obj("visibleOnUi" -> JsBoolean(ContentItem.visibleOnUi(s,wc)))
       }
       case ContentItem(s, None) => Json.toJson(s)
     }

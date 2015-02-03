@@ -17,7 +17,8 @@ case class Stub(id: Option[Long],
                 needsLegal: Flag,
                 note: Option[String],
                 prodOffice: String,
-                createdAt: DateTime = DateTime.now())
+                createdAt: DateTime = DateTime.now(),
+                lastModified: DateTime = DateTime.now())
 
 object Stub {
 
@@ -41,7 +42,8 @@ object Stub {
                             (__ \ "needsLegal").readNullable[Flag].map(f  => f.getOrElse(Flag.NotRequired)) and
                             (__ \"note").readNullable[String](noteReads) and
                             (__ \"prodOffice").read[String](prodOfficeReads) and
-                            (__ \ "createdAt").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) }
+                            (__ \ "createdAt").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
+                            (__ \ "lastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) }
                         )(Stub.apply _)
 
 
@@ -49,17 +51,17 @@ object Stub {
 
   def fromStubRow(row: Schema.StubRow): Stub = row match {
     case (pk, title, section, due, assignee, composerId, contentType, priority,
-          needsLegal, note, prodOffice, createdAt) =>
+          needsLegal, note, prodOffice, createdAt, lastModified) =>
       Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority,
-           needsLegal, note, prodOffice, createdAt)
+           needsLegal, note, prodOffice, createdAt, lastModified)
   }
 
   /* provide a tuple suitable for insertion into the database */
   def newStubRow(s: Stub) = s match {
     case Stub(_, title, section, due, assignee, composerId, contentType, priority,
-              needsLegal, note, prodOffice, createdAt) =>
+              needsLegal, note, prodOffice, createdAt, lastModified) =>
       (0L, title, section, due, assignee, composerId, contentType, priority,
-       needsLegal, note, prodOffice, createdAt)
+       needsLegal, note, prodOffice, createdAt, lastModified)
   }
 }
 

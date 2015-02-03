@@ -25,7 +25,8 @@ object Schema {
     Flag,               // needs_legal
     Option[String],     // note
     String,             // prod_office,
-    DateTime            // createdAt
+    DateTime,           // createdAt,
+    DateTime            // lastModified
   )
 
   case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
@@ -41,7 +42,8 @@ object Schema {
     def note         = column [Option[String]]   ("note")
     def prodOffice   = column [String]           ("prod_office")
     def createdAt    = column [DateTime]         ("created_at")
-    def * = (pk, workingTitle, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice, createdAt)
+    def lastModified = column [DateTime]         ("wf_last_modified")
+    def * = (pk, workingTitle, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice, createdAt, lastModified)
   }
 
   type ContentRow =
