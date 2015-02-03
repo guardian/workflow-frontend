@@ -18,9 +18,7 @@ object CommonDB {
 
   def getStubs(query: WfQuery, unlinkedOnly: Boolean = false): List[Stub] =
     DB.withTransaction { implicit session =>
-
       val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isEmpty) else stubsQuery(query)
-
       q.sortBy(s => (s.priority.desc, s.workingTitle)).list.map(row => Stub.fromStubRow(row))
     }
 
