@@ -44,6 +44,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'Article', value: 'article', icon: 'article' },
                 { caption: 'Liveblog', value: 'liveblog', icon: 'liveblog' },
                 { caption: 'Gallery', value: 'gallery', icon: 'gallery' },
+                { caption: 'Cartoon/Graphic', value: 'picture', icon: 'picture' },
                 { caption: 'Interactive', value: 'interactive', icon: 'interactive' }
             ]
         },
@@ -129,6 +130,16 @@ var filterDefaults = function (statuses, wfFiltersService) {
                     }
                 });
             }]
+        },
+        {
+            title: 'InCopy',
+            namespace: 'incopy',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'In InCopy', value: 'true' },
+                { caption: 'Not in InCopy', value: 'false' }
+            ]
         }
     ];
 };
