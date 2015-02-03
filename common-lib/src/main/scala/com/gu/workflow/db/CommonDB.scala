@@ -95,6 +95,22 @@ object CommonDB {
     }
   }
 
+
+  def removeFromUI(composerId: String) = {
+    DB.withTransaction { implicit session =>
+      archiveContentQuery((s, c) => s.composerId === composerId)
+      deleteContentItems(Seq(composerId))
+    }
+  }
+
+
+  def deleteArchiveContent(composerId: String): Int = {
+    DB.withTransaction { implicit session =>
+      archive.filter(_.composerId === composerId).delete
+    }
+  }
+
+
   def archiveOldContent: Int = {
     DB.withTransaction { implicit session =>
 
@@ -106,9 +122,7 @@ object CommonDB {
 
       val composerIds = archiveContentQuery(pred, wasDeleted=false)
       deleteContentItems(composerIds)
-
     }
-
   }
 
   def deleteContentItems(composerIds: Seq[String]): Int = {
