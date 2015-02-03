@@ -166,7 +166,6 @@ var loadedColumns;
 var wfContentListItem = function ($rootScope) {
     return {
         restrict: 'A',
-        replace: true,
         template: (tElement, tAttrs) => {
 
             return $rootScope.contentItemTemplate;
@@ -184,10 +183,10 @@ var wfContentListItem = function ($rootScope) {
              * Emit an event telling the details drawer to move itself to this element, update and display.
              * @param {Object} contentItem - this contentItem
              */
-            $scope.selectItem = (contentItem) => {
+            elem.bind('click', () => {
 
-                $rootScope.$emit('contentItem.select', contentItem, elem);
-            };
+                $rootScope.$emit('contentItem.select', $scope.contentItem, elem);
+            });
 
         }
     };
