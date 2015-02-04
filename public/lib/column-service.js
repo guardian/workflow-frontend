@@ -56,7 +56,7 @@ angular.module('wfColumnService', [])
                 }
 
                 getAvailableColumns() {
-                    return this.availableColums;
+                    return Promise.resolve(this.availableColums);
                 }
 
                 getColumns() {
