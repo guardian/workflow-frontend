@@ -85,6 +85,23 @@ object WorkflowContentMainMedia {
   }
 }
 
+case class LaunchScheduleDetails(
+  scheduledLaunchDate: Option[DateTime],
+  embargoedUntil: Option[DateTime],
+  embargoedIndefinitely: Boolean
+)
+
+object LaunchScheduleDetails {
+  implicit val launchScheduleDetailsWrites: Writes[LaunchScheduleDetails] =
+    Json.writes[LaunchScheduleDetails]
+
+  implicit val launchScheduleDetailsReads: Reads[LaunchScheduleDetails] =
+    ((__ \ "scheduledLaunchDate").readNullable[DateTime] ~
+     (__ \ "settings" \ "embargoedUntil").readNullable[String].map(s => s.map(t => new DateTime(t))) ~
+     (__ \ "settings" \ "embargoedIndefinitely").readNullable[String].map(s => s.exists(_=="true"))
+    )(LaunchScheduleDetails.apply _)
+}
+
 case class WorkflowContent(
   composerId: String,
   path: Option[String],
@@ -105,7 +122,8 @@ case class WorkflowContent(
   activeInInCopy: Boolean,
   takenDown: Boolean,
   timeTakenDown: Option[DateTime],
-  wordCount: Int
+  wordCount: Int,
+  launchScheduleDetails: Option[LaunchScheduleDetails]
 )
 
 object WorkflowContent {
@@ -125,29 +143,30 @@ object WorkflowContent {
     } yield tag.section
   }
 
-
   def default(composerId: String, contentType: String = "article", activeInInCopy: Boolean = false): WorkflowContent = {
     WorkflowContent(
       composerId,
-      path=None,
-      headline=None,
-      standfirst=None,
-      trailtext=None,
-      mainMedia=None,
-      trailImageUrl=None,
-      contentType=contentType,
-      section=None,
-      status=Status.Writers,
-      lastModified=new DateTime,
-      lastModifiedBy=None,
-      commentable=false,
-      published=false,
-      timePublished=None,
-      storyBundleId=None,
-      activeInInCopy=activeInInCopy,
-      takenDown=false,
-      timeTakenDown=None,
-      wordCount=0)
+      path                  = None,
+      headline              = None,
+      standfirst            = None,
+      trailtext             = None,
+      mainMedia             = None,
+      trailImageUrl         = None,
+      contentType           = contentType,
+      section               = None,
+      status                = Status.Writers,
+      lastModified          = new DateTime,
+      lastModifiedBy        = None,
+      commentable           = false,
+      published             = false,
+      timePublished         = None,
+      storyBundleId         = None,
+      activeInInCopy        = activeInInCopy,
+      takenDown             = false,
+      timeTakenDown         = None,
+      wordCount             = 0,
+      launchScheduleDetails = None
+    )
   }
 
   //implemented to work on DB object and model object
@@ -159,69 +178,103 @@ object WorkflowContent {
     !(c.published && c.lastModified <  DateTime.now().minusHours(24) && c.status === "Final")
   }
   def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
-    case (composerId      ::
-        path             ::
-        lastMod          ::
-        lastModBy        ::
-        status           ::
-        contentType      ::
-        commentable      ::
-        headline         ::
-        standfirst       ::
-        trailtext        ::
-        mainMedia        ::
-        mainMediaUrl     ::
-        mainMediaCaption ::
-        mainMediaAltText ::
-        trailImageUrl    ::
-        published        ::
-        timePublished    ::
-        _                ::
-        storyBundleId    ::
-        activeInInCopy   ::
-        takenDown        ::
-        timeTakenDown    ::
-        wordCount        ::
+    case (composerId          ::
+        path                  ::
+        lastMod               ::
+        lastModBy             ::
+        status                ::
+        contentType           ::
+        commentable           ::
+        headline              ::
+        standfirst            ::
+        trailtext             ::
+        mainMedia             ::
+        mainMediaUrl          ::
+        mainMediaCaption      ::
+        mainMediaAltText      ::
+        trailImageUrl         ::
+        published             ::
+        timePublished         ::
+        _                     ::
+        storyBundleId         ::
+        activeInInCopy        ::
+        takenDown             ::
+        timeTakenDown         ::
+        wordCount             ::
+        embargoedUntil        ::
+        embargoedIndefinitely ::
+        scheduledLaunchDate   ::
         HNil) => {
 
       val media = WorkflowContentMainMedia(
         mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
 
+      val launchScheduleDetails = LaunchScheduleDetails(
+        scheduledLaunchDate,
+        embargoedUntil,
+        embargoedIndefinitely
+      )
+
       WorkflowContent(
-        composerId, path, headline,
-        standfirst, trailtext, Some(media),
-        trailImageUrl, contentType, None,
-        Status(status), lastMod, lastModBy, commentable,
-        published, timePublished, storyBundleId,
-        activeInInCopy, takenDown, timeTakenDown, wordCount)
+        composerId,
+        path,
+        headline,
+        standfirst,
+        trailtext,
+        Some(media),
+        trailImageUrl,
+        contentType,
+        None,
+        Status(status),
+        lastMod,
+        lastModBy,
+        commentable,
+        published,
+        timePublished,
+        storyBundleId,
+        activeInInCopy,
+        takenDown,
+        timeTakenDown,
+        wordCount,
+        Some(launchScheduleDetails)
+      )
     }
   }
 
   def fromOptionalContentRow(row: Schema.OptionContentRow): Option[WorkflowContent] = row match {
-    case (Some(composerId)      ::
-          path                  ::
-          Some(lastMod)         ::
-          lastModBy             ::
-          Some(status)          ::
-          Some(contentType)     ::
-          Some(commentable)     ::
-          headline              ::
-          standfirst            ::
-          trailtext             ::
-          mainMedia             ::
-          mainMediaUrl          ::
-          mainMediaCaption      ::
-          mainMediaAltText      ::
-          trailImageUrl         ::
-          Some(published)       ::
-          timePublished         ::
-          revision              ::
-          storyBundleId         ::
-          Some(activeInInCopy)   ::
-          Some(takenDown)        ::
-          timeTakenDown           ::
-          Some(wordCount)        ::
+    case (Some(composerId)            ::
+          path                        ::
+          Some(lastMod)               ::
+          lastModBy                   ::
+          Some(status)                ::
+          Some(contentType)           ::
+          Some(commentable)           ::
+          headline                    ::
+          standfirst                  ::
+          trailtext                   ::
+          mainMedia                   ::
+          mainMediaUrl                ::
+          mainMediaCaption            ::
+          mainMediaAltText            ::
+          trailImageUrl               ::
+          Some(published)             ::
+          timePublished               ::
+          revision                    ::
+          storyBundleId               ::
+          Some(activeInInCopy)        ::
+          Some(takenDown)             ::
+          timeTakenDown               ::
+          Some(wordCount)             ::
+          embargoedUntil              ::
+          Some(embargoedIndefinitely) ::
+          scheduledLaunchDate         ::
           HNil) => {
+
+      val launchScheduleDetails = LaunchScheduleDetails(
+        scheduledLaunchDate,
+        embargoedUntil,
+        embargoedIndefinitely
+      )
 
       val media = WorkflowContentMainMedia(
         mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
@@ -232,39 +285,49 @@ object WorkflowContent {
         trailImageUrl, contentType, None,
         Status(status), lastMod, lastModBy, commentable,
         published, timePublished, storyBundleId,
-        activeInInCopy, takenDown, timeTakenDown, wordCount))
+        activeInInCopy, takenDown, timeTakenDown, wordCount, Some(launchScheduleDetails)
+        ))
     }
     case _ => None
 
   }
 
   def newContentRow(wc: WorkflowContent, revision: Option[Long]) = {
+
     val mainMedia = wc.mainMedia.getOrElse(
       WorkflowContentMainMedia(None, None, None, None)
     )
-    wc.composerId       ::
-    wc.path             ::
-    wc.lastModified     ::
-    wc.lastModifiedBy   ::
-    wc.status.name      ::
-    wc.contentType      ::
-    wc.commentable      ::
-    wc.headline         ::
-    wc.standfirst       ::
-    wc.trailtext        ::
-    mainMedia.mediaType ::
-    mainMedia.url       ::
-    mainMedia.caption   ::
-    mainMedia.altText   ::
-    wc.trailImageUrl    ::
-    wc.published        ::
-    wc.timePublished    ::
-    revision            ::
-    wc.storyBundleId    ::
-    wc.activeInInCopy   ::
-    wc.takenDown        ::
-    wc.timeTakenDown    ::
-    wc.wordCount        ::
+
+    val launchScheduleDetails = wc.launchScheduleDetails.getOrElse(
+      LaunchScheduleDetails(None, None, false)
+    )
+
+    wc.composerId            ::
+    wc.path                  ::
+    wc.lastModified          ::
+    wc.lastModifiedBy        ::
+    wc.status.name           ::
+    wc.contentType           ::
+    wc.commentable           ::
+    wc.headline              ::
+    wc.standfirst            ::
+    wc.trailtext             ::
+    mainMedia.mediaType      ::
+    mainMedia.url            ::
+    mainMedia.caption        ::
+    mainMedia.altText        ::
+    wc.trailImageUrl         ::
+    wc.published             ::
+    wc.timePublished         ::
+    revision                 ::
+    wc.storyBundleId         ::
+    wc.activeInInCopy        ::
+    wc.takenDown             ::
+    wc.timeTakenDown         ::
+    wc.wordCount             ::
+    launchScheduleDetails.embargoedUntil        ::
+    launchScheduleDetails.embargoedIndefinitely ::
+    launchScheduleDetails.scheduledLaunchDate   ::
     HNil
   }
 
@@ -295,9 +358,9 @@ object WorkflowContent {
       (__ \ "timeTakenDown").readNullable[DateTime] ~
       (__ \ "wordCount").readNullable[Int].map {
         c => c.getOrElse(0)
-      }
-
-      )(WorkflowContent.apply _)
+      } ~
+      (__ \ "launchScheduleDetails").readNullable[LaunchScheduleDetails]
+     )(WorkflowContent.apply _)
 }
 
 case class ContentItem(stub: Stub, wcOpt: Option[WorkflowContent])
@@ -326,4 +389,3 @@ case object ContentItem {
     }
   }
 }
-
