@@ -1,5 +1,6 @@
 package models
 
+import com.gu.workflow.lib.Util
 import models.Status._
 import com.gu.workflow.db.Schema
 import org.joda.time.DateTime
@@ -299,15 +300,15 @@ case object ContentItem {
   //implemented to work on DB object and model object
   def visibleOnUi(s: Stub, wc: WorkflowContent) = {
     !(wc.published &&
-      (wc.lastModified.isBefore(DateTime.now().minusHours(24)) &&
-      s.lastModified.isBefore(DateTime.now().minusHours(24))) &&
+      (wc.lastModified.isBefore(Util.roundDateTime(DateTime.now().minusHours(24))) &&
+      s.lastModified.isBefore(Util.roundDateTime(DateTime.now().minusHours(24)))) &&
       wc.status.name == "Final")
   }
 
   def visibleOnUi(s: Schema.DBStub, c: Schema.DBContent) = {
     !(c.published &&
-      (c.lastModified <  DateTime.now().minusHours(24) &&
-      s.lastModified <  DateTime.now().minusHours(24)) &&
+      (c.lastModified <  Util.roundDateTime(DateTime.now().minusHours(24)) &&
+      s.lastModified <  Util.roundDateTime(DateTime.now().minusHours(24))) &&
       c.status === "Final")
   }
   implicit val contentItemReads = new Reads[ContentItem] {
