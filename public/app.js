@@ -35,6 +35,7 @@ import 'lib/column-service';
 import 'lib/preferences-service';
 import 'lib/analytics';
 import 'lib/feature-switches';
+import 'lib/google-api';
 
 // 3rd party libs
 import 'angular-ui-router';
@@ -62,7 +63,8 @@ angular.module('workflow',
         'wfFiltersService',
         'wfColumnService',
         'wfPreferencesService',
-        'wfFeatureSwitches'
+        'wfFeatureSwitches',
+        'wfGoogleApiService'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
         // TODO: remember user's state and redirect there on default '' route
@@ -119,8 +121,11 @@ angular.module('workflow',
     .constant({ 'statuses': _wfConfig.statuses })
     .constant({ 'sections': _wfConfig.sections })
     .constant({ 'desks': _wfConfig.desks })
-    .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks });
+    .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
 
+    .run(function ($window, wfGoogleApiService) {
+        wfGoogleApiService.load();
+    });
 
 // Bootstrap App
 angular.element(document).ready(function () {
