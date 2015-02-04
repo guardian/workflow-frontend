@@ -220,3 +220,19 @@ $drawer-breakpoint-small: 1400px;
     min-width: 200px;
 }
 
+.drawer__user-image {
+    height: 38px;
+    width: 38px;
+    background-color: $c-grey-300;
+    margin-right: 2px;
+    @include border-radius(50px);
+    display: inline-block;
+
+    &.drawer__user-image--placeholder {
+        content: "";
+    }
+}
+
+.drawer__user-name {
+    display: inline-block;
+}
