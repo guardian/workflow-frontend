@@ -13,7 +13,7 @@ import 'lib/prodoffice-service';
 
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService',]);
 
-function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
+function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statuses, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
     var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
 
     $scope.mode = mode;
@@ -26,6 +26,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.formData = {};
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
+    $scope.statuses = statuses;
 
     $scope.stub = stub;
     $scope.stub.section = (function findSelectedSectionInAvailableSections () {
@@ -37,6 +38,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             return filteredSections[0];
         }
     })();
+    $scope.stub.status = 'Writers';
 
     /**
      * If the user currently has a desk selected then only
@@ -115,7 +117,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         var stub = $scope.stub;
         var promise;
 
-        stub.status = 'Writers';
+        if (!addToComposer) {
+            delete stub.status;
+        }
 
         if (addToComposer) {
             promise = wfContentService.createInComposer(stub);
