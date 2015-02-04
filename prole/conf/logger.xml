@@ -28,7 +28,9 @@
         <port>${elk_port}</port>
 
         <!-- encoder is required -->
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"appenv":"${APP_ENV}"}</customFields>
+        </encoder>
     </appender>
 
     <logger name="play" level="INFO" />
