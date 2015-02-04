@@ -23,7 +23,15 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Scheduled</span>
-                        <span class="drawer__section-data-row">{{ contentItem.scheduled }}</span>
+                        <span class="drawer__section-data-row">
+                            {{ (contentItem.launchScheduleDetails.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
+                        </span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Embargoed until</span>
+                        <span class="drawer__section-data-row">
+                            {{ contentItem.embargoedText }}
+                        </span>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Last modified</span>
