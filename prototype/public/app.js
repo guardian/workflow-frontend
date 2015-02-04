@@ -122,6 +122,16 @@ angular.module('workflow',
     .constant({ 'sections': _wfConfig.sections })
     .constant({ 'desks': _wfConfig.desks })
     .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
+    .constant({ 'legalValues': [
+        { name: '', value: 'NA' },
+        { name: 'Check it', value: 'REQUIRED' },
+        { name: 'Approved', value: 'COMPLETE'}
+    ]})
+    .constant({ 'priorities': [
+        { name: 'Normal', value: 0 },
+        { name: 'Urgent', value: 1 },
+        { name: 'Very-Urgent', value: 2 }
+    ]});
 
     .run(function ($window, wfGoogleApiService) {
         wfGoogleApiService.load();
