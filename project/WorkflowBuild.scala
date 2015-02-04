@@ -44,7 +44,7 @@ object WorkflowBuild extends Build {
     )
 
   lazy val prole = playProject("prole")
-                  .settings(libraryDependencies ++= awsDependencies ++ testDependencies)
+                  .settings(libraryDependencies ++= awsDependencies ++ testDependencies ++ logbackDependencies)
                   .settings(playDefaultPort := 9091)
 
   lazy val archiver = playProject("archiver")
@@ -55,7 +55,7 @@ object WorkflowBuild extends Build {
   lazy val root = playProject("prototype")
     .settings(
       libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
-      ++ apiDocDependencies
+      ++ apiDocDependencies ++ logbackDependencies
     )
     .settings(FrontEnd.PrototypeProject.settings: _*)
     .settings(playDefaultPort := 9090)
