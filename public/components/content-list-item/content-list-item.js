@@ -80,7 +80,7 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.hasMainMedia = Boolean(item.mainMedia) && Boolean(item.mainMedia.mediaType);
             if(this.hasMainMedia) {
                 this.mainMediaType    = item.mainMedia.mediaType;
-                this.mainMediaTitle   = 'Main media (' + (item.mainMediaType || 'none')  + ')';
+                this.mainMediaTitle   = 'Main media (' + (item.mainMedia.mediaType || 'none')  + ')';
                 this.mainMediaUrl     = item.mainMedia.url;
                 this.mainMediaCaption = stripHtml(item.mainMedia.caption);
                 this.mainMediaAltText = stripHtml(item.mainMedia.altText);
