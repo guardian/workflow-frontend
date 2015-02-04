@@ -163,7 +163,7 @@ var loadedColumns;
  * Directive allowing the contentListItems to interact with the details drawer
  * @param $rootScope
  */
-var wfContentListItem = function ($rootScope) {
+var wfContentListItem = function ($rootScope, statuses, legalValues, sections) {
     return {
         restrict: 'A',
         template: (tElement, tAttrs) => {
@@ -173,11 +173,14 @@ var wfContentListItem = function ($rootScope) {
         scope: {
             contentItem: '=',
             contentList: '=',
-            legalValues: '=',
-            statusValues: '=',
             template: '='
         },
-        link: function ($scope, elem, attrs) {
+        controller: ($scope) => {
+            $scope.statusValues = statuses;
+            $scope.legalValues = legalValues;
+            $scope.sections = sections;
+        },
+        link: function ($scope, elem, $attrs) {
 
             /**
              * Emit an event telling the details drawer to move itself to this element, update and display.

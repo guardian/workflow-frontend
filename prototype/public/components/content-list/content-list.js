@@ -19,9 +19,9 @@ import { wfContentListDrawer } from 'components/content-list-drawer/content-list
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField'])
     .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
-    .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
+    .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'legalValues', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
-    .directive('wfContentListItem', ['$rootScope', wfContentListItem])
+    .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'sections', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', wfContentListDrawer])
     .directive("bindCompiledHtml", function($compile, $timeout) {
         return {
@@ -53,9 +53,15 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                     var contentListHeading = '<tr class="content-list__group-heading-row"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span></th></tr>';
 
-                    var contentListContent = '<tr wf-content-list-item class="content-list-item" ng-class="{\'content-list-item--selected\': contentList.selectedItem === contentItem, \'content-list-item--published\': contentItem.isPublished && !contentItem.isTakenDown, \'content-list-item--takendown\': contentItem.isTakenDown}" ng-repeat="contentItem in group.items track by contentItem.id" content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues" sections="sections" id="stub-{{contentItem.id}}" href="stub-{{contentItem.id}}" template="contentItemTemplate"></tr>';
+                    var contentListItemDirective = '<tr wf-content-list-item class="content-list-item" ng-repeat="contentItem in group.items track by contentItem.id"';
 
-                    var contentListTemplate = contentListHeading + contentListContent;
+                    var contentListItemClasses = 'ng-class="{\'content-list-item--selected\': contentList.selectedItem === contentItem, \'content-list-item--published\': contentItem.isPublished && !contentItem.isTakenDown, \'content-list-item--takendown\': contentItem.isTakenDown}"';
+
+                    var contentListItemAttributes = 'content-item="contentItem" content-list="contentList" id="stub-{{contentItem.id}}" template="contentItemTemplate"></tr>';
+
+                    var contentListItemContent = contentListItemDirective + contentListItemClasses + contentListItemAttributes;
+
+                    var contentListTemplate = contentListHeading + contentListItemContent;
 
                     $rootScope.compiledTemplate = $rootScope.compiledTemplate || $compile(contentListTemplate);
 
@@ -69,7 +75,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 
 
-function wfContentListController($rootScope, $scope, $anchorScroll, statuses, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService) {
+function wfContentListController($rootScope, $scope, $anchorScroll, statuses, legalValues, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService) {
 
     /*jshint validthis:true */
 
@@ -151,19 +157,11 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, se
         $scope.$emit(prefix + ':edit', contentItem.item);
     };
 
-    this.legalValues = [
-        { name: '', value: 'NA' },
-        { name: 'Check it', value: 'REQUIRED' },
-        { name: 'Approved', value: 'COMPLETE'}
-    ];
+    this.legalValues = legalValues;
 
     this.sections = sections;
 
-    this.priorities = [
-        { name: 'Normal', value: 0 },
-        { name: 'Urgent', value: 1 },
-        { name: 'Very-Urgent', value: 2 }
-    ];
+    this.priorities = priorities;
 
     // Watch composer contentIds for Presence
     $scope.$watch('contentIds', (newIds, oldIds) => {
