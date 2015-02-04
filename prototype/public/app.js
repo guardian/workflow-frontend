@@ -131,7 +131,7 @@ angular.module('workflow',
         { name: 'Normal', value: 0 },
         { name: 'Urgent', value: 1 },
         { name: 'Very-Urgent', value: 2 }
-    ]});
+    ]})
 
     .run(function ($window, wfGoogleApiService) {
         wfGoogleApiService.load();
