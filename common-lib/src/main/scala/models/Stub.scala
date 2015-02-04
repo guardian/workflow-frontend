@@ -11,6 +11,7 @@ case class Stub(id: Option[Long],
                 section: String,
                 due: Option[DateTime],
                 assignee: Option[String],
+                assigneeEmail: Option[String],
                 composerId: Option[String],
                 contentType: Option[String],
                 priority: Int,
@@ -35,6 +36,7 @@ object Stub {
                             (__ \ "section" \ "name").read[String] and
                             (__ \ "due").readNullable[DateTime] and
                             (__ \ "assignee").readNullable[String] and
+                            (__ \ "assigneeEmail").readNullable[String] and
                             (__ \ "composerId").readNullable[String] and
                             (__ \ "contentType").readNullable[String] and
                             (__ \ "priority").readNullable[Int].map(_.getOrElse(0)) and
@@ -48,17 +50,17 @@ object Stub {
   implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
 
   def fromStubRow(row: Schema.StubRow): Stub = row match {
-    case (pk, title, section, due, assignee, composerId, contentType, priority,
+    case (pk, title, section, due, assignee, assigneeEmail, composerId, contentType, priority,
           needsLegal, note, prodOffice, createdAt) =>
-      Stub(Some(pk), title, section, due, assignee, composerId, contentType, priority,
+      Stub(Some(pk), title, section, due, assignee, assigneeEmail, composerId, contentType, priority,
            needsLegal, note, prodOffice, createdAt)
   }
 
   /* provide a tuple suitable for insertion into the database */
   def newStubRow(s: Stub) = s match {
-    case Stub(_, title, section, due, assignee, composerId, contentType, priority,
+    case Stub(_, title, section, due, assignee, assigneeEmail, composerId, contentType, priority,
               needsLegal, note, prodOffice, createdAt) =>
-      (0L, title, section, due, assignee, composerId, contentType, priority,
+      (0L, title, section, due, assignee, assigneeEmail, composerId, contentType, priority,
        needsLegal, note, prodOffice, createdAt)
   }
 }
