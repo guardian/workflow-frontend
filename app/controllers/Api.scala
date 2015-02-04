@@ -64,7 +64,8 @@ object Api extends Controller with PanDomainAuthActions {
   val getContentBlock = { implicit req: Request[AnyContent] =>
 
     val queryData = WfQuery.fromRequest(req)
-    val status = queryData.status
+    val state     = queryData.state
+    val status    = queryData.status
     val published = queryData.published
 
     def getContent = {
@@ -76,9 +77,8 @@ object Api extends Controller with PanDomainAuthActions {
 
     val stubs =
       if((status.isEmpty || status.exists(_ == models.Status("Stub"))) &&
-           // stubs are never 'published'
-           (published != Some(true)) &&
-           (queryData.inIncopy != Some(true))) getStubs else Nil
+        (state.isEmpty   || state == Some(DraftState)) &&
+        (queryData.inIncopy != Some(true))) getStubs else Nil
 
     val content = getContent
 
