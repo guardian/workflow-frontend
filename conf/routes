@@ -30,6 +30,7 @@ GET            /api/stubs                             controllers.Api.stubs
 POST           /api/stubs                             controllers.Api.createContent
 PUT            /api/stubs/:stubId                     controllers.Api.putStub(stubId: Long)
 PUT            /api/stubs/:stubId/assignee            controllers.Api.putStubAssignee(stubId: Long)
+PUT            /api/stubs/:stubId/assigneeEmail       controllers.Api.putStubAssigneeEmail(stubId: Long)
 PUT            /api/stubs/:stubId/dueDate             controllers.Api.putStubDueDate(stubId: Long)
 PUT            /api/stubs/:stubId/note                controllers.Api.putStubNote(stubId: Long)
 PUT            /api/stubs/:stubId/needsLegal          controllers.Api.putStubLegalStatus(stubId: Long)
