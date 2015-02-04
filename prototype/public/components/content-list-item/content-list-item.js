@@ -162,17 +162,17 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             var dateFormatter = (date) => { return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(date), 'ddd DD MMM HH:mm'); }
 
             var states = [
-                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "supl": () => {
-                    return dateFormatter(item.timeTakenDown); }
-                },
-                { "display": "Embargoed until", "key": "embargoed", "active": this.isEmbargoed, "supl": () => {
+               { "display": "Published", "key": "published", "active": item.published && !item.takenDown, "supl": () => {
+                    return dateFormatter(item.timePublished); }
+               },
+               { "display": "Embargoed until", "key": "embargoed", "active": this.isEmbargoed, "supl": () => {
                     return this.embargoedText; }
                 },
                 { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "supl": () => {
                     return dateFormatter(this.launchScheduleDetails.scheduledLaunchDate); }
                 },
-                { "display": "Published", "key": "published", "active": item.published, "supl": () => {
-                    return dateFormatter(item.timePublished); }
+                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "supl": () => {
+                    return dateFormatter(item.timeTakenDown); }
                 },
                 { "display": "", "key": "draft", "active": true, "supl": () => { return false; } } // Base state
             ];
