@@ -70,14 +70,19 @@ object CommonDB {
           c.trailtext, c.mainMedia, c.mainMediaUrl,
           c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl,
           c.published, c.timePublished, c.revision, c.wordCount, c.takenDown,
-          c.storyBundleId)
+          c.storyBundleId, c.embargoedUntil, c.embargoedIndefinitely, c.scheduledLaunchDate)
          )
          .update((e.path, e.lastModified, e.user, e.`type`,
            e.commentable, e.headline, e.standfirst,
            e.trailText, mainMedia.mediaType, mainMedia.url, mainMedia.caption,
-           mainMedia.altText, WorkflowContent.getTrailImageUrl(e.thumbnail), e.published, e.publicationDate,
-                  Some(e.revision), e.wordCount, isTakenDown(e.published, takenDown),
-                  e.storyBundleId))
+           mainMedia.altText, WorkflowContent.getTrailImageUrl(e.thumbnail),
+           e.published, e.publicationDate, Some(e.revision), e.wordCount,
+           isTakenDown(e.published, takenDown), e.storyBundleId,
+           e.launchScheduleDetails.embargoedUntil,
+           e.launchScheduleDetails.embargoedIndefinitely,
+           e.launchScheduleDetails.scheduledLaunchDate
+           )
+         )
     }
 
   }
@@ -95,6 +100,22 @@ object CommonDB {
     }
   }
 
+
+  def removeFromUI(composerId: String) = {
+    DB.withTransaction { implicit session =>
+      archiveContentQuery((s, c) => s.composerId === composerId)
+      deleteContentItems(Seq(composerId))
+    }
+  }
+
+
+  def deleteArchiveContent(composerId: String): Int = {
+    DB.withTransaction { implicit session =>
+      archive.filter(_.composerId === composerId).delete
+    }
+  }
+
+
   def archiveOldContent: Int = {
     DB.withTransaction { implicit session =>
 
@@ -106,9 +127,7 @@ object CommonDB {
 
       val composerIds = archiveContentQuery(pred, wasDeleted=false)
       deleteContentItems(composerIds)
-
     }
-
   }
 
   def deleteContentItems(composerIds: Seq[String]): Int = {
