@@ -12,5 +12,7 @@
     color: $c-grey-600;
     @extend %fs-data-2;
     font-weight: bold;
+    background-color: #ffffff;
+    @include box-shadow(0px 0px 5px $c-grey-500);
 }
 
