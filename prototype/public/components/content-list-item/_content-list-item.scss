@@ -24,7 +24,7 @@
     }
 
     &__notifier {
-        width: 4px;
+        width: 8px;
         padding: 0;
     }
 
@@ -38,6 +38,17 @@
         background: $c-grey-300;
         .content-list-item__notifier {
             background: repeating-linear-gradient( 45deg, $c-grey-300, $c-grey-300 3px, $c-grey-600 3px, $c-grey-600 6px)
+        }
+    }
+    &--scheduled {
+        .content-list-item__notifier {
+            background: repeating-linear-gradient( 0deg, $c-light-orange, $c-light-orange 3px, $c-orange 3px, $c-orange 6px)
+        }
+    }
+    &--embargoed {
+        background:$c-light-orange;
+        .content-list-item__notifier {
+            background: repeating-linear-gradient( 135deg, $c-grey-300, $c-grey-300 6px, $c-red 6px, $c-red 12px)
         }
     }
 
@@ -143,7 +154,9 @@
         &--deadline,
         &--created,
         &--section,
-        &--incopy {
+        &--incopy,
+        &--wordcount,
+        &--needsLegal {
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
@@ -180,6 +193,10 @@
             min-width: 28px;
         }
 
+        &--needsLegal {
+            width: 32px;
+        }
+
         &--office {
             width: 30px;
         }
@@ -212,6 +229,11 @@
             @extend %fs-data-1;
             padding: 2px 10px;
             width: 120px;
+        }
+
+        &--wordcount {
+            width: 34px;
+            text-align: center;
         }
 
         &-supl--published-state {
@@ -306,7 +328,8 @@
         &--created,
         &--section,
         &--incopy,
-        &--published-state {
+        &--published-state,
+        &--wordcount {
             @extend %fs-data-2;
         }
 

@@ -65,7 +65,10 @@ var filterDefaults = function (statuses, wfFiltersService) {
             listIsOpen: false,
             filterOptions: [
                 { caption: 'Draft', value: 'draft' },
-                { caption: 'Published', value: 'published' }
+                { caption: 'Published', value: 'published' },
+                { caption: 'Taken down', value: 'takendown' },
+                { caption: 'Scheduled', value: 'scheduled' },
+                { caption: 'Embargoed', value: 'embargoed' }
             ]
         },
         {
