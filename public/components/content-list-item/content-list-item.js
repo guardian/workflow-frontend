@@ -156,9 +156,6 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
     };
 }
 
-
-var loadedColumns;
-
 /**
  * Directive allowing the contentListItems to interact with the details drawer
  * @param $rootScope
