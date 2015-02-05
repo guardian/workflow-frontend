@@ -12,6 +12,7 @@ GET            /dashboard                             controllers.Application.da
 #static user pages
 GET            /about                                 controllers.Application.about
 GET            /faqs                                  controllers.Application.faqs
+GET            /troubleshooting                       controllers.Application.troubleshooting
 
 # Login
 GET            /oauthCallback                         controllers.Login.oauthCallback
