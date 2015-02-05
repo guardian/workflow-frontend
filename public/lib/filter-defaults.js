@@ -65,7 +65,10 @@ var filterDefaults = function (statuses, wfFiltersService) {
             listIsOpen: false,
             filterOptions: [
                 { caption: 'Draft', value: 'draft' },
-                { caption: 'Published', value: 'published' }
+                { caption: 'Published', value: 'published' },
+                { caption: 'Taken down', value: 'takendown' },
+                { caption: 'Scheduled', value: 'scheduled' },
+                { caption: 'Embargoed', value: 'embargoed' }
             ]
         },
         {
@@ -127,6 +130,16 @@ var filterDefaults = function (statuses, wfFiltersService) {
                     }
                 });
             }]
+        },
+        {
+            title: 'InCopy',
+            namespace: 'incopy',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'In InCopy', value: 'true' },
+                { caption: 'Not in InCopy', value: 'false' }
+            ]
         }
     ];
 };
