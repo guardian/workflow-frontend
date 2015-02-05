@@ -44,7 +44,9 @@ $compact-display-td-padding: 2px 5px;
             &--status,
             &--notes,
             &--links,
-            &--published-state {
+            &--published-state,
+            &--wordcount,
+            &--needsLegal {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 
@@ -79,6 +81,10 @@ $compact-display-td-padding: 2px 5px;
             &--notifier {
                 padding: 0;
                 width: 4px;
+            }
+
+            &--wordcount {
+                width: 40px;
             }
         }
     }
