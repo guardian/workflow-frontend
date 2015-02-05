@@ -24,7 +24,7 @@
     }
 
     &__notifier {
-        width: 8px;
+        width: 5px;
         padding: 0;
     }
 
@@ -84,6 +84,7 @@
 
         &--presence {
             background-color: $c-presence-purple;
+            border: 1px solid $c-white;
             color: #fff;
 
             &:hover {
@@ -357,10 +358,9 @@
     .content-list-item__icon--assignee {
         @extend %fs-data-1;
         font-size: 9px;
-        width: 15px;
-        height: 15px;
-        line-height: 15px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
         display: inline-block;
-        border: 1px solid $c-white;
     }
 }
