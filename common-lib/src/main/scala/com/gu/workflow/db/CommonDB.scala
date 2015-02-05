@@ -18,9 +18,7 @@ object CommonDB {
 
   def getStubs(query: WfQuery, unlinkedOnly: Boolean = false): List[Stub] =
     DB.withTransaction { implicit session =>
-
       val q = if (unlinkedOnly) stubsQuery(query).filter(_.composerId.isEmpty) else stubsQuery(query)
-
       q.sortBy(s => (s.priority.desc, s.workingTitle)).list.map(row => Stub.fromStubRow(row))
     }
 
@@ -72,14 +70,19 @@ object CommonDB {
           c.trailtext, c.mainMedia, c.mainMediaUrl,
           c.mainMediaCaption, c.mainMediaAltText, c.trailImageUrl,
           c.published, c.timePublished, c.revision, c.wordCount, c.takenDown,
-          c.storyBundleId)
+          c.storyBundleId, c.embargoedUntil, c.embargoedIndefinitely, c.scheduledLaunchDate)
          )
          .update((e.path, e.lastModified, e.user, e.`type`,
            e.commentable, e.headline, e.standfirst,
            e.trailText, mainMedia.mediaType, mainMedia.url, mainMedia.caption,
-           mainMedia.altText, WorkflowContent.getTrailImageUrl(e.thumbnail), e.published, e.publicationDate,
-                  Some(e.revision), e.wordCount, isTakenDown(e.published, takenDown),
-                  e.storyBundleId))
+           mainMedia.altText, WorkflowContent.getTrailImageUrl(e.thumbnail),
+           e.published, e.publicationDate, Some(e.revision), e.wordCount,
+           isTakenDown(e.published, takenDown), e.storyBundleId,
+           e.launchScheduleDetails.embargoedUntil,
+           e.launchScheduleDetails.embargoedIndefinitely,
+           e.launchScheduleDetails.scheduledLaunchDate
+           )
+         )
     }
 
   }
@@ -97,25 +100,55 @@ object CommonDB {
     }
   }
 
-  def deleteContent(composerId: String) = {
+
+  def removeFromUI(composerId: String) = {
     DB.withTransaction { implicit session =>
       archiveContentQuery((s, c) => s.composerId === composerId)
-      content.filter(_.composerId === composerId).delete
-      stubs.filter(_.composerId === composerId).delete
+      deleteContentItems(Seq(composerId))
     }
   }
 
 
-  def archiveContentQuery(p: (DBStub, DBContent) => Column[Option[Boolean]])(implicit session: Session) =
-    archive
+  def deleteArchiveContent(composerId: String): Int = {
+    DB.withTransaction { implicit session =>
+      archive.filter(_.composerId === composerId).delete
+    }
+  }
+
+
+  def archiveOldContent: Int = {
+    DB.withTransaction { implicit session =>
+
+      val pred = (s: DBStub, c: DBContent) => {
+        c.timePublished <  DateTime.now().minus(Duration.standardDays(30)) &&
+        c.lastModified < DateTime.now().minus(Duration.standardDays(30)) &&
+          !WorkflowContent.visibleOnUi(c)
+      }
+
+      val composerIds = archiveContentQuery(pred, wasDeleted=false)
+      deleteContentItems(composerIds)
+    }
+  }
+
+  def deleteContentItems(composerIds: Seq[String]): Int = {
+    DB.withTransaction { implicit session =>
+      content.filter(_.composerId inSet composerIds).delete
+      stubs.filter(_.composerId inSet composerIds).delete
+    }
+
+  }
+
+  def archiveContentQuery(p: (DBStub, DBContent) => Column[Option[Boolean]], wasDeleted:Boolean=true)(implicit session: Session): Seq[String] = {
+    (archive
       .map(
         a => (
           a.stubId, a.composerId, a.wasDeleted, a.workingTitle, a.section,
           a.contentType, a.prodOffice, a.createdAt, a.lastModified, a.status,
           a.headline, a.path, a.published, a.timePublished, a.revision,
           a.storybundleid, a.activeinincopy, a.takendown, a.timeTakendown
-        )
+          )
       )
+      .returning(archive.map(a => a.composerId))
       .insert(
         for {
           (s, c) <- stubs outerJoin content on (_.composerId === _.composerId)
@@ -123,10 +156,11 @@ object CommonDB {
         }
         yield
           (
-            s.pk, s.composerId, true /* was_deleted */, s.workingTitle, s.section,
+            s.pk, s.composerId, wasDeleted, s.workingTitle, s.section,
             s.contentType, s.prodOffice, s.createdAt, c.lastModified, c.status,
             c.headline, c.path, c.published, c.timePublished, c.revision,
             c.storyBundleId, c.activeInInCopy, c.takenDown, c.timeTakenDown
-          )
-      )
+            )
+      )).flatten
+  }
 }

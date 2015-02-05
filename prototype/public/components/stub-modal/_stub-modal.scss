@@ -59,6 +59,7 @@
     -webkit-transition: all 0.25s;
     -moz-transition: all 0.25s;
     transition: all 0.25s;
+    z-index: 2;
 }
 
 .modal-body__advanced--open {
@@ -67,6 +68,10 @@
     opacity:1;
 
     overflow: visible;
+}
+
+.modal-footer {
+    z-index: 1;
 }
 
 // Display errors for deadline field
@@ -90,4 +95,3 @@
 .modal-footer.alert {
     margin-bottom: 0px;
 }
-

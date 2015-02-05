@@ -57,8 +57,6 @@ function wfContentItemParser(config, statuses, sections) {
             this.update(item);
         }
 
-
-
         update(item) {
 
             // TODO: Stubs have a different structure to content items
@@ -78,10 +76,12 @@ function wfContentItemParser(config, statuses, sections) {
             this.hasMainMedia = Boolean(item.mainMedia) && Boolean(item.mainMedia.mediaType);
             if(this.hasMainMedia) {
                 this.mainMediaType    = item.mainMedia.mediaType;
-                this.mainMediaTitle   = 'Main media (' + (item.mainMediaType || 'none')  + ')';
+                this.mainMediaTitle   = 'Main media (' + (item.mainMedia.mediaType || 'none')  + ')';
                 this.mainMediaUrl     = item.mainMedia.url;
                 this.mainMediaCaption = stripHtml(item.mainMedia.caption);
                 this.mainMediaAltText = stripHtml(item.mainMedia.altText);
+            } else {
+                this.mainMediaTitle   = 'No main media has been set';
             }
 
             // Currently we don't pull in any preview information about non-image main media
@@ -90,8 +90,9 @@ function wfContentItemParser(config, statuses, sections) {
             this.trailtext = stripHtml(item.trailtext);
             this.trailImageUrl = item.trailImageUrl;
 
-            this.assignee = item.assignee && toInitials(item.assignee) || '';
-            this.assigneeFull = item.assignee || 'unassigned';
+            this.assignee = item.assignee;
+            this.assigneeEmail = item.assigneeEmail;
+            this.assigneeInitials = item.assignee && toInitials(item.assignee);
 
             this.contentType = item.contentType;
             this.contentTypeTitle = toTitleCase(item.contentType);
@@ -112,12 +113,32 @@ function wfContentItemParser(config, statuses, sections) {
             this.lastModified = item.lastModified;
             this.lastModifiedBy = item.lastModifiedBy;
 
+            this.launchScheduleDetails = item.launchScheduleDetails || {};
+
+            this.hasEmbargoedDate =
+                    this.launchScheduleDetails.embargoedUntil &&
+                    this.launchScheduleDetails.embargoedUntil > (new Date()).getTime();
+
+            this.embargoedText = (() => { if(this.launchScheduleDetails.embargoedIndefinitely) {
+                    return "Indefinitely";
+                } else if(this.hasEmbargoedDate) {
+                    return wfFormatDateTimeFilter(
+                        wfLocaliseDateTimeFilter(this.launchScheduleDetails.embargoedUntil)
+                    );
+                } else {
+                    return "-";
+                }
+            })();
+
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
+            this.isEmbargoed = this.hasEmbargoedDate || this.launchScheduleDetails.embargoedIndefinitely;
+            this.isScheduled = Boolean(this.launchScheduleDetails.scheduledLaunchDate);
 
-            var lifecycleState = this.lifecycleState(item);
-            this.lifecycleState = lifecycleState.display;
-            this.lifecycleStateTime = lifecycleState.time;
+            var lifecycleState      = this.lifecycleState(item);
+            this.lifecycleState     = lifecycleState.display;
+            this.lifecycleStateKey  = lifecycleState.key;
+            this.lifecycleStateSupl = lifecycleState.supl();
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -136,14 +157,26 @@ function wfContentItemParser(config, statuses, sections) {
 
         lifecycleState(item) {
             // Highest priority at the top!
+
+            var dateFormatter = (date) => { return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(date), 'ddd DD MMM HH:mm'); }
+
             var states = [
-                { "display": "Taken down", "active": item.takenDown, "time": item.timeTakenDown},
-                { "display": "Embargoed", "active": false, "time": undefined },
-                { "display": "Published", "active": item.published, "time": item.timePublished},
-                { "display": "", "active": true, "time": undefined} // Base state
+                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "supl": () => {
+                    return dateFormatter(item.timeTakenDown); }
+                },
+                { "display": "Embargoed until", "key": "embargoed", "active": this.isEmbargoed, "supl": () => {
+                    return this.embargoedText; }
+                },
+                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "supl": () => {
+                    return dateFormatter(this.launchScheduleDetails.scheduledLaunchDate); }
+                },
+                { "display": "Published", "key": "published", "active": item.published, "supl": () => {
+                    return dateFormatter(item.timePublished); }
+                },
+                { "display": "", "key": "draft", "active": true, "supl": () => { return false; } } // Base state
             ];
 
-            return (states.filter(function(o) { return o.active === true; })[0]);
+            return states.filter((o) => { return o.active === true; })[0];
         }
     }
 
@@ -152,17 +185,13 @@ function wfContentItemParser(config, statuses, sections) {
     };
 }
 
-
-var loadedColumns;
-
 /**
  * Directive allowing the contentListItems to interact with the details drawer
  * @param $rootScope
  */
-var wfContentListItem = function ($rootScope) {
+var wfContentListItem = function ($rootScope, statuses, legalValues, sections) {
     return {
         restrict: 'A',
-        replace: true,
         template: (tElement, tAttrs) => {
 
             return $rootScope.contentItemTemplate;
@@ -170,20 +199,23 @@ var wfContentListItem = function ($rootScope) {
         scope: {
             contentItem: '=',
             contentList: '=',
-            legalValues: '=',
-            statusValues: '=',
             template: '='
         },
-        link: function ($scope, elem, attrs) {
+        controller: ($scope) => {
+            $scope.statusValues = statuses;
+            $scope.legalValues = legalValues;
+            $scope.sections = sections;
+        },
+        link: function ($scope, elem, $attrs) {
 
             /**
              * Emit an event telling the details drawer to move itself to this element, update and display.
              * @param {Object} contentItem - this contentItem
              */
-            $scope.selectItem = (contentItem) => {
+            elem.bind('click', () => {
 
-                $rootScope.$emit('contentItem.select', contentItem, elem);
-            };
+                $rootScope.$emit('contentItem.select', $scope.contentItem, elem);
+            });
 
         }
     };
