@@ -7,10 +7,17 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${application.home}/logs/application.log</file>
 
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${application.home}/logs/application.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
-            <maxHistory>30</maxHistory>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>
+                ${application.home}/logs/application.log.%i
+            </fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>30</maxIndex>
         </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>5MB</maxFileSize>
+        </triggeringPolicy>
 
         <encoder>
             <pattern>%date - [%level] - from %logger in %thread %n%message%n%xException%n</pattern>
