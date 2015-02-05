@@ -9,9 +9,11 @@ import 'lib/content-service';
 import 'lib/legal-states-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
+import { punters } from 'components/punters/punters';
 
 
-var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService',]);
+var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])
+    .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
 function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statuses, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
     var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
