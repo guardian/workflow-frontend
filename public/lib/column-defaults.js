@@ -13,6 +13,8 @@ import statusTemplate           from "components/content-list-item/templates/sta
 import notesTemplate            from "components/content-list-item/templates/notes.html!text";
 import linksTemplate            from "components/content-list-item/templates/links.html!text";
 import publishedStateTemplate   from "components/content-list-item/templates/published-state.html!text";
+import wordcountTemplate        from "components/content-list-item/templates/wordcount.html!text";
+import needsLegalTemplate       from "components/content-list-item/templates/needsLegal.html!text";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
@@ -147,6 +149,15 @@ var columnDefaults = [{
     template: notesTemplate,
     active: true
 },{
+    name: 'wordcount',
+    prettyName: 'Wordcount',
+    labelHTML: 'Words',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'wordcount.html',
+    template: wordcountTemplate,
+    active: false
+},{
     name: 'links',
     prettyName: 'Open in...',
     labelHTML: 'Open in',
@@ -163,6 +174,15 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'published-state.html',
     template: publishedStateTemplate,
+    active: true
+},{
+    name: 'needsLegal',
+    prettyName: 'Needs Legal',
+    labelHTML: '',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'needsLegal.html',
+    template: needsLegalTemplate,
     active: true
 }];
 

@@ -44,12 +44,28 @@ $compact-display-td-padding: 2px 5px;
             &--status,
             &--notes,
             &--links,
-            &--published-state {
+            &--published-state,
+            &--wordcount,
+            &--needsLegal {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 
                 font-weight: bold;
                 text-align: left;
+            }
+
+            // icon fields
+            &--priority,
+            &--comments,
+            &--main-image,
+            &--content-type,
+            &--composer,
+            &--preview,
+            &--live,
+            &--ophan,
+            &--incopy {
+                padding: 10px 5px;
+                width: $content-list-icon-size;
             }
 
             &--presence,
@@ -79,6 +95,10 @@ $compact-display-td-padding: 2px 5px;
             &--notifier {
                 padding: 0;
                 width: 4px;
+            }
+
+            &--wordcount {
+                width: 40px;
             }
         }
     }
