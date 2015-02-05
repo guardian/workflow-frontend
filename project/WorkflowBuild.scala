@@ -57,6 +57,7 @@ object WorkflowBuild extends Build {
       libraryDependencies ++= databaseDependencies ++ akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
       ++ apiDocDependencies ++ logbackDependencies
     )
+    .settings(libraryDependencies += filters)
     .settings(FrontEnd.PrototypeProject.settings: _*)
     .settings(playDefaultPort := 9090)
 
