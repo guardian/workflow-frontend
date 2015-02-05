@@ -84,6 +84,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
                 this.mainMediaUrl     = item.mainMedia.url;
                 this.mainMediaCaption = stripHtml(item.mainMedia.caption);
                 this.mainMediaAltText = stripHtml(item.mainMedia.altText);
+            } else {
+                this.mainMediaTitle   = 'No main media has been set';
             }
 
             // Currently we don't pull in any preview information about non-image main media
