@@ -82,6 +82,9 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Updates an existing stub by overwriting its fields via PUT.
                  */
                 updateStub(stub) {
+
+                    console.log('update stub', stub);
+
                     return httpRequest({
                         method: 'PUT',
                         url: '/api/stubs/' + stub.id,
@@ -186,7 +189,8 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'created.from': wfFormatDateTimeFilter(createdRange['from'], "ISO8601") || null,
                         'created.until': wfFormatDateTimeFilter(createdRange['until'], "ISO8601") || null,
                         'text': modelParams['text'] || null,
-                        'assignee': modelParams['assignee'] || null
+                        'assignee': modelParams['assignee'] || null,
+                        'incopy' : modelParams['incopy'] || null
                     };
 
                     return params;
