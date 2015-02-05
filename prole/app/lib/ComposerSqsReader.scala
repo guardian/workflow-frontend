@@ -100,32 +100,36 @@ class ComposerSqsReader extends Actor {
   private def processLifecycleEvent(e: LifecycleEvent): Boolean = {
     Logger.info(s"process lifecycle event '${e.event}' for ${e.composerId}")
 
-    stub(e.composerId).map { stub => {
-      try {
-        e.event match {
-          case "delete" => {
-            CommonDB.deleteContent(e.composerId)
-            Logger.info(s"content deleted successfully: ${e.composerId}")
+    try {
+      e.event match {
+        case "delete" => {
+          val currentContent = CommonDB.deleteContentItems(Seq(e.composerId))
+          Logger.info(s"content deleted ${currentContent} current rows successfully: ${e.composerId}")
 
-            true
-          }
-          case "takedown" => {
+          val archivedContent = CommonDB.deleteArchiveContent(e.composerId)
+          Logger.info(s"content deleted ${archivedContent} archived rows successfully: ${e.composerId}")
+
+          if(currentContent == 0) recordUntrackedContent(e.composerId)
+          true
+        }
+        case "takedown" => {
+          stub(e.composerId).map { _ =>
             CommonDB.takeDownContent(e.composerId, Some(e.eventTime))
             Logger.info(s"content taken down: ${e.composerId}")
-
-            true
           }
-          case _ => {
-            Logger.info(s"unrecognised lifecycle event ${e.event}")
-
-            false
-          }
+          true
         }
-      } catch {
-        case sqle: SQLException => recordLifecycleEventError(e, sqle); false
+        case _ => {
+          Logger.info(s"unrecognised lifecycle event ${e.event}")
+
+          false
+        }
       }
-    }}.getOrElse(true)
+    } catch {
+      case sqle: SQLException => recordLifecycleEventError(e, sqle); false
+    }
   }
+
 }
 
 object ComposerSqsReader {

@@ -70,6 +70,9 @@ object Schema {
       Boolean          :: // takenDown
       Option[DateTime] :: // timeTakenDown
       Int              :: // wordCount
+      Option[DateTime] :: // embargoedUntil
+      Boolean          :: // embargoedIndefinitely
+      Option[DateTime] :: // scheduledLaunchDate
       HNil
 
   type OptionContentRow =
@@ -96,83 +99,94 @@ object Schema {
     Option[Boolean]          :: // takenDown
     Option[DateTime]         :: // timeTakenDown
     Option[Int]              :: // wordCount
+    Option[DateTime]         :: // embargoedUntil
+    Option[Boolean]          :: // embargoedIndefinitely
+    Option[DateTime]         :: // scheduledLaunchDate
     HNil
 
-
-  case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content"){
-    def composerId       = column [String]            ("composer_id", O.PrimaryKey)
-    def path             = column [Option[String]]    ("path")
-    def lastModified     = column [DateTime]          ("last_modified")
-    def lastModifiedBy   = column [Option[String]]    ("last_modified_by")
-    def status           = column [String]            ("status")
-    def contentType      = column [String]            ("content_type")
-    def commentable      = column [Boolean]           ("commentable")
-    def headline         = column [Option[String]]    ("headline")
-    def standfirst       = column [Option[String]]    ("standfirst")
-    def trailtext        = column [Option[String]]    ("trailtext")
-    def mainMedia        = column [Option[String]]    ("mainmedia")
-    def mainMediaUrl     = column [Option[String]]    ("mainmedia_url")
-    def mainMediaCaption = column [Option[String]]    ("mainmedia_caption")
-    def mainMediaAltText = column [Option[String]]    ("mainmedia_alttext")
-    def trailImageUrl    = column [Option[String]]    ("trailimage_url")
-    def published        = column [Boolean]           ("published")
-    def timePublished    = column [Option[DateTime]]  ("time_published")
-    def takenDown        = column [Boolean]           ("takendown")
-    def timeTakenDown    = column [Option[DateTime]]  ("time_takendown")
-    def revision         = column [Option[Long]]      ("revision")
-    def storyBundleId    = column [Option[String]]    ("storybundleid")
-    def activeInInCopy   = column [Boolean]           ("activeinincopy")
-    def wordCount        = column [Int]               ("wordcount")
-    def * = composerId       ::
-            path             ::
-            lastModified     ::
-            lastModifiedBy   ::
-            status           ::
-            contentType      ::
-            commentable      ::
-            headline         ::
-            standfirst       ::
-            trailtext        ::
-            mainMedia        ::
-            mainMediaUrl     ::
-            mainMediaCaption ::
-            mainMediaAltText ::
-            trailImageUrl    ::
-            published        ::
-            timePublished    ::
-            revision         ::
-            storyBundleId    ::
-            activeInInCopy   ::
-            takenDown        ::
-            timeTakenDown    ::
-            wordCount ::
+  case class DBContent(tag: Tag) extends Table[ContentRow](tag, "content") {
+    def composerId            = column [String]            ("composer_id", O.PrimaryKey)
+    def path                  = column [Option[String]]    ("path")
+    def lastModified          = column [DateTime]          ("last_modified")
+    def lastModifiedBy        = column [Option[String]]    ("last_modified_by")
+    def status                = column [String]            ("status")
+    def contentType           = column [String]            ("content_type")
+    def commentable           = column [Boolean]           ("commentable")
+    def headline              = column [Option[String]]    ("headline")
+    def standfirst            = column [Option[String]]    ("standfirst")
+    def trailtext             = column [Option[String]]    ("trailtext")
+    def mainMedia             = column [Option[String]]    ("mainmedia")
+    def mainMediaUrl          = column [Option[String]]    ("mainmedia_url")
+    def mainMediaCaption      = column [Option[String]]    ("mainmedia_caption")
+    def mainMediaAltText      = column [Option[String]]    ("mainmedia_alttext")
+    def trailImageUrl         = column [Option[String]]    ("trailimage_url")
+    def published             = column [Boolean]           ("published")
+    def timePublished         = column [Option[DateTime]]  ("time_published")
+    def takenDown             = column [Boolean]           ("takendown")
+    def timeTakenDown         = column [Option[DateTime]]  ("time_takendown")
+    def revision              = column [Option[Long]]      ("revision")
+    def storyBundleId         = column [Option[String]]    ("storybundleid")
+    def activeInInCopy        = column [Boolean]           ("activeinincopy")
+    def wordCount             = column [Int]               ("wordcount")
+    def embargoedUntil        = column [Option[DateTime]]  ("embargoed_until")
+    def embargoedIndefinitely = column [Boolean]           ("embargoed_indefinitely")
+    def scheduledLaunchDate   = column [Option[DateTime]]  ("scheduled_launch_date")
+    def * = composerId            ::
+            path                  ::
+            lastModified          ::
+            lastModifiedBy        ::
+            status                ::
+            contentType           ::
+            commentable           ::
+            headline              ::
+            standfirst            ::
+            trailtext             ::
+            mainMedia             ::
+            mainMediaUrl          ::
+            mainMediaCaption      ::
+            mainMediaAltText      ::
+            trailImageUrl         ::
+            published             ::
+            timePublished         ::
+            revision              ::
+            storyBundleId         ::
+            activeInInCopy        ::
+            takenDown             ::
+            timeTakenDown         ::
+            wordCount             ::
+            embargoedUntil        ::
+            embargoedIndefinitely ::
+            scheduledLaunchDate   ::
             HNil
 
     /*This is so content table can return none for the content query where composerId is not set */
 
-    def ? = composerId.?       ::
-            path               ::
-            lastModified.?     ::
-            lastModifiedBy     ::
-            status.?           ::
-            contentType.?      ::
-            commentable.?      ::
-            headline           ::
-            standfirst         ::
-            trailtext          ::
-            mainMedia          ::
-            mainMediaUrl       ::
-            mainMediaCaption   ::
-            mainMediaAltText   ::
-            trailImageUrl      ::
-            published.?        ::
-            timePublished      ::
-            revision           ::
-            storyBundleId      ::
-            activeInInCopy.?   ::
-            takenDown.?        ::
-            timeTakenDown      ::
-            wordCount.?        ::
+    def ? = composerId.?            ::
+            path                    ::
+            lastModified.?          ::
+            lastModifiedBy          ::
+            status.?                ::
+            contentType.?           ::
+            commentable.?           ::
+            headline                ::
+            standfirst              ::
+            trailtext               ::
+            mainMedia               ::
+            mainMediaUrl            ::
+            mainMediaCaption        ::
+            mainMediaAltText        ::
+            trailImageUrl           ::
+            published.?             ::
+            timePublished           ::
+            revision                ::
+            storyBundleId           ::
+            activeInInCopy.?        ::
+            takenDown.?             ::
+            timeTakenDown           ::
+            wordCount.?             ::
+            embargoedUntil          ::
+            embargoedIndefinitely.? ::
+            scheduledLaunchDate     ::
             HNil
   }
 
@@ -224,7 +238,8 @@ object Schema {
     Option[String],    // storyBundleId
     Boolean,           // activeInInCopy
     Boolean,           // takenDown
-    Option[DateTime]   // timeTakenDown
+    Option[DateTime],  // timeTakenDown
+    DateTime           // archivedAt
   )
 
   case class DBArchive(tag: Tag) extends Table[ArchiveRow](tag, "archive") {
@@ -250,11 +265,13 @@ object Schema {
     def takendown = column [Boolean] ("takendown")
     def timeTakendown = column [Option[DateTime]] ("time_takendown")
 
+    def archivedAt = column[DateTime]("archived_at")
+
     def * = (
       pk.?, stubId, composerId, wasDeleted,
       workingTitle, section, contentType, prodOffice, createdAt,
       lastModified, status, headline, path, published, timePublished, revision,
-      storybundleid, activeinincopy, takendown, timeTakendown
+      storybundleid, activeinincopy, takendown, timeTakendown, archivedAt
     )
   }
 

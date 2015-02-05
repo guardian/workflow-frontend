@@ -47,6 +47,10 @@ object WorkflowBuild extends Build {
                   .settings(libraryDependencies ++= awsDependencies ++ testDependencies)
                   .settings(playDefaultPort := 9091)
 
+  lazy val archiver = playProject("archiver")
+                    .settings(libraryDependencies ++= awsDependencies)
+                    .settings(playDefaultPort := 9092)
+
 
   lazy val root = playProject("prototype")
     .settings(
