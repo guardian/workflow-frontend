@@ -62,14 +62,15 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * it to "Writers" status.
                  * Also will create the stub if it doesn't have an id.
                  */
-                createInComposer(stub) {
-                    return wfComposerService.create(stub.contentType).then( (response) => {
+                createInComposer(stub, statusOption) {
 
-                        console.log("create response: ", response, stub); // TODO Need to add status back in somewhere here
+                    return wfComposerService.create(stub.contentType).then( (response) => {
 
                         wfComposerService.parseComposerData(response.data, stub);
 
-                        console.log("after parse: ", stub);
+                        if (statusOption) {
+                            stub['status'] = statusOption;
+                        }
 
                         if (stub.id) {
                             return this.updateStub(stub);
@@ -87,7 +88,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 updateStub(stub) {
 
-                    console.log("updateStub", stub)
+                    console.log("updateStub: ", stub);
 
                     return httpRequest({
                         method: 'PUT',
@@ -110,7 +111,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * @returns {Promise}
                  */
                 updateField(contentItem, field, data) {
-                    console.log("updateField: ",contentItem, field, data);
+
                     if (field === 'status') {
                         return this.updateStatus(contentItem, data);
                     }
@@ -132,10 +133,8 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 updateStatus(contentItem, data) {
 
-                    console.log("updateStatus", contentItem, data, !contentItem.composerId);
-
                     if (!contentItem.composerId) { // its a stub
-                        return this.createInComposer(contentItem);
+                        return this.createInComposer(contentItem, data);
                     }
 
                     return httpRequest({
