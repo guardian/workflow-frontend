@@ -40,7 +40,8 @@ function wfErrorExceptionHandlerDecorator($delegate, $injector) {
  */
 var errorMessageData = {
     'SessionError': {
-        message: 'Please refresh your browser – we could not verify your login details. If the problem persists, please see the',
+        action: 'Please refresh your browser',
+        message: ' – we could not verify your login details. If the problem persists, please see the',
         linkText: 'troubleshooting page',
         linkHref: URL_TROUBLESHOOTING_PAGE
     },
@@ -56,7 +57,7 @@ var errorMessageData = {
 };
 
 
-var wfErrorDisplayTemplate = '{{errorData.message}} ' +
+var wfErrorDisplayTemplate = '<b ng-if="errorData.action">{{ errorData.action }}</b>{{errorData.message}} ' +
     '<a class="error-display__link" target="blank" href="{{errorData.linkHref}}">{{errorData.linkText}}</a>' +
     '<button class="error-display__close" title="Dismiss error" wf-icon="cross" ng-click="ctrl.hideError()"></button>';
 
@@ -76,11 +77,16 @@ function wfErrorDisplayDirectiveFactory() {
 
                 if ($scope.errorData.isRecoverable) {
                     $timeout(this.hideError, RECOVERABLE_ERROR_HIDE_TIMEOUT);
+                } else {
+                    $attrs.$addClass('error-display--irrecoverable');
+                    $scope.$overlayElem.addClass('error-display-overlay--show');
                 }
             };
 
             this.hideError = () => {
                 $attrs.$removeClass('error-display--show');
+                $attrs.$removeClass('error-display--irrecoverable');
+                $scope.$overlayElem.removeClass('error-display-overlay--show');
             };
 
             $scope.$on('error.show', ($event, errorDetails) => {
@@ -95,6 +101,9 @@ function wfErrorDisplayDirectiveFactory() {
 
         link: function($scope, $elem, $attrs) {
             $attrs.$addClass('error-display');
+
+            $scope.$overlayElem = angular.element('<div class="error-display-overlay"></div>');
+            $elem.after($scope.$overlayElem);
         }
     };
 }
