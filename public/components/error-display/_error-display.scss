@@ -5,11 +5,27 @@
     text-align: center;
     position: fixed;
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
-    display: none;
+    opacity: 0;
     z-index: 10000;
     width: 100%;
 
+    transition: opacity ease 1s;
+
     &--show {
-        display: block;
+        opacity: 1;
     }
+}
+
+.error-display__link {
+    text-decoration: underline;
+}
+
+.error-display__close {
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 10px;
+    border: none;
+    padding: 0;
+    background: none;
 }
