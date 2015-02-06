@@ -60,8 +60,8 @@ function getTimezoneLocaleForLocation(location) {
 }
 
 angular.module('wfDateService', ['wfLocationService'])
-    .factory('wfDateParser', ['wfLocaliseDateTimeFilter', 'wfLocationService', 'wfFormatDateTimeFilter',
-        function (wfLocaliseDateTimeFilter, wfLocationService, wfFormatDateTimeFilter) {
+    .factory('wfDateParser', ['wfLocationService', 'wfFormatDateTimeFilter',
+        function (wfLocationService, wfFormatDateTimeFilter) {
 
 
             class DateParser {
@@ -75,7 +75,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  * @return {Date}
                  */
                 parseDate(input, locationKey) {
-                    return wfLocaliseDateTimeFilter(
+                    return this.localiseDateTime(
                         this.normaliseDateString(input, locationKey),
                         locationKey
                     ).toDate();
@@ -86,7 +86,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  * natural language inputs such as "today", "tuesday next week 18:00"
                  */
                 normaliseDateString(input, locationKey) {
-                    locationKey = locationKey || wfLocationService.getLocationKey();
+                    locationKey = locationKey || wfLocationService.getCurrentLocationKey();
 
                     var parsed;
                     if (moment.isMoment(input)) {
@@ -140,7 +140,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  */
                 parseRangeFromString(input, locationKey) {
 
-                    var now = wfLocaliseDateTimeFilter(this.now(), locationKey).clone();
+                    var now = this.localiseDateTime(this.now(), locationKey).clone();
 
                     if (!input) {
                         return {};
@@ -171,7 +171,7 @@ angular.module('wfDateService', ['wfLocationService'])
                         return this.createRange(now.clone().subtract(48, 'hours'), now);
 
                     } else {
-                        var parsed = wfLocaliseDateTimeFilter(input, locationKey);
+                        var parsed = this.localiseDateTime(input, locationKey);
 
                         if (!parsed.isValid()) {
                             throw new Error('Could not parse date: ' + input);
@@ -205,9 +205,9 @@ angular.module('wfDateService', ['wfLocationService'])
                     if (!date) return undefined;
                     var dateFormat = wfFormatDateTimeFilter(date, "YYYY-MM-DD");
                     if (dateFormat !== 'Invalid date') {
-                        return dateFormat
+                        return dateFormat;
                     }
-                    else return date
+                    else return date;
 
                 }
 
@@ -217,7 +217,7 @@ angular.module('wfDateService', ['wfLocationService'])
                  * @returns {Array.<Date>}
                  */
                 getDaysThisWeek(locationKey) {
-                    var today = wfLocaliseDateTimeFilter(this.now(), locationKey).startOf('day'),
+                    var today = this.localiseDateTime(this.now(), locationKey).startOf('day'),
 
                         choices = [ moment(today.toDate()) ];
 
@@ -228,6 +228,13 @@ angular.module('wfDateService', ['wfLocationService'])
                     return choices;
                 }
 
+
+                localiseDateTime(dateValue, location) {
+                    location = location || wfLocationService.getCurrentLocationKey();
+
+                    return moment.tz(dateValue, getTimezoneForLocation(location));
+                }
+
             }
 
             return new DateParser();
@@ -236,15 +243,18 @@ angular.module('wfDateService', ['wfLocationService'])
 
     /**
      * Localises a date input value to the specified value.
+     * Stateless and requires a "location" to be passed to filter.
      * @return {moment}
      */
-    .filter('wfLocaliseDateTime', ['wfLocationService', function (wfLocationService) {
+    .filter('wfLocaliseDateTime', [function () {
         return function (dateValue, location) {
             if (!dateValue) {
                 return dateValue;
             }
 
-            location = location || wfLocationService.getLocationKey();
+            if (!location) {
+                throw new Error('DEPRECATED. Specifying a location parameter is required');
+            }
 
             // Must return a moment object, as JS date seems to lose timezone info.
             return moment.tz(dateValue, getTimezoneForLocation(location));
