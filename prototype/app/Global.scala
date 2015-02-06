@@ -2,11 +2,9 @@ import java.util.TimeZone
 import play.api.mvc.WithFilters
 import play.api.{Logger, GlobalSettings, Application}
 import play.filters.gzip.GzipFilter
-import lib.{PrototypeConfiguration, RedirectToHTTPSFilter}
+import lib.{PrototypeConfiguration, RedirectToHTTPSFilter, LoggingFilter}
 
-
-object Global extends WithFilters(RedirectToHTTPSFilter, new GzipFilter) with GlobalSettings {
-
+object Global extends WithFilters(RedirectToHTTPSFilter, new GzipFilter, LoggingFilter) with GlobalSettings {
   override def beforeStart(app: Application) {
 
     /* It's horrible, but this is absolutely necessary for correct interpretation
@@ -22,7 +20,4 @@ object Global extends WithFilters(RedirectToHTTPSFilter, new GzipFilter) with Gl
     PrototypeConfiguration.apply
     Logger.info("successfully loaded configuration variables")
   }
-
-
-
 }
