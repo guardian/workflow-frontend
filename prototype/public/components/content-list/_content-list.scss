@@ -54,6 +54,20 @@ $compact-display-td-padding: 2px 5px;
                 text-align: left;
             }
 
+            // icon fields
+            &--priority,
+            &--comments,
+            &--main-image,
+            &--content-type,
+            &--composer,
+            &--preview,
+            &--live,
+            &--ophan,
+            &--incopy {
+                padding: 10px 5px;
+                width: $content-list-icon-size;
+            }
+
             &--presence,
             &--assignee {
                 text-align: center;

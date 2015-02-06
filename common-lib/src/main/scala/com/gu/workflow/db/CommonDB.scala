@@ -122,7 +122,8 @@ object CommonDB {
       val pred = (s: DBStub, c: DBContent) => {
         c.timePublished <  DateTime.now().minus(Duration.standardDays(30)) &&
         c.lastModified < DateTime.now().minus(Duration.standardDays(30)) &&
-          !WorkflowContent.visibleOnUi(c)
+          s.lastModified < DateTime.now().minus(Duration.standardDays(30)) &&
+          !ContentItem.visibleOnUi(s, c)
       }
 
       val composerIds = archiveContentQuery(pred, wasDeleted=false)

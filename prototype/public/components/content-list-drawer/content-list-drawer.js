@@ -11,7 +11,7 @@
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -50,6 +50,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 $element.addClass(hiddenClass);
 
                 $scope.contentList.selectedItem = null;
+                $scope.assigneeImage = ' ';
                 $parent.append($element);
                 resolve();
             });
@@ -80,6 +81,9 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                     $scope.contentItem = contentItem;
                     $scope.contentList.selectedItem = contentItem;
+
+                    this.updateAssigneeUserImage();
+
                     $scope.$apply();
 
                     return this.show();
@@ -106,6 +110,20 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                 return this.isHidden() ? this.showContent(contentItem, $contentListItemElement) : this.hide();
             };
+
+            this.updateAssigneeUserImage = function () {
+
+                // Enhance assignee with Image
+                if ($scope.contentItem.assigneeEmail) {
+                    wfGoogleApiService.searchUsers($scope.contentItem.assigneeEmail).then((data) => {
+                        if (data && data.length) {
+                            $scope.assigneeImage = data[0].thumbnailPhotoUrl;
+                        }
+                    });
+                } else {
+                    $scope.assigneeImage = ' ';
+                }
+            }
         },
 
 
@@ -117,7 +135,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             $scope.incopyExportEnabled = false;
             featureSwitches.withSwitch("incopy-export",
                                        val => $scope.incopyExportEnabled = val);
-
 
             /**
              * Listen for event triggered by click in external contentItemRow directive to show or hide drawer
@@ -256,8 +273,31 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             function errorMessage(err) {
                 $scope.$apply(() => { throw new Error('Error deleting content: ' + (err.message || err)); });
 
-            }
+            };
 
+            $scope.toggleAssigneeEditing = function () {
+                $scope.editingAssignee = !$scope.editingAssignee;
+            };
+
+            $rootScope.$on('punters.punterSelected', () => {
+
+                if ($scope && $scope.contentItem) {
+
+                    $scope.toggleAssigneeEditing(); // Close Field
+
+                    var msg = {
+                        contentItem: $scope.contentItem,
+                        data: {
+                            assignee: $scope.contentItem.assignee,
+                            assigneeEmail: $scope.contentItem.assigneeEmail
+                        }
+                    };
+
+                    $scope.$emit('contentItem.update', msg);
+
+                    contentListDrawerController.updateAssigneeUserImage();
+                }
+            });
         }
     };
 }
