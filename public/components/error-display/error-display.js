@@ -2,7 +2,9 @@
 import angular from 'angular';
 
 var URL_CONTACT_FORM = 'http://goo.gl/forms/mbdSNgafLt',
-    URL_TROUBLESHOOTING_PAGE = '/troubleshooting';
+    URL_TROUBLESHOOTING_PAGE = '/troubleshooting',
+
+    RECOVERABLE_ERROR_HIDE_TIMEOUT = 10000;
 
 angular.module('wfErrorDisplay', [])
     .config(['$provide', wfErrorConfig])
@@ -47,13 +49,16 @@ var errorMessageData = {
     },
     'Error': {
         message: 'An unexpected error has occurred and has been logged. If the problem persists, please',
+        isRecoverable: true,
         linkText: 'send feedback',
         linkHref: URL_CONTACT_FORM
     }
 };
 
 
-var wfErrorDisplayTemplate = '{{errorData.message}} <a class="error-display__link" target="blank" href="{{errorData.linkHref}}">{{errorData.linkText}}</a>';
+var wfErrorDisplayTemplate = '{{errorData.message}} ' +
+    '<a class="error-display__link" target="blank" href="{{errorData.linkHref}}">{{errorData.linkText}}</a>' +
+    '<button class="error-display__close" title="Dismiss error" wf-icon="cross" ng-click="ctrl.hideError()"></button>';
 
 /**
  * Directive for displaying the error. Listens for "error.show" and "error.hide" events
@@ -64,10 +69,14 @@ function wfErrorDisplayDirectiveFactory() {
         retrict: 'E',
         scope: true,
         template: wfErrorDisplayTemplate,
-        controller: function($scope, $element, $attrs) {
+        controller: function($scope, $element, $attrs, $timeout) {
             this.showError = (err) => {
                 $scope.errorData = err && errorMessageData[err.name] || errorMessageData.Error;
                 $attrs.$addClass('error-display--show');
+
+                if ($scope.errorData.isRecoverable) {
+                    $timeout(this.hideError, RECOVERABLE_ERROR_HIDE_TIMEOUT);
+                }
             };
 
             this.hideError = () => {
@@ -82,6 +91,7 @@ function wfErrorDisplayDirectiveFactory() {
                 this.hideError();
             });
         },
+        controllerAs: 'ctrl',
 
         link: function($scope, $elem, $attrs) {
             $attrs.$addClass('error-display');
