@@ -50,7 +50,7 @@ object PostgresDB {
 
       } yield (s, c)
 
-      query.filter( {case (s,c) => WorkflowContent.visibleOnUi(c) })
+      query.filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
            .list.map {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
@@ -66,7 +66,7 @@ object PostgresDB {
     DB.withTransaction { implicit session =>
       val leftJoinQ = (for {
         (s, c)<- (WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId))
-        if(WorkflowContent.visibleOnUi(c))
+        if(ContentItem.visibleOnUi(s, c))
       } yield (s,  c.?))
 
       val content: List[ContentItem] = leftJoinQ.list.map { case (s, c) => {
@@ -316,7 +316,10 @@ object PostgresDB {
       } yield wc.status
       val updatedRow = q.update(status)
       if(updatedRow==0) Left(ApiErrors.composerIdNotFound(composerId))
-      else Right(ApiSuccess(composerId))
+      else {
+        stubs.filter(_.composerId === composerId).map(_.lastModified).update(DateTime.now())
+        Right(ApiSuccess(composerId))
+      }
     }
   }
 }
