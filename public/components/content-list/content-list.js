@@ -18,7 +18,7 @@ import { wfLoader } from 'components/loader/loader';
 
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField'])
-    .service('wfContentItemParser', ['config', 'statuses', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
+    .service('wfContentItemParser', ['config', 'statusLabels', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
     .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'legalValues', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
     .directive('wfContentListLoader', ['$rootScope', wfLoader])
@@ -226,9 +226,12 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     $scope.$on('contentItem.update', ($event, msg) => {
 
+        console.log("recieved emit: ", $event, msg);
+
         // generally there'll only be one field to update, but iterate just incase
         // TODO: if multiple fields need updating, do it in a single API call
         for (var field in msg.data) {
+            console.log("update1: ", field, msg, msg.data[field]);
             wfContentService.updateField(msg.contentItem.item, field, msg.data[field]).then(() => {
                 $scope.$emit('contentItem.updated', {
                     'contentItem': msg.contentItem,

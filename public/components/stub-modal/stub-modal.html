@@ -30,8 +30,9 @@
         </div>
         <div class="form-group clearfix">
             <div class="pull-left">
-                <label for="stub_status">Status</label>
-                <select id="stub_status" name="status" ng-model="stub.status" ng-options="status for status in statuses"></select>
+                <label for="stub_status">Status *</label>
+                <select id="stub_status" name="status" ng-model="stub.status" ng-options="status.value as status.label for status in statuses"></select>
+                <p class="help-block">To save as a Stub please change status to News List</p>
             </div>
         </div>
     </div>
@@ -76,10 +77,10 @@
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         </div>
         <div class="pull-right">
-            <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=false)" ng-disabled="stubForm.$invalid">
+            <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=false)" ng-disabled="stubForm.$invalid || stub.status !== 'Stub'">
                 Save stub
             </button>
-            <button type="button" class="btn btn-primary" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid">
+            <button type="button" class="btn btn-primary" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid || stub.status === 'Stub'">
                 Create new
             </button>
         </div>

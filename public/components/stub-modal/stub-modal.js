@@ -15,7 +15,7 @@ import { punters } from 'components/punters/punters';
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
-function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statuses, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
+function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
     var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
 
     $scope.mode = mode;
@@ -28,7 +28,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.formData = {};
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
-    $scope.statuses = statuses;
+    $scope.statuses = statusLabels;
 
     $scope.stub = stub;
     $scope.stub.section = (function findSelectedSectionInAvailableSections () {

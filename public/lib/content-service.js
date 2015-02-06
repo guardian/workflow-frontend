@@ -65,7 +65,11 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 createInComposer(stub) {
                     return wfComposerService.create(stub.contentType).then( (response) => {
 
+                        console.log("create response: ", response, stub); // TODO Need to add status back in somewhere here
+
                         wfComposerService.parseComposerData(response.data, stub);
+
+                        console.log("after parse: ", stub);
 
                         if (stub.id) {
                             return this.updateStub(stub);
@@ -83,7 +87,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 updateStub(stub) {
 
-                    console.log('update stub', stub);
+                    console.log("updateStub", stub)
 
                     return httpRequest({
                         method: 'PUT',
@@ -106,6 +110,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * @returns {Promise}
                  */
                 updateField(contentItem, field, data) {
+                    console.log("updateField: ",contentItem, field, data);
                     if (field === 'status') {
                         return this.updateStatus(contentItem, data);
                     }
@@ -126,6 +131,9 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * is a Stub, a draft will be created moving it to "Writers" status.
                  */
                 updateStatus(contentItem, data) {
+
+                    console.log("updateStatus", contentItem, data, !contentItem.composerId);
+
                     if (!contentItem.composerId) { // its a stub
                         return this.createInComposer(contentItem);
                     }
