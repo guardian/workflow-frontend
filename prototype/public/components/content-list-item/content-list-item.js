@@ -150,7 +150,13 @@ function wfContentItemParser(config, statuses, sections) {
 
             var states = [
                 { "display": "Taken down", "key": "takendown", "active": item.takenDown, "suplDate": item.timeTakenDown },
-                { "display": "Embargoed until", "key": "embargoed", "active": this.isEmbargoed, "supl": this.launchScheduleDetails.embargoedIndefinitely ? "Indefinitely" : undefined, "sublDate": this.hasEmbargoedDate ? this.launchScheduleDetails.embargoedUntil : undefined },
+                {
+                    "display": "Embargoed until",
+                    "key": "embargoed",
+                    "active": this.isEmbargoed,
+                    "supl": this.launchScheduleDetails.embargoedIndefinitely ? "Indefinitely" : undefined,
+                    "sublDate": this.hasEmbargoedDate ? this.launchScheduleDetails.embargoedUntil : undefined
+                },
                 { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "suplDate": this.launchScheduleDetails.scheduledLaunchDate },
                 { "display": "Published", "key": "published", "active": item.published, "suplDate": item.timePublished },
                 { "display": "", "key": "draft", "active": true } // Base state
