@@ -50,7 +50,7 @@ object PostgresDB {
 
       } yield (s, c)
 
-      query.filter( {case (s,c) => WorkflowContent.visibleOnUi(c) })
+      query.filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
            .list.map {
             case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
@@ -66,7 +66,7 @@ object PostgresDB {
     DB.withTransaction { implicit session =>
       val leftJoinQ = (for {
         (s, c)<- (WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId))
-        if(WorkflowContent.visibleOnUi(c))
+        if(ContentItem.visibleOnUi(s, c))
       } yield (s,  c.?))
 
       val content: List[ContentItem] = leftJoinQ.list.map { case (s, c) => {
@@ -163,8 +163,8 @@ object PostgresDB {
 
       val updatedRow = stubs
         .filter(_.pk === id)
-        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
-        .update((stub.title, stub.section, stub.due, stub.assignee, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
 
       if(updatedRow==0) Left(ApiErrors.updateError(id))
       else Right(ApiSuccess(id))
@@ -192,6 +192,17 @@ object PostgresDB {
         .filter(_.pk === id)
         .map(s => s.assignee)
         .update(assignee)
+      if(updatedRow==0) Left(ApiErrors.updateError(id))
+      else Right(ApiSuccess(id))
+    }
+  }
+
+  def updateStubWithAssigneeEmail(id: Long, assigneeEmail: Option[String]): Response[Long] = {
+    DB.withTransaction { implicit session =>
+      val updatedRow = stubs
+        .filter(_.pk === id)
+        .map(s => s.assigneeEmail)
+        .update(assigneeEmail)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
       else Right(ApiSuccess(id))
     }
@@ -305,7 +316,10 @@ object PostgresDB {
       } yield wc.status
       val updatedRow = q.update(status)
       if(updatedRow==0) Left(ApiErrors.composerIdNotFound(composerId))
-      else Right(ApiSuccess(composerId))
+      else {
+        stubs.filter(_.composerId === composerId).map(_.lastModified).update(DateTime.now())
+        Right(ApiSuccess(composerId))
+      }
     }
   }
 }

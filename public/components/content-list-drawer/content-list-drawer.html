@@ -12,8 +12,8 @@
                     <li class="drawer__section">
                         <span class="drawer__section-title">Production deadline</span>
 
-                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.item.due, 'drawer__section-data-row--editable-empty': !contentItem.item.due }" title="{{ (contentItem.item.due | wfLocaliseDateTime | wfFormatDateTime:'long') || '' }}">
-                                {{ (contentItem.item.due | wfLocaliseDateTime | wfFormatDateTime) || 'Add deadline' }}
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.item.due, 'drawer__section-data-row--editable-empty': !contentItem.item.due }" title="{{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}">
+                                {{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
                             </span>
 
                         <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
@@ -35,7 +35,7 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Last modified</span>
-                        <span class="drawer__section-data-row">{{ (contentItem.lastModified | wfLocaliseDateTime | wfFormatDateTime) || "-" }}</span>
+                        <span class="drawer__section-data-row">{{ (contentItem.lastModified | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
                         <span class="drawer__section-data-row" ng-show="contentItem.lastModifiedBy">by {{ contentItem.lastModifiedBy }}</span>
                     </li>
                     <li class="drawer__section">
@@ -67,11 +67,16 @@
                         <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true">
                         </wf-presence-indicators>
                     </li>
-                    <li class="drawer__section">
-                        <span class="drawer__section-title">Assigned to</span>
-                        <wf-editable class="drawer__section-data-row" wf-editable-model="contentItem.item.assignee" wf-editable-on-update="onBeforeSaveAssignee(newValue)">{{ contentItem.item.assignee || 'Nobody' }}</wf-editable>
+                    <li class="drawer__section" ng-switch="!!editingAssignee">
+                        <div ng-switch-when="false">
+                            <span class="drawer__section-title">Assigned to</span>
+                            <img class="drawer__user-image" ng-if="assigneeImage.length > 1" ng-class="{ 'drawer__user-image--placeholder': !assigneeImage }" ng-src="{{ assigneeImage }}" height="38" width="38" alt="contentItem.item.assignee"/>
+                            <span class="drawer__section-data-row--editable drawer__user-name" ng-click="toggleAssigneeEditing();" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.assignee || "None" }}</span>
+                        </div>
+                        <div ng-switch-when="true">
+                            <punters stub="contentItem" indrawer="true"></punters>
+                        </div>
                     </li>
-
                     <li class="drawer__section">
                         <span class="drawer__section-title">InCopy</span>
                         <span class="drawer__section-data-row">{{ contentItem.incopyTitle }}</span>

@@ -75,8 +75,10 @@ var filterDefaults = function (statuses, wfFiltersService) {
             title: 'Flags',
             namespace: 'flags',
             listIsOpen: false,
+            multi: true,
             filterOptions: [
-                { caption: 'Needs legal', value: 'needsLegal' }
+                { caption: 'Needs legal', value: 'needsLegal' },
+                { caption: 'Legal approved', value: 'approved' }
             ]
         },
         {

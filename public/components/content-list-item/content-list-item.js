@@ -3,12 +3,8 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/',
     PREVIEW_PATH = 'http://preview.gutools.co.uk/',
     LIVE_PATH = 'http://www.theguardian.com/';
 
-function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter, sections) {
+function wfContentItemParser(config, statuses, sections) {
     /*jshint validthis:true */
-
-    function formatAndLocaliseDate(dateValue, dateFormat) {
-        return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(dateValue), dateFormat);
-    }
 
     function getFullOfficeString(office) {
         var offices = {
@@ -80,10 +76,12 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.hasMainMedia = Boolean(item.mainMedia) && Boolean(item.mainMedia.mediaType);
             if(this.hasMainMedia) {
                 this.mainMediaType    = item.mainMedia.mediaType;
-                this.mainMediaTitle   = 'Main media (' + (item.mainMediaType || 'none')  + ')';
+                this.mainMediaTitle   = 'Main media (' + (item.mainMedia.mediaType || 'none')  + ')';
                 this.mainMediaUrl     = item.mainMedia.url;
                 this.mainMediaCaption = stripHtml(item.mainMedia.caption);
                 this.mainMediaAltText = stripHtml(item.mainMedia.altText);
+            } else {
+                this.mainMediaTitle   = 'No main media has been set';
             }
 
             // Currently we don't pull in any preview information about non-image main media
@@ -92,8 +90,9 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             this.trailtext = stripHtml(item.trailtext);
             this.trailImageUrl = item.trailImageUrl;
 
-            this.assignee = item.assignee && toInitials(item.assignee) || '';
-            this.assigneeFull = item.assignee || 'unassigned';
+            this.assignee = item.assignee;
+            this.assigneeEmail = item.assigneeEmail;
+            this.assigneeInitials = item.assignee && toInitials(item.assignee);
 
             this.contentType = item.contentType;
             this.contentTypeTitle = toTitleCase(item.contentType);
@@ -120,17 +119,6 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
                     this.launchScheduleDetails.embargoedUntil &&
                     this.launchScheduleDetails.embargoedUntil > (new Date()).getTime();
 
-            this.embargoedText = (() => { if(this.launchScheduleDetails.embargoedIndefinitely) {
-                    return "Indefinitely";
-                } else if(this.hasEmbargoedDate) {
-                    return wfFormatDateTimeFilter(
-                        wfLocaliseDateTimeFilter(this.launchScheduleDetails.embargoedUntil)
-                    );
-                } else {
-                    return "-";
-                }
-            })();
-
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
             this.isEmbargoed = this.hasEmbargoedDate || this.launchScheduleDetails.embargoedIndefinitely;
@@ -139,7 +127,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             var lifecycleState      = this.lifecycleState(item);
             this.lifecycleState     = lifecycleState.display;
             this.lifecycleStateKey  = lifecycleState.key;
-            this.lifecycleStateSupl = lifecycleState.supl();
+            this.lifecycleStateSupl = lifecycleState.supl;
+            this.lifecycleStateSuplDate = lifecycleState.suplDate;
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -159,22 +148,18 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
         lifecycleState(item) {
             // Highest priority at the top!
 
-            var dateFormatter = (date) => { return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(date), 'ddd DD MMM HH:mm'); }
-
             var states = [
-               { "display": "Published", "key": "published", "active": item.published && !item.takenDown, "supl": () => {
-                    return dateFormatter(item.timePublished); }
-               },
-               { "display": "Embargoed until", "key": "embargoed", "active": this.isEmbargoed, "supl": () => {
-                    return this.embargoedText; }
+                { "display": "Published", "key": "published", "active": item.published && !item.takenDown, "suplDate": item.timePublished },
+                {
+                    "display": "Embargoed until",
+                    "key": "embargoed",
+                    "active": this.isEmbargoed,
+                    "supl": this.launchScheduleDetails.embargoedIndefinitely ? "Indefinitely" : undefined,
+                    "sublDate": this.hasEmbargoedDate ? this.launchScheduleDetails.embargoedUntil : undefined
                 },
-                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "supl": () => {
-                    return dateFormatter(this.launchScheduleDetails.scheduledLaunchDate); }
-                },
-                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "supl": () => {
-                    return dateFormatter(item.timeTakenDown); }
-                },
-                { "display": "", "key": "draft", "active": true, "supl": () => { return false; } } // Base state
+                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "suplDate": this.launchScheduleDetails.scheduledLaunchDate },
+                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "suplDate": item.timeTakenDown },
+                { "display": "", "key": "draft", "active": true } // Base state
             ];
 
             return states.filter((o) => { return o.active === true; })[0];
@@ -186,17 +171,13 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
     };
 }
 
-
-var loadedColumns;
-
 /**
  * Directive allowing the contentListItems to interact with the details drawer
  * @param $rootScope
  */
-var wfContentListItem = function ($rootScope) {
+var wfContentListItem = function ($rootScope, statuses, legalValues, sections) {
     return {
         restrict: 'A',
-        replace: true,
         template: (tElement, tAttrs) => {
 
             return $rootScope.contentItemTemplate;
@@ -204,20 +185,23 @@ var wfContentListItem = function ($rootScope) {
         scope: {
             contentItem: '=',
             contentList: '=',
-            legalValues: '=',
-            statusValues: '=',
             template: '='
         },
-        link: function ($scope, elem, attrs) {
+        controller: ($scope) => {
+            $scope.statusValues = statuses;
+            $scope.legalValues = legalValues;
+            $scope.sections = sections;
+        },
+        link: function ($scope, elem, $attrs) {
 
             /**
              * Emit an event telling the details drawer to move itself to this element, update and display.
              * @param {Object} contentItem - this contentItem
              */
-            $scope.selectItem = (contentItem) => {
+            elem.bind('click', () => {
 
-                $rootScope.$emit('contentItem.select', contentItem, elem);
-            };
+                $rootScope.$emit('contentItem.select', $scope.contentItem, elem);
+            });
 
         }
     };
