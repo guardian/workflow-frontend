@@ -149,7 +149,7 @@ function wfContentItemParser(config, statuses, sections) {
             // Highest priority at the top!
 
             var states = [
-                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "suplDate": item.timeTakenDown },
+                { "display": "Published", "key": "published", "active": item.published && !item.takenDown, "suplDate": item.timePublished },
                 {
                     "display": "Embargoed until",
                     "key": "embargoed",
@@ -158,7 +158,7 @@ function wfContentItemParser(config, statuses, sections) {
                     "sublDate": this.hasEmbargoedDate ? this.launchScheduleDetails.embargoedUntil : undefined
                 },
                 { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "suplDate": this.launchScheduleDetails.scheduledLaunchDate },
-                { "display": "Published", "key": "published", "active": item.published, "suplDate": item.timePublished },
+                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "suplDate": item.timeTakenDown },
                 { "display": "", "key": "draft", "active": true } // Base state
             ];
 
