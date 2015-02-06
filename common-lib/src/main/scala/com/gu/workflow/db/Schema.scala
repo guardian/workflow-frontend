@@ -19,6 +19,7 @@ object Schema {
     String,             // section
     Option[DateTime],   // due
     Option[String],     // assign_to
+    Option[String],     // assign_to_email
     Option[String],     // composer_id
     Option[String],     // content_type
     Int,                // priority
@@ -30,20 +31,21 @@ object Schema {
   )
 
   case class DBStub(tag: Tag) extends Table[StubRow](tag, "stub") {
-    def pk           = column [Long]             ("pk", O.PrimaryKey, O.AutoInc)
-    def workingTitle = column [String]           ("working_title")
-    def section      = column [String]           ("section")
-    def due          = column [Option[DateTime]] ("due")
-    def assignee     = column [Option[String]]   ("assign_to")
-    def composerId   = column [Option[String]]   ("composer_id")
-    def contentType  = column [Option[String]]   ("content_type")
-    def priority     = column [Int]              ("priority")
-    def needsLegal   = column [Flag]             ("needs_legal")
-    def note         = column [Option[String]]   ("note")
-    def prodOffice   = column [String]           ("prod_office")
-    def createdAt    = column [DateTime]         ("created_at")
-    def lastModified = column [DateTime]         ("wf_last_modified")
-    def * = (pk, workingTitle, section, due, assignee, composerId, contentType, priority, needsLegal, note, prodOffice, createdAt, lastModified)
+    def pk            = column [Long]             ("pk", O.PrimaryKey, O.AutoInc)
+    def workingTitle  = column [String]           ("working_title")
+    def section       = column [String]           ("section")
+    def due           = column [Option[DateTime]] ("due")
+    def assignee      = column [Option[String]]   ("assign_to")
+    def assigneeEmail = column [Option[String]]   ("assign_to_email")
+    def composerId    = column [Option[String]]   ("composer_id")
+    def contentType   = column [Option[String]]   ("content_type")
+    def priority      = column [Int]              ("priority")
+    def needsLegal    = column [Flag]             ("needs_legal")
+    def note          = column [Option[String]]   ("note")
+    def prodOffice    = column [String]           ("prod_office")
+    def createdAt     = column [DateTime]         ("created_at")
+    def lastModified  = column [DateTime]         ("wf_last_modified")
+    def * = (pk, workingTitle, section, due, assignee, assigneeEmail, composerId, contentType, priority, needsLegal, note, prodOffice, createdAt, lastModified)
   }
 
   type ContentRow =

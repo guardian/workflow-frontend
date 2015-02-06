@@ -29,20 +29,21 @@ case class WfQueryTime(
 )
 
 case class WfQuery(
-  section       : Seq[Section]     = Nil,
-  desk          : Seq[Desk]        = Nil,
-  dueTimes      : Seq[WfQueryTime] = Nil,
-  status        : Seq[Status]      = Nil,
-  contentType   : Seq[String]      = Nil,
-  published     : Option[Boolean]  = None,
-  flags         : Seq[Flag]  = Nil,
-  prodOffice    : Seq[String]      = Nil,
-  creationTimes : Seq[WfQueryTime] = Nil,
-  text          : Option[String]   = None,
-  assignedTo    : Seq[String]      = Nil,
-  composerId    : Option[String]   = None,
-  inIncopy      : Option[Boolean]  = None,
-  state         : Option[ContentState] = None
+  section         : Seq[Section]     = Nil,
+  desk            : Seq[Desk]        = Nil,
+  dueTimes        : Seq[WfQueryTime] = Nil,
+  status          : Seq[Status]      = Nil,
+  contentType     : Seq[String]      = Nil,
+  published       : Option[Boolean]  = None,
+  flags           : Seq[Flag]  = Nil,
+  prodOffice      : Seq[String]      = Nil,
+  creationTimes   : Seq[WfQueryTime] = Nil,
+  text            : Option[String]   = None,
+  assignedTo      : Seq[String]      = Nil,
+  assignedToEmail : Seq[String]      = Nil,
+  composerId      : Option[String]   = None,
+  inIncopy        : Option[Boolean]  = None,
+  state           : Option[ContentState] = None
 )
 object WfQuery {
   // correctly typed shorthand
@@ -161,23 +162,25 @@ object WfQuery {
       })
       val text = req.getQueryString("text")
       val assignee = queryStringMultiOption(req.getQueryString("assignee"))
+      val assigneeEmail = queryStringMultiOption(req.getQueryString("assigneeEmail"))
       val composerId = req.getQueryString("composerId")
       val inIncopy = req.getQueryString("incopy").map(_ == "true")
 
       WfQuery(
-        section       = sections,
-        status        = status,
-        contentType   = contentType,
-        prodOffice    = prodOffice,
-        dueTimes      = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
-        creationTimes = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
-        flags         = flags,
-        published     = published,
-        text          = text,
-        assignedTo    = assignee,
-        composerId    = composerId,
-        inIncopy      = inIncopy,
-        state         = state
+        section         = sections,
+        status          = status,
+        contentType     = contentType,
+        prodOffice      = prodOffice,
+        dueTimes        = WfQuery.dateTimeToQueryTime(dueFrom, dueUntil),
+        creationTimes   = WfQuery.dateTimeToQueryTime(createdFrom, createdUntil),
+        flags           = flags,
+        published       = published,
+        text            = text,
+        assignedTo      = assignee,
+        assignedToEmail = assigneeEmail,
+        composerId      = composerId,
+        inIncopy        = inIncopy,
+        state           = state
       )
   }
 
