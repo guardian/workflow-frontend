@@ -130,8 +130,10 @@ object Api extends Controller with PanDomainAuthActions {
     APIAuthAction { implicit request =>
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
-        contentItem <- extractResponse[ContentItem](jsValue.data).right
-        stubId <- PostgresDB.createContent(contentItem.data).right
+        stub <- extractResponse[Stub](jsValue.data).right
+        wcOpt <- (if(stub.data.composerId.isDefined) extractApiResponseOption[WorkflowContent](jsValue.data)
+                  else extractResponse[Option[WorkflowContent]](jsValue.data)).right
+        stubId <- PostgresDB.createContent(ContentItem(stub.data, wcOpt.data)).right
       } yield {
         stubId
       })
@@ -143,7 +145,9 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         stub <- extractResponse[Stub](jsValue.data).right
-        id <- PostgresDB.updateStub(stubId, stub.data).right
+        wcOpt <- (if(stub.data.composerId.isDefined) extractApiResponseOption[WorkflowContent](jsValue.data)
+                  else extractResponse[Option[WorkflowContent]](jsValue.data)).right
+        id <- PostgresDB.updateContentItem(stubId, ContentItem(stub.data, wcOpt.data)).right
       } yield {
         id
       })
