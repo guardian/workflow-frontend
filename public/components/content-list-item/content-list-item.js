@@ -3,12 +3,8 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/',
     PREVIEW_PATH = 'http://preview.gutools.co.uk/',
     LIVE_PATH = 'http://www.theguardian.com/';
 
-function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter, sections) {
+function wfContentItemParser(config, statuses, sections) {
     /*jshint validthis:true */
-
-    function formatAndLocaliseDate(dateValue, dateFormat) {
-        return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(dateValue), dateFormat);
-    }
 
     function getFullOfficeString(office) {
         var offices = {
@@ -123,17 +119,6 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
                     this.launchScheduleDetails.embargoedUntil &&
                     this.launchScheduleDetails.embargoedUntil > (new Date()).getTime();
 
-            this.embargoedText = (() => { if(this.launchScheduleDetails.embargoedIndefinitely) {
-                    return "Indefinitely";
-                } else if(this.hasEmbargoedDate) {
-                    return wfFormatDateTimeFilter(
-                        wfLocaliseDateTimeFilter(this.launchScheduleDetails.embargoedUntil)
-                    );
-                } else {
-                    return "-";
-                }
-            })();
-
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
             this.isEmbargoed = this.hasEmbargoedDate || this.launchScheduleDetails.embargoedIndefinitely;
@@ -142,7 +127,8 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
             var lifecycleState      = this.lifecycleState(item);
             this.lifecycleState     = lifecycleState.display;
             this.lifecycleStateKey  = lifecycleState.key;
-            this.lifecycleStateSupl = lifecycleState.supl();
+            this.lifecycleStateSupl = lifecycleState.supl;
+            this.lifecycleStateSuplDate = lifecycleState.suplDate;
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -162,22 +148,18 @@ function wfContentItemParser(config, statuses, wfLocaliseDateTimeFilter, wfForma
         lifecycleState(item) {
             // Highest priority at the top!
 
-            var dateFormatter = (date) => { return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(date), 'ddd DD MMM HH:mm'); }
-
             var states = [
-                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "supl": () => {
-                    return dateFormatter(item.timeTakenDown); }
+                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "suplDate": item.timeTakenDown },
+                {
+                    "display": "Embargoed until",
+                    "key": "embargoed",
+                    "active": this.isEmbargoed,
+                    "supl": this.launchScheduleDetails.embargoedIndefinitely ? "Indefinitely" : undefined,
+                    "sublDate": this.hasEmbargoedDate ? this.launchScheduleDetails.embargoedUntil : undefined
                 },
-                { "display": "Embargoed until", "key": "embargoed", "active": this.isEmbargoed, "supl": () => {
-                    return this.embargoedText; }
-                },
-                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "supl": () => {
-                    return dateFormatter(this.launchScheduleDetails.scheduledLaunchDate); }
-                },
-                { "display": "Published", "key": "published", "active": item.published, "supl": () => {
-                    return dateFormatter(item.timePublished); }
-                },
-                { "display": "", "key": "draft", "active": true, "supl": () => { return false; } } // Base state
+                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "suplDate": this.launchScheduleDetails.scheduledLaunchDate },
+                { "display": "Published", "key": "published", "active": item.published, "suplDate": item.timePublished },
+                { "display": "", "key": "draft", "active": true } // Base state
             ];
 
             return states.filter((o) => { return o.active === true; })[0];
