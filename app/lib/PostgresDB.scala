@@ -76,10 +76,10 @@ object PostgresDB {
     }
   }
 
-  private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
+  private def ensureContentExistsWithId(composerId: String, contentType: String, status: Status = Status("Writers"), activeInInCopy: Boolean = false)(implicit session: Session) {
     val contentExists = content.filter(_.composerId === composerId).exists.run
     if(!contentExists) {
-      val wc = WorkflowContent.default(composerId: String, contentType: String, activeInInCopy)
+      val wc = WorkflowContent.default(composerId: String, contentType: String, status, activeInInCopy)
       content += WorkflowContent.newContentRow(wc, None)
     }
   }
@@ -159,7 +159,7 @@ object PostgresDB {
   def updateStub(id: Long, stub: Stub): Response[Long] = {
     DB.withTransaction { implicit session =>
       //TODO - remove this
-      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
+      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article"), stub.status))
 
       val updatedRow = stubs
         .filter(_.pk === id)

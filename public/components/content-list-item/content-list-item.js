@@ -256,8 +256,6 @@ function wfContentItemUpdateActionDirective() {
                 msg.data[field] = ngModel.$modelValue;
                 msg.oldValues[field] = oldModelValue;
 
-                console.log("eveny emit", msg);
-
                 $scope.$emit('contentItem.update', msg);
             });
 
