@@ -74,7 +74,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                         if (stub.id) {
                             return this.updateStub(stub);
-                            // return this.updateComposerId(stub.id, composerId, stub.contentType);
 
                         } else {
                             return this.createStub(stub);
