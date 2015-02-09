@@ -81,6 +81,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                 }
 
                 function exitSearchMode(data) {
+                    self.clearAll(true);
                     if(savedFilters != null) {
                         _.forOwn(savedFilters,
                                  (value, key) => self.update(key, value));
