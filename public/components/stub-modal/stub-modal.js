@@ -163,10 +163,22 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
             $scope.actionSuccess = false;
             $scope.contentUpdateError = true;
 
-            $scope.errorMsg = err.friendlyMessage || err.message || err;
+            if(err.status === 409) {
+                $scope.errorMsg = 'This item is already linked to composer item.';
+                if(err.data.composerId) {
+                    $scope.composerUrl = config.composerViewContent + '/' + err.data.composerId;
+                }
+                if(err.data.stubId) {
+                    $scope.stubId = err.data.stubId;
+                }
+            }
+            else {
+                $scope.errorMsg = err.friendlyMessage || err.message || err;
+                $scope.actionSuccess = false;
+            }
+
             $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
 
-            $scope.actionSuccess = false;
             $scope.actionInProgress = false;
         });
 
