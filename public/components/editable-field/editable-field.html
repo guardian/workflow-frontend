@@ -1,8 +1,7 @@
 <button class="editable__edit-button" ng-click="editableController.setEditMode(true)">
-    <ng-transclude class="editable__view-value"></ng-transclude>
+    <span class="editable__view-value"><ng-transclude></ng-transclude></span>
 </button>
-<input type="text" class="editable__text-field" wf-editable-field ng-model="modelValue" ng-required="validateRequired" ng-minlength="validateMinlength" ng-maxlength="validateMaxlength" ng-if="::editableType !== 'textarea'" />
-<textarea class="editable__text-field editable__text-field--textarea" wf-editable-field ng-model="modelValue" ng-required="validateRequired" ng-minlength="validateMinlength" ng-maxlength="validateMaxlength" ng-if="::editableType === 'textarea'"></textarea>
+<wf-editable-field-target></wf-editable-field-target>
 <span class="editable__controls">
     <button class="editable__control editable__control--save" ng-click="commit()" title="Save changes">
         <i class="editable__control-icon editable__control-icon--save" wf-icon="check"></i>
