@@ -159,7 +159,7 @@ object PostgresDB {
 
       existingContentItem.map(cItem => {
         cItem match {
-          case ContentItem(s, Some(wc)) => Left(ApiErrors.composerItemLinked(wc.composerId))
+          case ContentItem(s, Some(wc)) => Left(ApiErrors.composerItemLinked(id, wc.composerId))
           case ContentItem(s, None) => {
             c.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
 
