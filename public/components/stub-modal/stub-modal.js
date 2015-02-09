@@ -10,12 +10,13 @@ import 'lib/legal-states-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
+import _ from 'lodash';
 
 
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
-function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
+function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
     var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
 
     $scope.mode = mode;
@@ -29,6 +30,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
     $scope.statuses = statusLabels;
+
+    if(mode==='import') {
+       $scope.statuses = _.filter(statusLabels, function(s) { return s.value!=='Stub'});
+    }
 
     $scope.stub = stub;
     $scope.stub.section = (function findSelectedSectionInAvailableSections () {
