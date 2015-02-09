@@ -2,7 +2,7 @@ package lib
 
 import com.wordnik.swagger.annotations.ApiResponses
 import lib.OrderingImplicits._
-import models.Response.Response
+import Response.Response
 import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
