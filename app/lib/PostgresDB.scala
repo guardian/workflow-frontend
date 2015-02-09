@@ -94,9 +94,7 @@ object PostgresDB {
       existing match {
         case Some(stubId) => Left(ApiErrors.conflict)
         case None => {
-          contentItem.wcOpt.foreach(
-            content += WorkflowContent.newContentRow(_, None)
-          )
+          contentItem.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
 
           Right(ApiSuccess((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub)))
         }
@@ -152,30 +150,32 @@ object PostgresDB {
   def updateContentItem(id: Long, c: ContentItem): Response[Long] = {
     DB.withTransaction { implicit session =>
 
-      val existing = c.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
+      val existingContentItem = (for {
+        (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
+        if (s.pk === id)
+      } yield (s, c.?)).firstOption.map { case (s, c) => {
+        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
+      }}
 
-      existing match {
-        case Some(stubId) => Left(ApiErrors.conflict)
+      existingContentItem.map(cItem => {
+        cItem match {
+          case ContentItem(s, Some(wc)) => Left(ApiErrors.composerItemLinked(wc.composerId))
+          case ContentItem(s, None) => {
+            c.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
 
-        case None => {
-          c.wcOpt.foreach(
-            content += WorkflowContent.newContentRow(_, None)
-          )
-
-          val stub = c.stub
-          val updatedRow = stubs
+            val stub = c.stub
+            val updatedRow = stubs
             .filter(_.pk === id)
             .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
             .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
 
-          if(updatedRow==0) Left(ApiErrors.updateError(id))
-          else Right(ApiSuccess(id))
+            if (updatedRow == 0) Left(ApiErrors.updateError(id))
+            else Right(ApiSuccess(id))
+          }
         }
-      }
+      }).getOrElse(Left(ApiErrors.updateError(id)))
     }
-
   }
-
 
   def updateStubWithAssignee(id: Long, assignee: Option[String]): Response[Long] = {
     DB.withTransaction { implicit session =>
