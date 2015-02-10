@@ -26,12 +26,12 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
 
                     // Check whether session has become invalid
                     if (err && (err.status === 401 || err.status === 419)) {
-                        if(options.retryCount && options.retryCount > MAX_RETRIES) {
-                           throw new Error('Could not re-establish session (exceeded max retries): ' + err);
-                           return;
-                        }
 
-                        options.retryCount = options.retryCount ? options.retryCount + 1 : 1;
+                        if(options.retryCount > MAX_RETRIES) {
+                           throw new Error('Could not re-establish session (exceeded max retries): ' + err);
+                        } else {
+                            options.retryCount = options.retryCount ? options.retryCount + 1 : 1;
+                        }
 
                         $log.info('Invalid session, attempting to re-establish');
 
