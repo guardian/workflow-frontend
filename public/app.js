@@ -119,6 +119,21 @@ angular.module('workflow',
         }
     )
     .constant({ 'statuses': _wfConfig.statuses })
+    .constant({ 'statusLabels': _wfConfig.statuses.map((status) => {
+
+            if (status === 'Stub') {
+                return {
+                    label: 'News list',
+                    value: 'Stub'
+                }
+            }
+
+            return {
+                label: status,
+                value: status
+            }
+        })
+    })
     .constant({ 'sections': _wfConfig.sections })
     .constant({ 'desks': _wfConfig.desks })
     .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })

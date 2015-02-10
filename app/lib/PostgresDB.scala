@@ -1,12 +1,15 @@
 package lib
 
+import java.sql.SQLException
+
 import com.wordnik.swagger.annotations.ApiResponses
 import lib.OrderingImplicits._
-import models.Response.Response
+import Response.Response
 import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
+import play.api.Logger
 import play.api.libs.json.{JsObject, Writes}
 import scala.slick.collection.heterogenous._
 import syntax._
@@ -76,13 +79,6 @@ object PostgresDB {
     }
   }
 
-  private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
-    val contentExists = content.filter(_.composerId === composerId).exists.run
-    if(!contentExists) {
-      val wc = WorkflowContent.default(composerId: String, contentType: String, activeInInCopy)
-      content += WorkflowContent.newContentRow(wc, None)
-    }
-  }
 
 
   /**
@@ -99,11 +95,9 @@ object PostgresDB {
       val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
 
       existing match {
-        case Some(stubId) => Left(ApiError("WorkflowContentExists", s"This item is already tracked in Workflow", 409, "conflict"))
+        case Some(stubId) => Left(ApiErrors.conflict)
         case None => {
-          contentItem.wcOpt.foreach(
-            content += WorkflowContent.newContentRow(_, None)
-          )
+          contentItem.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
 
           Right(ApiSuccess((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub)))
         }
@@ -156,35 +150,58 @@ object PostgresDB {
     }
   }
 
-  def updateStub(id: Long, stub: Stub): Response[Long] = {
+  def updateContentItem(id: Long, c: ContentItem): Response[Long] = {
     DB.withTransaction { implicit session =>
-      //TODO - remove this
+      val existingContentItem = (for {
+        (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
+        if (s.pk === id)
+      } yield (s, c.?)).firstOption.map { case (s, c) => {
+        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
+      }}
 
-      val updatedRow = stubs
-        .filter(_.pk === id)
-        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
-        .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
-
-      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
-
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+      existingContentItem.map(cItem => {
+        cItem match {
+          case ContentItem(s, Some(wc)) => Left(ApiErrors.composerItemLinked(id, wc.composerId))
+          case ContentItem(s, None) => {
+            val stub = c.stub
+            try {
+              val updatedRow = stubs
+                .filter(_.pk === id)
+                .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
+                .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
+              if (updatedRow == 0) Left(ApiErrors.updateError(id))
+              else {
+                c.wcOpt.foreach(wc => content += WorkflowContent.newContentRow(wc, None))
+                Right(ApiSuccess(id))
+              }
+            }
+            catch {
+              case sqle: SQLException=> {
+                Logger.error(s"Error updating stub with id ${id}, ${sqle.getMessage()}")
+                Left(ApiErrors.databaseError(sqle.getMessage()))
+              }
+            }
+          }
+        }
+      }).getOrElse(Left(ApiErrors.updateError(id)))
     }
   }
 
-  def updateStubWithComposerId(id: Long, composerId: String, contentType: String): Response[Long] = {
-    DB.withTransaction { implicit session =>
-      //TODO - remove this
-      ensureContentExistsWithId(composerId, contentType)
+  def createContentRow(wc: WorkflowContent)(implicit s: Session): Option[String] = {
 
-      val updatedRow = stubs
-        .filter(_.pk === id)
-        .map(s => (s.composerId, s.contentType))
-        .update((Some(composerId), Some(contentType)))
-
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+    try {
+      content += WorkflowContent.newContentRow(wc, None)
+      None
     }
+
+    catch  {
+      case sqle: SQLException=> {
+        println(s"sql exception ${sqle}")
+        Some("fail")
+      }
+    }
+
+
   }
 
   def updateStubWithAssignee(id: Long, assignee: Option[String]): Response[Long] = {
