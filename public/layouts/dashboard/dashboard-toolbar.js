@@ -126,14 +126,16 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
     }])
     .directive('wfToolbarDisableOnSearch', [function () {
         return {
+            scope: {},
             restrict: 'A',
-            link: function ($scope, elem) {
-                $scope.enabled = ""
-                $scope.$on("search-mode.enter", function() {
-                    $scope.isEnabled = "--disabled";
+            link: function (scope, elem) {
+                var elemScope = elem.scope()
+                elemScope.isEnabled = "";
+                scope.$on("search-mode.enter", function() {
+                    elemScope.isEnabled = "--disabled";
                 });
-                $scope.$on("search-mode.exit", function() {
-                    $scope.isEnabled = "";
+                scope.$on("search-mode.exit", function() {
+                    elemScope.isEnabled = "";
                 });
             }
         }
