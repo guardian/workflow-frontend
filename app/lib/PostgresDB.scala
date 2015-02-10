@@ -187,23 +187,6 @@ object PostgresDB {
     }
   }
 
-  def createContentRow(wc: WorkflowContent)(implicit s: Session): Option[String] = {
-
-    try {
-      content += WorkflowContent.newContentRow(wc, None)
-      None
-    }
-
-    catch  {
-      case sqle: SQLException=> {
-        println(s"sql exception ${sqle}")
-        Some("fail")
-      }
-    }
-
-
-  }
-
   def updateStubWithAssignee(id: Long, assignee: Option[String]): Response[Long] = {
     DB.withTransaction { implicit session =>
       val updatedRow = stubs
