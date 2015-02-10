@@ -253,7 +253,8 @@ angular.module('wfDateService', ['wfLocationService'])
             }
 
             if (!location) {
-                throw new Error('DEPRECATED. Specifying a location parameter is required');
+                console.warn('DEPRECATED. Specifying a location parameter is required');
+                return dateValue;
             }
 
             // Must return a moment object, as JS date seems to lose timezone info.

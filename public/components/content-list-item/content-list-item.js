@@ -151,11 +151,11 @@ function wfContentItemParser(config, statuses, sections) {
             var states = [
                 { "display": "Published", "key": "published", "active": item.published && !item.takenDown, "suplDate": item.timePublished },
                 {
-                    "display": "Embargoed until",
+                    "display": "Embargoed",
                     "key": "embargoed",
                     "active": this.isEmbargoed,
                     "supl": this.launchScheduleDetails.embargoedIndefinitely ? "Indefinitely" : undefined,
-                    "sublDate": this.hasEmbargoedDate ? this.launchScheduleDetails.embargoedUntil : undefined
+                    "suplDate": this.hasEmbargoedDate ? this.launchScheduleDetails.embargoedUntil : undefined
                 },
                 { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "suplDate": this.launchScheduleDetails.scheduledLaunchDate },
                 { "display": "Taken down", "key": "takendown", "active": item.takenDown, "suplDate": item.timeTakenDown },

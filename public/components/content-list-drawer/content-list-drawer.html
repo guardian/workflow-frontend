@@ -28,9 +28,9 @@
                         </span>
                     </li>
                     <li class="drawer__section">
-                        <span class="drawer__section-title">Embargoed until</span>
+                        <span class="drawer__section-title">Embargoed</span>
                         <span class="drawer__section-data-row">
-                            {{ contentItem.embargoedText }}
+                            {{ contentItem.lifecycleStateSupl || (contentItem.lifecycleStateSuplDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd DD MMM HH:mm') || "-" }}
                         </span>
                     </li>
                     <li class="drawer__section">
