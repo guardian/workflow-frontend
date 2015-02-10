@@ -18,7 +18,7 @@ import { wfLoader } from 'components/loader/loader';
 
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField'])
-    .service('wfContentItemParser', ['config', 'statusLabels', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', 'sections', wfContentItemParser])
+    .service('wfContentItemParser', ['config', 'statusLabels', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
     .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'legalValues', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
     .directive('wfContentListLoader', ['$rootScope', wfLoader])
@@ -275,7 +275,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     $scope.$on('destroy', function () {
         poller.stopPolling();
     });
-
 
     // TODO: use more specific event names to trigger a refresh, eg: filterChanged, contentImported
     $scope.$on('getContent', this.poller.refresh.bind(this.poller));

@@ -3,12 +3,9 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/',
     PREVIEW_PATH = 'http://preview.gutools.co.uk/',
     LIVE_PATH = 'http://www.theguardian.com/';
 
-function wfContentItemParser(config, statusLabels, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter, sections) {
-    /*jshint validthis:true */
 
-    function formatAndLocaliseDate(dateValue, dateFormat) {
-        return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(dateValue), dateFormat);
-    }
+function wfContentItemParser(config, statusLabels, sections) {
+    /*jshint validthis:true */
 
     function getFullOfficeString(office) {
         var offices = {
@@ -83,6 +80,8 @@ function wfContentItemParser(config, statusLabels, wfLocaliseDateTimeFilter, wfF
                 this.mainMediaUrl     = item.mainMedia.url;
                 this.mainMediaCaption = stripHtml(item.mainMedia.caption);
                 this.mainMediaAltText = stripHtml(item.mainMedia.altText);
+            } else {
+                this.mainMediaTitle   = 'No main media has been set';
             }
 
             // Currently we don't pull in any preview information about non-image main media
@@ -120,17 +119,6 @@ function wfContentItemParser(config, statusLabels, wfLocaliseDateTimeFilter, wfF
                     this.launchScheduleDetails.embargoedUntil &&
                     this.launchScheduleDetails.embargoedUntil > (new Date()).getTime();
 
-            this.embargoedText = (() => { if(this.launchScheduleDetails.embargoedIndefinitely) {
-                    return "Indefinitely";
-                } else if(this.hasEmbargoedDate) {
-                    return wfFormatDateTimeFilter(
-                        wfLocaliseDateTimeFilter(this.launchScheduleDetails.embargoedUntil)
-                    );
-                } else {
-                    return "-";
-                }
-            })();
-
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
             this.isEmbargoed = this.hasEmbargoedDate || this.launchScheduleDetails.embargoedIndefinitely;
@@ -139,7 +127,8 @@ function wfContentItemParser(config, statusLabels, wfLocaliseDateTimeFilter, wfF
             var lifecycleState      = this.lifecycleState(item);
             this.lifecycleState     = lifecycleState.display;
             this.lifecycleStateKey  = lifecycleState.key;
-            this.lifecycleStateSupl = lifecycleState.supl();
+            this.lifecycleStateSupl = lifecycleState.supl;
+            this.lifecycleStateSuplDate = lifecycleState.suplDate;
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -159,22 +148,18 @@ function wfContentItemParser(config, statusLabels, wfLocaliseDateTimeFilter, wfF
         lifecycleState(item) {
             // Highest priority at the top!
 
-            var dateFormatter = (date) => { return wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(date), 'ddd DD MMM HH:mm'); }
-
             var states = [
-                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "supl": () => {
-                    return dateFormatter(item.timeTakenDown); }
+                { "display": "Published", "key": "published", "active": item.published && !item.takenDown, "suplDate": item.timePublished },
+                {
+                    "display": "Embargoed",
+                    "key": "embargoed",
+                    "active": this.isEmbargoed,
+                    "supl": this.launchScheduleDetails.embargoedIndefinitely ? "Indefinitely" : undefined,
+                    "suplDate": this.hasEmbargoedDate ? this.launchScheduleDetails.embargoedUntil : undefined
                 },
-                { "display": "Embargoed until", "key": "embargoed", "active": this.isEmbargoed, "supl": () => {
-                    return this.embargoedText; }
-                },
-                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "supl": () => {
-                    return dateFormatter(this.launchScheduleDetails.scheduledLaunchDate); }
-                },
-                { "display": "Published", "key": "published", "active": item.published, "supl": () => {
-                    return dateFormatter(item.timePublished); }
-                },
-                { "display": "", "key": "draft", "active": true, "supl": () => { return false; } } // Base state
+                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "suplDate": this.launchScheduleDetails.scheduledLaunchDate },
+                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "suplDate": item.timeTakenDown },
+                { "display": "", "key": "draft", "active": true } // Base state
             ];
 
             return states.filter((o) => { return o.active === true; })[0];
