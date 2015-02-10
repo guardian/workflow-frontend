@@ -10,12 +10,13 @@ import 'lib/legal-states-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
+import _ from 'lodash';
 
 
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
-function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
+function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
     var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
 
     $scope.mode = mode;
@@ -28,6 +29,11 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.formData = {};
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
+    $scope.statuses = statusLabels;
+
+    if(mode==='import') {
+       $scope.statuses = _.filter(statusLabels, function(s) { return s.value!=='Stub'});
+    }
 
     $scope.stub = stub;
     $scope.stub.section = (function findSelectedSectionInAvailableSections () {
@@ -39,6 +45,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             return filteredSections[0];
         }
     })();
+    $scope.stub.status = 'Writers';
 
     /**
      * If the user currently has a desk selected then only
@@ -117,7 +124,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         var stub = $scope.stub;
         var promise;
 
-        stub.status = 'Writers';
+        if (!addToComposer) {
+            delete stub.status;
+        }
 
         if (addToComposer) {
             promise = wfContentService.createInComposer(stub);
@@ -154,10 +163,22 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $scope.actionSuccess = false;
             $scope.contentUpdateError = true;
 
-            $scope.errorMsg = err.friendlyMessage || err.message || err;
+            if(err.status === 409) {
+                $scope.errorMsg = 'This item is already linked to composer item.';
+                if(err.data.composerId) {
+                    $scope.composerUrl = config.composerViewContent + '/' + err.data.composerId;
+                }
+                if(err.data.stubId) {
+                    $scope.stubId = err.data.stubId;
+                }
+            }
+            else {
+                $scope.errorMsg = err.friendlyMessage || err.message || err;
+                $scope.actionSuccess = false;
+            }
+
             $rootScope.$apply(() => { throw new Error('Stub ' + mode + ' failed: ' + (err.message || err)); });
 
-            $scope.actionSuccess = false;
             $scope.actionInProgress = false;
         });
 
