@@ -159,12 +159,13 @@ object PostgresDB {
   def updateStub(id: Long, stub: Stub): Response[Long] = {
     DB.withTransaction { implicit session =>
       //TODO - remove this
-      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
       val updatedRow = stubs
         .filter(_.pk === id)
         .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
         .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
+
+      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
       if(updatedRow==0) Left(ApiErrors.updateError(id))
       else Right(ApiSuccess(id))
