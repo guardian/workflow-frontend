@@ -161,13 +161,14 @@ object PostgresDB {
         cItem match {
           case ContentItem(s, Some(wc)) => Left(ApiErrors.composerItemLinked(id, wc.composerId))
           case ContentItem(s, None) => {
-            c.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
 
             val stub = c.stub
             val updatedRow = stubs
             .filter(_.pk === id)
             .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
             .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
+
+            c.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
 
             if (updatedRow == 0) Left(ApiErrors.updateError(id))
             else Right(ApiSuccess(id))
