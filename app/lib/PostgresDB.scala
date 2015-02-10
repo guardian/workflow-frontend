@@ -153,7 +153,7 @@ object PostgresDB {
       val existingContentItem: Option[(Long, Option[String])] = (for {
         (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
         if (s.pk === id)
-      } yield (s.pk, c.composerId?)).firstOption
+      } yield (s.pk, c.composerId.?)).firstOption
 
       existingContentItem.map(cItem => {
         cItem match {
