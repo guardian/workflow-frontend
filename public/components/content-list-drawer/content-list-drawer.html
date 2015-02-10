@@ -143,7 +143,7 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Note</span>
-                        <wf-editable wf-editable-type="textarea" class="drawer__section-data-row" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength"></wf-editable>
+                        <wf-editable class="drawer__section-data-row" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">{{ contentItem.note || 'Add note' }}</wf-editable>
                     </li>
                 </ul>
 
