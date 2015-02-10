@@ -123,4 +123,18 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
                 });
             }
         };
+    }])
+    .directive('wfToolbarDisableOnSearch', [function () {
+        return {
+            restrict: 'A',
+            link: function ($scope, elem) {
+                $scope.enabled = ""
+                $scope.$on("search-mode.enter", function() {
+                    $scope.isEnabled = "--disabled";
+                });
+                $scope.$on("search-mode.exit", function() {
+                    $scope.isEnabled = "";
+                });
+            }
+        }
     }]);
