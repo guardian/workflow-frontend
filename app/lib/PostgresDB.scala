@@ -152,17 +152,15 @@ object PostgresDB {
 
   def updateContentItem(id: Long, c: ContentItem): Response[Long] = {
     DB.withTransaction { implicit session =>
-      val existingContentItem = (for {
+      val existingContentItem: Option[(Long, Option[String])] = (for {
         (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
         if (s.pk === id)
-      } yield (s, c.?)).firstOption.map { case (s, c) => {
-        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
-      }}
+      } yield (s.pk, c.composerId.?)).firstOption
 
       existingContentItem.map(cItem => {
         cItem match {
-          case ContentItem(s, Some(wc)) => Left(ApiErrors.composerItemLinked(id, wc.composerId))
-          case ContentItem(s, None) => {
+          case (sId, Some(composerId)) => Left(ApiErrors.composerItemLinked(sId, composerId))
+          case (sId, None) => {
             val stub = c.stub
             try {
               val updatedRow = stubs

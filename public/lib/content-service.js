@@ -87,8 +87,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 updateStub(stub) {
 
-                    console.log("updateStub: ", stub);
-
                     return httpRequest({
                         method: 'PUT',
                         url: '/api/stubs/' + stub.id,
