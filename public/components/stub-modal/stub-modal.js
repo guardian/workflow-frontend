@@ -10,7 +10,6 @@ import 'lib/legal-states-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
-import _ from 'lodash';
 
 
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])
@@ -32,7 +31,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
     $scope.statuses = statusLabels;
 
     if(mode==='import') {
-       $scope.statuses = _.filter(statusLabels, function(s) { return s.value!=='Stub'});
+       $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});
     }
 
     $scope.stub = stub;
