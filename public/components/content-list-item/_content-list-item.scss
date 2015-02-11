@@ -196,6 +196,7 @@
 
         &--needsLegal {
             width: 32px;
+            white-space: nowrap; // Prevent inline-block icons from falling under one another
         }
 
         &--office {
