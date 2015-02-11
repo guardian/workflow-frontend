@@ -123,8 +123,8 @@ angular.module('workflow',
     .constant({ 'desks': _wfConfig.desks })
     .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
     .constant({ 'legalValues': [
-        { name: '', value: 'NA' },
-        { name: 'Check it', value: 'REQUIRED' },
+        { name: 'Not Required', value: 'NA' },
+        { name: 'Needs Checking', value: 'REQUIRED' },
         { name: 'Approved', value: 'COMPLETE'}
     ]})
     .constant({ 'priorities': [
