@@ -163,7 +163,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
             $scope.contentUpdateError = true;
 
             if(err.status === 409) {
-                $scope.errorMsg = 'This item is already linked to composer item.';
+                $scope.errorMsg = 'This item is already linked to a composer item.';
                 if(err.data.composerId) {
                     $scope.composerUrl = config.composerViewContent + '/' + err.data.composerId;
                 }
