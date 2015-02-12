@@ -194,36 +194,6 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     cursor: pointer;
 }
 
-.dashboard-toolbar__dropdown--create {
-    .dashboard-toolbar__dropdown-dropdown-button {
-        border-left: $dashboard-toolbar-separator;
-        background-color: $c-composer-blue;
-        color: white;
-        &:hover, &:focus {
-            background-color: $c-composer-dark-blue
-        }
-    }
-    .dashboard-toolbar__dropdown-select {
-        padding: 15px 25px 17px 5px;
-        background-color: transparent;
-        &:after {
-            background: none;
-            width: 0px;
-            content: none;
-        }
-    }
-    .dropdown-toolbar__dropdown-select-icon {
-        height: 10px;
-        width: 10px;
-        position: absolute;
-        top: 14px;
-        right: 18px;
-        .wf-icon-type--arrow-down {
-            fill: #fff;
-        }
-    }
-}
-
 .dashboard-toolbar__dropdown {
     .dashboard-toolbar__dropdown-dropdown-button {
         border-right: $dashboard-toolbar-separator;
@@ -240,6 +210,59 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     padding: 0;
     flex: 2 0 240px;
     max-width: 200px;
+}
+
+.dashboard-toolbar__dropdown--slim {
+    overflow: hidden;
+    width: 100%;
+
+    .dashboard-toolbar__dropdown {
+        width: 100%;
+    }
+
+    .dropdown-toolbar__dropdown-select-icon {
+        height: 10px;
+        width: 10px;
+        position: absolute;
+        top: 14px;
+        right: 18px;
+    }
+
+    .dashboard-toolbar__dropdown-select {
+        padding: 15px 25px 17px 5px;
+        background-color: transparent;
+        &:after {
+            background: none;
+            width: 0px;
+            content: none;
+        }
+    }
+
+    .dropdown-toolbar__list {
+        margin: 0;
+    }
+}
+
+.dashboard-toolbar__dropdown--create {
+    .dashboard-toolbar__dropdown-dropdown-button {
+        border-left: $dashboard-toolbar-separator;
+        background-color: $c-composer-blue;
+        color: white;
+        &:hover, &:focus {
+            background-color: $c-composer-dark-blue
+        }
+    }
+
+    .dropdown-toolbar__dropdown-select-icon .wf-icon-type--arrow-down {
+        fill: #fff;
+    }
+}
+
+.dashboard-toolbar__dropdown--user {
+    .dashboard-toolbar__dropdown-dropdown-button {
+        background: none;
+        border: none;
+    }
 }
 
 .dashboard-toolbar__dropdown--disabled {
@@ -327,8 +350,12 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     padding: 7px 0 7px 15px;
     width: 100%;
     cursor: pointer;
+    display: inline-block;
+    color: $c-grey-700;
     &:hover {
         background-color: darken($c-grey-100, 15%);
+        text-decoration: none;
+        color: $c-grey-700;
     }
 }
 
