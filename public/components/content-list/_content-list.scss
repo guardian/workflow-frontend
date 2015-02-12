@@ -94,7 +94,9 @@ $compact-display-td-padding: 2px 5px;
 
             &--notifier {
                 padding: 0;
-                width: 4px;
+                width: 5px;
+                max-width: 5px;
+                min-width: 5px;
             }
 
             &--wordcount {

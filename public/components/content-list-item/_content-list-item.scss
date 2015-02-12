@@ -25,6 +25,8 @@
 
     &__notifier {
         width: 5px;
+        max-width: 5px;
+        min-width: 5px;
         padding: 0;
     }
 
