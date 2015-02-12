@@ -1,2 +1,33 @@
-<a class="top-toolbar__user-link" href="" ng-click="logout('Would you like to logout?')" title="Logout">{{displayName}}</a>
-<a class="top-toolbar__user-link top-toolbar__user-link--feedback" href="http://goo.gl/forms/mbdSNgafLt" target="_blank">Send Feedback</a>
+<div class="dashboard-toolbar__dropdown dashboard-toolbar__dropdown--slim dashboard-toolbar__dropdown--user" ng-controller="wfDashboardCreateController" wf-dropdown-toggle>
+    <button class="dashboard-toolbar__dropdown-dropdown-button" ng-click="toggleDropdown()">
+        <div class="dashboard-toolbar__dropdown-label">
+            <div class="dashboard-toolbar__dropdown-select">
+                <span class="dashboard-toolbar__dropdown-select-text">{{displayName}}</span>
+            </div>
+            <i class="dropdown-toolbar__dropdown-select-icon" wf-icon="arrow-down"></i>
+        </div>
+    </button>
+
+    <ul class="dashboard-toolbar__dropdown dropdown-toolbar__list list-unstyled content-type-list--hidden" ng-class="{'content-type-list--hidden' : !showDropdown }">
+
+        <li class="dropdown-toolbar__item" ng-click="logout('Would you like to logout?')">
+            <label class="dropdown-toolbar__item-label">
+                <span class="dropdown-toolbar__item-title" title="Logout">Sign out</span>
+            </label>
+        </li>
+
+        <li class="dropdown-toolbar__item">
+            <a class="dropdown-toolbar__item-label"  href="http://goo.gl/forms/mbdSNgafLt" target="_blank">
+                <span class="dropdown-toolbar__item-title" title="Logout">Send Feedback</span>
+            </a>
+        </li>
+
+        <li class="dropdown-toolbar__item" ng-click="resetFilters()">
+            <label class="dropdown-toolbar__item-label">
+                <span class="dropdown-toolbar__item-title" title="Reset all filters">Reset filters</span>
+            </label>
+        </li>
+
+    </ul>
+</div>
+
