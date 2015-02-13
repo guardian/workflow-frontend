@@ -32,11 +32,13 @@ object PostgresDB {
                   flags:        Seq[String]      = Nil,
                   prodOffice:   Option[String]   = None,
                   createdFrom:  Option[DateTime] = None,
-                  createdUntil: Option[DateTime] = None
+                  createdUntil: Option[DateTime] = None,
+                  composerId:   Option[String]   = None,
+                  assignedToEmail: Option[Seq[String]] = None
   ): List[DashboardRow] =
     getContent(WfQuery.fromOptions(
                  section, desk, dueFrom, dueUntil, status, contentType,
-                 published, flags, prodOffice, createdFrom, createdUntil
+                 published, flags, prodOffice, createdFrom, createdUntil, composerId, assignedToEmail
                )
     )
 

@@ -63,6 +63,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                     // Desk ignored so no need to request content
                 });
 
+                $rootScope.$on('filtersChanged.assigneeEmail', function(event, data) {
+                    self.update('assigneeEmail',  data);
+                    $rootScope.$broadcast('getContent');
+                });
+
                 var keywords = {
                     "type"       : "content-type",
                     "status"     : "status",
@@ -147,6 +152,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'prodOffice'   : params['prodOffice'],
                         'created'      : params['created'],
                         'assignee'     : params['assignee'],
+                        'assigneeEmail': params['assigneeEmail'],
                         'incopy'       : params['incopy']
                     };
                 };
