@@ -63,6 +63,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
             title: 'State',
             namespace: 'state',
             listIsOpen: false,
+            multi: true,
             filterOptions: [
                 { caption: 'Draft', value: 'draft' },
                 { caption: 'Published', value: 'published' },
