@@ -79,6 +79,11 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     }
 }
 
+%dashboard-toolbar-disabled {
+    opacity: 0.25;
+    pointer-events: none;
+}
+
 %dashboard-toolbar__select--inactive {
     @extend %dashboard-toolbar--control--inactive;
     @extend %dashboard-toolbar__select;
@@ -95,6 +100,11 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 
 }
 
+.dashboard-toolbar__prod-office--disabled {
+    @extend .dashboard-toolbar__prod-office;
+    @extend %dashboard-toolbar-disabled;
+}
+
 .dashboard-toolbar__prod-office-label {
     @extend %dashboard-toolbar__label--select;
 }
@@ -108,6 +118,13 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     @extend %dashboard-toolbar__segment;
     position: relative;
 }
+
+
+.dashboard-toolbar__section--disabled {
+    @extend .dashboard-toolbar__section;
+    @extend %dashboard-toolbar-disabled;
+}
+
 
 .dashboard-toolbar__section-select {
     @extend %dashboard-toolbar__select--active;
@@ -223,6 +240,11 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     padding: 0;
     flex: 2 0 240px;
     max-width: 200px;
+}
+
+.dashboard-toolbar__dropdown--disabled {
+    @extend .dashboard-toolbar__dropdown;
+    @extend %dashboard-toolbar-disabled;
 }
 
 .dashboard-toolbar__dropdown-dropdown-button {

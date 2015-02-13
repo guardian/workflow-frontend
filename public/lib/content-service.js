@@ -18,7 +18,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         "liveblog": "Live blog",
                         "gallery": "Gallery",
                         "interactive": "Interactive",
-                        "picture": "Cartoon/Graphic"
+                        "picture": "Picture"
                     }
                 };
 

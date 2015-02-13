@@ -25,6 +25,8 @@
 
     &__notifier {
         width: 5px;
+        max-width: 5px;
+        min-width: 5px;
         padding: 0;
     }
 
@@ -48,7 +50,7 @@
     &--embargoed {
         background:$c-light-orange;
         .content-list-item__notifier {
-            background: repeating-linear-gradient( 135deg, $c-grey-300, $c-grey-300 6px, $c-red 6px, $c-red 12px)
+            background: repeating-linear-gradient( 135deg, $c-grey-300, $c-grey-300 3px, $c-red 3px, $c-red 6px)
         }
     }
 
@@ -196,6 +198,7 @@
 
         &--needsLegal {
             width: 32px;
+            white-space: nowrap; // Prevent inline-block icons from falling under one another
         }
 
         &--office {
