@@ -85,6 +85,15 @@ object Api extends Controller with PanDomainAuthActions {
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
 
+  def contentSearch(patt: String) = APIAuthAction { implicit req =>
+    val content = PostgresDB.getContentTextSearch(patt).map(_.toString)
+    val stubs   = PostgresDB.getStubsTextSearch(patt).map(_.toString)
+    Ok(Json.obj("stubs" -> stubs.mkString("\n"),
+                "data"  -> content.mkString("\n")
+       )
+    )
+  }
+
   def content = APIAuthAction(getContentBlock)
 
   def getContentbyId(composerId: String) = CORSable(PrototypeConfiguration.apply.composerUrl) {
