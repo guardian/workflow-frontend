@@ -62,14 +62,18 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * it to "Writers" status.
                  * Also will create the stub if it doesn't have an id.
                  */
-                createInComposer(stub) {
+                createInComposer(stub, statusOption) {
+
                     return wfComposerService.create(stub.contentType).then( (response) => {
 
                         wfComposerService.parseComposerData(response.data, stub);
 
+                        if (statusOption) {
+                            stub['status'] = statusOption;
+                        }
+
                         if (stub.id) {
                             return this.updateStub(stub);
-                            // return this.updateComposerId(stub.id, composerId, stub.contentType);
 
                         } else {
                             return this.createStub(stub);
@@ -82,8 +86,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Updates an existing stub by overwriting its fields via PUT.
                  */
                 updateStub(stub) {
-
-                    console.log('update stub', stub);
 
                     return httpRequest({
                         method: 'PUT',
@@ -106,6 +108,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * @returns {Promise}
                  */
                 updateField(contentItem, field, data) {
+
                     if (field === 'status') {
                         return this.updateStatus(contentItem, data);
                     }
@@ -126,8 +129,9 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * is a Stub, a draft will be created moving it to "Writers" status.
                  */
                 updateStatus(contentItem, data) {
+
                     if (!contentItem.composerId) { // its a stub
-                        return this.createInComposer(contentItem);
+                        return this.createInComposer(contentItem, data);
                     }
 
                     return httpRequest({

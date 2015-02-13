@@ -28,6 +28,14 @@
 
             </div>
         </div>
+        <div class="form-group clearfix">
+            <div class="pull-left">
+                <label for="stub_status">Status *</label>
+                <select id="stub_status" name="status" ng-model="stub.status" ng-options="status.value as status.label for status in statuses"></select>
+                <p class="help-block" ng-class="{ 'help-block--invisible': mode === 'import' || stub.status === 'Stub' }">To save as a Stub please change status to News List</p>
+            </div>
+        </div>
+
     </div>
     <div class="modal-body modal-body__header" ng-click="expanded = !expanded">
         <a href="" class="modal-body__header-expander" ng-class="{'modal-body modal-body__header-expander--open': expanded}">
@@ -70,10 +78,10 @@
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         </div>
         <div class="pull-right">
-            <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=false)" ng-disabled="stubForm.$invalid">
+            <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=false)" ng-disabled="stubForm.$invalid || stub.status !== 'Stub'">
                 Save stub
             </button>
-            <button type="button" class="btn btn-primary" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid">
+            <button type="button" class="btn btn-primary" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid || stub.status === 'Stub'">
                 Create new
             </button>
         </div>
@@ -115,6 +123,10 @@
 
     <div class="modal-footer alert alert-danger" ng-show="actionSuccess === false">
         <p>There was an error performing this request: {{ errorMsg }} </p>
+        <p>
+            <a ng-show="composerUrl" href="{{composerUrl}}" target="_blank" ng-click="cancel()">View in Composer.</a>
+            <a ng-show="stubId" href="#stub-{{stubId}}" ng-click="cancel()">View in Workflow.</a>
+        </p>
     </div>
 
     <div class="modal-footer alert alert-success" ng-show="actionSuccess">
