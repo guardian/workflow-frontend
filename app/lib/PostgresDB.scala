@@ -60,10 +60,24 @@ object PostgresDB {
       }
     }
 
-  def getContentTextSearch(patt: String): List[WorkflowContent] =
+  def getContentTextSearch(patt: String): List[ContentItem] =
     DB.withTransaction { implicit session =>
-      WfQuery.contentTextQuery(patt)
-        .list.map(WorkflowContent.fromContentRow(_))
+      val matchesOnContent = for {
+        s <- stubs // TODO -> use WfQuery instance here to further drill-down?
+        c <- WfQuery.contentTextQuery(patt)
+        if s.composerId === c.composerId
+      } yield(s, c)
+
+      val matchesOnStub = for {
+        s <- WfQuery.stubTextQuery(patt)
+        c <- content
+        if s.composerId === c.composerId
+      } yield(s, c)
+
+      (matchesOnContent union matchesOnStub).list.map {
+        case (s, c) =>
+          ContentItem(Stub.fromStubRow(s), Some(WorkflowContent.fromContentRow(c)))
+      }
     }
 
   def getStubsTextSearch(patt: String): List[Stub] =
