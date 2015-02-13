@@ -1,12 +1,12 @@
 package controllers
 
 import javax.ws.rs.PathParam
-import models.Response.Response
+import lib._
+import Response.Response
 import com.gu.workflow.db.{CommonDB, Archive}
 import com.gu.workflow.query.WfQuery
 import controllers.Api._
 import lib.OrderingImplicits._
-import lib.{PostgresDB, PrototypeConfiguration}
 import models._
 import play.api.libs.json._
 import play.api.mvc._
