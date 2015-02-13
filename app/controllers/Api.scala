@@ -86,8 +86,9 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def contentSearch(patt: String) = APIAuthAction { implicit req =>
-    val content = PostgresDB.getContentTextSearch(patt)
-    val stubs   = PostgresDB.getStubsTextSearch(patt)
+    val q = WfQuery(text = Some(patt))
+    val content = PostgresDB.getContentTextSearch(q)
+    val stubs   = PostgresDB.getStubsTextSearch(q)
     Ok(
       Json.obj(
         "stubs"   -> stubs,
