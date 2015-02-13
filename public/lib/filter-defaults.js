@@ -72,6 +72,15 @@ var filterDefaults = function (statuses, wfFiltersService) {
             ]
         },
         {
+            title: 'Assignment',
+            namespace: 'assigneeEmail',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'Assigned to me', value: _wfConfig.user.email }
+            ]
+        },
+        {
             title: 'Flags',
             namespace: 'flags',
             listIsOpen: false,
@@ -141,15 +150,6 @@ var filterDefaults = function (statuses, wfFiltersService) {
             filterOptions: [
                 { caption: 'In InCopy', value: 'true' },
                 { caption: 'Not in InCopy', value: 'false' }
-            ]
-        },
-        {
-            title: 'Owner',
-            namespace: 'assigneeEmail',
-            listIsOpen: false,
-            multi: false,
-            filterOptions: [
-                { caption: 'My Stuff', value: _wfConfig.user.email }
             ]
         }
     ];
