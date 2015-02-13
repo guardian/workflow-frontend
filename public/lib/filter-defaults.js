@@ -44,7 +44,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'Article', value: 'article', icon: 'article' },
                 { caption: 'Liveblog', value: 'liveblog', icon: 'liveblog' },
                 { caption: 'Gallery', value: 'gallery', icon: 'gallery' },
-                { caption: 'Cartoon/Graphic', value: 'picture', icon: 'picture' },
+                { caption: 'Picture', value: 'picture', icon: 'picture' },
                 { caption: 'Interactive', value: 'interactive', icon: 'interactive' }
             ]
         },
@@ -55,8 +55,8 @@ var filterDefaults = function (statuses, wfFiltersService) {
             filterOptions: [
                 { caption: 'Yesterday', value: 'yesterday' },
                 { caption: 'Today', value: 'today' },
-                { caption: 'Last 24 Hours', value: 'last24' },
-                { caption: 'Last 48 Hours', value: 'last48' }
+                { caption: 'Last 24 hours', value: 'last24' },
+                { caption: 'Last 48 hours', value: 'last48' }
             ]
         },
         {

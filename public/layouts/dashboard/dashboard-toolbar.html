@@ -1,4 +1,4 @@
-<div class="dashboard-toolbar__prod-office">
+<div class="dashboard-toolbar__prod-office{{isEnabled}}" wf-toolbar-disable-on-search>
     <form>
         <label class="dashboard-toolbar__prod-office-label">Office
             <select class="dashboard-toolbar__prod-office-select" ng-model="selectedProdOffice" ng-options="office.value as office.name for office in prodOffices">
@@ -8,7 +8,7 @@
     </form>
 </div>
 
-<div class="dashboard-toolbar__section">
+<div class="dashboard-toolbar__section{{isEnabled}}" wf-toolbar-disable-on-search>
     <form>
         <label class="dashboard-toolbar__desk-label">Desk
             <select class="dashboard-toolbar__desk-select" ng-model="selectedDesk" ng-options="d as d.name for d in desks">
@@ -18,7 +18,7 @@
     </form>
 </div>
 
-<div wf-toolbar-sections-dropdown ng-model="selectedSections" sections="sections" selectedDesk="selectedDesk"></div>
+<div wf-toolbar-sections-dropdown  ng-model="selectedSections" sections="sections" selectedDesk="selectedDesk"></div>
 
 <div class="dashboard-toolbar__section" ng-controller="wfToolbarFreetextController">
     <form>
