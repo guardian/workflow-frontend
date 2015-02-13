@@ -60,7 +60,18 @@ object PostgresDB {
       }
     }
 
+  def getContentTextSearch(patt: String): List[WorkflowContent] =
+    DB.withTransaction { implicit session =>
+      WfQuery.contentTextQuery(patt)
+        .list.map(WorkflowContent.fromContentRow(_))
+    }
 
+  def getStubsTextSearch(patt: String): List[Stub] =
+    DB.withTransaction { implicit session =>
+      WfQuery.stubTextQuery(patt)
+        .filter(_.composerId.isEmpty)
+        .list.map(Stub.fromStubRow(_))
+    }
 
   def getContentItems(q: WfQuery): Response[List[ContentItem]] = {
     DB.withTransaction { implicit session =>
