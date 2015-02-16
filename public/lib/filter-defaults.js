@@ -143,6 +143,15 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'In InCopy', value: 'true' },
                 { caption: 'Not in InCopy', value: 'false' }
             ]
+        },
+        {
+            title: 'Touched by...',
+            namespace: 'touched',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'Me', value: _wfConfig.user.email }
+            ]
         }
     ];
 };
