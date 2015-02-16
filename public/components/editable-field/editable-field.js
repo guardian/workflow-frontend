@@ -31,12 +31,77 @@ function wfEditableDirectiveFactory($timeout) {
         restrict: 'E',
         templateUrl: '/assets/components/editable-field/editable-field.html',
         scope: {
-            modelValue: '=wfEditableModel',
+            modelValue: '=ngModel',
             onEditableUpdate: '&wfEditableOnUpdate',
             onEditableCancel: '&wfEditableOnCancel',
             validateRequired: '=wfEditableRequired',
             validateMinlength: '=wfEditableMinlength',
             validateMaxlength: '=wfEditableMaxlength'
+        },
+        compile: function(tElement, tAttrs) {
+            var nodeName,
+            $node,
+            nodeAttrs = {
+                'wf-editable-field': '',
+                'ng-model': 'modelValue',
+                'ng-required': 'validateRequired',
+                'ng-minlength': 'validateMinlength',
+                'ng-maxlength': 'validateMaxlength'
+            };
+
+            if (tAttrs.wfEditableType === 'textarea') {
+                nodeName = 'textarea';
+            } else {
+                nodeName = 'input';
+                nodeAttrs.type = 'text';
+            }
+
+            $node = angular.element(document.createElement(nodeName));
+
+
+            tElement.find('wf-editable-field-target')
+                .replaceWith($node.attr(nodeAttrs));
+
+
+            return function wfEditableFieldPostLink($scope, $element, $attrs, editableController) {
+                $attrs.$addClass(CLASS_EDITABLE);
+
+                $scope.$on('wfEditable.changedEditMode', ($event, newValue) => {
+                    if (newValue) { // entered edit mode
+                        addImplicitCancelListeners();
+                    } else {
+                        removeImplicitCancelListeners();
+                    }
+                });
+
+                /**
+                 * Search parent elements on "element" to find "parent" up a hierarchy of "levels".
+                 */
+                function isElementChildOf(element, parent, levels) {
+                    return element.parentElement === parent || levels !== 0 && isElementChildOf(element.parentElement, parent, levels - 1);
+                }
+
+                function checkForImplicitCancelListener(event) {
+                    if (!isElementChildOf(event.target, $element[0], 3)) {
+                        $scope.$broadcast('wfEditable.implicitCancel');
+                        $scope.$apply();
+                    }
+                }
+
+                /**
+                 * Adds body listeners for an implicit cancel event - either a click
+                 * on the body outside the control, or focus outside of the control.
+                 */
+                function addImplicitCancelListeners() {
+                    document.body.addEventListener('mousedown', checkForImplicitCancelListener);
+                    document.body.addEventListener('focus', checkForImplicitCancelListener, true);
+                }
+
+                function removeImplicitCancelListeners() {
+                    document.body.removeEventListener('mousedown', checkForImplicitCancelListener);
+                    document.body.removeEventListener('focus', checkForImplicitCancelListener, true);
+                }
+            };
         },
         transclude: true,
 
@@ -49,11 +114,6 @@ function wfEditableDirectiveFactory($timeout) {
             this.setEditMode = (newMode) => $scope.isEditMode = !!newMode;
 
             this.setErrors = (errors) => $scope.editableErrors = errors;
-
-        },
-
-        link: function($scope, $element, $attrs, editableController) {
-            $attrs.$addClass(CLASS_EDITABLE);
 
             $scope.$watch('isEditMode', (newValue, oldValue) => {
                 if (newValue) {
@@ -76,44 +136,6 @@ function wfEditableDirectiveFactory($timeout) {
                 $scope.$broadcast('wfEditable.cancel');
             };
 
-
-            $scope.$on('wfEditable.changedEditMode', ($event, newValue) => {
-                if (newValue) { // entered edit mode
-                    addImplicitCancelListeners();
-                } else {
-                    removeImplicitCancelListeners();
-                }
-            });
-
-
-            /**
-             * Search parent elements on "element" to find "parent" up a hierarchy of "levels".
-             */
-            function isElementChildOf(element, parent, levels) {
-                return element.parentElement === parent || levels !== 0 && isElementChildOf(element.parentElement, parent, levels - 1);
-            }
-
-            function checkForImplicitCancelListener(event) {
-                if (!isElementChildOf(event.target, $element[0], 3)) {
-                    $scope.$broadcast('wfEditable.implicitCancel');
-                    $scope.$apply();
-                }
-            }
-
-            /**
-             * Adds body listeners for an implicit cancel event - either a click
-             * on the body outside the control, or focus outside of the control.
-             */
-            function addImplicitCancelListeners() {
-                document.body.addEventListener('mousedown', checkForImplicitCancelListener);
-                document.body.addEventListener('focus', checkForImplicitCancelListener, true);
-            }
-
-            function removeImplicitCancelListeners() {
-                document.body.removeEventListener('mousedown', checkForImplicitCancelListener);
-                document.body.removeEventListener('focus', checkForImplicitCancelListener, true);
-            }
-
         }
     };
 }
@@ -124,7 +146,9 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
         restrict: 'A',
         require: ['ngModel', '^^wfEditable'],
 
+
         link: function($scope, $element, $attrs, [ ngModel, wfEditable ]) {
+            $attrs.$addClass('editable__text-field');
 
             // resets / sets the ng-model-options (prevents default behaviour)
             ngModel.$options = ngModel.$options || {};
@@ -146,6 +170,9 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
                         oldValue: oldValue
                     });
                     wfEditable.setEditMode(false);
+
+                    ngModel.$setUntouched();
+                    ngModel.$setPristine();
                 }
             }
 
