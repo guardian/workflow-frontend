@@ -63,28 +63,6 @@ object PostgresDB {
       }
     }
 
-  def testFilter(c: DBContent) = c.headline === "headline"
-
-  def getContentTextSearch(q: WfQuery): List[DashboardRow] =
-    DB.withTransaction { implicit session =>
-      val query = for {
-        s <- stubs // TODO -> use WfQuery instance here to further drill-down?
-        c <- content
-        if s.composerId === c.composerId
-      } yield(s, c)
-
-      WfQuery.textSearchQuery(query, q)
-        .list.map { case (s, c) => DashboardRow(Stub.fromStubRow(s), WorkflowContent.fromContentRow(c)) }
-
-    }
-
-  def getStubsTextSearch(q: WfQuery): List[Stub] =
-    DB.withTransaction { implicit session =>
-      WfQuery.stubsQuery(q)
-        .filter(_.composerId.isEmpty)
-        .list.map(Stub.fromStubRow(_))
-    }
-
   def getContentItems(q: WfQuery): Response[List[ContentItem]] = {
     DB.withTransaction { implicit session =>
       val leftJoinQ = (for {

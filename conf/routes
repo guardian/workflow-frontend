@@ -26,8 +26,6 @@ GET            /api/content/:composerId               controllers.Api.getContent
 PUT            /api/content/:composerId/status        controllers.Api.putContentStatus(composerId: String)
 DELETE         /api/content/:composerId               controllers.Api.deleteContent(composerId: String)
 
-GET            /api/content/search/:patt              controllers.Api.contentSearch(patt)
-
 GET            /api/stubs                             controllers.Api.stubs
 POST           /api/stubs                             controllers.Api.createContent
 PUT            /api/stubs/:stubId                     controllers.Api.putStub(stubId: Long)

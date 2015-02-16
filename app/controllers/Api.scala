@@ -85,18 +85,6 @@ object Api extends Controller with PanDomainAuthActions {
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
 
-  def contentSearch(patt: String) = APIAuthAction { implicit req =>
-    val q = WfQuery(text = Some(patt))
-    val content = PostgresDB.getContentTextSearch(q)
-    val stubs   = PostgresDB.getStubsTextSearch(q)
-    Ok(
-      Json.obj(
-        "stubs"   -> stubs,
-        "content" -> content
-      )
-    )
-  }
-
   def content = APIAuthAction(getContentBlock)
 
   def getContentbyId(composerId: String) = CORSable(PrototypeConfiguration.apply.composerUrl) {
