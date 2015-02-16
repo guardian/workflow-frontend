@@ -194,6 +194,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'created.until': wfFormatDateTimeFilter(createdRange['until'], "ISO8601") || null,
                         'text': modelParams['text'] || null,
                         'assignee': modelParams['assignee'] || null,
+                        'assigneeEmail': modelParams['assigneeEmail'] || null,
                         'incopy' : modelParams['incopy'] || null
                     };
 

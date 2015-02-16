@@ -73,6 +73,15 @@ var filterDefaults = function (statuses, wfFiltersService) {
             ]
         },
         {
+            title: 'Assignment',
+            namespace: 'assigneeEmail',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'Assigned to me', value: _wfConfig.user.email }
+            ]
+        },
+        {
             title: 'Flags',
             namespace: 'flags',
             listIsOpen: false,
