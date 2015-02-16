@@ -47,7 +47,6 @@ object PostgresDB {
         s <- (WfQuery.stubsQuery(q)).sortBy(s => (s.priority.desc, s.workingTitle))
         c <- WfQuery.contentQuery(q)
         if s.composerId === c.composerId
-
       } yield (s, c)
 
       query.filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
@@ -60,29 +59,24 @@ object PostgresDB {
       }
     }
 
-  def getContentTextSearch(q: WfQuery): List[ContentItem] =
-    DB.withTransaction { implicit session =>
-      val matchesOnContent = for {
-        s <- stubs // TODO -> use WfQuery instance here to further drill-down?
-        c <- WfQuery.contentTextQuery(q)
-        if s.composerId === c.composerId
-      } yield(s, c)
+  def testFilter(c: DBContent) = c.headline === "headline"
 
-      val matchesOnStub = for {
-        s <- WfQuery.stubTextQuery(q)
+  def getContentTextSearch(q: WfQuery): List[DashboardRow] =
+    DB.withTransaction { implicit session =>
+      val query = for {
+        s <- stubs // TODO -> use WfQuery instance here to further drill-down?
         c <- content
         if s.composerId === c.composerId
       } yield(s, c)
 
-      (matchesOnContent union matchesOnStub).list.map {
-        case (s, c) =>
-          ContentItem(Stub.fromStubRow(s), Some(WorkflowContent.fromContentRow(c)))
-      }
+      WfQuery.textSearchQuery(query, q)
+        .list.map { case (s, c) => DashboardRow(Stub.fromStubRow(s), WorkflowContent.fromContentRow(c)) }
+
     }
 
   def getStubsTextSearch(q: WfQuery): List[Stub] =
     DB.withTransaction { implicit session =>
-      WfQuery.stubTextQuery(q)
+      WfQuery.stubsQuery(q)
         .filter(_.composerId.isEmpty)
         .list.map(Stub.fromStubRow(_))
     }
