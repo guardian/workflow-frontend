@@ -1,0 +1,25 @@
+@()
+
+@layout("Troubleshooting") {
+<div style="padding: 20px">
+    <h1>Troubleshooting</h1>
+
+    <h2>Seeing a "Cannot verify login" error? Read on...</h2>
+    <img alt="Workflow error - We could not verify your login details" src="/assets/layouts/troubleshooting/troubleshooting-session-error.png"/>
+    <p>To fix in...</p>
+    <h3>Chrome</h3>
+    <ol>
+        <li>Open Preferences by selecting the "Chrome" menu and then "Preferences"<br/><img alt="Chrome menu" src="/assets/layouts/troubleshooting/troubleshooting-chrome-menu.png" style="margin:20px 0;"/></li>
+        <li>Scroll down and click on "Show Advanced settings..."<br/><img alt="Advanced preferences" src="/assets/layouts/troubleshooting/troubleshooting-chrome-advanced.png"/></li>
+        <li>Click "Content settings..." under Privacy<br/><img alt="Content settings" src="/assets/layouts/troubleshooting/troubleshooting-chrome-privacy.png" style="margin:20px 0;"/></li>
+        <li>In the new "Content settings" window, click "Manage exceptions..."<br/><img alt="Content settings" src="/assets/layouts/troubleshooting/troubleshooting-chrome-content-settings.png" style="margin:20px 0;"/></li>
+        <li>In the new "Cookie and site data exceptions" window, paste <code>[*.]google.com</code> into a blank box<br/><img src="/assets/layouts/troubleshooting/troubleshooting-chrome-cookie-exception.png" style="border: 1px solid #eee;"/></li>
+        <li>Click <strong>Done</strong> then <strong>Done</strong></li>
+        <li>Go back to <a href="/">Workflow</a> and refresh the page/tab</li>
+    </ol>
+
+    <h2>More help</h2>
+    <p>Need more help? Please contact the <a href="http://goo.gl/forms/mbdSNgafLt" target="_blank">Workflow team</a>.</p>
+</div>
+}
+
