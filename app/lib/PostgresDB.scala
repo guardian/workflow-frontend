@@ -70,8 +70,6 @@ object PostgresDB {
       }
     }
 
-
-
   def getContentItems(q: WfQuery): Response[List[ContentItem]] = {
     DB.withTransaction { implicit session =>
       val leftJoinQ = (for {
