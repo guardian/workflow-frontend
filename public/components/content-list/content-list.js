@@ -202,8 +202,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
             this.selectedItem = _.find(content, { id: this.selectedItem.id });
         }
 
-        $scope.refreshContentError = false;
-
         $scope.$emit('content.render', {
             content: $scope.content,
             selectedItem: this.selectedItem
@@ -215,10 +213,12 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
 
     this.renderError = (err) => {
-        $scope.refreshContentError = err;
 
         $scope.$apply(() => {
-            throw new Error('Error rendering content: ' + (err.message || err));
+            var newError = new Error('Error rendering content: ' + (err.message || err));
+            newError.name = err.name || 'Error';
+            newError.cause = err;
+            throw newError;
         });
 
     };
@@ -244,7 +244,10 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
                 $scope.refreshContentError = err;
 
                 $scope.$apply(() => {
-                    throw new Error('Error updating content: ' + (err.message || err));
+                    var newError = new Error('Error updating content: ' + (err.message || err));
+                    newError.name = err.name || 'Error';
+                    newError.cause = err;
+                    throw newError;
                 });
             });
         }
