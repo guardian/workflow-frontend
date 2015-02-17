@@ -1,12 +1,12 @@
 package controllers
 
 import javax.ws.rs.PathParam
-import models.Response.Response
+import lib._
+import Response.Response
 import com.gu.workflow.db.CommonDB
 import com.gu.workflow.query.WfQuery
 import controllers.Api._
 import lib.OrderingImplicits._
-import lib.{PostgresDB, PrototypeConfiguration}
 import models._
 import play.api.libs.json._
 import play.api.mvc._
@@ -51,7 +51,7 @@ trait WorkflowApi {
     } getOrElse Nil
 
   //duplicated from the method above to give a standard API response. should move all api methods onto to this
-  def readJsonFromRequest(requestBody: AnyContent):  models.Response.Response[JsValue] = {
+  def readJsonFromRequest(requestBody: AnyContent):  Response.Response[JsValue] = {
     requestBody.asJson match {
       case Some(jsValue) => Right(ApiSuccess(data=jsValue))
       case None => Left(ApiErrors.invalidContentSend)
@@ -65,7 +65,7 @@ trait WorkflowApi {
     yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
 
   //duplicated from the method above to give a standard API response. should move all api methods onto to this
-  def  extract[A: Reads](jsValue: JsValue): models.Response.Response[A] = {
+  def  extract[A: Reads](jsValue: JsValue): Response.Response[A] = {
     jsValue.validate[A] match {
       case JsSuccess(a, _) => Right(ApiSuccess(a))
       case error@JsError(_) =>

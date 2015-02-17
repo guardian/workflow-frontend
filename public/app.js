@@ -19,6 +19,7 @@ import angular from 'angular';
 import { getEnvironment } from 'environment';
 
 import 'components/sentry/sentry';
+import 'components/error-display/error-display';
 
 import 'components/content-list/content-list';
 import 'components/icons/icons';
@@ -51,6 +52,7 @@ angular.module('workflow',
         'ui.router',
         'ngAnimate',
         'wfSentry',
+        'wfErrorDisplay',
         'wfDashboard',
         'wfDashboardUser',
         'wfDashboardCreate',
@@ -119,6 +121,21 @@ angular.module('workflow',
         }
     )
     .constant({ 'statuses': _wfConfig.statuses })
+    .constant({ 'statusLabels': _wfConfig.statuses.map((status) => {
+
+            if (status === 'Stub') {
+                return {
+                    label: 'News list',
+                    value: 'Stub'
+                }
+            }
+
+            return {
+                label: status,
+                value: status
+            }
+        })
+    })
     .constant({ 'sections': _wfConfig.sections })
     .constant({ 'desks': _wfConfig.desks })
     .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })

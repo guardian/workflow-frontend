@@ -2,7 +2,7 @@ package lib
 
 import com.wordnik.swagger.annotations.ApiResponses
 import lib.OrderingImplicits._
-import models.Response.Response
+import Response.Response
 import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
@@ -32,11 +32,13 @@ object PostgresDB {
                   flags:        Seq[String]      = Nil,
                   prodOffice:   Option[String]   = None,
                   createdFrom:  Option[DateTime] = None,
-                  createdUntil: Option[DateTime] = None
+                  createdUntil: Option[DateTime] = None,
+                  composerId:   Option[String]   = None,
+                  assignedToEmail: Option[Seq[String]] = None
   ): List[DashboardRow] =
     getContent(WfQuery.fromOptions(
                  section, desk, dueFrom, dueUntil, status, contentType,
-                 published, flags, prodOffice, createdFrom, createdUntil
+                 published, flags, prodOffice, createdFrom, createdUntil, composerId, assignedToEmail
                )
     )
 
@@ -77,13 +79,6 @@ object PostgresDB {
     }
   }
 
-  private def ensureContentExistsWithId(composerId: String, contentType: String, activeInInCopy: Boolean = false)(implicit session: Session) {
-    val contentExists = content.filter(_.composerId === composerId).exists.run
-    if(!contentExists) {
-      val wc = WorkflowContent.default(composerId: String, contentType: String, activeInInCopy)
-      content += WorkflowContent.newContentRow(wc, None)
-    }
-  }
 
 
   /**
@@ -100,11 +95,9 @@ object PostgresDB {
       val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
 
       existing match {
-        case Some(stubId) => Left(ApiError("WorkflowContentExists", s"This item is already tracked in Workflow", 409, "conflict"))
+        case Some(stubId) => Left(ApiErrors.conflict)
         case None => {
-          contentItem.wcOpt.foreach(
-            content += WorkflowContent.newContentRow(_, None)
-          )
+          contentItem.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
 
           Right(ApiSuccess((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub)))
         }
@@ -157,33 +150,31 @@ object PostgresDB {
     }
   }
 
-  def updateStub(id: Long, stub: Stub): Response[Long] = {
+  def updateContentItem(id: Long, c: ContentItem): Response[Long] = {
     DB.withTransaction { implicit session =>
-      //TODO - remove this
-      stub.composerId.foreach(ensureContentExistsWithId(_, stub.contentType.getOrElse("article")))
 
-      val updatedRow = stubs
-        .filter(_.pk === id)
-        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
-        .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
+      val existingContentItem: Option[(Long, Option[String])] = (for {
+        (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
+        if (s.pk === id)
+      } yield (s.pk, c.composerId.?)).firstOption
 
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
-    }
-  }
+      existingContentItem.map(cItem => {
+        cItem match {
+          case (sId, Some(composerId)) => Left(ApiErrors.composerItemLinked(sId, composerId))
+          case (sId, None) => {
+            val stub = c.stub
+            val updatedRow = stubs
+            .filter(_.pk === id)
+            .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
+            .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
 
-  def updateStubWithComposerId(id: Long, composerId: String, contentType: String): Response[Long] = {
-    DB.withTransaction { implicit session =>
-      //TODO - remove this
-      ensureContentExistsWithId(composerId, contentType)
+            c.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
 
-      val updatedRow = stubs
-        .filter(_.pk === id)
-        .map(s => (s.composerId, s.contentType))
-        .update((Some(composerId), Some(contentType)))
-
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
+            if (updatedRow == 0) Left(ApiErrors.updateError(id))
+            else Right(ApiSuccess(id))
+          }
+        }
+      }).getOrElse(Left(ApiErrors.updateError(id)))
     }
   }
 

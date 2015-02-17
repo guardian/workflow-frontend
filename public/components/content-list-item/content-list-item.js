@@ -3,7 +3,8 @@ var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/',
     PREVIEW_PATH = 'http://preview.gutools.co.uk/',
     LIVE_PATH = 'http://www.theguardian.com/';
 
-function wfContentItemParser(config, statuses, sections) {
+
+function wfContentItemParser(config, statusLabels, sections) {
     /*jshint validthis:true */
 
     function getFullOfficeString(office) {
@@ -34,8 +35,7 @@ function wfContentItemParser(config, statuses, sections) {
         return typeof(text) === 'string' ? text.replace(/<[^>]+>/gm, '') : '';
     }
 
-    var newslistStatusValues = [ { label: 'News list', value: 'Stub'}, { label: 'Writers', value: 'writers' } ],
-        contentStatusValues = statuses.filter((status) => status !== 'Stub').map( (status) => { return { label: status, value: status }; });
+    var contentStatusValues = statusLabels.filter((status) => status.value !== 'Stub');
 
     class ContentItemLinks {
         constructor(item) {
@@ -100,7 +100,7 @@ function wfContentItemParser(config, statuses, sections) {
             this.officeTitle = getFullOfficeString(item.prodOffice);
 
             this.status = item.status || 'Stub';
-            this.statusValues = this.status === 'Stub' ? newslistStatusValues : contentStatusValues;
+            this.statusValues = this.status === 'Stub' ? statusLabels : contentStatusValues;
 
             item.section = sections.filter((section) => section.name === item.section)[0]; // Get section object
             this.section = item.section;

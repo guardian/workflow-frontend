@@ -63,12 +63,22 @@ var filterDefaults = function (statuses, wfFiltersService) {
             title: 'State',
             namespace: 'state',
             listIsOpen: false,
+            multi: true,
             filterOptions: [
                 { caption: 'Draft', value: 'draft' },
                 { caption: 'Published', value: 'published' },
                 { caption: 'Taken down', value: 'takendown' },
                 { caption: 'Scheduled', value: 'scheduled' },
                 { caption: 'Embargoed', value: 'embargoed' }
+            ]
+        },
+        {
+            title: 'Assignment',
+            namespace: 'assigneeEmail',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'Assigned to me', value: _wfConfig.user.email }
             ]
         },
         {
