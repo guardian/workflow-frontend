@@ -36,7 +36,7 @@
 
         <!-- encoder is required -->
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"appenv":"${APP_ENV}"}</customFields>
+            <customFields>{"stage":"${APP_ENV}","appname":"prototype"}</customFields>
         </encoder>
     </appender>
 
