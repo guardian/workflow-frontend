@@ -19,6 +19,7 @@ import angular from 'angular';
 import { getEnvironment } from 'environment';
 
 import 'components/sentry/sentry';
+import 'components/error-display/error-display';
 
 import 'components/content-list/content-list';
 import 'components/icons/icons';
@@ -51,6 +52,7 @@ angular.module('workflow',
         'ui.router',
         'ngAnimate',
         'wfSentry',
+        'wfErrorDisplay',
         'wfDashboard',
         'wfDashboardUser',
         'wfDashboardCreate',
@@ -138,8 +140,8 @@ angular.module('workflow',
     .constant({ 'desks': _wfConfig.desks })
     .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
     .constant({ 'legalValues': [
-        { name: '', value: 'NA' },
-        { name: 'Check it', value: 'REQUIRED' },
+        { name: 'Not required', value: 'NA' },
+        { name: 'Needs checking', value: 'REQUIRED' },
         { name: 'Approved', value: 'COMPLETE'}
     ]})
     .constant({ 'priorities': [

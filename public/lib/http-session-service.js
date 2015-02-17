@@ -8,6 +8,8 @@ angular.module('wfHttpSessionService', [])
 
 function wfHttpSessionService($http, $q, $log, wfUserSession) {
 
+    var MAX_RETRIES = 20;
+
     /**
      * Make a http request to the Workflow Content API.
      * Wraps all requests to handle when user sessions become invalid after an hour.
@@ -22,9 +24,15 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
             $http(options)
                 .then(resolve, (err) => {
 
-
                     // Check whether session has become invalid
                     if (err && (err.status === 401 || err.status === 419)) {
+
+                        if(options.retryCount > MAX_RETRIES) {
+                           throw new Error('Could not re-establish session (exceeded max retries): ' + err);
+                        } else {
+                            options.retryCount = options.retryCount ? options.retryCount + 1 : 1;
+                        }
+
                         $log.info('Invalid session, attempting to re-establish');
 
                         wfUserSession.reEstablishSession().then(
@@ -36,7 +44,9 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
                             },
 
                             (err) => {
-                                throw new Error('Could not re-establish session: ' + err);
+                                var sessionError = new Error('Could not re-establish session: ' + err);
+                                sessionError.name = 'SessionError';
+                                throw sessionError;
                             }
 
                         ).then(resolve, reject);

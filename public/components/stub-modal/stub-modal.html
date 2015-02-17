@@ -32,7 +32,7 @@
             <div class="pull-left">
                 <label for="stub_status">Status *</label>
                 <select id="stub_status" name="status" ng-model="stub.status" ng-options="status.value as status.label for status in statuses"></select>
-                <p class="help-block" ng-if="mode !== 'import'">To save as a Stub please change status to News List</p>
+                <p class="help-block" ng-class="{ 'help-block--invisible': mode === 'import' || stub.status === 'Stub' }">To save as a Stub please change status to News List</p>
             </div>
         </div>
 
