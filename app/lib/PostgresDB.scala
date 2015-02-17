@@ -97,9 +97,10 @@ object PostgresDB {
       existing match {
         case Some(stubId) => Left(ApiErrors.conflict)
         case None => {
+          val stubId = ((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
           contentItem.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
 
-          Right(ApiSuccess((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub)))
+          Right(ApiSuccess(stubId))
         }
       }
     }
