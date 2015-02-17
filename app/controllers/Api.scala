@@ -67,6 +67,7 @@ object Api extends Controller with PanDomainAuthActions {
     val queryData = WfQuery.fromRequest(req)
     val state     = queryData.state
     val status    = queryData.status
+    val touched   = queryData.touched
     val published = queryData.published
 
     def getContent = {
@@ -79,7 +80,9 @@ object Api extends Controller with PanDomainAuthActions {
     val stubs =
       if((status.isEmpty || status.exists(_ == models.Status("Stub"))) &&
         (state.isEmpty   || state == Some(DraftState)) &&
-        (queryData.inIncopy != Some(true))) getStubs else Nil
+        (queryData.inIncopy != Some(true)) &&
+        touched.isEmpty
+      ) getStubs else Nil
 
     val content = getContent
 
