@@ -36,6 +36,16 @@ var filterDefaults = function (statuses, wfFiltersService) {
             })
         },
         {
+            title: 'Your Content',
+            namespace: 'yourContent',
+            listIsOpen: false,
+            multi: true,
+            filterOptions: [
+                { caption: 'Assigned to me', value: _wfConfig.user.email },
+                { caption: 'Recent', value: _wfConfig.user.email }
+            ]
+        },
+        {
             title: 'Content',
             namespace: 'content-type',
             listIsOpen: false,
@@ -70,15 +80,6 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'Taken down', value: 'takendown' },
                 { caption: 'Scheduled', value: 'scheduled' },
                 { caption: 'Embargoed', value: 'embargoed' }
-            ]
-        },
-        {
-            title: 'Assignment',
-            namespace: 'assigneeEmail',
-            listIsOpen: false,
-            multi: false,
-            filterOptions: [
-                { caption: 'Assigned to me', value: _wfConfig.user.email }
             ]
         },
         {
@@ -151,15 +152,6 @@ var filterDefaults = function (statuses, wfFiltersService) {
             filterOptions: [
                 { caption: 'In InCopy', value: 'true' },
                 { caption: 'Not in InCopy', value: 'false' }
-            ]
-        },
-        {
-            title: 'Touched by...',
-            namespace: 'touched',
-            listIsOpen: false,
-            multi: false,
-            filterOptions: [
-                { caption: 'Me', value: _wfConfig.user.email }
             ]
         }
     ];
