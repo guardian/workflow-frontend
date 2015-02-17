@@ -20,7 +20,6 @@ object ApiErrors {
   def jsonParseError(errMsg: String) = ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")
   def updateError(id: Long)          = ApiError("UpdateError", s"Item with ID, ${id} does not exist", 404, "notfound")
   def composerIdNotFound(id: String) = ApiError("ComposerIdNotFound", s"Composer Id ${id} does not exist in workflow", 404, "notfound")
-  def databaseError(exc: String)     = ApiError("DatabaseError", s"${exc}", 500, "internalservererror")
 
   def composerItemLinked(id: Long, composerId: String) = {
     ApiError("ComposerItemIsLinked", s"This stub is already linked to a composer article", 409, "conflict",
