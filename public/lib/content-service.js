@@ -195,7 +195,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'text': modelParams['text'] || null,
                         'assignee': modelParams['assignee'] || null,
                         'incopy' : modelParams['incopy'] || null,
-                        'touched': modelParams['tuoched'] || null
+                        'touched': modelParams['touched'] || null
                     };
 
                     return params;
