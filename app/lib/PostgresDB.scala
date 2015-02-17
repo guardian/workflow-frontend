@@ -1,7 +1,5 @@
 package lib
 
-import java.sql.SQLException
-
 import com.wordnik.swagger.annotations.ApiResponses
 import lib.OrderingImplicits._
 import Response.Response
@@ -9,7 +7,6 @@ import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
-import play.api.Logger
 import play.api.libs.json.{JsObject, Writes}
 import scala.slick.collection.heterogenous._
 import syntax._
@@ -35,11 +32,13 @@ object PostgresDB {
                   flags:        Seq[String]      = Nil,
                   prodOffice:   Option[String]   = None,
                   createdFrom:  Option[DateTime] = None,
-                  createdUntil: Option[DateTime] = None
+                  createdUntil: Option[DateTime] = None,
+                  composerId:   Option[String]   = None,
+                  assignedToEmail: Option[Seq[String]] = None
   ): List[DashboardRow] =
     getContent(WfQuery.fromOptions(
                  section, desk, dueFrom, dueUntil, status, contentType,
-                 published, flags, prodOffice, createdFrom, createdUntil
+                 published, flags, prodOffice, createdFrom, createdUntil, composerId, assignedToEmail
                )
     )
 
@@ -153,6 +152,7 @@ object PostgresDB {
 
   def updateContentItem(id: Long, c: ContentItem): Response[Long] = {
     DB.withTransaction { implicit session =>
+
       val existingContentItem: Option[(Long, Option[String])] = (for {
         (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
         if (s.pk === id)
@@ -163,23 +163,15 @@ object PostgresDB {
           case (sId, Some(composerId)) => Left(ApiErrors.composerItemLinked(sId, composerId))
           case (sId, None) => {
             val stub = c.stub
-            try {
-              val updatedRow = stubs
-                .filter(_.pk === id)
-                .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
-                .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
-              if (updatedRow == 0) Left(ApiErrors.updateError(id))
-              else {
-                c.wcOpt.foreach(wc => content += WorkflowContent.newContentRow(wc, None))
-                Right(ApiSuccess(id))
-              }
-            }
-            catch {
-              case sqle: SQLException=> {
-                Logger.error(s"Error updating stub with id ${id}, ${sqle.getMessage()}")
-                Left(ApiErrors.databaseError(sqle.getMessage()))
-              }
-            }
+            val updatedRow = stubs
+            .filter(_.pk === id)
+            .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
+            .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
+
+            c.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
+
+            if (updatedRow == 0) Left(ApiErrors.updateError(id))
+            else Right(ApiSuccess(id))
           }
         }
       }).getOrElse(Left(ApiErrors.updateError(id)))

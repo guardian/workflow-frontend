@@ -2,7 +2,6 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
     return {
         restrict: 'A',
         require: '^ngModel',
-        replace: true,
         templateUrl: '/assets/components/toolbar-sections-dropdown/toolbar-sections-dropdown.html',
         scope: {
             ngModel: '=',
