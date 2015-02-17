@@ -63,6 +63,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                     // Desk ignored so no need to request content
                 });
 
+                $rootScope.$on('filtersChanged.touched', function(event, data) {
+                    self.update('touched',  data);
+                    $rootScope.$broadcast('getContent');
+                });
+
                 var keywords = {
                     "type"       : "content-type",
                     "status"     : "status",
