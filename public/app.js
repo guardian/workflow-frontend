@@ -19,6 +19,7 @@ import angular from 'angular';
 import { getEnvironment } from 'environment';
 
 import 'components/sentry/sentry';
+import 'components/error-display/error-display';
 
 import 'components/content-list/content-list';
 import 'components/icons/icons';
@@ -51,6 +52,7 @@ angular.module('workflow',
         'ui.router',
         'ngAnimate',
         'wfSentry',
+        'wfErrorDisplay',
         'wfDashboard',
         'wfDashboardUser',
         'wfDashboardCreate',
