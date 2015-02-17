@@ -158,7 +158,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'created'      : params['created'],
                         'assignee'     : params['assignee'],
                         'assigneeEmail': params['assigneeEmail'],
-                        'incopy'       : params['incopy']
+                        'incopy'       : params['incopy'],
+                        'touched'      : params['touched']
                     };
                 };
 
