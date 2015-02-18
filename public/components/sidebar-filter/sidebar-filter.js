@@ -41,6 +41,10 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 );
             }
 
+            $scope.$on('filters.clearAll', () => {
+                $scope.selectedFilters = [];
+            });
+
             $scope.filterIsSelected = function(filter) {
                 if ($scope.selectedFilters.length < 1) {
                     return filter.value === $scope.defaultFilter.value
