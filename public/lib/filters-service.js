@@ -74,7 +74,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                     "state"      : "state",
                     "who"        : "assignee",
                     "assignee"   : "assignee",
-                    "assignedto" : "assignee"
+                    "assignedto" : "assignee",
+                    "composerId" : "composerId"
                 };
 
                 var savedFilters = null;
@@ -112,9 +113,9 @@ angular.module('wfFiltersService', ['wfDateService'])
                                 }
                                 return "";
                             });
-                        self.update('text', rest, true, true);
+                        self.update('text', rest, true, false);
                     } else {
-                        self.update('text', null, true, true);
+                        self.update('text', null, true, false);
                     }
                     $rootScope.$broadcast('getContent');
                 });
@@ -153,7 +154,9 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'created'      : params['created'],
                         'assignee'     : params['assignee'],
                         'assigneeEmail': params['assigneeEmail'],
-                        'incopy'       : params['incopy']
+                        'incopy'       : params['incopy'],
+                        'text'         : params['text'],
+                        'composerId'   : params['composerId']
                     };
                 };
 

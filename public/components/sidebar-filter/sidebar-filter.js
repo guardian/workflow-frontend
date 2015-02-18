@@ -176,7 +176,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         // once the user has finished typing).
         var defaultDelay = 500;
 
-        $scope.value = "";
+        $scope.value = wfFiltersService.get('text') || "";
         var timeout = null;
         var oldValue = null;
 
