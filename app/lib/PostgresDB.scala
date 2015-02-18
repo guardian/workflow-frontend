@@ -48,12 +48,15 @@ object PostgresDB {
   def getContent(q: WfQuery): List[DashboardRow] =
     DB.withTransaction { implicit session =>
 
-      val query = for {
+      val baseQuery = for {
         s <- (WfQuery.stubsQuery(q)).sortBy(s => (s.priority.desc, s.workingTitle))
         c <- WfQuery.contentQuery(q)
         if s.composerId === c.composerId
-
       } yield (s, c)
+
+      // now that tables are joined into one query, apply the
+      // cross-table textSearch query as neccessary
+      val query = WfQuery.textSearchQuery(baseQuery, q)
 
       query.filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
            .list.map {
@@ -64,8 +67,6 @@ object PostgresDB {
           DashboardRow(stub, content)
       }
     }
-
-
 
   def getContentItems(q: WfQuery): Response[List[ContentItem]] = {
     DB.withTransaction { implicit session =>
