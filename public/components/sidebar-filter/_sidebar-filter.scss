@@ -50,6 +50,11 @@
         margin: 0;
         cursor: pointer;
         flex-grow: 0;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 82px;
+
         &::before {
             transform: rotate(-90deg);
         }
