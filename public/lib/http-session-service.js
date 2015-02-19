@@ -76,14 +76,29 @@ function wfHttpSessionService($http, $q, $log, wfUserSession) {
             Object.keys(requestConfig.params)
                 .filter((param, idx, params) => requestConfig.params[param] !== undefined && requestConfig.params[param] !== null)
                 .map((param) => `${param}=${requestConfig.params[param]}`),
-        error = new Error([
-            'Request error:',
-            err.status || '?',
-            err.statusText || 'Unknown',
-            'from',
-            requestConfig.method || '',
-            (requestConfig.url || '') + (requestParams && requestParams.length > 0 ? '?' + requestParams.join('&') : '')
-        ].join(' '));
+        error, errorMessage;
+
+        if (err.status) {
+            errorMessage = [
+                'Request error:',
+                err.status || '?',
+                err.statusText || 'Unknown',
+                'from',
+                requestConfig.method || '',
+                (requestConfig.url || '') + (requestParams && requestParams.length > 0 ? '?' + requestParams.join('&') : '')
+            ];
+        } else {
+            errorMessage = [
+                'Request error with no status: ',
+                'http error object: ',
+                JSON.stringify(err),
+                'from',
+                requestConfig.method || '',
+                (requestConfig.url || '') + (requestParams && requestParams.length > 0 ? '?' + requestParams.join('&') : '')
+            ];
+        }
+
+        error = new Error(errorMessage.join(' '));
 
         // Append to error object Workflow API JSON error conventions
         if(err.data && err.data.error) {
