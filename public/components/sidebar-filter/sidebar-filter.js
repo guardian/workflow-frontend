@@ -209,5 +209,12 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 );
                 oldValue = newValue;
             }, delay);
-        }
+        };
+
+        $rootScope.$on('filtersRequested.freeText', (textString) => {
+            console.log("recieved");
+            $scope.value = textString;
+            $scope.update(0);
+        });
+
     }]);
