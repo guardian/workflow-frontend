@@ -81,12 +81,12 @@ angular.module('wfFiltersService', ['wfDateService'])
 
                 function enterSearchMode(data) {
                     savedFilters = _.clone(self.filters);
-                    self.clearAll(true);
+                    self.clearAll(true, true);
                     $rootScope.$broadcast("search-mode.enter");
                 }
 
                 function exitSearchMode(data) {
-                    self.clearAll(true);
+                    self.clearAll(true, true);
                     if(savedFilters != null) {
                         _.forOwn(savedFilters,
                                  (value, key) => self.update(key, value));
@@ -216,11 +216,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                 return this.filters;
             }
 
-            clearAll(noPrefs) {
+            clearAll(noPrefs, noUI) {
                 _.forOwn(this.filters, (value, key) => {
                     this.update(key, null, noPrefs);
                 });
-                $rootScope.$broadcast("filters.clearAll");
+                if(!noUI) $rootScope.$broadcast("filters.clearAll");
             }
 
             /**
