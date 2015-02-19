@@ -79,7 +79,8 @@ object Api extends Controller with PanDomainAuthActions {
     val stubs =
       if((status.isEmpty || status.exists(_ == models.Status("Stub"))) &&
         (state.isEmpty   || state == Some(DraftState)) &&
-        (queryData.inIncopy != Some(true))) getStubs else Nil
+        (queryData.inIncopy != Some(true)) && (queryData.composerId.isEmpty)) getStubs else Nil
+
 
     val content = getContent
 
