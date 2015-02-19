@@ -43,19 +43,3 @@
     flex-grow: 1;
     flex-shrink: 1;
 }
-
-.top-toolbar__user {
-    text-align: right;
-    padding: 8px 15px;
-    border-left: 1px solid #bdbdbd;
-}
-
-.top-toolbar__user-link {
-    color: $c-text;
-    white-space: nowrap;
-    display: block;
-}
-
-.top-toolbar__user-link--feedback {
-    font-size: 0.9em;
-}
