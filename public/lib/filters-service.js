@@ -220,7 +220,9 @@ angular.module('wfFiltersService', ['wfDateService'])
                 _.forOwn(this.filters, (value, key) => {
                     this.update(key, null, noPrefs);
                 });
-                if(!noUI) $rootScope.$broadcast("filters.clearAll");
+                if(!noUI) {
+                    $rootScope.$broadcast("filters.clearAll");
+                }
             }
 
             /**
