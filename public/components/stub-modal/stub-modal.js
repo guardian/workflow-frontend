@@ -123,7 +123,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
         var stub = $scope.stub;
         var promise;
 
-        if (!addToComposer) {
+        if (!addToComposer && !($scope.mode === "import")) {
             delete stub.status;
         }
 
