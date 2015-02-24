@@ -84,6 +84,12 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
         });
 
         $scope.selectedDesk = updateSelectedDeskBasedOnSections($scope.selectedSections.map((el) => el.name));
+
+        $scope.$on('filters.clearAll', () => {
+            $scope.selectedSections = [];
+            $scope.selectedDesk = null;
+            $scope.selectedProdOffice = null;
+        });
     }])
 
     .directive('wfToolbarOption', [function () {

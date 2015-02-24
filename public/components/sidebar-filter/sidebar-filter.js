@@ -23,13 +23,32 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             }
 
             $scope.defaultFilter = { caption: "All", value: null };
-            var currentSelection = wfFiltersService.get($scope.filter.namespace);
 
-            if (!currentSelection) {
-                $scope.selectedFilters = [];
-            } else {
-                $scope.selectedFilters = currentSelection.split(",")
-            }
+            (function setUpSelectedFiltersFromUrl () {
+
+                if ($scope.filter.individualNamespaces) {
+
+                    $scope.selectedFilters = [];
+
+                    $scope.filter.filterOptions.forEach((filterOption) => {
+                        var currentSelection = wfFiltersService.get(filterOption.namespace);
+
+                        if (currentSelection) {
+                            $scope.selectedFilters.push(filterOption.namespace + ':' + currentSelection);
+                        }
+                    });
+
+
+                } else {
+                    var currentSelection = wfFiltersService.get($scope.filter.namespace);
+
+                    if (!currentSelection) {
+                        $scope.selectedFilters = [];
+                    } else {
+                        $scope.selectedFilters = currentSelection.split(",")
+                    }
+                }
+            })();
 
             if ($scope.filter.customLinkFunction) { // Custom linking function for non-standard filters
                 $injector.invoke(
@@ -41,9 +60,15 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 );
             }
 
+            $scope.$on('filters.clearAll', () => {
+                $scope.selectedFilters = [];
+            });
+
             $scope.filterIsSelected = function(filter) {
                 if ($scope.selectedFilters.length < 1) {
                     return filter.value === $scope.defaultFilter.value
+                } else if ($scope.filter.individualNamespaces) {
+                    return (filter != null && _.contains($scope.selectedFilters, individualNamespacesFilterName(filter)));
                 } else {
                     return (filter != null && _.contains($scope.selectedFilters, filter.value));
                 }
@@ -56,6 +81,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             };
 
             $scope.selectFilter = function(filter) {
+                console.log(filter,  $scope.selectedFilters);
                 if(isMultiSelect()) {
                     $scope.selectedFilters.push(filter);
                 } else {
@@ -64,14 +90,34 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             };
 
             $scope.filterClick = function(filter) {
-                if($scope.filterIsSelected(filter)) {
-                    $scope.selectedFilters =
-                        _.filter($scope.selectedFilters,
-                                 flt => flt !== filter.value);
+
+                if ($scope.filter.individualNamespaces) {
+
+                    var filterName = individualNamespacesFilterName(filter);
+
+                    if($scope.filterIsSelected(filter)) {
+                        $scope.selectedFilters =
+                            _.filter($scope.selectedFilters,
+                                    flt => flt !== filterName);
+                        $scope.$emit('filtersChanged.' + filter.namespace, '');
+                    } else {
+                        console.log("selecting: ", filterName);
+                        $scope.selectFilter(filterName);
+                        $scope.$emit('filtersChanged.' + filter.namespace, filter.value);
+                    }
+
                 } else {
-                    $scope.selectFilter(filter.value);
+
+                    if($scope.filterIsSelected(filter)) {
+                        $scope.selectedFilters =
+                            _.filter($scope.selectedFilters,
+                                    flt => flt !== filter.value);
+                    } else {
+                        $scope.selectFilter(filter.value);
+                    }
+
+                    $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
                 }
-                $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);
             };
 
             $scope.toggleSidebarSection = function () {
@@ -87,6 +133,10 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 }
 
             };
+
+            function individualNamespacesFilterName (filter) {
+                return filter.namespace + ":" + filter.value;
+            }
 
             /**
              * Update a generic filter preference

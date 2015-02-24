@@ -37,12 +37,12 @@ var filterDefaults = function (statuses, wfFiltersService) {
         },
         {
             title: 'Your Content',
-            namespace: 'yourContent',
             listIsOpen: false,
+            individualNamespaces: true,
             multi: true,
             filterOptions: [
-                { caption: 'Assigned to me', value: _wfConfig.user.email },
-                { caption: 'Recent', value: _wfConfig.user.email }
+                { caption: 'Assigned to me', value: _wfConfig.user.email, namespace: 'assigneeEmail' },
+                { caption: 'Recent', value: _wfConfig.user.email, namespace: 'touched' }
             ]
         },
         {
