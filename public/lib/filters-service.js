@@ -81,12 +81,14 @@ angular.module('wfFiltersService', ['wfDateService'])
                 var savedFilters = null;
 
                 function enterSearchMode(data) {
+                    console.log("enter");
                     savedFilters = _.clone(self.filters);
                     self.clearAll(true, true);
                     $rootScope.$broadcast("search-mode.enter");
                 }
 
                 function exitSearchMode(data) {
+                    console.log("exit");
                     self.clearAll(true, true);
                     if(savedFilters != null) {
                         _.forOwn(savedFilters,
@@ -186,6 +188,8 @@ angular.module('wfFiltersService', ['wfDateService'])
 
 
             update(key, value, doNotUpdateprefs, doNotUpdateUrl) {
+
+                debugger
 
                 if (value !== null && (value === undefined || value.length === 0)) { // empty String or Array
                     value = null; // Remove query param
