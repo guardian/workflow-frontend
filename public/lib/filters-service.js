@@ -49,7 +49,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                 });
 
                 $rootScope.$on('filtersChanged.created', function(event, data) {
-                    self.update('created',  data);
+                    self.update('created', data);
                     $rootScope.$broadcast('getContent');
                 });
 
@@ -64,12 +64,12 @@ angular.module('wfFiltersService', ['wfDateService'])
                 });
 
                 $rootScope.$on('filtersChanged.touched', function(event, data) {
-                    self.update('touched',  data);
+                    self.update('touched', data);
                     $rootScope.$broadcast('getContent');
                 });
 
                 $rootScope.$on('filtersChanged.assigneeEmail', function(event, data) {
-                    self.update('assigneeEmail',  data);
+                    self.update('assigneeEmail', data);
                     $rootScope.$broadcast('getContent');
                 });
 
@@ -226,6 +226,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                 _.forOwn(this.filters, (value, key) => {
                     this.update(key, null, noPrefs);
                 });
+                $rootScope.$broadcast("filters.clearAll");
             }
 
             /**
