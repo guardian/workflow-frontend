@@ -143,11 +143,6 @@ angular.module('wfFiltersService', ['wfDateService'])
 
                     var selectedDate = params['selectedDate'];
 
-                    if (params['text']) {
-                        console.log("sent", params);
-                        $rootScope.$broadcast('filtersRequested.freeText', params['text']);
-                    }
-
                     self.filters = {
                         'status'       : params['status'],
                         'state'        : params['state'],
@@ -160,7 +155,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'assignee'     : params['assignee'],
                         'assigneeEmail': params['assigneeEmail'],
                         'incopy'       : params['incopy'],
-                        'composerId'   : params['composerId']
+                        'composerId'   : params['composerId'],
+                        'text'         : params['text']
                     };
                 };
 

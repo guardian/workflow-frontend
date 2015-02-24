@@ -181,6 +181,15 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         var defaultDelay = 500;
 
         $scope.value = wfFiltersService.get('text') || "";
+
+        if ($scope.value) {
+            $rootScope.$broadcast(
+                "filtersChanged.freeText",
+                {newValue: $scope.value, oldValue: ""}
+            );
+            $rootScope.$broadcast("search-mode.enter");
+        }
+
         var timeout = null;
         var oldValue = null;
 
@@ -210,11 +219,5 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 oldValue = newValue;
             }, delay);
         };
-
-        $rootScope.$on('filtersRequested.freeText', (textString) => {
-            console.log("recieved");
-            $scope.value = textString;
-            $scope.update(0);
-        });
 
     }]);
