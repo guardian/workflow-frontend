@@ -36,13 +36,13 @@ var filterDefaults = function (statuses, wfFiltersService) {
             })
         },
         {
-            title: 'Your Content',
+            title: 'My Content',
             listIsOpen: false,
             individualNamespaces: true,
             multi: true,
             filterOptions: [
                 { caption: 'Assigned to me', value: _wfConfig.user.email, namespace: 'assigneeEmail' },
-                { caption: 'Recent', value: _wfConfig.user.email, namespace: 'touched' }
+                { caption: 'Edited by me', value: _wfConfig.user.email, namespace: 'touched' }
             ]
         },
         {
