@@ -69,6 +69,7 @@ object Api extends Controller with PanDomainAuthActions {
     val status    = queryData.status
     val touched   = queryData.touched
     val published = queryData.published
+    val assigned  = queryData.assignedToEmail
 
     def getContent = {
        PostgresDB.getContent(queryData)
@@ -81,7 +82,8 @@ object Api extends Controller with PanDomainAuthActions {
       if((status.isEmpty || status.exists(_ == models.Status("Stub"))) &&
         (state.isEmpty   || state == Some(DraftState)) &&
         (queryData.inIncopy != Some(true)) &&
-        touched.isEmpty
+        touched.isEmpty &&
+        assigned.isEmpty
       ) getStubs else Nil
 
     val content = getContent
