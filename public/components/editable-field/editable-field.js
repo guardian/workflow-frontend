@@ -78,7 +78,7 @@ function wfEditableDirectiveFactory($timeout) {
                  * Search parent elements on "element" to find "parent" up a hierarchy of "levels".
                  */
                 function isElementChildOf(element, parent, levels) {
-                    return element.parentElement === parent || levels !== 0 && isElementChildOf(element.parentElement, parent, levels - 1);
+                    return element && element.parentElement === parent || levels !== 0 && isElementChildOf(element.parentElement, parent, levels - 1);
                 }
 
                 function checkForImplicitCancelListener(event) {
