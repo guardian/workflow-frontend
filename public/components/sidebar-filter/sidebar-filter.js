@@ -81,7 +81,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             };
 
             $scope.selectFilter = function(filter) {
-                console.log(filter,  $scope.selectedFilters);
+
                 if(isMultiSelect()) {
                     $scope.selectedFilters.push(filter);
                 } else {
@@ -101,7 +101,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                                     flt => flt !== filterName);
                         $scope.$emit('filtersChanged.' + filter.namespace, '');
                     } else {
-                        console.log("selecting: ", filterName);
+
                         $scope.selectFilter(filterName);
                         $scope.$emit('filtersChanged.' + filter.namespace, filter.value);
                     }
