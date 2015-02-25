@@ -185,7 +185,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         if ($scope.value) {
             $rootScope.$broadcast(
                 "filtersChanged.freeText",
-                {newValue: $scope.value, oldValue: ""}
+                {newValue: $scope.value, oldValue: "", initialLoad: true}
             );
             $rootScope.$broadcast("search-mode.enter");
         }
