@@ -67,6 +67,9 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                     $log.error('error subscribing ', err)
                 )
             });
+            p.on('error', msg => {
+                $log.error('presence error ', msg);
+            });
             return p;
         },
         () => {
