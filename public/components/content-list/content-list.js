@@ -57,7 +57,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                     //$scope.group.items = $filter('limitTo')($scope.group.items, $scope.limit);
 
-                    var contentListHeading = '<tr class="content-list__group-heading-row"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span></th></tr>';
+                    var contentListHeading = '<tr class="content-list__group-heading-row"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.count }}</span></span></th></tr>';
 
                     var contentListItemDirective = '<tr wf-content-list-item class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-repeat="contentItem in group.items track by contentItem.id" ';
 
@@ -253,18 +253,9 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
 
         // TODO stubs and content are separate structures in the API response
         //      make this a single list of content with consistent structure in the API
-        //var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
-        //    grouped = _.groupBy(content, 'status');
 
         data.content['Stub'] = data.stubs;
-
         var grouped = data.content;
-
-        //data.content['Stub'] = data.stubs;
-        //
-        //var content = data.stubs.concat
-        //
-        //var grouped = data.content;
 
         $scope.originalContent = statuses.map((status) => {
             // TODO: status is currently stored as presentation text, eg: "Writers"
@@ -274,7 +265,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
             return {
                 name: status.toLowerCase(),
                 title: status == 'Stub' ? 'News list' : status,
-                //items: grouped[status].map(wfContentItemParser.parse)
+                count: data.count[status],
                 items: grouped[status] ? grouped[status].map(wfContentItemParser.parse) : grouped[status]
             };
         });
@@ -286,8 +277,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
         for (var key in data.content) {
             $scope.contentIds.concat(data.content[key].map((content) => content.composerId))
         }
-
-        //data.content.map((content) => content.composerId);
 
         // update selectedItem as objects are now !==
         if (this.selectedItem) {
