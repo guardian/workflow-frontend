@@ -9,6 +9,14 @@ import net.logstash.logback.appender.LogstashTcpSocketAppender
 
 object LogConfig {
 
+  val customFields = Map(
+    "app" -> "pmr-test"
+  )
+
+  def makeCustomFields: String = {
+    "{" + (for((k, v) <- customFields) yield(s""""${k}":"${v}"""")).mkString(",") + "}"
+  }
+
   def asLogBack(l: LoggerLike): Option[LogbackLogger] = l.logger match {
     case l: LogbackLogger => Some(l)
     case _ => None
@@ -17,7 +25,7 @@ object LogConfig {
   def makeEncoder(context: LoggerContext) = {
     val e = new LogstashEncoder()
     e.setContext(context)
-    e.setCustomFields("""{"appname":"pmr-test"}""")
+    e.setCustomFields(makeCustomFields)
     e.start()
     e
   }
