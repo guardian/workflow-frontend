@@ -86,20 +86,7 @@ object Api extends Controller with PanDomainAuthActions {
         assigned.isEmpty
       ) getStubs else Nil
 
-    val content = getContent
-
-//    var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
-//    grouped = _.groupBy(content, 'status');
-//
-//    $scope.content = statuses.map((status) => {
-//      return {
-//        name: status.toLowerCase(),
-//        title: status == 'Stub' ? 'News list' : status,
-//        items: grouped[status]
-//      };
-//    });
-
-    val contentGroupedByStatus = content.groupBy(_.wc.status)
+    val contentGroupedByStatus = getContent.groupBy(_.wc.status)
 
     val jsContentGroupedByStatus = contentGroupedByStatus.map({
       case (status, content) => (status.toString, Json.toJson(content))
@@ -107,7 +94,7 @@ object Api extends Controller with PanDomainAuthActions {
 
     val counts = contentGroupedByStatus.map({
       case (status, content) => (status.toString, Json.toJson(content.length))
-    }).toSeq
+    }).toSeq ++ Map("Stub" -> Json.toJson(stubs.length)).toSeq
 
     Ok(
       Json.obj(
