@@ -99,11 +99,23 @@ object Api extends Controller with PanDomainAuthActions {
 //      };
 //    });
 
-//    val contentGroupedByStatus = JsObject(content.groupBy(_.wc.status).map({
-//      case (status, content) => (status.toString, Json.toJson(content))
-//    }).toSeq)
+    val contentGroupedByStatus = content.groupBy(_.wc.status)
 
-    Ok(Json.obj("content" -> content, "stubs" -> stubs))
+    val jsContentGroupedByStatus = contentGroupedByStatus.map({
+      case (status, content) => (status.toString, Json.toJson(content))
+    }).toSeq
+
+    val counts = contentGroupedByStatus.map({
+      case (status, content) => (status.toString, Json.toJson(content.length))
+    }).toSeq
+
+    Ok(
+      Json.obj(
+        "content" -> JsObject(jsContentGroupedByStatus),
+        "stubs" -> stubs,
+        "count" -> JsObject(counts)
+      )
+    )
   }
 
   def content = APIAuthAction(getContentBlock)

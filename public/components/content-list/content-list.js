@@ -181,6 +181,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
     });
 
     $scope.contentitemsDisplayed = 50;
+    $scope.contentItemLoadingIncrement = 10;
 
     $scope.originalContent = [];
     $scope.content;
@@ -224,11 +225,13 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
         var groups = clone(content);
 
         groups.forEach((group) => {
-            if (group.items.length < trimTo) {
-                trimTo = trimTo - group.items.length;
-            } else {
-                group.items.length = trimTo;
-                trimTo = 0;
+            if (group.items && group.items.length) {
+                if (group.items.length < trimTo) {
+                    trimTo = trimTo - group.items.length;
+                } else {
+                    group.items.length = trimTo;
+                    trimTo = 0;
+                }
             }
         });
 
@@ -237,7 +240,8 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
 
     $scope.moreContent = function () {
         $timeout(() => {
-            $scope.contentitemsDisplayed += 20;
+            $scope.contentitemsDisplayed += $scope.contentItemLoadingIncrement;
+            $scope.animationsEnabled = false;
             $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentitemsDisplayed);
         }, 1);
     };
@@ -249,8 +253,12 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
 
         // TODO stubs and content are separate structures in the API response
         //      make this a single list of content with consistent structure in the API
-        var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
-            grouped = _.groupBy(content, 'status');
+        //var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
+        //    grouped = _.groupBy(content, 'status');
+
+        data.content['Stub'] = data.stubs;
+
+        var grouped = data.content;
 
         //data.content['Stub'] = data.stubs;
         //
@@ -262,17 +270,24 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
             // TODO: status is currently stored as presentation text, eg: "Writers"
             //       should be stored as an enum and transformed to presentation text
             //       here in the front-end
+
             return {
                 name: status.toLowerCase(),
                 title: status == 'Stub' ? 'News list' : status,
-                items: grouped[status].map(wfContentItemParser.parse)
-                //items: grouped[status]
+                //items: grouped[status].map(wfContentItemParser.parse)
+                items: grouped[status] ? grouped[status].map(wfContentItemParser.parse) : grouped[status]
             };
         });
 
         $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentitemsDisplayed);
 
-        $scope.contentIds = data.content.map((content) => content.composerId);
+        $scope.contentIds = [];
+
+        for (var key in data.content) {
+            $scope.contentIds.concat(data.content[key].map((content) => content.composerId))
+        }
+
+        //data.content.map((content) => content.composerId);
 
         // update selectedItem as objects are now !==
         if (this.selectedItem) {
