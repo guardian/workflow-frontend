@@ -49,7 +49,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                 });
 
                 $rootScope.$on('filtersChanged.created', function(event, data) {
-                    self.update('created',  data);
+                    self.update('created', data);
                     $rootScope.$broadcast('getContent');
                 });
 
@@ -63,8 +63,13 @@ angular.module('wfFiltersService', ['wfDateService'])
                     // Desk ignored so no need to request content
                 });
 
+                $rootScope.$on('filtersChanged.touched', function(event, data) {
+                    self.update('touched', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
                 $rootScope.$on('filtersChanged.assigneeEmail', function(event, data) {
-                    self.update('assigneeEmail',  data);
+                    self.update('assigneeEmail', data);
                     $rootScope.$broadcast('getContent');
                 });
 
@@ -153,7 +158,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'created'      : params['created'],
                         'assignee'     : params['assignee'],
                         'assigneeEmail': params['assigneeEmail'],
-                        'incopy'       : params['incopy']
+                        'incopy'       : params['incopy'],
+                        'touched'      : params['touched']
                     };
                 };
 
