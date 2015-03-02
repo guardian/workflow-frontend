@@ -20,7 +20,7 @@ import { wfLoader } from 'components/loader/loader';
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField'])
     .service('wfContentItemParser', ['config', 'statusLabels', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
-    .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'legalValues', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
+    .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', '$timeout', 'statuses', 'legalValues', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', wfContentListController])
     .directive('wfContentListLoader', ['$rootScope', wfLoader])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'sections', wfContentListItem])
@@ -45,7 +45,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
             }
         };
     })
-    .directive("contentListItemContainer", function ($compile, $rootScope) {
+    .directive("contentListItemContainer", function ($compile, $rootScope, $filter) {
         return {
             restrict: 'A',
             transclude: true,
@@ -53,9 +53,13 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                 $rootScope.$watch('contentItemTemplate', () => {
 
+                    //$scope.limit = 3;
+
+                    //$scope.group.items = $filter('limitTo')($scope.group.items, $scope.limit);
+
                     var contentListHeading = '<tr class="content-list__group-heading-row"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span></th></tr>';
 
-                    var contentListItemDirective = '<tr wf-content-list-item class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-repeat="contentItem in group.items track by contentItem.id"';
+                    var contentListItemDirective = '<tr wf-content-list-item class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-repeat="contentItem in group.items track by contentItem.id" ';
 
                     var contentListItemClasses = 'ng-class="(contentList.selectedItem === contentItem) ? \'content-list-item--selected\' : \'\'"';
 
@@ -77,7 +81,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 
 
-function wfContentListController($rootScope, $scope, $anchorScroll, statuses, legalValues, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService) {
+function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, statuses, legalValues, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService) {
 
     /*jshint validthis:true */
 
@@ -176,24 +180,97 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         wfPresenceService.subscribe($scope.contentIds);
     });
 
+    $scope.contentitemsDisplayed = 50;
+
+    $scope.originalContent = [];
+    $scope.content;
+
+    function clone(obj) {
+        var copy;
+
+        // Handle the 3 simple types, and null or undefined
+        if (null == obj || "object" != typeof obj) return obj;
+
+        // Handle Date
+        if (obj instanceof Date) {
+            copy = new Date();
+            copy.setTime(obj.getTime());
+            return copy;
+        }
+
+        // Handle Array
+        if (obj instanceof Array) {
+            copy = [];
+            for (var i = 0, len = obj.length; i < len; i++) {
+                copy[i] = clone(obj[i]);
+            }
+            return copy;
+        }
+
+        // Handle Object
+        if (obj instanceof Object) {
+            copy = {};
+            for (var attr in obj) {
+                if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+            }
+            return copy;
+        }
+
+        throw new Error("Unable to copy obj! Its type isn't supported.");
+    }
+
+    $scope.trimContentToLength = function (groups, trimTo) {
+
+        //var groups = originalContent.slice();
+
+        groups.forEach((group) => {
+            if (group.items.length < trimTo) {
+                trimTo = trimTo - group.items.length;
+            } else {
+                group.items.length = trimTo;
+                trimTo = 0;
+            }
+        });
+
+        return groups;
+    };
+
+    $scope.moreContent = function () {
+        $timeout(() => {
+            $scope.contentitemsDisplayed += 20;
+            $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentitemsDisplayed);
+        }, 1);
+    };
+
     this.render = (response) => {
         var data = response.data;
+
+        console.log('rendering...');
 
         // TODO stubs and content are separate structures in the API response
         //      make this a single list of content with consistent structure in the API
         var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
             grouped = _.groupBy(content, 'status');
 
-        $scope.content = statuses.map((status) => {
+        //data.content['Stub'] = data.stubs;
+        //
+        //var content = data.stubs.concat
+        //
+        //var grouped = data.content;
+
+        $scope.originalContent = statuses.map((status) => {
             // TODO: status is currently stored as presentation text, eg: "Writers"
             //       should be stored as an enum and transformed to presentation text
             //       here in the front-end
             return {
                 name: status.toLowerCase(),
                 title: status == 'Stub' ? 'News list' : status,
-                items: grouped[status]
+                items: grouped[status].map(wfContentItemParser.parse)
+                //items: grouped[status]
             };
         });
+
+        $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentitemsDisplayed);
 
         $scope.contentIds = data.content.map((content) => content.composerId);
 
@@ -202,13 +279,13 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
             this.selectedItem = _.find(content, { id: this.selectedItem.id });
         }
 
-        $scope.$emit('content.render', {
-            content: $scope.content,
-            selectedItem: this.selectedItem
-        });
+        //$scope.$emit('content.render', {
+        //    content: $scope.content,
+        //    selectedItem: this.selectedItem
+        //});
 
-        $scope.$apply();
-        $scope.$emit('content.rendered');
+        //$scope.$apply();
+        //$scope.$emit('content.rendered');
     };
 
 

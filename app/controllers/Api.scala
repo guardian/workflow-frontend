@@ -83,6 +83,21 @@ object Api extends Controller with PanDomainAuthActions {
 
     val content = getContent
 
+//    var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
+//    grouped = _.groupBy(content, 'status');
+//
+//    $scope.content = statuses.map((status) => {
+//      return {
+//        name: status.toLowerCase(),
+//        title: status == 'Stub' ? 'News list' : status,
+//        items: grouped[status]
+//      };
+//    });
+
+//    val contentGroupedByStatus = JsObject(content.groupBy(_.wc.status).map({
+//      case (status, content) => (status.toString, Json.toJson(content))
+//    }).toSeq)
+
     Ok(Json.obj("content" -> content, "stubs" -> stubs))
   }
 
