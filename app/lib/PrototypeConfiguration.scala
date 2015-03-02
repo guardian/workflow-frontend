@@ -3,8 +3,6 @@ package lib
 import com.gu.workflow.lib.Config
 import play.Logger
 
-case class LogStashConf(host: String, port: Int)
-
 case class PrototypeConfiguration(
                                    composerUrl: String,
                                    googleClientId: String,
