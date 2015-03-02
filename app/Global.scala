@@ -7,7 +7,7 @@ import lib.{PrototypeConfiguration, RedirectToHTTPSFilter, LoggingFilter, LogCon
 object Global extends WithFilters(RedirectToHTTPSFilter, new GzipFilter, LoggingFilter) with GlobalSettings {
   override def beforeStart(app: Application) {
 
-    LogConfig.init
+    LogConfig.init(PrototypeConfiguration.apply.logStashConf)
 
     /* It's horrible, but this is absolutely necessary for correct interpretation
      * of datetime columns in the database which do not have a timezone.
