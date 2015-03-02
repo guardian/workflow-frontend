@@ -66,6 +66,7 @@ object PostgresDB {
 
           DashboardRow(stub, content)
       }
+
     }
 
   def getContentItems(q: WfQuery): Response[List[ContentItem]] = {
