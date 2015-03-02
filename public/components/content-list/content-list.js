@@ -219,9 +219,9 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
         throw new Error("Unable to copy obj! Its type isn't supported.");
     }
 
-    $scope.trimContentToLength = function (groups, trimTo) {
+    $scope.trimContentToLength = function (content, trimTo) {
 
-        //var groups = originalContent.slice();
+        var groups = clone(content);
 
         groups.forEach((group) => {
             if (group.items.length < trimTo) {
@@ -279,13 +279,13 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
             this.selectedItem = _.find(content, { id: this.selectedItem.id });
         }
 
-        //$scope.$emit('content.render', {
-        //    content: $scope.content,
-        //    selectedItem: this.selectedItem
-        //});
+        $scope.$emit('content.render', {
+            content: $scope.content,
+            selectedItem: this.selectedItem
+        });
 
-        //$scope.$apply();
-        //$scope.$emit('content.rendered');
+        $scope.$apply();
+        $scope.$emit('content.rendered');
     };
 
 
