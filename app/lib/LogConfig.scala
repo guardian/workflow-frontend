@@ -9,9 +9,18 @@ import net.logstash.logback.appender.LogstashTcpSocketAppender
 
 object LogConfig {
 
-  val customFields = Map(
-    "app" -> "pmr-test"
-  )
+  import play.api.Play.current
+  val config = play.api.Play.configuration
+
+  lazy val customFields = (
+    for {
+      app   <- config.getString("logging.fields.app")
+      stage <- config.getString("logging.fields.stage")
+    } yield Map(
+      "stage" -> stage.toUpperCase,
+      "app"   -> app
+    )
+  ).getOrElse(Map("logging-error" -> "bad-logging-config"))
 
   def makeCustomFields: String = {
     "{" + (for((k, v) <- customFields) yield(s""""${k}":"${v}"""")).mkString(",") + "}"
@@ -40,22 +49,12 @@ object LogConfig {
     a
   }
 
-  def makeConsoleAppender(context: LoggerContext) = {
-    val a = new ConsoleAppender[ILoggingEvent]()
-    a.setContext(context)
-    a.setEncoder(makeEncoder(context))
-    a.start()
-    a
-  }
-
   def init = {
     Logger.info("LogConfig INIT()")
     asLogBack(Logger).map { lb =>
       lb.info("Configuring Logback")
       val context = lb.getLoggerContext
       // remove the default configuration
-      context.reset()
-      lb.addAppender(makeConsoleAppender(context))
       lb.addAppender(makeTcpAppender(context))
       lb.info("Configured Logback")
     } getOrElse( Logger.info("not running using logback") )
