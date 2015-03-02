@@ -2,6 +2,8 @@ package lib
 
 import play.api.{Logger, LoggerLike}
 import ch.qos.logback.classic.{Logger => LogbackLogger, LoggerContext}
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.ConsoleAppender
 import net.logstash.logback.encoder.LogstashEncoder
 import net.logstash.logback.appender.LogstashTcpSocketAppender
 
@@ -20,12 +22,20 @@ object LogConfig {
     e
   }
 
-  def makeAppender(context: LoggerContext) = {
+  def makeTcpAppender(context: LoggerContext) = {
     val a = new LogstashTcpSocketAppender()
     a.setContext(context)
     a.setEncoder(makeEncoder(context))
     a.setRemoteHost(PrototypeConfiguration.apply.logStashConf.host)
     a.setPort(PrototypeConfiguration.apply.logStashConf.port)
+    a.start()
+    a
+  }
+
+  def makeConsoleAppender(context: LoggerContext) = {
+    val a = new ConsoleAppender[ILoggingEvent]()
+    a.setContext(context)
+    a.setEncoder(makeEncoder(context))
     a.start()
     a
   }
@@ -37,7 +47,8 @@ object LogConfig {
       val context = lb.getLoggerContext
       // remove the default configuration
       context.reset()
-      lb.addAppender(makeAppender(context))
+      lb.addAppender(makeConsoleAppender(context))
+      lb.addAppender(makeTcpAppender(context))
       lb.info("Configured Logback")
     } getOrElse( Logger.info("not running using logback") )
   }
