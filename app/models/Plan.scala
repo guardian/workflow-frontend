@@ -1,5 +1,6 @@
 package models
 
+import play.api.libs.json.Json
 import org.joda.time.DateTime
 
 case class Bundle(name: String, items: List[PlannedItem])
