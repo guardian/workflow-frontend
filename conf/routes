@@ -49,6 +49,7 @@ GET            /api/sections                           controllers.Api.sections
 # API V1
 
 # Content
+GET            /api/v1/plan                            controllers.PlanApi.plan
 GET            /api/v1/content                         controllers.ContentApi.content
 GET            /api/v1/content/:id                     controllers.ContentApi.contentById(id: String)
 POST           /api/v1/content                         controllers.ContentApi.createContent
