@@ -1,11 +1,18 @@
 import angular from 'angular';
 
-
 angular.module('wfPlan', [])
-    .controller('wfPlanController', ['$scope', function wfPlanController ($scope) {
+    .service('wfPlanLoader', function () {
+        // LOAD from the API here
+        function loadPlanItems() {
+            return [{
+                title: "Stuff will happen here"
+            }];
+        }
+        return {
+            load: loadPlanItems
+        }
+    })
+    .controller('wfPlanController', ['$scope', 'wfPlanLoader', function wfPlanController ($scope, planLoader) {
         // controller stuff
-
-        $scope.plannedItems = [1, 2, 3, 4, 5];
-
+        $scope.plannedItems = planLoader.load();
     }]);
-
