@@ -15,10 +15,20 @@ angular.module('wfPlan', [])
         }
     })
     .controller('wfPlanController', ['$scope', 'wfPlanLoader', function wfPlanController ($scope, planLoader) {
+        moment.locale('wfPlan', {
+            calendar : {
+                lastDay : '[Yesterday]',
+                sameDay : '[Today]',
+                nextDay : '[Tomorrow]',
+                lastWeek : '[last] dddd',
+                nextWeek : 'dddd',
+                sameElse : 'L'
+            }
+        });
         // controller stuff
         $scope.plannedItems = planLoader.load();
         function makeDateList() {
-            var now = moment();
+            var now = moment().locale("wfPlan");
             return _.map(_.range(0, 10), (days) => moment().add(days, 'days'));
         }
         $scope.dateList = makeDateList();
