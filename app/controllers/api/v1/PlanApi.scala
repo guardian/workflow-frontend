@@ -10,6 +10,6 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
   def plan() = APIAuthAction { request =>
     val list = PlanDB.store()
 
-    Response(Right(ApiSuccess(list)).right)
+    Response(Right(ApiSuccess(list)))
   }
 }
