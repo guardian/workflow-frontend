@@ -30,6 +30,8 @@ import 'layouts/dashboard/dashboard-create';
 import 'layouts/dashboard/dashboard-toolbar';
 import 'layouts/dashboard/dashboard-sidebar';
 
+import 'layouts/plan/plan';
+
 import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/column-service';
@@ -66,7 +68,8 @@ angular.module('workflow',
         'wfColumnService',
         'wfPreferencesService',
         'wfFeatureSwitches',
-        'wfGoogleApiService'
+        'wfGoogleApiService',
+        'wfPlan'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
         // TODO: remember user's state and redirect there on default '' route
@@ -97,7 +100,17 @@ angular.module('workflow',
                     controller: 'wfDashboardUserController'
                 }
             }
-        });
+        })
+        .state('plan', {
+                url: '/plan',
+                views: {
+                    '': {
+                        templateUrl: '/assets/layouts/plan/plan.html',
+                        controller: 'wfPlanController'
+                    }
+                }
+            });
+
         $locationProvider.html5Mode({
             enabled: true,
             requireBase: false
