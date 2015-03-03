@@ -18,7 +18,8 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def plan = AuthAction { request =>
-    Ok(views.html.plan())
+    val user = request.user
+    Ok(views.html.plan("Plan view", Some(user), Json.obj()))
   }
 
   def dashboard = app("Workflow")
