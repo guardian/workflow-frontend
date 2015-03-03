@@ -17,6 +17,10 @@ object Application extends Controller with PanDomainAuthActions {
     Redirect(routes.Application.dashboard)
   }
 
+  def plan = AuthAction { request =>
+    Ok(views.html.plan())
+  }
+
   def dashboard = app("Workflow")
 
   def about = AuthAction { request =>
