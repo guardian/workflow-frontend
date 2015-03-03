@@ -376,11 +376,10 @@
     /* end */
 </style>
 
-<span ng-repeat="item in plannedItems">{{ item.title }}</span>
-
 <div class="plan-container">
     <div class="three-month-view">
         <ul>
+            <li class="current" ng-repeat="date in dateList">{{date.calendar()}}</li>
             <li class="past">last Friday</li>
             <li class="past">last Saturday</li>
             <li class="past">Yesterday</li>
