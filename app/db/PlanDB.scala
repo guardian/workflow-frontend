@@ -10,12 +10,14 @@ object PlannedItem {
 }
 
 case class Bundle(name: String, plannedItems: List[PlannedItem])
-
 object Bundle {
   implicit val bundleFormats = Json.format[Bundle]
 }
 
-
+case class PlanView(bundles: List[Bundle], plannedItems: List[PlannedItem])
+object PlanView {
+  implicit val planVieFormats = Json.format[PlanView]
+}
 
 object StubData {
   val all = List(
@@ -43,6 +45,8 @@ object BundleData {
 object PlanDB {
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val bundles: Agent[List[Bundle]]      = Agent(BundleData.all)
-  val store:   Agent[List[PlannedItem]] = Agent(StubData.all)
+  val bundles:  Agent[List[Bundle]]      = Agent(BundleData.all)
+  val items:    Agent[List[PlannedItem]] = Agent(StubData.all)
+
+  val planView: Agent[PlanView]          = Agent(PlanView(bundles(), items()))
 }
