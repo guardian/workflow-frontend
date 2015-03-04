@@ -51,6 +51,13 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
             moment.locale('wfPlan', calLocale);
         });
 
+        $scope.selectedDate = moment();
+
+        $scope.selectDay = function (date) {
+            console.log("selectDay", date);
+            $scope.selectedDate = moment(date);
+        };
+
         $scope.$watch('startDate', () => {
            console.log(arguments);
         });
@@ -92,4 +99,12 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         $scope.$on('planned-items-changed', (ev, eventItems) => {
             $scope.items = $scope.getItems($scope.date, $scope.date.clone().add(1, 'days'));
         });
+    }])
+    .controller('wfNewsAgendaController', [ '$scope', function ($scope) {
+        $scope.agendaItems = [{title: "one"}, {title: "two"}];
+        $scope.$watch('selectedDate', (newValue, oldValue) => {
+            console.log("selectedDate changed", newValue);
+            $scope.agendaItems = $scope.getItems(moment(newValue),
+                                                 moment(newValue).add(1, 'days'));
+        }, true);
     }]);
