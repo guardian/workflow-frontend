@@ -376,66 +376,10 @@
     /* end */
 </style>
 
-<span ng-repeat="item in plannedItems">{{ item }}</span>
-
 <div class="plan-container">
     <div class="three-month-view">
         <ul>
-            <li class="past">last Friday</li>
-            <li class="past">last Saturday</li>
-            <li class="past">Yesterday</li>
-            <li class="current"><span class="label"><strong>Today</strong><div class="add-event">+</div></span>
-                <ul class="day-events">
-                    <li class="day-event ">Litvinenko inquest opens<div class="add-event">+</div></li>
-                    <li class="day-event">
-                        Obama in Saudi Arabia<div class="add-event">+</div></li>
-                    <li class="day-event">Auschwitz rememberance<div class="add-event">+</div></li>
-                </ul>
-            </li>
-            <li><span class="label">Tomorrow<div class="add-event">+</div></span>
-                <ul class="day-events">
-                    <li class="day-event">
-                        Climate report due<div class="add-event">+</div></li>
-                    <li class="day-event">Apple live earnings<div class="add-event">+</div></li>
-                    <li class="day-event">Auschwitz rememberance<div class="add-event">+</div></li>
-                    <li class="day-event">Apple watch launch<div class="add-event">+</div></li>
-                </ul>
-            </li>
-            <li>Wednesday</li>
-            <li>Thursday</li>
-            <li>Friday</li>
-            <li>Saturday</li>
-            <li>Sunday</li>
-            <li>Mon. 2nd Feb</li>
-            <li>Tues. 3rd Feb</li>
-            <li>Wed. 4th Feb</li>
-            <li>Thur. 5th Feb</li>
-            <li>Fri. 6th Feb</li>
-            <li>Sat. 7th Feb</li>
-            <li>Sun. 8th Feb</li>
-            <li>Mon. 9th Feb</li>
-            <li>Tues. 10th Feb</li>
-            <li>Wed. 11th Feb</li>
-            <ul class="day-events">
-                <li class="day-event">
-                    Climate report due<div class="add-event">+</div></li>
-                <li class="day-event">Apple live earnings<div class="add-event">+</div></li>
-                <li class="day-event">Auschwitz rememberance<div class="add-event">+</div></li>
-                <li class="day-event">Apple watch launch<div class="add-event">+</div></li>
-            </ul>
-            <li>Thur. 12th Feb</li>
-            <li>Fri. 13th Feb</li>
-            <li>Sat. 14th Feb</li>
-            <li>Sun. 15th Feb</li>
-            <li>Mon. 16th Feb</li>
-            <li>Tues. 17th Feb</li>
-            <li>Wed. 18th Feb</li>
-            <li>Thur. 19th Feb</li>
-            <li>Fri. 20th Feb</li>
-            <li>Sat. 21st Feb</li>
-            <li>Sun. 22nd Feb</li>
-            <li>Mon. 23rd Feb</li>
-            <li>Tues. 24th Feb</li>
+            <li class="current" ng-repeat="date in dateList">{{date.calendar()}}</li>
         </ul>
     </div>
 
