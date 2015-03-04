@@ -13,12 +13,12 @@ function withLocale(locale, f) {
 }
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
-    .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', function (http, planService, PollingService) {
+    .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', '$rootScope', function (http, planService, PollingService, $rootScope) {
 
         this.poller = new PollingService(planService, () => { return {}; })
 
         this.render = (response) => {
-            console.log(response.data.data)
+            $rootScope.$broadcast('plan-view-data-load', response.data.data);
         }
 
         this.renderError = (err) => {
@@ -29,17 +29,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         this.poller.onError(this.renderError);
 
         this.poller.startPolling();
-
-        // LOAD from the API here
-        function loadPlanItems() {
-            return http.request({url: "/api/v1/plan"}).then((res) => _.map(res.data.data, (item) => {
-                item.plannedDate = moment(item.plannedDate);
-                return item;
-            }));
-        };
-        return {
-            load: loadPlanItems
-        };
     }])
     .filter('dateListFormatter', [function () {
         return function(date) {
@@ -69,12 +58,12 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         // controller stuff
         $scope.plannedItems = []
 
-        $scope.$watch('plannedItems', function (newValue, oldValue) {
-            $scope.$broadcast('planned-items-changed', newValue);
-        }, true);
-
-        planLoader.load().then((items) => {
-            $scope.$apply(function () { $scope.plannedItems = items; })
+        $scope.$on('plan-view-data-load', function (ev, data) {
+            $scope.plannedItems = _.map(data.plannedItems, (item) => {
+                item.plannedDate = moment(item.plannedDate)
+                return item;
+            });
+            $scope.$broadcast('planned-items-changed', $scope.plannedItems);            
         });
 
         function makeDateList() {
