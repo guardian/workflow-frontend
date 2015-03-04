@@ -3,6 +3,8 @@ package lib
 import play.api.libs.json._
 import play.api.mvc.{Result, Results}
 
+import scala.concurrent.{ExecutionContext, Future}
+
 case class ApiError(message: String, friendlyMessage: String, statusCode: Int, statusString: String, data: Option[JsObject] = None)
 
 case class ApiSuccess[T](data: T, status: String = "Ok", statusCode: Int = 200, headers: List[(String,String)]= Nil)
@@ -35,6 +37,66 @@ object ApiErrors {
 
 }
 
+
+
+case class ApiResponseFt[A] private (underlying: Future[Either[ApiError, A]]) {
+
+  def map[B](f: A => B)(implicit ec: ExecutionContext): ApiResponseFt[B] = ApiResponseFt(underlying.map(ft => ft.right.map(a => f(a))))
+
+  def flatMap[B](f: A => ApiResponseFt[B])(implicit ec: ExecutionContext): ApiResponseFt[B] = ApiResponseFt {
+    asFuture.flatMap {
+      case Right(a) => f(a).asFuture
+      case Left(e) => Future.successful(Left(e))
+    }
+  }
+
+  def fold[B](failure: ApiError => B, success: A => B)(implicit ex: ExecutionContext): Future[B] = {
+    asFuture.map(_.fold(failure, success))
+  }
+
+  def asFuture(implicit ec: ExecutionContext): Future[Either[ApiError, A]] = {
+    underlying recover { case err =>
+      scala.Left(ApiError("DatabaseError",err.getMessage,500, "server"))
+    }
+  }
+
+}
+
+object ApiResponseFt extends Results {
+
+  def apply[T](action: => ApiResponseFt[T])(implicit tjs: Writes[T], ec: ExecutionContext): Future[Result] = {
+    action.fold( {
+      apiErrors => Status(apiErrors.statusCode) {
+        JsObject(Seq(
+          "status" -> JsString("error"),
+          "statusCode" -> JsNumber(apiErrors.statusCode),
+          "data" -> JsArray(),
+          "errors" -> Json.toJson(apiErrors)
+        ))
+      }
+    },
+    t => {
+      Ok {
+        JsObject(Seq(
+          "status" -> JsString("ok"),
+          "statusCode" -> JsNumber(200),
+          "data" -> Json.toJson(t)
+        ))
+      }
+    })
+  }
+
+  def Right[A](a: A): ApiResponseFt[A] = ApiResponseFt(Future.successful(scala.Right(a)))
+
+  def Left[A](err: ApiError): ApiResponseFt[A] = ApiResponseFt(Future.successful(scala.Left(err)))
+
+  object Async {
+    def Right[A](fa: Future[A])(implicit ex: ExecutionContext): ApiResponseFt[A] = ApiResponseFt(fa.map(scala.Right(_)))
+
+    def Left[A](ferr: Future[ApiError])(implicit ec: ExecutionContext): ApiResponseFt[A] = ApiResponseFt(ferr.map(scala.Left(_)))
+  }
+
+}
 
 object Response extends Results {
   type Response[T] = Either[ApiError, ApiSuccess[T]]
