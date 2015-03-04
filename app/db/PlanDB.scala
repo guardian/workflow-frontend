@@ -10,7 +10,22 @@ import lib.{ApiResponseFt, ApiSuccess}
 case class PlannedItem(title: String, newsList: String, plannedDate: Option[DateTime]=None, byLine: Option[String]=None, bundleId: Option[String]=None, notes: Option[String]=None, created: DateTime = DateTime.now(),  priority: Int=0, id: String = UUID.randomUUID().toString)
 object PlannedItem {
   implicit val plannedItemFormats = Json.format[PlannedItem]
+  import play.api.libs.functional.syntax._
+  import play.api.libs.json.util._
+  implicit val jsonReads: Reads[PlannedItem] =(
+    (__ \ "title").read[String] and
+    (__ \ "newsList").read[String] and
+    (__ \ "plannedDate").readNullable[DateTime] and
+    (__ \ "byLine").readNullable[String] and
+    (__ \ "bundleId").readNullable[String] and
+    (__ \ "notes").readNullable[String] and
+    (__ \ "created").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
+    (__ \ "priority").readNullable[Int].map(_.getOrElse(0)) and
+    (__ \"id").readNullable[String].map(_.getOrElse(UUID.randomUUID().toString))
+    )(PlannedItem.apply _)
+
 }
+
 
 case class Bundle(name: String, plannedItems: List[PlannedItem])
 object Bundle {
