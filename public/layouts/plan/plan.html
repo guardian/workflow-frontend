@@ -3,7 +3,7 @@
     <div class="three-month-view">
         <ul>
             <li class="current" ng-repeat="date in dateList"
-                ng-controller="wfDateListController">{{date | dateListFormatter}}
+                ng-controller="wfDateListController" ng-click="selectDay(date)">{{date | dateListFormatter}}
                 <ul class="day-events">
                     <li class="day-event" ng-repeat="item in items">{{item.title}}</li>
                 </ul>
@@ -14,6 +14,9 @@
     <div class="am-pm-timings">
         <div class="unassigned">
             <h2>News agenda</h2>
+            <ul ng-controller="wfNewsAgendaController" class="news-agenda-items">
+                <li ng-repeat="item in agendaItems">{{item.title}}</li>
+            </ul>
             <ul class="unassigned-list-items">
                 <li class="day-event">Obama in Saudi Arabia
                     <ul>
