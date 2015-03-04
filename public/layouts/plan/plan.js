@@ -66,7 +66,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         $scope.plannedItems = []
 
         $scope.$on('plan-view-data-load', function (ev, data) {
-            $scope.plannedItems = _.map(data.plannedItems, (item) => {
+            $scope.plannedItems = _.map(data, (item) => {
                 item.plannedDate = moment(item.plannedDate)
                 return item;
             });
