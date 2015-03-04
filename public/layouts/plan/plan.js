@@ -55,11 +55,11 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
             console.log("quick ADD!", text);
         });
 
-        $scope.selectedDate = moment();
+        $scope.selectedDate = null;
 
         $scope.selectDay = function (date) {
             console.log("selectDay", date);
-            $scope.selectedDate = moment(date);
+            $scope.selectedDate = date;
         };
 
         $scope.$watch('startDate', () => {
@@ -105,7 +105,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         });
     }])
     .controller('wfNewsAgendaController', [ '$scope', function ($scope) {
-//        $scope.agendaItems = [{title: "one"}, {title: "two"}];
         $scope.getBundles = function () { return _.keys($scope.agendaItems); };
         $scope.$watch('selectedDate', (newValue, oldValue) => {
             $scope.agendaItems = _.groupBy($scope.getItems(moment(newValue),
@@ -114,4 +113,11 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
 
         }, true);
 
+    }])
+    .controller('wfDetailedListController', ['$scope', function($scope){
+        $scope.$watch('selectedDate', (newValue, oldValue) => {
+            $scope.morningItems = $scope.getItems(moment(newValue),moment(newValue).add(12,'hours'));
+            $scope.afternoonItems = $scope.getItems(moment(newValue).add(12,'hours'),moment(newValue).add(18,'hours'));
+            $scope.eveningItems = $scope.getItems(moment(newValue).add(18,'hours'),moment(newValue).add(24,'hours'));
+        }, true);
     }]);
