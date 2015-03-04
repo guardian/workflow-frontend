@@ -1,3 +1,5 @@
+@import "layouts/global/colours";
+
 .current.label {
     background-color: #dee2e3;
     border-left: 3px solid #00adee;
@@ -26,9 +28,9 @@
 }
 
 .three-month-view {
-    flex: 0 0 150px;
-    -webkit-flex: 0 0 250px;
+    flex: 0 0 160px;
     overflow-x: auto;
+    border-right: 1px solid $c-grey-400;
 }
 
 .three-month-view ul {
@@ -173,7 +175,7 @@
     -webkit-flex-basis: auto;
     -webkit-align-items: stretch;
     padding-right: 10px;
-    border-top: 1px dotted silver;
+    //border-top: 1px dotted silver;
 }
 
 .unassigned ul {

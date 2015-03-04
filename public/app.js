@@ -107,6 +107,10 @@ angular.module('workflow',
                     '': {
                         templateUrl: '/assets/layouts/plan/plan.html',
                         controller: 'wfPlanController'
+                    },
+                    'view-toolbar': {
+                        templateUrl: '/assets/layouts/plan/plan-toolbar.html',
+                        controller: 'wfPlanToolbarController'
                     }
                 }
             });
