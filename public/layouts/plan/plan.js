@@ -7,10 +7,8 @@ function withLocale(locale, f) {
     // changing the global locale also
     var oldLocale = moment.locale();
     moment.locale(locale);
-    console.log("-> locale", moment.locale());
     var ret = f();
     moment.locale(oldLocale);
-    console.log("<- locale", moment.locale());
     return ret;
 }
 
@@ -70,22 +68,39 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
 
         // controller stuff
         $scope.plannedItems = []
-            planLoader.load().then((items) => {
-            console.log("items", items);
-            $scope.apply(function () { $scope.plannedItems = items; })
+
+        $scope.$watch('plannedItems', function (newValue, oldValue) {
+            $scope.$broadcast('planned-items-changed', newValue);
+        }, true);
+
+        planLoader.load().then((items) => {
+            $scope.$apply(function () { $scope.plannedItems = items; })
         });
+
         function makeDateList() {
-            return withLocale('wfPlan', () => {
-                var now = moment().startOf('day');
-                return _.map(_.range(0, 10), (days) => moment().add(days, 'days'));
+            var ret =  withLocale('wfPlan', () => {
+                var start = moment().subtract(3, 'days').startOf('day');
+                return _.map(_.range(0, 10), (days) => {
+                    var date = start.clone();
+                    date.add(days, 'days');
+                    return date;
+                });
             });
+            return ret;
         }
         $scope.getItems = function (dateFrom, dateTo) {
             // search all of the planned items, and find the ones that
             // are within our date range
             return _.filter($scope.plannedItems, (item) => {
-                return item.plannedDate
+                var ret = (item.plannedDate.isSame(dateFrom) || item.plannedDate.isAfter(dateFrom)) &&
+                    item.plannedDate.isBefore(dateTo);
+                return ret;
             });
         }
         $scope.dateList = makeDateList();
+    }])
+    .controller('wfDateListController', [ '$scope', function ($scope) {
+        $scope.$on('planned-items-changed', (ev, eventItems) => {
+            $scope.items = $scope.getItems($scope.date, $scope.date.clone().add(1, 'days'));
+        });
     }]);
