@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div class="detailed-schedule">
+    <div class="detailed-schedule" ng-controller="wfDetailedListController">
 
         <div class="time-jumper">
             <ul>
@@ -63,12 +63,25 @@
 
         <table>
             <tr>
-                <th colspan=3 class="timeBars">6am-9am<span class="hour_count"> (2)</span></th>
+                <th colspan=3 class="timeBars">Morning 12am-12pm<span class="hour_count"></span></th>
+            </tr>
+            <tr ng-repeat="item in morningItems">
+                <td>{{ item.plannedDate.format("HH:mm") }}</td>
+                <td><b>{{ item.bundleId }} </b> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
             </tr>
             <tr>
-                <td>10:00</td>
-                <td>blah news news news<span class="assigned-to">LH</span></td>
-                <td>Scheduled</td>
+                <th colspan=3 class="timeBars">Afternoon 12pm-6pm<span class="hour_count"></span></th>
+            </tr>
+            <tr ng-repeat="item in afternoonItems">
+                <td>{{ item.plannedDate.format("HH:mm") }}</td>
+                <td><b>{{ item.bundleId }} </b> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
+            </tr>
+            <tr>
+                <th colspan=3 class="timeBars">Evening 6pm-12pm<span class="hour_count"></span></th>
+            </tr>
+            <tr ng-repeat="item in eveningItems">
+                <td>{{ item.plannedDate.format("HH:mm") }}</td>
+                <td><b>{{ item.bundleId }} </b> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
             </tr>
        </table>
     </div>
