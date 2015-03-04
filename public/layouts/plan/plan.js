@@ -75,6 +75,10 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
             moment.locale('wfPlan', calLocale);
         });
 
+        $scope.$on('quick-add-submit', function (ev, text) {
+            console.log("quick ADD!", text);
+        });
+
         $scope.selectedDate = null;
 
         $scope.selectDay = function (date) {
@@ -90,7 +94,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         $scope.plannedItems = []
 
         $scope.$on('plan-view-data-load', function (ev, data) {
-            $scope.plannedItems = _.map(data.plannedItems, (item) => {
+            $scope.plannedItems = _.map(data, (item) => {
                 item.plannedDate = moment(item.plannedDate)
                 return item;
             });

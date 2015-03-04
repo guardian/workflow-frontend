@@ -2,13 +2,20 @@ package controllers
 
 import models._
 import play.api.mvc._
-import lib.{ApiErrors, ApiSuccess, Response, PostgresDB}
-import Response.Response
+import lib._
+
+import scala.util.{Failure, Success}
 
 object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
-  def plan() = APIAuthAction { request =>
-    val list = PlanDB.planView()
-    Response(Right(ApiSuccess(list)))
+
+  import scala.concurrent.ExecutionContext.Implicits.global
+  def plan() = APIAuthAction.async { request =>
+    ApiResponseFt(for {
+      items <- PlanDB.getItems()
+    } yield {
+      items
+    })
+
   }
 
   def items() = APIAuthAction { request =>
