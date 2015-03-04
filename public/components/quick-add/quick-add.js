@@ -33,7 +33,7 @@ angular.module('wfQuickAdd', ['wfContentService'])
                 /* the default properties will be applied to the
                  * parsed object, to fill in any gaps */
                 $scope.defaultProps = {
-                    date: "testDate"
+                    newsList: "testNewsList"
                 };
 
                 $scope.submit = function () {
