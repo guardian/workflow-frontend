@@ -109,9 +109,11 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
 
         }, true);
 
-    }]);
+    }])
     .controller('wfDetailedListController', ['$scope', function($scope){
         $scope.$watch('selectedDate', (newValue, oldValue) => {
-            $scope.detailedItems = $scope.getItems(moment(newValue),moment(newValue).add(1,'days'))
-        });
+            $scope.morningItems = $scope.getItems(moment(newValue),moment(newValue).add(12,'hours'));
+            $scope.afternoonItems = $scope.getItems(moment(newValue).add(12,'hours'),moment(newValue).add(18,'hours'));
+            $scope.eveningItems = $scope.getItems(moment(newValue).add(18,'hours'),moment(newValue).add(24,'hours'));
+        }, true);
     }]);
