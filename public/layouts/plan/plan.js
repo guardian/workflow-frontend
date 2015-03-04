@@ -101,7 +101,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         });
     }])
     .controller('wfNewsAgendaController', [ '$scope', function ($scope) {
-//        $scope.agendaItems = [{title: "one"}, {title: "two"}];
         $scope.getBundles = function () { return _.keys($scope.agendaItems); };
         $scope.$watch('selectedDate', (newValue, oldValue) => {
             $scope.agendaItems = _.groupBy($scope.getItems(moment(newValue),
@@ -110,4 +109,9 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
 
         }, true);
 
+    }]);
+    .controller('wfDetailedListController', ['$scope', function($scope){
+        $scope.$watch('selectedDate', (newValue, oldValue) => {
+            $scope.detailedItems = $scope.getItems(moment(newValue),moment(newValue).add(1,'days'))
+        });
     }]);
