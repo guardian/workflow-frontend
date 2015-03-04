@@ -46,11 +46,15 @@ angular.module('wfPlan', [])
                 }
             };
             moment.locale('wfPlan', calLocale);
-         });
-        
+        });
+
+        $scope.$watch('startDate', () => {
+           console.log(arguments);
+        });
+
         // controller stuff
         $scope.plannedItems = []
-        planLoader.load().then((items) => {
+            planLoader.load().then((items) => {
             console.log("items", items);
             $scope.apply(function () { $scope.plannedItems = items; })
         });
