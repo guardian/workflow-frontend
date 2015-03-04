@@ -379,7 +379,7 @@
 <div class="plan-container">
     <div class="three-month-view">
         <ul>
-            <li class="current" ng-repeat="date in dateList">{{date.calendar()}}</li>
+            <li class="current" ng-repeat="date in dateList">{{date | dateListFormatter}}</li>
         </ul>
     </div>
 
