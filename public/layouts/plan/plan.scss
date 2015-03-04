@@ -36,7 +36,6 @@
 .three-month-view ul {
     list-style-type: none;
     padding-left: 10px;
-    font: 0.9rem "AS32 Agate Sans";
     color: #333333;
 }
 
@@ -140,15 +139,15 @@
 }
 
 .am-pm-timings {
-    flex: 0 0 350px;
-    -webkit-flex: 0 0 350px;
+    flex: 0 0 400px;
+    -webkit-flex: 0 0 400px;
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: column;
     -webkit-align-items: stretch;
-    font-family: "AS32 Agate Sans", 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
     font-size: 14px;
     line-height: 18px;
+    border-right: 1px solid $c-grey-400;
 }
 
 .am {
@@ -208,7 +207,6 @@
     -webkit-align-items: stretch;
     -webkit-flex: 0 0 50px;
     flex: 0 0 50px;
-    margin-left: 2px;
     /*background-color: #2eb859;*/
 }
 
@@ -216,12 +214,15 @@
     list-style-type: none;
     font: 70%/27px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
     width: 50px;
-    padding: 0 4px 0 0;
+    padding: 0;
     /*	background-color: #1c78cf;*/
     vertical-align: middle;
     text-align: right;
     border-right: 1px dotted silver;
     color: #333333;
+    li {
+        padding-right: 4px;
+    }
 }
 
 .time-jumper ul li:hover {
@@ -229,18 +230,18 @@
     color: #ffffff;
     cursor: pointer;
 }
-
-td	{
-    color:black;
-    font-style:normal;
-    display: table-cell;
-    vertical-align: top;
-}
-
-table {
-    table-layout: fixed;
-    font: 0.8em "AS32 Agate Sans";
-}
+//
+//td	{
+//    color:black;
+//    font-style:normal;
+//    display: table-cell;
+//    vertical-align: top;
+//}
+//
+//table {
+//    table-layout: fixed;
+//    font: 0.8em "AS32 Agate Sans";
+//}
 
 .time {
     width: 50px;
@@ -305,7 +306,6 @@ table {
     border-collapse: collapse;
     border-top-color: #DCDCDC;
     border-bottom-width: 1px;
-    display: table-row;
     background-color: rgb(222, 226, 227);
     border-bottom-color: rgb(255, 255, 255);
     border-bottom-style: solid;
@@ -317,7 +317,6 @@ table {
     border-top-style: solid;
     border-top-width: 1px;
     box-sizing: content-box;
-    display: table-row;
     font-family: "AS32 Agate Sans", 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
     font-size: 14px;
     height: 19px;
