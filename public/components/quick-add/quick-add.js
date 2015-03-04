@@ -8,6 +8,12 @@ var quickAddParsers = [
             return match;          // delete the matched text? return "" here if so
         });
     },
+    (item, text) => {
+        return text.replace(/at ([0-9]+)/i, (match, hour) => {
+            item.hour = Number(hour);
+            return "";
+        });
+    },
     (item, text) => { item.title = text; return text; }
 ];
 
