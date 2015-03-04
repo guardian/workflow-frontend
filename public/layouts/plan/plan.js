@@ -13,7 +13,7 @@ function withLocale(locale, f) {
 }
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
-    .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', '$rootScope', function (http, planService, PollingService, $rootScope) {
+    .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', '$rootScope', '$http', function (http, planService, PollingService, $rootScope, $http) {
 
         this.poller = new PollingService(planService, () => { return {}; })
 
@@ -36,7 +36,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
             return moment(date).calendar();
         }
     }])
-    .controller('wfPlanController', ['$scope', 'wfPlanLoader', function wfPlanController ($scope, planLoader) {
+    .controller('wfPlanController', ['$scope', 'wfPlanLoader', '$http', function wfPlanController ($scope, planLoader, $http) {
         withLocale("", function () {
             var calLocale = {
                 calendar : {
@@ -51,8 +51,11 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
             moment.locale('wfPlan', calLocale);
         });
 
-        $scope.$on('quick-add-submit', function (ev, text) {
-            console.log("quick ADD!", text);
+        $scope.$on('quick-add-submit', function (ev, item) {
+            console.log("quick ADD!", item);
+            $http.post("/api/v1/plan/item", JSON.stringify(item))
+                .then((res) => console.log("success", res))
+                .catch((err) => console.log("error", err));
         });
 
         $scope.selectedDate = null;
