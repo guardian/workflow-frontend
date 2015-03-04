@@ -4,18 +4,6 @@
 
 import angular from 'angular';
 
-// Legacy:
-// import 'javascripts/services';
-// import 'javascripts/directives';
-// import 'javascripts/controllers';
-// import 'javascripts/controllers/dashboard';
-// import 'javascripts/controllers/dashboard/content-item';
-// import 'javascripts/controllers/dashboard/dashboard';
-// import 'javascripts/controllers/dashboard/date-filter';
-// import 'javascripts/controllers/dashboard/stub-crud';
-// import 'javascripts/services/legal-states-service';
-// import 'javascripts/services/prodoffice-service';
-
 import { getEnvironment } from 'environment';
 
 import 'components/sentry/sentry';
@@ -39,6 +27,8 @@ import 'lib/preferences-service';
 import 'lib/analytics';
 import 'lib/feature-switches';
 import 'lib/google-api';
+import 'lib/plan-service';
+import 'lib/polling-service';
 
 // 3rd party libs
 import 'angular-ui-router';

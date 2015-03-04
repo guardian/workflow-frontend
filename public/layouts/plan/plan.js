@@ -14,8 +14,24 @@ function withLocale(locale, f) {
     return ret;
 }
 
-angular.module('wfPlan', [])
-    .service('wfPlanLoader', [ 'wfHttpSessionService', function (http) {
+angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
+    .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', function (http, planService, PollingService) {
+
+        this.poller = new PollingService(planService, () => { return {}; })
+
+        this.render = (response) => {
+            console.log(response.data.data)
+        }
+
+        this.renderError = (err) => {
+            console.log(err)
+        }
+
+        this.poller.onPoll(this.render);
+        this.poller.onError(this.renderError);
+
+        this.poller.startPolling();
+
         // LOAD from the API here
         function loadPlanItems() {
             return http.request({url: "/api/v1/plan"}).then((res) => _.map(res.data.data, (item) => {
@@ -47,7 +63,7 @@ angular.module('wfPlan', [])
             };
             moment.locale('wfPlan', calLocale);
          });
-        
+
         // controller stuff
         $scope.plannedItems = []
         planLoader.load().then((items) => {
