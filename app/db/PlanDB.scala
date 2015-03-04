@@ -9,7 +9,7 @@ import lib.{ApiResponseFt, ApiSuccess}
 
 case class PlannedItem(title: String, newsList: String, plannedDate: Option[DateTime]=None, byLine: Option[String]=None, bundleId: Option[String]=None, notes: Option[String]=None, created: DateTime = DateTime.now(),  priority: Int=0, id: String = UUID.randomUUID().toString)
 object PlannedItem {
-  implicit val plannedItemFormats = Json.format[PlannedItem]
+  implicit val plannedItemFormats = Json.writes[PlannedItem]
   import play.api.libs.functional.syntax._
   import play.api.libs.json.util._
   implicit val jsonReads: Reads[PlannedItem] =(
