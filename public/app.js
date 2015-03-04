@@ -19,6 +19,7 @@ import 'layouts/dashboard/dashboard-toolbar';
 import 'layouts/dashboard/dashboard-sidebar';
 
 import 'layouts/plan/plan';
+import 'layouts/plan/plan-toolbar';
 
 import 'lib/date-service';
 import 'lib/filters-service';
@@ -59,7 +60,8 @@ angular.module('workflow',
         'wfPreferencesService',
         'wfFeatureSwitches',
         'wfGoogleApiService',
-        'wfPlan'
+        'wfPlan',
+        'wfPlanToolbar'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
         // TODO: remember user's state and redirect there on default '' route
