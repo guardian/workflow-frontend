@@ -2,7 +2,12 @@
 
     <div class="three-month-view">
         <ul>
-            <li class="current" ng-repeat="date in dateList">{{date | dateListFormatter}}</li>
+            <li class="current" ng-repeat="date in dateList"
+                ng-controller="wfDateListController">{{date | dateListFormatter}}
+                <ul class="day-events">
+                    <li class="day-event" ng-repeat="item in items">{{item.title}}</li>
+                </ul>
+            </li>
         </ul>
     </div>
 
