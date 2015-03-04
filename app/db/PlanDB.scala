@@ -1,8 +1,9 @@
-package lib
+package models
 
 import akka.agent.Agent
 import org.joda.time.DateTime
 import play.api.libs.json._
+import lib.{ApiSuccess}
 
 case class PlannedItem(title: String, newsList: String, plannedDate: Option[DateTime], byLine: String, bundleId: Option[String]=None, notes: Option[String]=None, created: DateTime = DateTime.now(),  priority: Int=0)
 object PlannedItem {
@@ -38,14 +39,6 @@ object StubData {
 
 object BundleData {
   val all = List(
-//    Bundle(
-//      "Creepy John Travolta",
-//      StubData.all.slice(3,5)
-//    ),
-//    Bundle(
-//      "Another Bundle",
-//      StubData.all.slice(0,2)
-//    ),
     Bundle(
       "Obama in Saudi Arabia",
       List(
@@ -77,4 +70,12 @@ object PlanDB {
   val items:    Agent[List[PlannedItem]] = Agent(StubData.all)
 
   val planView: Agent[PlanView]          = Agent(PlanView(bundles(), items()))
+
+
+  def addItem(item: PlannedItem) = {
+    items.send(_ :+ item)
+
+
+    Right(ApiSuccess("id"))
+  }
 }
