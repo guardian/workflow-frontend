@@ -9,7 +9,7 @@ var quickAddParsers = [
         });
     },
     (item, text) => {
-        return text.replace(/at ([0-9]+)/i, (match, hour) => {
+        return text.replace(/(@|at )([0-9]+)/i, (match, at, hour) => {
             item.hour = Number(hour);
             return "";
         });
