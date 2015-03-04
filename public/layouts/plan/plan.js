@@ -51,6 +51,10 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
             moment.locale('wfPlan', calLocale);
         });
 
+        $scope.$on('quick-add-submit', function (ev, text) {
+            console.log("quick ADD!", text);
+        });
+
         $scope.selectedDate = null;
 
         $scope.selectDay = function (date) {

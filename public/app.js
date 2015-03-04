@@ -12,6 +12,8 @@ import 'components/error-display/error-display';
 import 'components/content-list/content-list';
 import 'components/icons/icons';
 
+import 'components/quick-add/quick-add';
+
 import 'layouts/dashboard/dashboard';
 import 'layouts/dashboard/dashboard-user';
 import 'layouts/dashboard/dashboard-create';
@@ -61,7 +63,8 @@ angular.module('workflow',
         'wfFeatureSwitches',
         'wfGoogleApiService',
         'wfPlan',
-        'wfPlanToolbar'
+        'wfPlanToolbar',
+        'wfQuickAdd'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
         // TODO: remember user's state and redirect there on default '' route
