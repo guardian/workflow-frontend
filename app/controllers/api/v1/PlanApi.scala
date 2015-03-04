@@ -1,7 +1,6 @@
 package controllers
 
 import models._
-import lib.PlanDB
 import play.api.mvc._
 import lib.{ApiErrors, ApiSuccess, Response, PostgresDB}
 import Response.Response
@@ -17,8 +16,19 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     Response(Right(ApiSuccess(list)))
   }
 
+  def createItem() = APIAuthAction { implicit request =>
+    Response(for {
+      jsValue <- readJsonFromRequest(request.body).right
+      plannedItem <- extract[PlannedItem](jsValue.data).right
+      itemId <- PlanDB.addItem(plannedItem.data).right
+    } yield {
+      itemId
+    })
+  }
+
   def bundles() = APIAuthAction { request =>
     val list = PlanDB.bundles()
+
     Response(Right(ApiSuccess(list)))
   }
 }

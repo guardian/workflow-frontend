@@ -9,10 +9,6 @@
     text-decoration: none;
 }
 
-.Litvenenko {
-    background-color: #ffffff;
-}
-
 .note {
     color: #787878;
 }
@@ -237,6 +233,9 @@
 
     tr td {
         padding: 2px 0;
+    }
+    .time {
+        min-width: 72px;
     }
 }
 
