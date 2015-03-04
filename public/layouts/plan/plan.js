@@ -7,20 +7,18 @@ function withLocale(locale, f) {
     // changing the global locale also
     var oldLocale = moment.locale();
     moment.locale(locale);
-    console.log("-> locale", moment.locale());
     var ret = f();
     moment.locale(oldLocale);
-    console.log("<- locale", moment.locale());
     return ret;
 }
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
-    .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', function (http, planService, PollingService) {
+    .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', '$rootScope', function (http, planService, PollingService, $rootScope) {
 
         this.poller = new PollingService(planService, () => { return {}; })
 
         this.render = (response) => {
-            console.log(response.data.data)
+            $rootScope.$broadcast('plan-view-data-load', response.data.data);
         }
 
         this.renderError = (err) => {
@@ -31,17 +29,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         this.poller.onError(this.renderError);
 
         this.poller.startPolling();
-
-        // LOAD from the API here
-        function loadPlanItems() {
-            return http.request({url: "/api/v1/plan"}).then((res) => _.map(res.data.data, (item) => {
-                item.plannedDate = moment(item.plannedDate);
-                return item;
-            }));
-        };
-        return {
-            load: loadPlanItems
-        };
     }])
     .filter('dateListFormatter', [function () {
         return function(date) {
@@ -64,28 +51,60 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
             moment.locale('wfPlan', calLocale);
         });
 
+        $scope.selectedDate = moment();
+
+        $scope.selectDay = function (date) {
+            console.log("selectDay", date);
+            $scope.selectedDate = moment(date);
+        };
+
         $scope.$watch('startDate', () => {
            console.log(arguments);
         });
 
         // controller stuff
         $scope.plannedItems = []
-            planLoader.load().then((items) => {
-            console.log("items", items);
-            $scope.apply(function () { $scope.plannedItems = items; })
-        });
-        function makeDateList() {
-            return withLocale('wfPlan', () => {
-                var now = moment().startOf('day');
-                return _.map(_.range(0, 10), (days) => moment().add(days, 'days'));
+
+        $scope.$on('plan-view-data-load', function (ev, data) {
+            $scope.plannedItems = _.map(data.plannedItems, (item) => {
+                item.plannedDate = moment(item.plannedDate)
+                return item;
             });
+            $scope.$broadcast('planned-items-changed', $scope.plannedItems);            
+        });
+
+        function makeDateList() {
+            var ret =  withLocale('wfPlan', () => {
+                var start = moment().subtract(3, 'days').startOf('day');
+                return _.map(_.range(0, 10), (days) => {
+                    var date = start.clone();
+                    date.add(days, 'days');
+                    return date;
+                });
+            });
+            return ret;
         }
         $scope.getItems = function (dateFrom, dateTo) {
             // search all of the planned items, and find the ones that
             // are within our date range
             return _.filter($scope.plannedItems, (item) => {
-                return item.plannedDate
+                var ret = (item.plannedDate.isSame(dateFrom) || item.plannedDate.isAfter(dateFrom)) &&
+                    item.plannedDate.isBefore(dateTo);
+                return ret;
             });
         }
         $scope.dateList = makeDateList();
+    }])
+    .controller('wfDateListController', [ '$scope', function ($scope) {
+        $scope.$on('planned-items-changed', (ev, eventItems) => {
+            $scope.items = $scope.getItems($scope.date, $scope.date.clone().add(1, 'days'));
+        });
+    }])
+    .controller('wfNewsAgendaController', [ '$scope', function ($scope) {
+        $scope.agendaItems = [{title: "one"}, {title: "two"}];
+        $scope.$watch('selectedDate', (newValue, oldValue) => {
+            console.log("selectedDate changed", newValue);
+            $scope.agendaItems = $scope.getItems(moment(newValue),
+                                                 moment(newValue).add(1, 'days'));
+        }, true);
     }]);
