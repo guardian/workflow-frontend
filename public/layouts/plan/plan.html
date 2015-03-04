@@ -15,33 +15,14 @@
         <div class="unassigned">
 
             <ul ng-controller="wfNewsAgendaController" class="news-agenda-items">
-                <li ng-repeat="item in agendaItems">{{item.title}}</li>
-            </ul>
-
-            <ul class="unassigned-list-items">
-                <li class="day-event">Obama in Saudi Arabia
+                <li class="day-event" ng-repeat="bundle in getBundles()">{{ bundle }}
                     <ul>
-                        <li class="day-event-item">Overnight curtain-raiser <span class="assigned-to">Dan R</span><span class="note">   to be launched by AUS
-                                - UK to pick up and expand, then US to take over</span></li>
-                        <li class="day-event-item">Further analysis - <span class="assigned-to">Aitkin</span></li>
-                    </ul>
-                </li>
-
-                <li class="day-event">Auschwitz rememberance
-                    <ul>
-                        <li class="day-event-item">curtain-raiser <span class="assigned-to">Connolly</span></li>
-                        <li class="day-event-item">explainer + video</li>
-                        <li class="day-event-item">interview with survivor <span class="assigned-to">Davies</span></li>
-                        <li class="day-event-item">Rolling news story <span class="assigned-to">Weaver</span></li>
-                    </ul>
-                </li>
-
-                <li class="day-event"><span id="Litvenenko">Litvenenko inquest opens</span>
-                    <ul>
-                        <li class="day-event-item">15:30 first person piece from son<span class="assigned-to">LH</span></li>
-                        <li class="day-event-item">11:00 Video explainer</li>
-                        <li class="day-event-item">News curtain raiser <span class="assigned-to">LH</span></li>
-                        <li class="day-event-item">10am Live blog<span class="assigned-to">Walker</span></li>
+                        <li class="day-event-item" ng-repeat="item in agendaItems[bundle]">
+                            <span>{{item.plannedDate.format("HH:mm")}}</span>
+                            {{item.title}}
+                            <span class="assigned-to">{{item.byLine}}</span>
+                            <span class="note">{{item.notes}}</span>
+                        </li>
                     </ul>
                 </li>
             </ul>

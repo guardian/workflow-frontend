@@ -70,7 +70,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
                 item.plannedDate = moment(item.plannedDate)
                 return item;
             });
-            $scope.$broadcast('planned-items-changed', $scope.plannedItems);            
+            $scope.$broadcast('planned-items-changed', $scope.plannedItems);
         });
 
         function makeDateList() {
@@ -101,10 +101,13 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         });
     }])
     .controller('wfNewsAgendaController', [ '$scope', function ($scope) {
-        $scope.agendaItems = [{title: "one"}, {title: "two"}];
+//        $scope.agendaItems = [{title: "one"}, {title: "two"}];
+        $scope.getBundles = function () { return _.keys($scope.agendaItems); };
         $scope.$watch('selectedDate', (newValue, oldValue) => {
-            console.log("selectedDate changed", newValue);
-            $scope.agendaItems = $scope.getItems(moment(newValue),
-                                                 moment(newValue).add(1, 'days'));
+            $scope.agendaItems = _.groupBy($scope.getItems(moment(newValue),
+                                                 moment(newValue).add(1, 'days')), function(item) { return item.bundleId  });
+
+
         }, true);
+
     }]);
