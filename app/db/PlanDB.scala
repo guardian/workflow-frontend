@@ -1,11 +1,13 @@
 package models
 
+import java.util.UUID
+
 import akka.agent.Agent
 import org.joda.time.DateTime
 import play.api.libs.json._
-import lib.{ApiSuccess}
+import lib.{ApiResponseFt, ApiSuccess}
 
-case class PlannedItem(title: String, newsList: String, plannedDate: Option[DateTime], byLine: String, bundleId: Option[String]=None, notes: Option[String]=None, created: DateTime = DateTime.now(),  priority: Int=0)
+case class PlannedItem(title: String, newsList: String, plannedDate: Option[DateTime]=None, byLine: Option[String]=None, bundleId: Option[String]=None, notes: Option[String]=None, created: DateTime = DateTime.now(),  priority: Int=0, id: String = UUID.randomUUID().toString)
 object PlannedItem {
   implicit val plannedItemFormats = Json.format[PlannedItem]
 }
@@ -23,16 +25,16 @@ object PlanView {
 
 object StubData {
   val all = List(
-    PlannedItem("MPs quiz", "Global", Some(new DateTime(2015, 3, 3, 10, 0, 0)), "Mark Carney", Some("BoE Foreign Exchange Investigation"), Some("Another Bundle")),
-    PlannedItem("London Symphony Orchestra press conf", "Global", Some(new DateTime(2015, 3, 3, 10, 0, 0)), "Mark Brown", Some("- commentary: Tom Service (tbc - Liese commissioning)"), Some("Another Bundle")),
-    PlannedItem("Serious case review published into failings over the abuse of girls in Oxfordshire - Laville (8am lock in)", "Global", Some(new DateTime(2015, 3, 3, 11, 0, 0)), "Amelia Hill", Some("11am launch - the multi agency team now tackling this issue "), Some("Creepy John Travolta")),
-    PlannedItem("Scarlett Johansson denies", "Film", Some(new DateTime(2015, 3, 3, 15, 0, 0)), "Some", Some("Creepy John Travolta")),
-    PlannedItem("Hollywoods creepy uncle", "Film", Some(new DateTime(2015, 3, 3, 15, 0, 0)), "Someone else", Some("Creepy John Travolta")),
-    PlannedItem("Overnight curtain-raiser", "news", None, "Dan R", Some("Obama in Saudi Arabia"), Some(" to be launched by AUS - UK to pick up and expand, then US to take over")),
-    PlannedItem("Further analysis", "news",  Some(new DateTime().withTime(15, 30, 0, 0)), "Aitken", Some("Obama in Saudi Arabia"), None),
-    PlannedItem("Litvenenko inquest opens", "news", Some(new DateTime().withTime(15, 30, 0, 0)), "LH", Some("Litvenenko inquest opens")),
-    PlannedItem("Video explainer", "news", Some(new DateTime().withTime(11, 0, 0, 0)), "na", Some("Litvenenko inquest opens")),
-    PlannedItem("Live blog", "news", Some(new DateTime().withTime(10, 0, 0,0)), "Walker", Some("Litvenenko inquest opens"))
+    PlannedItem("MPs quiz", "Global", Some(new DateTime(2015, 3, 3, 10, 0, 0)), Some("Mark Carney"), Some("BoE Foreign Exchange Investigation"), Some("Another Bundle")),
+    PlannedItem("London Symphony Orchestra press conf", "Global", Some(new DateTime(2015, 3, 3, 10, 0, 0)), Some("Mark Brown"), Some("- commentary: Tom Service (tbc - Liese commissioning)"), Some("Another Bundle")),
+    PlannedItem("Serious case review published into failings over the abuse of girls in Oxfordshire - Laville (8am lock in)", "Global", Some(new DateTime(2015, 3, 3, 11, 0, 0)), Some("Amelia Hill"), Some("11am launch - the multi agency team now tackling this issue "), Some("Creepy John Travolta")),
+    PlannedItem("Scarlett Johansson denies", "Film", Some(new DateTime(2015, 3, 3, 15, 0, 0)), Some("Some"), Some("Creepy John Travolta")),
+    PlannedItem("Hollywoods creepy uncle", "Film", Some(new DateTime(2015, 3, 3, 15, 0, 0)), Some("Someone else"), Some("Creepy John Travolta")),
+    PlannedItem("Overnight curtain-raiser", "news", None, Some("Dan R"), Some("Obama in Saudi Arabia"), Some(" to be launched by AUS - UK to pick up and expand, then US to take over")),
+    PlannedItem("Further analysis", "news",  Some(new DateTime().withTime(15, 30, 0, 0)), Some("Aitken"), Some("Obama in Saudi Arabia"), None),
+    PlannedItem("Litvenenko inquest opens", "news", Some(new DateTime().withTime(15, 30, 0, 0)), Some("LH"), Some("Litvenenko inquest opens")),
+    PlannedItem("Video explainer", "news", Some(new DateTime().withTime(11, 0, 0, 0)), None, Some("Litvenenko inquest opens")),
+    PlannedItem("Live blog", "news", Some(new DateTime().withTime(10, 0, 0,0)), Some("Walker"), Some("Litvenenko inquest opens"))
   )
 }
 
@@ -42,17 +44,17 @@ object BundleData {
     Bundle(
       "Obama in Saudi Arabia",
       List(
-        PlannedItem("Overnight curtain-raiser", "news", None, "Dan R", None, Some(" to be launched by AUS - UK to pick up and expand, then US to take over")),
-        PlannedItem("Further analysis", "news", None, "Aitken")
+        PlannedItem("Overnight curtain-raiser", "news", None, Some("Dan R"), None, Some(" to be launched by AUS - UK to pick up and expand, then US to take over")),
+        PlannedItem("Further analysis", "news", None, Some("Aitken"))
       )
     ),
     Bundle(
       "Auschwitz rememberance",
       List(
-        PlannedItem("explainer + video", "news", None, "na" ),
-        PlannedItem("curtain-raiser", "news", None, "Connolly" ),
-        PlannedItem("interview with survivor", "news", None, "Davies"),
-        PlannedItem("Rolling news story", "news", None, "Weaver")
+        PlannedItem("explainer + video", "news", None, None),
+        PlannedItem("curtain-raiser", "news", None, Some("Connolly")),
+        PlannedItem("interview with survivor", "news", None, Some("Davies")),
+        PlannedItem("Rolling news story", "news", None, Some("Weaver"))
       )
     ),
     Bundle(
@@ -67,15 +69,17 @@ object PlanDB {
   import scala.concurrent.ExecutionContext.Implicits.global
 
   val bundles:  Agent[List[Bundle]]      = Agent(BundleData.all)
-  val items:    Agent[List[PlannedItem]] = Agent(StubData.all)
+  val items:    Agent[Map[String, PlannedItem]] = Agent(StubData.all.map(item => (item.id -> item)).toMap)
 
-  val planView: Agent[PlanView]          = Agent(PlanView(bundles(), items()))
+//  val planView: Agent[PlanView]          = Agent(PlanView(bundles(), items()))
 
 
   def addItem(item: PlannedItem) = {
-    items.send(_ :+ item)
+    items.send(items => items.updated(item.id, item))
+    Right(ApiSuccess(item.id))
+  }
 
-
-    Right(ApiSuccess("id"))
+  def getItems(): ApiResponseFt[List[PlannedItem]] = {
+    ApiResponseFt.Async.Right(items.future().map(_.values.toList))
   }
 }
