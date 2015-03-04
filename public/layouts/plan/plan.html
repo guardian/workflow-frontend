@@ -1,23 +1,27 @@
 <div class="plan-container">
 
-    <div class="three-month-view">
-        <ul>
-            <li class="current" ng-repeat="date in dateList"
+    <div class="date-list">
+        <ul class="date-list__list list-unstyled">
+            <li class="date-list__date" ng-class="{'date-list__date--selected': date == selectedDate}" ng-repeat="date in dateList"
                 ng-controller="wfDateListController" ng-click="selectDay(date)">{{date | dateListFormatter}}
-                <ul class="day-events">
+                <ul class="day-events list-unstyled" ng-if="items.length">
                     <li class="day-event" ng-repeat="item in items">{{item.title}}</li>
                 </ul>
             </li>
         </ul>
     </div>
 
-    <div class="am-pm-timings">
-        <div class="unassigned">
+    <div class="news-agenda">
+        <!--<div class="unassigned">-->
 
-            <ul ng-controller="wfNewsAgendaController" class="news-agenda-items">
-                <li class="day-event" ng-repeat="bundle in getBundles()">{{ bundle }}
-                    <ul>
-                        <li class="day-event-item" ng-repeat="item in agendaItems[bundle]">
+            <ul ng-controller="wfNewsAgendaController" class="news-agenda-items list-unstyled">
+                <li class="alert alert-info" ng-if="!getBundles().length">
+                    <span>Nothing planned for Today!</span>
+                </li>
+                <li class="day-bundle" ng-repeat="bundle in getBundles()">
+                    <span class="day-bundle__title">{{ bundle }}</span>
+                    <ul class="day-bundle__items list-unstyled">
+                        <li class="day-bundle__item" ng-repeat="item in agendaItems[bundle]">
                             <span>{{item.plannedDate.format("HH:mm")}}</span>
                             {{item.title}}
                             <span class="assigned-to">{{item.byLine}}</span>
@@ -26,13 +30,13 @@
                     </ul>
                 </li>
             </ul>
-        </div>
+        <!--</div>-->
     </div>
 
     <div class="detailed-schedule" ng-controller="wfDetailedListController">
 
         <div class="time-jumper">
-            <ul>
+            <ul class="list-unstyled">
                 <li class="past">Midnight</li>
                 <li class="past">1am</li>
                 <li class="past">2am</li>
@@ -65,23 +69,26 @@
             <tr>
                 <th colspan=3 class="timeBars">Morning 12am-12pm<span class="hour_count"></span></th>
             </tr>
+
             <tr ng-repeat="item in morningItems">
-                <td>{{ item.plannedDate.format("HH:mm") }}</td>
-                <td><b>{{ item.bundleId }} </b> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
+                <td class="time">{{ item.plannedDate.format("HH:mm") }}</td>
+                <td><span class="bundle">{{ item.bundleId }} </span> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
             </tr>
+
             <tr>
                 <th colspan=3 class="timeBars">Afternoon 12pm-6pm<span class="hour_count"></span></th>
             </tr>
             <tr ng-repeat="item in afternoonItems">
-                <td>{{ item.plannedDate.format("HH:mm") }}</td>
-                <td><b>{{ item.bundleId }} </b> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
+                <td class="time">{{ item.plannedDate.format("HH:mm") }}</td>
+                <td><span class="bundle">{{ item.bundleId }} </span> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
             </tr>
+
             <tr>
                 <th colspan=3 class="timeBars">Evening 6pm-12pm<span class="hour_count"></span></th>
             </tr>
             <tr ng-repeat="item in eveningItems">
-                <td>{{ item.plannedDate.format("HH:mm") }}</td>
-                <td><b>{{ item.bundleId }} </b> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
+                <td class="time">{{ item.plannedDate.format("HH:mm") }}</td>
+                <td><span class="bundle">{{ item.bundleId }} </span> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
             </tr>
        </table>
     </div>

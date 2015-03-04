@@ -51,11 +51,11 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
             moment.locale('wfPlan', calLocale);
         });
 
-        $scope.selectedDate = moment();
+        $scope.selectedDate = null;
 
         $scope.selectDay = function (date) {
             console.log("selectDay", date);
-            $scope.selectedDate = moment(date);
+            $scope.selectedDate = date;
         };
 
         $scope.$watch('startDate', () => {
