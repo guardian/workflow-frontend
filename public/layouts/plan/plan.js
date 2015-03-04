@@ -53,8 +53,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
                         ((i>>16)&0xFF).toString(16) +
                         ((i>>8)&0xFF).toString(16);
 
-                console.log(c);
-
                 return("#" + c);
             }
 
@@ -77,7 +75,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
 
         $scope.$on('quick-add-submit', function (ev, item) {
             var defaultDate = $scope.selectedDate ?
-                $scope.selectedDate.valueOf() : moment().valueOf(); 
+                $scope.selectedDate.valueOf() : moment().valueOf();
             item["date"] = item["date"] || defaultDate;
             console.log("quick ADD!", item);
             $http.post("/api/v1/plan/item", JSON.stringify(item))
