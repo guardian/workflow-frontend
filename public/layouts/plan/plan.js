@@ -140,7 +140,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         $scope.getBundles = function () { return _.keys($scope.agendaItems); };
         $scope.$watch('selectedDate', (newValue, oldValue) => {
             $scope.agendaItems = _.groupBy($scope.getItems(moment(newValue),
-                                                 moment(newValue).add(1, 'days')), function(item) { return item.bundleId  });
+                                                 moment(newValue).add(1, 'days')), function(item) { return item.bundleId || "No Bundle" });
 
 
         }, true);
