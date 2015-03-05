@@ -61,15 +61,16 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         // 2. Have we loaded the client library?
         (presenceClient) => {
             var p = presenceClient(self.endpoint, person);
-            p.startConnection();
             p.on('connection.open', () => {
                 p.subscribe(currentArticleIds).catch((err) =>
                     $log.error('error subscribing ', err)
-                )
+                );
+                addHandlers(p, messageHandlers);
             });
             p.on('error', msg => {
                 $log.error('presence error ', msg);
             });
+            p.startConnection();
             return p;
         },
         () => {
