@@ -49,7 +49,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                 });
 
                 $rootScope.$on('filtersChanged.created', function(event, data) {
-                    self.update('created',  data);
+                    self.update('created', data);
                     $rootScope.$broadcast('getContent');
                 });
 
@@ -63,8 +63,13 @@ angular.module('wfFiltersService', ['wfDateService'])
                     // Desk ignored so no need to request content
                 });
 
+                $rootScope.$on('filtersChanged.touched', function(event, data) {
+                    self.update('touched', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
                 $rootScope.$on('filtersChanged.assigneeEmail', function(event, data) {
-                    self.update('assigneeEmail',  data);
+                    self.update('assigneeEmail', data);
                     $rootScope.$broadcast('getContent');
                 });
 
@@ -81,12 +86,12 @@ angular.module('wfFiltersService', ['wfDateService'])
 
                 function enterSearchMode(data) {
                     savedFilters = _.clone(self.filters);
-                    self.clearAll(true);
+                    self.clearAll(true, true);
                     $rootScope.$broadcast("search-mode.enter");
                 }
 
                 function exitSearchMode(data) {
-                    self.clearAll(true);
+                    self.clearAll(true, true);
                     if(savedFilters != null) {
                         _.forOwn(savedFilters,
                                  (value, key) => self.update(key, value));
@@ -153,7 +158,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'created'      : params['created'],
                         'assignee'     : params['assignee'],
                         'assigneeEmail': params['assigneeEmail'],
-                        'incopy'       : params['incopy']
+                        'incopy'       : params['incopy'],
+                        'touched'      : params['touched']
                     };
                 };
 
@@ -216,11 +222,13 @@ angular.module('wfFiltersService', ['wfDateService'])
                 return this.filters;
             }
 
-            clearAll(noPrefs) {
+            clearAll(noPrefs, noUI) {
                 _.forOwn(this.filters, (value, key) => {
                     this.update(key, null, noPrefs);
                 });
-                $rootScope.$broadcast("filters.clearAll");
+                if(!noUI) {
+                    $rootScope.$broadcast("filters.clearAll");
+                }
             }
 
             /**
