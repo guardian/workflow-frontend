@@ -36,17 +36,17 @@ var filterDefaults = function (statuses, wfFiltersService) {
             })
         },
         {
-            title: 'My Content',
+            title: 'Your Content',
             listIsOpen: false,
             individualNamespaces: true,
             multi: true,
             filterOptions: [
-                { caption: 'Assigned to me', value: _wfConfig.user.email, namespace: 'assigneeEmail' },
-                { caption: 'Edited by me', value: _wfConfig.user.email, namespace: 'touched' }
+                { caption: 'Assigned to you', value: _wfConfig.user.email, namespace: 'assigneeEmail' },
+                { caption: 'Edited by you', value: _wfConfig.user.email, namespace: 'touched' }
             ]
         },
         {
-            title: 'Content',
+            title: 'Content type',
             namespace: 'content-type',
             listIsOpen: false,
             multi: true,
