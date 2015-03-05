@@ -176,22 +176,32 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
         wfPresenceService.subscribe($scope.contentIds);
     });
 
+    // Infinite Scrolling functionality
     // See infinite-scroll http://sroze.github.io/ngInfiniteScroll/documentation.html
+    // =============================================================================== //
 
-    $scope.contentItemsLoadingThreshold = 1.5;
-    $scope.contentItemsDisplayed = 50;
-    $scope.contentItemLoadingIncrement = 20;
+    var INFINITE_SCROLL_STARTING_ITEMS = 50, // TODO Dynamically calculate optimal value based on container height
+        INFINITE_SCROLL_ITEM_LOAD_INCREMENT = 20,
+        INFINITE_SCROLL_LOAD_MORE_TRIGGER = 1.5; // Multiples of container height
 
-    $scope.originalContent = [];
-    $scope.content;
+    $scope.contentItemsLoadingThreshold = INFINITE_SCROLL_LOAD_MORE_TRIGGER;
+    $scope.contentItemsDisplayed = INFINITE_SCROLL_STARTING_ITEMS;
+    $scope.contentItemLoadingIncrement = INFINITE_SCROLL_ITEM_LOAD_INCREMENT;
 
     $scope.$on('getContent', () => {
-        $scope.contentItemsDisplayed = 50; // reset when filters are applied
+        $scope.contentItemsDisplayed = INFINITE_SCROLL_STARTING_ITEMS; // reset when filters are applied
     });
 
+    /**
+     * Trim the content to length over the status groups.
+     * ie: If 100 items are requested you might get 20 from Stubs, 30 from Writers and 50 from Desk making 100 in total
+     * @param content The content grouped by status
+     * @param trimTo Amount of items to return
+     * @returns {*}
+     */
     $scope.trimContentToLength = function (content, trimTo) {
 
-        var groups = _.cloneDeep(content);
+        var groups = _.cloneDeep(content); // Ensure originalContent is left unchanged
 
         groups.forEach((group) => {
             if (group.items && group.items.length) {
@@ -207,11 +217,19 @@ function wfContentListController($rootScope, $scope, $anchorScroll, $timeout, st
         return groups;
     };
 
+    /**
+     * Method called when the bottom of the list gets within
+     * INFINITE_SCROLL_LOAD_MORE_TRIGGER * container.height pixels of the bottom of the container
+     *
+     * Increments the amount of items to display and the re-trims the originalContent object to length
+     */
     $scope.moreContent = function () {
         $scope.contentItemsDisplayed += $scope.contentItemLoadingIncrement;
         $scope.animationsEnabled = false;
         $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentItemsDisplayed);
     };
+
+    // =============================================================================== //
 
     this.render = (response) => {
         var data = response.data;
