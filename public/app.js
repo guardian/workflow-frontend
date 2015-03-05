@@ -42,7 +42,6 @@ import 'lib/google-api';
 import 'angular-ui-router';
 import 'angular-bootstrap';
 import 'angular-animate/angular-animate.min';
-import 'ngInfiniteScroll/ng-infinite-scroll';
 
 // App-wide Styles
 import 'bootstrap@3.2.0/css/bootstrap.min.css!';
@@ -67,8 +66,7 @@ angular.module('workflow',
         'wfColumnService',
         'wfPreferencesService',
         'wfFeatureSwitches',
-        'wfGoogleApiService',
-        'infinite-scroll'
+        'wfGoogleApiService'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
         // TODO: remember user's state and redirect there on default '' route
