@@ -53,9 +53,9 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                 $rootScope.$watch('contentItemTemplate', () => {
 
-                    var contentListHeading = '<tr class="content-list__group-heading-row"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count" ng-show="group.items.length">{{ group.items.length }}</span></span></th></tr>';
+                    var contentListHeading = '<tr class="content-list__group-heading-row" ng-show="group.count && group.count > 0"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count">{{ group.count }}</span></span></th></tr>';
 
-                    var contentListItemDirective = '<tr wf-content-list-item class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-repeat="contentItem in group.items track by contentItem.id"';
+                    var contentListItemDirective = '<tr wf-content-list-item class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-repeat="contentItem in group.items track by contentItem.id" ';
 
                     var contentListItemClasses = 'ng-class="(contentList.selectedItem === contentItem) ? \'content-list-item--selected\' : \'\'"';
 
@@ -176,26 +176,105 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         wfPresenceService.subscribe($scope.contentIds);
     });
 
+    // Infinite Scrolling functionality
+    // See infinite-scroll http://sroze.github.io/ngInfiniteScroll/documentation.html
+    // =============================================================================== //
+
+    var INFINITE_SCROLL_STARTING_ITEMS = 50, // TODO Dynamically calculate optimal value based on container height
+        INFINITE_SCROLL_ITEM_LOAD_INCREMENT = 20,
+        INFINITE_SCROLL_LOAD_MORE_TRIGGER = 1.5; // Multiples of container height
+
+    $scope.contentItemsLoadingThreshold = INFINITE_SCROLL_LOAD_MORE_TRIGGER;
+    $scope.contentItemsDisplayed = INFINITE_SCROLL_STARTING_ITEMS;
+    $scope.contentItemLoadingIncrement = INFINITE_SCROLL_ITEM_LOAD_INCREMENT;
+
+    $scope.$on('getContent', () => {
+        $scope.contentItemsDisplayed = INFINITE_SCROLL_STARTING_ITEMS; // reset when filters are applied
+        $scope.infiniteScrollDisabled = false;
+    });
+
+    /**
+     * Trim the content to length over the status groups.
+     * ie: If 100 items are requested you might get 20 from Stubs, 30 from Writers and 50 from Desk making 100 in total
+     * @param content The content grouped by status
+     * @param trimTo Amount of items to return
+     * @returns {*}
+     */
+    $scope.trimContentToLength = function (content, trimTo) {
+
+        var groups = _.cloneDeep(content); // Ensure originalContent is left unchanged
+
+        groups.forEach((group) => {
+            if (group.items && group.items.length) {
+                if (group.items.length < trimTo) {
+                    trimTo = trimTo - group.items.length;
+                } else {
+                    group.items.length = trimTo;
+                    trimTo = 0;
+                }
+            }
+        });
+
+        return groups;
+    };
+
+    /**
+     * Method called when the bottom of the list gets within
+     * INFINITE_SCROLL_LOAD_MORE_TRIGGER * container.height pixels of the bottom of the container
+     *
+     * Increments the amount of items to display and the re-trims the originalContent object to length
+     */
+    $scope.moreContent = function () {
+        $scope.infiniteScrollDisabled = true;
+        $scope.contentItemsDisplayed += $scope.contentItemLoadingIncrement;
+        $scope.animationsEnabled = false;
+        doContentTrimAndSetContent();
+        $scope.infiniteScrollDisabled = false;
+    };
+
+    function doContentTrimAndSetContent () {
+        if ($scope.contentItemsDisplayed >= $scope.totalContentItems) {
+            $scope.content = $scope.originalContent;
+            $scope.displayingEverything = true;
+            $scope.infiniteScrollDisabled = true;
+        } else {
+            $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentItemsDisplayed);
+            $scope.displayingEverything = false;
+        }
+    }
+
+    // =============================================================================== //
+
     this.render = (response) => {
         var data = response.data;
 
         // TODO stubs and content are separate structures in the API response
         //      make this a single list of content with consistent structure in the API
-        var content = data.stubs.concat(data.content).map(wfContentItemParser.parse),
-            grouped = _.groupBy(content, 'status');
 
-        $scope.content = statuses.map((status) => {
+        data.content['Stub'] = data.stubs;
+        var grouped = data.content;
+        $scope.totalContentItems = data.count['total'];
+
+        $scope.originalContent = statuses.map((status) => {
             // TODO: status is currently stored as presentation text, eg: "Writers"
             //       should be stored as an enum and transformed to presentation text
             //       here in the front-end
+
             return {
                 name: status.toLowerCase(),
                 title: status == 'Stub' ? 'News list' : status,
-                items: grouped[status]
+                count: data.count[status],
+                items: grouped[status] ? grouped[status].map(wfContentItemParser.parse) : grouped[status]
             };
         });
 
-        $scope.contentIds = data.content.map((content) => content.composerId);
+        doContentTrimAndSetContent();
+
+        $scope.contentIds = [];
+
+        for (var key in data.content) {
+            $scope.contentIds.concat(data.content[key].map((content) => content.composerId))
+        }
 
         // update selectedItem as objects are now !==
         if (this.selectedItem) {
@@ -211,7 +290,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         $scope.$emit('content.rendered');
     };
 
-
     this.renderError = (err) => {
 
         $scope.$apply(() => {
@@ -222,7 +300,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         });
 
     };
-
 
     $scope.$on('contentItem.update', ($event, msg) => {
 
