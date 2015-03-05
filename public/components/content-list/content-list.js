@@ -190,6 +190,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     $scope.$on('getContent', () => {
         $scope.contentItemsDisplayed = INFINITE_SCROLL_STARTING_ITEMS; // reset when filters are applied
+        $scope.infiniteScrollDisabled = false;
     });
 
     /**
@@ -224,10 +225,23 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
      * Increments the amount of items to display and the re-trims the originalContent object to length
      */
     $scope.moreContent = function () {
+        $scope.infiniteScrollDisabled = true;
         $scope.contentItemsDisplayed += $scope.contentItemLoadingIncrement;
         $scope.animationsEnabled = false;
-        $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentItemsDisplayed);
+        doContentTrimAndSetContent();
+        $scope.infiniteScrollDisabled = false;
     };
+
+    function doContentTrimAndSetContent () {
+        if ($scope.contentItemsDisplayed >= $scope.totalContentItems) {
+            $scope.content = $scope.originalContent;
+            $scope.displayingEverything = true;
+            $scope.infiniteScrollDisabled = true;
+        } else {
+            $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentItemsDisplayed);
+            $scope.displayingEverything = false;
+        }
+    }
 
     // =============================================================================== //
 
@@ -239,6 +253,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
         data.content['Stub'] = data.stubs;
         var grouped = data.content;
+        $scope.totalContentItems = data.count['total'];
 
         $scope.originalContent = statuses.map((status) => {
             // TODO: status is currently stored as presentation text, eg: "Writers"
@@ -253,7 +268,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
             };
         });
 
-        $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentItemsDisplayed);
+        doContentTrimAndSetContent();
 
         $scope.contentIds = [];
 

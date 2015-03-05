@@ -92,9 +92,14 @@ object Api extends Controller with PanDomainAuthActions {
       case (status, content) => (status.toString, Json.toJson(content))
     }).toSeq
 
+    var countTotal = 0
+
     val counts = contentGroupedByStatus.map({
-      case (status, content) => (status.toString, Json.toJson(content.length))
-    }).toSeq ++ Map("Stub" -> Json.toJson(stubs.length)).toSeq
+      case (status, content) => {
+        countTotal += content.length
+        (status.toString, Json.toJson(content.length))
+      }
+    }).toSeq ++ Map("Stub" -> Json.toJson(stubs.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+stubs.length)).toSeq
 
     Ok(
       Json.obj(

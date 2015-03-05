@@ -3,7 +3,7 @@
 
 <wf-content-list-loader event="content.rendered"></wf-content-list-loader>
 
-<table class="content-list" ng-class="{ 'content-list--compact': compactView.visible, 'content-list--animations-enabled': animationsEnabled }" infinite-scroll="moreContent()" infinite-scroll-distance="contentItemsLoadingThreshold" infinite-scroll-immediate-check="false" infinite-scroll-parent="true">
+<table class="content-list" ng-class="{ 'content-list--compact': compactView.visible, 'content-list--animations-enabled': animationsEnabled }" infinite-scroll="moreContent()" infinite-scroll-distance="contentItemsLoadingThreshold" infinite-scroll-immediate-check="false" infinite-scroll-parent="true" infinite-scroll-disabled="infiniteScrollDisabled">
     <thead class="content-list-head">
         <tr class="content-list-head__row">
             <th class="content-list-head__heading--group content-list-head__heading--notifier" colspan="1">
@@ -36,6 +36,14 @@
 
     <tbody class="content-list__item-container" ng-repeat="group in content track by group.name" content-list-item-container>
         <!-- Find my content in content-list.js:45 -->
+    </tbody>
+
+    <tbody ng-if="displayingEverything">
+        <tr class="content-list__content-end">
+            <td colspan="99">
+                <span class="notice">&mdash;&nbsp;{{ totalContentItems }} Items&nbsp;&mdash;</span>
+            </td>
+        </tr>
     </tbody>
 
     <tbody class="content-list-draw__dock">
