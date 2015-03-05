@@ -11,7 +11,8 @@ case class PrototypeConfiguration(
                                    presenceUrl: String,
                                    presenceClientLib: String,
                                    preferencesUrl: String,
-                                   incopyExportUrl: String
+                                   incopyExportUrl: String,
+                                   logStashConf: LogStashConf
                                    )
 
 object PrototypeConfiguration {
@@ -29,7 +30,9 @@ object PrototypeConfiguration {
         presenceClientLib <- Config.getConfigString("presence.clientLib").right
         preferencesUrl <- Config.getConfigString("preferences.url").right
         incopyExportUrl <- Config.getConfigString("incopyExportUrl").right
-      } yield PrototypeConfiguration(composerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl))
+        logStashHost <- Config.getConfigString("logging.logstash.host").right
+        logStashPort <- Config.getConfigInt("logging.logstash.port").right
+      } yield PrototypeConfiguration(composerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl, LogStashConf(logStashHost, logStashPort)))
     configEit.fold(error => {
       Logger.error(s"could not instantiate Prototype Configuration ${error}")
       sys.error(error)
