@@ -3,37 +3,42 @@
 
         <div class="content-list-drawer__container"><!-- div for animation -->
             <div class="content-list-drawer__container-inner"><!-- div for padding/spacing -->
-            
-            <ul class="drawer__column--wide"><!--Working titles and broad information-->
-                <li class="drawer__section">
-                    <span class="drawer__section-title">Working title</span>
-                    <wf-editable class="drawer__section-data-row" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">{{ contentItem.workingTitle || '-' }}</wf-editable>
-                </li>
-                <li class="drawer__section">
-	                <span class="drawer__section-title">Note</span>
-	                <wf-editable class="drawer__section-data-row" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">{{ contentItem.note || 'Add note' }}</wf-editable>
-                </li>
-                
-                <li class="drawer__section">
-                    <span class="drawer__section-title">Headline</span>
-                    <span class="drawer__section-data-row">{{ contentItem.headline || '-' }}</span>
-                </li>
-                <li class="drawer__section">
-                    <span class="drawer__section-title">Standfirst</span>
+
+                <ul class="drawer__column--wide"><!--Working titles and broad information-->
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Working title</span>
+                        <wf-editable class="drawer__section-data-row" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
+                            {{ contentItem.workingTitle || '-' }}
+                        </wf-editable>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Note</span>
+                        <wf-editable class="drawer__section-data-row" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">
+                            {{ contentItem.note || 'Add note' }}
+                        </wf-editable>
+                    </li>
+
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Headline</span>
+                        <span class="drawer__section-data-row">{{ contentItem.headline || '-' }}</span>
+                    </li>
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Standfirst</span>
                     <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !contentItem.standfirst}">
                         {{ contentItem.standfirst || "None" }}
                     </span>
-                </li>
-                
-                <li class="drawer__section">
-                    <span class="drawer__section-title">URL</span>
+                    </li>
+
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">URL</span>
                     <span class="drawer__section-data-row" ng-if="contentItem.path">
-                        <a href="{{ contentItem.links.live || contentItem.links.preview || contentItem.links.composer }}">{{ contentItem.path }}</a>
+                        <a href="{{ contentItem.links.live || contentItem.links.preview || contentItem.links.composer }}">{{
+                            contentItem.path }}</a>
                     </span>
-                </li>
-            </ul>
-            
-            
+                    </li>
+                </ul>
+
+
                 <ul class="drawer__column"><!--Dates, times and importance things-->
                     <li class="drawer__section">
                         <span class="drawer__section-title">Priority</span>
@@ -88,7 +93,7 @@
                         <span class="drawer__section-title">State</span>
                         <span class="drawer__section-data-row">{{ contentItem.state || '-' }}</span>
                     </li>
-                    
+
                     <li class="drawer__section">
                         <span class="drawer__section-title">In use by</span>
                         <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true">
@@ -104,12 +109,12 @@
                             <punters stub="contentItem" indrawer="true"></punters>
                         </div>
                     </li>
-                    
+
                     <li class="drawer__section">
                         <span class="drawer__section-title">Comments</span>
                         <span class="drawer__section-data-row">{{ contentItem.commentsTitle }}</span>
                     </li>
-                    
+
                     <li class="drawer__section">
                         <span class="drawer__section-title">InCopy</span>
                         <span class="drawer__section-data-row">{{ contentItem.incopyTitle }}</span>
@@ -127,38 +132,44 @@
                         <span class="drawer__section-title">Legal status</span>
                         <select class="drawer__section-control" ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
                     </li>
-                    
+
                     <li class="drawer__section">
                         <span class="drawer__section-title">Office</span>
-                        <select  class="drawer__section-control" ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices" wf-content-item-update-action="prodOffice"></select>
+                        <select class="drawer__section-control" ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices" wf-content-item-update-action="prodOffice"></select>
                     </li>
-                    
+
                     <li class="drawer__section">
                         <span class="drawer__section-title">Content type</span>
                         <span class="drawer__section-data-row"><i class="drawer__icon--content-type" wf-icon="{{ contentItem.contentType }}"/> {{ contentItem.contentTypeTitle }}</span>
                     </li>
-                   
-					<!--<li class="drawer__section">
+
+                    <!-- Placeholders for upcoming features
+
+                    <li class="drawer__section">
                         <span class="drawer__section-title">Guardian Witness</span>
                         <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
-                    </li>-->
-                	<!-- <li class="drawer__section">
+                    </li>
+
+                    <li class="drawer__section">
                         <span class="drawer__section-title">Feature</span>
                         <span class="drawer__section-data-row drawer__section-data-row--coming-soon">Coming soon...</span>
-                    </li>-->
+                    </li>
+
+                    -->
+
                     <li class="drawer__section" ng-show="contentItem.contentType == 'article'">
                         <span class="drawer__section-title">Word count</span>
                         <span class="drawer__section-control">{{ contentItem.wordCount }} </span>
                     </li>
                 </ul>
 
-                
 
                 <ul class="drawer__column--media">
                     <li class="drawer__section drawer__section-mainmedia"
-                    ng-class="{'drawer__section-mainmedia--nopreview': contentItem.mainMediaNoPreview}">
+                        ng-class="{'drawer__section-mainmedia--nopreview': contentItem.mainMediaNoPreview}">
 
                         <span class="drawer__section-title">Main media</span>
+
                         <div ng-if="contentItem.mainMediaType == 'image'" class="drawer__section-image-container">
                             <img ng-src="{{ contentItem.mainMediaUrl}}" alt=""/>
                         </div>
@@ -168,7 +179,7 @@
                         <div ng-if="!contentItem.mainMediaType" class="drawer__section-data-row drawer__section-data-row--empty">
                             None
                         </div>
-                    </span>
+                        </span>
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">Caption</span>
@@ -187,6 +198,7 @@
                 <ul class="drawer__column--media">
                     <li class="drawer__section">
                         <span class="drawer__section-title">Trail picture</span>
+
                         <div ng-if="contentItem.trailImageUrl" class="drawer__section-image-container">
                             <img ng-src="{{ contentItem.trailImageUrl }}" alt=""/>
                         </div>
@@ -201,7 +213,6 @@
                         </span>
                     </li>
                 </ul>
-
 
 
                 <ul class="drawer__column--control">
