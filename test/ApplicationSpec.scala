@@ -1,15 +1,45 @@
-import org.specs2.mutable._
-import org.specs2.runner._
-import org.junit.runner._
-
-import play.api.test._
+import org.scalatest.BeforeAndAfterAll
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.htmlunit.HtmlUnitDriver
+import org.scalatest.FlatSpec
+import play.api.test.TestServer
+import org.scalatest.Matchers
+import play.api.test.Helpers
+import org.scalatest.selenium.WebBrowser
+import play.api.test.FakeApplication
+import play.api.GlobalSettings
 import play.api.test.Helpers._
 
-/**
- * Add your spec here.
- * You can mock out a whole application including requests, plugins etc.
- * For more information, consult the wiki.
- */
-@RunWith(classOf[JUnitRunner])
-class ApplicationSpec extends Specification {
+trait PlayBrowserSpec extends FlatSpec with BeforeAndAfterAll with Matchers with WebBrowser{
+
+  implicit val webDriver: WebDriver = new HtmlUnitDriver
+
+  val host = s"http://localhost:${Helpers.testServerPort}"
+  var app: FakeApplication = _
+  var server: TestServer = _
+
+  override def beforeAll() {
+    val props = System.getProperties();
+    props.setProperty("config.resource", "application.local.conf");
+
+    app = FakeApplication()
+
+    println(app.configuration.getString("db.default.url"))
+
+    server = TestServer(port = Helpers.testServerPort)
+    server.start
+  }
+
+  override def afterAll() {
+    server.stop
+    quit
+  }
+}
+
+class WorkflowSpec extends PlayBrowserSpec {
+
+  "The home page" should "have the correct title" in {
+    go to (host + "/")
+    pageTitle should be("Workflow")
+  }
 }
