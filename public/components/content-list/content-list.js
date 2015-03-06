@@ -246,47 +246,45 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     // =============================================================================== //
 
     this.render = (response) => {
-        var data = response.data;
+        var data = response.data,
+            self = this;
 
         // TODO stubs and content are separate structures in the API response
         //      make this a single list of content with consistent structure in the API
 
         data.content['Stub'] = data.stubs;
         var grouped = data.content;
-        $scope.totalContentItems = data.count['total'];
 
-        $scope.originalContent = statuses.map((status) => {
-            // TODO: status is currently stored as presentation text, eg: "Writers"
-            //       should be stored as an enum and transformed to presentation text
-            //       here in the front-end
+        $scope.$apply(() => {
+            $scope.totalContentItems = data.count['total'];
 
-            return {
-                name: status.toLowerCase(),
-                title: status == 'Stub' ? 'News list' : status,
-                count: data.count[status],
-                items: grouped[status] ? grouped[status].map(wfContentItemParser.parse) : grouped[status]
-            };
+            $scope.originalContent = statuses.map((status) => {
+                // TODO: status is currently stored as presentation text, eg: "Writers"
+                //       should be stored as an enum and transformed to presentation text
+                //       here in the front-end
+
+                return {
+                    name: status.toLowerCase(),
+                    title: status == 'Stub' ? 'News list' : status,
+                    count: data.count[status],
+                    items: grouped[status] ? grouped[status].map(wfContentItemParser.parse) : grouped[status]
+                };
+            });
+
+            doContentTrimAndSetContent();
+
+            $scope.contentIds = [];
+
+            for (var key in data.content) {
+                $scope.contentIds.concat(data.content[key].map((content) => content.composerId))
+            }
+
+            $scope.$emit('content.render', {
+                content: $scope.content
+            });
+
         });
 
-        doContentTrimAndSetContent();
-
-        $scope.contentIds = [];
-
-        for (var key in data.content) {
-            $scope.contentIds.concat(data.content[key].map((content) => content.composerId))
-        }
-
-        // update selectedItem as objects are now !==
-        if (this.selectedItem) {
-            this.selectedItem = _.find(content, { id: this.selectedItem.id });
-        }
-
-        $scope.$emit('content.render', {
-            content: $scope.content,
-            selectedItem: this.selectedItem
-        });
-
-        $scope.$apply();
         $scope.$emit('content.rendered');
     };
 
