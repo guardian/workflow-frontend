@@ -37,6 +37,7 @@ import 'lib/preferences-service';
 import 'lib/analytics';
 import 'lib/feature-switches';
 import 'lib/google-api';
+import 'lib/title-service';
 
 // 3rd party libs
 import 'angular-ui-router';
@@ -68,7 +69,8 @@ angular.module('workflow',
         'wfPreferencesService',
         'wfFeatureSwitches',
         'wfGoogleApiService',
-        'infinite-scroll'
+        'infinite-scroll',
+        'wfTitleService'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
         // TODO: remember user's state and redirect there on default '' route
