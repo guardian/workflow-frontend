@@ -36,7 +36,17 @@ var filterDefaults = function (statuses, wfFiltersService) {
             })
         },
         {
-            title: 'Content',
+            title: 'Your Content',
+            listIsOpen: false,
+            individualNamespaces: true,
+            multi: true,
+            filterOptions: [
+                { caption: 'Assigned to you', value: _wfConfig.user.email, namespace: 'assigneeEmail' },
+                { caption: 'Edited by you', value: _wfConfig.user.email, namespace: 'touched' }
+            ]
+        },
+        {
+            title: 'Content type',
             namespace: 'content-type',
             listIsOpen: false,
             multi: true,
@@ -63,22 +73,13 @@ var filterDefaults = function (statuses, wfFiltersService) {
             title: 'State',
             namespace: 'state',
             listIsOpen: false,
-            multi: true,
+            multi: false,
             filterOptions: [
                 { caption: 'Draft', value: 'draft' },
                 { caption: 'Published', value: 'published' },
                 { caption: 'Taken down', value: 'takendown' },
                 { caption: 'Scheduled', value: 'scheduled' },
                 { caption: 'Embargoed', value: 'embargoed' }
-            ]
-        },
-        {
-            title: 'Assignment',
-            namespace: 'assigneeEmail',
-            listIsOpen: false,
-            multi: false,
-            filterOptions: [
-                { caption: 'Assigned to me', value: _wfConfig.user.email }
             ]
         },
         {
