@@ -20,6 +20,8 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 
     self.endpoint = config.presenceUrl;
 
+    var currentArticleIds = [];
+
     function broadcast(name, data) {
         /* use apply to make it take effect straight away */
         $rootScope.$apply(function () {
@@ -58,24 +60,18 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     ).then(
         // 2. Have we loaded the client library?
         (presenceClient) => {
-            var clientPromise =
-                new Promise((resolve, reject) => {
-                    var client = presenceClient(self.endpoint, person);
-                    client.on('connection.open', ()=>resolve(client));
-                    client.on('connection.error', reject);
-                    client.startConnection();
-                });
-            clientPromise.then(
-                // 3. have successfully connected?
-                (client) => {
-                    $log.info("presence connection open");
-                    broadcast("presence.connection.success", client.url);
-                    addHandlers(client, messageHandlers);
-                    return client;
-                },
-                () => $log.error("could not open presence connection")
-            );
-            return clientPromise;
+            var p = presenceClient(self.endpoint, person);
+            p.on('connection.open', () => {
+                p.subscribe(currentArticleIds).catch((err) =>
+                    $log.error('error subscribing ', err)
+                );
+                addHandlers(p, messageHandlers);
+            });
+            p.on('error', msg => {
+                $log.error('presence error ', msg);
+            });
+            p.startConnection();
+            return p;
         },
         () => {
             broadcast("presence.connection.error", "Could not get access to the library ");
@@ -84,6 +80,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         });
 
     self.articleSubscribe = function (articleIds) {
+        currentArticleIds = articleIds;
         var p = presence.then((p) => p.subscribe(articleIds).catch(
             function(){
                 $log.error("could not subscribe to presence", p.url, arguments);

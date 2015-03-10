@@ -37,30 +37,20 @@ object PostgresDB {
                   createdFrom:  Option[DateTime] = None,
                   createdUntil: Option[DateTime] = None,
                   composerId:   Option[String]   = None,
-                  assignedToEmail: Option[Seq[String]] = None
+                  assignedToEmail: Option[Seq[String]] = None,
+                  touched:      Option[Seq[String]] = None
   ): List[DashboardRow] =
     getContent(WfQuery.fromOptions(
                  section, desk, dueFrom, dueUntil, status, contentType,
-                 published, flags, prodOffice, createdFrom, createdUntil, composerId, assignedToEmail
+                 published, flags, prodOffice, createdFrom, createdUntil, composerId, assignedToEmail, touched
                )
     )
 
   def getContent(q: WfQuery): List[DashboardRow] =
     DB.withTransaction { implicit session =>
-
-      val baseQuery = for {
-        s <- (WfQuery.stubsQuery(q)).sortBy(s => (s.priority.desc, s.workingTitle))
-        c <- WfQuery.contentQuery(q)
-        if s.composerId === c.composerId
-      } yield (s, c)
-
-      // now that tables are joined into one query, apply the
-      // cross-table textSearch query as neccessary
-      val query = WfQuery.textSearchQuery(baseQuery, q)
-
-      query.filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
-           .list.map {
-            case (stubData, contentData) =>
+      WfQuery.getContentQuery(q)
+        .filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
+        .list.map { case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
           val content = WorkflowContent.fromContentRow(contentData)
 
