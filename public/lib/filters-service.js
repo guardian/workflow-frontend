@@ -79,21 +79,18 @@ angular.module('wfFiltersService', ['wfDateService'])
                     "state"      : "state",
                     "who"        : "assignee",
                     "assignee"   : "assignee",
-                    "assignedto" : "assignee",
-                    "composerId" : "composerId"
+                    "assignedto" : "assignee"
                 };
 
                 var savedFilters = null;
 
                 function enterSearchMode(data) {
-                    console.log("enter");
                     savedFilters = _.clone(self.filters);
                     self.clearAll(true, true);
                     $rootScope.$broadcast("search-mode.enter");
                 }
 
                 function exitSearchMode(data) {
-                    console.log("exit");
                     self.clearAll(true, true);
                     if(savedFilters != null) {
                         _.forOwn(savedFilters,
@@ -105,8 +102,6 @@ angular.module('wfFiltersService', ['wfDateService'])
                 $rootScope.$on('filtersChanged.freeText', function(event, data) {
                     var newValue = data.newValue;
                     var oldValue = data.oldValue;
-
-                    console.log("trigger", data);
 
                     if(oldValue == null && newValue != null) {
                         enterSearchMode(data);
@@ -122,13 +117,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                                 }
                                 return "";
                             });
-                        if (!data.initialLoad) { // Should only clear if responding to typing..
-                            self.update('text', rest, true, false);
-                        } else {
-                            delete self.filters['text'];
-                        }
                     } else {
-                        self.update('text', null, true, false);
+                        self.update('text', null, true, true);
                     }
                     $rootScope.$broadcast('getContent');
                 });
@@ -168,7 +158,6 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'assignee'     : params['assignee'],
                         'assigneeEmail': params['assigneeEmail'],
                         'incopy'       : params['incopy'],
-                        'text'         : params['text'],
                         'touched'      : params['touched'],
                         'composerId'   : params['composerId']
                     };

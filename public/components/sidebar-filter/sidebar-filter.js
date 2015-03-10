@@ -233,16 +233,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         // once the user has finished typing).
         var defaultDelay = 500;
 
-        $scope.value = wfFiltersService.get('text') || "";
-
-        if ($scope.value) {
-            $rootScope.$broadcast(
-                "filtersChanged.freeText",
-                {newValue: $scope.value, oldValue: "", initialLoad: true}
-            );
-            $rootScope.$broadcast("search-mode.enter");
-        }
-
+        $scope.value = "";
         var timeout = null;
         var oldValue = null;
 
@@ -271,6 +262,5 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 );
                 oldValue = newValue;
             }, delay);
-        };
-
+        }
     }]);
