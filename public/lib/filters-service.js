@@ -212,6 +212,15 @@ angular.module('wfFiltersService', ['wfDateService'])
                     wfPreferencesService.setPreference('location', this.sanitizeFilters(this.filters));
                 }
 
+                this.postUpdate();
+            }
+
+            postUpdate() {
+                if (this.filters['composerId']) {
+                    $rootScope.$broadcast("search-mode.enter");
+                } else {
+                    $rootScope.$broadcast("search-mode.exit");
+                }
             }
 
             get(key) {
