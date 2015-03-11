@@ -6,8 +6,8 @@ angular.module('wfTitleService', [])
 
         class TitleService
         {
-            set(titlePrefix) {
-                document.title = titlePrefix + ' - Workflow';
+            set(title) {
+                document.title = title;
             }
         }
 

@@ -78,10 +78,10 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
             }
 
             if ($scope.selectedDesk && $scope.selectedDesk.name) {
-                wfTitleService.set($scope.selectedDesk.name);
+                wfTitleService.set($scope.selectedDesk.name + ' - Workflow');
             }
             else {
-                wfTitleService.set('All desks');
+                wfTitleService.set('Workflow');
             }
         });
 
