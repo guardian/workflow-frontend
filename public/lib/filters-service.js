@@ -117,6 +117,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                                 }
                                 return "";
                             });
+                        self.update('text', rest, true, true);
                     } else {
                         self.update('text', null, true, true);
                     }

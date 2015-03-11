@@ -309,9 +309,14 @@ $compact-display-td-padding: 2px 5px;
     border-bottom: 1px solid #ffffff;
     height: 46px;
     line-height: 46px;
-    @extend %fs-data-3;
+    @extend %fs-data-2;
     text-transform: uppercase;
     color: $c-grey-700;
     font-weight: bold;
     text-align: center;
+}
+
+.content-list__content-end-reset {
+    margin: 0 0 0 6px;
+    line-height: 1.42857143; // Bootstrap...
 }
