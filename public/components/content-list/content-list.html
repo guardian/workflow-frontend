@@ -41,7 +41,8 @@
     <tbody ng-if="displayingEverything">
         <tr class="content-list__content-end">
             <td colspan="99">
-                <span class="notice">&mdash;&nbsp;&nbsp;{{ totalContentItems }} Items&nbsp;&nbsp;&mdash;</span>
+                <span class="notice">&mdash;&nbsp;&nbsp;{{ totalContentItems }} Item<span ng-if="totalContentItems !== 1">s</span><span ng-if="totalContentItems === 1" class="btn btn-xs btn-info content-list__content-end-reset" ng-click="resetFilters()">reset filters</span> &nbsp;&nbsp;&mdash;</span>
+
             </td>
         </tr>
     </tbody>
