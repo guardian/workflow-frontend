@@ -3,15 +3,13 @@ package controllers
 import com.gu.workflow.db.{SectionDeskMappingDB, SectionDB, DeskDB}
 import com.gu.workflow.lib.StatusDatabase
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 import lib._
 import lib.Composer._
 
 import play.api.mvc._
 import play.api.libs.json.Json
 
-object Application extends Controller with PanDomainAuthActions {
+object Application extends Controller with PanDomainAuthActions with LoggingActions {
 
   def index = AuthAction { request =>
     Redirect(routes.Application.dashboard)
