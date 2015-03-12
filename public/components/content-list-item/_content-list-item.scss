@@ -154,9 +154,7 @@
         &--preview,
         &--live,
         &--ophan,
-        &--deadline,
         &--created,
-        &--section,
         &--incopy,
         &--wordcount,
         &--needsLegal {
@@ -215,10 +213,8 @@
             width: 100px;
         }
 
-        &--status {
-            select {
-                width: 80px;
-            }
+        &--status--select {
+            width: 80px;
         }
 
         &--section {
@@ -229,7 +225,7 @@
 
         &--section,
         &--deadline {
-            font-size: 11px;
+            @extend %fs-data-1;
         }
 
         &--deadline,
@@ -338,8 +334,8 @@
     .content-list-item__field--working-title,
     .content-list-item__field--headline {
         @include smallScreen {
+            @extend %fs-data-1;
             max-width: 160px;
-            font-size: 11.5px;
         }
 
         @include largeScreen {
@@ -406,10 +402,8 @@
             display: inline;
         }
 
-        &--status {
-            select {
-                width: 65px;
-            }
+        &--status--select {
+            width: 65px;
         }
 
         &--office {
