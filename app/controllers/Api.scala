@@ -83,7 +83,8 @@ object Api extends Controller with PanDomainAuthActions {
         (state.isEmpty   || state == Some(DraftState)) &&
         (queryData.inIncopy != Some(true)) &&
         touched.isEmpty &&
-        assigned.isEmpty
+        assigned.isEmpty &&
+        queryData.composerId.isEmpty
       ) getStubs else Nil
 
     val content = getContent
