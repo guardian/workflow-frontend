@@ -1,5 +1,6 @@
 package controllers
 
+import com.gu.workflow.util.LoggingContext
 import play.api.mvc._
 import scala.concurrent.Future
 import play.Logger
@@ -34,13 +35,11 @@ trait LoggingActions {
     def reportFailure(t: Throwable) = ec.reportFailure(t)
   }
 
-  def storeHeader(req: Request[_]) {
-    req.headers.get("X-PMR-Test").foreach(MDC.put("pmrtest", _))
-  }
-
   object LoggingAction extends ActionBuilder[Request] {
     def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
-      storeHeader(request)
+      val headers = request.headers.getAll(LoggingContext.LOGGING_CONTEXT_HEADER)
+        .headOption.map(LoggingContext.fromHeader(_))
+      Logger.info(s"headers: ${headers}")
       block(request)
     }
   }
