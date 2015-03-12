@@ -277,11 +277,20 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
             doContentTrimAndSetContent();
 
-            $scope.contentIds = [];
+            (function setUpPresencContentIds () {
 
-            for (var key in data.content) {
-                $scope.contentIds.concat(data.content[key].map((content) => content.composerId))
-            }
+                var contentIds = [];
+
+                for (var key in data.content) {
+                    if (key !== 'Stub') {
+                        contentIds = contentIds.concat(
+                            data.content[key].map((content) => content.composerId)
+                        );
+                    }
+                }
+
+                $scope.contentIds = contentIds;
+            })();
 
             $scope.$emit('content.render', {
                 content: $scope.content
