@@ -6,7 +6,7 @@ import play.api.mvc.{Action, Controller}
 object Management extends Controller {
 
   def healthCheck = Action {
-    Ok("It's all OK, honest.")
+    Ok(<h1>ok</h1>).as(HTML)
   }
 
 }
