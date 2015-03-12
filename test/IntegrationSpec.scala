@@ -1,14 +1,37 @@
-import org.specs2.mutable._
-import org.specs2.runner._
-import org.junit.runner._
+package test
 
-import play.api.test._
-import play.api.test.Helpers._
+import models.{ContentItem, Stub, WorkflowContent, Flag}
+import lib.{PostgresDB}
+import play.api.libs.json._
 
-/**
- * add your integration spec here.
- * An integration test will fire up a whole play application in a real (or headless) browser
- */
-@RunWith(classOf[JUnitRunner])
-class IntegrationSpec extends Specification {
+import org.scalatest.Inside
+import play.api.libs.json.JsResult
+
+object Helpers {
+  def contentItem(): ContentItem = {
+    ContentItem(
+      Stub(
+        title = "Title",
+        prodOffice = "UK",
+        priority = 1,
+        section = "Section",
+        needsLegal = Flag.NotRequired
+      ),
+      None
+    )
+  }
+}
+
+class WorkflowSpec extends BaseSuite with Inside {
+  s"$host/api/content" should "work" in {
+    val item = Helpers.contentItem
+    PostgresDB.createContent(item)
+
+    val connection = GET(s"$host/api/content")
+
+    connection.responseCode should be (200)
+
+    val result: JsValue = Json.parse(connection.body)
+    (result \\ "title").headOption.get.toString should equal(""""Title"""")
+  }
 }

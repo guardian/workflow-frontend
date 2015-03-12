@@ -32,7 +32,8 @@ object PrototypeConfiguration {
         incopyExportUrl <- Config.getConfigString("incopyExportUrl").right
         logStashHost <- Config.getConfigString("logging.logstash.host").right
         logStashPort <- Config.getConfigInt("logging.logstash.port").right
-      } yield PrototypeConfiguration(composerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl, LogStashConf(logStashHost, logStashPort)))
+        logStashEnabled <- Config.getConfigBoolean("logging.logstash.enabled").right
+      } yield PrototypeConfiguration(composerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl, LogStashConf(logStashHost, logStashPort, logStashEnabled)))
     configEit.fold(error => {
       Logger.error(s"could not instantiate Prototype Configuration ${error}")
       sys.error(error)
