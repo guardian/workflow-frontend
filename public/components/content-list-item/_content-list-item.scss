@@ -63,7 +63,8 @@
         &--preview,
         &--live,
         &--ophan,
-        &--incopy {
+        &--incopy,
+        &--optimisedForWeb {
             display: inline-block;
             width: $content-list-icon-size;
             height: $content-list-icon-size;
@@ -157,7 +158,8 @@
         &--created,
         &--incopy,
         &--wordcount,
-        &--needsLegal {
+        &--needsLegal,
+        &--optimisedForWeb {
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
@@ -177,7 +179,8 @@
         &--preview,
         &--live,
         &--ophan,
-        &--incopy {
+        &--incopy,
+        &--optimisedForWeb {
             padding: 10px 5px;
             width: $content-list-icon-size;
         }
@@ -402,6 +405,7 @@
         &--created,
         &--section,
         &--incopy,
+        &--optimisedForWeb,
         &--published-state,
         &--wordcount {
             @extend %fs-data-2;

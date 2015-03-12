@@ -142,6 +142,8 @@ function wfContentItemParser(config, statusLabels, sections) {
                 'Linked with InCopy Story Bundle ' + this.storyBundleId :
                 'Not linked with InCopy';
 
+            this.optimisedForWeb = item.statusFlags && item.statusFlags.optimisedForWeb;
+
             this.item = item;
         }
 
