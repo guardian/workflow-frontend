@@ -277,7 +277,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
             doContentTrimAndSetContent();
 
-            (function setUpPresencContentIds () {
+            (function setUpPresenceContentIds () {
 
                 var contentIds = [];
 
