@@ -1,37 +1,35 @@
 package test
 
-import models.{ContentItem, Stub, WorkflowContent, Flag}
-import lib.{PostgresDB}
 import play.api.libs.json._
+import org.scalatest._
 
-import org.scalatest.Inside
-import play.api.libs.json.JsResult
 
-object WorkflowHelpers {
-  def contentItem(): ContentItem = {
-    ContentItem(
-      Stub(
-        title = "Title",
-        prodOffice = "UK",
-        priority = 1,
-        section = "Section",
-        needsLegal = Flag.NotRequired
-      ),
-      None
-    )
+class WorkflowSpec extends WorkflowIntegrationSuite with Inside {
+  s"$host/api/content" should "show content in db" in {
+    val expectedTitle = "Content Item"
+    val content = createContent(contentItem(expectedTitle))
+
+    val js: JsValue = getJs("api/content")
+    val actualTitle = ((js \ "stubs").apply(0) \ "title").validate[String].asOpt.get
+
+    expectedTitle should equal(actualTitle)
   }
-}
 
-class WorkflowSpec extends BaseSuite with Inside {
-  s"$host/api/content" should "work" in {
-    val item = WorkflowHelpers.contentItem
-    PostgresDB.createContent(item)
+  s"$host/api/content?text=query" should "show filter results from api" in {
+    createContent(contentItem("Foo"))
+    createContent(contentItem("Bar"))
 
-    val connection = GET(s"$host/api/content")
+    val includedStubs = (getJs(s"api/content?text=Foo") \ "stubs").as[JsArray]
+    val excludedStubs = (getJs(s"api/content?text=Bar") \ "stubs").as[JsArray]
 
-    connection.responseCode should be (200)
+    includedStubs.productArity should equal(1)
+    excludedStubs.productArity should equal(1)
 
-    val result: JsValue = Json.parse(connection.body)
-    (result \\ "title").headOption.get.toString should equal(""""Title"""")
+    val includedTitle = (includedStubs.apply(0) \ "title").validate[String].asOpt.get
+    val excludedTitle = (excludedStubs.apply(0) \ "title").validate[String].asOpt.get
+
+    includedTitle should equal("Foo")
+    excludedTitle should equal("Bar")
   }
+
 }
