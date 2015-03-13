@@ -159,7 +159,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'assignee'     : params['assignee'],
                         'assigneeEmail': params['assigneeEmail'],
                         'incopy'       : params['incopy'],
-                        'touched'      : params['touched']
+                        'touched'      : params['touched'],
+                        'composerId'   : params['composerId']
                     };
                 };
 
@@ -212,6 +213,15 @@ angular.module('wfFiltersService', ['wfDateService'])
                     wfPreferencesService.setPreference('location', this.sanitizeFilters(this.filters));
                 }
 
+                this.postUpdate();
+            }
+
+            postUpdate() {
+                if (this.filters['composerId']) {
+                    $rootScope.$broadcast("search-mode.enter");
+                } else {
+                    $rootScope.$broadcast("search-mode.exit");
+                }
             }
 
             get(key) {
