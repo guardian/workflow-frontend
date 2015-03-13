@@ -7,7 +7,7 @@ import play.api.libs.json._
 import org.scalatest.Inside
 import play.api.libs.json.JsResult
 
-object Helpers {
+object WorkflowHelpers {
   def contentItem(): ContentItem = {
     ContentItem(
       Stub(
@@ -24,7 +24,7 @@ object Helpers {
 
 class WorkflowSpec extends BaseSuite with Inside {
   s"$host/api/content" should "work" in {
-    val item = Helpers.contentItem
+    val item = WorkflowHelpers.contentItem
     PostgresDB.createContent(item)
 
     val connection = GET(s"$host/api/content")
