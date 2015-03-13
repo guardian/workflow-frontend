@@ -187,7 +187,11 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                     contentListDrawerController.hide();
 
                     // Update selectedItem from new polled data - updates changed data
-                } else if ($scope.contentItem && $scope.contentItem !== $scope.selectedItem && $scope.selectedItem.status !== 'Stub') {
+                } else if (
+                    $scope.contentItem &&
+                    $scope.contentItem !== $scope.selectedItem &&
+                    $scope.selectedItem.status !== 'Stub'
+                ) {
 
                     if ($scope.contentItem.id !== $scope.selectedItem.id) {
                         // TODO toggle show different item (edge case, rarely should fire)
