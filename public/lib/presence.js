@@ -60,18 +60,26 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     ).then(
         // 2. Have we loaded the client library?
         (presenceClient) => {
-            var p = presenceClient(self.endpoint, person);
-            p.on('connection.open', () => {
-                p.subscribe(currentArticleIds).catch((err) =>
-                    $log.error('error subscribing ', err)
-                );
-                addHandlers(p, messageHandlers);
-            });
-            p.on('error', msg => {
-                $log.error('presence error ', msg);
-            });
-            p.startConnection();
-            return p;
+            var clientPromise =
+                new Promise((resolve, reject) => {
+                    var p = presenceClient(self.endpoint, person);
+                    p.on('connection.open', () => {
+                        // after one successful connection, replace
+                        // the connection event handler with one that
+                        // resubscribes when we lose and regain
+                        // connection to the other end.
+                        p.on('connection.open', () => {
+                            p.subscribe(currentArticleIds).catch((err) => $log.error('error subscribing ', err));
+                        });
+                        resolve(p);
+                    });
+                    p.on('error', msg => {
+                        $log.error('presence error ', msg);
+                    });
+                    p.startConnection();
+                    addHandlers(p, messageHandlers);
+                });
+            return clientPromise;
         },
         () => {
             broadcast("presence.connection.error", "Could not get access to the library ");
