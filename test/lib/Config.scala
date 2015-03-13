@@ -10,6 +10,11 @@ object Config {
   val dbUrl: String = sys.env.get("WF_DB_URL").get
   val dbUser: String = sys.env.get("WF_DB_USER").get
   val dbPass: String = sys.env.get("WF_DB_PASS").get
+  def dbFullUrl: String = {
+    val s = dbUrl ++ dbName
+    println(s"Connecting to database: $s")
+    s
+  }
 
   val pandaConfig = PandaConfig("workflow", "localhost", awsKey, awsSecret)
   val pandaUser   = PandaUser("jim@guardian.co.uk", "jim", "bob")
@@ -21,7 +26,7 @@ object Config {
     "aws.secret"               -> awsSecret,
     "pandomain.aws.keyId"      -> awsKey,
     "pandomain.aws.secret"     -> awsSecret,
-    "db.default.url"           -> (dbUrl ++ dbName),
+    "db.default.url"           -> dbFullUrl,
     "db.default.user"          -> dbUser,
     "db.default.password"      -> dbPass,
     "host"                     -> s"http://localhost:${Helpers.testServerPort}"
