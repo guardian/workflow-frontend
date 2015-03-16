@@ -162,6 +162,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'touched'      : params['touched'],
                         'composerId'   : params['composerId']
                     };
+
+                    $rootScope.currentlySelectedStatusFilters = self.filters["status"];
                 };
 
                 setUpFilters(params); // base setting
@@ -207,6 +209,10 @@ angular.module('wfFiltersService', ['wfDateService'])
                 else {
                     this.filters[key] = value;
                     doNotUpdateUrl || $location.search(key, value);
+
+                    if (key == "status") {
+                        $rootScope.currentlySelectedStatusFilters = value;
+                    }
                 }
 
                 if (!doNotUpdateprefs) {
