@@ -73,9 +73,9 @@
         &--presence {
             display: inline-block;
             border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            line-height: 22px;
+            width: $textualIconSize;
+            height: $textualIconSize;
+            line-height: $textualIconSize;
             text-align: center;
             text-transform: uppercase;
         }
@@ -103,7 +103,7 @@
                 line-height: 16px;
                 display: inline-block;
                 text-align: center;
-                width: 22px;
+                width: $textualIconSize;
             }
 
             &-au {
@@ -190,17 +190,17 @@
         }
 
         &--presence,
+        &--office {
+            width: 40px;
+        }
+
         &--assignee {
-            min-width: 28px;
+            width: 30px;
         }
 
         &--needsLegal {
             width: 32px;
             white-space: nowrap; // Prevent inline-block icons from falling under one another
-        }
-
-        &--office {
-            width: 30px;
         }
 
         &--presence {
@@ -213,8 +213,20 @@
             width: 100px;
         }
 
-        &--status--select {
-            width: 80px;
+        &--status {
+            @include smallScreen {
+                width: 80px;
+                &--select {
+                    width: 80px;
+                }
+            }
+
+            @include largeScreen {
+                width: 125px;
+                &--select {
+                    width: 125px;
+                }
+            }
         }
 
         &--section {
@@ -237,10 +249,13 @@
             @extend %fs-data-1;
             padding: 2px 10px;
 
-            min-width: 120px; //default
+            //default
+            min-width: 120px;
+            max-width: 200px;
 
             @include largeScreen {
                 min-width: 200px;
+                max-width: 300px;
             }
 
             @include smallScreen {
