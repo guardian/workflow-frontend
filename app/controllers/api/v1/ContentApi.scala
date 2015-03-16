@@ -76,10 +76,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
     val contentEither = contentOpt match {
       case Some(contentItem) => {
         contentItem.stub.id.map { id =>
-          Right(ApiSuccess(contentItem,
-                status = "Redirect",
-                statusCode = 301,
-                headers = List(("location", s"/api/v1/content/${id}"))))
+          Right(ApiSuccess(contentItem))
         }.getOrElse(Left(ApiErrors.notFound))
       }
       case None => {
