@@ -163,7 +163,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'composerId'   : params['composerId']
                     };
 
-                    $rootScope.currentlySelectedStatusFilters = self.filters["status"];
+                    $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);
+
                 };
 
                 setUpFilters(params); // base setting
@@ -211,7 +212,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                     doNotUpdateUrl || $location.search(key, value);
 
                     if (key == "status") {
-                        $rootScope.currentlySelectedStatusFilters = value;
+                        console.log(value);
+                        $rootScope.currentlySelectedStatusFilters = this.transformStatusList(value);
                     }
                 }
 
@@ -261,6 +263,14 @@ angular.module('wfFiltersService', ['wfDateService'])
                 return filters;
             }
 
+            /**
+             * Transform a comma separated list of statues for use by the angular interface
+             * @param list
+             * @returns {U[]}
+             */
+            transformStatusList (list) {
+                return list.split(',').map((status) => status == 'Stub' ? 'News list' : status);
+            }
         }
 
         return new FiltersService();
