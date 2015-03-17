@@ -120,7 +120,11 @@
                         <span class="drawer__section-data-row">{{ contentItem.incopyTitle }}</span>
                         <span class="drawer__section-data-row" ng-if="contentItem.isOwnedByInCopy"><i>Locked</i></span>
                     </li>
-
+                    <li class="drawer__section">
+                        <span class="drawer__section-title">Optimised For Web</span>
+                        <span class="drawer__section-data-row" ng-if="contentItem.optimisedForWeb">Optimised</span>
+                        <span class="drawer__section-data-row" ng-if="!contentItem.optimisedForWeb">Not Optimised</span>
+                    </li>
                 </ul>
 
                 <ul class="drawer__column"><!--Meta-->
