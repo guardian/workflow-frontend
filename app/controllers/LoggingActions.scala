@@ -1,47 +1,30 @@
 package controllers
 
-import com.gu.workflow.util.LoggingContext
 import play.api.mvc._
 import scala.concurrent.Future
 import play.Logger
-import scala.concurrent.ExecutionContext
 import org.slf4j.MDC
 
-trait LoggingActions {
 
-  implicit val ec = new ExecutionContext {
-    /* should this be defined as a value somewhere, e.g in PrototypeConfig object? */
-    val ec = scala.concurrent.ExecutionContext.Implicits.global
+// import MDCExecutionContext.ec
 
-    def runHook(r: Runnable)(before: () => Unit)(after: () => Unit = () => ()) = new Runnable {
-      def run: Unit = { before(); r.run(); after(); }
-    }
+// trait LoggingActions {
+//   object LoggingAction extends ActionBuilder[Request] {
+//     def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
+//       val headers = request.headers.getAll(LoggingContext.LOGGING_CONTEXT_HEADER)
+//         // TODO - !! just reading the first header for now
+//         .headOption.map(LoggingContext.fromHeader(_)).getOrElse(Map.empty[String, String])
 
-    def execute(r: Runnable) = {
-      // save the MDC in the current thread ...
-      val savedMDC = MDC.getCopyOfContextMap()
-      Logger.info("outer thread" + savedMDC)
-      val withHook = runHook(r) { () =>
-        Logger.info("inner thread" + savedMDC)
-        // ... and then restore within this thread once it has taken
-        // over
-        if(savedMDC == null) MDC.clear() else MDC.setContextMap(savedMDC)
-      } { () =>
-        MDC.clear()
-      }
-      ec.execute(withHook)
-    }
+//       Logger.info(s"LoggingAction invokeBlock [$headers]")
 
-    def reportFailure(t: Throwable) = ec.reportFailure(t)
-  }
-
-  object LoggingAction extends ActionBuilder[Request] {
-    def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
-      val headers = request.headers.getAll(LoggingContext.LOGGING_CONTEXT_HEADER)
-        .headOption.map(LoggingContext.fromHeader(_))
-      Logger.info(s"headers: ${headers}")
-      block(request)
-    }
-  }
-
-}
+//       LoggingContext.withContext(headers) {
+//         // execute the original block to generate the original
+//         // response ...
+//         block(request)
+//           // ... and then wrap its response with the (possibly
+//           // updated) MDC response header
+//           .map(_.withHeaders(LoggingContext.headerMap.toSeq: _*))
+//       }
+//     }
+//   }
+// }
