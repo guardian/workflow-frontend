@@ -245,6 +245,11 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
             $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentItemsDisplayed);
             $scope.displayingEverything = false;
         }
+
+        $scope.content.map((status) => {
+            status.items = status.items ? status.items.map(wfContentItemParser.parse) : status.items;
+            return status;
+        })
     }
 
     // =============================================================================== //
@@ -271,7 +276,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
                     name: status.toLowerCase(),
                     title: status == 'Stub' ? 'News list' : status,
                     count: data.count[status],
-                    items: grouped[status] ? grouped[status].map(wfContentItemParser.parse) : grouped[status]
+                    items: grouped[status]
                 };
             });
 
