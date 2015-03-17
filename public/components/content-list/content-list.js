@@ -249,7 +249,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         $scope.content.map((status) => {
             status.items = status.items ? status.items.map(wfContentItemParser.parse) : status.items;
             return status;
-        })
+        });
     }
 
     // =============================================================================== //
