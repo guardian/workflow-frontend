@@ -1,25 +1,36 @@
 package lib
 
+import com.gu.workflow.util.LoggingContext
 import play.api.Logger
 import play.api.mvc._
 import scala.concurrent.Future
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 object LoggingFilter extends Filter {
   def apply(nextFilter: (RequestHeader) => Future[Result])
            (requestHeader: RequestHeader): Future[Result] = {
     val startTime = System.currentTimeMillis
+    val headers = requestHeader.headers.getAll(LoggingContext.LOGGING_CONTEXT_HEADER)
+      // TODO - !! just reading the first header for now
+      .headOption.map(LoggingContext.fromHeader(_)).getOrElse(Map.empty[String, String])
 
-    nextFilter(requestHeader).map { result =>
-      val endTime = System.currentTimeMillis
-      val requestTime = endTime - startTime
+    LoggingContext.withContext(headers) {
+      // use an new implicit execution context that will stash the
+      // current MDC, and then apply to all threads that are
+      // associated with this request
+      implicit val ec = LoggingContext.createExecutionContextWithMDC(
+        PrototypeConfiguration.defaultExecutionContext)
 
-      Logger.info(
-        s"(${result.header.status}) ${requestHeader.method} ${requestHeader.uri} " +
-        s"took ${requestTime}ms"
-      )
+      nextFilter(requestHeader).map { result =>
+        val endTime = System.currentTimeMillis
+        val requestTime = endTime - startTime
 
-      result
+        Logger.info(
+          s"(${result.header.status}) ${requestHeader.method} ${requestHeader.uri} " +
+            s"took ${requestTime}ms"
+        )
+
+        result
+      }
     }
   }
 }

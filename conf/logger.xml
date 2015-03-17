@@ -24,7 +24,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%coloredLevel %logger{15} - %message%n%xException{5}</pattern>
+            <pattern>%coloredLevel mdc:[origin=%X{origin}; sessionId=%X{sessionId}]  %logger{15} - %message%n%xException{5}</pattern>
         </encoder>
     </appender>
 

@@ -17,6 +17,10 @@ case class PrototypeConfiguration(
 
 object PrototypeConfiguration {
 
+
+  implicit val defaultExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
+
   lazy val cached = apply
 
   def apply: PrototypeConfiguration = {
