@@ -8,7 +8,7 @@ import { wfToolbarSectionsDropdown } from 'components/toolbar-sections-dropdown/
 
 angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPresenceService', 'wfProdOfficeService'])
     .directive('wfToolbarSectionsDropdown', ['wfFiltersService', '$rootScope', 'sectionsInDesks', wfToolbarSectionsDropdown])
-    .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'desks', 'sections', 'sectionsInDesks', function ($scope, wfFiltersService, wfDateParser, prodOfficeService,  desks, sections, sectionsInDesks) {
+    .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'desks', 'sections', 'sectionsInDesks', 'wfTitleService', function ($scope, wfFiltersService, wfDateParser, prodOfficeService,  desks, sections, sectionsInDesks, wfTitleService) {
 
         $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
@@ -72,10 +72,16 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
         $scope.$watch('selectedDesk', function () {
             if ($scope.selectedDesk && $scope.selectedDesk.id) {
-
                 $scope.$emit('filtersChanged.desk', $scope.selectedDesk.id);
             } else if ($scope.selectedDesk == null) { // 'All desks'
                 $scope.$emit('filtersChanged.desk', -1);
+            }
+
+            if ($scope.selectedDesk && $scope.selectedDesk.name) {
+                wfTitleService.set($scope.selectedDesk.name + ' - Workflow');
+            }
+            else {
+                wfTitleService.set('Workflow');
             }
         });
 
