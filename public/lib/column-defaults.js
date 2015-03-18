@@ -59,6 +59,15 @@ var columnDefaults = [{
     template: titleTemplate,
     active: true
 },{
+    name: 'notes',
+    prettyName: 'Notes',
+    labelHTML: 'Notes',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'notes.html',
+    template: notesTemplate,
+    active: true
+},{
     name: 'comments',
     prettyName: 'Comments: On/Off',
     labelHTML: '',
@@ -138,15 +147,6 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'status.html',
     template: statusTemplate,
-    active: true
-},{
-    name: 'notes',
-    prettyName: 'Notes',
-    labelHTML: 'Notes',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'notes.html',
-    template: notesTemplate,
     active: true
 },{
     name: 'wordcount',
