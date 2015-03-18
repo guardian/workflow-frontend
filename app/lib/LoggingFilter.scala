@@ -11,8 +11,8 @@ object LoggingFilter extends Filter {
            (requestHeader: RequestHeader): Future[Result] = {
     val startTime = System.currentTimeMillis
     val headers = requestHeader.headers.getAll(LoggingContext.LOGGING_CONTEXT_HEADER)
-      // TODO - !! just reading the first header for now
-      .headOption.map(LoggingContext.fromHeader(_)).getOrElse(Map.empty[String, String])
+      .map(LoggingContext.fromHeader(_))
+      .fold(Map.empty[String, String])(_ ++ _)
 
     LoggingContext.withContext(headers) {
       LoggingContext.withMDCExecutionContext(PrototypeConfiguration.defaultExecutionContext) { implicit ec =>
