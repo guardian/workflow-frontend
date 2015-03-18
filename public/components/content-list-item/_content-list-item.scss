@@ -73,9 +73,9 @@
         &--presence {
             display: inline-block;
             border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            line-height: 22px;
+            width: $textualIconSize;
+            height: $textualIconSize;
+            line-height: $textualIconSize;
             text-align: center;
             text-transform: uppercase;
         }
@@ -103,7 +103,7 @@
                 line-height: 16px;
                 display: inline-block;
                 text-align: center;
-                width: 22px;
+                width: $textualIconSize;
             }
 
             &-au {
@@ -154,9 +154,7 @@
         &--preview,
         &--live,
         &--ophan,
-        &--deadline,
         &--created,
-        &--section,
         &--incopy,
         &--wordcount,
         &--needsLegal {
@@ -192,17 +190,17 @@
         }
 
         &--presence,
+        &--office {
+            width: 40px;
+        }
+
         &--assignee {
-            min-width: 28px;
+            width: 30px;
         }
 
         &--needsLegal {
             width: 32px;
             white-space: nowrap; // Prevent inline-block icons from falling under one another
-        }
-
-        &--office {
-            width: 30px;
         }
 
         &--presence {
@@ -216,12 +214,30 @@
         }
 
         &--status {
-            width: 80px;
+            @include smallScreen {
+                width: 80px;
+                &--select {
+                    width: 80px;
+                }
+            }
+
+            @include largeScreen {
+                width: 125px;
+                &--select {
+                    width: 125px;
+                }
+            }
         }
 
         &--section {
-            width: 80px;
-            padding: 5px 10px;
+            width: 70px;
+            padding: 5px 5px;
+
+        }
+
+        &--section,
+        &--deadline {
+            @extend %fs-data-1;
         }
 
         &--deadline,
@@ -232,7 +248,21 @@
         &--notes {
             @extend %fs-data-1;
             padding: 2px 10px;
-            width: 120px;
+
+            //default
+            min-width: 120px;
+            max-width: 200px;
+
+            @include largeScreen {
+                min-width: 200px;
+                max-width: 300px;
+            }
+
+            @include smallScreen {
+                min-width: 50px;
+                max-width: 200px;
+                padding: 2px 5px;
+            }
         }
 
         &--wordcount {
@@ -256,6 +286,17 @@
             width: 80px;
             padding: 5px 10px;
             @extend %fs-data-3;
+        }
+
+        &--working-title,
+        &--headline {
+            @include smallScreen {
+                max-width: 225px;
+            }
+
+            @include largeScreen {
+                min-width: 400px;
+            }
         }
     }
 }
@@ -301,16 +342,42 @@
 .content-list--compact {
     .content-list-item__field--working-title,
     .content-list-item__field--notes {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
+        @include text-truncate;
         max-width: 200px;
     }
 
+    .content-list-item__field--working-title,
+    .content-list-item__field--headline {
+        @include smallScreen {
+            @extend %fs-data-1;
+            max-width: 160px;
+        }
+
+        @include largeScreen {
+            min-width: 300px;
+        }
+    }
+
+    .content-list-item__field--working-title,
+    .content-list-item__field--headline,
+    .content-list-item__field--notes {
+        @include smallScreen {
+            padding: 2px 4px;
+        }
+    }
+
+    .content-list-item__field--notes {
+        @include smallScreen {
+            max-width: 90px;
+        }
+
+        @include largeScreen {
+            max-width: 300px;
+        }
+    }
+
     .content-list-item__field--section {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
+        @include text-truncate;
         max-width: 80px;
     }
 
@@ -348,6 +415,15 @@
 
         &-supl--published-state {
             display: inline;
+        }
+
+        &--status--select {
+            width: 65px;
+        }
+
+        &--office {
+            width: 20px;
+            padding: 2px 3px;
         }
     }
 
