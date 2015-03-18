@@ -269,7 +269,7 @@ angular.module('wfFiltersService', ['wfDateService'])
              * @returns {U[]}
              */
             transformStatusList (list) {
-                return list.split(',').map((status) => status == 'Stub' ? 'News list' : status);
+                return list ? list.split(',').map((status) => status == 'Stub' ? 'News list' : status) : list;
             }
         }
 
