@@ -192,6 +192,9 @@
         &--presence,
         &--office {
             width: 40px;
+            @include smallScreen {
+                min-width: 40px;
+            }
         }
 
         &--assignee {
