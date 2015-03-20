@@ -417,8 +417,18 @@
             display: inline;
         }
 
-        &--status--select {
-            width: 65px;
+        &--status {
+            width: 125px;
+            &--select {
+                width: 125px;
+            }
+
+            @include smallScreen {
+                width: 65px;
+                &--select {
+                    width: 65px;
+                }
+            }
         }
 
         &--office {
