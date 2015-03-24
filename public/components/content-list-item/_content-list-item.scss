@@ -193,7 +193,7 @@
         &--office {
             width: 40px;
             @include smallScreen {
-                min-width: 40px;
+                min-width: 30px;
             }
         }
 
