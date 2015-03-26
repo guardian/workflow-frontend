@@ -70,7 +70,7 @@ function wfContentItemParser(config, statusLabels, sections) {
 
             this.priority = item.priority;
 
-            this.hasComments = !!item.commentable;
+            this.hasComments = !!(item.statusFlags && item.statusFlags.commentable);
             this.commentsTitle = this.hasComments ? 'on' : 'off';
 
             this.hasMainMedia = Boolean(item.mainMedia) && Boolean(item.mainMedia.mediaType);
