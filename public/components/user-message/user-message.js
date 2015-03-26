@@ -11,7 +11,7 @@ angular.module('wfUserMessage', ['wfSupportedBrowserService'])
 
 /**
  * Config which provides an exception handler decorator for handling errors, and
- * appends error display directive to the page body.
+ * appends user message directive to the page body.
  */
 function wfUserMessageConfig($provide) {
     $provide.decorator('$exceptionHandler', ['$delegate', '$injector', wfErrorExceptionHandlerDecorator]);
@@ -21,8 +21,8 @@ function wfUserMessageConfig($provide) {
 
 
 /**
- * Directive for displaying the error. Listens for "error.show" and "error.hide" events
- * broadcast from wfErrorExceptionHandler when an error occurs.
+ * Directive for displaying the message. Listens for "userMessage.show" and "userMessage.hide" events
+ * broadcast from wfErrorExceptionHandler (when an error occurs) or elsewhere
  */
 function wfUserMessageDirectiveFactory(wfSupportedBrowserService) {
     return {
@@ -72,6 +72,7 @@ function wfUserMessageDirectiveFactory(wfSupportedBrowserService) {
                 this.hideMessage();
             });
 
+            // check takes place here to ensure the component has loaded before messages are sent
             wfSupportedBrowserService.checkSupportedBrowser();
 
         },

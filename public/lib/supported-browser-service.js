@@ -24,7 +24,8 @@ angular.module('wfSupportedBrowserService', ['wfUserMessage'])
                     }
                 ];
 
-                var ua = new UAParser(), // parse the user agent
+                // parse the user agent string to get browser name and version
+                var ua = new UAParser(), 
                     browser = ua.getBrowser(),
                     userBrowserName = browser.name,
                     userBrowserVersion = browser.major;
@@ -33,6 +34,7 @@ angular.module('wfSupportedBrowserService', ['wfUserMessage'])
                     return (userBrowserName === b.browserName && userBrowserVersion >= b.browserVersion);
                 });
 
+                // if the browser is not supported, alert the user
                 if (!supported) {
                     $rootScope.$broadcast('userMessage.show', {
                         name: "browserNotSupported",
