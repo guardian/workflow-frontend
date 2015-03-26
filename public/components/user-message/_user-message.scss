@@ -1,9 +1,8 @@
-wf-error-display {
+wf-user-message {
     opacity: 0;
 }
 
-.error-display {
-    background-color: #F6D7D2;
+.user-message {
     border-bottom: 0 solid #BDBDBD;
     padding: 0;
     text-align: center;
@@ -17,6 +16,14 @@ wf-error-display {
 
     transition: opacity ease 1s;
 
+    &--error {
+        background-color: #F6D7D2;
+    }
+
+    &--notification {
+        background-color: #F2BA2C
+    }
+
     &--show {
         opacity: 1;
 
@@ -26,18 +33,18 @@ wf-error-display {
         border-bottom-width: 1px;
     }
 
-    &--irrecoverable {
-        .error-display__close {
+    &--no-close {
+        .user-message__close {
             display: none;
         }
     }
 }
 
-.error-display__link {
+.user-message__link {
     text-decoration: underline;
 }
 
-.error-display__close {
+.user-message__close {
     width: 14px;
     height: 14px;
     line-height: 14px;
@@ -50,7 +57,7 @@ wf-error-display {
 }
 
 // overlay for irrecoverable errors
-.error-display-overlay {
+.irrecoverable-error-overlay {
     position: fixed;
     width: 100%;
     height: 100%;
