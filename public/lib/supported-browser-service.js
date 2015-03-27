@@ -1,9 +1,8 @@
 import angular from 'angular';
 import UAParser from 'ua-parser/ua-parser.min';
-import 'components/user-message/user-message';
 
 
-angular.module('wfSupportedBrowserService', ['wfUserMessage'])
+angular.module('wfSupportedBrowserService', [])
     .factory('wfSupportedBrowserService', ['$rootScope', function($rootScope) {
 
         class SupportedBrowserService
