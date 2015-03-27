@@ -1,6 +1,6 @@
 {
     "checkpoints": {
-        "RELEASE": { "url": "http://workflow.release.dev-gutools.co.uk/management/healthcheck", "overdue": "15M" },
-        "PROD": { "url": "http://workflow.gutools.co.uk/management/healthcheck", "overdue": "1H" }
+        "WORKFLOW_RELEASE": { "url": "http://workflow.release.dev-gutools.co.uk/management/healthcheck", "overdue": "15M" },
+        "WORKFLOW_PROD": { "url": "http://workflow.gutools.co.uk/management/healthcheck", "overdue": "1H" }
     }
 }
