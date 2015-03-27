@@ -256,8 +256,9 @@
             max-width: 200px;
 
             @include largeScreen {
-                min-width: 200px;
-                max-width: 300px;
+                min-width: 0px;
+                max-width: none;
+                width: 300px;
             }
 
             @include smallScreen {
@@ -297,7 +298,14 @@
             }
 
             @include largeScreen {
-                min-width: 400px;
+                width: 475px;
+
+            }
+        }
+
+        &--needsLegal {
+            @include largeScreen {
+                width: auto;
             }
         }
     }
@@ -356,7 +364,8 @@
         }
 
         @include largeScreen {
-            min-width: 300px;
+            max-width: none;
+            width: 475px;
         }
     }
 
@@ -374,7 +383,8 @@
         }
 
         @include largeScreen {
-            max-width: 300px;
+            max-width: none;
+            width: 300px;
         }
     }
 
@@ -434,9 +444,15 @@
             }
         }
 
-        &--office {
+        &--office { 
             width: 20px;
             padding: 2px 3px;
+        }
+
+        &--needsLegal {
+            @include largeScreen {
+                width: auto;
+            }
         }
     }
 
