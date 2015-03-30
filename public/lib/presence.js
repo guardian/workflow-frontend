@@ -63,11 +63,6 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
             var clientPromise =
                 new Promise((resolve, reject) => {
                     var p = presenceClient(self.endpoint, person);
-                    // first successful connection only: resolve the promise
-                    // successfully.
-                    p.once('connection.open', () => {
-                      resolve(p);
-                    });
                     // for all successful connections, trigger a subscribe
                     // (this will happen on initial connection, but also if we
                     // lose connection and then it is restored)
@@ -77,8 +72,12 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                     p.on('error', msg => {
                         $log.error('presence error ', msg);
                     });
-                    p.startConnection();
                     addHandlers(p, messageHandlers);
+                    // startConnection() will return a promise that will be
+                    // resolved once the conection has been successfully
+                    // established. So we return a chained promise that
+                    // replaces the return value with our presenceClient object
+                    return p.startConnection().then(() => p);
                 });
             return clientPromise;
         },
