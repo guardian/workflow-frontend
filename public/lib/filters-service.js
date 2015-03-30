@@ -225,7 +225,7 @@ angular.module('wfFiltersService', ['wfDateService'])
             }
 
             postUpdate() {
-                if (this.filters['composerId']) {
+                if (this.filters['composerId'] || this.filters['text']) {
                     $rootScope.$broadcast("search-mode.enter");
                 } else {
                     $rootScope.$broadcast("search-mode.exit");
