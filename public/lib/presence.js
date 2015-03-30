@@ -63,15 +63,16 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
             var clientPromise =
                 new Promise((resolve, reject) => {
                     var p = presenceClient(self.endpoint, person);
+                    // first successful connection only: resolve the promise
+                    // successfully.
+                    p.once('connection.open', () => {
+                      resolve(p);
+                    });
+                    // for all successful connections, trigger a subscribe
+                    // (this will happen on initial connection, but also if we
+                    // lose connection and then it is restored)
                     p.on('connection.open', () => {
-                        // after one successful connection, replace
-                        // the connection event handler with one that
-                        // resubscribes when we lose and regain
-                        // connection to the other end.
-                        p.on('connection.open', () => {
-                            p.subscribe(currentArticleIds).catch((err) => $log.error('error subscribing ', err));
-                        });
-                        resolve(p);
+                      p.subscribe(currentArticleIds).catch((err) => $log.error('error subscribing ', err));
                     });
                     p.on('error', msg => {
                         $log.error('presence error ', msg);
