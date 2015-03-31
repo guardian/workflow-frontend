@@ -12,9 +12,10 @@ GET            /dashboard                              controllers.Application.d
 GET            /plan                                   controllers.Application.plan
 
 #static user pages
-GET            /about                                  controllers.Application.about
-GET            /faqs                                   controllers.Application.faqs
-GET            /troubleshooting                        controllers.Application.troubleshooting
+GET            /about                                 controllers.Assets.at(path="/public", file="/static/about.html")
+GET            /faqs                                  controllers.Application.faqs
+GET            /troubleshooting                       controllers.Application.troubleshooting
+GET            /training                              controllers.Application.training
 
 # Login
 GET            /oauthCallback                          controllers.Login.oauthCallback

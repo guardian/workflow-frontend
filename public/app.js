@@ -30,13 +30,16 @@ import 'lib/preferences-service';
 import 'lib/analytics';
 import 'lib/feature-switches';
 import 'lib/google-api';
-import 'lib/plan-service';
 import 'lib/polling-service';
+import 'lib/title-service';
+
+import 'lib/plan-service';
 
 // 3rd party libs
 import 'angular-ui-router';
 import 'angular-bootstrap';
 import 'angular-animate/angular-animate.min';
+import 'ngInfiniteScroll/ng-infinite-scroll';
 
 // App-wide Styles
 import 'bootstrap@3.2.0/css/bootstrap.min.css!';
@@ -62,9 +65,14 @@ angular.module('workflow',
         'wfPreferencesService',
         'wfFeatureSwitches',
         'wfGoogleApiService',
+<<<<<<< HEAD
         'wfPlan',
         'wfPlanToolbar',
         'wfQuickAdd'
+=======
+        'infinite-scroll',
+        'wfTitleService'
+>>>>>>> 5646204317a814b46e3f3a80d776595c4e296a2d
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
         // TODO: remember user's state and redirect there on default '' route

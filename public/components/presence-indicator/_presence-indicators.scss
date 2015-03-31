@@ -8,7 +8,7 @@ $topIconOffset: 8px !default;
 $rightIconOffset: 14px !default;
 $topIconOffsetCompact: 3px;
 $rightIconOffsetCompact: 8px;
-$iconsToStack: 8;
+$iconsToStack: $textualIconSize / 4;
 $iconExpandIntervalDistance: 24;
 $iconExpandIntervalDistanceCompact: 18;
 $stackColorLightenIncrement: 14%;

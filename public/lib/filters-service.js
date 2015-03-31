@@ -159,8 +159,12 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'assignee'     : params['assignee'],
                         'assigneeEmail': params['assigneeEmail'],
                         'incopy'       : params['incopy'],
-                        'touched'      : params['touched']
+                        'touched'      : params['touched'],
+                        'composerId'   : params['composerId']
                     };
+
+                    $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);
+
                 };
 
                 setUpFilters(params); // base setting
@@ -206,12 +210,26 @@ angular.module('wfFiltersService', ['wfDateService'])
                 else {
                     this.filters[key] = value;
                     doNotUpdateUrl || $location.search(key, value);
+
+                    if (key == "status") {
+                        console.log(value);
+                        $rootScope.currentlySelectedStatusFilters = this.transformStatusList(value);
+                    }
                 }
 
                 if (!doNotUpdateprefs) {
                     wfPreferencesService.setPreference('location', this.sanitizeFilters(this.filters));
                 }
 
+                this.postUpdate();
+            }
+
+            postUpdate() {
+                if (this.filters['composerId'] || this.filters['text']) {
+                    $rootScope.$broadcast("search-mode.enter");
+                } else {
+                    $rootScope.$broadcast("search-mode.exit");
+                }
             }
 
             get(key) {
@@ -245,6 +263,14 @@ angular.module('wfFiltersService', ['wfDateService'])
                 return filters;
             }
 
+            /**
+             * Transform a comma separated list of statues for use by the angular interface
+             * @param list
+             * @returns {U[]}
+             */
+            transformStatusList (list) {
+                return list ? list.split(',').map((status) => status == 'Stub' ? 'News list' : status) : list;
+            }
         }
 
         return new FiltersService();

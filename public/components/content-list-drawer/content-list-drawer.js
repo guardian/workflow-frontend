@@ -76,19 +76,22 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              */
             this.showContent = (contentItem, $contentListItemElement) => {
 
-                return this.hide().then(() => {
-                    $contentListItemElement.after($element);
+                var self = this;
 
-                    $scope.contentItem = contentItem;
-                    $scope.contentList.selectedItem = contentItem;
+                return self.hide().then(() => {
 
-                    this.updateAssigneeUserImage();
+                    $scope.$apply(() => {
 
-                    $scope.$apply();
+                        $contentListItemElement.after($element);
 
-                    return this.show();
+                        $scope.contentItem = contentItem;
+                        $scope.contentList.selectedItem = contentItem;
+
+                        self.updateAssigneeUserImage();
+                    });
+
+                    return self.show();
                 });
-
             };
 
             this.isHidden = () => $element.hasClass(hiddenClass);
@@ -142,6 +145,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             $rootScope.$on('contentItem.select', ($event, contentItem, contentListItemElement) => {
                 $scope.awaitingDeleteConfirmation = false;
 
+                $scope.selectedItem = contentItem;
+
                 if (contentItem.status === 'Stub') {
                     $scope.$emit('stub:edit', contentItem.item);
                     return;
@@ -166,27 +171,41 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
             $rootScope.$on('content.render', ($event, data) => {
 
+                if ($scope.selectedItem) { // Update selected item reference to new item returned from content polling
+                    $scope.selectedItem = _.find(
+                        data.content.map((c) => c.items) // Status > items
+                            .filter((i) => typeof i !== "undefined") // Not undefined
+                            .reduce((a, b) => a.concat(b)) // Flatten
+                        ,{
+                            id: $scope.selectedItem.id
+                        });
+                }
+
                 // selectedItem no longer in table
-                if (!data.selectedItem) {
+                if (!$scope.selectedItem) {
                     // TODO: move to generic "hide drawer" method
                     contentListDrawerController.hide();
 
                     // Update selectedItem from new polled data - updates changed data
-                } else if ($scope.contentItem !== data.selectedItem) {
+                } else if (
+                    $scope.contentItem &&
+                    $scope.contentItem !== $scope.selectedItem &&
+                    $scope.selectedItem.status !== 'Stub'
+                ) {
 
-                    if ($scope.contentItem.id !== data.selectedItem.id) {
+                    if ($scope.contentItem.id !== $scope.selectedItem.id) {
                         // TODO toggle show different item (edge case, rarely should fire)
                         //      generally covered by above event on "contentItem.select"
 
-                        $scope.contentItem = data.selectedItem;
+                        $scope.contentItem = $scope.selectedItem;
 
-                    } else if ($scope.contentItem.status !== data.selectedItem.status) {
+                    } else if ($scope.contentItem.status !== $scope.selectedItem.status) {
                         // Item has moved status, hide drawer and select nothing
 
                         contentListDrawerController.hide();
 
                     } else {
-                        $scope.contentItem = data.selectedItem;
+                        $scope.contentItem = $scope.selectedItem;
                     }
 
                 }
