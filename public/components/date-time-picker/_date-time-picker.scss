@@ -1,0 +1,22 @@
+.date-time-picker__help-text {
+    font-size: 85%;
+    font-weight: normal;
+    font-style: italic;
+    color: #666;
+}
+
+// Error message should be exposed properly from date-time-picker via form.field.$error
+.date-time-picker {
+
+  &.ng-invalid-parse {
+    input,
+    button {
+        border-color: $c-red;
+    }
+
+    .help-block::after {
+        content: "Unrecognised date";
+        font-style: italic;
+    }
+  }
+}
