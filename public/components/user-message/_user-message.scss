@@ -1,7 +1,3 @@
-wf-user-message {
-    opacity: 0;
-}
-
 .user-message {
     border-bottom: 0 solid #BDBDBD;
     padding: 0;
@@ -13,6 +9,7 @@ wf-user-message {
     width: 100%;
 
     height: 0;
+    opacity: 0;
 
     transition: opacity ease 1s;
 
@@ -31,12 +28,6 @@ wf-user-message {
         height: auto;
         padding: 10px;
         border-bottom-width: 1px;
-    }
-
-    &--no-close {
-        .user-message__close {
-            display: none;
-        }
     }
 }
 
