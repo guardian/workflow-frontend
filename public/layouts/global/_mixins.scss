@@ -51,3 +51,22 @@
     -moz-box-shadow: $args;
     box-shadow: $args;
 }
+
+@mixin text-truncate {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+
+@mixin smallScreen {
+    @media screen and (max-width: 1350px) {
+        @content;
+    }
+}
+
+@mixin largeScreen {
+    @media screen and (min-width: 1600px) {
+        @content;
+    }
+}

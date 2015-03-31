@@ -1,14 +1,35 @@
-import org.specs2.mutable._
-import org.specs2.runner._
-import org.junit.runner._
+package test
 
-import play.api.test._
-import play.api.test.Helpers._
+import play.api.libs.json._
+import org.scalatest._
 
-/**
- * add your integration spec here.
- * An integration test will fire up a whole play application in a real (or headless) browser
- */
-@RunWith(classOf[JUnitRunner])
-class IntegrationSpec extends Specification {
+
+class WorkflowSpec extends WorkflowIntegrationSuite with Inside {
+  s"$host/api/content" should "show content in db" in {
+    val expectedTitle = "Content Item"
+    val content = createContent(contentItem(expectedTitle))
+
+    val js: JsValue = getJs("api/content")
+    val actualTitle = ((js \ "stubs").apply(0) \ "title").validate[String].asOpt.get
+
+    expectedTitle should equal(actualTitle)
+  }
+
+  s"$host/api/content?text=query" should "show filter results from api" in {
+    createContent(contentItem("Foo"))
+    createContent(contentItem("Bar"))
+
+    val includedStubs = (getJs(s"api/content?text=Foo") \ "stubs").as[JsArray]
+    val excludedStubs = (getJs(s"api/content?text=Bar") \ "stubs").as[JsArray]
+
+    includedStubs.productArity should equal(1)
+    excludedStubs.productArity should equal(1)
+
+    val includedTitle = (includedStubs.apply(0) \ "title").validate[String].asOpt.get
+    val excludedTitle = (excludedStubs.apply(0) \ "title").validate[String].asOpt.get
+
+    includedTitle should equal("Foo")
+    excludedTitle should equal("Bar")
+  }
+
 }

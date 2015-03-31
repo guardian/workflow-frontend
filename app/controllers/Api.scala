@@ -22,7 +22,8 @@ import org.joda.time.DateTime
 import com.gu.workflow.db.{DeskDB, SectionDeskMappingDB, SectionDB, CommonDB}
 import com.gu.workflow.query._
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import lib.PrototypeConfiguration.defaultExecutionContext
+
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 import scala.concurrent.duration._
@@ -83,12 +84,32 @@ object Api extends Controller with PanDomainAuthActions {
         (state.isEmpty   || state == Some(DraftState)) &&
         (queryData.inIncopy != Some(true)) &&
         touched.isEmpty &&
-        assigned.isEmpty
+        assigned.isEmpty &&
+        queryData.composerId.isEmpty
       ) getStubs else Nil
 
-    val content = getContent
+    val contentGroupedByStatus = getContent.groupBy(_.wc.status)
 
-    Ok(Json.obj("content" -> content, "stubs" -> stubs))
+    val jsContentGroupedByStatus = contentGroupedByStatus.map({
+      case (status, content) => (status.toString, Json.toJson(content))
+    }).toSeq
+
+    var countTotal = 0
+
+    val counts = contentGroupedByStatus.map({
+      case (status, content) => {
+        countTotal += content.length
+        (status.toString, Json.toJson(content.length))
+      }
+    }).toSeq ++ Map("Stub" -> Json.toJson(stubs.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+stubs.length)).toSeq
+
+    Ok(
+      Json.obj(
+        "content" -> JsObject(jsContentGroupedByStatus),
+        "stubs" -> stubs,
+        "count" -> JsObject(counts)
+      )
+    )
   }
 
   def content = APIAuthAction(getContentBlock)

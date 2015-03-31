@@ -11,10 +11,15 @@ case class PrototypeConfiguration(
                                    presenceUrl: String,
                                    presenceClientLib: String,
                                    preferencesUrl: String,
-                                   incopyExportUrl: String
+                                   incopyExportUrl: String,
+                                   logStashConf: LogStashConf
                                    )
 
 object PrototypeConfiguration {
+
+
+  implicit val defaultExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
 
   lazy val cached = apply
 
@@ -29,7 +34,10 @@ object PrototypeConfiguration {
         presenceClientLib <- Config.getConfigString("presence.clientLib").right
         preferencesUrl <- Config.getConfigString("preferences.url").right
         incopyExportUrl <- Config.getConfigString("incopyExportUrl").right
-      } yield PrototypeConfiguration(composerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl))
+        logStashHost <- Config.getConfigString("logging.logstash.host").right
+        logStashPort <- Config.getConfigInt("logging.logstash.port").right
+        logStashEnabled <- Config.getConfigBoolean("logging.logstash.enabled").right
+      } yield PrototypeConfiguration(composerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl, LogStashConf(logStashHost, logStashPort, logStashEnabled)))
     configEit.fold(error => {
       Logger.error(s"could not instantiate Prototype Configuration ${error}")
       sys.error(error)

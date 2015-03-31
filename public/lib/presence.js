@@ -20,6 +20,8 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 
     self.endpoint = config.presenceUrl;
 
+    var currentArticleIds = [];
+
     function broadcast(name, data) {
         /* use apply to make it take effect straight away */
         $rootScope.$apply(function () {
@@ -60,21 +62,23 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         (presenceClient) => {
             var clientPromise =
                 new Promise((resolve, reject) => {
-                    var client = presenceClient(self.endpoint, person);
-                    client.on('connection.open', ()=>resolve(client));
-                    client.on('connection.error', reject);
-                    client.startConnection();
+                    var p = presenceClient(self.endpoint, person);
+                    // for all successful connections, trigger a subscribe
+                    // (this will happen on initial connection, but also if we
+                    // lose connection and then it is restored)
+                    p.on('connection.open', () => {
+                      p.subscribe(currentArticleIds).catch((err) => $log.error('error subscribing ', err));
+                    });
+                    p.on('error', msg => {
+                        $log.error('presence error ', msg);
+                    });
+                    addHandlers(p, messageHandlers);
+                    // startConnection() will return a promise that will be
+                    // resolved once the conection has been successfully
+                    // established. So we return a chained promise that
+                    // replaces the return value with our presenceClient object
+                    return p.startConnection().then(() => p);
                 });
-            clientPromise.then(
-                // 3. have successfully connected?
-                (client) => {
-                    $log.info("presence connection open");
-                    broadcast("presence.connection.success", client.url);
-                    addHandlers(client, messageHandlers);
-                    return client;
-                },
-                () => $log.error("could not open presence connection")
-            );
             return clientPromise;
         },
         () => {
@@ -84,11 +88,13 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         });
 
     self.articleSubscribe = function (articleIds) {
-        var p = presence.then((p) => p.subscribe(articleIds).catch(
-            function(){
+        currentArticleIds = articleIds;
+        var p = presence
+            .then((p) => p.subscribe(articleIds))
+            .catch( function(){
                 $log.error("could not subscribe to presence", p.url, arguments);
                 broadcast("presence.connection.error");
-        }));
+            });
         return p
     };
 

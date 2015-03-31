@@ -1,7 +1,5 @@
 <configuration>
 
-    <property file="${application.home}/conf/logback.${APP_ENV}.properties" />
-
     <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -30,16 +28,6 @@
         </encoder>
     </appender>
 
-    <appender name="STASH_TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <remoteHost>${elk_host}</remoteHost>
-        <port>${elk_port}</port>
-
-        <!-- encoder is required -->
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"stage":"${APP_ENV}","stack":"workflow","app":"prototype"}</customFields>
-        </encoder>
-    </appender>
-
     <logger name="play" level="INFO" />
     <logger name="application" level="DEBUG" />
 
@@ -52,7 +40,6 @@
     <root level="ERROR">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
-        <appender-ref ref="STASH_TCP" />
     </root>
 
 </configuration>
