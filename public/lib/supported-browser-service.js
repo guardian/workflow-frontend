@@ -29,7 +29,7 @@ angular.module('wfSupportedBrowserService', [])
                     userBrowserName = browser.name,
                     userBrowserVersion = browser.major;
 
-                var supported = supportedBrowserCollection.some(function(b) {
+                var supported = supportedBrowserCollection.some((b) => {
                     return (userBrowserName === b.browserName && userBrowserVersion >= b.browserVersion);
                 });
 

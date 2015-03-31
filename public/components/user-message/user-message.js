@@ -26,41 +26,29 @@ function wfUserMessageConfig($provide) {
  */
 function wfUserMessageDirectiveFactory(wfSupportedBrowserService) {
     return {
-        retrict: 'E',
+        restrict: 'E',
         scope: true,
         templateUrl: '/assets/components/user-message/user-message.html',
         controller: function($scope, $element, $attrs, $timeout) {
+
             this.showMessage = (msg) => {
 
                 $scope.messageData = msg;
-
-                $attrs.$addClass('user-message--show');
+                $scope.messageData.showMessage = true;
 
                 if ($scope.messageData.timeout) {
                     $timeout(this.hideMessage, $scope.messageData.timeout);
-                }
-
-                if (! $scope.messageData.dismissable) {
-                    $attrs.$addClass('user-message--no-close');
                 }
 
                 if ($scope.messageData.showOverlay) {
                     $scope.$overlayElem.addClass('irrecoverable-error-overlay--show');
                 }
 
-                if ($scope.messageData.messageType === 'notification') {
-                    $attrs.$removeClass('user-message--error');
-                    $attrs.$addClass('user-message--notification');
-                } else if ($scope.messageData.messageType === 'error') {
-                    $attrs.$removeClass('user-message--notification');
-                    $attrs.$addClass('user-message--error');
-                }
-
             };
 
             this.hideMessage = () => {
-                $attrs.$removeClass('user-message--show');
-                $attrs.$removeClass('user-message--no-close');
+
+                $scope.messageData.showMessage = false;
                 $scope.$overlayElem.removeClass('irrecoverable-error-overlay--show');
             };
 
@@ -79,7 +67,6 @@ function wfUserMessageDirectiveFactory(wfSupportedBrowserService) {
         controllerAs: 'ctrl',
 
         link: function($scope, $elem, $attrs) {
-            $attrs.$addClass('user-message');
 
             $scope.$overlayElem = angular.element('<div class="irrecoverable-error-overlay"></div>');
             $elem.after($scope.$overlayElem);
