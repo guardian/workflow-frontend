@@ -19,8 +19,8 @@ object Application extends Controller with PanDomainAuthActions {
 
   def dashboard = app("Workflow")
 
-  def about = AuthAction { request =>
-      Ok(views.html.about())
+  def training = AuthAction { request =>
+      Ok(views.html.training())
   }
 
   def faqs = AuthAction { request =>
