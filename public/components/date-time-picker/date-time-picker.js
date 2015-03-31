@@ -23,10 +23,6 @@ import 'angular-bootstrap-datetimepicker/src/css/datetimepicker.css!';
 // local dependencies
 import 'lib/date-service';
 
-// component dependencies
-import './date-time-picker.css!';
-
-
 angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateService'])
 
     .directive('wfDateTimePicker', ['$log', '$timeout', 'wfDateParser', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', function ($log, $timeout, wfDateParser, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
@@ -45,7 +41,8 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 updateOn: '@wfUpdateOn',
                 cancelOn: '@wfCancelOn',
                 onCancel: '&wfOnCancel',
-                onUpdate: '&wfOnUpdate'
+                onUpdate: '&wfOnUpdate',
+                onSubmit:  '&wfOnSubmit'
             },
             templateUrl: '/assets/components/date-time-picker/date-time-picker.html',
 
@@ -54,6 +51,8 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
                 this.textInputId = 'wfDateTimePickerText' + idSuffix;
                 this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
+
+                $element.addClass('date-time-picker');
 
 
                 // Watch for model updates to dateValue, and update datePicker when changes
@@ -72,6 +71,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                     // Delay running onUpdate so digest can run and update dateValue properly.
                     $timeout(function () {
                         $scope.onUpdate($scope.dateValue);
+                        $scope.onSubmit();
                     }, 0);
                 };
             },
@@ -102,7 +102,8 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 updateOn: '@wfUpdateOn',
                 cancelOn: '@wfCancelOn',
                 onCancel: '&wfOnCancel',
-                onUpdate: '&wfOnUpdate'
+                onUpdate: '&wfOnUpdate',
+                onSubmit: '&wfOnSubmit'
             },
 
             link: function (scope, elem, attrs, ngModel) {
@@ -138,17 +139,9 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
                     try {
                         return wfDateParser.parseDate(input);
-
-                        // TODO: setInvalid when invalid date specified. How do we handle errors?
                     }
                     catch (err) {
-                        if (updateOn != 'default') {
-                            $log.error('Error parsing date: ', err);
-
-                            // FIXME: report error (for sentry) but do not throw it.
-                            //        previous logic ignores error, needs to be handled properly.
-                            if (window.onerror) { window.onerror(err); }
-                        }
+                        // do nothing - parse errors handled by angular (ng-invalid-parse)
                     }
                 }
 
@@ -167,7 +160,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                     var key = ev.keyCode,
                         type = ev.type;
 
-                    if (type == 'keydown' && updateOn == 'default') {
+                    if (type == 'keydown') {
 
                         // ignore the following keys on input
                         if ((key === KEYCODE_COMMAND) || isModifierKey(key) || isArrowKey(key)) {
@@ -175,6 +168,10 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                         }
 
                         $browser.defer(commitUpdate);
+
+                        if (updateOn == 'enter' && key === 13) {
+                            scope.onSubmit();
+                        }
                     }
 
                     if (type == 'blur' && scope.cancelOn == 'blur') {

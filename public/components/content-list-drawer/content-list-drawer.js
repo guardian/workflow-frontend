@@ -87,6 +87,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                         $scope.contentItem = contentItem;
                         $scope.contentList.selectedItem = contentItem;
 
+                        $scope.currentDatePickerValue = $scope.contentItem.item.due ? $scope.contentItem.item.due : null;
+
                         self.updateAssigneeUserImage();
                     });
 
@@ -258,19 +260,24 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              */
             $scope.updateDeadline = function () {
 
-                var content = $scope.contentItem,
+                var currentDatePickerValue = $scope.currentDatePickerValue,
                     parsedDate,
                     requestData;
 
-                if (content.item.due) { // TODO: See content-list.js:118
-                    parsedDate = moment(content.item.due);
+                if (currentDatePickerValue) { // TODO: See content-list.js:118
+                    parsedDate = moment(currentDatePickerValue);
                     if (parsedDate.isValid()) {
                         requestData = parsedDate.toISOString();
+                        $scope.currentDatePickerValue = requestData;
                     }
                 }
 
+                // this is needed to prevent the old deadline from being displayed briefly
+                $scope.contentItem.item.due = requestData;
+
                 updateField("dueDate", requestData);
             };
+
 
             /**
              * Delete manually as no event or tracking yet
