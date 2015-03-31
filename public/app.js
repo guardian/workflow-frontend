@@ -65,14 +65,11 @@ angular.module('workflow',
         'wfPreferencesService',
         'wfFeatureSwitches',
         'wfGoogleApiService',
-<<<<<<< HEAD
+        'infinite-scroll',
+        'wfTitleService',
         'wfPlan',
         'wfPlanToolbar',
         'wfQuickAdd'
-=======
-        'infinite-scroll',
-        'wfTitleService'
->>>>>>> 5646204317a814b46e3f3a80d776595c4e296a2d
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
         // TODO: remember user's state and redirect there on default '' route
