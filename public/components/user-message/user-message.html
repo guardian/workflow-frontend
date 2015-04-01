@@ -1,0 +1,21 @@
+<div class="user-message" ng-class="{'user-message--error': messageData.messageType === 'error', 'user-message--notification': messageData.messageType === 'notification', 'user-message--show': messageData.showMessage}">
+    <div ng-show="messageData.name === 'sessionError'">
+        <b>Please refresh your browser</b> – we could not verify your login details. If the problem persists, please see the <a class="user-message__link" target="blank" href="/troubleshooting">troubleshooting page.</a>
+    </div>
+
+    <div ng-show="messageData.name === 'timeoutError'">
+        We could not connect to a Workflow service, please try again later.
+    </div>
+
+    <div ng-show="messageData.name === 'error'">
+        An unexpected error has occurred and has been logged. If the problem persists, please <a class="user-message__link" target="blank" href="http://goo.gl/forms/mbdSNgafLt"> send feedback. </a>
+    </div>
+
+    <div ng-show="messageData.name === 'browserNotSupported'">
+        It appears that you're using an old or unsupported browser version. You can continue, but some features may not work as expected. Please download the latest version of <a href="http://www.google.com/chrome">Chrome</a> or <a href="http://www.mozilla.org/firefox">Firefox</a>.
+        <br/>
+        If you're on a managed machine, please phone 34444 (or <a href="mailto:34444@guardian.co.uk?subject=Browser upgrade&body=Please upgrade my browser to the latest versions of Firefox and Chrome. Thank you.">email 34444</a>) about having these upgraded for you.
+    </div>
+
+    <button class="user-message__close" ng-show="messageData.dismissable" title="Dismiss message" wf-icon="cross" ng-click="ctrl.hideMessage()"></button>
+</div>
