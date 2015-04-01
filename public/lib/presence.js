@@ -91,10 +91,11 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         currentArticleIds = articleIds;
         var p = presence
             .then((p) => p.subscribe(articleIds))
-            .catch( function(){
-                $log.error("could not subscribe to presence", p.url, arguments);
-                broadcast("presence.connection.error");
-            });
+        
+        p.catch( function(){
+            $log.error("could not subscribe to presence", p.url, arguments);
+            broadcast("presence.connection.error");
+        });
         return p
     };
 
