@@ -212,7 +212,6 @@ angular.module('wfFiltersService', ['wfDateService'])
                     doNotUpdateUrl || $location.search(key, value);
 
                     if (key == "status") {
-                        console.log(value);
                         $rootScope.currentlySelectedStatusFilters = this.transformStatusList(value);
                     }
                 }
