@@ -3,7 +3,7 @@ package controllers
 import com.gu.workflow.db.{SectionDeskMappingDB, SectionDB, DeskDB}
 import com.gu.workflow.lib.StatusDatabase
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import lib.PrototypeConfiguration.defaultExecutionContext
 
 import lib._
 import lib.Composer._
@@ -19,8 +19,8 @@ object Application extends Controller with PanDomainAuthActions {
 
   def dashboard = app("Workflow")
 
-  def about = AuthAction { request =>
-      Ok(views.html.about())
+  def training = AuthAction { request =>
+      Ok(views.html.training())
   }
 
   def faqs = AuthAction { request =>
