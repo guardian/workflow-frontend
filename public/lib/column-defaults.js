@@ -97,7 +97,7 @@ var columnDefaults = [{
 },{
     name: 'presence',
     prettyName: 'Presence',
-    labelHTML: '<i class="content-list-head__heading-icon--presence" wf-icon="presence"/>',
+    labelHTML: '<i class="content-list-head__heading-icon--presence" wf-icon="presence{{presenceIsActive}}"/>',
     colspan: 1,
     title: 'In use by',
     templateUrl: templateRoot + 'presence.html',
