@@ -18,7 +18,7 @@
     </div>
 
     <div ng-show="messageData.name === 'presenceError'">
-        <b>Unable to show presence indicators</b> - please refresh your browser.
+        <b>Presence indicators are unavailable</b> - others might be editing a document and overwriting your changes. Please refresh your browser.
     </div>
 
     <button class="user-message__close" ng-show="messageData.dismissable" title="Dismiss message" wf-icon="cross" ng-click="ctrl.hideMessage()"></button>

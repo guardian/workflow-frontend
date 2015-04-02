@@ -82,6 +82,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                 // (this will happen on initial connection, but also if we
                 // lose connection and then it is restored)
                 p.on('connection.open', () => {
+                    broadcast("presence.connection.open");
                     p.subscribe(currentArticleIds).catch((err) => $log.error('error subscribing ', err));
                 });
                 p.on('error', msg => {
