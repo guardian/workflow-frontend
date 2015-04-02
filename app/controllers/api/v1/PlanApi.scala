@@ -11,6 +11,7 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
   import scala.concurrent.ExecutionContext.Implicits.global
   def plan() = APIAuthAction { implicit request =>
 
+    println(request);
     Response(for {
       items <- PlanDB.getItems().right
     } yield {
