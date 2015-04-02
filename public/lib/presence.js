@@ -53,47 +53,53 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
         email     : wfUser.email
     };
     // INITIATE the connection if presence is enabled
-    var presence = self.whenEnabled.then(
-        // 1. Is presence enabled?
-        ()=>System.import('presence-client'),
-        ()=>$log.info("presence is disabled")
-    ).then(
-        // 2. Have we loaded the client library?
-        (presenceClient) => {
-            var clientPromise =
-                new Promise((resolve, reject) => {
-                    var p = presenceClient(self.endpoint, person);
-                    // for all successful connections, trigger a subscribe
-                    // (this will happen on initial connection, but also if we
-                    // lose connection and then it is restored)
-                    p.on('connection.open', () => {
-                      p.subscribe(currentArticleIds).catch((err) => $log.error('error subscribing ', err));
-                    });
-                    p.on('error', msg => {
-                        $log.error('presence error ', msg);
-                    });
-                    addHandlers(p, messageHandlers);
-                    // startConnection() will return a promise that will be
-                    // resolved once the conection has been successfully
-                    // established. So we return a chained promise that
-                    // replaces the return value with our presenceClient object
-                    return p.startConnection().then(() => p);
+    var presence = new Promise(function(presenceResolve, presenceReject) {
+
+        function error(msg) {
+            $log.error("Presence error: " + msg);
+            presenceReject(msg);
+        }
+
+        self.whenEnabled.then(
+            // 1. Is presence enabled?
+            ()=>System.import('presence-client'),
+            ()=>error("presence is disabled")
+        ).then(
+            // 2. Have we loaded the client library?
+            (presenceClient) => {
+                var p = presenceClient(self.endpoint, person);
+                // for all successful connections, trigger a subscribe
+                // (this will happen on initial connection, but also if we
+                // lose connection and then it is restored)
+                p.on('connection.open', () => {
+                    p.subscribe(currentArticleIds).catch((err) => $log.error('error subscribing ', err));
                 });
-            return clientPromise;
-        },
-        () => {
-            broadcast("presence.connection.error", "Could not get access to the library ");
-        }).catch((err)=>{
-            $log.error("error starting presence", err);
-        });
+                p.on('error', msg => {
+                    $log.error('presence error ', msg);
+                });
+                addHandlers(p, messageHandlers);
+                // startConnection() will return a promise that will be
+                // resolved once the conection has been successfully
+                // established. So we return a chained promise that
+                // replaces the return value with our presenceClient object
+                return p.startConnection().then(() => presenceResolve(p), () => error("unable to establish connection to presence"));
+            },
+            () => {
+                broadcast("presence.connection.error", "Could not get access to the library");
+                error("Could not get access to the client library");
+            });
+        // .catch((err)=>{
+        //     $log.error("error starting presence", err);
+        // });
+    });
 
     self.articleSubscribe = function (articleIds) {
         currentArticleIds = articleIds;
         var p = presence
             .then((p) => p.subscribe(articleIds))
         
-        p.catch( function(){
-            $log.error("could not subscribe to presence", p.url, arguments);
+        p.catch( function(msg){
+            $log.error("could not subscribe to presence [" + msg + "]", p.url, arguments);
             broadcast("presence.connection.error");
         });
         return p
@@ -103,7 +109,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     var deRegisterPreviousSubscribe = angular.noop;
 
     self.subscribe = function(composerIds) {
-        return self.whenEnabled.then(function() {
+        return presence.then(function() {
             return self.articleSubscribe(composerIds);
         });
 
