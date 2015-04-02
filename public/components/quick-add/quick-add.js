@@ -39,7 +39,8 @@ angular.module('wfQuickAdd', ['wfContentService'])
                 /* the default properties will be applied to the
                  * parsed object, to fill in any gaps */
                 $scope.defaultProps = {
-                    newsList: "testNewsList"
+                    id: 0, // Should not need to be here!
+                    newsList: "1" // <<<<<<<<<<<<<<<<<<<<<<<< TODO: Set to current newslist
                 };
 
                 $scope.submit = function () {

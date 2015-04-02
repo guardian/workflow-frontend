@@ -53,7 +53,7 @@ GET            /api/sections                           controllers.Api.sections
 GET            /api/v1/plan                            controllers.PlanApi.plan
 GET            /api/v1/plan/item                       controllers.PlanApi.items
 POST           /api/v1/plan/item                       controllers.PlanApi.createItem
-GET            /api/v1/plan/bundle                     controllers.PlanApi.bundles
+# GET            /api/v1/plan/bundle                     controllers.PlanApi.bundles
 GET            /api/v1/content                         controllers.ContentApi.content
 GET            /api/v1/content/:id                     controllers.ContentApi.contentById(id: String)
 POST           /api/v1/content                         controllers.ContentApi.createContent
