@@ -135,9 +135,9 @@ object PlanDB {
 //    Right(ApiSuccess(item.id))
 //  }
 
-  def getItems(): Response[List[PlannedItem]] = {
+  def getItems(queryNewsList: Long): Response[List[PlannedItem]] = {
     //ApiResponseFt.Async.Right(items.future().map(_.values.toList))
-    Right(ApiSuccess(getPlannedItems()))
+    Right(ApiSuccess(getPlannedItems(queryNewsList)))
   }
 
 //  def getStubs(query: WfQuery): List[Stub] =
@@ -149,8 +149,8 @@ object PlanDB {
 //      q.sortBy(s => (s.priority.desc, s.workingTitle)).list.map(row => Stub.fromStubRow(row))
 //    }
 
-  def getPlannedItems(): List[PlannedItem] = DB.withTransaction { implicit session =>
-      planItems.list.map({
+  def getPlannedItems(queryNewsList: Long): List[PlannedItem] = DB.withTransaction { implicit session =>
+      planItems.filter(_.news_list === queryNewsList).list.map({
         case (id, title, newsList) => PlannedItem(title, newsList.toString, None, None, None, None, new DateTime().withTime(10, 0, 0,0), 0, id)
       })
     }

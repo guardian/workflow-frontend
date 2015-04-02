@@ -9,11 +9,13 @@ import scala.util.{Failure, Success}
 object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
   import scala.concurrent.ExecutionContext.Implicits.global
-  def plan() = APIAuthAction { implicit request =>
+  def plan(queryNewsListOption: Option[Long]) = APIAuthAction { implicit request =>
+
+    val queryNewsList: Long = queryNewsListOption.getOrElse(0)
 
     println(request);
     Response(for {
-      items <- PlanDB.getItems().right
+      items <- PlanDB.getItems(queryNewsList).right
     } yield {
       items
     })
@@ -30,7 +32,7 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     println("getting items")
 
     Response(for {
-      items <- PlanDB.getItems().right
+      items <- PlanDB.getItems(0).right
     } yield {
       items
     })
