@@ -270,7 +270,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 }
 
                 updateField("dueDate", requestData);
-                $scope.$apply();
             };
 
             /**
