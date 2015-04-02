@@ -129,6 +129,15 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('pvFiltersChanged.news-list', function(event, data) {
+                    if (data === 'all') {
+                        self.update('news-list', null)
+                    } else {
+                        self.update('news-list', data);
+                    }
+                    $rootScope.$broadcast('pvFiltersChanged');
+                })
+
             }
 
             init() {
@@ -160,7 +169,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'assigneeEmail': params['assigneeEmail'],
                         'incopy'       : params['incopy'],
                         'touched'      : params['touched'],
-                        'composerId'   : params['composerId']
+                        'composerId'   : params['composerId'],
+                        'news-list'    : params['news-list']
                     };
 
                     $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);

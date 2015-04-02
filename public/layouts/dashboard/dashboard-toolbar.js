@@ -36,11 +36,12 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
         });
 
         $scope.sections = sections;
+        console.log(sections);
 
         // Desks ================================
 
         /**
-         * Update the selected desk scope variable based on wether a supplied array of selected sections matches any of
+         * Update the selected desk scope variable based on whether a supplied array of selected sections matches any of
          * the desk configurations
          * @param selectedSections Array of sections eg: ["Environment", "Money", "News", "Technology"]
          */

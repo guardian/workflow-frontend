@@ -12,18 +12,25 @@ function withLocale(locale, f) {
     return ret;
 }
 
-angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
-    .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', '$rootScope', '$http', function (http, planService, PollingService, $rootScope, $http) {
+angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService'])
+    .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
-        this.poller = new PollingService(planService, () => { return {}; })
+        var filterParams = wfFiltersService.getAll();
+        function params() {
+            return {
+                'news-list': filterParams['news-list']
+            }
+        }
+
+        this.poller = new PollingService(planService, params)
 
         this.render = (response) => {
             $rootScope.$broadcast('plan-view-data-load', response.data.data);
-        }
+        };
 
         this.renderError = (err) => {
             console.log(err)
-        }
+        };
 
         this.poller.onPoll(this.render);
         this.poller.onError(this.renderError);
@@ -100,11 +107,11 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
         });
 
         // controller stuff
-        $scope.plannedItems = []
+        $scope.plannedItems = [];
 
         $scope.$on('plan-view-data-load', function (ev, data) {
             $scope.plannedItems = _.map(data, (item) => {
-                item.plannedDate = moment(item.plannedDate)
+                item.plannedDate = moment(item.plannedDate);
                 return item;
             });
             $scope.$broadcast('planned-items-changed', $scope.plannedItems);
@@ -129,7 +136,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService'])
                     item.plannedDate.isBefore(dateTo);
                 return ret;
             });
-        }
+        };
         $scope.dateList = makeDateList();
     }])
     .controller('wfDateListController', [ '$scope', function ($scope) {

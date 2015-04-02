@@ -25,8 +25,8 @@ function parseQuickAdd(text) {
     }, {item: {}, text: text}).item;
 }
 
-angular.module('wfQuickAdd', ['wfContentService'])
-    .directive('wfQuickAdd', ['wfContentService', '$rootScope', function (wfContent, $rootScope) {
+angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
+    .directive('wfQuickAdd', ['wfContentService', 'wfFiltersService', '$rootScope',  function (wfContent, wfFiltersService, $rootScope) {
        return {
             restrict: 'A',
             templateUrl: '/assets/components/quick-add/quick-add.html',
@@ -36,24 +36,37 @@ angular.module('wfQuickAdd', ['wfContentService'])
             },
             link: function($scope, elm) {
                 $scope.active = false;
+
                 /* the default properties will be applied to the
                  * parsed object, to fill in any gaps */
-                $scope.defaultProps = {
-                    id: 0, // Should not need to be here!
-                    newsList: "1" // <<<<<<<<<<<<<<<<<<<<<<<< TODO: Set to current newslist
-                };
 
+                $scope.currentNewsListId = "1"; // <<<<<<<<<<<<<<<<<<<<<<<< TODO: Set to default newslist
+
+
+                $scope.defaultProps = function() {
+                    return {
+                        id: 0,// Should not need to be here!
+                        newsList: $scope.currentNewsListId
+                    }
+                };
                 $scope.submit = function () {
+
                     var parsed = parseQuickAdd($scope.addText);
-                    var content = _.defaults(parsed, $scope.defaultProps);
+                    var content = _.defaults(parsed, $scope.defaultProps());
                     $rootScope.$broadcast("quick-add-submit", content);
-                }
+                };
 
                 $scope.$on('wf-quick-add-activate', function () {
                     $scope.active = true;
                 });
                 $scope.$on('wf-quick-add-deactivate', function () {
                     $scope.active = false;
+                });
+
+                $scope.$on('pvFiltersChanged', function(event, newsList) {
+                    var filters = wfFiltersService.getAll();
+                    console.log(filters['news-list']);
+                    $scope.currentNewsListId = filters['news-list'] ? filters['news-list'].toString() : "1"; // TODO: toString should not be necessary! And we need a better default
                 });
             }
         }
