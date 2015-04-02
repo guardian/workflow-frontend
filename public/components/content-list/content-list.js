@@ -176,9 +176,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         }
     }, true);
 
-    $scope.$on('presence.connection.success', function(){
-        wfPresenceService.subscribe($scope.contentIds);
-    });
 
     // Infinite Scrolling functionality
     // See infinite-scroll http://sroze.github.io/ngInfiniteScroll/documentation.html
