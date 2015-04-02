@@ -7,6 +7,7 @@ import lib.PrototypeConfiguration.defaultExecutionContext
 
 import lib._
 import lib.Composer._
+import models.PlanDB
 
 import play.api.mvc._
 import play.api.libs.json.Json
@@ -23,6 +24,7 @@ object Application extends Controller with PanDomainAuthActions {
       sections = SectionDB.sectionList.sortBy(_.name)
       desks = DeskDB.deskList.sortBy(_.name)
       sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
+      newsLists = PlanDB.getNewsLists.sortBy(_.title)
     }
     yield {
       val user = request.user
@@ -41,7 +43,8 @@ object Application extends Controller with PanDomainAuthActions {
         "presenceClientLib" -> PrototypeConfiguration.cached.presenceClientLib,
         "preferencesUrl" -> PrototypeConfiguration.cached.preferencesUrl,
         "user" -> Json.parse(user.toJson),
-        "incopyExportUrl" -> PrototypeConfiguration.cached.incopyExportUrl
+        "incopyExportUrl" -> PrototypeConfiguration.cached.incopyExportUrl,
+        "newsLists" -> newsLists
       )
 
       Ok(views.html.app("Plan View", Some(user), config))
