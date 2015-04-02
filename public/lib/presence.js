@@ -55,15 +55,19 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     // INITIATE the connection if presence is enabled
     var presence = new Promise(function(presenceResolve, presenceReject) {
 
-        function error(msg) {
+        function presenceError(msg) {
+            var err = new Error(msg);
+            err.name = "PresenceError";
             $log.error("Presence error: " + msg);
             presenceReject(msg);
+            $rootScope.$apply(function () { throw err });
+            broadcast("presence.connection.error", msg);
         }
 
         self.whenEnabled.then(
             // 1. Is presence enabled?
             ()=>System.import('presence-client'),
-            ()=>error("presence is disabled")
+            ()=>presenceError("presence is disabled")
         ).then(
             // 2. Have we loaded the client library?
             (presenceClient) => {
@@ -82,13 +86,12 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                 // resolved once the conection has been successfully
                 // established. So we return a chained promise that
                 // replaces the return value with our presenceClient object
-                return p.startConnection().then(() => presenceResolve(p), () => error("unable to establish connection to presence"));
+                return p.startConnection().then(() => presenceResolve(p), () => presenceError("unable to establish connection to presence"));
             },
             () => {
-                broadcast("presence.connection.error", "Could not get access to the library");
-                error("Could not get access to the client library");
+                presenceError("Could not get access to the client library");
             }).catch((err)=>{
-                error("error starting presence");
+                presenceError("error starting presence" + err);
             });
     });
 
