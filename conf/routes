@@ -50,7 +50,7 @@ GET            /api/sections                           controllers.Api.sections
 # API V1
 
 # Content
-GET            /api/v1/plan                            controllers.PlanApi.plan
+GET            /api/v1/plan                            controllers.PlanApi.plan(newsList: Option[Long])
 GET            /api/v1/plan/item                       controllers.PlanApi.items
 POST           /api/v1/plan/item                       controllers.PlanApi.createItem
 # GET            /api/v1/plan/bundle                     controllers.PlanApi.bundles
