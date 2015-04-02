@@ -17,5 +17,9 @@
         If you're on a managed machine, please phone 34444 (or <a href="mailto:34444@guardian.co.uk?subject=Browser upgrade&body=Please upgrade my browser to the latest versions of Firefox and Chrome. Thank you.">email 34444</a>) about having these upgraded for you.
     </div>
 
+    <div ng-show="messageData.name === 'presenceError'">
+        <b>Unable to show presence indicators</b> - please refresh your browser.
+    </div>
+
     <button class="user-message__close" ng-show="messageData.dismissable" title="Dismiss message" wf-icon="cross" ng-click="ctrl.hideMessage()"></button>
 </div>
