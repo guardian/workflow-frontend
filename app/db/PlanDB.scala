@@ -3,11 +3,37 @@ package models
 import java.util.UUID
 
 import akka.agent.Agent
+import com.gu.workflow.db.CommonDB
+import com.gu.workflow.query.{WfQueryTime, WfQuery}
+import com.gu.workflow.query.WfQuery._
+import controllers.Api._
+import lib.Response.Response
+import lib.Response.Response
+import lib.Responses._
 import org.joda.time.DateTime
+import play.api.db.slick._
 import play.api.libs.json._
-import lib.{ApiResponseFt, ApiSuccess}
+import lib.{Response, ApiResponseFt, ApiSuccess}
+import play.api.mvc.{AnyContent, Request}
+import com.gu.workflow.db.Schema._
+import play.api.Play.current
+import play.api.db.slick.DB
+import scala.slick.driver.PostgresDriver.simple._
 
-case class PlannedItem(title: String, newsList: String, plannedDate: Option[DateTime]=None, byLine: Option[String]=None, bundleId: Option[String]=None, notes: Option[String]=None, created: DateTime = DateTime.now(),  priority: Int=0, id: String = UUID.randomUUID().toString)
+import scala.concurrent.Future
+
+case class PlannedItem(
+                        title: String,
+                        newsList: String,
+                        plannedDate: Option[DateTime]=None,
+                        byLine: Option[String]=None,
+                        bundleId: Option[String]=None,
+                        notes: Option[String]=None,
+                        created: DateTime = DateTime.now(),
+                        priority: Int=0,
+                        id: String = UUID.randomUUID().toString
+                        )
+
 object PlannedItem {
   implicit val plannedItemFormats = Json.writes[PlannedItem]
   import play.api.libs.functional.syntax._
@@ -26,6 +52,20 @@ object PlannedItem {
 
 }
 
+case class NewsList(
+                     title: String,
+                     id: Int
+                     )
+
+object NewsList {
+  implicit val newsListFormats = Json.writes[NewsList]
+  import play.api.libs.functional.syntax._
+  import play.api.libs.json.util._
+  implicit val jsonReads: Reads[NewsList] =(
+      (__ \ "title").read[String] and
+      (__ \"id").read[Int]
+    )(NewsList.apply _)
+}
 
 case class Bundle(name: String, plannedItems: List[PlannedItem])
 object Bundle {
@@ -94,7 +134,29 @@ object PlanDB {
     Right(ApiSuccess(item.id))
   }
 
-  def getItems(): ApiResponseFt[List[PlannedItem]] = {
-    ApiResponseFt.Async.Right(items.future().map(_.values.toList))
+  def getItems(): Response[List[PlannedItem]] = {
+    //ApiResponseFt.Async.Right(items.future().map(_.values.toList))
+    Right(ApiSuccess(getPlannedItems()))
+  }
+
+//  def getStubs(query: WfQuery): List[Stub] =
+//    DB.withTransaction { implicit session =>
+//      val q = if (unlinkedOnly)
+//        stubsTextSearchQuery(stubsQuery(query), query).filter(_.composerId.isEmpty)
+//      else
+//        stubsQuery(query)
+//      q.sortBy(s => (s.priority.desc, s.workingTitle)).list.map(row => Stub.fromStubRow(row))
+//    }
+
+  def getPlannedItems(): List[PlannedItem] = DB.withTransaction { implicit session =>
+      planItems.list.map({
+        case (id, title) => PlannedItem(title, "", None, None, None, None, new DateTime().withTime(10, 0, 0,0), 0, id)
+      })
+    }
+
+  def getNewsLists(): List[NewsList] = DB.withTransaction { implicit session =>
+    newsLists.list.map({
+      case (pk, title) => NewsList(title, pk.toInt)
+    })
   }
 }

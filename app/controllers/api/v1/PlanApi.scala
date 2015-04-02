@@ -9,18 +9,31 @@ import scala.util.{Failure, Success}
 object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
   import scala.concurrent.ExecutionContext.Implicits.global
-  def plan() = APIAuthAction.async { request =>
-    ApiResponseFt(for {
-      items <- PlanDB.getItems()
+  def plan() = APIAuthAction { implicit request =>
+
+    Response(for {
+      items <- PlanDB.getItems().right
     } yield {
       items
     })
 
   }
 
-  def items() = APIAuthAction { request =>
-    val list = PlanDB.items()
-    Response(Right(ApiSuccess(list)))
+//  def items() = APIAuthAction { request =>
+//    val list = PlanDB.items()
+//    Response(Right(ApiSuccess(list)))
+//  }
+
+  def items() = APIAuthAction { implicit request =>
+
+    println("getting items")
+
+    Response(for {
+      items <- PlanDB.getItems().right
+    } yield {
+      items
+    })
+
   }
 
   def createItem() = APIAuthAction { implicit request =>
