@@ -1,10 +1,12 @@
 # --- !Ups
 
-CREATE TABLE newsList(
-    pk serial primary key,
-    title varchar(128) not null unique
+CREATE TABLE plan_item
+(
+    id character varying(32) NOT NULL PRIMARY KEY,
+    title text NOT NULL,
+    news_list integer not null REFERENCES news_list (pk)
 );
 
 # --- !Downs
 
-DROP table newsList
+DROP table plan_item
