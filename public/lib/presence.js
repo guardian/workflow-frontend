@@ -85,7 +85,10 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                     broadcast("presence.connection.open");
                     p.subscribe(currentArticleIds).catch((err) => $log.error('error subscribing ', err));
                 });
-                p.on('error', msg => {
+                // the 'error' event gets triggered for each of the
+                // three retries, but 'connection.error' will only get
+                // triggered if we finally give up.
+                p.on('connection.error', msg => {
                     presenceError(msg);
                 });
                 addHandlers(p, messageHandlers);
