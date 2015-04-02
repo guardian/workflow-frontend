@@ -48,6 +48,10 @@ var errorMessageData = {
     'TimeoutError': {
         message: 'We could not connect to a Workflow service, please try again later.'
     },
+    'PresenceError': {
+        action: 'Please refresh your browser',
+        message: ' - we could not activate presence indicators.'
+    },
     'Error': {
         message: 'An unexpected error has occurred and has been logged. If the problem persists, please',
         isRecoverable: true,
