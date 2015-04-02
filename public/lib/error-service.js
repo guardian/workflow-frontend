@@ -28,6 +28,12 @@ var errorData = {
         showOverlay: true,
         messageType: 'error'
     },
+    'PresenceError': {
+        name: 'presenceError',
+        dismissable: true,
+        showOverlay: false,
+        messageType: 'error'
+    },
     'Error': {
         name: 'error',
         dismissable: true,
