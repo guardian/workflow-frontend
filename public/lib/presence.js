@@ -87,32 +87,16 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
             () => {
                 broadcast("presence.connection.error", "Could not get access to the library");
                 error("Could not get access to the client library");
+            }).catch((err)=>{
+                error("error starting presence");
             });
-        // .catch((err)=>{
-        //     $log.error("error starting presence", err);
-        // });
     });
 
-    self.articleSubscribe = function (articleIds) {
+    self.subscribe = function (articleIds) {
         currentArticleIds = articleIds;
-        var p = presence
-            .then((p) => p.subscribe(articleIds))
-        
-        p.catch( function(msg){
-            $log.error("could not subscribe to presence [" + msg + "]", p.url, arguments);
-            broadcast("presence.connection.error");
+        presence.then((p) => p.subscribe(articleIds), (msg) => {
+            $log.error("could not subscribe to presence [" + msg + "]");
         });
-        return p
-    };
-
-    // Subscribe var/function moved from wfPresenceSubscription controller
-    var deRegisterPreviousSubscribe = angular.noop;
-
-    self.subscribe = function(composerIds) {
-        return presence.then(function() {
-            return self.articleSubscribe(composerIds);
-        });
-
     };
 
     return self;
