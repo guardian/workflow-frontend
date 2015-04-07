@@ -3,11 +3,14 @@ import angular from 'angular';
 import 'lib/filters-service';
 
 angular.module('wfPlanToolbar', ['wfFiltersService'])
-    .controller('wfPlanToolbarController', ['$scope', '$rootScope', function ($scope, $rootScope) {
+    .controller('wfPlanToolbarController', ['$scope', '$rootScope', 'wfFiltersService', function ($scope, $rootScope, wfFiltersService) {
         // controller stuff
 
         $scope.newsLists = _wfConfig.newsLists;
-        $scope.selectedNewsList = null;
+
+        var filterParams = wfFiltersService.getAll();
+        var selectedNewsListId = filterParams['news-list'];
+        $scope.selectedNewsList = selectedNewsListId ? $scope.newsLists[selectedNewsListId - 1] : null;
 
 
         $scope.$watch('selectedNewsList', function() {
