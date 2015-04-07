@@ -45,7 +45,8 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                 $scope.defaultProps = function() {
                     return {
                         id: 0,// Should not need to be here!
-                        newsList: $scope.currentNewsListId
+                        newsList: $scope.currentNewsListId,
+                        plannedDate: new Date().toISOString().slice(0, 10).replace(/-/g, '-') // yyyy-MM-dd
                     }
                 };
                 $scope.submit = function () {
