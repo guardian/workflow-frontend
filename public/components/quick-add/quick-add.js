@@ -39,7 +39,10 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
 
                 /* the default properties will be applied to the
                  * parsed object, to fill in any gaps */
-                $scope.currentNewsListId = null;
+                var filterParams = wfFiltersService.getAll();
+                console.log(filterParams);
+                $scope.currentNewsListId = filterParams['news-list'].toString();
+//                $scope.currentNewsListId = selectedNewsListId;
 
 
                 $scope.defaultProps = function() {
