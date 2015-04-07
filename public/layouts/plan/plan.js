@@ -91,7 +91,10 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
             console.log("quick ADD!", item);
             $http.post("/api/v1/plan/item", JSON.stringify(item))
-                .then((res) => console.log("success", res))
+                .then((res) => {
+                    console.log("success", res);
+//                    planLoader.poller.refresh(); <<<<<<<< TODO: Get ui to update with the new item
+                })
                 .catch((err) => console.log("error", err));
         });
 
