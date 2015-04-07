@@ -39,8 +39,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
 
                 /* the default properties will be applied to the
                  * parsed object, to fill in any gaps */
-
-                $scope.currentNewsListId = "1"; // <<<<<<<<<<<<<<<<<<<<<<<< TODO: Set to default newslist
+                $scope.currentNewsListId = null;
 
 
                 $scope.defaultProps = function() {
@@ -57,16 +56,20 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                 };
 
                 $scope.$on('wf-quick-add-activate', function () {
-                    $scope.active = true;
+                    $scope.disabled = false;
                 });
                 $scope.$on('wf-quick-add-deactivate', function () {
-                    $scope.active = false;
+                    $scope.disabled = true;
                 });
 
-                $scope.$on('pvFiltersChanged', function(event, newsList) {
+                $scope.$on('pvFiltersChanged', function() {
                     var filters = wfFiltersService.getAll();
-                    console.log(filters['news-list']);
-                    $scope.currentNewsListId = filters['news-list'] ? filters['news-list'].toString() : "1"; // TODO: toString should not be necessary! And we need a better default
+                    $scope.currentNewsListId = filters['news-list'] ? filters['news-list'].toString() : null; // TODO: toString should not be necessary!
+                });
+
+                // If no news list has been selected ('All news') then disable the quick-add form
+                $scope.$watch('currentNewsListId', function() {
+                    $scope.disabled = $scope.currentNewsListId ? false : true;
                 });
             }
         }
