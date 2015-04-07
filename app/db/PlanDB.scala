@@ -27,7 +27,7 @@ import scala.concurrent.Future
 case class PlannedItem(
                         title: String,
                         newsList: String,
-                        plannedDate: Option[DateTime]=None,
+                        plannedDate: DateTime,
                         byLine: Option[String]=None,
                         bundleId: Option[String]=None,
                         notes: Option[String]=None,
@@ -43,7 +43,7 @@ object PlannedItem {
   implicit val jsonReads: Reads[PlannedItem] =(
     (__ \ "title").read[String] and
     (__ \ "newsList").read[String] and
-    (__ \ "plannedDate").readNullable[DateTime] and
+    (__ \ "plannedDate").read[DateTime] and
     (__ \ "byLine").readNullable[String] and
     (__ \ "bundleId").readNullable[String] and
     (__ \ "notes").readNullable[String] and
@@ -151,7 +151,7 @@ object PlanDB {
 
   def getPlannedItems(queryNewsList: Long): List[PlannedItem] = DB.withTransaction { implicit session =>
       planItems.filter(_.news_list === queryNewsList).list.map({
-        case (id, title, newsList) => PlannedItem(title, newsList.toString, None, None, None, None, new DateTime().withTime(10, 0, 0,0), 0, id)
+        case (id, title, newsList, date) => PlannedItem(title, newsList.toString, date, None, None, None, new DateTime().withTime(11, 0, 0, 0), 0, id)
       })
     }
 
@@ -159,7 +159,7 @@ object PlanDB {
     DB.withTransaction { implicit session =>
       val planItemExists = planItems.filter(_.title === planItem.title).exists.run
       if(!planItemExists) {
-        planItems += (0, planItem.title, planItem.newsList.toLong)
+        planItems += (0, planItem.title, planItem.newsList.toLong, planItem.plannedDate)
         Right(ApiSuccess(planItem.id))
       }
       else Left(ApiError("Could not create planned item", "Could not create planned item", 500, "Error"))
