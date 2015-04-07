@@ -2,7 +2,7 @@
 
 @import helper._
 
-@admin("sections") {
+@admin.adminLayout("desksAndSections") {
 
 <div class="row">
 
@@ -12,7 +12,7 @@
 
         @for(desk <- desks) {
             <li class="list-group-item @if(desk.selected){list-group-item-info}">
-                <a href="@{routes.Admin.index(Some(desk.id))}">@{desk.name}</a>
+                <a href="@{routes.Admin.desksAndSections(Some(desk.id))}">@{desk.name}</a>
             </li>
         }
         </ul>

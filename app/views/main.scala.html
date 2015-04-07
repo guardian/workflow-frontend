@@ -13,14 +13,15 @@
 
     @** TODO: Pull css in with SystemJS CSS plugin **@
     <link href="@routes.Assets.at("jspm_packages/github/components/bootstrap@3.2.0/css/bootstrap.min.css")" rel="stylesheet">
-    <link href="@routes.Assets.at("jspm_packages/github/vitalets/angular-xeditable@0.1.8/dist/css/xeditable.css")" rel="stylesheet">
-
-    <link href="@routes.Assets.at("wf.css")" rel="stylesheet">
-
 
     @** TODO: move jQuery calls into modules, so that this isn't needed: **@
     <script src="@routes.Assets.at("jspm_packages/github/components/jquery@1.11.1/jquery.min.js")" type="text/javascript"></script>
 
+    <style>
+        .admin {
+            padding-top: 72px;
+        }
+    </style>
 
 </head>
 
@@ -41,7 +42,7 @@
                 <li>
                     <a href="/dashboard">Dashboard</a>
                 </li>
-                <li><a href="@routes.Admin.index(None)">Settings</a>
+                <li><a href="@routes.Admin.index">Settings</a>
                 </li>
                 <li><a href="@routes.Login.logout">Log out</a>
                 </li>

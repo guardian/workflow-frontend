@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.db.{CommonDB, DeskDB, SectionDB, SectionDeskMappingDB}
+import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
 import lib._
 import Response._
@@ -8,23 +8,24 @@ import org.joda.time.DateTime
 import play.api.Logger
 import play.api.libs.json._
 import play.api.libs.ws.WS
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import play.api.mvc._
 import play.api.data.Form
-
 import lib._
-import models.{Status => WorkflowStatus, WorkflowContent, ContentUpdateEvent, Section, Desk}
-
+import models.{Status => WorkflowStatus, _}
 import scala.util.{Failure, Success}
 
 object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
 
-  def index(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter) {
+  def index() = (AuthAction andThen WhiteListAuthFilter) {
+
+    Redirect("/admin/desks-and-sections")
+  }
+
+  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter) {
 
     val deskList = DeskDB.deskList
 
@@ -37,8 +38,8 @@ object Admin extends Controller with PanDomainAuthActions {
 
     val desks = selectedDeskOption.map { selectedDesk =>
       deskList.map { desk =>
-        if(desk.id==selectedDesk.id)
-          desk.copy(name=desk.name, selected=true)
+        if (desk.id == selectedDesk.id)
+          desk.copy(name = desk.name, selected = true)
         else
           desk
       }
@@ -49,13 +50,17 @@ object Admin extends Controller with PanDomainAuthActions {
     }.getOrElse(SectionDB.sectionList)
 
     Ok(
-      views.html.adminConsole(
+      views.html.admin.desksAndSections(
         sectionList.sortBy(_.name),
         addSectionForm,
         desks.sortBy(_.name),
         addDeskForm,
         selectedDeskOption)
     )
+  }
+
+  def newsLists = (AuthAction andThen WhiteListAuthFilter) {
+    Ok(views.html.admin.newsLists(NewsListDB.newsListList, addNewsListForm))
   }
 
   def syncComposer = (AuthAction andThen WhiteListAuthFilter) {
@@ -138,7 +143,7 @@ object Admin extends Controller with PanDomainAuthActions {
       formWithErrors => BadRequest("failed to update section assignments"),
       sectionAssignment => {
         SectionDeskMappingDB.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
-        Redirect(routes.Admin.index(Some(sectionAssignment.desk)))
+        Redirect(routes.Admin.desksAndSections(Some(sectionAssignment.desk)))
       }
     )
   }
@@ -152,7 +157,7 @@ object Admin extends Controller with PanDomainAuthActions {
       formWithErrors => BadRequest("failed to add section"),
       section => {
         SectionDB.upsert(section)
-        Redirect(routes.Admin.index(None))
+        Redirect(routes.Admin.desksAndSections(None))
       }
     )
   }
@@ -177,7 +182,7 @@ object Admin extends Controller with PanDomainAuthActions {
       formWithErrors => BadRequest(s"failed to add desk ${formWithErrors.errors}"),
       desk => {
         DeskDB.upsert(desk)
-        Redirect(routes.Admin.index(None))
+        Redirect(routes.Admin.desksAndSections(None))
       }
     )
   }
@@ -188,6 +193,37 @@ object Admin extends Controller with PanDomainAuthActions {
       desk => {
         SectionDeskMappingDB.removeDeskMappings(desk)
         DeskDB.remove(desk)
+        NoContent
+      }
+    )
+  }
+
+  /*
+  NEWSLIST routes
+ */
+
+  val addNewsListForm = Form(
+    mapping(
+      "title" -> nonEmptyText,
+      "id" -> longNumber
+    )(NewsList.apply)(NewsList.unapply)
+  )
+
+  def addNewsList = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
+    addNewsListForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(s"failed to add desk ${formWithErrors.errors}"),
+      newsList => {
+        NewsListDB.upsert(newsList)
+        Redirect(routes.Admin.newsLists())
+      }
+    )
+  }
+
+  def removeNewsList = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
+    addNewsListForm.bindFromRequest.fold(
+      formWithErrors => BadRequest("failed to remove desk"),
+      newsList => {
+        NewsListDB.remove(newsList)
         NoContent
       }
     )
