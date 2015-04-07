@@ -24,6 +24,10 @@ import play.api.libs.json.util._
 
 import scala.concurrent.Future
 
+import org.joda.time.DateTime
+import play.api.libs.json._
+import play.api.libs.json.Reads._
+
 case class PlannedItem(
                         title: String,
                         newsList: String,
@@ -37,6 +41,8 @@ case class PlannedItem(
                         )
 
 object PlannedItem {
+
+  implicit val dateTimeFormat = DateFormat
 
   implicit val plannedItemFormats = Json.writes[PlannedItem]
 
