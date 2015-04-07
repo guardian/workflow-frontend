@@ -10,7 +10,6 @@ angular
 
             class PlanService {
                 get(params) {
-                    console.log(params);
                     return httpRequest({
                         method: 'GET',
                         url: '/api/v1/plan',
