@@ -1,0 +1,25 @@
+@(tab: String)(content: Html)
+
+@main("Admin") {
+
+<div class="admin">
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" @if(tab == "desksAndSections"){class="active"}><a href="@routes.Admin.desksAndSections(None)">Desks and Sections</a></li>
+                    <li role="presentation" @if(tab == "newsLists"){class="active"}><a href="@routes.Admin.newsLists()">Newslists</a></li>
+                </ul>
+            </div>
+        </div>
+
+        @content
+
+    </div>
+</div>
+
+
+
+}

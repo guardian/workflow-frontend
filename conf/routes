@@ -12,10 +12,10 @@ GET            /dashboard                              controllers.Application.d
 GET            /plan                                   controllers.Application.plan
 
 #static user pages
-GET            /about                                 controllers.Assets.at(path="/public", file="/static/about.html")
-GET            /faqs                                  controllers.Application.faqs
-GET            /troubleshooting                       controllers.Application.troubleshooting
-GET            /training                              controllers.Application.training
+GET            /about                                  controllers.Assets.at(path="/public", file="/static/about.html")
+GET            /faqs                                   controllers.Application.faqs
+GET            /troubleshooting                        controllers.Application.troubleshooting
+GET            /training                               controllers.Application.training
 
 # Login
 GET            /oauthCallback                          controllers.Login.oauthCallback
@@ -70,7 +70,8 @@ GET            /api/v1/docs/content                    controllers.ApiHelpContro
 GET            /api/v1/docs/archive                    controllers.ApiHelpController.getResource(path = "/archive")
 
 # Admin
-GET            /admin                                  controllers.Admin.index(selectedDesk: Option[Long])
+GET            /admin                                  controllers.Admin.index
+GET            /admin/desks-and-sections               controllers.Admin.desksAndSections(selectedDesk: Option[Long])
 GET            /admin/syncComposer                     controllers.Admin.syncComposer
 POST           /admin/syncComposer                     controllers.Admin.syncComposerPost
 
@@ -79,6 +80,10 @@ DELETE         /admin/sections                         controllers.Admin.removeS
 
 POST           /admin/desks                            controllers.Admin.addDesk
 DELETE         /admin/desks                            controllers.Admin.removeDesk
+
+GET            /admin/newslists                        controllers.Admin.newsLists
+POST           /admin/newslists                        controllers.Admin.addNewsList
+DELETE         /admin/newslists                        controllers.Admin.removeNewsList
 
 POST           /admin/assign                           controllers.Admin.assignSectionToDesk
 

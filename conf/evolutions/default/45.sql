@@ -1,7 +1,7 @@
 # --- !Ups
 
 CREATE TABLE news_list(
-    pk serial primary key,
+    pk serial NOT NULL PRIMARY KEY,
     title varchar(128) not null unique
 );
 

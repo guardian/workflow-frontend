@@ -1,0 +1,34 @@
+@(newsLists: List[NewsList], addNewsListForm: Form[NewsList])
+
+@import helper._
+
+@admin.adminLayout("newsLists") {
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <h1>Current NewsLists</h1>
+            <ul class="list-unstyled list-group" >
+
+            @for(newsList <- newsLists) {
+                <li class="list-group-item">
+                    @{newsList.title} (@{newsList.pk})
+                </li>
+            }
+            </ul>
+
+            <div class="form">
+                <h3>Add a new NewsList</h3>
+                @form(action=routes.Admin.addNewsList){
+                    @inputText(addNewsListForm("title"))
+                    <input type="hidden" name="id" value="0">
+                    <input type="hidden" name="selected" value="false">
+                    <input type="submit" value="Add">
+                    }
+            </div>
+
+        </div>
+
+    </div>
+
+}

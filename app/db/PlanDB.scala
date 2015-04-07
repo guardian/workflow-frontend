@@ -59,21 +59,6 @@ object PlannedItem {
     )(PlannedItem.apply _)
 }
 
-case class NewsList(
-                     title: String,
-                     id: Int
-                     )
-
-object NewsList {
-
-  implicit val newsListFormats = Json.writes[NewsList]
-
-  implicit val jsonReads: Reads[NewsList] =(
-      (__ \ "title").read[String] and
-      (__ \"id").read[Int]
-    )(NewsList.apply _)
-}
-
 case class Bundle(name: String, plannedItems: List[PlannedItem])
 object Bundle {
   implicit val bundleFormats = Json.format[Bundle]
