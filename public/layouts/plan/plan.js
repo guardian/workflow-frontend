@@ -18,7 +18,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         var filterParams = wfFiltersService.getAll();
         function params() {
             return {
-                'news-list': filterParams['news-list']
+                'newsList': filterParams['news-list']
             }
         }
 
