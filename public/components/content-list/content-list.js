@@ -118,6 +118,30 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     });
 
     $scope.showColumnMenu = false;
+
+    /**
+     * If the user has not clicked in to the column configurator then show
+     * the new labels against the configurator button and the new field.
+     */
+    (function displayNewIndicatorsIfNotSeenBefore () {
+
+        $scope.showColumnMenuNewIndicator = false;
+        wfPreferencesService.getPreference('ofwFieldNotYetSeen').then((data) => {
+
+            $scope.showColumnMenuNewIndicator = data;
+        }, () => {
+
+            $scope.showColumnMenuNewIndicator = true;
+
+            $scope.$watch('showColumnMenu', (newValue, oldValue) => {
+
+                if (newValue !== oldValue) {
+                    wfPreferencesService.setPreference('ofwFieldNotYetSeen', false);
+                }
+            }, false);
+        });
+    })();
+
     $scope.colChange = function () {
         wfColumnService.setColumns($scope.columns).then(() => {
             if (confirm('Configuring columns requires a refresh, reload the page?')) {

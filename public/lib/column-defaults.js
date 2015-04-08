@@ -103,7 +103,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'optimisedForWeb.html',
     template: optimisedForWebTemplate,
-    active: true
+    active: true,
+    isNew: true
 },{
     name: 'presence',
     prettyName: 'Presence',

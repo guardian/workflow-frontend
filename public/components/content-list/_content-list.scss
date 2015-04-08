@@ -300,6 +300,54 @@ $textualIconSize: 22px;
     }
 }
 
+.configure-columns__new-indicator {
+    display: inline-block;
+
+    z-index: 9;
+    @extend %fs-data-1;
+    font-weight: normal;
+    color: #ffffff;
+    height: 14px;
+    background-color: #B22234;
+    padding: 1px 3px 0;
+
+    position: relative;
+    top: -2px;
+    left: 6px;
+
+
+    &--animate-on-button {
+        display: block;
+        margin: 0;
+        position: absolute;
+        left: -25px;
+        top: -5px;
+
+        animation: new-indicator-pulse 3s infinite alternate;
+        -webkit-animation: new-indicator-pulse 3s infinite alternate;
+        -moz-animation: new-indicator-pulse 3s infinite alternate;
+
+        animation-timing-function: ease-in-out;
+        -webkit-animation-timing-function: ease-in-out;
+        -moz-animation-timing-function: ease-in-out;
+    }
+}
+
+@include keyframes(new-indicator-pulse) {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+}
+
 .content-list-head__heading--group {
     position: relative;
 }
