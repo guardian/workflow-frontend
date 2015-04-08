@@ -1,4 +1,6 @@
-    <form ng-submit="submit()">
-        <input wf-quick-add-input type="text" placeholder="Add..." ng-model="addText" ng-disabled="disabled"/>
-        <input type="submit" value="Add" class="quick-add-submit" ng-disabled="disabled"/>
-    </form>
+<form class="form-inline" ng-submit="submit()">
+    <input wf-quick-add-input type="text" placeholder="Add..." ng-model="addText" ng-disabled="disabled"/>
+    <div wf-date-time-picker class="quick-add__datetime form-group" ng-model="addDate" wf-small="true" wf-in-toolbar="true"></div>
+    <input type="submit" value="Add" class="quick-add-submit" ng-disabled="disabled"/>
+</form>
+
