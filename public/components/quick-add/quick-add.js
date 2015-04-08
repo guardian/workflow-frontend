@@ -1,5 +1,6 @@
 import angular from 'angular';
 import _ from 'lodash';
+import moment  from 'moment';
 
 var quickAddParsers = [
     (item, text) => {
@@ -41,29 +42,31 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                  * parsed object, to fill in any gaps */
                 var filterParams = wfFiltersService.getAll();
                 console.log(filterParams);
-                $scope.currentNewsListId = filterParams['news-list'].toString();
-//                $scope.currentNewsListId = selectedNewsListId;
+                $scope.currentNewsListId = filterParams['news-list'] ? filterParams['news-list'].toString() : null;
 
 
-                $scope.defaultProps = function() {
+                $scope.defaultProps = function(addDate) {
                     return {
                         id: 0,// Should not need to be here!
                         newsList: $scope.currentNewsListId,
-                        plannedDate: new Date().toISOString().slice(0, 10).replace(/-/g, '-') // yyyy-MM-dd
+                        plannedDate: moment(addDate).format() //.slice(0, 10).replace(/-/g, '-') // yyyy-MM-dd
                     }
                 };
                 $scope.submit = function () {
 
                     var parsed = parseQuickAdd($scope.addText);
-                    var content = _.defaults(parsed, $scope.defaultProps());
+                    var content = _.defaults(parsed, $scope.defaultProps($scope.addDate));
                     $rootScope.$broadcast("quick-add-submit", content);
                 };
 
                 $scope.$on('wf-quick-add-activate', function () {
                     $scope.disabled = false;
+                    $scope.active = true;
                 });
+
                 $scope.$on('wf-quick-add-deactivate', function () {
                     $scope.disabled = true;
+                    $scope.active = false;
                 });
 
                 $scope.$on('pvFiltersChanged', function() {

@@ -81,12 +81,14 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         });
 
         $scope.$on('quick-add-submit', function (ev, item) {
-            var defaultDate = $scope.selectedDate ?
-                $scope.selectedDate : moment();
+//            var defaultDate = $scope.selectedDate ?
+//                $scope.selectedDate : moment();
+//
+//            defaultDate.hour(item["hour"] || 10);
+//            defaultDate.minute(0);
+//            console.log("defaultdate", moment(defaultDate).format());
 
-            defaultDate.hour(item["hour"] || 10);
-            defaultDate.minute(0);
-            console.log("defaultdate", moment(defaultDate).format());
+//            console.log(moment(item['plannedDate']).format());
             //item["plannedDate"] = item["date"] || moment(defaultDate).valueOf();
 
             console.log("quick ADD!", item);

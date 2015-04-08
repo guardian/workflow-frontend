@@ -45,7 +45,8 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 updateOn: '@wfUpdateOn',
                 cancelOn: '@wfCancelOn',
                 onCancel: '&wfOnCancel',
-                onUpdate: '&wfOnUpdate'
+                onUpdate: '&wfOnUpdate',
+                inToolbar: '@wfInToolbar'
             },
             templateUrl: '/assets/components/date-time-picker/date-time-picker.html',
 

@@ -10,15 +10,19 @@ angular.module('wfPlanToolbar', ['wfFiltersService'])
 
         var filterParams = wfFiltersService.getAll();
         var selectedNewsListId = filterParams['news-list'];
-        $scope.selectedNewsList = selectedNewsListId ? $scope.newsLists[selectedNewsListId - 1] : null;
+        if (selectedNewsListId && selectedNewsListId <= $scope.newsLists.length) {
+            $scope.selectedNewsList = $scope.newsLists[selectedNewsListId - 1];
+        } else {
+            $scope.selectedNewsList = null;
+        }
 
 
         $scope.$watch('selectedNewsList', function() {
-            console.log("selected news list changed");
+            console.log("selected news list changed", $scope.selectedNewsList);
             if ($scope.selectedNewsList === null) { // All lists
                 $scope.$emit('pvFiltersChanged.news-list', 'all');
             } else {
-                $scope.$emit('pvFiltersChanged.news-list', $scope.selectedNewsList.id);
+                $scope.$emit('pvFiltersChanged.news-list', $scope.selectedNewsList.pk);
             }
         })
 

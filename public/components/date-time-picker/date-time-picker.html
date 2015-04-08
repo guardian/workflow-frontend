@@ -9,4 +9,4 @@
             </ul>
         </div>
 </div>
-<span class="help-block" ng-class="{'small': small}">{{ dateValue | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd D MMM YYYY HH:mm z' }}</span>
+<span class="help-block" ng-class="{'small': small}" ng-if="!inToolbar">{{ dateValue | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd D MMM YYYY HH:mm z' }}</span>
