@@ -13,8 +13,11 @@
             <th ng-repeat="col in columns" ng-if="::col.active" class="content-list-head__heading--{{ col.name }}" ng-attr-title="{{ getColumnTitle(col) }}" colspan="{{ col.colspan }}" bind-compiled-html="col.labelHTML"></span></th>
 
             <th class="content-list-head__heading--group content-list-head__heading--notifier content-list-head--button-container" colspan="1">
-                <div class="configure-columns" ng-click="showColumnMenu = !showColumnMenu" title="Select columns">
+
+                <div class="configure-columns" ng-click="$parent.showColumnMenu = !$parent.showColumnMenu" title="Select columns">
                     <div class="configure-columns__inner"></div>
+
+                    <span class="configure-columns__new-indicator configure-columns__new-indicator--animate-on-button" ng-if="$parent.showColumnMenuNewIndicator">New!</span>
                 </div>
 
                 <div class="column-configurator" ng-show="showColumnMenu">
@@ -23,6 +26,7 @@
                             <label class="column-configurator__label" for="{{ col.name }}">
                                 <input class="column-configurator__label" type="checkbox" ng-model="col.active" id="{{ col.name }}" name="{{ col.name }}" ng-change="colChangeSelect()"/>
                                 {{ col.prettyName }}
+                                <span class="configure-columns__new-indicator" ng-if="col.isNew && showColumnMenuNewIndicator">New!</span>
                             </label>
                         </li>
                         <li class="column-configurator__list-item">

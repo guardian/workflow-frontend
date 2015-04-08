@@ -1,10 +1,6 @@
 // Styles for Individual content item rows
 
-@mixin keyframes($name) {
-    @-webkit-keyframes #{$name} { @content }
-    @keyframes #{$name} { @content }
-}
-
+@import "layouts/global/mixins";
 
 .content-list-item {
     .content-list-item__icon--inactive {
