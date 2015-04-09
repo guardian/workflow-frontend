@@ -52,11 +52,18 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                         plannedDate: moment(addDate).format() //.slice(0, 10).replace(/-/g, '-') // yyyy-MM-dd
                     }
                 };
-                $scope.submit = function () {
 
+                $scope.clearFields = function() {
+                    $scope.addText = null;
+                    $scope.addDate = null;
+                    $rootScope.$broadcast('resetPicker');
+                };
+
+                $scope.submit = function () {
                     var parsed = parseQuickAdd($scope.addText);
                     var content = _.defaults(parsed, $scope.defaultProps($scope.addDate));
                     $rootScope.$broadcast("quick-add-submit", content);
+                    $scope.clearFields();
                 };
 
                 $scope.$on('wf-quick-add-activate', function () {
@@ -71,7 +78,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
 
                 $scope.$on('pvFiltersChanged', function() {
                     var filters = wfFiltersService.getAll();
-                    $scope.currentNewsListId = filters['news-list'] ? filters['news-list'].toString() : null; // TODO: toString should not be necessary!
+                    $scope.currentNewsListId = filters['news-list'] ? filters['news-list'] : null;
                 });
 
                 // If no news list has been selected ('All news') then disable the quick-add form
