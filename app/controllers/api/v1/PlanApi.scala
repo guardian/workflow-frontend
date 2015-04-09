@@ -68,6 +68,16 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     })
   }
 
+  def deletePlannedItem() = APIAuthAction { implicit request =>
+    Response(for {
+      jsValue <- readJsonFromRequest(request.body).right
+      plannedItem <- extract[PlannedItem](jsValue.data).right
+      itemId <- queryDataToResponse(PlannedItemDB.deletePlannedItem(plannedItem.data)).right
+    } yield {
+      itemId
+    })
+  }
+
 //  def bundles() = APIAuthAction { request =>
 //    val list = PlanDB.bundles()
 //
