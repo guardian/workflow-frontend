@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.db.{SectionDeskMappingDB, SectionDB, DeskDB}
+import com.gu.workflow.db.{NewsListDB, SectionDeskMappingDB, SectionDB, DeskDB}
 import com.gu.workflow.lib.StatusDatabase
 
 import lib.PrototypeConfiguration.defaultExecutionContext
@@ -24,7 +24,7 @@ object Application extends Controller with PanDomainAuthActions {
       sections = SectionDB.sectionList.sortBy(_.name)
       desks = DeskDB.deskList.sortBy(_.name)
       sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
-      newsLists = PlanDB.getNewsLists.sortBy(_.title)
+      newsLists = NewsListDB.newsListList.sortBy(_.title)
     }
     yield {
       val user = request.user

@@ -3,17 +3,19 @@ package models
 import java.util.UUID
 
 import akka.agent.Agent
-import com.gu.workflow.db.CommonDB
+import com.gu.workflow.db.{PlannedItemDB, CommonDB}
 import com.gu.workflow.query.{WfQueryTime, WfQuery}
 import com.gu.workflow.query.WfQuery._
 import controllers.Api._
-import lib.Response.Response
-import lib.Response.Response
+import lib.Response
+import lib.{Response, ApiSuccess}
+import Response.Response
+import Response.Response
 import lib.Responses._
 import org.joda.time.DateTime
 import play.api.db.slick._
 import play.api.libs.json._
-import lib.{ApiError, Response, ApiResponseFt, ApiSuccess}
+import lib.{ApiSuccess, Response}
 import play.api.mvc.{AnyContent, Request}
 import com.gu.workflow.db.Schema._
 import play.api.Play.current
@@ -27,37 +29,6 @@ import scala.concurrent.Future
 import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.json.Reads._
-
-case class PlannedItem(
-                        title: String,
-                        newsList: String,
-                        plannedDate: DateTime,
-                        byLine: Option[String]=None,
-                        bundleId: Option[String]=None,
-                        notes: Option[String]=None,
-                        created: DateTime = DateTime.now(),
-                        priority: Int=0,
-                        id: Long
-                        )
-
-object PlannedItem {
-
-  implicit val dateTimeFormat = DateFormat
-
-  implicit val plannedItemFormats = Json.writes[PlannedItem]
-
-  implicit val jsonReads: Reads[PlannedItem] =(
-    (__ \ "title").read[String] and
-    (__ \ "newsList").read[String] and
-    (__ \ "plannedDate").read[DateTime] and
-    (__ \ "byLine").readNullable[String] and
-    (__ \ "bundleId").readNullable[String] and
-    (__ \ "notes").readNullable[String] and
-    (__ \ "created").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
-    (__ \ "priority").readNullable[Int].map(_.getOrElse(0)) and
-    (__ \"id").read[Long]
-    )(PlannedItem.apply _)
-}
 
 case class Bundle(name: String, plannedItems: List[PlannedItem])
 object Bundle {
@@ -128,7 +99,7 @@ object PlanDB {
 
   def getItems(queryNewsList: Long): Response[List[PlannedItem]] = {
     //ApiResponseFt.Async.Right(items.future().map(_.values.toList))
-    Right(ApiSuccess(getPlannedItems(queryNewsList)))
+    Right(ApiSuccess(PlannedItemDB.getPlannedItems(queryNewsList)))
   }
 
 //  def getStubs(query: WfQuery): List[Stub] =
@@ -140,26 +111,4 @@ object PlanDB {
 //      q.sortBy(s => (s.priority.desc, s.workingTitle)).list.map(row => Stub.fromStubRow(row))
 //    }
 
-  def getPlannedItems(queryNewsList: Long): List[PlannedItem] = DB.withTransaction { implicit session =>
-      planItems.filter(_.news_list === queryNewsList).list.map({
-        case (id, title, newsList, date) => PlannedItem(title, newsList.toString, date, None, None, None, new DateTime().withTime(11, 0, 0, 0), 0, id)
-      })
-    }
-
-  def createPlannedItem(planItem: PlannedItem) = {
-    DB.withTransaction { implicit session =>
-      val planItemExists = planItems.filter(_.title === planItem.title).exists.run
-      if(!planItemExists) {
-        planItems += (0, planItem.title, planItem.newsList.toLong, planItem.plannedDate)
-        Right(ApiSuccess(planItem.id))
-      }
-      else Left(ApiError("Could not create planned item", "Could not create planned item", 500, "Error"))
-    }
-  }
-
-  def getNewsLists(): List[NewsList] = DB.withTransaction { implicit session =>
-    newsLists.list.map({
-      case (pk, title) => NewsList(title, pk.toInt)
-    })
-  }
 }

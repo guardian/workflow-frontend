@@ -42,7 +42,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                  * parsed object, to fill in any gaps */
                 var filterParams = wfFiltersService.getAll();
                 console.log(filterParams);
-                $scope.currentNewsListId = filterParams['news-list'] ? filterParams['news-list'].toString() : null;
+                $scope.currentNewsListId = filterParams['news-list'] ? filterParams['news-list'] : null;
 
 
                 $scope.defaultProps = function(addDate) {

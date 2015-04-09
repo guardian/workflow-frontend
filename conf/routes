@@ -52,7 +52,7 @@ GET            /api/sections                           controllers.Api.sections
 # Content
 GET            /api/v1/plan                            controllers.PlanApi.plan(newsList: Option[Long])
 GET            /api/v1/plan/item                       controllers.PlanApi.items
-POST           /api/v1/plan/item                       controllers.PlanApi.createItem
+POST           /api/v1/plan/item                       controllers.PlanApi.addPlannedItem
 # GET            /api/v1/plan/bundle                     controllers.PlanApi.bundles
 GET            /api/v1/content                         controllers.ContentApi.content
 GET            /api/v1/content/:id                     controllers.ContentApi.contentById(id: String)
