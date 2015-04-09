@@ -46,6 +46,11 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
 
 
                 $scope.defaultProps = function(addDate) {
+                    // if date not set, use default of this time tomorrow <<<< TODO: Think about this - maybe date field should be compulsory
+                    if (!addDate) {
+                        var dateTimeNow = new Date();
+                        addDate = dateTimeNow.setDay(dateTimeNow.getDay + 1);
+                    }
                     return {
                         id: 0,// Should not need to be here!
                         newsList: $scope.currentNewsListId,
