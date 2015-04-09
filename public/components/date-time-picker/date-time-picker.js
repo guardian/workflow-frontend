@@ -29,6 +29,27 @@ import './date-time-picker.css!';
 
 angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateService'])
 
+    // Add a listener to ui.bootstrap.datetimepicker to reset the picker to day view
+    .config(function dateTimePickerMonkeyPatch($provide) {
+        $provide.decorator('datetimepickerDirective', function($delegate) {
+            var directive = $delegate[0];
+
+            var link = directive.link;
+
+            directive.compile = function() {
+                return function(scope, element, attrs) {
+                    // get old link functionality
+                    link.apply(this, arguments);
+                    // add extra listener to link
+                    scope.$on('resetPicker', function () {
+                        scope.changeView('day', new Date());
+                    })
+                }
+            };
+            return $delegate
+        });
+    })
+
     .directive('wfDateTimePicker', ['$log', '$timeout', 'wfDateParser', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', function ($log, $timeout, wfDateParser, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
 
         var pickerCount = 0;
