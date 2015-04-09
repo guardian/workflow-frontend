@@ -1,8 +1,8 @@
 package controllers
 
 import javax.ws.rs.PathParam
-import com.gu.workflow.lib.{StatusDatabase, Formatting}
-import lib.{ApiErrors, ApiSuccess, Response, PostgresDB}
+import com.gu.workflow.lib._
+import lib.{Response, ApiErrors, ApiSuccess, PostgresDB}
 import Response.Response
 import com.gu.workflow.db.{CommonDB, Archive}
 import com.gu.workflow.query.WfQuery

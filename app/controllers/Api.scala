@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.lib.{StatusDatabase, Formatting}
+import com.gu.workflow.lib._
 import lib._
 import Response.Response
 import models.Flag.Flag

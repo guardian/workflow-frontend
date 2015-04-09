@@ -1,6 +1,12 @@
 package controllers
 
+import com.google.api.client.util.DateTime
+import com.gu.workflow.db.{PlannedItemDB, NewsListDB}
+import controllers.Admin._
+import lib.Response.Response
 import models._
+import play.api.data.Form
+import play.api.data.Forms._
 import play.api.mvc._
 import lib._
 
@@ -13,7 +19,6 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
     val queryNewsList: Long = queryNewsListOption.getOrElse(0)
 
-    println(request);
     Response(for {
       items <- PlanDB.getItems(queryNewsList).right
     } yield {
@@ -39,11 +44,25 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
   }
 
-  def createItem() = APIAuthAction { implicit request =>
+  def queryDataToResponse[T](data: Option[T]): Response[T] = {
+    data match {
+      case Some(id) => Right(ApiSuccess(id))
+      case None => Left(ApiError("Could not create planned item", "Could not create planned item", 500, "Error"))
+    }
+  }
+
+  def plannedItemQueryDataToResponse(planData: PlannedItem): Response[Long] = {
+    PlannedItemDB.upsert(planData) match {
+      case Some(id) => Right(ApiSuccess(id))
+      case None => Left(ApiError("Could not create planned item", "Could not create planned item", 500, "Error"))
+    }
+  }
+
+  def addPlannedItem() = APIAuthAction { implicit request =>
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
       plannedItem <- extract[PlannedItem](jsValue.data).right
-      itemId <- PlanDB.createPlannedItem(plannedItem.data).right
+      itemId <- queryDataToResponse(PlannedItemDB.upsert(plannedItem.data)).right
     } yield {
       itemId
     })
