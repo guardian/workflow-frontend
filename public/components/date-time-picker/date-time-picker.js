@@ -30,6 +30,7 @@ import './date-time-picker.css!';
 angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateService'])
 
     // Add a listener to ui.bootstrap.datetimepicker to reset the picker to day view
+    // Written using the second example from here http://angular-tips.com/blog/2013/09/experiment-decorating-directives/
     .config(function dateTimePickerMonkeyPatch($provide) {
         $provide.decorator('datetimepickerDirective', function($delegate) {
             var directive = $delegate[0];
@@ -77,6 +78,9 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 this.textInputId = 'wfDateTimePickerText' + idSuffix;
                 this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
 
+                // indication of default date (currently this time tomorrow) <<<<< TODO: Think about best default (or whether this field should be compulsory)
+                var tomorrow = moment(moment()).add(1, 'days');
+                $scope.placeholderText = wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(tomorrow), 'D MMM YYYY HH:mm');
 
                 // Watch for model updates to dateValue, and update datePicker when changes
                 $scope.$watch('dateValue', function (newValue) {
@@ -90,6 +94,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
                 this.onDatePicked = function (newValue) {
                     $scope.dateValue = wfDateParser.parseDate(newValue);
+
 
                     // Delay running onUpdate so digest can run and update dateValue properly.
                     $timeout(function () {
