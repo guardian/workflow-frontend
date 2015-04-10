@@ -97,10 +97,10 @@ object PlanDB {
 //    Right(ApiSuccess(item.id))
 //  }
 
-  def getItems(queryNewsList: Long): Response[List[PlannedItem]] = {
-    //ApiResponseFt.Async.Right(items.future().map(_.values.toList))
-    Right(ApiSuccess(PlannedItemDB.getPlannedItems(queryNewsList)))
-  }
+//  def getItems(queryNewsList: Long): Response[List[PlannedItem]] = {
+//    //ApiResponseFt.Async.Right(items.future().map(_.values.toList))
+//    Right(ApiSuccess(PlannedItemDB.getPlannedItems(queryNewsList)))
+//  }
 
 //  def getStubs(query: WfQuery): List[Stub] =
 //    DB.withTransaction { implicit session =>
