@@ -72,8 +72,15 @@ $textualIconSize: 22px;
 
             &--presence,
             &--assignee {
-                text-align: center;
                 padding: 5px 5px 5px 0;
+            }
+
+            &--assignee {
+              text-align: center;
+            }
+
+            &--presence {
+              text-align: right;
             }
 
             &-icon {
@@ -167,6 +174,25 @@ $textualIconSize: 22px;
             border-right: 1px solid $c-bluegrey;
             color: $c-grey-700;
         }
+    }
+
+    &--presence-disabled {
+      .content-list-head__heading--presence,
+      .content-list-item__field--presence {
+        position: relative;
+
+        &:after {
+          content: "";
+          display: block;
+          position: absolute;
+          height: 100%;
+          width: 100%;
+          top: 0;
+          left: 0;
+          background-color: rgba(220,220,220,0.6);
+        }
+      }
+
     }
 
 }
