@@ -97,7 +97,7 @@ var columnDefaults = [{
 },{
     name: 'presence',
     prettyName: 'Presence',
-    labelHTML: '<i class="content-list-head__heading-icon--presence" wf-icon="presence{{presenceIsActive}}"/>',
+    labelHTML: '<div ng-switch="presenceIsActive"><i class="content-list-head__heading-icon--presence" ng-switch-when="false" wf-icon="presence-unavailable"/><i class="content-list-head__heading-icon--presence" ng-switch-default wf-icon="presence"/></div>',
     colspan: 1,
     title: 'In use by',
     templateUrl: templateRoot + 'presence.html',

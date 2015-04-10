@@ -80,9 +80,9 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 function wfContentListController($rootScope, $scope, $anchorScroll, statuses, legalValues, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService, wfFiltersService) {
 
 
-    $scope.presenceIsActive = "-unavailable";
-    $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = "-unavailable");
-    $rootScope.$on("presence.connection.open",  () => $scope.presenceIsActive = "");
+    $scope.presenceIsActive = false;
+    $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = true);
+    $rootScope.$on("presence.connection.open",  () => $scope.presenceIsActive = true);
 
     /*jshint validthis:true */
 
