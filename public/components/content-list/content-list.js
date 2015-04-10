@@ -81,7 +81,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
 
     $scope.presenceIsActive = false;
-    $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = true);
+    $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = false);
     $rootScope.$on("presence.connection.open",  () => $scope.presenceIsActive = true);
 
     /*jshint validthis:true */
@@ -103,6 +103,14 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     wfColumnService.getColumns().then((data) => {
         $scope.columns = data;
     });
+
+    $scope.getColumnTitle = function(col) {
+        if (col.name !== 'presence') {
+            return (col.title.length > 0) ? col.title : undefined;
+        } else {
+            return $scope.presenceIsActive ? col.title : col.unavailableTitle;
+        }
+    };
 
     wfColumnService.getContentItemTemplate().then((template) => {
 
