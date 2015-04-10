@@ -1,7 +1,7 @@
 package controllers
 
-import com.google.api.client.util.DateTime
-import com.gu.workflow.db.{PlannedItemDB, NewsListDB}
+import org.joda.time.DateTime
+import com.gu.workflow.db.{PlannedItemDB, NewsListDB, PlannedItemQuery}
 import controllers.Admin._
 import lib.Response.Response
 import models._
@@ -14,39 +14,20 @@ import scala.util.{Failure, Success}
 
 object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
-  import scala.concurrent.ExecutionContext.Implicits.global
-  def plan(queryNewsListOption: Option[Long]) = APIAuthAction { implicit request =>
+  def plan(newsListIdOption: Option[Long], startDateOption: Option[String], endDateOption: Option[String]) = APIAuthAction { implicit request =>
 
-    val queryNewsList: Long = queryNewsListOption.getOrElse(0)
+    val planQuery = PlannedItemQuery(newsListIdOption, startDateOption.map(d => DateTime.parse(d)), endDateOption.map(d => DateTime.parse(d)))
 
     Response(for {
-      items <- PlanDB.getItems(queryNewsList).right
+      items <- queryDataToResponse(PlannedItemDB.getPlannedItemsByQuery(planQuery)).right
     } yield {
       items
     })
-
-  }
-
-//  def items() = APIAuthAction { request =>
-//    val list = PlanDB.items()
-//    Response(Right(ApiSuccess(list)))
-//  }
-
-  def items() = APIAuthAction { implicit request =>
-
-    println("getting items")
-
-    Response(for {
-      items <- PlanDB.getItems(0).right
-    } yield {
-      items
-    })
-
   }
 
   def queryDataToResponse[T](data: Option[T]): Response[T] = {
     data match {
-      case Some(id) => Right(ApiSuccess(id))
+      case Some(data) => Right(ApiSuccess(data))
       case None => Left(ApiError("Could not create planned item", "Could not create planned item", 500, "Error"))
     }
   }
@@ -56,6 +37,16 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       case Some(id) => Right(ApiSuccess(id))
       case None => Left(ApiError("Could not create planned item", "Could not create planned item", 500, "Error"))
     }
+  }
+
+  def getPlannedItem() = APIAuthAction { implicit request =>
+    Response(for {
+      jsValue <- readJsonFromRequest(request.body).right
+      plannedItemQuery <- extract[PlannedItem](jsValue.data).right
+      plannedItem <- queryDataToResponse(PlannedItemDB.getPlannedItemById(plannedItemQuery.data.id)).right
+    } yield {
+      plannedItem
+    })
   }
 
   def addPlannedItem() = APIAuthAction { implicit request =>
