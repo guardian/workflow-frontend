@@ -43,7 +43,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             return moment(date).calendar();
         }
     }])
-    .controller('wfPlanController', ['$scope', 'wfPlanLoader', '$http', function wfPlanController ($scope, planLoader, $http) {
+    .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', function wfPlanController ($scope, $rootScope, planLoader, $http) {
         withLocale("", function () {
 
         $scope.genColor = (s) => {
@@ -95,9 +95,15 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $http.post("/api/v1/plan/item", JSON.stringify(item))
                 .then((res) => {
                     console.log("success", res);
+                    $rootScope.$emit('quick-add-success');
+
+
 //                    planLoader.poller.refresh(); <<<<<<<< TODO: Get ui to update with the new item
                 })
-                .catch((err) => console.log("error", err));
+                .catch((err) => {
+                    $rootScope.$emit('quick-add-failure');
+                    console.log("error", err);
+                });
         });
 
         $scope.selectedDate = null;

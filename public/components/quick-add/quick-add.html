@@ -1,6 +1,6 @@
 <form class="form-inline" ng-submit="submit()">
     <input wf-quick-add-input type="text" placeholder="Add..." ng-model="addText" ng-disabled="disabled"/>
     <div wf-date-time-picker class="quick-add__datetime form-group" ng-model="addDate" wf-small="true" wf-in-toolbar="true"></div>
-    <button type="submit" class="btn btn-primary" ng-disabled="disabled">Add</button>
+    <button type="submit" class="btn btn-primary quick-add__add" ng-class="{'quick-add__add--success' : showSuccess, 'quick-add__add--failure' : showFailure}" ng-disabled="disabled || addButtonDisabled"><span class="glyphicon" ng-class="{'glyphicon-plus' : !showSuccess && !showFailure, 'glyphicon-ok' : showSuccess, 'glyphicon-remove' : showFailure}"></span> {{ buttonText }}</button>
 </form>
 
