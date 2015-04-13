@@ -79,8 +79,11 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
 
                 // indication of default date (currently this time tomorrow) <<<<< TODO: Think about best default (or whether this field should be compulsory)
-                var tomorrow = moment(moment()).add(1, 'days');
-                $scope.placeholderText = wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(tomorrow), 'D MMM YYYY HH:mm');
+                if ($scope.inToolbar) {
+                    var tomorrow = moment(moment()).add(1, 'days');
+                    $scope.placeholderText = wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(tomorrow), 'D MMM YYYY HH:mm');
+                }
+
 
                 // Watch for model updates to dateValue, and update datePicker when changes
                 $scope.$watch('dateValue', function (newValue) {

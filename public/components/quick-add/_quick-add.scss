@@ -2,3 +2,40 @@
   width: 200px;
 }
 
+.quick-add__add {
+  background-color: #00ADEE;
+  border-radius: 0;
+  width: 100px;
+  opacity: 100;
+
+  transition: background-color 0.5s ease;
+
+  &:hover {
+    background-color: #008FC5;
+  }
+
+  &--success,
+  &--success:disabled {
+    background-color: #47AE38;
+    transition: background-color 0.5s ease;
+
+
+    &:hover {
+      background-color: #47AE38;
+    }
+  }
+
+  &--failure,
+  &--failure:disabled {
+    background-color: #ED5935;
+    transition: background-color 0.5s ease;
+
+
+    &:hover {
+      background-color: #ED5935;
+    }
+
+  }
+
+
+}

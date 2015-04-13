@@ -26,8 +26,12 @@ function parseQuickAdd(text) {
     }, {item: {}, text: text}).item;
 }
 
+var QA_BUTTON_DEFAULT_TEXT = 'Add',
+    QA_BUTTON_SUCCESS_TEXT = 'Success',
+    QA_BUTTON_FAILURE_TEXT = 'Add failed';
+
 angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
-    .directive('wfQuickAdd', ['wfContentService', 'wfFiltersService', '$rootScope',  function (wfContent, wfFiltersService, $rootScope) {
+    .directive('wfQuickAdd', ['wfContentService', 'wfFiltersService', '$rootScope', '$timeout',   function (wfContent, wfFiltersService, $rootScope, $timeout) {
        return {
             restrict: 'A',
             templateUrl: '/assets/components/quick-add/quick-add.html',
@@ -37,6 +41,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
             },
             link: function($scope, elm) {
                 $scope.active = false;
+                $scope.buttonText = 'Add';
 
                 /* the default properties will be applied to the
                  * parsed object, to fill in any gaps */
@@ -67,8 +72,22 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                     var parsed = parseQuickAdd($scope.addText);
                     var content = _.defaults(parsed, $scope.defaultProps($scope.addDate));
                     $rootScope.$broadcast("quick-add-submit", content);
-                    $scope.clearFields();
                 };
+
+                $rootScope.$on('quick-add-success', function () {
+                    $scope.showSuccess = true;
+                    $scope.buttonText = QA_BUTTON_SUCCESS_TEXT;
+//                    $scope.disabled = true;
+                    $timeout(function() { $scope.showSuccess = false; $scope.buttonText = QA_BUTTON_DEFAULT_TEXT;}, 1000);
+                    $scope.clearFields();
+                });
+
+                $rootScope.$on('quick-add-failure', function () {
+                    $scope.showFailure = true;
+//                    $scope.disabled = true;
+                    $scope.buttonText = QA_BUTTON_FAILURE_TEXT;
+                    $timeout(function() { $scope.showFailure = false; $scope.buttonText = QA_BUTTON_DEFAULT_TEXT;}, 1000);
+                });
 
                 $scope.$on('wf-quick-add-activate', function () {
                     $scope.disabled = false;
@@ -89,6 +108,10 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                 $scope.$watch('currentNewsListId', function() {
                     $scope.disabled = $scope.currentNewsListId ? false : true;
                 });
+
+                $scope.$watch('addText', function() {
+                    $scope.addButtonDisabled = !$scope.addText || $scope.addText.length === 0;
+                })
             }
         }
     }])
