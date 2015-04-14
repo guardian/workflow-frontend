@@ -37,13 +37,18 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
             var link = directive.link;
 
+            function getUTCTimeNow() {
+                var timeNow = new Date();
+                return timeNow.getTime() - (timeNow.getTimezoneOffset() * 60000);
+            }
+
             directive.compile = function() {
                 return function(scope, element, attrs) {
                     // get old link functionality
                     link.apply(this, arguments);
                     // add extra listener to link
                     scope.$on('resetPicker', function () {
-                        scope.changeView('day', new Date());
+                        scope.changeView('day', getUTCTimeNow());
                     })
                 }
             };
