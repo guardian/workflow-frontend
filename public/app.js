@@ -12,7 +12,7 @@ import 'components/user-message/user-message';
 import 'components/content-list/content-list';
 import 'components/icons/icons';
 
-import 'components/quick-add/quick-add';
+import 'components/plan-view/quick-add/quick-add';
 
 import 'layouts/dashboard/dashboard';
 import 'layouts/dashboard/dashboard-user';
