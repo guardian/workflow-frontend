@@ -14,14 +14,15 @@
     background-color: #008FC5;
   }
 
-  &--success,
-  &--success:disabled {
+  &--success {
     background-color: #47AE38;
     transition: background-color 0.5s ease;
 
 
-    &:hover {
+    &:hover,
+    &:disabled {
       background-color: #47AE38;
+      opacity: 1;
     }
   }
 

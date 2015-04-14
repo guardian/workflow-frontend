@@ -78,8 +78,8 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                     $scope.showSuccess = true;
                     $scope.buttonText = QA_BUTTON_SUCCESS_TEXT;
 //                    $scope.disabled = true;
-                    $timeout(function() { $scope.showSuccess = false; $scope.buttonText = QA_BUTTON_DEFAULT_TEXT;}, 1000);
                     $scope.clearFields();
+                    $timeout(function() { $scope.showSuccess = false; $scope.buttonText = QA_BUTTON_DEFAULT_TEXT; }, 1000);
                 });
 
                 $rootScope.$on('quick-add-failure', function () {
