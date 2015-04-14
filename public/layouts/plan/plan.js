@@ -84,21 +84,13 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         });
 
         $scope.$on('quick-add-submit', function (ev, item) {
-//            var defaultDate = $scope.selectedDate ?
-//                $scope.selectedDate : moment();
-//
-//            defaultDate.hour(item["hour"] || 10);
-//            defaultDate.minute(0);
-//            console.log("defaultdate", moment(defaultDate).format());
-
-//            console.log(moment(item['plannedDate']).format());
-            //item["plannedDate"] = item["date"] || moment(defaultDate).valueOf();
 
             console.log("quick ADD!", item);
             $http.post("/api/v1/plan/item", JSON.stringify(item))
                 .then((res) => {
                     console.log("success", res);
                     planLoader.poller.refresh();
+                    updateScopeItems();
                     $rootScope.$emit('quick-add-success');
                 })
                 .catch((err) => {
@@ -140,6 +132,11 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             });
             return ret;
         }
+        function updateScopeItems() {
+            $scope.dayItems = $scope.getItems(moment($scope.currentlySelectedDay), moment($scope.currentlySelectedDay).add(1, 'days'));
+            $scope.agendaItems = _.groupBy($scope.dayItems, function(item) { return item.bundleId || "No Bundle" });
+
+        }
         $scope.getItems = function (dateFrom, dateTo) {
             // search all of the planned items, and find the ones that
             // are within our date range
@@ -153,8 +150,8 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
         $scope.getBundles = function () { return _.keys($scope.agendaItems); };
         $scope.$watch('selectedDate', (newValue, oldValue) => {
-            $scope.dayItems = $scope.getItems(moment(newValue), moment(newValue).add(1, 'days'));
-            $scope.agendaItems = _.groupBy($scope.dayItems, function(item) { return item.bundleId || "No Bundle" });
+            $scope.currentlySelectedDay = newValue;
+            updateScopeItems();
         }, true);
 
     }])
