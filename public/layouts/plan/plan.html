@@ -14,7 +14,7 @@
     <div class="news-agenda">
         <!--<div class="unassigned">-->
 
-            <ul ng-controller="wfNewsAgendaController" class="news-agenda-items list-unstyled">
+            <ul class="news-agenda-items list-unstyled">
                 <li class="alert alert-info" ng-if="!getBundles().length">
                     <span>Nothing planned for Today!</span>
                 </li>
@@ -33,63 +33,5 @@
         <!--</div>-->
     </div>
 
-    <div class="detailed-schedule" ng-controller="wfDetailedListController">
-
-        <div class="time-jumper">
-            <ul class="list-unstyled">
-                <li class="past">Midnight</li>
-                <li class="past">1am</li>
-                <li class="past">2am</li>
-                <li class="past">3am</li>
-                <li class="past">4am</li>
-                <li class="past">5am</li>
-                <li class="past">6am</li>
-                <li class="past">7am</li>
-                <li class="past">8am</li>
-                <li class="past">9am</li>
-                <li class="past">10am</li>
-                <li class="past">11am</li>
-                <li class="past">12 noon</li>
-                <li class="past">1pm</li>
-                <li class="past">2pm</li>
-                <li class="_current">3pm</li>
-                <li>4pm</li>
-                <li>5pm</li>
-                <li>6pm</li>
-                <li>7pm</li>
-                <li>8pm</li>
-                <li>9pm</li>
-                <li>10pm</li>
-                <li>11pm</li>
-                <li>Midnight</li>
-            </ul>
-        </div>
-
-        <table>
-            <tr>
-                <th colspan=3 class="timeBars">Morning 12am-12pm<span class="hour_count"></span></th>
-            </tr>
-
-            <tr ng-repeat="item in morningItems">
-                <td class="time">{{ item.plannedDate.format("HH:mm") }}</td>
-                <td><span class="bundle" ng-style="{{genColor(item.bundleId)}}">{{ item.bundleId }} </span> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
-            </tr>
-
-            <tr>
-                <th colspan=3 class="timeBars">Afternoon 12pm-6pm<span class="hour_count"></span></th>
-            </tr>
-            <tr ng-repeat="item in afternoonItems">
-                <td class="time">{{ item.plannedDate.format("HH:mm") }}</td>
-                <td><span class="bundle" ng-style="{{genColor(item.bundleId)}}">{{ item.bundleId }} </span> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
-            </tr>
-
-            <tr>
-                <th colspan=3 class="timeBars">Evening 6pm-12pm<span class="hour_count"></span></th>
-            </tr>
-            <tr ng-repeat="item in eveningItems">
-                <td class="time">{{ item.plannedDate.format("HH:mm") }}</td>
-                <td><span class="bundle" ng-style="{{genColor(item.bundleId)}}">{{ item.bundleId }} </span> {{ item.title }} <span class="assigned-to">{{ item.byLine }}</span></td>
-            </tr>
-       </table>
-    </div>
+    <wf-day-view class="detailed-schedule" plan-items="dayItems" wf-on-resize="onResize"></wf-day-view>
 </div>

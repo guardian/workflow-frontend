@@ -1,0 +1,35 @@
+<div class="day-view">
+
+    <div class="day-view__times">
+        <ul class="list-unstyled">
+
+            <li class="time-value" ng-repeat="time in timeValues" ng-class="{'past': time.past}" ng-style="time.style">{{ time.label }}</li>
+
+        </ul>
+    </div>
+
+    <div class="day-view__list">
+
+        <ul class="day-view__list-bg list-unstyled">
+            <li class="time-value" ng-repeat="time in timeValues" ng-style="time.style"></li>
+        </ul>
+
+        <div ng-repeat="item in processedPlanItems" class="day-view__item" ng-style="calculatePlannedItemStyle(item)">
+            <div class="day-view__item-top-row">
+                <span class="day-view__item-time">{{ item.plannedDate.format("HH:mm") }}</span>
+                <div class="day-view__item-title">
+                    <span class="bundle" ng-style="{{genColor(item.bundleId)}}" ng-if="item.bundleId">{{ item.bundleId }}</span>
+                    <span>{{ item.title }}</span>
+                </div>
+            </div>
+
+            <div class="day-view__item-bottom-row">
+                <span class="day-view__item-byline" ng-if="item.byLine">{{ item.byLine }}</span>
+                <span class="day-view__item-note">{{ item.notes }}</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
