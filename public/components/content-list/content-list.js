@@ -79,6 +79,11 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 function wfContentListController($rootScope, $scope, $anchorScroll, statuses, legalValues, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService, wfFiltersService) {
 
+
+    $scope.presenceIsActive = false;
+    $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = false);
+    $rootScope.$on("presence.connection.open",  () => $scope.presenceIsActive = true);
+
     /*jshint validthis:true */
 
     $scope.resetFilters = function () {
@@ -98,6 +103,14 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     wfColumnService.getColumns().then((data) => {
         $scope.columns = data;
     });
+
+    $scope.getColumnTitle = function(col) {
+        if (col.name !== 'presence') {
+            return (col.title.length > 0) ? col.title : undefined;
+        } else {
+            return $scope.presenceIsActive ? col.title : col.unavailableTitle;
+        }
+    };
 
     wfColumnService.getContentItemTemplate().then((template) => {
 
@@ -176,9 +189,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         }
     }, true);
 
-    $scope.$on('presence.connection.success', function(){
-        wfPresenceService.subscribe($scope.contentIds);
-    });
 
     // Infinite Scrolling functionality
     // See infinite-scroll http://sroze.github.io/ngInfiniteScroll/documentation.html
