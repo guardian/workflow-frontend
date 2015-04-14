@@ -88,6 +88,8 @@ function wfDayView ($rootScope) {
 
                 items = sortPlannedItemsByDate(items);
 
+                console.log("PROCESS>>>", items)
+
                 var conflictGroups = [],
                     currentConflictGroup = {
                         end: 0
