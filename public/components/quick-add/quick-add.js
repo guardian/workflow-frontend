@@ -58,7 +58,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                     return {
                         id: 0,// Should not need to be here!
                         newsList: $scope.currentNewsListId,
-                        plannedDate: moment(addDate).format() //.slice(0, 10).replace(/-/g, '-') // yyyy-MM-dd
+                        plannedDate: moment(addDate).format()
                     }
                 };
 

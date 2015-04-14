@@ -25,7 +25,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             }
         }
 
-        this.poller = new PollingService(planService, params)
+        this.poller = new PollingService(planService, params);
 
         this.render = (response) => {
             $rootScope.$broadcast('plan-view-data-load', response.data.data);
@@ -98,10 +98,8 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $http.post("/api/v1/plan/item", JSON.stringify(item))
                 .then((res) => {
                     console.log("success", res);
+                    planLoader.poller.refresh();
                     $rootScope.$emit('quick-add-success');
-
-
-//                    planLoader.poller.refresh(); <<<<<<<< TODO: Get ui to update with the new item
                 })
                 .catch((err) => {
                     $rootScope.$emit('quick-add-failure');
