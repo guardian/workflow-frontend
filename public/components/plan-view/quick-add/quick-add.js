@@ -34,7 +34,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
     .directive('wfQuickAdd', ['wfContentService', 'wfFiltersService', '$rootScope', '$timeout',   function (wfContent, wfFiltersService, $rootScope, $timeout) {
        return {
             restrict: 'A',
-            templateUrl: '/assets/components/quick-add/quick-add.html',
+            templateUrl: '/assets/components/plan-view/quick-add/quick-add.html',
             scope: {
                 customDefaultProps: '=',
                 onAddHook: '='
