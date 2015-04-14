@@ -1,6 +1,8 @@
 @import "layouts/global/colours";
 @import "components/quick-add/quick-add";
 
+@import "components/plan-view/day-view/day-view";
+
 .current.label {
     background-color: #dee2e3;
     border-left: 3px solid #00adee;
@@ -22,6 +24,7 @@
     display: -webkit-flex;
     display: flex;
     max-height: 100%;
+    width: 100%;
 }
 
 .date-list {
@@ -146,24 +149,6 @@
         @extend %fs-data-2;
         padding: 2px 0;
     }
-}
-
-
-
-.assigned-to {
-    background-color: #DCDCDC;
-    border-radius: 50px;
-    box-sizing: border-box;
-    color: #333333;
-//    font-family: "AS32 Agate Sans", 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
-    font-size: 12px;
-    line-height: 12px;
-    margin: 0 6px;
-    padding: 2px 6px;
-    text-align: center;
-    text-decoration: none;
-    text-transform: none;
-    width: auto;
 }
 
 //.am-pm-timings {
@@ -297,10 +282,10 @@
 //    font: 0.8em "AS32 Agate Sans";
 //}
 
-.time {
-    width: 50px;
-    text-indent: 17px;
-}
+//.time {
+//    width: 50px;
+//    text-indent: 17px;
+//}
 
 .section {
     text-align: right;
@@ -350,37 +335,37 @@
     white-space: normal;
 }
 
-.timeBars {
-    font-size: 13px;
-    height: 20px;
-    line-height: 20px;
-    padding-left: 3px;
-    font-weight: bold;
-    max-width: 500px;
-    border-collapse: collapse;
-    border-top-color: #DCDCDC;
-    border-bottom-width: 1px;
-    background-color: rgb(222, 226, 227);
-    border-bottom-color: rgb(255, 255, 255);
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
-    border-collapse: collapse;
-    border-left-color: rgb(128, 128, 128);
-    border-right-color: rgb(128, 128, 128);
-    border-top-color: #DCDCDC;
-    border-top-style: solid;
-    border-top-width: 1px;
-    box-sizing: content-box;
-    font-family: "AS32 Agate Sans", 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
-    font-size: 14px;
-    height: 19px;
-    line-height: 18px;
-    vertical-align: middle;
-    font-weight: bold;
-    text-indent: 4px;
-    margin: 2px 0;
-    background-color: $c-grey-300;
-}
+//.timeBars {
+//    font-size: 13px;
+//    height: 20px;
+//    line-height: 20px;
+//    padding-left: 3px;
+//    font-weight: bold;
+//    max-width: 500px;
+//    border-collapse: collapse;
+//    border-top-color: #DCDCDC;
+//    border-bottom-width: 1px;
+//    background-color: rgb(222, 226, 227);
+//    border-bottom-color: rgb(255, 255, 255);
+//    border-bottom-style: solid;
+//    border-bottom-width: 1px;
+//    border-collapse: collapse;
+//    border-left-color: rgb(128, 128, 128);
+//    border-right-color: rgb(128, 128, 128);
+//    border-top-color: #DCDCDC;
+//    border-top-style: solid;
+//    border-top-width: 1px;
+//    box-sizing: content-box;
+//    font-family: "AS32 Agate Sans", 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+//    font-size: 14px;
+//    height: 19px;
+//    line-height: 18px;
+//    vertical-align: middle;
+//    font-weight: bold;
+//    text-indent: 4px;
+//    margin: 2px 0;
+//    background-color: $c-grey-300;
+//}
 
 .hour_count{
     font-weight: normal;

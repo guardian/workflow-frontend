@@ -2,6 +2,8 @@ import angular from 'angular';
 import moment  from 'moment';
 import _       from 'lodash';
 
+import { wfDayView } from 'components/plan-view/day-view/day-view';
+
 function withLocale(locale, f) {
     // can't find a way to create a new locale without
     // changing the global locale also
@@ -13,6 +15,7 @@ function withLocale(locale, f) {
 }
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService'])
+    .directive('wfDayView', [wfDayView])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
         var filterParams = wfFiltersService.getAll();
@@ -143,26 +146,38 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             });
         };
         $scope.dateList = makeDateList();
+
+        $scope.getBundles = function () { return _.keys($scope.agendaItems); };
+        $scope.$watch('selectedDate', (newValue, oldValue) => {
+            $scope.dayItems = $scope.getItems(moment(newValue), moment(newValue).add(1, 'days'));
+            $scope.agendaItems = _.groupBy($scope.dayItems, function(item) { return item.bundleId || "No Bundle" });
+        }, true);
+
     }])
     .controller('wfDateListController', [ '$scope', function ($scope) {
         $scope.$on('planned-items-changed', (ev, eventItems) => {
             $scope.items = $scope.getItems($scope.date, $scope.date.clone().add(1, 'days'));
         });
     }])
-    .controller('wfNewsAgendaController', [ '$scope', function ($scope) {
-        $scope.getBundles = function () { return _.keys($scope.agendaItems); };
-        $scope.$watch('selectedDate', (newValue, oldValue) => {
-            $scope.agendaItems = _.groupBy($scope.getItems(moment(newValue),
-                                                 moment(newValue).add(1, 'days')), function(item) { return item.bundleId || "No Bundle" });
-
-
-        }, true);
-
+    .directive('wfOnResize', ['$window', '$parse', function ($window, $parse) {
+        return {
+            restrict: 'A',
+            link: function ($scope, elem, attrs) {
+                //console.log("AATTRS>>>>>>>>>>>", attrs.wfOnResize);
+                //let fn = $parse(attrs.wfOnResize);
+                //console.log(typeof fn);
+                //console.log(fn($scope));
+            }
+        }
     }])
-    .controller('wfDetailedListController', ['$scope', function($scope){
-        $scope.$watch('selectedDate', (newValue, oldValue) => {
-            $scope.morningItems = $scope.getItems(moment(newValue),moment(newValue).add(12,'hours'));
-            $scope.afternoonItems = $scope.getItems(moment(newValue).add(12,'hours'),moment(newValue).add(18,'hours'));
-            $scope.eveningItems = $scope.getItems(moment(newValue).add(18,'hours'),moment(newValue).add(24,'hours'));
-        }, true);
-    }]);
+    //.controller('wfNewsAgendaController', [ '$scope', function ($scope) {
+    //
+    //
+    //}]);
+    //.controller('wfDetailedListController', ['$scope', function($scope){
+    //    $scope.$watch('selectedDate', (newValue, oldValue) => {
+    //        $scope.morningItems = $scope.getItems(moment(newValue),moment(newValue).add(12,'hours'));
+    //        $scope.afternoonItems = $scope.getItems(moment(newValue).add(12,'hours'),moment(newValue).add(18,'hours'));
+    //        $scope.eveningItems = $scope.getItems(moment(newValue).add(18,'hours'),moment(newValue).add(24,'hours'));
+    //    }, true);
+    //}]);
