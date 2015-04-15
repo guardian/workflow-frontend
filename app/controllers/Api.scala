@@ -142,7 +142,7 @@ object Api extends Controller with PanDomainAuthActions {
         countTotal += content.length
         (status.toString, Json.toJson(content.length))
       }
-    }).toSeq ++ Map("Stub" -> Json.toJson(stubs.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+stubs.length)).toSeq
+    }).toSeq ++ Map("Stub" -> Json.toJson(stubs.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+filteredStubs.length)).toSeq
 
     Ok(
       Json.obj(
