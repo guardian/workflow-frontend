@@ -5,6 +5,7 @@ import lib._
 import Response.Response
 import models.Flag.Flag
 import models._
+import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
 
 import play.api.libs.ws.WS
 import play.api.data.Form
@@ -71,6 +72,7 @@ object Api extends Controller with PanDomainAuthActions {
     val touched   = queryData.touched
     val published = queryData.published
     val assigned  = queryData.assignedToEmail
+    val view      = queryData.view
 
     def getContent = {
        PostgresDB.getContent(queryData)
@@ -88,7 +90,46 @@ object Api extends Controller with PanDomainAuthActions {
         queryData.composerId.isEmpty
       ) getStubs else Nil
 
-    val contentGroupedByStatus = getContent.groupBy(_.wc.status)
+    // ================= Check if a contentItem has ANY DateTime that is 'today' ================= //
+
+    val isTodayFmt: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd")
+
+    val today = isTodayFmt.print(DateTime.now())
+
+    def compareIsToday(date: DateTime): Boolean = isTodayFmt.print(date) == today
+
+    def isTodayStub(stub: Stub): Boolean = stub match {
+      case s if s.due.isDefined && compareIsToday(s.due.get)                           => true
+      case s if compareIsToday(s.createdAt)                                            => true
+      case s if compareIsToday(s.lastModified)                                         => true
+      case _                                                                           => false
+    }
+
+    def isToday(contentItem: DashboardRow): Boolean = contentItem match {
+      case c if c.stub.due.isDefined && compareIsToday(c.stub.due.get)                 => true
+      case c if compareIsToday(c.stub.createdAt)                                       => true
+      case c if compareIsToday(c.stub.lastModified)                                    => true
+      case c if compareIsToday(c.wc.lastModified)                                      => true
+      case c if c.wc.timePublished.isDefined && compareIsToday(c.wc.timePublished.get) => true
+      case c if c.wc.timeTakenDown.isDefined && compareIsToday(c.wc.timeTakenDown.get) => true
+      case _                                                                           => false
+    }
+
+    val filteredStubs = view match {
+      case Some(contentView) if contentView == "today" => stubs.filter(isTodayStub)
+      case Some(contentView) => stubs
+      case None => stubs
+    }
+
+    val filteredGetContent = view match {
+      case Some(contentView) if contentView == "today" => getContent.filter(isToday)
+      case Some(contentView) => getContent
+      case None => getContent
+    }
+
+    // ================= End 'today' ============================================================= //
+
+    val contentGroupedByStatus = filteredGetContent.groupBy(_.wc.status)
 
     val jsContentGroupedByStatus = contentGroupedByStatus.map({
       case (status, content) => (status.toString, Json.toJson(content))
@@ -106,7 +147,7 @@ object Api extends Controller with PanDomainAuthActions {
     Ok(
       Json.obj(
         "content" -> JsObject(jsContentGroupedByStatus),
-        "stubs" -> stubs,
+        "stubs" -> filteredStubs,
         "count" -> JsObject(counts)
       )
     )

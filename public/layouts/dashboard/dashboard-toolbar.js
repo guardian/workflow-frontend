@@ -10,6 +10,12 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
     .directive('wfToolbarSectionsDropdown', ['wfFiltersService', '$rootScope', 'sectionsInDesks', wfToolbarSectionsDropdown])
     .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'desks', 'sections', 'sectionsInDesks', 'wfTitleService', function ($scope, wfFiltersService, wfDateParser, prodOfficeService,  desks, sections, sectionsInDesks, wfTitleService) {
 
+        $scope.todayView = function () {
+            $scope.$emit('filtersChanged.view', wfFiltersService.get('view') === 'today' ? '' : 'today');
+        };
+
+        $scope.todayViewActive = () => wfFiltersService.get('view') === 'today';
+
         $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
         $scope.prodOffices = prodOfficeService.getProdOffices();
