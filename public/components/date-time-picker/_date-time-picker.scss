@@ -9,8 +9,8 @@
 .date-time-picker {
 
   &.ng-invalid-parse {
-    input,
-    button {
+    .date-time-picker__text-input,
+    .date-time-picker__dropdown {
         border-color: $c-red;
     }
 
