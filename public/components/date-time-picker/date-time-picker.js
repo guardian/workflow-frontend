@@ -141,7 +141,11 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                         return wfDateParser.parseDate(input);
                     }
                     catch (err) {
-                        // do nothing - parse errors handled by angular (ng-invalid-parse)
+                        // ignore parse errors - these are handled by angular (ng-invalid-parse)
+                        if (err.message.substr(0,20) !== 'Could not parse date') {
+                            throw err;
+                        }
+
                     }
                 }
 
