@@ -87,7 +87,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                         $scope.contentItem = contentItem;
                         $scope.contentList.selectedItem = contentItem;
 
-                        $scope.currentDatePickerValue = $scope.contentItem.item.due ? $scope.contentItem.item.due : null;
+                        $scope.currentDatePickerValue = $scope.contentItem.item.due ? $scope.contentItem.item.due : undefined;
 
                         self.updateAssigneeUserImage();
                     });
@@ -260,12 +260,11 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              */
             $scope.updateDeadline = function () {
 
-                var currentDatePickerValue = $scope.currentDatePickerValue,
-                    parsedDate,
+                var parsedDate,
                     requestData;
 
-                if (currentDatePickerValue) { // TODO: See content-list.js:118
-                    parsedDate = moment(currentDatePickerValue);
+                if ($scope.currentDatePickerValue) { // TODO: See content-list.js:118
+                    parsedDate = moment($scope.currentDatePickerValue);
                     if (parsedDate.isValid()) {
                         requestData = parsedDate.toISOString();
                         $scope.currentDatePickerValue = requestData;

@@ -94,6 +94,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         // Constants
         var KEYCODE_COMMAND = 91;
         var KEYCODE_ESCAPE = 27;
+        var KEYCODE_ENTER = 13;
 
         return {
             require: '^ngModel',
@@ -173,7 +174,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
                         $browser.defer(commitUpdate);
 
-                        if (updateOn == 'enter' && key === 13) {
+                        if (updateOn == 'enter' && key === KEYCODE_ENTER) {
                             scope.onSubmit();
                         }
                     }
