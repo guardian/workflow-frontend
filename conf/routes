@@ -23,6 +23,7 @@ GET            /logout                                controllers.Login.logout
 # API
 
 GET            /api/content                           controllers.Api.content
+GET            /api/test                              controllers.Api.test
 POST           /api/content                           controllers.Api.createContent
 GET            /api/content/:composerId               controllers.Api.getContentbyId(composerId: String)
 PUT            /api/content/:composerId/status        controllers.Api.putContentStatus(composerId: String)
