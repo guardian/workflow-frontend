@@ -115,15 +115,10 @@ object Api extends Controller with PanDomainAuthActions {
       case _                                                                           => false
     }
 
-    val filteredStubs = view match {
-      case Some("today") => stubs.filter(isTodayStub)
-      case _ => stubs
-    }
+    val filteredStubs = stubs
 
-    val filteredGetContent = view match {
-      case Some("today") => getContent.filter(isToday)
-      case _ => getContent
-    }
+
+    val filteredGetContent = getContent
 
     // ================= End 'today' ============================================================= //
 
@@ -189,6 +184,21 @@ object Api extends Controller with PanDomainAuthActions {
       }
       )
     }
+  }
+
+  def test = Action { req =>
+//    val viewFromOpt: Option[DateTime]  =  req.getQueryString("view.from").flatMap(Formatting.parseDate)
+//    val viewUntilOpt: Option[DateTime]  =  req.getQueryString("view.until").flatMap(Formatting.parseDate)
+
+    val viewFromOpt: Option[DateTime] = Some(DateTime.now().minusHours(12))
+    val viewUntilOpt: Option[DateTime] = Some(DateTime.now().plusHours(12))
+
+    val dateRgeOpt = DateRange(viewFromOpt, viewUntilOpt)
+
+    val wfQuery = WfQuery(viewTimes = dateRgeOpt)
+
+    val content =  PostgresDB.getContent(wfQuery)
+    Ok(Json.toJson(content))
   }
 
 
