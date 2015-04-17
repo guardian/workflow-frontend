@@ -123,15 +123,10 @@ object Api extends Controller with PanDomainAuthActions {
       case _                                                                           => false
     }
 
-    val filteredStubs = view match {
-      case Some("today") => stubs.filter(isTodayStub)
-      case _ => stubs
-    }
+    val filteredStubs = stubs
 
-    val filteredGetContent = view match {
-      case Some("today") => getContent.filter(isToday)
-      case _ => getContent
-    }
+
+    val filteredGetContent = getContent
 
     // ================= End 'today' ============================================================= //
 
