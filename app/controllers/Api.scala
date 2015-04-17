@@ -90,47 +90,7 @@ object Api extends Controller with PanDomainAuthActions {
         queryData.composerId.isEmpty
       ) getStubs else Nil
 
-    // ================= Check if a contentItem has ANY DateTime that is 'today' ================= //
-
-    val isTodayFmt: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd")
-
-    val today = isTodayFmt.print(DateTime.now())
-
-    def compareIsToday(date: DateTime): Boolean = isTodayFmt.print(date) == today
-
-    def isTodayStub(stub: Stub): Boolean = stub match {
-      case s if s.due.isDefined && compareIsToday(s.due.get)                           => true
-      case s if compareIsToday(s.createdAt)                                            => true
-      case s if compareIsToday(s.lastModified)                                         => true
-
-      case _                                                                           => false
-    }
-
-    def isToday(contentItem: DashboardRow): Boolean = contentItem match {
-      case c if c.stub.due.isDefined && compareIsToday(c.stub.due.get)                 => true
-      case c if compareIsToday(c.stub.createdAt)                                       => true
-      case c if c.wc.launchScheduleDetails.isDefined &&
-        c.wc.launchScheduleDetails.get.embargoedUntil.isDefined &&
-        compareIsToday(c.wc.launchScheduleDetails.get.embargoedUntil.get)              => true
-      case c if c.wc.launchScheduleDetails.isDefined &&
-        c.wc.launchScheduleDetails.get.scheduledLaunchDate.isDefined &&
-        compareIsToday(c.wc.launchScheduleDetails.get.scheduledLaunchDate.get)         => true
-      case c if compareIsToday(c.stub.lastModified)                                    => true
-      case c if compareIsToday(c.wc.lastModified)                                      => true
-      case c if c.wc.timePublished.isDefined && compareIsToday(c.wc.timePublished.get) => true
-      case c if c.wc.timeTakenDown.isDefined && compareIsToday(c.wc.timeTakenDown.get) => true
-
-      case _                                                                           => false
-    }
-
-    val filteredStubs = stubs
-
-
-    val filteredGetContent = getContent
-
-    // ================= End 'today' ============================================================= //
-
-    val contentGroupedByStatus = filteredGetContent.groupBy(_.wc.status)
+    val contentGroupedByStatus = getContent.groupBy(_.wc.status)
 
     val jsContentGroupedByStatus = contentGroupedByStatus.map({
       case (status, content) => (status.toString, Json.toJson(content))
@@ -143,12 +103,12 @@ object Api extends Controller with PanDomainAuthActions {
         countTotal += content.length
         (status.toString, Json.toJson(content.length))
       }
-    }).toSeq ++ Map("Stub" -> Json.toJson(filteredStubs.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+filteredStubs.length)).toSeq
+    }).toSeq ++ Map("Stub" -> Json.toJson(stubs.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+stubs.length)).toSeq
 
     Ok(
       Json.obj(
         "content" -> JsObject(jsContentGroupedByStatus),
-        "stubs" -> filteredStubs,
+        "stubs" -> stubs,
         "count" -> JsObject(counts)
       )
     )
