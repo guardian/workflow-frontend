@@ -180,6 +180,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                     var dateRange = wfDateParser.parseRangeFromString(selectedDate);
                     var createdRange = wfDateParser.parseRangeFromString(modelParams['created']);
+                    var viewRange = wfDateParser.parseRangeFromString(modelParams['view']);
 
                     var params = {
                         'status': modelParams['status'],
@@ -192,13 +193,14 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'due.until': wfFormatDateTimeFilter(dateRange['until'], "ISO8601") || null,
                         'created.from': wfFormatDateTimeFilter(createdRange['from'], "ISO8601") || null,
                         'created.until': wfFormatDateTimeFilter(createdRange['until'], "ISO8601") || null,
+                        'view.from': wfFormatDateTimeFilter(viewRange['from'], "ISO8601") || null,
+                        'view.until': wfFormatDateTimeFilter(viewRange['until'], "ISO8601") || null,
                         'text': modelParams['text'] || null,
                         'assignee': modelParams['assignee'] || null,
                         'touched': modelParams['touched'] || null,
                         'assigneeEmail': modelParams['assigneeEmail'] || null,
                         'incopy' : modelParams['incopy'] || null,
-                        'composerId' : modelParams['composerId'] || null,
-                        'view' : modelParams['view'] || null
+                        'composerId' : modelParams['composerId'] || null
                     };
 
                     return params;
