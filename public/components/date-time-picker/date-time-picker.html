@@ -1,6 +1,6 @@
 <label class="date-time-picker__label" for="{{dateTimePicker.textInputId}}" ng-if="label">{{ label }} <span class="date-time-picker__help-text" ng-if="helpText">{{ helpText == 'true' && 'e.g. today 3pm, tomorrow 15:00, tuesday next week 18:00, 2014-08-14' || helpText }}</span></label>
 <div class="date-time-picker__group input-group">
-        <input class="date-time-picker__text-input form-control" ng-class="{'date-time-picker__toolbar-input': inToolbar}" type="text" placeholder="{{ placeholderText }}"  wf-date-time-field id="{{dateTimePicker.textInputId}}" name="due" wf-on-cancel="onCancel()" wf-on-update="onUpdate()" wf-update-on="{{updateOn}}" wf-cancel-on="{{cancelOn}}" ng-class="{'input-sm': small}">
+        <input class="date-time-picker__text-input form-control" ng-class="{'date-time-picker__toolbar-text-input': inToolbar}" type="text" placeholder="{{ placeholderText }}"  wf-date-time-field id="{{dateTimePicker.textInputId}}" name="due" wf-on-cancel="onCancel()" wf-on-update="onUpdate()" wf-update-on="{{updateOn}}" wf-cancel-on="{{cancelOn}}" ng-class="{'input-sm': small}">
         <div dropdown class="input-group-btn">
                 <button type="button" id="{{dateTimePicker.dropDownButtonId}}" class="btn btn-default dropdown-toggle" ng-class="{'btn-sm': small, 'date-time-picker__toolbar-button': inToolbar}"><i class="glyphicon glyphicon-calendar"></i></button>
             </a>

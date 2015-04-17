@@ -78,10 +78,10 @@ function wfDayView ($rootScope) {
                 if (newValue && oldValue) {
                     if (!comparePlannedItems(newValue, oldValue)) {
                         newValue = processPlannedItems(newValue);
+                        $scope.processedPlanItems = newValue;
                     }
                 }
 
-                $scope.processedPlanItems = newValue;
             }, false);
 
             function processPlannedItems(items) {

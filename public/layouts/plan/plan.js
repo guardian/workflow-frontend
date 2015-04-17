@@ -90,7 +90,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 .then((res) => {
                     console.log("success", res);
                     planLoader.poller.refresh();
-                    updateScopeItems();
                     $rootScope.$emit('quick-add-success');
                 })
                 .catch((err) => {
@@ -135,8 +134,10 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         function updateScopeItems() {
             $scope.dayItems = $scope.getItems(moment($scope.currentlySelectedDay), moment($scope.currentlySelectedDay).add(1, 'days'));
             $scope.agendaItems = _.groupBy($scope.dayItems, function(item) { return item.bundleId || "No Bundle" });
-
         }
+        $scope.$on('planned-items-changed', function () {
+            updateScopeItems();
+        });
         $scope.getItems = function (dateFrom, dateTo) {
             // search all of the planned items, and find the ones that
             // are within our date range
