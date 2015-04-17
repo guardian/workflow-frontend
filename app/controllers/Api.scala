@@ -186,21 +186,6 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def test = Action { req =>
-//    val viewFromOpt: Option[DateTime]  =  req.getQueryString("view.from").flatMap(Formatting.parseDate)
-//    val viewUntilOpt: Option[DateTime]  =  req.getQueryString("view.until").flatMap(Formatting.parseDate)
-
-    val viewFromOpt: Option[DateTime] = Some(DateTime.now().minusHours(12))
-    val viewUntilOpt: Option[DateTime] = Some(DateTime.now().plusHours(12))
-
-    val dateRgeOpt = DateRange(viewFromOpt, viewUntilOpt)
-
-    val wfQuery = WfQuery(viewTimes = dateRgeOpt)
-
-    val content =  PostgresDB.getContent(wfQuery)
-    Ok(Json.toJson(content))
-  }
-
 
   def createContent() =  CORSable(composerUrl) {
     APIAuthAction { implicit request =>
