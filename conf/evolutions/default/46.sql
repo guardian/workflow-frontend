@@ -10,7 +10,9 @@ CREATE TABLE plan_item
     notes TEXT,
     bundle_id TEXT,
     created TIMESTAMP NOT NULL ,
-    priority INTEGER NOT NULL
+    priority INTEGER NOT NULL,
+    bucketed BOOLEAN NOT NULL,
+    has_specific_time BOOLEAN NOT NULL
 );
 
 # --- !Downs
