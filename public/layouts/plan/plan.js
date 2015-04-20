@@ -20,8 +20,8 @@ function withLocale(locale, f) {
     return ret;
 }
 
-angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService'])
-    .directive('wfDayView', 'ngDragDrop', [ngDragDrop, wfDayView])
+angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
+    .directive('wfDayView', ['$rootScope', '$http', wfDayView])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
         var filterParams = wfFiltersService.getAll();

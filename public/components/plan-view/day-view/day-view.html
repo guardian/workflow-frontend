@@ -3,11 +3,14 @@
     <div class="day-view__list">
 
         <ul class="day-view__list-buckets list-unstyled">
-            <li class="day-view__bucket" ng-repeat="bucket in buckets">
+            <li class="day-view__bucket" ng-repeat="bucket in buckets" >
                 <div class="bucket__title">{{ toMeridiem(bucket.start) }} - {{ toMeridiem(bucket.end) }}</div>
 
                 <ul class="bucket__items list-unstyled">
-                    <li ng-repeat="item in bucket.items track by item.id" class="day-view__item"  data-drag="true" jqyoui-draggable="{onStart: 'draggingStart', onStop: 'draggingStop'}" data-jqyoui-options="draggableOptions">
+
+                    <li class="bucket__drop-zone" ng-model="bucket.items" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="true" data-jqyoui-options="{tolerance: 'pointer', hoverClass: 'dnd__status--hovered'}"></li>
+
+                    <li ng-repeat="item in bucket.items track by item.id" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions">
                         <div class="day-view__item-top-row">
                             <span class="day-view__item-time">{{ item.plannedDate.format("HH:mm") }}</span>
                             <div class="day-view__item-title">

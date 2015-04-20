@@ -1,10 +1,25 @@
-function wfDayView ($rootScope) {
+function wfDayView ($rootScope, $http) {
     return {
         restrict: 'E',
         templateUrl: '/assets/components/plan-view/day-view/day-view.html',
         scope: {
             newsListName: '=',
             planItems: '='
+        },
+        controller: function ($scope) {
+            $scope.draggableOptions = {
+                helper: 'clone',
+                cursorAt: {
+                    top: 12,
+                    left: 12
+                },
+                containment: '.content-list',
+                refreshPositions: true,
+                axis: 'y',
+                snap: '.bucket__drop-zone',
+                snapMode: 'inner',
+                revert: 'invalid'
+            };
         },
         link: ($scope, elem, attrs) => {
 
@@ -39,8 +54,6 @@ function wfDayView ($rootScope) {
                 if (newValue && oldValue) {
                     if (!comparePlannedItems(newValue, oldValue)) {
 
-                        console.log("updating", newValue, oldValue)
-
                         let sortedItems = sortPlannedItemsByDate(newValue);
 
                         $scope.buckets.forEach((bucket) => {
@@ -66,7 +79,66 @@ function wfDayView ($rootScope) {
                 }
             }, true);
 
+            $scope.draggingStart = (event, ui, item) => {
+                $scope.draggedItem = item;
+                elem.addClass('day-view--dragging')
+            };
 
+            $scope.draggingStop = () => {
+                elem.removeClass('day-view--dragging')
+            };
+
+            $scope.droppedOn = (event, ui) => {
+
+                var el = ui.draggable.detach();
+
+                el.appendTo(event.target.parentNode);
+
+                console.log('drop!', $scope.draggedItem);
+
+                $http.post("/api/v1/plan/item", JSON.stringify($scope.draggedItem));
+
+                //$scope.locked = true;
+                //
+                //// Ripped from content-list-item.js:190
+                //var newStatus = event.target.getAttribute('data-status')
+                //
+                //var msg = {
+                //    contentItem: $scope.droppedModel,
+                //    data: {},
+                //    oldValues: {},
+                //    source: $scope.statusValues
+                //};
+                //
+                //msg.data['status'] = newStatus;
+                //msg.oldValues['status'] = $scope.droppedModel.status;
+                //
+                //$scope.$emit('contentItem.update', msg);
+                //
+                //var unbind = $rootScope.$on('contentItem.updated', () => {
+                //
+                //    var temp = event.target.innerHTML;
+                //    event.target.classList.add(classes.success);
+                //    event.target.innerHTML = '<img class="dnd__success" src="/assets/components/icons/png/tick.png" alt=""/>';
+                //
+                //
+                //    notify('Workflow', {
+                //        icon: '/assets/favicon128.ico',
+                //        body: '"' + $scope.droppedModel.workingTitle + '" was moved to ' + newStatus
+                //    });
+                //
+                //
+                //    $timeout(() => {
+                //
+                //        elem.removeClass(classes.show);
+                //        event.target.classList.remove(classes.success);
+                //        event.target.innerHTML = temp;
+                //        $scope.locked = false;
+                //    }, 750);
+                //
+                //    unbind(); // Unbind contentItem.updated
+                //});
+            };
         }
     }
 }
