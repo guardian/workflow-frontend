@@ -66,6 +66,16 @@
     font-weight: bold;
 }
 
+.bucket__drop-zone {
+    height: 32px;
+    background-color: $c-grey-100;
+    display: none;
+}
+
+.day-view--dragging .bucket__drop-zone {
+    display: block;
+}
+
 .day-view__item {
     //position: absolute;
     z-index: 2;
