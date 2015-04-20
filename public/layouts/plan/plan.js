@@ -2,6 +2,12 @@ import angular from 'angular';
 import moment  from 'moment';
 import _       from 'lodash';
 
+import 'jquery'
+import 'jquery-ui/draggable'
+import 'jquery-ui/droppable'
+
+import 'angular-dragdrop';
+
 import { wfDayView } from 'components/plan-view/day-view/day-view';
 
 function withLocale(locale, f) {
@@ -15,7 +21,7 @@ function withLocale(locale, f) {
 }
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService'])
-    .directive('wfDayView', [wfDayView])
+    .directive('wfDayView', 'ngDragDrop', [ngDragDrop, wfDayView])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
         var filterParams = wfFiltersService.getAll();
@@ -89,7 +95,8 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $http.post("/api/v1/plan/item", JSON.stringify(item))
                 .then((res) => {
                     console.log("success", res);
-                    planLoader.poller.refresh();
+                    planLoader.poller.refresh()
+                        .then(updateScopeItems);
                     $rootScope.$emit('quick-add-success');
                 })
                 .catch((err) => {

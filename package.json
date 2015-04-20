@@ -42,7 +42,9 @@
       "sugar": "npm:sugar@1.4.1",
       "text": "^0.0.2",
       "ua-parser": "github:faisalman/ua-parser-js@0.7.1",
-      "underscore": "github:jashkenas/underscore@1.7.0"
+      "underscore": "github:jashkenas/underscore@1.7.0",
+      "jquery-ui": "npm:jquery-ui@1.10.5",
+      "angular-dragdrop": "github:codef0rmer/angular-dragdrop@1.0.9"
     }
   },
   "repository": {

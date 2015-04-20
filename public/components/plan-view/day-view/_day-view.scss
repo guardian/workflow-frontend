@@ -56,8 +56,18 @@
 
 }
 
+.bucket__title {
+    display: block;
+    width: 100%;
+    background-color: $c-grey-300;
+    padding: 2px 0 2px 6px;
+    border-left: 3px solid #00adee;
+    @extend %fs-data-4;
+    font-weight: bold;
+}
+
 .day-view__item {
-    position: absolute;
+    //position: absolute;
     z-index: 2;
     left: 0;
     width: 100%;
