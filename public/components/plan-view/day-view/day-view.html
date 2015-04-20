@@ -1,34 +1,31 @@
 <div class="day-view">
 
-    <div class="day-view__times">
-        <ul class="list-unstyled">
-
-            <li class="time-value" ng-repeat="time in timeValues" ng-class="{'past': time.past}" ng-style="time.style">{{ time.label }}</li>
-
-        </ul>
-    </div>
-
     <div class="day-view__list">
 
-        <ul class="day-view__list-bg list-unstyled">
-            <li class="time-value" ng-repeat="time in timeValues" ng-style="time.style"></li>
+        <ul class="day-view__list-buckets list-unstyled">
+            <li class="day-view__bucket" ng-repeat="bucket in buckets">
+                <div class="bucket__title">{{ toMeridiem(bucket.start) }} - {{ toMeridiem(bucket.end) }}</div>
+
+                <ul class="bucket__items list-unstyled">
+                    <li ng-repeat="item in bucket.items track by item.id" class="day-view__item"  data-drag="true" jqyoui-draggable="{onStart: 'draggingStart', onStop: 'draggingStop'}" data-jqyoui-options="draggableOptions">
+                        <div class="day-view__item-top-row">
+                            <span class="day-view__item-time">{{ item.plannedDate.format("HH:mm") }}</span>
+                            <div class="day-view__item-title">
+                                <span class="bundle" ng-style="{{genColor(item.bundleId)}}" ng-if="item.bundleId">{{ item.bundleId }}</span>
+                                <span>{{ item.title }}</span>
+                            </div>
+                        </div>
+
+                        <div class="day-view__item-bottom-row">
+                            <span class="day-view__item-byline" ng-if="item.byLine">{{ item.byLine }}</span>
+                            <span class="day-view__item-note">{{ item.notes }}</span>
+                        </div>
+
+                    </li>
+                </ul>
+
+            </li>
         </ul>
-
-        <div ng-repeat="item in processedPlanItems" class="day-view__item" ng-style="calculatePlannedItemStyle(item)">
-            <div class="day-view__item-top-row">
-                <span class="day-view__item-time">{{ item.plannedDate.format("HH:mm") }}</span>
-                <div class="day-view__item-title">
-                    <span class="bundle" ng-style="{{genColor(item.bundleId)}}" ng-if="item.bundleId">{{ item.bundleId }}</span>
-                    <span>{{ item.title }}</span>
-                </div>
-            </div>
-
-            <div class="day-view__item-bottom-row">
-                <span class="day-view__item-byline" ng-if="item.byLine">{{ item.byLine }}</span>
-                <span class="day-view__item-note">{{ item.notes }}</span>
-            </div>
-
-        </div>
 
     </div>
 
