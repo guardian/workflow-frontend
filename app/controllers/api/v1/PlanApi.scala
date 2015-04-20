@@ -28,14 +28,14 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
   def queryDataToResponse[T](data: Option[T]): Response[T] = {
     data match {
       case Some(data) => Right(ApiSuccess(data))
-      case None => Left(ApiError("Could not create planned item", "Could not create planned item", 500, "Error"))
+      case None => Left(ApiError("Could not fetch plan items", "Could not fetch plan items", 500, "Error"))
     }
   }
 
   def plannedItemQueryDataToResponse(planData: PlannedItem): Response[Long] = {
     PlannedItemDB.upsert(planData) match {
       case Some(id) => Right(ApiSuccess(id))
-      case None => Left(ApiError("Could not create planned item", "Could not create planned item", 500, "Error"))
+      case None => Left(ApiError("Could not fetch plan items", "Could not fetch plan items", 500, "Error"))
     }
   }
 
