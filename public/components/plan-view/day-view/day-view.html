@@ -13,7 +13,7 @@
 
                 <ul class="bucket__items list-unstyled">
 
-                    <li ng-repeat="item in buckets.unscheduledItems track by item.id" ng-include="'/assets/components/plan-view/day-view/day-view-plan-item.html'" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
+                    <li wf-day-view-plan-item ng-repeat="item in buckets.unscheduledItems track by item.id" item="item" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
 
                 </ul>
             </li>
@@ -25,7 +25,7 @@
 
                     <li class="bucket__drop-zone" ng-model="bucket.items" data-bucket-start="{{ bucket.start }}" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="true" data-jqyoui-options="{tolerance: 'pointer', hoverClass: 'dnd__status--hovered'}"></li>
 
-                    <li ng-repeat="item in bucket.items track by item.id" ng-include="'/assets/components/plan-view/day-view/day-view-plan-item.html'" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
+                    <li wf-day-view-plan-item ng-repeat="item in bucket.items track by item.id" item="item"  ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
 
                 </ul>
 

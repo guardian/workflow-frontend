@@ -1,0 +1,54 @@
+<div class="day-view__item-wrapper" ng-click="openDrawer()" ng-class="{'priority-high': item.priority == 1, 'priority-very-high': item.priority == 2}">
+    <div class="day-view__item-top-row">
+        <span class="day-view__item-time" ng-if="item.hasSpecificTime">{{ item.plannedDate.format("HH:mm") }}</span>
+        <div class="day-view__item-title">
+            <span class="bundle" ng-style="{{genColor(item.bundleId)}}" ng-if="item.bundleId">{{ item.bundleId }}</span>
+            <span>{{ item.title }}</span>
+        </div>
+    </div>
+
+    <div class="day-view__item-bottom-row">
+        <span class="day-view__item-byline" ng-if="item.byLine">{{ item.byLine }}</span>
+        <span class="day-view__item-note">{{ item.notes }}</span>
+    </div>
+
+    <div class="day-view__actions">
+        <button class="day-view__action-tomorrow" ng-click="shiftToTomorrow(); $event.stopPropagation();">Tomorrow</button>
+    </div>
+</div>
+
+<div class="day-view__item-drawer" ng-if="drawerOpen">
+
+    <ul class="drawer__column--wide">
+
+        <li class="drawer__section">
+            <span class="drawer__section-title">Title</span>
+            <wf-editable class="drawer__section-data-row" ng-model="item.title" wf-editable-on-update="onUpdateField('title', newValue)" wf-editable-required="true">
+                {{ item.title || '-' }}
+            </wf-editable>
+        </li>
+
+        <li class="drawer__section">
+            <span class="drawer__section-title">Note</span>
+            <wf-editable class="drawer__section-data-row" ng-model="item.notes" wf-editable-on-update="onUpdateField('notes', newValue)" wf-editable-required="true">
+                {{ item.notes || 'Empty...' }}
+            </wf-editable>
+        </li>
+    </ul>
+
+    <ul class="drawer__column--wide">
+
+        <li class="drawer__section">
+            <span class="drawer__section-title">Newslist</span>
+            <select class="drawer__section-control" ng-model="item.newsList" ng-options="nl.pk as nl.title for nl in newsLists" ng-change="onUpdateField('newsList', item.newsList)"></select>
+        </li>
+
+        <li class="drawer__section">
+            <span class="drawer__section-title">Priority</span>
+            <select class="drawer__section-control" ng-model="item.priority" ng-options="p.value as p.title for p in priorities" ng-change="onUpdateField('priority', item.priority)"></select>
+        </li>
+    </ul>
+
+
+
+</div>

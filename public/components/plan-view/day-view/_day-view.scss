@@ -69,11 +69,11 @@
     display: block;
     width: 100%;
     background-color: $c-grey-300;
-    padding: 2px 0 2px 6px;
+    padding: 2px 0 2px 3px;
     border-left: 3px solid #00adee;
     @extend %fs-data-4;
     font-weight: bold;
-    @include box-shadow(0px 1px 4px 1px $c-grey-600);
+    @include box-shadow(0px 1px 4px 1px $c-grey-400);
 
 }
 
@@ -81,6 +81,9 @@
     height: 32px;
     background-color: $c-grey-100;
     display: none;
+    &.dnd__status--hovered {
+        background-color: $c-highlight-blue;
+    }
 }
 
 .day-view--dragging .bucket__drop-zone {
@@ -92,20 +95,23 @@
     z-index: 1;
     left: 0;
     width: 100%;
-    height: 32px; // change this value in day-view.js too
     @extend %fs-data-3;
     background-color: #ffffff;
+
+    border-bottom: 1px solid $c-grey-200;
+    &:last-child {
+        border: none;
+    }
 
     @include box-shadow(0px 0px 0px 0px #c0c0c0);
     transition: box-shadow 0.2s ease-in-out;
 
-    padding: 2px 0 2px 6px;
-
     cursor: pointer;
 
-    &:hover {
+    &.ui-draggable-dragging {
         @include box-shadow(0px 1px 4px 2px #c0c0c0);
         z-index: 3;
+        opacity: 0.8;
     }
 
     .day-view__item-top-row,
