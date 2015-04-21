@@ -81,7 +81,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                     lastDay : '[Yesterday]',
                     sameDay : '[Today]',
                     nextDay : '[Tomorrow]',
-                    lastWeek : '[last] dddd',
+                    lastWeek : '[Last] dddd',
                     nextWeek : 'dddd',
                     sameElse : 'L'
                 }
@@ -105,10 +105,9 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 });
         });
 
-        $scope.selectedDate = null;
+        $scope.selectedDate = moment().startOf('day');
 
         $scope.selectDay = function (date) {
-            console.log("selectDay", date);
             $scope.selectedDate = date;
         };
 
@@ -160,7 +159,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         $scope.$watch('selectedDate', (newValue, oldValue) => {
             $scope.currentlySelectedDay = newValue;
             updateScopeItems();
-        }, true);
+        }, false);
 
     }])
     .controller('wfDateListController', [ '$scope', function ($scope) {

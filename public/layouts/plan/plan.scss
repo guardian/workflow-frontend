@@ -1,5 +1,5 @@
 @import "layouts/global/colours";
-@import "components/quick-add/quick-add";
+@import "components/plan-view/quick-add/quick-add";
 
 @import "components/plan-view/day-view/day-view";
 
@@ -28,7 +28,7 @@
 }
 
 .date-list {
-    flex: 0 0 160px;
+    flex: 0 0 260px;
     overflow-x: auto;
     border-right: 1px solid $c-grey-400;
 }
@@ -41,6 +41,14 @@
     padding: 2px 0 2px 9px;
     border-left: 3px solid #fff;
     @extend %fs-data-4;
+}
+
+.date-list__date-date,
+.date-list__date-items-indicator--faded {
+    color: $c-grey-400;
+    @extend %fs-data-2;
+    line-height: 18px;
+    line-height: 1.8rem;
 }
 
 //.three-month-view ul li .label {

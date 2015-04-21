@@ -1,30 +1,32 @@
 <div class="day-view">
 
+    <div class="day-view__quick-add">
+        <wf-quick-add on-add-hook="quickAddHook" pre-selected-date="selectedDate"></wf-quick-add>
+    </div>
+
     <div class="day-view__list">
 
         <ul class="day-view__list-buckets list-unstyled">
+
+            <li class="day-view__bucket day-view__bucket--unscheduled">
+                <div class="bucket__title">Unscheduled</div>
+
+                <ul class="bucket__items list-unstyled">
+
+                    <li ng-repeat="item in buckets.unscheduledItems track by item.id" ng-include="'/assets/components/plan-view/day-view/day-view-plan-item.html'" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
+
+                </ul>
+            </li>
+
             <li class="day-view__bucket" ng-repeat="bucket in buckets" >
                 <div class="bucket__title">{{ toMeridiem(bucket.start) }} - {{ toMeridiem(bucket.end) }}</div>
 
                 <ul class="bucket__items list-unstyled">
 
-                    <li class="bucket__drop-zone" ng-model="bucket.items" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="true" data-jqyoui-options="{tolerance: 'pointer', hoverClass: 'dnd__status--hovered'}"></li>
+                    <li class="bucket__drop-zone" ng-model="bucket.items" data-bucket-start="{{ bucket.start }}" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="true" data-jqyoui-options="{tolerance: 'pointer', hoverClass: 'dnd__status--hovered'}"></li>
 
-                    <li ng-repeat="item in bucket.items track by item.id" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions">
-                        <div class="day-view__item-top-row">
-                            <span class="day-view__item-time">{{ item.plannedDate.format("HH:mm") }}</span>
-                            <div class="day-view__item-title">
-                                <span class="bundle" ng-style="{{genColor(item.bundleId)}}" ng-if="item.bundleId">{{ item.bundleId }}</span>
-                                <span>{{ item.title }}</span>
-                            </div>
-                        </div>
+                    <li ng-repeat="item in bucket.items track by item.id" ng-include="'/assets/components/plan-view/day-view/day-view-plan-item.html'" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
 
-                        <div class="day-view__item-bottom-row">
-                            <span class="day-view__item-byline" ng-if="item.byLine">{{ item.byLine }}</span>
-                            <span class="day-view__item-note">{{ item.notes }}</span>
-                        </div>
-
-                    </li>
                 </ul>
 
             </li>
