@@ -10,7 +10,7 @@ import lib.Composer._
 import models.PlanDB
 
 import play.api.mvc._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 
 object Application extends Controller with PanDomainAuthActions {
 
@@ -25,7 +25,9 @@ object Application extends Controller with PanDomainAuthActions {
       desks = DeskDB.deskList.sortBy(_.name)
       sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
       newsLists = NewsListDB.newsListList.sortBy(_.title)
-      newsListBuckets = NewsListBucketDB.newsListBucketsList.sortBy(_.start)
+      newsListBuckets = NewsListBucketDB.newsListBucketsList.groupBy(_.newsList).map({
+        case (newsList, buckets) => (newsList, Json.toJson(buckets))
+      }).toSeq
     }
     yield {
       val user = request.user
@@ -46,7 +48,7 @@ object Application extends Controller with PanDomainAuthActions {
         "user" -> Json.parse(user.toJson),
         "incopyExportUrl" -> PrototypeConfiguration.cached.incopyExportUrl,
         "newsLists" -> newsLists,
-        "newsListBuckets" -> newsListBuckets
+        "newsListBuckets" -> JsObject(newsListBuckets)
       )
 
       Ok(views.html.app("Plan View", Some(user), config))
