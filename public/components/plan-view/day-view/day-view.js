@@ -42,49 +42,61 @@ function wfDayView ($rootScope, $http) {
             });
 
             $scope.toMeridiem = function (time) {
-                if (time > 12) {
-                    return (time - 12) + 'PM';
+                if (time === 0 || time === 24) {
+                    return 'Midnight';
+                }else if (time > 12) {
+                    return (time - 12) + 'pm';
                 } else if (time == 12) {
-                    return time + 'PM';
+                    return time + 'pm';
                 } else {
-                    return time + 'AM';
+                    return time + 'am';
                 }
             };
+
             $scope.$watch('planItems', function (newValue, oldValue) {
 
                 if (newValue && oldValue) {
                     if (!comparePlannedItems(newValue, oldValue)) {
 
-                        let sortedItems = sortPlannedItemsByDate(newValue);
-
-                        $scope.buckets.unscheduledItems = [];
-
-                        $scope.buckets.forEach((bucket) => {
-                            bucket.items = [];
-                        });
-
-                        sortedItems.forEach((item) => {
-
-                            let hour = item.plannedDate.hours();
-
-                            if (!item.bucketed && !item.hasSpecificTime) {
-                                $scope.buckets.unscheduledItems.push(item);
-                            } else {
-                                for (let i = 0; i < $scope.buckets.length; i++) {
-
-                                    let bucket = $scope.buckets[i];
-
-                                    if (hour >= bucket.start && hour < bucket.end) {
-
-                                        bucket.items.push(item);
-                                        break;
-                                    }
-                                }
-                            }
-                        });
+                        processPlanItems(newValue)
                     }
                 }
             }, true);
+
+            $scope.$on('update-plan-items', () => {
+                processPlanItems($scope.planItems);
+            });
+
+            function processPlanItems (items) {
+
+                let sortedItems = sortPlannedItemsByDate(items);
+
+                $scope.buckets.unscheduledItems = [];
+
+                $scope.buckets.forEach((bucket) => {
+                    bucket.items = [];
+                });
+
+                sortedItems.forEach((item) => {
+
+                    let hour = item.plannedDate.hours();
+
+                    if (!item.bucketed && !item.hasSpecificTime) {
+                        $scope.buckets.unscheduledItems.push(item);
+                    } else {
+                        for (let i = 0; i < $scope.buckets.length; i++) {
+
+                            let bucket = $scope.buckets[i];
+
+                            if (hour >= bucket.start && hour < bucket.end) {
+
+                                bucket.items.push(item);
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
 
             $scope.draggingStart = (event, ui, item) => {
                 $scope.draggedItem = item;

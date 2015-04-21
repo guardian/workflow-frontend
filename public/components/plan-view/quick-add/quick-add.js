@@ -46,6 +46,8 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
 
                 $scope.addDate = $scope.preSelectedDate;
 
+                $scope.$watch('preSelectedDate', (date) => { $scope.addDate = date; });
+
                 $scope.active = false;
                 $scope.buttonText = 'Add';
 

@@ -9,6 +9,7 @@ import 'jquery-ui/droppable'
 import 'angular-dragdrop';
 
 import { wfDayView } from 'components/plan-view/day-view/day-view';
+import { wfDayViewPlanItem } from 'components/plan-view/day-view-plan-item/day-view-plan-item';
 
 function withLocale(locale, f) {
     // can't find a way to create a new locale without
@@ -22,6 +23,7 @@ function withLocale(locale, f) {
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
     .directive('wfDayView', ['$rootScope', '$http', wfDayView])
+    .directive('wfDayViewPlanItem', ['$rootScope', '$http', '$timeout', wfDayViewPlanItem])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
         var filterParams = wfFiltersService.getAll();
