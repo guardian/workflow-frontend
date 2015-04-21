@@ -49,12 +49,18 @@ GET            /api/sections                           controllers.Api.sections
 
 # API V1
 
-# Content
+# Plan
+# PlanItems
 GET            /api/v1/plan                            controllers.PlanApi.plan(newsList: Option[Long], startDate: Option[String], endDate: Option[String])
 GET            /api/v1/plan/item                       controllers.PlanApi.getPlannedItem
 POST           /api/v1/plan/item                       controllers.PlanApi.addPlannedItem
-DELETE         /api/v1/plan/item                       controllers.PlanApi.deletePlannedItem
-# GET            /api/v1/plan/bundle                     controllers.PlanApi.bundles
+DELETE         /api/v1/plan/item                       controllers.PlanApi.deletePlannedItem 
+
+# Bundles
+GET            /api/v1/plan/bundle/:id                 controllers.PlanApi.getBundleById(id: Long)
+GET            /api/v1/plan/bundles                    controllers.PlanApi.getBundles
+
+# Content
 GET            /api/v1/content                         controllers.ContentApi.content
 GET            /api/v1/content/:id                     controllers.ContentApi.contentById(id: String)
 POST           /api/v1/content                         controllers.ContentApi.createContent
