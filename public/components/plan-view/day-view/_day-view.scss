@@ -2,7 +2,14 @@
 
 .day-view {
     width: 100%;
-    display: flex;
+//    display: flex;
+}
+
+.day-view__quick-add {
+    padding: 12px;
+    position: relative;
+    z-index: 3;
+    background-color: #ffffff;
 }
 
 .day-view__times {
@@ -37,8 +44,8 @@
 
 .day-view__list {
     position: relative;
-    -webkit-flex: 1 0 auto;
-    flex: 1 0 auto;
+//    -webkit-flex: 1 0 auto;
+//    flex: 1 0 auto;
 }
 
 .day-view__list-bg {
@@ -57,6 +64,8 @@
 }
 
 .bucket__title {
+    position: relative;
+    z-index: 2;
     display: block;
     width: 100%;
     background-color: $c-grey-300;
@@ -64,6 +73,8 @@
     border-left: 3px solid #00adee;
     @extend %fs-data-4;
     font-weight: bold;
+    @include box-shadow(0px 1px 4px 1px $c-grey-600);
+
 }
 
 .bucket__drop-zone {
@@ -78,14 +89,14 @@
 
 .day-view__item {
     //position: absolute;
-    z-index: 2;
+    z-index: 1;
     left: 0;
     width: 100%;
     height: 32px; // change this value in day-view.js too
     @extend %fs-data-3;
     background-color: #ffffff;
 
-    @include box-shadow(0px 1px 4px 0px #c0c0c0);
+    @include box-shadow(0px 0px 0px 0px #c0c0c0);
     transition: box-shadow 0.2s ease-in-out;
 
     padding: 2px 0 2px 6px;

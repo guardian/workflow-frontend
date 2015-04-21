@@ -1,0 +1,12 @@
+<div class="day-view__item-top-row">
+    <span class="day-view__item-time" ng-if="item.hasSpecificTime">{{ item.plannedDate.format("HH:mm") }}</span>
+    <div class="day-view__item-title">
+        <span class="bundle" ng-style="{{genColor(item.bundleId)}}" ng-if="item.bundleId">{{ item.bundleId }}</span>
+        <span>{{ item.title }}</span>
+    </div>
+</div>
+
+<div class="day-view__item-bottom-row">
+    <span class="day-view__item-byline" ng-if="item.byLine">{{ item.byLine }}</span>
+    <span class="day-view__item-note">{{ item.notes }}</span>
+</div>

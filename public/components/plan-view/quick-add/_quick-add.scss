@@ -6,6 +6,9 @@
   background-color: #00ADEE;
   border-radius: 0;
   width: 100px;
+  display: inline-block;
+  vertical-align: top;
+  height: 100%;
   opacity: 100;
 
   transition: background-color 0.5s ease;
@@ -39,4 +42,17 @@
   }
 
 
+}
+
+// Patch for use in day-view...
+
+.quick-add {
+    height: 34px;
+}
+
+.quick-add__input {
+    height: 100%;
+    vertical-align: top;
+    display: inline-block;
+    padding-left: 8px;
 }

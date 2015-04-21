@@ -2,10 +2,15 @@
 
     <div class="date-list">
         <ul class="date-list__list list-unstyled">
-            <li class="date-list__date" ng-class="{'date-list__date--selected': date == selectedDate}" ng-repeat="date in dateList"
-                ng-controller="wfDateListController" ng-click="selectDay(date)">{{date | dateListFormatter}}
+            <li class="date-list__date" ng-class="{'date-list__date--selected': date.isSame(selectedDate, 'day')}" ng-repeat="date in dateList"
+                ng-controller="wfDateListController" ng-click="selectDay(date)">
+                <span class="date-list__date-title">{{ date | dateListFormatter }}</span>
+                <span class="date-list__date-items-indicator" ng-class="{'date-list__date-items-indicator--faded': items.length === 0}"> - {{ items.length }} {{ items.length === 1 ? "item" : "items" }}</span>
+                <span class="date-list__date-date">({{ date.format('DD/MM/YY') }})</span>
                 <ul class="day-events list-unstyled" ng-if="items.length">
-                    <li class="day-event" ng-repeat="item in items">{{item.title}}</li>
+                    <li class="day-event" ng-repeat="item in items">
+                        <span class="day-event__title">{{item.title}}</span>
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -33,5 +38,5 @@
         <!--</div>-->
     </div>
 
-    <wf-day-view class="detailed-schedule" plan-items="dayItems" wf-on-resize="onResize"></wf-day-view>
+    <wf-day-view class="detailed-schedule" plan-items="dayItems" selected-date="selectedDate"></wf-day-view>
 </div>

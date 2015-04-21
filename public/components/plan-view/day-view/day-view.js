@@ -4,7 +4,8 @@ function wfDayView ($rootScope, $http) {
         templateUrl: '/assets/components/plan-view/day-view/day-view.html',
         scope: {
             newsListName: '=',
-            planItems: '='
+            planItems: '=',
+            selectedDate: '='
         },
         controller: function ($scope) {
             $scope.draggableOptions = {
@@ -56,6 +57,8 @@ function wfDayView ($rootScope, $http) {
 
                         let sortedItems = sortPlannedItemsByDate(newValue);
 
+                        $scope.buckets.unscheduledItems = [];
+
                         $scope.buckets.forEach((bucket) => {
                             bucket.items = [];
                         });
@@ -64,14 +67,18 @@ function wfDayView ($rootScope, $http) {
 
                             let hour = item.plannedDate.hours();
 
-                            for (let i = 0; i < $scope.buckets.length; i++) {
+                            if (!item.bucketed && !item.hasSpecificTime) {
+                                $scope.buckets.unscheduledItems.push(item);
+                            } else {
+                                for (let i = 0; i < $scope.buckets.length; i++) {
 
-                                let bucket = $scope.buckets[i];
+                                    let bucket = $scope.buckets[i];
 
-                                if (hour >= bucket.start && hour < bucket.end) {
+                                    if (hour >= bucket.start && hour < bucket.end) {
 
-                                    bucket.items.push(item);
-                                    break;
+                                        bucket.items.push(item);
+                                        break;
+                                    }
                                 }
                             }
                         });
@@ -92,9 +99,12 @@ function wfDayView ($rootScope, $http) {
 
                 var el = ui.draggable.detach();
 
-                el.appendTo(event.target.parentNode);
+                $scope.draggedItem.bucketed = true;
+                $scope.draggedItem.hasSpecificTime = false;
 
-                console.log('drop!', $scope.draggedItem);
+                $scope.draggedItem.plannedDate.hours(event.target.getAttribute('data-bucket-start'));
+
+                console.log($scope.draggedItem.plannedDate, event.target.getAttribute('data-bucket-start'));
 
                 $http.post("/api/v1/plan/item", JSON.stringify($scope.draggedItem));
 

@@ -33,13 +33,19 @@ var QA_BUTTON_DEFAULT_TEXT = 'Add',
 angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
     .directive('wfQuickAdd', ['wfContentService', 'wfFiltersService', '$rootScope', '$timeout',   function (wfContent, wfFiltersService, $rootScope, $timeout) {
        return {
-            restrict: 'A',
+            restrict: 'E',
             templateUrl: '/assets/components/plan-view/quick-add/quick-add.html',
             scope: {
                 customDefaultProps: '=',
-                onAddHook: '='
+                onAddHook: '=',
+                preSelectedDate: '='
             },
             link: function($scope, elm) {
+
+                $scope.withDatePicker = $scope.preSelectedDate ? false : true;
+
+                $scope.addDate = $scope.preSelectedDate;
+
                 $scope.active = false;
                 $scope.buttonText = 'Add';
 
@@ -64,7 +70,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
 
                 $scope.clearFields = function() {
                     $scope.addText = null;
-                    $scope.addDate = null;
+                    $scope.addDate = $scope.preSelectedDate;
                     $rootScope.$broadcast('resetPicker');
                 };
 
