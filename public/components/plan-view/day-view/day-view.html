@@ -13,12 +13,12 @@
 
                 <ul class="bucket__items list-unstyled">
 
-                    <li wf-day-view-plan-item ng-repeat="item in buckets.unscheduledItems track by item.id" item="item" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
+                    <li wf-day-view-plan-item ng-repeat="item in unscheduledItems track by item.id" item="item" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
 
                 </ul>
             </li>
 
-            <li class="day-view__bucket" ng-repeat="bucket in buckets" >
+            <li class="day-view__bucket" ng-repeat="bucket in buckets track by bucket.start" >
                 <div class="bucket__title">{{ toMeridiem(bucket.start) }} - {{ toMeridiem(bucket.end) }}</div>
 
                 <ul class="bucket__items list-unstyled">

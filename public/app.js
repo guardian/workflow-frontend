@@ -71,9 +71,11 @@ angular.module('workflow',
         'wfPlanToolbar',
         'wfQuickAdd'
     ])
-    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider ) {
+    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', '$animateProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider, $animateProvider ) {
         // TODO: remember user's state and redirect there on default '' route
         $urlRouterProvider.when('', '/dashboard');
+
+        $animateProvider.classNameFilter(/^((?!(day-view__item)).)*$/); // https://github.com/angular/angular.js/issues/3613#issuecomment-86704187
 
         $compileProvider.aHrefSanitizationWhitelist(
             RegExp($compileProvider.aHrefSanitizationWhitelist().source +

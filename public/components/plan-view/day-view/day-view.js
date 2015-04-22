@@ -1,4 +1,6 @@
-function wfDayView ($rootScope, $http) {
+import _ from 'lodash';
+
+function wfDayView ($rootScope, $http, $timeout) {
     return {
         restrict: 'E',
         templateUrl: '/assets/components/plan-view/day-view/day-view.html',
@@ -21,8 +23,6 @@ function wfDayView ($rootScope, $http) {
                 snapMode: 'inner',
                 revert: 'invalid'
             };
-        },
-        link: ($scope, elem, attrs) => {
 
             _wfConfig.planBuckets = {
                 'default': [
@@ -41,24 +41,17 @@ function wfDayView ($rootScope, $http) {
                 bucket.items = [];
             });
 
-            $scope.toMeridiem = function (time) {
-                if (time === 0 || time === 24) {
-                    return 'Midnight';
-                }else if (time > 12) {
-                    return (time - 12) + 'pm';
-                } else if (time == 12) {
-                    return time + 'pm';
-                } else {
-                    return time + 'am';
-                }
-            };
+            $scope.unscheduledItems = [];
 
-            $scope.$watch('planItems', function (newValue, oldValue) {
+            $scope.$watchCollection(() => $scope.planItems, (newValue, oldValue) => {
+
+                newValue = sortPlannedItemsByDate(newValue);
+                oldValue = sortPlannedItemsByDate(oldValue);
 
                 if (newValue && oldValue) {
                     if (!comparePlannedItems(newValue, oldValue)) {
 
-                        processPlanItems(newValue)
+                        processPlanItems(newValue);
                     }
                 }
             }, true);
@@ -67,14 +60,12 @@ function wfDayView ($rootScope, $http) {
                 processPlanItems($scope.planItems);
             });
 
-            function processPlanItems (items) {
+            function processPlanItems (sortedItems) {
 
-                let sortedItems = sortPlannedItemsByDate(items);
-
-                $scope.buckets.unscheduledItems = [];
+                $scope.unscheduledItems.length = 0;
 
                 $scope.buckets.forEach((bucket) => {
-                    bucket.items = [];
+                    bucket.items.length = 0;
                 });
 
                 sortedItems.forEach((item) => {
@@ -82,7 +73,7 @@ function wfDayView ($rootScope, $http) {
                     let hour = item.plannedDate.hours();
 
                     if (!item.bucketed && !item.hasSpecificTime) {
-                        $scope.buckets.unscheduledItems.push(item);
+                        $scope.unscheduledItems.push(item);
                     } else {
                         for (let i = 0; i < $scope.buckets.length; i++) {
 
@@ -97,6 +88,20 @@ function wfDayView ($rootScope, $http) {
                     }
                 });
             }
+        },
+        link: ($scope, elem, attrs) => {
+
+            $scope.toMeridiem = function (time) {
+                if (time === 0 || time === 24) {
+                    return 'Midnight';
+                }else if (time > 12) {
+                    return (time - 12) + 'pm';
+                } else if (time == 12) {
+                    return time + 'pm';
+                } else {
+                    return time + 'am';
+                }
+            };
 
             $scope.draggingStart = (event, ui, item) => {
                 $scope.draggedItem = item;
