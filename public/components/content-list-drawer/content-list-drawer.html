@@ -232,6 +232,12 @@
                             {{ awaitingDeleteConfirmation ? 'Delete' : 'Delete from Workflow' }}
                         </span>
                     </li>
+                    <li class="drawer__control">
+                        <a href="{{ restorerUrl }}" class="drawer__section-data-row drawer__control-item drawer__control-item--incopy" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InCopy">
+                            <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="restorer"></i>
+                            View versions
+                        </a>
+                    </li>
                     <li class="drawer__control" ng-show="incopyExportEnabled">
                         <a href="{{ incopyExportUrl }}" class="drawer__section-data-row drawer__control-item drawer__control-item--incopy" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InCopy">
                             <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="incopy"></i>
