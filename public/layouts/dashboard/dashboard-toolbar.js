@@ -10,6 +10,8 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
     .directive('wfToolbarSectionsDropdown', ['wfFiltersService', '$rootScope', 'sectionsInDesks', wfToolbarSectionsDropdown])
     .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'desks', 'sections', 'sectionsInDesks', 'wfTitleService', function ($scope, wfFiltersService, wfDateParser, prodOfficeService,  desks, sections, sectionsInDesks, wfTitleService) {
 
+        // Prod Office ===========================
+
         $scope.selectedProdOffice = wfFiltersService.get('prodOffice');
 
         $scope.prodOffices = prodOfficeService.getProdOffices();
@@ -91,10 +93,23 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
         $scope.selectedDesk = updateSelectedDeskBasedOnSections($scope.selectedSections.map((el) => el.name));
 
+        // Today View ===========================
+
+        $scope.availableContentViews = [{name: 'Today', value: 'today'}];
+
+        $scope.selectedView = wfFiltersService.get('view'); // All
+
+        $scope.$watch('selectedView', (newValue, oldValue) => {
+            $scope.$emit('filtersChanged.view', newValue);
+        }, true);
+
+        // Misc =================================
+
         $scope.$on('filters.clearAll', () => {
             $scope.selectedSections = [];
             $scope.selectedDesk = null;
             $scope.selectedProdOffice = null;
+            $scope.selectedView = null;
         });
     }])
 

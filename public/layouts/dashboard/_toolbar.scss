@@ -377,3 +377,20 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
     margin-left: 5px;
     cursor: pointer;
 }
+
+.dashboard-toolbar__button {
+    border: none;
+    background-color: $c-bluegrey;
+    border-right: $dashboard-toolbar-separator;
+    padding: 0 15px;
+    height: 49px;
+    position: relative;
+    z-index: 2;
+    line-height: 49px;
+    @extend %fs-data-3;
+    outline: none;
+    &:hover, &.dashboard-toolbar__button--blue {
+        background-color: $c-highlight-blue;
+        color: #fff;
+    }
+}
