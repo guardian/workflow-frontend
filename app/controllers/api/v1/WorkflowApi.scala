@@ -42,7 +42,7 @@ trait WorkflowApi {
                                 // default transformer just makes
                                 // Option using Sum.apply
                                 f: String => Option[A] = (s: String) => Some(s)): List[A] =
-  // conver the query string into a list of filters by separating on
+  // convert the query string into a list of filters by separating on
   // "," and pass to the transformation function to get the required
   // type. If the param doesn't exist in the query string, assume
   // the empty list
