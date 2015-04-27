@@ -7,7 +7,6 @@ import lib.PrototypeConfiguration.defaultExecutionContext
 
 import lib._
 import lib.Composer._
-import models.PlanDB
 
 import play.api.mvc._
 import play.api.libs.json.{JsObject, Json}

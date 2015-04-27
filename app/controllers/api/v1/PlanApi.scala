@@ -1,7 +1,7 @@
 package controllers
 
 import org.joda.time.DateTime
-import com.gu.workflow.db.{PlannedItemDB, NewsListDB, PlannedItemQuery}
+import com.gu.workflow.db.{PlannedItemDB, NewsListDB, PlannedItemQuery, BundleDB}
 import controllers.Admin._
 import lib.Response.Response
 import models._
@@ -19,16 +19,16 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     val planQuery = PlannedItemQuery(newsListIdOption, startDateOption.map(d => DateTime.parse(d)), endDateOption.map(d => DateTime.parse(d)))
 
     Response(for {
-      items <- queryDataToResponse(PlannedItemDB.getPlannedItemsByQuery(planQuery)).right
+      items <- queryDataToResponse(PlannedItemDB.getPlannedItemsByQuery(planQuery), "Could not fetch plan items").right
     } yield {
       items
     })
   }
 
-  def queryDataToResponse[T](data: Option[T]): Response[T] = {
+  def queryDataToResponse[T](data: Option[T], errorMessage: String): Response[T] = {
     data match {
       case Some(data) => Right(ApiSuccess(data))
-      case None => Left(ApiError("Could not fetch plan items", "Could not fetch plan items", 500, "Error"))
+      case None => Left(ApiError(errorMessage, errorMessage, 500, "Error"))
     }
   }
 
@@ -43,7 +43,7 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
       plannedItemQuery <- extract[PlannedItem](jsValue.data).right
-      plannedItem <- queryDataToResponse(PlannedItemDB.getPlannedItemById(plannedItemQuery.data.id)).right
+      plannedItem <- queryDataToResponse(PlannedItemDB.getPlannedItemById(plannedItemQuery.data.id), "Could not fetch plan items").right
     } yield {
       plannedItem
     })
@@ -53,7 +53,7 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
       plannedItem <- extract[PlannedItem](jsValue.data).right
-      itemId <- queryDataToResponse(PlannedItemDB.upsert(plannedItem.data)).right
+      itemId <- queryDataToResponse(PlannedItemDB.upsert(plannedItem.data), "Could not add plan item").right
     } yield {
       itemId
     })
@@ -63,23 +63,26 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
       plannedItem <- extract[PlannedItem](jsValue.data).right
-      itemId <- queryDataToResponse(PlannedItemDB.deletePlannedItem(plannedItem.data)).right
+      itemId <- queryDataToResponse(PlannedItemDB.deletePlannedItem(plannedItem.data), "Could not fetch delete item").right
     } yield {
       itemId
     })
   }
 
-//  def startWorkOnPlannedItem(idOption: Option[Long]) = APIAuthAction { implicit request =>
-//    Response(for {
-//      id <- queryDataToResponse(idOption)
-//    } yield {
-//      id
-//    })
-//  }
+  def getBundleById(id : Long) = APIAuthAction { implicit request =>
+    Response(for {
+      bundle <- queryDataToResponse(BundleDB.getBundleById(id), "Could not fetch bundle").right
+    } yield {
+        bundle
+    })
+  }
 
-//  def bundles() = APIAuthAction { request =>
-//    val list = PlanDB.bundles()
-//
-//    Response(Right(ApiSuccess(list)))
-//  }
+  def getBundles() = APIAuthAction { implicit request =>
+    Response(for {
+      bundles <- queryDataToResponse(BundleDB.getBundles, "Could not fetch bundles").right
+    } yield {
+        bundles
+      })
+  }
+
 }

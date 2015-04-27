@@ -8,7 +8,7 @@ CREATE TABLE plan_item
     planned_date TIMESTAMP NOT NULL,
     by_line TEXT,
     notes TEXT,
-    bundle_id TEXT,
+    bundle_id INTEGER NOT NULL,
     created TIMESTAMP NOT NULL ,
     priority INTEGER NOT NULL,
     bucketed BOOLEAN NOT NULL,

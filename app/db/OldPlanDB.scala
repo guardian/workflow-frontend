@@ -1,45 +1,45 @@
-package models
-
-import java.util.UUID
-
-import akka.agent.Agent
-import com.gu.workflow.db.{PlannedItemDB, CommonDB}
-import com.gu.workflow.query.{WfQueryTime, WfQuery}
-import com.gu.workflow.query.WfQuery._
-import controllers.Api._
-import lib.Response
-import lib.{Response, ApiSuccess}
-import Response.Response
-import Response.Response
-import lib.Responses._
-import org.joda.time.DateTime
-import play.api.db.slick._
-import play.api.libs.json._
-import lib.{ApiSuccess, Response}
-import play.api.mvc.{AnyContent, Request}
-import com.gu.workflow.db.Schema._
-import play.api.Play.current
-import play.api.db.slick.DB
-import scala.slick.driver.PostgresDriver.simple._
-import play.api.libs.functional.syntax._
-import play.api.libs.json.util._
-
-import scala.concurrent.Future
-
-import org.joda.time.DateTime
-import play.api.libs.json._
-import play.api.libs.json.Reads._
-
-case class Bundle(name: String, plannedItems: List[PlannedItem])
-object Bundle {
-  implicit val bundleFormats = Json.format[Bundle]
-}
-
-
-case class PlanView(bundles: List[Bundle], plannedItems: List[PlannedItem])
-object PlanView {
-  implicit val planVieFormats = Json.format[PlanView]
-}
+//package models
+//
+//import java.util.UUID
+//
+//import akka.agent.Agent
+//import com.gu.workflow.db.{PlannedItemDB, CommonDB}
+//import com.gu.workflow.query.{WfQueryTime, WfQuery}
+//import com.gu.workflow.query.WfQuery._
+//import controllers.Api._
+//import lib.Response
+//import lib.{Response, ApiSuccess}
+//import Response.Response
+//import Response.Response
+//import lib.Responses._
+//import org.joda.time.DateTime
+//import play.api.db.slick._
+//import play.api.libs.json._
+//import lib.{ApiSuccess, Response}
+//import play.api.mvc.{AnyContent, Request}
+//import com.gu.workflow.db.Schema._
+//import play.api.Play.current
+//import play.api.db.slick.DB
+//import scala.slick.driver.PostgresDriver.simple._
+//import play.api.libs.functional.syntax._
+//import play.api.libs.json.util._
+//
+//import scala.concurrent.Future
+//
+//import org.joda.time.DateTime
+//import play.api.libs.json._
+//import play.api.libs.json.Reads._
+//
+//case class Bundle(name: String, plannedItems: List[PlannedItem])
+//object Bundle {
+//  implicit val bundleFormats = Json.format[Bundle]
+//}
+//
+//
+//case class PlanView(bundles: List[Bundle], plannedItems: List[PlannedItem])
+//object PlanView {
+//  implicit val planVieFormats = Json.format[PlanView]
+//}
 
 //object StubData {
 //  val all = List(
@@ -83,7 +83,7 @@ object PlanView {
 //
 //}
 
-object PlanDB {
+//object PlanDB {
   import scala.concurrent.ExecutionContext.Implicits.global
 
 //  val bundles:  Agent[List[Bundle]]      = Agent(BundleData.all)
@@ -111,4 +111,4 @@ object PlanDB {
 //      q.sortBy(s => (s.priority.desc, s.workingTitle)).list.map(row => Stub.fromStubRow(row))
 //    }
 
-}
+//}
