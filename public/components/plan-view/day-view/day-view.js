@@ -73,8 +73,6 @@ function wfDayView ($rootScope, $http, $timeout) {
 
             function processPlanItems (sortedItems) {
 
-                console.log(sortedItems);
-
                 $scope.unscheduledItems.length = 0;
 
                 $scope.buckets.forEach((bucket) => {
