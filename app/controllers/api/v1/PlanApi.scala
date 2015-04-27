@@ -63,7 +63,7 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
       plannedItem <- extract[PlannedItem](jsValue.data).right
-      itemId <- queryDataToResponse(PlannedItemDB.deletePlannedItem(plannedItem.data), "Could not fetch delete item").right
+      itemId <- queryDataToResponse(PlannedItemDB.deletePlannedItem(plannedItem.data), "Could not delete plan item").right
     } yield {
       itemId
     })
@@ -82,6 +82,26 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       bundles <- queryDataToResponse(BundleDB.getBundles, "Could not fetch bundles").right
     } yield {
         bundles
+      })
+  }
+
+  def addBundle() = APIAuthAction { implicit request =>
+    Response(for {
+      jsValue <- readJsonFromRequest(request.body).right
+      bundle <- extract[Bundle](jsValue.data).right
+      itemId <- queryDataToResponse(BundleDB.upsert(bundle.data), "Could not add bundle").right
+    } yield {
+        itemId
+      })
+  }
+
+  def deleteBundle = APIAuthAction { implicit request =>
+    Response(for {
+      jsValue <- readJsonFromRequest(request.body).right
+      bundle <- extract[Bundle](jsValue.data).right
+      itemId <- queryDataToResponse(BundleDB.deleteBundle(bundle.data), "Could not delete bundle").right
+    } yield {
+        itemId
       })
   }
 
