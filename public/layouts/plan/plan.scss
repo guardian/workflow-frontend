@@ -1,5 +1,6 @@
 @import "layouts/global/colours";
 @import "components/plan-view/quick-add/quick-add";
+@import "components/plan-view/bundle-view/bundle-view";
 @import "components/plan-view/day-view/day-view";
 @import "components/plan-view/day-view-plan-item/day-view-plan-item";
 
@@ -155,70 +156,6 @@
 
 .add-event {
     display: none;
-}
-
-// Bundle List
-// ================================================================= //
-
-.bundle-list {
-
-    flex: 0 0 400px;
-    -webkit-flex: 0 0 400px;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: column;
-    -webkit-align-items: stretch;
-    border-right: 1px solid $c-grey-400;
-
-    .alert {
-        margin: 12px;
-    }
-}
-
-.bundle-list-items {
-
-}
-
-.day-bundle {
-    padding: 0 0 6px 0;
-
-    .day-bundle__title {
-        display: block;
-        width: 100%;
-        background-color: $c-grey-300;
-        padding: 2px 0 2px 6px;
-        border-left: 3px solid #00adee;
-        @extend %fs-data-4;
-        font-weight: bold;
-    }
-}
-
-.day-bundle__items {
-    padding: 2px 0 2px 18px;
-    .day-bundle__item {
-        @extend %fs-data-2;
-        padding: 2px 0;
-    }
-}
-
-.unassigned {
-    /*background-color: orange;*/
-    flex: 1 0 auto;
-    -webkit-flex: 1 0 auto;
-    -webkit-flex-basis: auto;
-    -webkit-align-items: stretch;
-    padding-right: 10px;
-    //border-top: 1px dotted silver;
-}
-
-.unassigned ul {
-    /*background-color: pink;*/
-}
-
-.unassigned-list-items {
-    list-style: none;
-    padding-left: 0px;
-    margin-left: 0px;
 }
 
 // Detailed-schedule
