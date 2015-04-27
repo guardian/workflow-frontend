@@ -121,11 +121,21 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         $scope.plannedItems = [];
 
         $scope.$on('plan-view-data-load', function (ev, data) {
-            $scope.plannedItems = _.map(data, (item) => {
-                item.plannedDate = moment(item.plannedDate);
-                return item;
+
+            data.forEach((bundle) => {
+                bundle.items.map((item) => {
+                    item.plannedDate = moment(item.plannedDate);
+                    return item;
+                });
             });
-            $scope.$broadcast('planned-items-changed', $scope.plannedItems);
+
+            $scope.plannedItemsByBundle = data;
+
+            $scope.plannedItems = $scope.plannedItemsByBundle.map((bundle) => {
+                return bundle.items;
+            }).flatten();
+
+            $scope.$broadcast('planned-items-changed', $scope.plannedItemsByBundle);
             document.querySelector('.plan-container').classList.add('loaded');
         });
 
@@ -142,7 +152,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         }
         function updateScopeItems() {
             $scope.dayItems = $scope.getItems(moment($scope.currentlySelectedDay), moment($scope.currentlySelectedDay).add(1, 'days'));
-            $scope.agendaItems = _.groupBy($scope.dayItems, function(item) { return item.bundleId || "No Bundle" });
+            //$scope.agendaItems = _.groupBy($scope.dayItems, function(item) { return item.bundleId || "No Bundle" });
         }
         $scope.$on('planned-items-changed', function () {
             updateScopeItems();

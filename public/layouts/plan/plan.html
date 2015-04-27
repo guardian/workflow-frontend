@@ -7,11 +7,11 @@
                 <span class="date-list__date-title">{{ date | dateListFormatter }}</span>
                 <span class="date-list__date-items-indicator" ng-class="{'date-list__date-items-indicator--faded': items.length === 0}"> - {{ items.length }} {{ items.length === 1 ? "item" : "items" }}</span>
                 <span class="date-list__date-date">({{ date.format('DD/MM/YY') }})</span>
-                <ul class="day-events list-unstyled" ng-if="items.length">
-                    <li class="day-event" ng-repeat="item in items">
-                        <span class="day-event__title">{{item.title}}</span>
-                    </li>
-                </ul>
+                <!--<ul class="day-events list-unstyled" ng-if="items.length">-->
+                    <!--<li class="day-event" ng-repeat="item in items">-->
+                        <!--<span class="day-event__title">{{item.title}}</span>-->
+                    <!--</li>-->
+                <!--</ul>-->
             </li>
         </ul>
     </div>
@@ -20,14 +20,14 @@
         <!--<div class="unassigned">-->
 
             <ul class="bundle-list-items list-unstyled">
-                <li class="alert alert-info" ng-if="!getBundles().length">
+                <li class="alert alert-info" ng-if="!plannedItemsByBundle.length">
                     <span>Nothing planned for Today!</span>
                 </li>
-                <li class="day-bundle" ng-repeat="bundle in getBundles()">
-                    <span class="day-bundle__title" ng-style="{{genColor(bundle)}}">{{ bundle }}</span>
+                <li class="day-bundle" ng-repeat="bundle in plannedItemsByBundle">
+                    <span class="day-bundle__title" ng-style="{{ genColor(bundle.id) }}">{{ bundle.title }}</span>
                     <ul class="day-bundle__items list-unstyled">
-                        <li class="day-bundle__item" ng-repeat="item in agendaItems[bundle]">
-                            <span>{{item.plannedDate.format("HH:mm")}}</span>
+                        <li class="day-bundle__item" ng-repeat="item in bundle.items">
+                            <span ng-if="item.hasSpecificTime">{{item.plannedDate.format("HH:mm")}}</span>
                             {{item.title}}
                             <span class="assigned-to">{{item.byLine}}</span>
                             <span class="note">{{item.notes}}</span>
