@@ -56,11 +56,24 @@ function wfDayView ($rootScope, $http, $timeout) {
                 }
             }, true);
 
-            $scope.$on('update-plan-items', () => {
+            $scope.$on('update-plan-item', ($event, newItem) => {
+
+                // Stupid Angular Shit
+
+                $scope.planItems = $scope.planItems.map((item) => {
+                    if (item.id === newItem.id) {
+                        return newItem;
+                    } else {
+                        return item;
+                    }
+                });
+
                 processPlanItems($scope.planItems);
             });
 
             function processPlanItems (sortedItems) {
+
+                console.log(sortedItems);
 
                 $scope.unscheduledItems.length = 0;
 
@@ -69,6 +82,8 @@ function wfDayView ($rootScope, $http, $timeout) {
                 });
 
                 sortedItems.forEach((item) => {
+
+                    if (!moment.isMoment(item.plannedDate)) { item.plannedDate = moment(item.plannedDate); }
 
                     let hour = item.plannedDate.hours();
 

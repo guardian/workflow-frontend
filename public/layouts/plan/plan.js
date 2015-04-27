@@ -23,7 +23,7 @@ function withLocale(locale, f) {
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
     .directive('wfDayView', ['$rootScope', '$http', '$timeout', wfDayView])
-    .directive('wfDayViewPlanItem', ['$rootScope', '$http', '$timeout', wfDayViewPlanItem])
+    .directive('wfDayViewPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', wfDayViewPlanItem])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
         var filterParams = wfFiltersService.getAll();
@@ -126,6 +126,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 return item;
             });
             $scope.$broadcast('planned-items-changed', $scope.plannedItems);
+            document.querySelector('.plan-container').classList.add('loaded');
         });
 
         function makeDateList() {
@@ -140,7 +141,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             return ret;
         }
         function updateScopeItems() {
-            console.log('updating scope items!');
             $scope.dayItems = $scope.getItems(moment($scope.currentlySelectedDay), moment($scope.currentlySelectedDay).add(1, 'days'));
             $scope.agendaItems = _.groupBy($scope.dayItems, function(item) { return item.bundleId || "No Bundle" });
         }

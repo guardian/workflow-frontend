@@ -53,6 +53,7 @@ GET            /api/sections                           controllers.Api.sections
 GET            /api/v1/plan                            controllers.PlanApi.plan(newsList: Option[Long], startDate: Option[String], endDate: Option[String])
 GET            /api/v1/plan/item                       controllers.PlanApi.getPlannedItem
 POST           /api/v1/plan/item                       controllers.PlanApi.addPlannedItem
+# POST           /api/v1/plan/item/:id/start-work        controllers.PlanApi.startWorkOnPlannedItem(id: Option[Long])
 DELETE         /api/v1/plan/item                       controllers.PlanApi.deletePlannedItem
 # GET            /api/v1/plan/bundle                     controllers.PlanApi.bundles
 GET            /api/v1/content                         controllers.ContentApi.content

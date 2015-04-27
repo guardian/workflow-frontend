@@ -1,6 +1,9 @@
 <div class="day-view">
 
     <div class="day-view__quick-add">
+
+        <h1 class="day-view__title">{{ selectedDate.format('dddd, Do MMMM, YYYY') }}</h1>
+
         <wf-quick-add on-add-hook="quickAddHook" pre-selected-date="selectedDate"></wf-quick-add>
     </div>
 
