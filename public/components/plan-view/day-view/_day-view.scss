@@ -2,14 +2,28 @@
 
 .day-view {
     width: 100%;
-//    display: flex;
+}
+
+.day-view__title {
+    @extend %f-data;
+    font-size: 20px;
+    line-height: 34px;
+    display: inline-block;
+    margin: 0 12px 0 0;
+    vertical-align: top;
 }
 
 .day-view__quick-add {
     padding: 12px;
+    height: 58px;
     position: relative;
     z-index: 3;
     background-color: #ffffff;
+    .quick-add {
+        display: inline-block;
+        line-height: 34px;
+        vertical-align: top;
+    }
 }
 
 .day-view__times {
@@ -91,58 +105,21 @@
 }
 
 .day-view__item {
-    //position: absolute;
-    z-index: 1;
-    left: 0;
     width: 100%;
+    border-bottom: 1px solid $c-grey-200;
     @extend %fs-data-3;
     background-color: #ffffff;
-
-    border-bottom: 1px solid $c-grey-200;
-    &:last-child {
-        border: none;
-    }
 
     @include box-shadow(0px 0px 0px 0px #c0c0c0);
     transition: box-shadow 0.2s ease-in-out;
 
-    cursor: pointer;
+    &:last-child {
+        border: none;
+    }
 
     &.ui-draggable-dragging {
         @include box-shadow(0px 1px 4px 2px #c0c0c0);
         z-index: 3;
         opacity: 0.8;
-    }
-
-    .day-view__item-top-row,
-    .day-view__item-bottom-row {
-        display: block;
-        height: 16px;
-        > * {
-            display: inline-block;
-        }
-    }
-
-    .day-view__item-time {
-        margin-right: 6px;
-    }
-
-    .day-view__item-title {
-        font-weight: bold;
-    }
-
-    .day-view__item-byline {
-//        background-color: #DCDCDC;
-//        border-radius: 50px;
-//        box-sizing: border-box;
-//        color: #333333;
-//        @extend %fs-data-1;
-//        line-height: 12px;
-//        margin: 0 6px;
-//        padding: 2px 6px;
-//        text-align: center;
-//        text-decoration: none;
-//        text-transform: none;
-//        width: auto;
     }
 }

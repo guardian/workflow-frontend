@@ -69,6 +69,14 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     })
   }
 
+//  def startWorkOnPlannedItem(idOption: Option[Long]) = APIAuthAction { implicit request =>
+//    Response(for {
+//      id <- queryDataToResponse(idOption)
+//    } yield {
+//      id
+//    })
+//  }
+
 //  def bundles() = APIAuthAction { request =>
 //    val list = PlanDB.bundles()
 //

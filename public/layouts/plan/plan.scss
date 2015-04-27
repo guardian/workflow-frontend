@@ -27,8 +27,50 @@
     width: 100%;
 }
 
+// Loading animation
+// ---------------------------------------------------------- //
+
+.date-list,
+.bundle-list,
+.detailed-schedule {
+    position: relative;
+    transition: left 0.3s ease-in-out, box-shadow 0.7s ease-in-out;
+    background-color: #fff;
+    @include box-shadow(2px 0px 8px 2px $c-grey-500);
+}
+
 .date-list {
-    flex: 0 0 260px;
+    left: -400px;
+    z-index: 3;
+    transition-delay: 0s, 1.4s;
+}
+
+.bundle-list {
+    left: -800px;
+    z-index: 2;
+    transition-delay: 0.35s, 1.4s;
+}
+
+.detailed-schedule {
+    left: -100%;
+    z-index: 1;
+    transition-delay: 0.75s, 1.4s;
+}
+
+.loaded {
+    .date-list,
+    .bundle-list,
+    .detailed-schedule {
+        left: 0;
+        @include box-shadow(0 0 0 0 #fff);
+    }
+}
+
+// Date Panel
+// ---------------------------------------------------------- //
+
+.date-list {
+    flex: 0 0 400px;
     overflow-x: auto;
     border-right: 1px solid $c-grey-400;
 }
@@ -115,10 +157,10 @@
     display: none;
 }
 
-// News Agenda
+// Bundle List
 // ================================================================= //
 
-.news-agenda {
+.bundle-list {
 
     flex: 0 0 400px;
     -webkit-flex: 0 0 400px;
@@ -133,7 +175,7 @@
     }
 }
 
-.news-agenda-items {
+.bundle-list-items {
 
 }
 
@@ -158,42 +200,6 @@
         padding: 2px 0;
     }
 }
-
-//.am-pm-timings {
-//    flex: 0 0 400px;
-//    -webkit-flex: 0 0 400px;
-//    display: -webkit-flex;
-//    display: flex;
-//    -webkit-flex-direction: column;
-//    -webkit-align-items: stretch;
-//    border-right: 1px solid $c-grey-400;
-//    font-size: 14px;
-//    line-height: 18px;
-//
-//}
-
-.am {
-    /*background-color: #ce7777;*/
-    flex: 1 0 auto;
-    -webkit-flex: 1 0 auto;
-    -webkit-flex-basis: auto;
-    -webkit-align-items: stretch;
-}
-
-.pm {
-    /*background-color: #6bd0bb;*/
-    flex: 1 0 auto;
-    -webkit-flex: 1 0 auto;
-    -webkit-flex-basis: auto;
-    -webkit-align-items: stretch;
-    border-top: 1px dotted silver;
-}
-
-//ul.news-agenda-items {
-//    list-style: none;
-//    padding: 0;
-//    margin: 0;
-//}
 
 .unassigned {
     /*background-color: orange;*/
@@ -240,10 +246,6 @@
     border-left: 3px solid #00adee;
     @extend %fs-data-2;
     font-weight: bold;
-}
-
-.detailed-schedule table {
-    width: 780px;
 }
 
 /* group time jumpers */

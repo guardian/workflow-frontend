@@ -1,4 +1,4 @@
-<div class="day-view__item-wrapper" ng-click="openDrawer()" ng-class="{'priority-high': item.priority == 1, 'priority-very-high': item.priority == 2}">
+<div class="day-view__item-wrapper" ng-click="drawerOpen = !drawerOpen" ng-class="{'priority-high': item.priority == 1, 'priority-very-high': item.priority == 2, 'created': !!item.composerId, 'drawer-open': drawerOpen}">
     <div class="day-view__item-top-row">
         <span class="day-view__item-time" ng-if="item.hasSpecificTime">{{ item.plannedDate.format("HH:mm") }}</span>
         <div class="day-view__item-title">
@@ -13,40 +13,58 @@
     </div>
 
     <div class="day-view__actions">
-        <!--<button class="day-view__action-start" ng-click="startWork(); $event.stopPropagation();">Start work</button>-->
-        <button class="day-view__action-tomorrow" ng-click="shiftToTomorrow(); $event.stopPropagation();">Move to tomorrow</button>
+        <button class="day-view__action day-view__action-start" ng-if="!item.composerId" ng-click="startWork(); $event.stopPropagation();" ng-class="{'loading': startWorkLoading}">Start work <span class="loader"></span></button>
+        <a class="day-view__action day-view__action-view" ng-if="item.composerId" href="/dashboard?composerId={{ item.composerId }}">View in produce</a>
+        <button class="day-view__action day-view__action-tomorrow" ng-click="shiftToTomorrow(); $event.stopPropagation();" ng-class="{'loading': MoveToTomorrowLoading}">Move to tomorrow  <span class="loader"></span></button>
     </div>
 </div>
 
-<div class="day-view__item-drawer" ng-if="drawerOpen">
+
+
+<div class="day-view__item-drawer" ng-class="{'day-view__item-drawer--open': drawerOpen}">
 
     <ul class="drawer__column--wide">
 
         <li class="drawer__section">
             <span class="drawer__section-title">Title</span>
-            <wf-editable class="drawer__section-data-row" ng-model="item.title" wf-editable-on-update="onUpdateField('title', newValue)" wf-editable-required="true">
+            <wf-editable class="drawer__section-data-row" ng-model="item.title" wf-editable-on-update="updateField('title', newValue)" wf-editable-required="true">
                 {{ item.title || '-' }}
             </wf-editable>
         </li>
 
         <li class="drawer__section">
             <span class="drawer__section-title">Note</span>
-            <wf-editable class="drawer__section-data-row" ng-model="item.notes" wf-editable-on-update="onUpdateField('notes', newValue)" wf-editable-required="true">
+            <wf-editable class="drawer__section-data-row" ng-model="item.notes" wf-editable-on-update="updateField('notes', newValue)" wf-editable-required="true">
                 {{ item.notes || 'Empty...' }}
             </wf-editable>
         </li>
     </ul>
 
-    <ul class="drawer__column--wide">
+    <ul class="drawer__column">
+        <li class="drawer__section">
+            <span class="drawer__section-title">Planned Time</span>
+
+            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': item.plannedDate, 'drawer__section-data-row--editable-empty': !item.plannedDate }" title="{{ (item.plannedDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}">
+                {{ (item.plannedDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
+            </span>
+
+            <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
+                <div wf-date-time-picker ng-model="item.plannedDate" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="updateField('plannedDate', item.plannedDate); dateTimeEdit = false" wf-small="true"></div>
+            </form>
+
+        </li>
+    </ul>
+
+    <ul class="drawer__column">
 
         <li class="drawer__section">
             <span class="drawer__section-title">Newslist</span>
-            <select class="drawer__section-control" ng-model="item.newsList" ng-options="nl.pk as nl.title for nl in newsLists" ng-change="onUpdateField('newsList', item.newsList)"></select>
+            <select class="drawer__section-control" ng-model="item.newsList" ng-options="nl.pk as nl.title for nl in newsLists" ng-change="updateField('newsList', item.newsList)"></select>
         </li>
 
         <li class="drawer__section">
             <span class="drawer__section-title">Priority</span>
-            <select class="drawer__section-control" ng-model="item.priority" ng-options="p.value as p.title for p in priorities" ng-change="onUpdateField('priority', item.priority)"></select>
+            <select class="drawer__section-control" ng-model="item.priority" ng-options="p.value as p.title for p in priorities" ng-change="updateField('priority', item.priority)"></select>
         </li>
     </ul>
 
