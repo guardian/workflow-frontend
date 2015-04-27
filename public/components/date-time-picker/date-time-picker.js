@@ -42,7 +42,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 cancelOn: '@wfCancelOn',
                 onCancel: '&wfOnCancel',
                 onUpdate: '&wfOnUpdate',
-                onSubmit:  '&wfOnSubmit'
+                onSubmit: '&wfOnSubmit'
             },
             templateUrl: '/assets/components/date-time-picker/date-time-picker.html',
 
@@ -53,7 +53,6 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
 
                 $element.addClass('date-time-picker');
-
 
                 // Watch for model updates to dateValue, and update datePicker when changes
                 $scope.$watch('dateValue', function (newValue) {
