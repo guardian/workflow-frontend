@@ -59,6 +59,8 @@ DELETE         /api/v1/plan/item                       controllers.PlanApi.delet
 # Bundles
 GET            /api/v1/plan/bundle/:id                 controllers.PlanApi.getBundleById(id: Long)
 GET            /api/v1/plan/bundles                    controllers.PlanApi.getBundles
+POST           /api/v1/plan/bundle                     controllers.PlanApi.addBundle
+DELETE         /api/v1/plan/bundle                     controllers.PlanApi.deleteBundle
 
 # Content
 GET            /api/v1/content                         controllers.ContentApi.content
