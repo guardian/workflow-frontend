@@ -8,6 +8,7 @@ import 'jquery-ui/droppable'
 
 import 'angular-dragdrop';
 
+import { wfBundleView } from 'components/plan-view/bundle-view/bundle-view';
 import { wfDayView } from 'components/plan-view/day-view/day-view';
 import { wfDayViewPlanItem } from 'components/plan-view/day-view-plan-item/day-view-plan-item';
 
@@ -21,7 +22,8 @@ function withLocale(locale, f) {
     return ret;
 }
 
-angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
+angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'wfBundleService', 'ngDragDrop'])
+    .directive('wfBundleView', ['$rootScope', 'wfBundleService', wfBundleView])
     .directive('wfDayView', ['$rootScope', '$http', '$timeout', wfDayView])
     .directive('wfDayViewPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', wfDayViewPlanItem])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {

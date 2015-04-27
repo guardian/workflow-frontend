@@ -33,7 +33,9 @@ import 'lib/google-api';
 import 'lib/polling-service';
 import 'lib/title-service';
 
+// Plan view specific
 import 'lib/plan-service';
+import 'lib/bundle-service';
 
 // 3rd party libs
 import 'angular-ui-router';

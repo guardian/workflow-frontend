@@ -16,27 +16,7 @@
         </ul>
     </div>
 
-    <div class="bundle-list">
-        <!--<div class="unassigned">-->
-
-            <ul class="bundle-list-items list-unstyled">
-                <li class="alert alert-info" ng-if="!plannedItemsByBundle.length">
-                    <span>Nothing planned for Today!</span>
-                </li>
-                <li class="day-bundle" ng-repeat="bundle in plannedItemsByBundle">
-                    <span class="day-bundle__title" ng-style="{{ genColor(bundle.id) }}">{{ bundle.title }}</span>
-                    <ul class="day-bundle__items list-unstyled">
-                        <li class="day-bundle__item" ng-repeat="item in bundle.items">
-                            <span ng-if="item.hasSpecificTime">{{item.plannedDate.format("HH:mm")}}</span>
-                            {{item.title}}
-                            <span class="assigned-to">{{item.byLine}}</span>
-                            <span class="note">{{item.notes}}</span>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        <!--</div>-->
-    </div>
+    <wf-bundle-view class="bundle-list" bundle-items="plannedItemsByBundle"></wf-bundle-view>
 
     <wf-day-view class="detailed-schedule" plan-items="dayItems" selected-date="selectedDate"></wf-day-view>
 </div>
