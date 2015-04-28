@@ -258,7 +258,7 @@
             @include largeScreen {
                 min-width: 0px;
                 max-width: none;
-                width: 300px;
+                width: 350px;
             }
 
             @include smallScreen {
@@ -298,7 +298,7 @@
             }
 
             @include largeScreen {
-                width: 475px;
+                width: 300px;
 
             }
         }
@@ -364,8 +364,7 @@
         }
 
         @include largeScreen {
-            max-width: none;
-            width: 475px;
+            max-width: 300px;
         }
     }
 
@@ -443,7 +442,7 @@
             }
         }
 
-        &--office { 
+        &--office {
             width: 20px;
             padding: 2px 3px;
         }
