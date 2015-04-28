@@ -33,12 +33,12 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     }
   }
 
-  def plannedItemQueryDataToResponse(planData: PlannedItem): Response[Long] = {
-    PlannedItemDB.upsert(planData) match {
-      case Some(id) => Right(ApiSuccess(id))
-      case None => Left(ApiError("Could not fetch plan items", "Could not fetch plan items", 500, "Error"))
-    }
-  }
+//  def plannedItemQueryDataToResponse(planData: PlannedItem): Response[Long] = {
+//    PlannedItemDB.upsert(planData) match {
+//      case Some(id) => Right(ApiSuccess(id))
+//      case None => Left(ApiError("Could not fetch plan items", "Could not fetch plan items", 500, "Error"))
+//    }
+//  }
 
   def getPlannedItem() = APIAuthAction { implicit request =>
     Response(for {
@@ -122,7 +122,17 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
       bundle <- extract[Bundle](jsValue.data).right
-      itemId <- queryDataToResponse(BundleDB.upsert(bundle.data), "Could not add bundle").right
+      itemId <- queryDataToResponse(BundleDB.insert(bundle.data), "Could not add bundle").right
+    } yield {
+        itemId
+      })
+  }
+
+  def patchBundle(id: Long, fieldName: String) = Action { implicit request =>
+    Response(for {
+      jsValue <- readJsonFromRequest(request.body).right
+      newFieldValue <- extractFromJson(fieldName, jsValue.data \ "data").right
+      itemId <- queryDataToResponse(BundleDB.update(id, fieldName, newFieldValue.data), "Could not update bundle").right
     } yield {
         itemId
       })
