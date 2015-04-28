@@ -207,6 +207,10 @@
 
         &--presence {
             position: relative;
+
+            @include largeScreen {
+                width: 50px;
+            }
         }
 
         &--deadline,
@@ -258,7 +262,7 @@
             @include largeScreen {
                 min-width: 0px;
                 max-width: none;
-                width: 350px;
+                width: 325px;
             }
 
             @include smallScreen {
@@ -298,7 +302,7 @@
             }
 
             @include largeScreen {
-                width: 300px;
+                width: 375px;
 
             }
         }
@@ -364,7 +368,7 @@
         }
 
         @include largeScreen {
-            max-width: 300px;
+            max-width: 375px;
         }
     }
 
@@ -382,13 +386,17 @@
         }
 
         @include largeScreen {
-            width: 350px;
+            width: 325px;
         }
     }
 
     .content-list-item__field--section {
         @include text-truncate;
         max-width: 80px;
+
+        @include largeScreen {
+            width: 110px;
+        }
     }
 
     .content-list-item__field {
@@ -445,6 +453,12 @@
         &--office {
             width: 20px;
             padding: 2px 3px;
+        }
+
+        &--presence {
+            @include largeScreen {
+                width: 50px;
+            }
         }
 
         &--needsLegal {
