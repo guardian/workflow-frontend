@@ -36,11 +36,16 @@ angular
                     });
                 }
 
-                update(bundle) { // requires the bundle id...
+                updateTitle(bundleId, title) {
+
+                    _wfConfig.bundleList[bundleId].title = title;
+
                     return httpRequest({
-                        method: 'POST',
-                        url: '/api/v1/plan/bundle',
-                        data: bundle
+                        method: 'PATCH',
+                        url: '/api/v1/plan/bundle/' + bundleId + '/title',
+                        data: {
+                            data: title
+                        }
                     });
                 }
 

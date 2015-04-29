@@ -28,6 +28,31 @@
     width: 100%;
 }
 
+// Basic Layout
+// ---------------------------------------------------------- //
+
+.date-list {
+    flex: 0 0 400px;
+}
+
+.bundle-list {
+    flex: 0 0 400px;
+}
+
+.detailed-schedule {
+    flex: 1 0 auto;
+}
+
+@include smallScreen {
+    .date-list {
+        flex: 0 0 200px;
+    }
+
+    .bundle-list {
+        flex: 0 0 200px;
+    }
+}
+
 // Loading animation
 // ---------------------------------------------------------- //
 
@@ -71,7 +96,6 @@
 // ---------------------------------------------------------- //
 
 .date-list {
-    flex: 0 0 400px;
     overflow-x: auto;
     border-right: 1px solid $c-grey-400;
 }
@@ -162,12 +186,7 @@
 // ================================================================= //
 
 .detailed-schedule {
-    display: -webkit-flex;
-    display: flex;
-    flex: 1 0 auto;
-    -webkit-flex: 1 0 auto;
     overflow-x: auto;
-
     tr td {
         padding: 2px 0;
     }

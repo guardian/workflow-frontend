@@ -4,13 +4,6 @@
 // ================================================================= //
 
 .bundle-list {
-
-    flex: 0 0 400px;
-    -webkit-flex: 0 0 400px;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: column;
-    -webkit-align-items: stretch;
     border-right: 1px solid $c-grey-400;
 
     .alert {

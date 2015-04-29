@@ -89,9 +89,14 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBun
 
             };
 
-            $scope.updatePlannedDate = function () {
+            $scope.$watch('item.bundleId', (newValue, oldValue) => {
 
-            }
+                $timeout(() => {
+
+                    $scope.item.bundleTitle = wfBundleService.getTitle(newValue);
+                    $scope.item.bundleColor = wfBundleService.genBundleColor($scope.item.bundleTitle);
+                });
+            });
         }
     }
 }
