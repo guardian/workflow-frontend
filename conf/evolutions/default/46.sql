@@ -2,7 +2,7 @@
 
 CREATE TABLE plan_item
 (
-    id SERIAL NOT NULL PRIMARY KEY,
+    pk SERIAL NOT NULL PRIMARY KEY,
     title TEXT NOT NULL,
     news_list INTEGER NOT NULL REFERENCES news_list (pk),
     planned_date TIMESTAMP NOT NULL,
