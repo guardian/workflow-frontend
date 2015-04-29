@@ -22,6 +22,9 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             });
     }
 
+    function buildComposerRestorerUrl (composerId) {
+        return config.composerRestorerUrl + '/' + composerId + '/versions';
+    }
 
     return {
         restrict: 'A',
@@ -37,6 +40,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
         controller: function ($scope, $element) {
 
             var $parent = $element.parent();
+
+            $scope.composerRestorerUrl = config.composerRestorerUrl;
 
             /**
              * Hide the drawer from view.
@@ -154,6 +159,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                 // TODO: move build incopy URL to decorator
                 $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
+
+                $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
 
                 contentListDrawerController.toggleContent(contentItem, contentListItemElement);
 
