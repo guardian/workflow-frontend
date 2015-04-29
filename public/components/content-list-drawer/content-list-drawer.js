@@ -41,8 +41,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
             var $parent = $element.parent();
 
-            $scope.composerRestorerUrl = config.composerRestorerUrl;
-
             /**
              * Hide the drawer from view.
              * @returns {Promise}
