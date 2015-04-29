@@ -97,7 +97,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
 
                 draggedItem.bundleId = droppedBundle.id;
 
-                wfPlannedItemService.updateField($scope.draggedItem.id, 'bundleId', droppedBundle.pk).then(() => {
+                wfPlannedItemService.updateField($scope.draggedItem.id, 'bundleId', droppedBundle.id).then(() => {
                     $scope.$emit('plan-view__bundles-edited');
                 });
             };
