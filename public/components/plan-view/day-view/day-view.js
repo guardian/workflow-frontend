@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-function wfDayView ($rootScope, $http, $timeout) {
+function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
     return {
         restrict: 'E',
         templateUrl: '/assets/components/plan-view/day-view/day-view.html',
@@ -136,48 +136,7 @@ function wfDayView ($rootScope, $http, $timeout) {
 
                 console.log($scope.draggedItem.plannedDate, event.target.getAttribute('data-bucket-start'));
 
-                $http.post("/api/v1/plan/item", JSON.stringify($scope.draggedItem));
-
-                //$scope.locked = true;
-                //
-                //// Ripped from content-list-item.js:190
-                //var newStatus = event.target.getAttribute('data-status')
-                //
-                //var msg = {
-                //    contentItem: $scope.droppedModel,
-                //    data: {},
-                //    oldValues: {},
-                //    source: $scope.statusValues
-                //};
-                //
-                //msg.data['status'] = newStatus;
-                //msg.oldValues['status'] = $scope.droppedModel.status;
-                //
-                //$scope.$emit('contentItem.update', msg);
-                //
-                //var unbind = $rootScope.$on('contentItem.updated', () => {
-                //
-                //    var temp = event.target.innerHTML;
-                //    event.target.classList.add(classes.success);
-                //    event.target.innerHTML = '<img class="dnd__success" src="/assets/components/icons/png/tick.png" alt=""/>';
-                //
-                //
-                //    notify('Workflow', {
-                //        icon: '/assets/favicon128.ico',
-                //        body: '"' + $scope.droppedModel.workingTitle + '" was moved to ' + newStatus
-                //    });
-                //
-                //
-                //    $timeout(() => {
-                //
-                //        elem.removeClass(classes.show);
-                //        event.target.classList.remove(classes.success);
-                //        event.target.innerHTML = temp;
-                //        $scope.locked = false;
-                //    }, 750);
-                //
-                //    unbind(); // Unbind contentItem.updated
-                //});
+                wfPlannedItemService.update($scope.draggedItem);
             };
         }
     }

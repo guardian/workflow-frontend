@@ -25,6 +25,15 @@
     &:hover {
         background-color: $c-grey-100;
     }
+
+    .bundle {
+        display: inline-block;
+        background-color: $c-grey-300;
+        padding: 1px 6px;
+        border-left: 3px solid #00adee;
+        @extend %fs-data-2;
+        font-weight: bold;
+    }
 }
 
 .day-view__item-top-row,

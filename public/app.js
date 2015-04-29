@@ -36,6 +36,7 @@ import 'lib/title-service';
 // Plan view specific
 import 'lib/plan-service';
 import 'lib/bundle-service';
+import 'lib/planned-item-service';
 
 // 3rd party libs
 import 'angular-ui-router';
@@ -69,9 +70,14 @@ angular.module('workflow',
         'wfGoogleApiService',
         'infinite-scroll',
         'wfTitleService',
+
+        // Plan view specific
+
         'wfPlan',
         'wfPlanToolbar',
-        'wfQuickAdd'
+        'wfQuickAdd',
+        'wfBundleService',
+        'wfPlannedItemService'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', '$animateProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider, $animateProvider ) {
         // TODO: remember user's state and redirect there on default '' route
