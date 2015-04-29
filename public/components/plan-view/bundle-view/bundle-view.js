@@ -98,11 +98,12 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
             };
 
             $scope.updateTitle = (bundle, value) => {
-                $timeout(() => {
-                    bundle.title = value;
-                });
 
-                wfBundleService.update(bundle);
+                $timeout(() => {
+
+                    bundle.title = value;
+                    wfBundleService.updateTitle(bundle.id, value);
+                });
             }
         }
     }
