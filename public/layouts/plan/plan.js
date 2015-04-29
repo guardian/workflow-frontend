@@ -74,17 +74,14 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
         $scope.$on('quick-add-submit', function (ev, item) {
 
-            console.log("quick ADD!", item);
             $http.post("/api/v1/plan/item", JSON.stringify(item))
                 .then((res) => {
-                    console.log("success", res);
                     planLoader.poller.refresh()
                         .then(updateScopeItems);
                     $rootScope.$emit('quick-add-success');
                 })
                 .catch((err) => {
                     $rootScope.$emit('quick-add-failure');
-                    console.log("error", err);
                 });
         });
 
@@ -99,9 +96,9 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $scope.selectedDate = date;
         };
 
-        $scope.$watch('startDate', () => {
-           console.log(arguments);
-        });
+        //$scope.$watch('startDate', () => {
+        //   console.log(arguments);
+        //});
 
         // controller stuff
         $scope.plannedItems = [];

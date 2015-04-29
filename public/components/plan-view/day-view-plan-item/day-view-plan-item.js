@@ -63,7 +63,7 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBun
 
                 let postUpdateHook = () => {
                     if (key === 'plannedDate' || key === 'newsList') {
-                        $scope.$emit('update-plan-item', $scope.item);
+                        $scope.$emit('plan-view__update-plan-item', $scope.item);
                     }
                 };
 

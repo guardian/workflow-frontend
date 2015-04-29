@@ -3,7 +3,7 @@
     <li class="alert alert-info" ng-if="!plannedItemsByBundle.length">
         <span>Nothing planned for Today!</span>
     </li>
-    <li class="day-bundle" ng-repeat="bundle in plannedItemsByBundle track by bundle.pk" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.pk !== 0">
+    <li class="day-bundle" ng-repeat="bundle in plannedItemsByBundle track by bundle.id" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday">
 
         <wf-editable class="day-bundle__title" ng-style="{{ genColor(bundle.title) }}" ng-model="bundle.title" wf-editable-on-update="updateTitle(bundle, newValue)" wf-editable-required="true">
             {{ bundle.title || 'Empty...' }}
@@ -11,7 +11,7 @@
 
         <ul class="day-bundle__items list-unstyled">
 
-            <li class="day-bundle__item" ng-repeat="item in bundle.itemsToday track by item.id" data-drag="bundle.pk === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId">
+            <li class="day-bundle__item" ng-repeat="item in bundle.itemsToday track by item.id" data-drag="bundle.id === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId" ng-model="item">
 
                 <span ng-if="item.hasSpecificTime">{{item.plannedDate.format("HH:mm")}}</span>
                 {{item.title}}

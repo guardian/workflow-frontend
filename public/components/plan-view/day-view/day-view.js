@@ -45,9 +45,6 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
 
             $scope.$watchCollection(() => $scope.planItems, (newValue, oldValue) => {
 
-                newValue = sortPlannedItemsByDate(newValue);
-                oldValue = sortPlannedItemsByDate(oldValue);
-
                 if (newValue && oldValue) {
                     if (!comparePlannedItems(newValue, oldValue)) {
 
@@ -56,7 +53,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
                 }
             }, true);
 
-            $scope.$on('update-plan-item', ($event, newItem) => {
+            $scope.$on('plan-view__update-plan-item', ($event, newItem) => {
 
                 // Stupid Angular Shit
 
@@ -144,15 +141,15 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
     }
 }
 
-function sortPlannedItemsByDate(items) {
-    return items.sort((a, b) => {
-        if (a.plannedDate.isAfter(b.plannedDate)) {
-            return 1;
-        } else if (a.plannedDate.isBefore(b.plannedDate)) {
-            return -1;
-        } else { return 0; }
-    });
-}
+//function sortPlannedItemsByDate(items) {
+//    return items.sort((a, b) => {
+//        if (a.plannedDate.isAfter(b.plannedDate)) {
+//            return 1;
+//        } else if (a.plannedDate.isBefore(b.plannedDate)) {
+//            return -1;
+//        } else { return 0; }
+//    });
+//}
 
 function comparePlannedItems(newPlannedItems, oldPlannedItems) {
 
