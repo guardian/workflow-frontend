@@ -61,10 +61,10 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                     $scope.draggedItem.bundleId = response.data.data;
                     droppedItem.bundleId = response.data.data;
 
-                    Promise.all(
-                        wfPlannedItemService.update($scope.draggedItem),
-                        wfPlannedItemService.update(droppedItem)
-                    ).then(() => {
+                    Promise.all([
+                        wfPlannedItemService.updateField($scope.draggedItem.id, 'bundleId', response.data.data),
+                        wfPlannedItemService.updateField(droppedItem.id, 'bundleId', response.data.data)
+                    ]).then(() => {
                         $scope.$emit('plan-view__bundles-edited');
                     });
                 })
@@ -97,7 +97,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
 
                 draggedItem.bundleId = droppedBundle.pk;
 
-                wfPlannedItemService.update($scope.draggedItem).then(() => {
+                wfPlannedItemService.updateField($scope.draggedItem.id, 'bundleId', droppedBundle.pk).then(() => {
                     $scope.$emit('plan-view__bundles-edited');
                 });
             };
