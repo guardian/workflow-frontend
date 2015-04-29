@@ -50,20 +50,20 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
 
             $scope.droppedOn = (event, ui) => {
 
-                let droppedItem = angular.element(event.target).scope().item;
+                let droppedOnItem = ui.draggable.scope().item; // Weird becasue there is a drag and a drop on the same item - but works.
 
                 wfBundleService.add({
-                    title: 'New Bundle',
+                    title: 'Unnamed bundle',
                     id: 0
                 }).then((response) => {
                     refreshBundles();
 
                     $scope.draggedItem.bundleId = response.data.data;
-                    droppedItem.bundleId = response.data.data;
+                    droppedOnItem.bundleId = response.data.data;
 
                     Promise.all([
                         wfPlannedItemService.updateField($scope.draggedItem.id, 'bundleId', response.data.data),
-                        wfPlannedItemService.updateField(droppedItem.id, 'bundleId', response.data.data)
+                        wfPlannedItemService.updateField(droppedOnItem.id, 'bundleId', response.data.data)
                     ]).then(() => {
                         $scope.$emit('plan-view__bundles-edited');
                     });
@@ -90,11 +90,6 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                     .itemsToday
                     .splice(draggedItemIndex, 1)[0];
 
-                $timeout(()=>{
-                    droppedBundle.itemsToday
-                        .push(draggedItem);
-                });
-
                 draggedItem.bundleId = droppedBundle.id;
 
                 wfPlannedItemService.updateField($scope.draggedItem.id, 'bundleId', droppedBundle.id).then(() => {
@@ -103,7 +98,10 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
             };
 
             $scope.updateTitle = (bundle, value) => {
-                bundle.title = value;
+                $timeout(() => {
+                    bundle.title = value;
+                });
+
                 wfBundleService.update(bundle);
             }
         }
