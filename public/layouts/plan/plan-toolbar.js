@@ -22,7 +22,7 @@ angular.module('wfPlanToolbar', ['wfFiltersService'])
             if ($scope.selectedNewsList === null) { // All lists
                 $scope.$emit('pvFiltersChanged.news-list', 'all');
             } else {
-                $scope.$emit('pvFiltersChanged.news-list', $scope.selectedNewsList.pk);
+                $scope.$emit('pvFiltersChanged.news-list', $scope.selectedNewsList.id);
             }
         })
 

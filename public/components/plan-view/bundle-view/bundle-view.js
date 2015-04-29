@@ -54,7 +54,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
 
                 wfBundleService.add({
                     title: 'New Bundle',
-                    pk: 0
+                    id: 0
                 }).then((response) => {
                     refreshBundles();
 
@@ -95,7 +95,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                         .push(draggedItem);
                 });
 
-                draggedItem.bundleId = droppedBundle.pk;
+                draggedItem.bundleId = droppedBundle.id;
 
                 wfPlannedItemService.update($scope.draggedItem).then(() => {
                     $scope.$emit('plan-view__bundles-edited');
