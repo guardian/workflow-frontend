@@ -76,20 +76,14 @@ $drawer-breakpoint-small: 1400px;
 
 
 .drawer__control {
-    padding: 12px;
     border-bottom: 1px solid $c-grey-300;
 
-    &--confirm {
-        color: white;
-        background-color: $c-red;
-
-        .wf-icon-type--delete {
-            fill: #fff;
-        }
+    &:hover {
+        background-color: $c-grey-300;
     }
 
     .drawer__control-item {
-        height: 32px;
+        height: 56px;
 
         &--incopy,
         &--incopy:visited,
@@ -100,18 +94,30 @@ $drawer-breakpoint-small: 1400px;
         }
         cursor: pointer;
         position: relative;
-        padding: 2px 0 0 22px;
+        padding: 14px 12px 12px 34px;
         word-wrap: break-word;
+        text-decoration: none;
+        color: $c-grey-700;
+
         .drawer__control-item-icon {
             position: absolute;
-            top: 1px;
-            left: 0;
+            top: 13px;
+            left: 12px;
         }
 
         @media screen and (max-width: $drawer-breakpoint-small) {
             padding-left: 50px;
             white-space: nowrap;
         }
+    }
+}
+
+.drawer__control.drawer__control--confirm {
+    color: white;
+    background-color: $c-red;
+
+    .wf-icon-type--delete {
+        fill: #fff;
     }
 }
 
