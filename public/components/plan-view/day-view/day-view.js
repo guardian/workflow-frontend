@@ -134,9 +134,11 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
 
                 $scope.draggedItem.plannedDate.hours(event.target.getAttribute('data-bucket-start'));
 
-                console.log($scope.draggedItem.plannedDate, event.target.getAttribute('data-bucket-start'));
-
-                wfPlannedItemService.update($scope.draggedItem);
+                wfPlannedItemService.updateFields($scope.draggedItem.id, {
+                    'bucketed': true,
+                    'hasSpecificTime': false,
+                    'plannedDate': $scope.draggedItem.plannedDate.toISOString()
+                });
             };
         }
     }

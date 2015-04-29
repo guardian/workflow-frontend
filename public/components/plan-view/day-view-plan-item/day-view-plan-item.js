@@ -52,9 +52,7 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBun
 
                 wfContentService.createInComposer($scope.fakeStub).then((response) => {
 
-                    $scope.item.composerId = $scope.fakeStub.composerId;
-
-                    return wfPlannedItemService.update($scope.item).then(() => {
+                    return wfPlannedItemService.updateField($scope.item.id, 'composerId', $scope.fakeStub.composerId).then(() => {
 
                         window.location = "/dashboard?composerId=" + $scope.item.composerId;
                     });
@@ -63,21 +61,30 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBun
 
             $scope.updateField = function (key, value) {
 
-                $scope.$apply(() => {
-                    $scope.item[key] = value;
+                let postUpdateHook = () => {
+                    if (key === 'plannedDate' || key === 'newsList') {
+                        $scope.$emit('update-plan-item', $scope.item);
+                    }
+                };
 
-                    console.log(key, value);
+                $timeout(() => {
 
                     if (key === 'plannedDate') {
+                        $scope.item[key] = moment(value);
                         $scope.item.bucketed = false;
                         $scope.item.hasSpecificTime = true;
-                    }
 
-                    wfPlannedItemService.update($scope.item).then(() => {
-                        if (key === 'plannedDate' || key === 'newsList') {
-                            $scope.$emit('update-plan-item', $scope.item);
-                        }
-                    });
+                        wfPlannedItemService.updateFields($scope.item.id, {
+                            'bucketed': false,
+                            'hasSpecificTime': true,
+                            'plannedDate': value
+                        }).then(postUpdateHook);
+                    } else {
+
+                        $scope.item[key] = value;
+                        wfPlannedItemService.updateField($scope.item.id, key, value)
+                            .then(postUpdateHook);
+                    }
                 });
 
             };
