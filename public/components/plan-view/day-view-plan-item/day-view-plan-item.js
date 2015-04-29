@@ -1,4 +1,4 @@
-function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService) {
+function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleService, wfPlannedItemService) {
     return {
         restrict: 'A',
         templateUrl: '/assets/components/plan-view/day-view-plan-item/day-view-plan-item.html',
@@ -6,6 +6,10 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService) {
             item: '='
         },
         link: ($scope, elem, attrs) => {
+
+            $scope.bundleList       = wfBundleService.list();
+            $scope.getBundleName    = wfBundleService.getTitle;
+            $scope.genColor         = wfBundleService.genBundleColor;
 
             $scope.drawerOpen = false;
 
@@ -50,7 +54,7 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService) {
 
                     $scope.item.composerId = $scope.fakeStub.composerId;
 
-                    return $http.post("/api/v1/plan/item", JSON.stringify($scope.item)).then(() => {
+                    return wfPlannedItemService.update($scope.item).then(() => {
 
                         window.location = "/dashboard?composerId=" + $scope.item.composerId;
                     });
@@ -69,8 +73,11 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService) {
                         $scope.item.hasSpecificTime = true;
                     }
 
-                    $http.post("/api/v1/plan/item", JSON.stringify($scope.item));
-                    if (key === 'plannedDate' || key === 'newsList') { $scope.$emit('update-plan-item', $scope.item); }
+                    wfPlannedItemService.update($scope.item).then(() => {
+                        if (key === 'plannedDate' || key === 'newsList') {
+                            $scope.$emit('update-plan-item', $scope.item);
+                        }
+                    });
                 });
 
             };

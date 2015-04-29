@@ -22,10 +22,10 @@ function withLocale(locale, f) {
     return ret;
 }
 
-angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'wfBundleService', 'ngDragDrop'])
-    .directive('wfBundleView', ['$rootScope', 'wfBundleService', wfBundleView])
-    .directive('wfDayView', ['$rootScope', '$http', '$timeout', wfDayView])
-    .directive('wfDayViewPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', wfDayViewPlanItem])
+angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
+    .directive('wfBundleView', ['$rootScope','$timeout', 'wfBundleService', 'wfPlannedItemService', wfBundleView])
+    .directive('wfDayView', ['$rootScope', 'wfPlannedItemService', '$http', '$timeout', wfDayView])
+    .directive('wfDayViewPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', 'wfBundleService', 'wfPlannedItemService', wfDayViewPlanItem])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
         var filterParams = wfFiltersService.getAll();
@@ -59,27 +59,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
     .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', function wfPlanController ($scope, $rootScope, planLoader, $http) {
         withLocale("", function () {
 
-        $scope.genColor = (s) => {
-            function hashCode(str) { // java String#hashCode
-                var hash = 0;
-                for (var i = 0; i < str.length; i++) {
-                   hash = str.charCodeAt(i) + ((hash << 5) - hash);
-                }
-                return hash;
-            }
-
-            function intToARGB(i) {
-                var c = ((i>>24)&0xFF).toString(16) +
-                        ((i>>16)&0xFF).toString(16) +
-                        ((i>>8)&0xFF).toString(16);
-
-                return("#" + c);
-            }
-
-            return { 'border-left-color': intToARGB(hashCode(s || "empty")) };
-        }
-
-
             var calLocale = {
                 calendar : {
                     lastDay : '[Yesterday]',
@@ -109,6 +88,11 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 });
         });
 
+        $scope.$on('bundles-edited', () => {
+            planLoader.poller.refresh()
+                .then(updateScopeItems);
+        });
+
         $scope.selectedDate = moment().startOf('day');
 
         $scope.selectDay = function (date) {
@@ -121,6 +105,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
         // controller stuff
         $scope.plannedItems = [];
+        $scope.plannedItemsByBundle = [];
 
         $scope.$on('plan-view-data-load', function (ev, data) {
 
@@ -152,13 +137,60 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             });
             return ret;
         }
+
+        /**
+         * Create the scope items for the bundle view and the day view using the currently selected date
+         */
         function updateScopeItems() {
-            $scope.dayItems = $scope.getItems(moment($scope.currentlySelectedDay), moment($scope.currentlySelectedDay).add(1, 'days'));
-            //$scope.agendaItems = _.groupBy($scope.dayItems, function(item) { return item.bundleId || "No Bundle" });
+
+            let selectedDay = moment($scope.currentlySelectedDay),
+                selectedDayPlusOne = moment($scope.currentlySelectedDay).add(1, 'days');
+
+            /**
+             * Does a plannedItems date fall within a date range?
+             * @param item
+             * @param dateFrom
+             * @param dateTo
+             * @returns {*}
+             */
+            function itemIsWithinDateRange (item, dateFrom, dateTo) {
+
+                return (item.plannedDate.isSame(dateFrom) || item.plannedDate.isAfter(dateFrom)) &&
+                    item.plannedDate.isBefore(dateTo)
+            }
+
+            // Filter items for the bundle view
+            $scope.dayItemsByBundle = $scope.plannedItemsByBundle.map((bundle) => {
+
+                bundle.itemsToday = bundle.items.filter((item) => {
+
+                    return itemIsWithinDateRange(item, selectedDay, selectedDayPlusOne);
+                });
+                return bundle;
+            }).filter((bundle) => {
+
+                return bundle.itemsToday.length > 0;
+            });
+
+            // Filter items for the day view
+            $scope.dayItems = $scope.plannedItems.filter((item) => {
+
+                return itemIsWithinDateRange(item, selectedDay, selectedDayPlusOne);
+            });
         }
+
         $scope.$on('planned-items-changed', function () {
             updateScopeItems();
         });
+
+        $scope.dateList = makeDateList();
+
+        $scope.getBundles = function () { return _.keys($scope.agendaItems); };
+        $scope.$watch('selectedDate', (newValue, oldValue) => {
+            $scope.currentlySelectedDay = newValue;
+            updateScopeItems();
+        }, false);
+
         $scope.getItems = function (dateFrom, dateTo) {
             // search all of the planned items, and find the ones that
             // are within our date range
@@ -168,13 +200,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 return ret;
             });
         };
-        $scope.dateList = makeDateList();
-
-        $scope.getBundles = function () { return _.keys($scope.agendaItems); };
-        $scope.$watch('selectedDate', (newValue, oldValue) => {
-            $scope.currentlySelectedDay = newValue;
-            updateScopeItems();
-        }, false);
 
     }])
     .controller('wfDateListController', [ '$scope', function ($scope) {

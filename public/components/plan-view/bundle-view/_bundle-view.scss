@@ -34,6 +34,10 @@
         @extend %fs-data-4;
         font-weight: bold;
     }
+
+    &.dnd__status--hovered {
+        background-color: $c-highlight-blue;
+    }
 }
 
 .day-bundle__items {

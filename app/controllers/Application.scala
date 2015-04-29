@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.db.{NewsListDB, NewsListBucketDB, SectionDeskMappingDB, SectionDB, DeskDB}
+import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
 
 import lib.PrototypeConfiguration.defaultExecutionContext
@@ -27,6 +27,7 @@ object Application extends Controller with PanDomainAuthActions {
       newsListBuckets = NewsListBucketDB.newsListBucketsList.groupBy(_.newsList).map({
         case (newsList, buckets) => (newsList, Json.toJson(buckets))
       }).toSeq
+      bundleList = BundleDB.getBundles
     }
     yield {
       val user = request.user
@@ -47,7 +48,8 @@ object Application extends Controller with PanDomainAuthActions {
         "user" -> Json.parse(user.toJson),
         "incopyExportUrl" -> PrototypeConfiguration.cached.incopyExportUrl,
         "newsLists" -> newsLists,
-        "newsListBuckets" -> JsObject(newsListBuckets)
+        "newsListBuckets" -> JsObject(newsListBuckets),
+        "bundleList" -> bundleList
       )
 
       Ok(views.html.app("Plan View", Some(user), config))

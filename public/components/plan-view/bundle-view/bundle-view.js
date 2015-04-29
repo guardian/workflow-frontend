@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-function wfBundleView ($rootScope, wfBundleService) {
+function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemService) {
     return {
         restrict: 'E',
         templateUrl: '/assets/components/plan-view/bundle-view/bundle-view.html',
@@ -30,11 +30,14 @@ function wfBundleView ($rootScope, wfBundleService) {
         link: ($scope, elem, attrs) => {
 
             function refreshBundles() {
-                wfBundleService.get().then((response) => {
+                wfBundleService.getList().then((response) => {
                     $scope.bundleList = response.data.data;
                 });
             }
             refreshBundles();
+
+            $scope.getBundleName    = wfBundleService.getTitle;
+            $scope.genColor         = wfBundleService.genBundleColor;
 
             $scope.draggingStart = (event, ui, item) => {
                 $scope.draggedItem = item;
@@ -47,22 +50,62 @@ function wfBundleView ($rootScope, wfBundleService) {
 
             $scope.droppedOn = (event, ui) => {
 
-                let el = ui.draggable.detach();
-
                 let droppedItem = angular.element(event.target).scope().item;
 
-                console.log($scope.draggedItem, droppedItem);
-
                 wfBundleService.add({
-                    title: 'My new bundle',
+                    title: 'New Bundle',
                     pk: 0
                 }).then((response) => {
                     refreshBundles();
-                    console.log(response);
+
+                    $scope.draggedItem.bundleId = response.data.data;
+                    droppedItem.bundleId = response.data.data;
+
+                    Promise.all(
+                        wfPlannedItemService.update($scope.draggedItem),
+                        wfPlannedItemService.update(droppedItem)
+                    ).then(() => {
+                        $scope.$emit('plan-view__bundles-edited');
+                    });
                 })
 
 
             };
+
+            /**
+             * Find the dragged item in the model and move it to the new bundle,
+             * update the server with the new bundle id of the item.
+             * @param event
+             * @param ui
+             */
+            $scope.droppedOnExistingBundle = (event, ui) => {
+
+                let droppedBundle = angular.element(event.target).scope().bundle;
+
+                let draggedItemIndex = _.findIndex($scope.plannedItemsByBundle[$scope.draggedItem.bundleId].itemsToday, (item) => {
+                    return item.id === $scope.draggedItem.id
+                });
+
+                let draggedItem = $scope.plannedItemsByBundle[$scope.draggedItem.bundleId]
+                    .itemsToday
+                    .splice(draggedItemIndex, 1)[0];
+
+                $timeout(()=>{
+                    droppedBundle.itemsToday
+                        .push(draggedItem);
+                });
+
+                draggedItem.bundleId = droppedBundle.pk;
+
+                wfPlannedItemService.update($scope.draggedItem).then(() => {
+                    $scope.$emit('plan-view__bundles-edited');
+                });
+            };
+
+            $scope.updateTitle = (bundle, value) => {
+                bundle.title = value;
+                wfBundleService.update(bundle);
+            }
         }
     }
 }
