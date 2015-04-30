@@ -137,6 +137,8 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
                     'plannedDate': $scope.draggedItem.plannedDate.toISOString()
                 });
             };
+
+            $timeout(() => {$rootScope.$emit('plan-view__ui-loaded')}, 700);
         }
     }
 }

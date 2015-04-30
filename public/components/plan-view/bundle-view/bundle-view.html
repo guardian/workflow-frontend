@@ -22,6 +22,7 @@
 
             <li class="day-bundle__item" ng-repeat="item in bundle.itemsToday track by item.id" ng-class="{ 'day-bundle__item--bundled': bundle.id !== 0 }" data-drag="bundle.id === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId" ng-model="item">
 
+                <span class="day-bundle__item-time" ng-if="!item.hasSpecificTime && !item.bucketed">&mdash;</span>
                 <span class="day-bundle__item-time" ng-if="item.hasSpecificTime">{{item.plannedDate.format("HH:mm")}}</span>
                 <span class="day-bundle__item-time" ng-if="!item.hasSpecificTime && item.bucketed">{{item.plannedDate.format("Ha")}}</span>
                 <span class="day-bundle__item-title">{{item.title}}</span>
