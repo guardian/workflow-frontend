@@ -153,11 +153,15 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       })
   }
 
-  def getDayNotes = APIAuthAction { implicit request =>
+
+  def getDayNotes(newsListIdOption: Option[Long], startDateOption: Option[String], endDateOption: Option[String]) = APIAuthAction { implicit request =>
+
+    val dayNoteQuery = DayNoteQuery(newsListIdOption, startDateOption.map(d => DateTime.parse(d)), endDateOption.map(d => DateTime.parse(d)))
+
     Response(for {
-      dayNotes <- queryDataToResponse(DayNoteDB.getDayNotes(), "Could not fetch day notes").right
+      items <- queryDataToResponse(DayNoteDB.getDayNotesByQuery(dayNoteQuery), "Could not fetch day notes").right
     } yield {
-        dayNotes
+        items
       })
   }
 

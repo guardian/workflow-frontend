@@ -67,7 +67,7 @@ PATCH          /api/v1/plan/bundle/:id/:fieldName            controllers.PlanApi
 
 # Day Notes
 GET            /api/v1/plan/day-note/:id                       controllers.PlanApi.getDayNoteById(id: Long)
-GET            /api/v1/plan/day-note                           controllers.PlanApi.getDayNotes
+GET            /api/v1/plan/day-note                           controllers.PlanApi.getDayNotes(newsList: Option[Long], startDate: Option[String], endDate: Option[String])
 POST           /api/v1/plan/day-note                           controllers.PlanApi.addDayNote
 DELETE         /api/v1/plan/day-note                           controllers.PlanApi.deleteDayNote
 PATCH          /api/v1/plan/day-note/:id/:fieldName            controllers.PlanApi.patchDayNote(id: Long, fieldName: String)
