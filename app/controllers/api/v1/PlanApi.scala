@@ -15,6 +15,36 @@ import scala.util.{Try, Failure, Success}
 
 object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
+  // helper methods
+  def extractFromJson(fieldName: String, jsValue: JsValue) = {
+    val jsValueData = jsValue \ "data"
+    fieldName match {
+      case "title"|"note" => extract[String](jsValueData)
+      case "byLine"|"notes" => extract[Option[String]](jsValueData)
+      case "newsList"|"bundleId" => extract[Long](jsValueData)
+      case "priority" => extract[Int](jsValueData)
+      case "plannedDate"|"created"|"day" =>
+        // this could possibly be improved by replacing with a custom reads
+        val dateString = extract[String](jsValueData).right.map { d => d.data}.right.getOrElse("")
+        Try(new DateTime(dateString)) match {
+          case Success(dt) => Right(ApiSuccess(dt))
+          case Failure(msg) => Left(ApiError("Could not parse date", "Could not parse date", 500, "Error"))
+        }
+
+      case "hasSpecificTime"|"bucketed" => extract[Boolean](jsValueData)
+      case _ => Left(ApiError("Invalid field name", "Invalid field name", 500, "Error"))
+    }
+  }
+
+  def queryDataToResponse[T](data: Option[T], errorMessage: String): Response[T] = {
+    data match {
+      case Some(data) => Right(ApiSuccess(data))
+      case None => Left(ApiError(errorMessage, errorMessage, 500, "Error"))
+    }
+  }
+
+  /** Plan item queries */
+
   def plan(newsListIdOption: Option[Long], startDateOption: Option[String], endDateOption: Option[String]) = APIAuthAction { implicit request =>
 
     val planQuery = PlannedItemQuery(newsListIdOption, startDateOption.map(d => DateTime.parse(d)), endDateOption.map(d => DateTime.parse(d)))
@@ -25,20 +55,6 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       items
     })
   }
-
-  def queryDataToResponse[T](data: Option[T], errorMessage: String): Response[T] = {
-    data match {
-      case Some(data) => Right(ApiSuccess(data))
-      case None => Left(ApiError(errorMessage, errorMessage, 500, "Error"))
-    }
-  }
-
-//  def plannedItemQueryDataToResponse(planData: PlannedItem): Response[Long] = {
-//    PlannedItemDB.upsert(planData) match {
-//      case Some(id) => Right(ApiSuccess(id))
-//      case None => Left(ApiError("Could not fetch plan items", "Could not fetch plan items", 500, "Error"))
-//    }
-//  }
 
   def getPlannedItem() = APIAuthAction { implicit request =>
     Response(for {
@@ -60,29 +76,10 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     })
   }
 
-  def extractFromJson(fieldName: String, jsValueData: JsValue) = {
-    fieldName match {
-      case "title"|"note" => extract[String](jsValueData)
-      case "byLine"|"notes" => extract[Option[String]](jsValueData)
-      case "newsList"|"bundleId" => extract[Long](jsValueData)
-      case "priority" => extract[Int](jsValueData)
-      case "plannedDate"|"created"|"day" =>
-        // this could possibly be improved by replacing with a custom reads
-        val dateString = extract[String](jsValueData).right.map { d => d.data}.right.getOrElse("")
-        Try(new DateTime(dateString)) match {
-          case Success(dt) => Right(ApiSuccess(dt))
-          case Failure(msg) => Left(ApiError("Could not parse date", "Could not parse date", 500, "Error"))
-        }
-
-      case "hasSpecificTime"|"bucketed" => extract[Boolean](jsValueData)
-      case _ => Left(ApiError("Invalid field name", "Invalid field name", 500, "Error"))
-    }
-  }
-
-  def patchPlannedItem(id: Long, fieldName: String) = Action { implicit request =>
+  def patchPlannedItem(id: Long, fieldName: String) = APIAuthAction { implicit request =>
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
-      newFieldValue <- extractFromJson(fieldName, jsValue.data \ "data").right
+      newFieldValue <- extractFromJson(fieldName, jsValue.data).right
       itemId <- queryDataToResponse(PlannedItemDB.update(id, fieldName, newFieldValue.data), "Could not update plan item").right
     } yield {
         itemId
@@ -98,6 +95,8 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       itemId
     })
   }
+
+  /** Bundle queries */
 
   def getBundleById(id : Long) = APIAuthAction { implicit request =>
     Response(for {
@@ -125,10 +124,10 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       })
   }
 
-  def patchBundle(id: Long, fieldName: String) = Action { implicit request =>
+  def patchBundle(id: Long, fieldName: String) = APIAuthAction { implicit request =>
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
-      newFieldValue <- extractFromJson(fieldName, jsValue.data \ "data").right
+      newFieldValue <- extractFromJson(fieldName, jsValue.data).right
       itemId <- queryDataToResponse(BundleDB.update(id, fieldName, newFieldValue.data), "Could not update bundle").right
     } yield {
         itemId
@@ -145,6 +144,8 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       })
   }
 
+  /** Day note queries. */
+
   def getDayNoteById(id : Long) = APIAuthAction { implicit request =>
     Response(for {
       dayNote <- queryDataToResponse(DayNoteDB.getDayNoteById(id), "Could not fetch day note").right
@@ -152,7 +153,6 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
         dayNote
       })
   }
-
 
   def getDayNotes(newsListIdOption: Option[Long], startDateOption: Option[String], endDateOption: Option[String]) = APIAuthAction { implicit request =>
 
@@ -175,10 +175,10 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       })
   }
 
-  def patchDayNote(id: Long, fieldName: String) = Action { implicit request =>
+  def patchDayNote(id: Long, fieldName: String) = APIAuthAction { implicit request =>
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
-      newFieldValue <- extractFromJson(fieldName, jsValue.data \ "data").right
+      newFieldValue <- extractFromJson(fieldName, jsValue.data).right
       itemId <- queryDataToResponse(DayNoteDB.update(id, fieldName, newFieldValue.data), "Could not update day note").right
     } yield {
         itemId
