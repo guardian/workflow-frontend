@@ -11,12 +11,16 @@
 
         <ul class="day-bundle__items list-unstyled">
 
-            <li class="day-bundle__item" ng-repeat="item in bundle.itemsToday track by item.id" data-drag="bundle.id === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId" ng-model="item">
+            <li class="day-bundle__item" ng-repeat="item in bundle.itemsToday track by item.id" ng-class="{ 'day-bundle__item--bundled': bundle.id !== 0 }" data-drag="bundle.id === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId" ng-model="item">
 
                 <span ng-if="item.hasSpecificTime">{{item.plannedDate.format("HH:mm")}}</span>
                 {{item.title}}
                 <span class="assigned-to">{{item.byLine}}</span>
                 <span class="note">{{item.notes}}</span>
+
+                <span class="action__remove">
+                    <i class="day-bundle__item__icon--cross" wf-icon="cross" wf-icon-active="true"></i>
+                </span>
             </li>
 
         </ul>

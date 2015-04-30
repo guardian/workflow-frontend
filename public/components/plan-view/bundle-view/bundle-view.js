@@ -50,7 +50,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
 
             $scope.droppedOn = (event, ui) => {
 
-                let droppedOnItem = ui.draggable.scope().item; // Weird becasue there is a drag and a drop on the same item - but works.
+                let droppedOnItem = ui.draggable.scope().item; // Weird because there is a drag and a drop on the same item - but works.
 
                 wfBundleService.add({
                     title: 'Unnamed bundle',
@@ -58,8 +58,24 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 }).then((response) => {
                     refreshBundles();
 
-                    $scope.draggedItem.bundleId = response.data.data;
-                    droppedOnItem.bundleId = response.data.data;
+                    $scope.$apply(() => { // Create the bundle in the UI instantly
+
+                        $scope.draggedItem.bundleId = response.data.data;
+                        droppedOnItem.bundleId = response.data.data;
+
+                        $scope.plannedItemsByBundle[0].itemsToday = $scope.plannedItemsByBundle[0]
+                            .itemsToday
+                            .filter((item) => {
+                                return item.id !== $scope.draggedItem.id &&
+                                    item.id  !== droppedOnItem.id;
+                            });
+
+                        $scope.plannedItemsByBundle.push({
+                            itemsToday: [$scope.draggedItem, droppedOnItem],
+                            id: response.data.data,
+                            title: 'Unnamed bundle'
+                        });
+                    });
 
                     Promise.all([
                         wfPlannedItemService.updateField($scope.draggedItem.id, 'bundleId', response.data.data),
