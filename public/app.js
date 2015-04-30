@@ -44,6 +44,9 @@ import 'angular-bootstrap';
 import 'angular-animate/angular-animate.min';
 import 'ngInfiniteScroll/ng-infinite-scroll';
 
+//import 'angular-loading-bar';
+//import 'angular-loading-bar@0.7.1/src/loading-bar.css!';
+
 // App-wide Styles
 import 'bootstrap@3.2.0/css/bootstrap.min.css!';
 import 'main.min.css!';
@@ -70,6 +73,10 @@ angular.module('workflow',
         'wfGoogleApiService',
         'infinite-scroll',
         'wfTitleService',
+
+        // New
+
+        //'angular-loading-bar',
 
         // Plan view specific
 

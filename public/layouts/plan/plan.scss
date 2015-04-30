@@ -137,6 +137,7 @@
 
 .date-list__date--selected {
     border-left: 3px solid #00adee;
+    background-color: $c-grey-200;
 }
 
 .day-event:hover .add-event {
@@ -173,10 +174,6 @@
     font-weight: normal;
     font-style: normal;
 }
-
-//.day-event:before {
-//    content: "📅 ";
-//}
 
 .add-event {
     display: none;

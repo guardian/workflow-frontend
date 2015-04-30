@@ -13,7 +13,8 @@ angular
                     return httpRequest({
                         method: 'GET',
                         url: '/api/v1/plan',
-                        params: params
+                        params: params,
+                        ignoreLoadingBar: true
                     });
                 }
             }

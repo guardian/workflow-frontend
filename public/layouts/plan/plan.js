@@ -38,7 +38,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         this.poller = new PollingService(planService, params);
 
         this.render = (response) => {
-            $rootScope.$broadcast('plan-view-data-load', response.data.data);
+            $rootScope.$broadcast('plan-view__data-load', response.data.data);
         };
 
         this.renderError = (err) => {
@@ -56,7 +56,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             return moment(date).calendar();
         }
     }])
-    .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', function wfPlanController ($scope, $rootScope, planLoader, $http) {
+    .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout) {
         withLocale("", function () {
 
             var calLocale = {
@@ -70,6 +70,10 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 }
             };
             moment.locale('wfPlan', calLocale);
+        });
+
+        $rootScope.$on('plan-view__ui-loaded', function() {
+            $scope.isLoaded = true;
         });
 
         $scope.$on('quick-add-submit', function (ev, item) {
@@ -104,7 +108,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         $scope.plannedItems = [];
         $scope.plannedItemsByBundle = [];
 
-        $scope.$on('plan-view-data-load', function (ev, data) {
+        $scope.$on('plan-view__data-load', function (ev, data) {
 
             data.forEach((bundle) => {
                 bundle.items.map((item) => {
@@ -119,8 +123,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 return bundle.items;
             }).flatten();
 
-            $scope.$broadcast('planned-items-changed', $scope.plannedItemsByBundle);
-            document.querySelector('.plan-container').classList.add('loaded');
+            $scope.$broadcast('plan-view__planned-items-changed', $scope.plannedItemsByBundle);
         });
 
         function makeDateList() {
@@ -176,8 +179,8 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             });
         }
 
-        $scope.$on('planned-items-changed', function () {
-            updateScopeItems();
+        $scope.$on('plan-view__planned-items-changed', function () {
+            $timeout(updateScopeItems); // Ensure scope is applied on the next digest loop
         });
 
         $scope.dateList = makeDateList();
@@ -200,7 +203,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
     }])
     .controller('wfDateListController', [ '$scope', function ($scope) {
-        $scope.$on('planned-items-changed', (ev, eventItems) => {
+        $scope.$on('plan-view__planned-items-changed', (ev, eventItems) => {
             $scope.items = $scope.getItems($scope.date, $scope.date.clone().add(1, 'days'));
         });
     }])

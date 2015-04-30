@@ -66,11 +66,8 @@
 
         .day-bundle__title {
             padding: 2px 0 2px 9px;
-            background-color: #fff;
+            background-color: $c-grey-200;
             border-left: none;
-            border-top: 1px solid $c-grey-400;
-            //border-bottom: 1px solid $c-grey-400;
-            text-decoration: underline;
         }
     }
 }
@@ -101,6 +98,13 @@
 
         .day-bundle__item-title {
             font-weight: bold;
+        }
+
+        .day-bundle__item-time {
+            width: 34px;
+            color: $c-grey-400;
+            display: inline-block;
+            @extend %fs-data-2;
         }
 
         .action__remove {
