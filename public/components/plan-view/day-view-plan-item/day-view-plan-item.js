@@ -5,26 +5,24 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBun
         scope: {
             item: '='
         },
-        link: ($scope, elem, attrs) => {
-
-            $scope.bundleList       = wfBundleService.list();
-            $scope.getBundleName    = wfBundleService.getTitle;
-            $scope.genColor         = wfBundleService.genBundleColor;
-
+        controller: ($scope) => {
+            $scope.bundleList = wfBundleService.list();
+            $scope.getBundleName = wfBundleService.getTitle;
+            $scope.genColor = wfBundleService.genBundleColor;
             $scope.drawerOpen = false;
-
             $scope.newsLists = _wfConfig.newsLists;
-
             $scope.priorities = [{
                 value: 0,
                 title: 'Normal'
-            },{
+            }, {
                 value: 1,
                 title: 'High'
-            },{
+            }, {
                 value: 2,
                 title: 'Very High'
             }];
+        },
+        link: ($scope, elem, attrs) => {
 
             $scope.shiftToTomorrow = function () {
                 $scope.MoveToTomorrowLoading = true;
@@ -89,14 +87,15 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBun
 
             };
 
-            $scope.$watch('item.bundleId', (newValue, oldValue) => {
+            //$scope.$watch('item.bundleId', (newValue, oldValue) => {
+            //
+            //    $timeout(() => {
+            //
+            //        debugger
+            //
 
-                $timeout(() => {
-
-                    $scope.item.bundleTitle = wfBundleService.getTitle(newValue);
-                    $scope.item.bundleColor = wfBundleService.genBundleColor($scope.item.bundleTitle);
-                });
-            });
+            //    });
+            //});
         }
     }
 }
