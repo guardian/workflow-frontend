@@ -1,11 +1,20 @@
-<!--<div class="unassigned">-->
+<div class="bundle-list__title-bar">
+
+    <h1 class="bundle-list__title">Bundles</h1>
+
+</div>
+
 <ul class="bundle-list-items list-unstyled">
     <li class="alert alert-info" ng-if="!plannedItemsByBundle.length">
         <span>Nothing planned for Today!</span>
     </li>
-    <li class="day-bundle" ng-repeat="bundle in plannedItemsByBundle track by bundle.id" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday">
+    <li class="day-bundle" ng-repeat="bundle in plannedItemsByBundle track by bundle.id" ng-class="{ 'day-bundle--unscheduled': bundle.id === 0 }" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday">
 
-        <wf-editable class="day-bundle__title" ng-style="{{ genColor(bundle.title) }}" ng-model="bundle.title" wf-editable-on-update="updateTitle(bundle, newValue)" wf-editable-required="true">
+        <!--Title for unscheduled-->
+        <span class="day-bundle__title"  ng-if="bundle.id === 0">{{ bundle.title }}</span>
+
+        <!--Editable title for all other budles-->
+        <wf-editable ng-if="bundle.id !== 0" class="day-bundle__title" ng-style="genColor(bundle.title)" ng-model="bundle.title" wf-editable-on-update="updateTitle(bundle, newValue)" wf-editable-required="true">
             {{ bundle.title || 'Empty...' }}
         </wf-editable>
 
@@ -13,8 +22,9 @@
 
             <li class="day-bundle__item" ng-repeat="item in bundle.itemsToday track by item.id" ng-class="{ 'day-bundle__item--bundled': bundle.id !== 0 }" data-drag="bundle.id === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId" ng-model="item">
 
-                <span ng-if="item.hasSpecificTime">{{item.plannedDate.format("HH:mm")}}</span>
-                {{item.title}}
+                <span class="day-bundle__item-time" ng-if="item.hasSpecificTime">{{item.plannedDate.format("HH:mm")}}</span>
+                <span class="day-bundle__item-time" ng-if="!item.hasSpecificTime && item.bucketed">{{item.plannedDate.format("Ha")}}</span>
+                <span class="day-bundle__item-title">{{item.title}}</span>
                 <span class="assigned-to">{{item.byLine}}</span>
                 <span class="note">{{item.notes}}</span>
 
