@@ -56,7 +56,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             return moment(date).calendar();
         }
     }])
-    .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout) {
+    .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', 'wfDayNoteService', 'wfFiltersService', function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDayNoteService, wfFiltersService) {
         withLocale("", function () {
 
             var calLocale = {
@@ -129,11 +129,13 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         function makeDateList() {
             var ret =  withLocale('wfPlan', () => {
                 var start = moment().subtract(3, 'days').startOf('day');
-                return _.map(_.range(0, 10), (days) => {
+
+                let dateList = _.map(_.range(0, 10), (days) => {
                     var date = start.clone();
                     date.add(days, 'days');
-                    return date;
+                    return {'date':date};
                 });
+                return dateList;
             });
             return ret;
         }
@@ -183,7 +185,42 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $timeout(updateScopeItems); // Ensure scope is applied on the next digest loop
         });
 
-        $scope.dateList = makeDateList();
+        (function buildDateListAndDayNotes() {
+
+            $scope.dateList = makeDateList();
+
+            wfDayNoteService.get({
+                'newsList': wfFiltersService.get('newsList'),
+                'startDate': $scope.dateList[0].date.toISOString(),
+                'endDate': $scope.dateList[$scope.dateList.length-1].date.toISOString()
+            }).then((response) => {
+
+                let dayNotes = response.data.data;
+                $scope.dateList.map((date) => {
+
+                    let dateDayNote = dayNotes.filter((note) => {
+                        return moment(note.day).isSame(date.date);
+                    })[0];
+                    date.dayNote = dateDayNote ? dateDayNote : {};
+                    return date;
+                });
+            });
+        })();
+
+        $scope.updateDayNote = function(id, newValue, date) {
+            if (id) {
+                wfDayNoteService.updateField(id, 'note', newValue);
+            } else {
+
+                wfDayNoteService.add({
+                    'id':0,
+                    'note':newValue,
+                    'day':date.toISOString(),
+                    'newsList': wfFiltersService.get('news-list')
+                })
+            }
+        };
+
 
         $scope.getBundles = function () { return _.keys($scope.agendaItems); };
         $scope.$watch('selectedDate', (newValue, oldValue) => {
@@ -204,7 +241,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
     }])
     .controller('wfDateListController', [ '$scope', function ($scope) {
         $scope.$on('plan-view__planned-items-changed', (ev, eventItems) => {
-            $scope.items = $scope.getItems($scope.date, $scope.date.clone().add(1, 'days'));
+            $scope.items = $scope.getItems($scope.date.date, $scope.date.date.clone().add(1, 'days'));
         });
     }])
     .directive('wfOnResize', ['$window', '$parse', function ($window, $parse) {
