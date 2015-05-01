@@ -37,6 +37,7 @@ import 'lib/title-service';
 import 'lib/plan-service';
 import 'lib/bundle-service';
 import 'lib/planned-item-service';
+import 'lib/day-note-service';
 
 // 3rd party libs
 import 'angular-ui-router';
@@ -84,7 +85,8 @@ angular.module('workflow',
         'wfPlanToolbar',
         'wfQuickAdd',
         'wfBundleService',
-        'wfPlannedItemService'
+        'wfPlannedItemService',
+        'wfDayNoteService'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', '$animateProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider, $animateProvider ) {
         // TODO: remember user's state and redirect there on default '' route
