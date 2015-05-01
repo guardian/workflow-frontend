@@ -72,7 +72,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    padding: 8px 2px 8px;
+    padding: 8px 4px 8px;
 
     .day-view__action-tomorrow {
         border: 1px solid $c-highlight-blue;
@@ -164,6 +164,16 @@
             opacity: 0;
             transition: opacity 0.2s ease-in-out;
         }
+    }
+}
+
+.day-view__item-drag-handle {
+    height: 20px;
+    width: 22px;
+    padding: 1px 0 0 0;
+    .handle__mark {
+        height: 4px;
+        margin-bottom: 3px;
     }
 }
 

@@ -29,9 +29,17 @@
                 <span class="assigned-to">{{item.byLine}}</span>
                 <span class="note">{{item.notes}}</span>
 
-                <span class="action__remove">
-                    <i class="day-bundle__item__icon--cross" wf-icon="cross" wf-icon-active="true"></i>
-                </span>
+                <div class="day-bundle__actions">
+                    <span class="action__remove" ng-if="bundle.id !== 0">
+                        <i class="day-bundle__item__icon--cross" wf-icon="cross" wf-icon-active="true"></i>
+                    </span>
+                    <div class="day-bundle__item-drag-handle plan__drag-handle" ng-if="bundle.id === 0">
+                        <span class="handle__mark"></span>
+                        <span class="handle__mark"></span>
+                        <span class="handle__mark"></span>
+                    </div>
+                </div>
+
             </li>
 
         </ul>
