@@ -179,33 +179,45 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
                 return itemIsWithinDateRange(item, selectedDay, selectedDayPlusOne);
             });
+
+
         }
+
+        $scope.$on('pvFiltersChanged', function() {
+
+            planLoader.poller.refresh();
+            $scope.newsList = wfFiltersService.get('news-list');
+            $scope.buildDateListAndDayNotes();
+        });
 
         $scope.$on('plan-view__planned-items-changed', function () {
             $timeout(updateScopeItems); // Ensure scope is applied on the next digest loop
         });
 
-        (function buildDateListAndDayNotes() {
+        $scope.buildDateListAndDayNotes = function() {
 
             $scope.dateList = makeDateList();
+            if ($scope.newsList) {
 
-            wfDayNoteService.get({
-                'newsList': wfFiltersService.get('newsList'),
-                'startDate': $scope.dateList[0].date.toISOString(),
-                'endDate': $scope.dateList[$scope.dateList.length-1].date.toISOString()
-            }).then((response) => {
+                wfDayNoteService.get({
+                    'newsList': $scope.newsList,
+                    'startDate': $scope.dateList[0].date.toISOString(),
+                    'endDate': $scope.dateList[$scope.dateList.length-1].date.toISOString()
+                }).then((response) => {
 
-                let dayNotes = response.data.data;
-                $scope.dateList.map((date) => {
+                    let dayNotes = response.data.data;
+                    $scope.dateList.map((date) => {
 
-                    let dateDayNote = dayNotes.filter((note) => {
-                        return moment(note.day).isSame(date.date);
-                    })[0];
-                    date.dayNote = dateDayNote ? dateDayNote : {};
-                    return date;
+                        let dateDayNote = dayNotes.filter((note) => {
+                            return moment(note.day).isSame(date.date, 'day');
+                        })[0];
+                        date.dayNote = dateDayNote ? dateDayNote : {};
+                        return date;
+                    });
                 });
-            });
-        })();
+            }
+
+        };
 
         $scope.updateDayNote = function(id, newValue, date) {
             if (id) {
@@ -213,10 +225,10 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             } else {
 
                 wfDayNoteService.add({
-                    'id':0,
-                    'note':newValue,
-                    'day':date.toISOString(),
-                    'newsList': wfFiltersService.get('news-list')
+                    'id': 0,
+                    'note': newValue,
+                    'day': date.format('YYYY-MM-DD'),
+                    'newsList': $scope.newsList
                 })
             }
         };
