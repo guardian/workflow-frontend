@@ -110,12 +110,27 @@
     @extend %fs-data-4;
 }
 
+.date-list__date-note,
 .date-list__date-date,
 .date-list__date-items-indicator--faded {
     color: $c-grey-400;
     @extend %fs-data-2;
     line-height: 18px;
     line-height: 1.8rem;
+    .editable__view-value {
+        border-bottom-color: $c-grey-400;
+    }
+}
+
+.date-list__date-note {
+    display: block;
+
+    &:hover {
+        color: $c-grey-700;
+        .editable__view-value {
+            border-bottom-color: $c-grey-700;
+        }
+    }
 }
 
 //.three-month-view ul li .label {
