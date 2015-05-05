@@ -169,9 +169,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                     return itemIsWithinDateRange(item, selectedDay, selectedDayPlusOne);
                 });
                 return bundle;
-            }).filter((bundle) => {
-
-                return bundle.itemsToday.length > 0;
             });
 
             // Filter items for the day view

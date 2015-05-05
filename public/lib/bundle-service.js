@@ -60,11 +60,12 @@ angular
                     }
 
                     function intToARGB(i) {
-                        var c = ((i>>24)&0xFF).toString(16) +
+                        let c = ((i>>24)&0xFF).toString(16) +
                             ((i>>16)&0xFF).toString(16) +
-                            ((i>>8)&0xFF).toString(16);
+                            ((i>>8)&0xFF).toString(16)  +
+                            (i&0xFF).toString(16);
 
-                        return("#" + c);
+                        return("#" + c.substr(0, 6));
                     }
 
                     return { 'border-left-color': intToARGB(hashCode(s || "empty")) };
