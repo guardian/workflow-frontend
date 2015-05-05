@@ -24,6 +24,10 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBun
         },
         link: ($scope, elem, attrs) => {
 
+            //$scope.$watch('item', () => {
+            //    debugger;
+            //});
+
             $scope.shiftToTomorrow = function () {
                 $scope.MoveToTomorrowLoading = true;
                 $scope.updateField('plannedDate', $scope.item.plannedDate.add(1, 'day'));

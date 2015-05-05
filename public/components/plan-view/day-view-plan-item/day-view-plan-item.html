@@ -40,7 +40,7 @@
         <li class="drawer__section">
             <span class="drawer__section-title">Note</span>
             <wf-editable class="drawer__section-data-row" ng-model="item.notes" wf-editable-on-update="updateField('notes', newValue)" wf-editable-required="true">
-                {{ item.notes || 'Empty...' }}
+                {{ item.notes || 'Add note' }}
             </wf-editable>
         </li>
     </ul>
@@ -64,7 +64,7 @@
 
         <li class="drawer__section">
             <span class="drawer__section-title">Newslist</span>
-            <select class="drawer__section-control" ng-model="item.newsList" ng-options="nl.pk as nl.title for nl in newsLists" ng-change="updateField('newsList', item.newsList)"></select>
+            <select class="drawer__section-control" ng-model="item.newsList" ng-options="nl.id as nl.title for nl in newsLists" ng-change="updateField('newsList', item.newsList)"></select>
         </li>
 
         <li class="drawer__section">

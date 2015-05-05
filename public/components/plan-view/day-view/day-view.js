@@ -16,7 +16,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
                     top: 12,
                     left: 12
                 },
-                containment: '.day-view__list-buckets',
+                containment: '.day-view__list',
                 refreshPositions: true,
                 axis: 'y',
                 snap: '.bucket__drop-zone',

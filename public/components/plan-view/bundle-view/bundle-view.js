@@ -5,7 +5,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
         restrict: 'E',
         templateUrl: '/assets/components/plan-view/bundle-view/bundle-view.html',
         scope: {
-            'plannedItemsByBundle': '=bundleItems'
+            'dayItemsByBundle': '=bundleItems'
         },
         controller: function ($scope) {
             $scope.draggableOptions = {
@@ -49,6 +49,11 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 elem.removeClass('bundle-view--dragging')
             };
 
+            /**
+             * Create a new bundle from the result of dropping one item on to another. New bundle contains both items.
+             * @param event
+             * @param ui
+             */
             $scope.droppedOn = (event, ui) => {
 
                 let droppedOnItem = ui.draggable.scope().item; // Weird because there is a drag and a drop on the same item - but works.
@@ -59,19 +64,19 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 }).then((response) => {
                     refreshBundles();
 
-                    $scope.$apply(() => { // Create the bundle in the UI instantly
+                    $timeout(() => { // Create the bundle in the UI instantly
 
                         $scope.draggedItem.bundleId = response.data.data;
                         droppedOnItem.bundleId = response.data.data;
 
-                        $scope.plannedItemsByBundle[0].itemsToday = $scope.plannedItemsByBundle[0]
+                        $scope.dayItemsByBundle[0].itemsToday = $scope.dayItemsByBundle[0]
                             .itemsToday
                             .filter((item) => {
                                 return item.id !== $scope.draggedItem.id &&
                                     item.id  !== droppedOnItem.id;
                             });
 
-                        $scope.plannedItemsByBundle.push({
+                        $scope.dayItemsByBundle.push({
                             itemsToday: [$scope.draggedItem, droppedOnItem],
                             id: response.data.data,
                             title: 'Unnamed bundle'
@@ -85,8 +90,6 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                         $scope.$emit('plan-view__bundles-edited');
                     });
                 })
-
-
             };
 
             /**
@@ -98,22 +101,47 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
             $scope.droppedOnExistingBundle = (event, ui) => {
 
                 let droppedBundle = angular.element(event.target).scope().bundle;
-
-                let draggedItemIndex = _.findIndex($scope.plannedItemsByBundle[$scope.draggedItem.bundleId].itemsToday, (item) => {
-                    return item.id === $scope.draggedItem.id
-                });
-
-                let draggedItem = $scope.plannedItemsByBundle[$scope.draggedItem.bundleId]
-                    .itemsToday
-                    .splice(draggedItemIndex, 1)[0];
-
-                draggedItem.bundleId = droppedBundle.id;
+                let draggedItem = util.removeItemFromCurrentBundle($scope.draggedItem);
 
                 wfPlannedItemService.updateField($scope.draggedItem.id, 'bundleId', droppedBundle.id).then(() => {
-                    $scope.$emit('plan-view__bundles-edited');
+
+                    $timeout(() => { // Create the bundle in the UI instantly
+
+                        draggedItem.bundleId = droppedBundle.id;
+
+                        $scope.$emit('plan-view__bundles-edited');
+                    });
                 });
             };
 
+            /**
+             * Remove an item from its bundle and add it back as an unbundled item, update the server
+             * @param removingItem
+             */
+            $scope.removeFromBundle = (removingItem) => {
+
+                let removedItem = util.removeItemFromCurrentBundle(removingItem);
+
+                wfPlannedItemService.updateField(removedItem.id, 'bundleId', 0).then(() => {
+
+                    $timeout(() => {
+
+                        removingItem.bundleId = 0;
+                        removedItem.bundleId = 0;
+                        $scope.dayItemsByBundle[0]
+                            .itemsToday
+                            .push(removedItem);
+
+                        $scope.$emit('plan-view__bundles-edited');
+                    });
+                });
+            };
+
+            /**
+             * Update the title of a bundle
+             * @param bundle
+             * @param value
+             */
             $scope.updateTitle = (bundle, value) => {
 
                 $timeout(() => {
@@ -121,6 +149,25 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                     bundle.title = value;
                     wfBundleService.updateTitle(bundle.id, value);
                 });
+            };
+
+            var util = {
+
+                /**
+                 * Maintaining references, using an items bundle id, find the correct bundle and remove the item from the model.
+                 * TODO: Possibly replace by passing bundle through from UI
+                 * @param removedItem
+                 * @returns {*}
+                 */
+                removeItemFromCurrentBundle: (removedItem) => {
+
+                    let itemBundleIndex = _.findIndex($scope.dayItemsByBundle, (bundle) => bundle.id === removedItem.bundleId);
+                    let itemIndex = _.findIndex($scope.dayItemsByBundle[itemBundleIndex].itemsToday, (item) => item.id === removedItem.id);
+
+                    return $scope.dayItemsByBundle[itemBundleIndex]
+                        .itemsToday
+                        .splice(itemIndex, 1)[0];
+                }
             }
         }
     }

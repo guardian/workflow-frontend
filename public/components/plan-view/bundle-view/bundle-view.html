@@ -1,14 +1,14 @@
-<div class="bundle-list__title-bar">
+<!--<div class="bundle-list__title-bar">-->
 
-    <h1 class="bundle-list__title">Bundles</h1>
+    <!--<h1 class="bundle-list__title">Bundles</h1>-->
 
-</div>
+<!--</div>-->
 
 <ul class="bundle-list-items list-unstyled">
-    <li class="alert alert-info" ng-if="!plannedItemsByBundle.length">
+    <li class="alert alert-info" ng-if="!dayItemsByBundle.length">
         <span>Nothing planned for Today!</span>
     </li>
-    <li class="day-bundle" ng-repeat="bundle in plannedItemsByBundle track by bundle.id" ng-class="{ 'day-bundle--unscheduled': bundle.id === 0 }" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday">
+    <li class="day-bundle" ng-repeat="bundle in dayItemsByBundle track by bundle.id" ng-class="{ 'day-bundle--unscheduled': bundle.id === 0 }" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday" ng-if="bundle.itemsToday.length > 0">
 
         <!--Title for unscheduled-->
         <span class="day-bundle__title"  ng-if="bundle.id === 0">{{ bundle.title }}</span>
@@ -30,7 +30,7 @@
                 <span class="note">{{item.notes}}</span>
 
                 <div class="day-bundle__actions">
-                    <span class="action__remove" ng-if="bundle.id !== 0">
+                    <span class="action__remove" ng-if="bundle.id !== 0" ng-click="removeFromBundle(item)">
                         <i class="day-bundle__item__icon--cross" wf-icon="cross" wf-icon-active="true"></i>
                     </span>
                     <div class="day-bundle__item-drag-handle plan__drag-handle" ng-if="bundle.id === 0">
