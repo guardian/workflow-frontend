@@ -340,3 +340,25 @@
     font-weight: normal;
 }
 
+// Drag Handles
+
+.plan__drag-handle {
+    display: inline-block;
+    cursor: ns-resize;
+    vertical-align: top;
+    .handle__mark {
+        display: block;
+        width: 100%;
+        background-color: #dcdcdc;
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &:hover {
+        .handle__mark {
+            background-color: $c-grey-500;
+        }
+    }
+}
+

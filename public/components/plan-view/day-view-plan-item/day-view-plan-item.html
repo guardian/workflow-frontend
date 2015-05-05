@@ -16,6 +16,11 @@
         <button class="day-view__action day-view__action-start" ng-if="!item.composerId" ng-click="startWork(); $event.stopPropagation();" ng-class="{'loading': startWorkLoading}">Start work <span class="loader"></span></button>
         <a class="day-view__action day-view__action-view" ng-if="item.composerId" href="/dashboard?composerId={{ item.composerId }}">View in produce</a>
         <button class="day-view__action day-view__action-tomorrow" ng-click="shiftToTomorrow(); $event.stopPropagation();" ng-class="{'loading': MoveToTomorrowLoading}">Move to tomorrow  <span class="loader"></span></button>
+        <div class="day-view__item-drag-handle plan__drag-handle">
+            <span class="handle__mark"></span>
+            <span class="handle__mark"></span>
+            <span class="handle__mark"></span>
+        </div>
     </div>
 </div>
 

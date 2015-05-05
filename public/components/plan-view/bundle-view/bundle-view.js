@@ -14,12 +14,13 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                     top: 12,
                     left: 12
                 },
-                containment: '.content-list',
+                containment: '.bundle-list-items',
                 refreshPositions: true,
                 axis: 'y',
                 snap: '.bundle__drop-zone',
                 snapMode: 'inner',
                 revert: 'invalid',
+                handle: '.day-bundle__item-drag-handle',
 
                 // For droppable on same item
 
