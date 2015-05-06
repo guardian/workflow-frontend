@@ -20,7 +20,7 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     val jsValueData = jsValue \ "data"
     fieldName match {
       case "title"|"note" => extract[String](jsValueData)
-      case "byLine"|"notes" => extract[Option[String]](jsValueData)
+      case "byLine"|"notes"|"composerId" => extract[Option[String]](jsValueData)
       case "newsList"|"bundleId" => extract[Long](jsValueData)
       case "priority" => extract[Int](jsValueData)
       case "plannedDate"|"created"|"day" =>
