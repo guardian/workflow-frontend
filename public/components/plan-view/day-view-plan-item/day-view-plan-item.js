@@ -54,9 +54,13 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBun
 
                 wfContentService.createInComposer($scope.fakeStub).then((response) => {
 
+                    $timeout(() => {
+                        $scope.item.composerId = $scope.fakeStub.composerId;
+                    });
+
                     return wfPlannedItemService.updateField($scope.item.id, 'composerId', $scope.fakeStub.composerId).then(() => {
 
-                        window.location = "/dashboard?composerId=" + $scope.item.composerId;
+                        window.location = "/dashboard?composerId=" + $scope.fakeStub.composerId;
                     });
                 });
             };
