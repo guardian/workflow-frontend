@@ -1,4 +1,5 @@
 @import "layouts/global/mixins";
+@import "layouts/plan/mixins";
 
 // Bundle List
 // ================================================================= //
@@ -40,13 +41,14 @@
 
 .day-bundle {
 //    padding: 0 0 6px 0;
+    border-bottom: 1px solid #fff;
 
     .day-bundle__title {
         display: block;
         width: 100%;
         background-color: $c-grey-300;
         padding: 2px 0 2px 6px;
-        border-left: 3px solid #00adee;
+        @include bundle-border();
         @extend %fs-data-4;
         font-weight: bold;
     }
@@ -74,6 +76,7 @@
 }
 
 .day-bundle__items {
+    @include bundle-border();
 
     .day-bundle__item {
         @extend %fs-data-2;
