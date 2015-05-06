@@ -6,16 +6,16 @@
  *
  * Extracted from https://github.com/guardian/guss-typography for sass-lib compatibility.
  */
-.day-view__title, body {
+.bundle-list__title, .day-view__title, body {
   font-family: "GuardianAgateSans1Web", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
 
-.content-list-item__field--section, .content-list-item__field--deadline, .content-list-item__field--notes, .content-list-item__field-supl--published-state, .content-list--compact .content-list-item__field--working-title, .content-list--compact .content-list-item__field--headline, .content-list--compact .content-list-item__icon--presence, .content-list--compact .content-list-item__icon--assignee, .modal-body__header-expander, .punters__token .punters__autocomplete-item-name, .punters__token-remove, .punters__autocomplete-item-email, .sidebar__header .sidebar__heading, .dashboard-toolbar__prod-office-label, .dashboard-toolbar__section-label, .dashboard-toolbar__desk-label, .dashboard-toolbar__dropdown-select, .dashboard-toolbar__deadline-label, .day-view__times ul, .day-view__actions .day-view__action-tomorrow {
+.content-list-item__field--section, .content-list-item__field--deadline, .content-list-item__field--notes, .content-list-item__field-supl--published-state, .content-list--compact .content-list-item__field--working-title, .content-list--compact .content-list-item__field--headline, .content-list--compact .content-list-item__icon--presence, .content-list--compact .content-list-item__icon--assignee, .modal-body__header-expander, .punters__token .punters__autocomplete-item-name, .punters__token-remove, .punters__autocomplete-item-email, .sidebar__header .sidebar__heading, .dashboard-toolbar__prod-office-label, .dashboard-toolbar__section-label, .dashboard-toolbar__desk-label, .dashboard-toolbar__dropdown-select, .dashboard-toolbar__deadline-label, .day-view__actions .day-view__action-tomorrow {
   font-size: 11px;
   font-size: 1.1rem;
   line-height: 14px;
   line-height: 1.4rem; }
 
-.content-list-head__heading--titles, .content-list-head__heading--group, .content-list-head__heading--office, .content-list-head__heading--deadline, .content-list-head__heading--created, .content-list-head__heading--section, .content-list-head__heading--legal, .content-list-head__heading--status, .content-list-head__heading--notes, .content-list-head__heading--links, .content-list-head__heading--published-state, .content-list-head__heading--wordcount, .content-list-head__heading--needsLegal, .content-list__content-end, .content-list-item__field--assignee, .content-list-item__field--presence, .content-list--compact .content-list-item__field--priority, .content-list--compact .content-list-item__field--comments, .content-list--compact .content-list-item__field--main-image, .content-list--compact .content-list-item__field--content-type, .content-list--compact .content-list-item__field--working-title, .content-list--compact .content-list-item__field--headline, .content-list--compact .content-list-item__field--office, .content-list--compact .content-list-item__field--legal, .content-list--compact .content-list-item__field--status, .content-list--compact .content-list-item__field--composer, .content-list--compact .content-list-item__field--preview, .content-list--compact .content-list-item__field--live, .content-list--compact .content-list-item__field--ophan, .content-list--compact .content-list-item__field--deadline, .content-list--compact .content-list-item__field--created, .content-list--compact .content-list-item__field--section, .content-list--compact .content-list-item__field--incopy, .content-list--compact .content-list-item__field--published-state, .content-list--compact .content-list-item__field--wordcount, .content-list-item__presence-list--drawer .content-list-item__presence--present .content-list-item__icon--presence, .wf-loader, .location-picker__button, .location-picker__menu, .dropdown-toolbar__item-title, .day-view__actions .day-view__action, .date-list__date-date, .date-list__date-items-indicator--faded, .day-event, .day-bundle__items .day-bundle__item, .detailed-schedule .bundle {
+.content-list-head__heading--titles, .content-list-head__heading--group, .content-list-head__heading--office, .content-list-head__heading--deadline, .content-list-head__heading--created, .content-list-head__heading--section, .content-list-head__heading--legal, .content-list-head__heading--status, .content-list-head__heading--notes, .content-list-head__heading--links, .content-list-head__heading--published-state, .content-list-head__heading--wordcount, .content-list-head__heading--needsLegal, .content-list__content-end, .content-list-item__field--assignee, .content-list-item__field--presence, .content-list--compact .content-list-item__field--priority, .content-list--compact .content-list-item__field--comments, .content-list--compact .content-list-item__field--main-image, .content-list--compact .content-list-item__field--content-type, .content-list--compact .content-list-item__field--working-title, .content-list--compact .content-list-item__field--headline, .content-list--compact .content-list-item__field--office, .content-list--compact .content-list-item__field--legal, .content-list--compact .content-list-item__field--status, .content-list--compact .content-list-item__field--composer, .content-list--compact .content-list-item__field--preview, .content-list--compact .content-list-item__field--live, .content-list--compact .content-list-item__field--ophan, .content-list--compact .content-list-item__field--deadline, .content-list--compact .content-list-item__field--created, .content-list--compact .content-list-item__field--section, .content-list--compact .content-list-item__field--incopy, .content-list--compact .content-list-item__field--published-state, .content-list--compact .content-list-item__field--wordcount, .content-list-item__presence-list--drawer .content-list-item__presence--present .content-list-item__icon--presence, .wf-loader, .location-picker__button, .location-picker__menu, .dropdown-toolbar__item-title, .day-bundle__items .day-bundle__item, .day-bundle__items .day-bundle__item .day-bundle__item-time, .day-view__item-wrapper .bundle, .day-view__actions .day-view__action, .date-list__date-note, .date-list__date-date, .date-list__date-items-indicator--faded, .day-event {
   font-size: 12px;
   font-size: 1.2rem;
   line-height: 14px;
@@ -27,7 +27,7 @@
   line-height: 16px;
   line-height: 1.6rem; }
 
-.bucket__title, .date-list__date, .day-bundle .day-bundle__title, body {
+.day-bundle .day-bundle__title, .bucket__title, .date-list__date, body {
   font-size: 14px;
   font-size: 1.4rem;
   line-height: 18px;
@@ -2245,45 +2245,198 @@
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg); } }
 
+.bundle-list {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #bdbdbd; }
+  .bundle-list .alert {
+    margin: 12px; }
+
+.bundle-list__title-bar {
+  padding: 12px 12px 12px 0;
+  height: 58px;
+  position: relative;
+  z-index: 3;
+  background-color: #ffffff; }
+
+.bundle-list__title {
+  font-size: 20px;
+  line-height: 34px;
+  display: inline-block;
+  margin: 0;
+  vertical-align: top;
+  display: none; }
+
+.bundle-list-items {
+  margin: 0;
+  height: 100%;
+  flex: 1; }
+
+.day-bundle {
+  border-bottom: 1px solid #fff; }
+  .day-bundle .day-bundle__title {
+    display: block;
+    width: 100%;
+    background-color: #dcdcdc;
+    padding: 2px 0 2px 6px;
+    border-left: 9px solid #00adee;
+    font-weight: bold; }
+  .day-bundle .editable__text-field {
+    width: 50%; }
+  .day-bundle .editable__controls {
+    padding: 2px; }
+  .day-bundle.dnd__status--hovered {
+    background-color: #00adee; }
+  .day-bundle.day-bundle--unscheduled .day-bundle__title {
+    padding: 2px 0 2px 9px;
+    background-color: #ededed;
+    border-left: none; }
+
+.day-bundle__items {
+  border-left: 9px solid #00adee; }
+  .day-bundle__items .day-bundle__item {
+    padding: 2px 9px;
+    display: block;
+    width: 100%;
+    height: 18px; }
+    .day-bundle__items .day-bundle__item:hover {
+      background-color: #f6f6f6; }
+    .day-bundle__items .day-bundle__item.ui-draggable-dragging {
+      -webkit-box-shadow: 0px 1px 4px 2px #c0c0c0;
+      -moz-box-shadow: 0px 1px 4px 2px #c0c0c0;
+      box-shadow: 0px 1px 4px 2px #c0c0c0;
+      z-index: 3;
+      opacity: 0.8; }
+    .day-bundle__items .day-bundle__item.dnd__status--hovered {
+      background-color: #00adee; }
+    .day-bundle__items .day-bundle__item .day-bundle__item-title {
+      font-weight: bold; }
+    .day-bundle__items .day-bundle__item .day-bundle__item-time {
+      width: 34px;
+      color: #bdbdbd;
+      display: inline-block; }
+
+.day-bundle__actions {
+  position: absolute;
+  height: 100%;
+  right: 0;
+  top: 0;
+  padding: 0 4px 0 0; }
+  .day-bundle__actions .action__remove {
+    display: block;
+    float: right;
+    height: 10px;
+    width: 10px;
+    margin: 4px 0;
+    cursor: pointer; }
+  .day-bundle__actions .day-bundle__item__icon--cross {
+    height: 10px;
+    width: 10px;
+    display: block;
+    vertical-align: top; }
+    .day-bundle__actions .day-bundle__item__icon--cross svg {
+      vertical-align: top; }
+
+.day-bundle__item-drag-handle {
+  height: 20px;
+  width: 16px;
+  padding: 3px 0 0 0; }
+  .day-bundle__item-drag-handle .handle__mark {
+    height: 2px;
+    margin-bottom: 3px; }
+
+.unassigned {
+  /*background-color: orange;*/
+  flex: 1 0 auto;
+  -webkit-flex: 1 0 auto;
+  -webkit-flex-basis: auto;
+  -webkit-align-items: stretch;
+  padding-right: 10px; }
+
+.unassigned-list-items {
+  list-style: none;
+  padding-left: 0px;
+  margin-left: 0px; }
+
+/**
+ * `transition` prefixer.
+ * Do not use when transitionning prefixed properties
+ * to avoid impossible code like `-moz-transition: -webkit-border-radius 1s`.
+ *
+ * @param {Arglist} $args
+ *
+ * @link https://developer.mozilla.org/en-US/docs/Web/CSS/transition transition on MDN
+ *
+ * @group css3
+ */
+/**
+ * `border-radius` prefixer.
+ *
+ * @param {Number} $radius (5px)
+ *
+ * @link https://developer.mozilla.org/en-US/docs/Web/CSS/border-radius border-radius on MDN
+ *
+ * @group css3
+ */
+/**
+ * `box-shadow` prefixer.
+ *
+ * @param {Arglist} $args
+ *
+ * @link https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow box-shadow on MDN
+ *
+ * @group css3
+ */
+@-webkit-keyframes load3 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+
+@keyframes load3 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+
 .day-view {
-  width: 100%; }
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: absolute; }
+
+.day-view__title-bar {
+  padding: 12px;
+  height: 58px;
+  position: relative;
+  z-index: 3;
+  background-color: #ffffff; }
+  .day-view__title-bar .quick-add {
+    display: inline-block;
+    line-height: 34px;
+    vertical-align: top; }
 
 .day-view__title {
   font-size: 20px;
-  font-size: 2rem;
-  line-height: 32px;
-  line-height: 3.2rem;
-  display: inline-block; }
-
-.day-view__quick-add {
-  padding: 12px;
-  position: relative;
-  z-index: 3;
-  background-color: #ffffff;
-  display: inline-block; }
-
-.day-view__times {
-  -webkit-flex: 0 0 50px;
-  flex: 0 0 50px; }
-  .day-view__times ul {
-    width: 50px;
-    padding: 0;
-    /*	background-color: #1c78cf;*/
-    vertical-align: middle;
-    text-align: right;
-    color: #333333;
-    position: relative; }
-    .day-view__times ul li {
-      width: 100%;
-      position: absolute;
-      left: 0;
-      padding: 0 4px;
-      box-sizing: border-box; }
-      .day-view__times ul li:nth-child(even) {
-        background-color: #eee; }
+  line-height: 34px;
+  display: inline-block;
+  margin: 0 12px 0 0;
+  vertical-align: top; }
 
 .day-view__list {
-  position: relative; }
+  position: relative;
+  flex: 1 1 0px;
+  overflow-y: auto; }
+
+.day-view__list-buckets {
+  margin: 0; }
 
 .day-view__list-bg {
   position: absolute;
@@ -2300,12 +2453,11 @@
   display: block;
   width: 100%;
   background-color: #dcdcdc;
-  padding: 2px 0 2px 3px;
-  border-left: 3px solid #00adee;
-  font-weight: bold;
-  -webkit-box-shadow: 0px 1px 4px 1px #bdbdbd;
-  -moz-box-shadow: 0px 1px 4px 1px #bdbdbd;
-  box-shadow: 0px 1px 4px 1px #bdbdbd; }
+  padding: 2px 0 2px 6px;
+  font-weight: bold; }
+
+.day-view__bucket--unscheduled .bucket__title {
+  background-color: #ededed; }
 
 .bucket__drop-zone {
   height: 32px;
@@ -2318,10 +2470,9 @@
   display: block; }
 
 .day-view__item {
-  left: 0;
   width: 100%;
-  background-color: #ffffff;
   border-bottom: 1px solid #ededed;
+  background-color: #ffffff;
   -webkit-box-shadow: 0px 0px 0px 0px #c0c0c0;
   -moz-box-shadow: 0px 0px 0px 0px #c0c0c0;
   box-shadow: 0px 0px 0px 0px #c0c0c0;
@@ -2334,15 +2485,6 @@
     box-shadow: 0px 1px 4px 2px #c0c0c0;
     z-index: 3;
     opacity: 0.8; }
-  .day-view__item .day-view__item-top-row, .day-view__item .day-view__item-bottom-row {
-    display: block;
-    height: 16px; }
-    .day-view__item .day-view__item-top-row > *, .day-view__item .day-view__item-bottom-row > * {
-      display: inline-block; }
-  .day-view__item .day-view__item-time {
-    margin-right: 6px; }
-  .day-view__item .day-view__item-title {
-    font-weight: bold; }
 
 /**
  * `transition` prefixer.
@@ -2408,12 +2550,30 @@
     background-color: #f3faf2; }
   .day-view__item-wrapper:hover {
     background-color: #f6f6f6; }
+  .day-view__item-wrapper .bundle {
+    display: inline-block;
+    background-color: #dcdcdc;
+    padding: 1px 6px;
+    border-left: 9px solid #00adee;
+    font-weight: bold; }
+
+.day-view__item-top-row, .day-view__item-bottom-row {
+  display: block;
+  height: 16px; }
+  .day-view__item-top-row > *, .day-view__item-bottom-row > * {
+    display: inline-block; }
+
+.day-view__item-time {
+  margin-right: 6px; }
+
+.day-view__item-title {
+  font-weight: bold; }
 
 .day-view__actions {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 8px 2px 8px; }
+  padding: 8px 4px 8px; }
   .day-view__actions .day-view__action-tomorrow {
     border: 1px solid #00adee;
     background-color: #148ad2;
@@ -2554,13 +2714,23 @@
       opacity: 0;
       transition: opacity 0.2s ease-in-out; }
 
+.day-view__item-drag-handle {
+  height: 20px;
+  width: 22px;
+  padding: 1px 0 0 0; }
+  .day-view__item-drag-handle .handle__mark {
+    height: 4px;
+    margin-bottom: 3px; }
+
 .day-view__item-drawer {
   background-color: #ededed;
   display: flex;
+  overflow: hidden;
   height: 0;
   transition: height 0.2s ease-in-out; }
   .day-view__item-drawer--open {
-    height: 120px; }
+    height: 120px;
+    overflow: visible; }
   .day-view__item-drawer .date-time-picker__group {
     max-width: 200px; }
 
@@ -2584,6 +2754,21 @@
   max-height: 100%;
   width: 100%; }
 
+.date-list {
+  flex: 0 0 400px; }
+
+.detailed-schedule {
+  flex: 1 0 auto; }
+
+.bundle-list {
+  flex: 0 0 400px; }
+
+@media screen and (max-width: 1350px) {
+  .date-list {
+    flex: 0 0 200px; }
+  .bundle-list {
+    flex: 0 0 200px; } }
+
 .date-list, .bundle-list, .detailed-schedule {
   position: relative;
   transition: left 0.3s ease-in-out, box-shadow 0.7s ease-in-out;
@@ -2598,7 +2783,7 @@
   transition-delay: 0s, 1.4s; }
 
 .bundle-list {
-  left: -800px;
+  left: -100%;
   z-index: 2;
   transition-delay: 0.35s, 1.4s; }
 
@@ -2614,7 +2799,6 @@
   box-shadow: 0 0 0 0 #fff; }
 
 .date-list {
-  flex: 0 0 400px;
   overflow-x: auto;
   border-right: 1px solid #bdbdbd; }
 
@@ -2625,17 +2809,31 @@
   padding: 2px 0 2px 9px;
   border-left: 3px solid #fff; }
 
-.date-list__date-date, .date-list__date-items-indicator--faded {
+.date-list__date-note, .date-list__date-date, .date-list__date-items-indicator--faded {
   color: #bdbdbd;
   line-height: 18px;
   line-height: 1.8rem; }
+  .date-list__date-note .editable__view-value, .date-list__date-date .editable__view-value, .date-list__date-items-indicator--faded .editable__view-value {
+    border-bottom-color: #bdbdbd; }
+
+.date-list__date-note {
+  display: block; }
+  .date-list__date-note:hover {
+    color: #333333; }
+    .date-list__date-note:hover .editable__view-value {
+      border-bottom-color: #333333; }
 
 .date-list__date:hover {
   background-color: #ededed;
   cursor: pointer; }
 
 .date-list__date--selected {
-  border-left: 3px solid #00adee; }
+  border-left: 3px solid #00adee;
+  background-color: #ededed; }
+  .date-list__date--selected .date-list__date-note {
+    color: #333333; }
+    .date-list__date--selected .date-list__date-note .editable__view-value {
+      border-bottom-color: #333333; }
 
 .day-event:hover .add-event {
   display: block;
@@ -2668,62 +2866,10 @@
 .add-event {
   display: none; }
 
-.bundle-list {
-  flex: 0 0 400px;
-  -webkit-flex: 0 0 400px;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: column;
-  -webkit-align-items: stretch;
-  border-right: 1px solid #bdbdbd; }
-  .bundle-list .alert {
-    margin: 12px; }
-
-.day-bundle {
-  padding: 0 0 6px 0; }
-  .day-bundle .day-bundle__title {
-    display: block;
-    width: 100%;
-    background-color: #dcdcdc;
-    padding: 2px 0 2px 6px;
-    border-left: 3px solid #00adee;
-    font-weight: bold; }
-
-.day-bundle__items {
-  padding: 2px 0 2px 18px; }
-  .day-bundle__items .day-bundle__item {
-    padding: 2px 0; }
-
-.unassigned {
-  /*background-color: orange;*/
-  flex: 1 0 auto;
-  -webkit-flex: 1 0 auto;
-  -webkit-flex-basis: auto;
-  -webkit-align-items: stretch;
-  padding-right: 10px; }
-
-.unassigned-list-items {
-  list-style: none;
-  padding-left: 0px;
-  margin-left: 0px; }
-
-.detailed-schedule {
-  display: -webkit-flex;
-  display: flex;
-  flex: 1 0 auto;
-  -webkit-flex: 1 0 auto;
-  overflow-x: auto; }
-  .detailed-schedule tr td {
-    padding: 2px 0; }
-  .detailed-schedule .time {
-    min-width: 72px; }
-
-.detailed-schedule .bundle {
-  display: inline-block;
-  background-color: #dcdcdc;
-  padding: 2px 6px;
-  border-left: 3px solid #00adee;
-  font-weight: bold; }
+.detailed-schedule tr td {
+  padding: 2px 0; }
+.detailed-schedule .time {
+  min-width: 72px; }
 
 /* group time jumpers */
 .time-jumper {
@@ -2793,6 +2939,19 @@
 
 .hour_count {
   font-weight: normal; }
+
+.plan__drag-handle {
+  display: inline-block;
+  cursor: ns-resize;
+  vertical-align: top; }
+  .plan__drag-handle .handle__mark {
+    display: block;
+    width: 100%;
+    background-color: #dcdcdc; }
+    .plan__drag-handle .handle__mark:last-child {
+      margin-bottom: 0; }
+  .plan__drag-handle:hover .handle__mark {
+    background-color: #898989; }
 
 .main-container {
   display: -webkit-box;

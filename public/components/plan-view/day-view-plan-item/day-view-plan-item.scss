@@ -1,4 +1,5 @@
 @import "layouts/global/mixins";
+@import "layouts/plan/mixins";
 @import "layouts/global/colours";
 
 .day-view__item-wrapper {
@@ -30,7 +31,7 @@
         display: inline-block;
         background-color: $c-grey-300;
         padding: 1px 6px;
-        border-left: 3px solid #00adee;
+        @include bundle-border();
         @extend %fs-data-2;
         font-weight: bold;
     }
