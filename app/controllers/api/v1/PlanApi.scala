@@ -1,12 +1,10 @@
 package controllers
 
+import com.gu.pandomainauth.action.UserRequest
 import org.joda.time.DateTime
 import com.gu.workflow.db._
-import controllers.Admin._
 import lib.Response.Response
 import models._
-import play.api.data.Form
-import play.api.data.Forms._
 import play.api.libs.json.{JsResult, Reads, JsValue}
 import play.api.mvc._
 import lib._
@@ -16,7 +14,7 @@ import scala.util.{Try, Failure, Success}
 object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
   // helper methods
-  def extractFromJson(fieldName: String, jsValue: JsValue) = {
+  def extractFromJson[T](fieldName: String, jsValue: JsValue) = {
     val jsValueData = jsValue \ "data"
     fieldName match {
       case "title"|"note" => extract[String](jsValueData)
@@ -43,6 +41,26 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     }
   }
 
+  def requestToResponse[A :Reads, B](request: UserRequest[AnyContent], dbFunction: A => Option[B], errorMessage: String) = {
+    for {
+      jsValue <- readJsonFromRequest(request.body).right
+      queryData <- extract[A](jsValue.data).right
+      out <- queryDataToResponse(dbFunction(queryData.data), errorMessage).right
+    } yield {
+        out
+      }
+  }
+
+//  def patchRequestToResponse[A : Reads, B, C](request: UserRequest[AnyContent], dbFunction: (Int, String, C) => Option[B], id: Int, fieldName: String) = {
+//    for {
+//      jsValue <- readJsonFromRequest(request.body).right
+//      queryData <- extractFromJson(fieldName, jsValue.data).right
+//      out <- queryDataToResponse(dbFunction(id, fieldName, queryData.data), errorMessage).right
+//    } yield {
+//      out
+//    }
+//  }
+
   /** Plan item queries */
 
   def plan(newsListIdOption: Option[Long], startDateOption: Option[String], endDateOption: Option[String]) = APIAuthAction { implicit request =>
@@ -60,20 +78,14 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
       plannedItemQuery <- extract[PlannedItem](jsValue.data).right
-      plannedItem <- queryDataToResponse(PlannedItemDB.getPlannedItemById(plannedItemQuery.data.id), "Could not fetch plan items").right
+      plannedItem <- queryDataToResponse(PlannedItemDB.getPlannedItemById(plannedItemQuery.data), "Could not fetch plan items").right
     } yield {
       plannedItem
     })
   }
 
   def addPlannedItem() = APIAuthAction { implicit request =>
-    Response(for {
-      jsValue <- readJsonFromRequest(request.body).right
-      plannedItem <- extract[PlannedItem](jsValue.data).right
-      itemId <- queryDataToResponse(PlannedItemDB.insert(plannedItem.data), "Could not add plan item").right
-    } yield {
-      itemId
-    })
+    Response(requestToResponse[PlannedItem, Long](request,PlannedItemDB.insert, "Could not add plan item"))
   }
 
   def patchPlannedItem(id: Long, fieldName: String) = APIAuthAction { implicit request =>
@@ -86,14 +98,12 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       })
   }
 
+//  def patchPlannedItem() = APIAuthAction { implicit request =>
+//    Response(patchRequestToResponse[PlannedItem, Long](request,PlannedItemDB.update, "Could not add plan item", id, fieldName))
+//  }
+
   def deletePlannedItem() = APIAuthAction { implicit request =>
-    Response(for {
-      jsValue <- readJsonFromRequest(request.body).right
-      plannedItem <- extract[PlannedItem](jsValue.data).right
-      itemId <- queryDataToResponse(PlannedItemDB.deletePlannedItem(plannedItem.data), "Could not delete plan item").right
-    } yield {
-      itemId
-    })
+    Response(requestToResponse[PlannedItem, Long](request,PlannedItemDB.deletePlannedItem, "Could not delete plan item"))
   }
 
   /** Bundle queries */
@@ -115,13 +125,7 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
   }
 
   def addBundle() = APIAuthAction { implicit request =>
-    Response(for {
-      jsValue <- readJsonFromRequest(request.body).right
-      bundle <- extract[Bundle](jsValue.data).right
-      itemId <- queryDataToResponse(BundleDB.insert(bundle.data), "Could not add bundle").right
-    } yield {
-        itemId
-      })
+    Response(requestToResponse[Bundle, Long](request,BundleDB.insert, "Could not add bundle"))
   }
 
   def patchBundle(id: Long, fieldName: String) = APIAuthAction { implicit request =>
@@ -134,14 +138,8 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       })
   }
 
-  def deleteBundle = APIAuthAction { implicit request =>
-    Response(for {
-      jsValue <- readJsonFromRequest(request.body).right
-      bundle <- extract[Bundle](jsValue.data).right
-      itemId <- queryDataToResponse(BundleDB.deleteBundle(bundle.data), "Could not delete bundle").right
-    } yield {
-        itemId
-      })
+  def deleteBundle() = APIAuthAction { implicit request =>
+    Response(requestToResponse[Bundle, Long](request,BundleDB.deleteBundle, "Could not delete bundle"))
   }
 
   /** Day note queries. */
@@ -165,15 +163,9 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       })
   }
 
-  def addDayNote = APIAuthAction { implicit request =>
-    Response(for {
-      jsValue <- readJsonFromRequest(request.body).right
-      dayNote <- extract[DayNote](jsValue.data).right
-      itemId <- queryDataToResponse(DayNoteDB.insert(dayNote.data), "Could not add day note").right
-    } yield {
-        itemId
-      })
-  }
+    def addDayNote() = APIAuthAction { implicit request =>
+      Response(requestToResponse[DayNote, Long](request,DayNoteDB.insert, "Could not add day note"))
+    }
 
   def patchDayNote(id: Long, fieldName: String) = APIAuthAction { implicit request =>
     Response(for {
@@ -185,14 +177,8 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       })
   }
 
-  def deleteDayNote = APIAuthAction { implicit request =>
-    Response(for {
-      jsValue <- readJsonFromRequest(request.body).right
-      dayNote <- extract[DayNote](jsValue.data).right
-      itemId <- queryDataToResponse(DayNoteDB.deleteDayNote(dayNote.data), "Could not delete day note").right
-    } yield {
-        itemId
-      })
+  def deleteDayNote() = APIAuthAction { implicit request =>
+    Response(requestToResponse[DayNote, Long](request,DayNoteDB.deleteDayNote, "Could not delete day note"))
   }
 
 }
