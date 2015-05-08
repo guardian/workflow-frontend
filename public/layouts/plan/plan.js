@@ -10,7 +10,7 @@ import 'angular-dragdrop';
 
 import { wfBundleView } from 'components/plan-view/bundle-view/bundle-view';
 import { wfDayView } from 'components/plan-view/day-view/day-view';
-import { wfDayViewPlanItem } from 'components/plan-view/day-view-plan-item/day-view-plan-item';
+import { wfPlanItem } from 'components/plan-view/plan-item/plan-item';
 
 function withLocale(locale, f) {
     // can't find a way to create a new locale without
@@ -23,9 +23,9 @@ function withLocale(locale, f) {
 }
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
-    .directive('wfBundleView', ['$rootScope','$timeout', 'wfBundleService', 'wfPlannedItemService', wfBundleView])
+    .directive('wfBundleView', ['$rootScope','$timeout', 'wfBundleService', 'wfPlannedItemService', 'wfFiltersService', wfBundleView])
     .directive('wfDayView', ['$rootScope', 'wfPlannedItemService', '$http', '$timeout', wfDayView])
-    .directive('wfDayViewPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', 'wfBundleService', 'wfPlannedItemService', wfDayViewPlanItem])
+    .directive('wfPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', 'wfBundleService', 'wfPlannedItemService', wfPlanItem])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
         var filterParams = wfFiltersService.getAll();
@@ -56,7 +56,8 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             return moment(date).calendar();
         }
     }])
-    .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', 'wfDayNoteService', 'wfFiltersService', function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDayNoteService, wfFiltersService) {
+    .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', 'wfDayNoteService', 'wfFiltersService', 'wfPlannedItemService', function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDayNoteService, wfFiltersService, wfPlannedItemService) {
+
         withLocale("", function () {
 
             var calLocale = {
@@ -72,13 +73,15 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             moment.locale('wfPlan', calLocale);
         });
 
+        $scope.byBundle = true;
+
         $rootScope.$on('plan-view__ui-loaded', function() {
             $scope.isLoaded = true;
         });
 
         $scope.$on('quick-add-submit', function (ev, item) {
 
-            $http.post("/api/v1/plan/item", JSON.stringify(item))
+            wfPlannedItemService.add(item)
                 .then((res) => {
                     planLoader.poller.refresh()
                         .then(updateScopeItems);

@@ -1,32 +1,49 @@
-<div class="day-view__item-wrapper" ng-click="drawerOpen = !drawerOpen" ng-class="{'priority-high': item.priority == 1, 'priority-very-high': item.priority == 2, 'created': !!item.composerId, 'drawer-open': drawerOpen}">
-    <div class="day-view__item-top-row">
-        <span class="day-view__item-time" ng-if="item.hasSpecificTime">{{ item.plannedDate.format("HH:mm") }}</span>
-        <div class="day-view__item-title">
-            <span class="bundle" ng-style="genColor(getBundleName(item.bundleId))" ng-if="item.bundleId">{{ getBundleName(item.bundleId) }}</span>
+<div class="plan-item__item-wrapper" ng-click="drawerOpen = !drawerOpen" ng-class="{'priority-high': item.priority == 1, 'priority-very-high': item.priority == 2, 'created': !!item.composerId, 'drawer-open': drawerOpen}">
+    <div class="plan-item__item-top-row">
+        <span class="plan-item__item-time" ng-if="item.hasSpecificTime">{{ item.plannedDate.format("HH:mm") }}</span>
+        <div class="plan-item__item-title">
+            <span class="bundle" ng-style="genColor(getBundleName(item.bundleId))" ng-if="item.bundleId && variant !== 'bundle'">{{ getBundleName(item.bundleId) }}</span>
             <span>{{ item.title }}</span>
         </div>
     </div>
 
-    <div class="day-view__item-bottom-row">
-        <span class="day-view__item-byline" ng-if="item.byLine">{{ item.byLine }}</span>
-        <span class="day-view__item-note">{{ item.notes }}</span>
+    <div class="plan-item__item-bottom-row">
+        <span class="plan-item__item-byline" ng-if="item.byLine">{{ item.byLine }}</span>
+        <span class="plan-item__item-note">{{ item.notes }}</span>
     </div>
 
-    <div class="day-view__actions">
-        <button class="day-view__action day-view__action-start" ng-if="!item.composerId" ng-click="startWork(); $event.stopPropagation();" ng-class="{'loading': startWorkLoading}">Start work <span class="loader"></span></button>
-        <a class="day-view__action day-view__action-view" ng-if="item.composerId" href="/dashboard?composerId={{ item.composerId }}">View in produce</a>
-        <button class="day-view__action day-view__action-tomorrow" ng-click="shiftToTomorrow(); $event.stopPropagation();" ng-class="{'loading': MoveToTomorrowLoading}">Move to tomorrow  <span class="loader"></span></button>
-        <div class="day-view__item-drag-handle plan__drag-handle">
-            <span class="handle__mark"></span>
-            <span class="handle__mark"></span>
-            <span class="handle__mark"></span>
+    <div class="plan-item__actions" ng-switch="variant">
+
+        <div ng-switch-when="bundle">
+            <span class="plan-item__action-remove" ng-if="bundle.id !== 0" ng-click="removeFromBundleProxy(item); $event.stopPropagation();">
+                <i class="plan-item__action-icon--cross" wf-icon="cross" wf-icon-active="true"></i>
+            </span>
+
+            <div class="plan-item__item-drag-handle  plan__drag-handle" ng-if="bundle.id === 0">
+                <span class="handle__mark"></span>
+                <span class="handle__mark"></span>
+                <span class="handle__mark"></span>
+            </div>
         </div>
+
+        <div ng-switch-when="day">
+            <button class="plan-item__action plan-item__action-start" ng-if="!item.composerId" ng-click="startWork(); $event.stopPropagation();" ng-class="{'loading': startWorkLoading}">Start work <span class="loader"></span></button>
+            <a class="plan-item__action plan-item__action-view" ng-if="item.composerId" href="/dashboard?composerId={{ item.composerId }}">View in produce</a>
+            <button class="plan-item__action plan-item__action-tomorrow" ng-click="shiftToTomorrow(); $event.stopPropagation();" ng-class="{'loading': MoveToTomorrowLoading}">Move to tomorrow  <span class="loader"></span></button>
+            <div class="plan-item__item-drag-handle plan__drag-handle">
+                <span class="handle__mark"></span>
+                <span class="handle__mark"></span>
+                <span class="handle__mark"></span>
+            </div>
+        </div>
+
     </div>
+
 </div>
 
 
 
-<div class="day-view__item-drawer" ng-class="{'day-view__item-drawer--open': drawerOpen}">
+<div class="plan-item__item-drawer" ng-class="{'plan-item__item-drawer--open': drawerOpen}">
 
     <ul class="drawer__column--wide">
 

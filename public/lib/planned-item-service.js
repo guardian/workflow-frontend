@@ -19,6 +19,7 @@ angular
                 }
 
                 add(plannedItem) {
+                    console.log(plannedItem);
                     return httpRequest({
                         method: 'POST',
                         url: '/api/v1/plan/item',

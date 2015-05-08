@@ -3,7 +3,7 @@
 @import "components/plan-view/quick-add/quick-add";
 @import "components/plan-view/bundle-view/bundle-view";
 @import "components/plan-view/day-view/day-view";
-@import "components/plan-view/day-view-plan-item/day-view-plan-item";
+@import "components/plan-view/plan-item/plan-item";
 
 .current.label {
     background-color: #dee2e3;
@@ -36,12 +36,8 @@
     flex: 0 0 400px;
 }
 
-.detailed-schedule {
+.plan__view-container {
     flex: 1 0 auto;
-}
-
-.bundle-list {
-    flex: 0 0 400px;
 }
 
 @include smallScreen {
@@ -57,41 +53,41 @@
 // Loading animation
 // ---------------------------------------------------------- //
 
-.date-list,
-.bundle-list,
-.detailed-schedule {
-    position: relative;
-    transition: left 0.3s ease-in-out, box-shadow 0.7s ease-in-out;
-    background-color: #fff;
-    @include box-shadow(2px 0px 8px 2px $c-grey-500);
-}
-
-.date-list {
-    left: -400px;
-    z-index: 3;
-    transition-delay: 0s, 1.4s;
-}
-
-.bundle-list {
-    left: -100%;
-    z-index: 2;
-    transition-delay: 0.35s, 1.4s;
-}
-
-.detailed-schedule {
-    left: -100%;
-    z-index: 1;
-    transition-delay: 0.75s, 1.4s;
-}
-
-.loaded {
-    .date-list,
-    .bundle-list,
-    .detailed-schedule {
-        left: 0;
-        @include box-shadow(0 0 0 0 #fff);
-    }
-}
+//.date-list,
+//.bundle-list,
+//.detailed-schedule {
+//    position: relative;
+//    transition: left 0.3s ease-in-out, box-shadow 0.7s ease-in-out;
+//    background-color: #fff;
+//    @include box-shadow(2px 0px 8px 2px $c-grey-500);
+//}
+//
+//.date-list {
+//    left: -400px;
+//    z-index: 3;
+//    transition-delay: 0s, 1.4s;
+//}
+//
+//.bundle-list {
+//    left: -100%;
+//    z-index: 2;
+//    transition-delay: 0.35s, 1.4s;
+//}
+//
+//.detailed-schedule {
+//    left: -100%;
+//    z-index: 1;
+//    transition-delay: 0.75s, 1.4s;
+//}
+//
+//.loaded {
+//    .date-list,
+//    .bundle-list,
+//    .detailed-schedule {
+//        left: 0;
+//        @include box-shadow(0 0 0 0 #fff);
+//    }
+//}
 
 // Date Panel
 // ---------------------------------------------------------- //
@@ -201,6 +197,99 @@
     display: none;
 }
 
+// View Container + views layout
+// ================================================================= //
+
+.plan__view-container {
+    display: flex;
+    flex-direction: column;
+
+    .plan__title-bar {
+        flex: 0 0 58px;
+    }
+
+    .day-view, .bundle-view {
+        flex: 1 0 auto;
+        height: 100px;
+        overflow-y: auto;
+        position: relative;
+    }
+}
+
+// Titles
+// ================================================================= //
+
+.plan__title-bar {
+    padding: 12px;
+    height: 58px;
+    position: relative;
+    z-index: 3;
+    background-color: #ffffff;
+    border-bottom: 1px solid $c-grey-400;
+    .quick-add {
+        display: inline-block;
+        line-height: 34px;
+        vertical-align: top;
+    }
+}
+
+.plan__title {
+    @extend %f-data;
+    font-size: 20px;
+    line-height: 34px;
+    display: inline-block;
+    margin: 0 12px 0 0;
+    vertical-align: top;
+}
+
+// Tabs
+// ================================================================= //
+
+.plan__tabs {
+    position: relative;
+    display: inline-block;
+    margin: 0;
+    height: 46px;
+    line-height: 32px;
+    margin-left: 12px;
+}
+
+.plan__tab {
+    position: relative;
+    display: inline-block;
+    border: 1px solid $c-grey-400;
+    @include border-radius(3px 3px 0 0);
+    padding-left: 12px;
+    padding-right: 12px;
+    height: 100%;
+    @extend %f-data;
+    font-size: 14px;
+    line-height: inherit;
+    cursor: pointer;
+    background: linear-gradient(to top, $c-grey-400 -6px, #ffffff 6px, #ffffff 100%); // inset shadow
+    //font-weight: bold;
+    color: $c-grey-400;
+
+    margin-right: 6px;
+    &:last-child {
+        margin-right: 0;
+    }
+
+    &:hover {
+        background: linear-gradient(to top, $c-grey-400 -6px, $c-grey-200 6px, $c-grey-200 100%);
+        color: $c-grey-700;
+    }
+
+    &.plan__tab--active {
+        background: linear-gradient(to top, $c-grey-200 0px, #ffffff 20px, #ffffff 100%);
+        border-bottom: none;
+        color: $c-grey-700;
+        &:hover {
+            background: linear-gradient(to top, $c-grey-200 0px, #ffffff 20px, #ffffff 100%);
+        }
+    }
+}
+
 // Detailed-schedule
 // ================================================================= //
 
@@ -245,6 +334,7 @@
     color: #ffffff;
     cursor: pointer;
 }
+
 //
 //td	{
 //    color:black;
@@ -305,7 +395,6 @@
     position: relative;
 }
 
-
 .section_header {
     text-align: left;
     white-space: normal;
@@ -343,7 +432,7 @@
 //    background-color: $c-grey-300;
 //}
 
-.hour_count{
+.hour_count {
     font-weight: normal;
 }
 

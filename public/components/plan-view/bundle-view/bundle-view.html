@@ -1,48 +1,29 @@
-<!--<div class="bundle-list__title-bar">-->
+<div class="bundle-view__list">
+    <ul class="bundle-list-items list-unstyled">
 
-    <!--<h1 class="bundle-list__title">Bundles</h1>-->
+        <li class="day-bundle" ng-repeat="bundle in dayItemsByBundle track by bundle.id" ng-class="{ 'day-bundle--unscheduled': bundle.id === 0 }" data-jqyoui-options="bundleDraggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday" ng-if="bundle.itemsToday.length > 0">
 
-<!--</div>-->
+            <div class="day-bundle__title" ng-style="genColor(bundle.title)">
 
-<ul class="bundle-list-items list-unstyled">
-    <li class="alert alert-info" ng-if="!dayItemsByBundle.length">
-        <span>Nothing planned for Today!</span>
-    </li>
-    <li class="day-bundle" ng-repeat="bundle in dayItemsByBundle track by bundle.id" ng-class="{ 'day-bundle--unscheduled': bundle.id === 0 }" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday" ng-if="bundle.itemsToday.length > 0">
+                <!--Title for unscheduled-->
+                <span ng-if="bundle.id === 0">{{ bundle.title }}</span>
 
-        <!--Title for unscheduled-->
-        <span class="day-bundle__title"  ng-if="bundle.id === 0">{{ bundle.title }}</span>
-
-        <!--Editable title for all other budles-->
-        <wf-editable ng-if="bundle.id !== 0" class="day-bundle__title" ng-style="genColor(bundle.title)" ng-model="bundle.title" wf-editable-on-update="updateTitle(bundle, newValue)" wf-editable-required="true">
-            {{ bundle.title || 'Empty...' }}
-        </wf-editable>
-
-        <ul class="day-bundle__items list-unstyled" ng-style="genColor(bundle.title)">
-
-            <li class="day-bundle__item" ng-repeat="item in bundle.itemsToday track by item.id" ng-class="{ 'day-bundle__item--bundled': bundle.id !== 0 }" data-drag="bundle.id === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId" ng-model="item">
-
-                <span class="day-bundle__item-time" ng-if="!item.hasSpecificTime && !item.bucketed">&mdash;</span>
-                <span class="day-bundle__item-time" ng-if="item.hasSpecificTime">{{item.plannedDate.format("HH:mm")}}</span>
-                <span class="day-bundle__item-time" ng-if="!item.hasSpecificTime && item.bucketed">{{item.plannedDate.format("Ha")}}</span>
-                <span class="day-bundle__item-title">{{item.title}}</span>
-                <span class="assigned-to">{{item.byLine}}</span>
-                <span class="note">{{item.notes}}</span>
+                <!--Editable title for all other budles-->
+                <wf-editable ng-if="bundle.id !== 0" ng-model="bundle.title" wf-editable-on-update="updateTitle(bundle, newValue)" wf-editable-required="true">
+                    {{ bundle.title || 'Empty...' }}
+                </wf-editable>
 
                 <div class="day-bundle__actions">
-                    <span class="action__remove" ng-if="bundle.id !== 0" ng-click="removeFromBundle(item)">
-                        <i class="day-bundle__item__icon--cross" wf-icon="cross" wf-icon-active="true"></i>
-                    </span>
-                    <div class="day-bundle__item-drag-handle plan__drag-handle" ng-if="bundle.id === 0">
-                        <span class="handle__mark"></span>
-                        <span class="handle__mark"></span>
-                        <span class="handle__mark"></span>
-                    </div>
+                    <span class="day-bundle__add-item" ng-click="addNewItemToBundle(bundle)">+</span>
                 </div>
 
-            </li>
+            </div>
 
-        </ul>
-    </li>
-</ul>
-<!--</div>-->
+            <ul class="day-bundle__items list-unstyled" ng-style="genColor(bundle.title)">
+
+                <li wf-plan-item variant="'bundle'" ng-repeat="item in bundle.itemsToday track by item.id" item="item" bundle="bundle" ng-model="item" class="day-view__item" data-drag="bundle.id === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="bundleDraggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId"></li>
+
+            </ul>
+        </li>
+    </ul>
+</div>

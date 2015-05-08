@@ -1,9 +1,11 @@
-function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleService, wfPlannedItemService) {
+function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleService, wfPlannedItemService) {
     return {
         restrict: 'A',
-        templateUrl: '/assets/components/plan-view/day-view-plan-item/day-view-plan-item.html',
+        templateUrl: '/assets/components/plan-view/plan-item/plan-item.html',
         scope: {
-            item: '='
+            item: '=',
+            variant: '=',
+            bundle: '='
         },
         controller: ($scope) => {
             $scope.bundleList = wfBundleService.list();
@@ -95,6 +97,10 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBun
 
             };
 
+            $scope.removeFromBundleProxy = (item) => {
+                $scope.$emit('plan-view__remove-item-from-bundle', item);
+            };
+
             //$scope.$watch('item.bundleId', (newValue, oldValue) => {
             //
             //    $timeout(() => {
@@ -108,4 +114,4 @@ function wfDayViewPlanItem ($rootScope, $http, $timeout, wfContentService, wfBun
     }
 }
 
-export { wfDayViewPlanItem };
+export { wfPlanItem };
