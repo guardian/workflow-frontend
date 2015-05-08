@@ -73,8 +73,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             moment.locale('wfPlan', calLocale);
         });
 
-        $scope.byBundle = true;
-
         $rootScope.$on('plan-view__ui-loaded', function() {
             $scope.isLoaded = true;
         });

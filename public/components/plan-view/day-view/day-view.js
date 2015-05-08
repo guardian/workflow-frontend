@@ -22,7 +22,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
                 snap: '.bucket__drop-zone',
                 snapMode: 'inner',
                 revert: 'invalid',
-                handle: '.day-view__item-drag-handle'
+                handle: '.plan-item__item-drag-handle'
             };
 
             _wfConfig.planBuckets = {
