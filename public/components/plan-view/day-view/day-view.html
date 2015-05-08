@@ -1,40 +1,29 @@
-<div class="day-view">
+<div class="day-view__list">
 
-    <div class="day-view__title-bar">
+    <ul class="day-view__list-buckets list-unstyled">
 
-        <h1 class="day-view__title">{{ selectedDate.format('dddd Do MMMM YYYY') }}</h1>
+        <li class="day-view__bucket day-view__bucket--unscheduled">
+            <div class="bucket__title">Unscheduled</div>
 
-        <wf-quick-add on-add-hook="quickAddHook" pre-selected-date="selectedDate"></wf-quick-add>
-    </div>
+            <ul class="bucket__items list-unstyled">
 
-    <div class="day-view__list">
+                <li wf-plan-item variant="'day'" ng-repeat="item in unscheduledItems track by item.id" item="item" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
 
-        <ul class="day-view__list-buckets list-unstyled">
+            </ul>
+        </li>
 
-            <li class="day-view__bucket day-view__bucket--unscheduled">
-                <div class="bucket__title">Unscheduled</div>
+        <li class="day-view__bucket" ng-repeat="bucket in buckets track by bucket.start">
+            <div class="bucket__title">{{ toMeridiem(bucket.start) }} - {{ toMeridiem(bucket.end) }}</div>
 
-                <ul class="bucket__items list-unstyled">
+            <ul class="bucket__items list-unstyled">
 
-                    <li wf-day-view-plan-item ng-repeat="item in unscheduledItems track by item.id" item="item" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
+                <li class="bucket__drop-zone" ng-model="bucket.items" data-bucket-start="{{ bucket.start }}" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="true" data-jqyoui-options="{tolerance: 'pointer', hoverClass: 'dnd__status--hovered'}"></li>
 
-                </ul>
-            </li>
+                <li wf-plan-item variant="'day'" ng-repeat="item in bucket.items track by item.id" item="item" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
 
-            <li class="day-view__bucket" ng-repeat="bucket in buckets track by bucket.start" >
-                <div class="bucket__title">{{ toMeridiem(bucket.start) }} - {{ toMeridiem(bucket.end) }}</div>
+            </ul>
 
-                <ul class="bucket__items list-unstyled">
-
-                    <li class="bucket__drop-zone" ng-model="bucket.items" data-bucket-start="{{ bucket.start }}" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="true" data-jqyoui-options="{tolerance: 'pointer', hoverClass: 'dnd__status--hovered'}"></li>
-
-                    <li wf-day-view-plan-item ng-repeat="item in bucket.items track by item.id" item="item"  ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
-
-                </ul>
-
-            </li>
-        </ul>
-
-    </div>
+        </li>
+    </ul>
 
 </div>

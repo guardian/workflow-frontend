@@ -19,8 +19,25 @@
         </ul>
     </div>
 
-    <wf-bundle-view class="bundle-list" bundle-items="dayItemsByBundle"></wf-bundle-view>
+    <div class="plan__view-container">
 
-    <wf-day-view class="detailed-schedule" plan-items="dayItems" selected-date="selectedDate"></wf-day-view>
+        <div class="plan__title-bar">
+
+            <h1 class="plan__title">{{ selectedDate.format('dddd Do MMMM YYYY') }}</h1>
+
+            <wf-quick-add on-add-hook="quickAddHook" pre-selected-date="selectedDate"></wf-quick-add>
+
+            <ul class="plan__tabs list-unstyled">
+                <li class="plan__tab" ng-click="byBundle = false;" ng-class="{'plan__tab--active': !byBundle}">By time</li>
+                <li class="plan__tab" ng-click="byBundle = true;" ng-class="{'plan__tab--active': byBundle}">By bundle</li>
+            </ul>
+
+        </div>
+
+        <wf-day-view class="day-view" plan-items="dayItems" selected-date="selectedDate" ng-show="!byBundle"></wf-day-view>
+
+        <wf-bundle-view class="bundle-view" bundle-items="dayItemsByBundle" selected-date="selectedDate" ng-show="byBundle"></wf-bundle-view>
+
+    </div>
 
 </div>

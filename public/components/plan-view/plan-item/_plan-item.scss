@@ -2,29 +2,37 @@
 @import "layouts/plan/mixins";
 @import "layouts/global/colours";
 
-.day-view__item-wrapper {
+.plan-item__item-wrapper {
     position: relative;
     height: 36px;
     padding: 2px 0 2px 12px;
 
     cursor: pointer;
 
+    &:hover {
+        background-color: $c-grey-100;
+        .plan-item__actions {
+            display: block;
+        }
+    }
+
     &.priority-high {
         padding-left: 9px;
         border-left: 3px solid $c-orange;
     }
+
     &.priority-very-high {
         padding-left: 9px;
         border-left: 3px solid $c-red;
     }
+
     &.created {
         padding-left: 9px;
         border-left: 3px solid $c-green;
         background-color: $c-light-green;
-    }
-
-    &:hover {
-        background-color: $c-grey-100;
+        &:hover {
+            background-color: darken($c-light-green, 8%);
+        }
     }
 
     .bundle {
@@ -37,8 +45,8 @@
     }
 }
 
-.day-view__item-top-row,
-.day-view__item-bottom-row {
+.plan-item__item-top-row,
+.plan-item__item-bottom-row {
     display: block;
     height: 16px;
     > * {
@@ -46,15 +54,15 @@
     }
 }
 
-.day-view__item-time {
+.plan-item__item-time {
     margin-right: 6px;
 }
 
-.day-view__item-title {
+.plan-item__item-title {
     font-weight: bold;
 }
 
-.day-view__item-byline {
+.plan-item__item-byline {
     //        background-color: #DCDCDC;
     //        border-radius: 50px;
     //        box-sizing: border-box;
@@ -69,13 +77,15 @@
     //        width: auto;
 }
 
-.day-view__actions {
+.plan-item__actions {
     position: absolute;
     top: 0;
     right: 0;
     padding: 8px 4px 8px;
 
-    .day-view__action-tomorrow {
+    display: none;
+
+    .plan-item__action-tomorrow {
         border: 1px solid $c-highlight-blue;
         background-color: $c-blue;
         color: #ffffff;
@@ -89,7 +99,7 @@
         }
     }
 
-    .day-view__action {
+    .plan-item__action {
         @extend %fs-data-2;
         height: 20px;
         line-height: 15px;
@@ -165,10 +175,29 @@
             opacity: 0;
             transition: opacity 0.2s ease-in-out;
         }
+
+        &-remove {
+            display: block;
+            float: right;
+            height: 16px;
+            width: 16px;
+            margin: 1px;
+            cursor: pointer;
+        }
+
+        .plan-item__action-icon--cross {
+            height: 10px;
+            width: 10px;
+            display: block;
+            vertical-align: top;
+            svg {
+                vertical-align: top;
+            }
+        }
     }
 }
 
-.day-view__item-drag-handle {
+.plan-item__item-drag-handle {
     height: 20px;
     width: 22px;
     padding: 1px 0 0 0;
@@ -178,15 +207,17 @@
     }
 }
 
-.day-view__item-drawer {
+.plan-item__item-drawer {
     background-color: $c-grey-200;
     display: flex;
     overflow: hidden;
     height: 0;
-    transition: height 0.2s ease-in-out;
+    opacity: 0;
+    transition: height 0.2s ease-in-out, opacity 0.2s 0.2s ease-in-out;
 
     &--open {
         height: 120px;
+        opacity: 1;
         overflow: visible;
     }
 

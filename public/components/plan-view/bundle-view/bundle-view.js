@@ -1,31 +1,33 @@
 import _ from 'lodash';
 
-function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemService) {
+function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemService, wfFiltersService) {
     return {
         restrict: 'E',
         templateUrl: '/assets/components/plan-view/bundle-view/bundle-view.html',
         scope: {
-            'dayItemsByBundle': '=bundleItems'
+            'dayItemsByBundle': '=bundleItems',
+            'selectedDate': '='
         },
         controller: function ($scope) {
-            $scope.draggableOptions = {
+            $scope.bundleDraggableOptions = {
                 helper: 'clone',
-                cursorAt: {
-                    top: 12,
-                    left: 12
-                },
-                containment: '.bundle-list-items',
+                //cursorAt: {
+                //    top: 12,
+                //    left: 12
+                //},
+                containment: '.bundle-view',
                 refreshPositions: true,
                 axis: 'y',
-                snap: '.bundle__drop-zone',
-                snapMode: 'inner',
+                //snap: '.bundle__drop-zone',
+                //snapMode: 'inner',
                 revert: 'invalid',
-                handle: '.day-bundle__item-drag-handle',
+                handle: '.plan__drag-handle',
 
                 // For droppable on same item
 
                 tolerance: 'pointer',
-                hoverClass: 'dnd__status--hovered'
+                hoverClass: 'dnd__status--hovered',
+                scroll: true
             };
         },
         link: ($scope, elem, attrs) => {
@@ -41,6 +43,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
             $scope.genColor         = wfBundleService.genBundleColor;
 
             $scope.draggingStart = (event, ui, item) => {
+                debugger;
                 $scope.draggedItem = item;
                 elem.addClass('bundle-view--dragging')
             };
@@ -118,7 +121,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
              * Remove an item from its bundle and add it back as an unbundled item, update the server
              * @param removingItem
              */
-            $scope.removeFromBundle = (removingItem) => {
+            $scope.$on('plan-view__remove-item-from-bundle', (event, removingItem) => {
 
                 let removedItem = util.removeItemFromCurrentBundle(removingItem);
 
@@ -135,7 +138,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                         $scope.$emit('plan-view__bundles-edited');
                     });
                 });
-            };
+            });
 
             /**
              * Update the title of a bundle
@@ -148,6 +151,19 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
 
                     bundle.title = value;
                     wfBundleService.updateTitle(bundle.id, value);
+                });
+            };
+
+            $scope.addNewItemToBundle = (bundle) => {
+
+                wfPlannedItemService.add({
+                    title: "My title",
+                    id: 0,
+                    newsList: wfFiltersService.get('news-list') || 0,
+                    plannedDate: $scope.selectedDate.toISOString(),
+                    bundleId: bundle.id
+                }).then(() => {
+
                 });
             };
 
