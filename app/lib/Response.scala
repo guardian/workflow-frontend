@@ -1,5 +1,6 @@
 package lib
 
+import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{Result, Results}
 
@@ -41,12 +42,15 @@ object Response extends Results {
 
   def apply[T](action: => Response[T])(implicit tjs: Writes[T]): Result = {
     action.fold({
-      apiError => Status(apiError.statusCode) {
-        JsObject(Seq(
-          "status" -> JsString(apiError.statusString),
-          "statusCode" -> JsNumber(apiError.statusCode),
-          "error" -> Json.toJson(apiError)
-        ))
+      apiError => {
+        Logger.info(apiError.friendlyMessage)
+        Status(apiError.statusCode) {
+          JsObject(Seq(
+            "status" -> JsString(apiError.statusString),
+            "statusCode" -> JsNumber(apiError.statusCode),
+            "error" -> Json.toJson(apiError)
+          ))
+        }
       }
     },
     apiSuccess => {
