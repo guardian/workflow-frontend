@@ -12,13 +12,9 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
         controller: function ($scope) {
             $scope.draggableOptions = {
                 helper: 'clone',
-                //appendTo: '.day-view',
                 containment: '.day-view',
                 refreshPositions: true,
                 axis: 'y',
-                //snap: '.bucket__drop-zone',
-                //snapMode: 'inner',
-                //revert: 'invalid',
                 handle: '.plan-item__item-drag-handle',
                 scroll: true
             };
@@ -129,7 +125,6 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
             };
 
             $scope.draggingStart = (event, ui, item) => {
-                //debugger;
                 $scope.draggedItem = item;
                 elem.addClass('day-view--dragging');
                 $scope.dragScrollBoxEl = ui.helper.parents('.day-view');
@@ -137,9 +132,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
             };
 
             $scope.onDrag = (event, ui) => {
-                console.log('1: ', ui.position.top);
                 ui.position.top = ui.position.top + ($scope.dragScrollBoxEl.scrollTop() - $scope.dragStartOffset);
-                console.log('2: ', ui.position.top);
             };
 
             $scope.draggingStop = () => {
@@ -150,16 +143,6 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
         }
     }
 }
-
-//function sortPlannedItemsByDate(items) {
-//    return items.sort((a, b) => {
-//        if (a.plannedDate.isAfter(b.plannedDate)) {
-//            return 1;
-//        } else if (a.plannedDate.isBefore(b.plannedDate)) {
-//            return -1;
-//        } else { return 0; }
-//    });
-//}
 
 function comparePlannedItems(newPlannedItems, oldPlannedItems) {
 
