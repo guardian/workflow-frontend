@@ -12,17 +12,15 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
         controller: function ($scope) {
             $scope.draggableOptions = {
                 helper: 'clone',
-                cursorAt: {
-                    top: 12,
-                    left: 12
-                },
-                containment: '.day-view__list',
+                //appendTo: '.day-view',
+                containment: '.day-view',
                 refreshPositions: true,
                 axis: 'y',
-                snap: '.bucket__drop-zone',
-                snapMode: 'inner',
-                revert: 'invalid',
-                handle: '.plan-item__item-drag-handle'
+                //snap: '.bucket__drop-zone',
+                //snapMode: 'inner',
+                //revert: 'invalid',
+                handle: '.plan-item__item-drag-handle',
+                scroll: true
             };
 
             _wfConfig.planBuckets = {
@@ -114,15 +112,6 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
                 }
             };
 
-            $scope.draggingStart = (event, ui, item) => {
-                $scope.draggedItem = item;
-                elem.addClass('day-view--dragging')
-            };
-
-            $scope.draggingStop = () => {
-                elem.removeClass('day-view--dragging')
-            };
-
             $scope.droppedOn = (event, ui) => {
 
                 var el = ui.draggable.detach();
@@ -137,6 +126,24 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
                     'hasSpecificTime': false,
                     'plannedDate': $scope.draggedItem.plannedDate.toISOString()
                 });
+            };
+
+            $scope.draggingStart = (event, ui, item) => {
+                //debugger;
+                $scope.draggedItem = item;
+                elem.addClass('day-view--dragging');
+                $scope.dragScrollBoxEl = ui.helper.parents('.day-view');
+                $scope.dragStartOffset = $scope.dragScrollBoxEl.scrollTop();
+            };
+
+            $scope.onDrag = (event, ui) => {
+                console.log('1: ', ui.position.top);
+                ui.position.top = ui.position.top + ($scope.dragScrollBoxEl.scrollTop() - $scope.dragStartOffset);
+                console.log('2: ', ui.position.top);
+            };
+
+            $scope.draggingStop = () => {
+                elem.removeClass('day-view--dragging')
             };
 
             $timeout(() => {$rootScope.$emit('plan-view__ui-loaded')}, 700);

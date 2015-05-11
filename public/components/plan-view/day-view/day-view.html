@@ -7,7 +7,7 @@
 
             <ul class="bucket__items list-unstyled">
 
-                <li wf-plan-item variant="'day'" ng-repeat="item in unscheduledItems track by item.id" item="item" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
+                <li wf-plan-item variant="'day'" ng-repeat="item in unscheduledItems track by item.id" item="item" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', onDrag: 'onDrag', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
 
             </ul>
         </li>

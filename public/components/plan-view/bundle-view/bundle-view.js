@@ -16,7 +16,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 //    left: 12
                 //},
                 containment: '.bundle-view',
-                refreshPositions: true,
+                //refreshPositions: true,
                 axis: 'y',
                 //snap: '.bundle__drop-zone',
                 //snapMode: 'inner',
@@ -28,6 +28,15 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 tolerance: 'pointer',
                 hoverClass: 'dnd__status--hovered',
                 scroll: true
+
+                // Fix issues on scroll
+                //start: function (event, ui) {
+                //    $(this).data("startingScrollTop",window.pageYOffset);
+                //},
+                //drag: function(event,ui){
+                //    var st = parseInt($(this).data("startingScrollTop"));
+                //    ui.position.top -= st;
+                //}
             };
         },
         link: ($scope, elem, attrs) => {
