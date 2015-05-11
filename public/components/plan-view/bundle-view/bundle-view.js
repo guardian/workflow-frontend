@@ -11,15 +11,8 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
         controller: function ($scope) {
             $scope.bundleDraggableOptions = {
                 helper: 'clone',
-                //cursorAt: {
-                //    top: 12,
-                //    left: 12
-                //},
                 containment: '.bundle-view',
-                //refreshPositions: true,
                 axis: 'y',
-                //snap: '.bundle__drop-zone',
-                //snapMode: 'inner',
                 revert: 'invalid',
                 handle: '.plan__drag-handle',
 
@@ -29,14 +22,6 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 hoverClass: 'dnd__status--hovered',
                 scroll: true
 
-                // Fix issues on scroll
-                //start: function (event, ui) {
-                //    $(this).data("startingScrollTop",window.pageYOffset);
-                //},
-                //drag: function(event,ui){
-                //    var st = parseInt($(this).data("startingScrollTop"));
-                //    ui.position.top -= st;
-                //}
             };
         },
         link: ($scope, elem, attrs) => {
@@ -52,9 +37,14 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
             $scope.genColor         = wfBundleService.genBundleColor;
 
             $scope.draggingStart = (event, ui, item) => {
-                debugger;
                 $scope.draggedItem = item;
-                elem.addClass('bundle-view--dragging')
+                elem.addClass('bundle-view--dragging');
+                $scope.dragScrollBoxEl = ui.helper.parents('.day-view');
+                $scope.dragStartOffset = $scope.dragScrollBoxEl.scrollTop();
+            };
+
+            $scope.onDrag = (event, ui) => {
+                ui.position.top = ui.position.top + ($scope.dragScrollBoxEl.scrollTop() - $scope.dragStartOffset);
             };
 
             $scope.draggingStop = () => {

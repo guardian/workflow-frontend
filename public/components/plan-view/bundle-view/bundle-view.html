@@ -21,7 +21,7 @@
 
             <ul class="day-bundle__items list-unstyled" ng-style="genColor(bundle.title)">
 
-                <li wf-plan-item variant="'bundle'" ng-repeat="item in bundle.itemsToday track by item.id" item="item" bundle="bundle" ng-model="item" class="day-view__item" data-drag="bundle.id === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', placeholder: true}" data-jqyoui-options="bundleDraggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId"></li>
+                <li wf-plan-item variant="'bundle'" ng-repeat="item in bundle.itemsToday track by item.id" item="item" bundle="bundle" ng-model="item" class="day-view__item" data-drag="bundle.id === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', onDrag: 'onDrag', placeholder: true}" data-jqyoui-options="bundleDraggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId"></li>
 
             </ul>
         </li>
