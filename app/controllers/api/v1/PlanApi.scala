@@ -51,16 +51,6 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       }
   }
 
-//  def patchRequestToResponse[A : Reads, B, C](request: UserRequest[AnyContent], dbFunction: (Int, String, C) => Option[B], id: Int, fieldName: String) = {
-//    for {
-//      jsValue <- readJsonFromRequest(request.body).right
-//      queryData <- extractFromJson(fieldName, jsValue.data).right
-//      out <- queryDataToResponse(dbFunction(id, fieldName, queryData.data), errorMessage).right
-//    } yield {
-//      out
-//    }
-//  }
-
   /** Plan item queries */
 
   def plan(newsListIdOption: Option[Long], startDateOption: Option[String], endDateOption: Option[String]) = APIAuthAction { implicit request =>
@@ -97,10 +87,6 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
         itemId
       })
   }
-
-//  def patchPlannedItem() = APIAuthAction { implicit request =>
-//    Response(patchRequestToResponse[PlannedItem, Long](request,PlannedItemDB.update, "Could not add plan item", id, fieldName))
-//  }
 
   def deletePlannedItem() = APIAuthAction { implicit request =>
     Response(requestToResponse[PlannedItem, Long](request,PlannedItemDB.deletePlannedItem, "Could not delete plan item"))
