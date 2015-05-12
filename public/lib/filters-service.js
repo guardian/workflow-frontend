@@ -129,6 +129,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('filtersChanged.view', function(event, data) {
+                    self.update('view', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
             }
 
             init() {
@@ -160,7 +165,8 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'assigneeEmail': params['assigneeEmail'],
                         'incopy'       : params['incopy'],
                         'touched'      : params['touched'],
-                        'composerId'   : params['composerId']
+                        'composerId'   : params['composerId'],
+                        'view'         : params['view']
                     };
 
                     $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);

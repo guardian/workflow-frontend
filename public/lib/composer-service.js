@@ -38,7 +38,8 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
         statusFlags:(d) => {
             return {
                 commentable: deepSearch(d, ['preview', 'data', 'settings', 'commentable', 'data']) === 'true',
-                optimisedForWeb: deepSearch(d, ['toolSettings', 'seoOptimised', 'data']) === 'true'
+                optimisedForWeb: deepSearch(d, ['toolSettings', 'seoOptimised', 'data']) === 'true',
+                optimisedForWebChanged: deepSearch(d, ['toolSettings', 'seoChanged', 'data']) === 'true'
             };
         },
 
