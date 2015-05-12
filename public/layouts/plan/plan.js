@@ -142,6 +142,9 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             });
             return ret;
         }
+        $scope.dateList = makeDateList();
+
+        $scope.newNote = '';
 
         /**
          * Create the scope items for the bundle view and the day view using the currently selected date
@@ -194,43 +197,62 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $timeout(updateScopeItems); // Ensure scope is applied on the next digest loop
         });
 
-        $scope.buildDateListAndDayNotes = function() {
+        $scope.buildDateListAndDayNotes = function(newNoteDate) {
 
-            $scope.dateList = makeDateList();
+            newNoteDate = newNoteDate || null;
+
+            var tempDateList = $scope.dateList;
             if ($scope.newsList) {
 
                 wfDayNoteService.get({
                     'newsList': $scope.newsList,
-                    'startDate': $scope.dateList[0].date.toISOString(),
-                    'endDate': $scope.dateList[$scope.dateList.length-1].date.toISOString()
+                    'startDate': tempDateList[0].date.toISOString(),
+                    'endDate': tempDateList[tempDateList.length-1].date.toISOString()
                 }).then((response) => {
-
                     let dayNotes = response.data.data;
-                    $scope.dateList.map((date) => {
+                    tempDateList.map((date) => {
 
-                        let dateDayNote = dayNotes.filter((note) => {
+                        let dateDayNotes = dayNotes.filter((note) => {
                             return moment(note.day).isSame(date.date, 'day');
-                        })[0];
-                        date.dayNote = dateDayNote ? dateDayNote : {};
+                        });
+                        date.dayNotes = dateDayNotes ? dateDayNotes : [];
+                        if (newNoteDate && moment(newNoteDate).isSame(date.date)) {
+                            date.justAdded = true;
+                        }
                         return date;
                     });
+                    $scope.dateList = tempDateList;
+
                 });
             }
 
         };
 
         $scope.updateDayNote = function(id, newValue, date) {
+
             if (id) {
                 wfDayNoteService.updateField(id, 'note', newValue);
             } else {
 
-                wfDayNoteService.add({
+                $scope.newNote = '';
+                let newNote = {
                     'id': 0,
                     'note': newValue,
-                    'day': date.format('YYYY-MM-DD'),
+                    'day': date.date.format('YYYY-MM-DD'),
                     'newsList': $scope.newsList
-                })
+                };
+
+                $timeout(() => {
+                    date.dayNotes.push(newNote);
+                    date.justAdded = true;
+
+                });
+                wfDayNoteService.add(newNote).then((response) => {
+                    $scope.buildDateListAndDayNotes(date.date.format('YYYY-MM-DD'))
+                });
+
             }
+
         };
 
 
