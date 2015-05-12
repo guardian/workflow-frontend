@@ -143,7 +143,13 @@ function wfContentItemParser(config, statusLabels, sections) {
                 'Not linked with InCopy';
 
             this.optimisedForWeb = !!(item.statusFlags && item.statusFlags.optimisedForWeb);
-            this.optimisedForWebTitle = this.optimisedForWeb ? 'Optimised for web' : 'Not optimised for web';
+            this.optimisedForWebChanged = !!(item.statusFlags && item.statusFlags.optimisedForWebChanged);
+
+            if (this.optimisedForWebChanged) {
+                this.optimisedForWebTitle = 'Content has been modified since being optimised'
+            } else {
+                this.optimisedForWebTitle = this.optimisedForWeb ? 'Optimised for web' : 'Not optimised for web';
+            }
 
             this.item = item;
         }
