@@ -182,8 +182,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
                 return itemIsWithinDateRange(item, selectedDay, selectedDayPlusOne);
             });
-
-
         }
 
         $scope.$on('pvFiltersChanged', function() {
@@ -197,9 +195,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $timeout(updateScopeItems); // Ensure scope is applied on the next digest loop
         });
 
-        $scope.buildDateListAndDayNotes = function(newNoteDate) {
-
-            newNoteDate = newNoteDate || null;
+        $scope.buildDateListAndDayNotes = function() {
 
             var tempDateList = $scope.dateList;
             if ($scope.newsList) {
@@ -216,16 +212,11 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                             return moment(note.day).isSame(date.date, 'day');
                         });
                         date.dayNotes = dateDayNotes ? dateDayNotes : [];
-                        if (newNoteDate && moment(newNoteDate).isSame(date.date)) {
-                            date.justAdded = true;
-                        }
                         return date;
                     });
                     $scope.dateList = tempDateList;
-
                 });
             }
-
         };
 
         $scope.updateDayNote = function(id, newValue, date) {
@@ -241,18 +232,14 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                     'day': date.date.format('YYYY-MM-DD'),
                     'newsList': $scope.newsList
                 };
-
                 $timeout(() => {
                     date.dayNotes.push(newNote);
-                    date.justAdded = true;
 
                 });
-                wfDayNoteService.add(newNote).then((response) => {
-                    $scope.buildDateListAndDayNotes(date.date.format('YYYY-MM-DD'))
+                wfDayNoteService.add(newNote).then(() => {
+                    $scope.buildDateListAndDayNotes();
                 });
-
             }
-
         };
 
 
