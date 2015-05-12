@@ -99,7 +99,7 @@
 
     <div class="modal-footer" ng-if="mode === 'import'" ng-hide="actionInProgress">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" ng-click="ok()" ng-disabled="stubForm.$invalid || !validImport" data-component="submit-button">
+        <button type="submit" class="btn btn-primary" ng-click="ok()" ng-disabled="stubForm.$invalid || !validImport" testing-target="submit-button">
             Import
         </button>
     </div>
