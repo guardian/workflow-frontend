@@ -36,7 +36,8 @@ function wfEditableDirectiveFactory($timeout) {
             onEditableCancel: '&wfEditableOnCancel',
             validateRequired: '=wfEditableRequired',
             validateMinlength: '=wfEditableMinlength',
-            validateMaxlength: '=wfEditableMaxlength'
+            validateMaxlength: '=wfEditableMaxlength',
+            noCloseMode:    '=wfNoCloseMode'
         },
         compile: function(tElement, tAttrs) {
             var nodeName,
@@ -169,7 +170,14 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
                         newValue: newValue,
                         oldValue: oldValue
                     });
-                    wfEditable.setEditMode(false);
+                    if ($scope.noCloseMode) {
+
+                        // reset input
+                        $element[0].value = '';
+
+                    } else {
+                        wfEditable.setEditMode(false);
+                    }
 
                     ngModel.$setUntouched();
                     ngModel.$setPristine();
