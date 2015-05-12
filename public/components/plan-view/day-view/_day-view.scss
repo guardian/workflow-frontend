@@ -1,44 +1,5 @@
 @import "layouts/global/mixins";
 
-//.day-view__times {
-//    -webkit-flex: 0 0 50px;
-//    flex: 0 0 50px;
-//    ul {
-//        @extend %fs-data-1;
-//        width: 50px;
-//        padding: 0;
-//        /*	background-color: #1c78cf;*/
-//        vertical-align: middle;
-//        text-align: right;
-//        color: #333333;
-//        position: relative;
-//
-//        li {
-//            width: 100%;
-//            position: absolute;
-//            left: 0;
-//            padding: 0 4px;
-//            box-sizing: border-box;
-////            border-bottom: 1px solid #eee;
-//            &:nth-child(even) {
-//                background-color: #eee;
-//            }
-////            &:last-child {
-////                border-bottom: none;
-////            }
-//        }
-//    }
-//}
-
-.day-view__list {
-//    position: relative;
-//    flex: 1 1 0px;
-//    overflow-y: auto;
-//    &::-webkit-scrollbar {
-//        display: none;
-//    }
-}
-
 .day-view__list-buckets {
     margin: 0;
 }
@@ -55,20 +16,35 @@
             background-color: #f6f6f6;
         }
     }
-
 }
 
-.bucket__title {
-    position: relative;
-    z-index: 2;
-    display: block;
-    width: 100%;
-    background-color: $c-grey-300;
-    padding: 2px 0 2px 6px;
-    //border-left: 3px solid #00adee;
-    @extend %fs-data-4;
-    font-weight: bold;
-    //@include box-shadow(0px 1px 4px 1px $c-grey-400);
+.day-view__bucket {
+    .bucket__title {
+        position: relative;
+        z-index: 2;
+        display: block;
+        width: 100%;
+        background-color: $c-grey-300;
+        padding: 2px 0 2px 6px;
+        @extend %fs-data-4;
+        font-weight: bold;
+        height: 26px;
+        line-height: 22px;
+    }
+
+    .bucket__actions {
+        position: absolute;
+        right: 12px;
+        top: 0;
+        height: 100%;
+        @extend %fs-data-4;
+        line-height: 26px;
+
+        .inline-add-item__form {
+            height: 26px;
+            line-height: 26px;
+        }
+    }
 
 }
 
@@ -104,5 +80,9 @@
         @include box-shadow(0px 1px 4px 2px #c0c0c0);
         z-index: 3;
         opacity: 0.8;
+    }
+
+    &.dnd__status--hovered {
+        background-color: $c-highlight-blue;
     }
 }

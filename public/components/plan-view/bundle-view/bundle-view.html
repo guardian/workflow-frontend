@@ -14,7 +14,7 @@
                 </wf-editable>
 
                 <div class="day-bundle__actions">
-                    <span class="day-bundle__add-item" ng-click="addNewItemToBundle(bundle)">+</span>
+                    <wf-inline-add-item wf-inline-add-item-on-submit="addNewItemToBundle(bundle, title);" class="day-bundle__action-add-item" ng-if="bundle.id !== 0"></wf-inline-add-item>
                 </div>
 
             </div>

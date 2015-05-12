@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
+function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFiltersService) {
     return {
         restrict: 'E',
         templateUrl: '/assets/components/plan-view/day-view/day-view.html',
@@ -10,27 +10,18 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
             selectedDate: '='
         },
         controller: function ($scope) {
+
             $scope.draggableOptions = {
                 helper: 'clone',
                 containment: '.day-view',
                 refreshPositions: true,
                 axis: 'y',
                 handle: '.plan-item__item-drag-handle',
-                scroll: true
+                scroll: true,
+                revert: 'invalid'
             };
 
-            _wfConfig.planBuckets = {
-                'default': [
-                    {start: 0, end: 6},
-                    {start: 6, end: 9},
-                    {start: 9, end: 12},
-                    {start: 12, end: 15},
-                    {start: 15, end: 18},
-                    {start: 18, end: 24}
-                ]
-            };
-
-            $scope.buckets = _wfConfig.planBuckets[$scope.newsListName] ? _wfConfig.planBuckets[$scope.newsListName] : _wfConfig.planBuckets['default'];
+            $scope.buckets = _wfConfig.newsListBuckets[$scope.newsListName] ? _wfConfig.newsListBuckets[$scope.newsListName] : _wfConfig.newsListBuckets['default'];
 
             $scope.buckets.map((bucket) => {
                 bucket.items = [];
@@ -137,6 +128,21 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout) {
 
             $scope.draggingStop = () => {
                 elem.removeClass('day-view--dragging')
+            };
+
+            $scope.addNewItemToBucket = (bucket, newItemName) => {
+
+                wfPlannedItemService.add({
+                    title: newItemName ? newItemName : "New Item",
+                    id: 0,
+                    newsList: wfFiltersService.get('news-list') || 0,
+                    plannedDate: $scope.selectedDate.clone().hours(bucket.start).toISOString(),
+                    bundleId: 0,
+                    bucketed: true,
+                    hasSpecificTime: false
+                }).then(() => {
+                    delete $scope.newItemName;
+                });
             };
 
             $timeout(() => {$rootScope.$emit('plan-view__ui-loaded')}, 700);

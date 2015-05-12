@@ -13,7 +13,15 @@
         </li>
 
         <li class="day-view__bucket" ng-repeat="bucket in buckets track by bucket.start">
-            <div class="bucket__title">{{ toMeridiem(bucket.start) }} - {{ toMeridiem(bucket.end) }}</div>
+            <div class="bucket__title">
+
+                <span>{{ toMeridiem(bucket.start) }} - {{ toMeridiem(bucket.end) }}</span>
+
+                <div class="bucket__actions">
+                    <wf-inline-add-item wf-inline-add-item-on-submit="addNewItemToBucket(bucket, title);" class="bucket__action-add-item" ng-if="bundle.id !== 0"></wf-inline-add-item>
+                </div>
+
+            </div>
 
             <ul class="bucket__items list-unstyled">
 

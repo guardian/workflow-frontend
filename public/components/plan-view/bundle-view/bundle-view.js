@@ -9,6 +9,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
             'selectedDate': '='
         },
         controller: function ($scope) {
+
             $scope.bundleDraggableOptions = {
                 helper: 'clone',
                 containment: '.bundle-view',
@@ -21,8 +22,9 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 tolerance: 'pointer',
                 hoverClass: 'dnd__status--hovered',
                 scroll: true
-
             };
+
+            $scope.newItemName = null;
         },
         link: ($scope, elem, attrs) => {
 
@@ -153,16 +155,16 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 });
             };
 
-            $scope.addNewItemToBundle = (bundle) => {
+            $scope.addNewItemToBundle = (bundle, newItemName) => {
 
                 wfPlannedItemService.add({
-                    title: "My title",
+                    title: newItemName ? newItemName : "New Item",
                     id: 0,
                     newsList: wfFiltersService.get('news-list') || 0,
                     plannedDate: $scope.selectedDate.toISOString(),
                     bundleId: bundle.id
                 }).then(() => {
-
+                    delete $scope.newItemName;
                 });
             };
 

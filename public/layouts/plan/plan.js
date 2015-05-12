@@ -11,6 +11,7 @@ import 'angular-dragdrop';
 import { wfBundleView } from 'components/plan-view/bundle-view/bundle-view';
 import { wfDayView } from 'components/plan-view/day-view/day-view';
 import { wfPlanItem } from 'components/plan-view/plan-item/plan-item';
+import { wfInlineAddItem } from 'components/plan-view/inline-add-item/inline-add-item';
 
 function withLocale(locale, f) {
     // can't find a way to create a new locale without
@@ -24,8 +25,9 @@ function withLocale(locale, f) {
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
     .directive('wfBundleView', ['$rootScope','$timeout', 'wfBundleService', 'wfPlannedItemService', 'wfFiltersService', wfBundleView])
-    .directive('wfDayView', ['$rootScope', 'wfPlannedItemService', '$http', '$timeout', wfDayView])
+    .directive('wfDayView', ['$rootScope', 'wfPlannedItemService', '$http', '$timeout', 'wfFiltersService', wfDayView])
     .directive('wfPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', 'wfBundleService', 'wfPlannedItemService', wfPlanItem])
+    .directive('wfInlineAddItem', ['$timeout', wfInlineAddItem])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
         var filterParams = wfFiltersService.getAll();
