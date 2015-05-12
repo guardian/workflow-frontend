@@ -1,0 +1,29 @@
+.inline-add-item__toggle {
+    cursor: pointer;
+}
+
+.inline-add-item__form {
+    vertical-align: top;
+    font-weight: normal;
+}
+
+.inline-add-item__input {
+    vertical-align: top;
+    height: 100%;
+    font-weight: normal;
+}
+
+.inline-add-item__submit {
+    vertical-align: top;
+    height: 100%;
+    border: 1px solid #357ebd; // TODO: Parameterise colours
+    background-color: #00ADEE;
+    transition: background-color 0.5s ease;
+    padding: 0 9px;
+    color: #fff;
+    font-weight: normal;
+    &:hover {
+        background-color: #008FC5;
+    }
+}
+
