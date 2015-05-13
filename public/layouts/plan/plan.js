@@ -8,22 +8,15 @@ import 'jquery-ui/droppable'
 
 import 'angular-dragdrop';
 
+import { wfDateView } from 'components/plan-view/date-view/date-view';
 import { wfBundleView } from 'components/plan-view/bundle-view/bundle-view';
 import { wfDayView } from 'components/plan-view/day-view/day-view';
 import { wfPlanItem } from 'components/plan-view/plan-item/plan-item';
 import { wfInlineAddItem } from 'components/plan-view/inline-add-item/inline-add-item';
 
-function withLocale(locale, f) {
-    // can't find a way to create a new locale without
-    // changing the global locale also
-    var oldLocale = moment.locale();
-    moment.locale(locale);
-    var ret = f();
-    moment.locale(oldLocale);
-    return ret;
-}
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
+    .directive('wfDateView', ['$rootScope','$timeout', 'wfDayNoteService', wfDateView])
     .directive('wfBundleView', ['$rootScope','$timeout', 'wfBundleService', 'wfPlannedItemService', 'wfFiltersService', wfBundleView])
     .directive('wfDayView', ['$rootScope', 'wfPlannedItemService', '$http', '$timeout', 'wfFiltersService', wfDayView])
     .directive('wfPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', 'wfBundleService', 'wfPlannedItemService', wfPlanItem])
@@ -52,6 +45,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
         this.poller.startPolling();
     }])
+    // TODO: This should be in date-view.js
     .filter('dateListFormatter', [function () {
         return function(date) {
             // date should be a moment() instance but we can make sure it is
@@ -60,20 +54,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
     }])
     .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', 'wfDayNoteService', 'wfFiltersService', 'wfPlannedItemService', function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDayNoteService, wfFiltersService, wfPlannedItemService) {
 
-        withLocale("", function () {
 
-            var calLocale = {
-                calendar : {
-                    lastDay : '[Yesterday]',
-                    sameDay : '[Today]',
-                    nextDay : '[Tomorrow]',
-                    lastWeek : '[Last] dddd',
-                    nextWeek : 'dddd',
-                    sameElse : 'L'
-                }
-            };
-            moment.locale('wfPlan', calLocale);
-        });
 
         $rootScope.$on('plan-view__ui-loaded', function() {
             $scope.isLoaded = true;
@@ -97,6 +78,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 .then(updateScopeItems);
         });
 
+        // TODO: this is duplicated in date-view, should fix
         $scope.selectedDate = moment().startOf('day');
 
         $scope.selectDay = function (date) {
@@ -128,21 +110,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
             $scope.$broadcast('plan-view__planned-items-changed', $scope.plannedItemsByBundle);
         });
-
-        function makeDateList() {
-            var ret =  withLocale('wfPlan', () => {
-                var start = moment().subtract(3, 'days').startOf('day');
-
-                let dateList = _.map(_.range(0, 10), (days) => {
-                    var date = start.clone();
-                    date.add(days, 'days');
-                    return {'date':date};
-                });
-                return dateList;
-            });
-            return ret;
-        }
-        $scope.dateList = makeDateList();
 
         $scope.newNote = '';
 
@@ -188,59 +155,11 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
             planLoader.poller.refresh();
             $scope.newsList = wfFiltersService.get('news-list');
-            $scope.buildDateListAndDayNotes();
         });
 
         $scope.$on('plan-view__planned-items-changed', function () {
             $timeout(updateScopeItems); // Ensure scope is applied on the next digest loop
         });
-
-        $scope.buildDateListAndDayNotes = function() {
-
-            var tempDateList = $scope.dateList;
-            if ($scope.newsList) {
-
-                wfDayNoteService.get({
-                    'newsList': $scope.newsList,
-                    'startDate': tempDateList[0].date.toISOString(),
-                    'endDate': tempDateList[tempDateList.length-1].date.toISOString()
-                }).then((response) => {
-                    let dayNotes = response.data.data;
-                    tempDateList.map((date) => {
-
-                        let dateDayNotes = dayNotes.filter((note) => {
-                            return moment(note.day).isSame(date.date, 'day');
-                        });
-                        date.dayNotes = dateDayNotes ? dateDayNotes : [];
-                        return date;
-                    });
-                    $scope.dateList = tempDateList;
-                });
-            }
-        };
-
-        $scope.updateDayNote = function(id, newValue, date) {
-
-            if (id) {
-                wfDayNoteService.updateField(id, 'note', newValue);
-            } else {
-
-                $scope.newNote = '';
-                let newNote = {
-                    'id': 0,
-                    'note': newValue,
-                    'day': date.date.format('YYYY-MM-DD'),
-                    'newsList': $scope.newsList
-                };
-                $timeout(() => {
-                    date.dayNotes.push(newNote);
-
-                });
-                wfDayNoteService.add(newNote).then(() => {
-                    $scope.buildDateListAndDayNotes();
-                });
-            }
-        };
 
 
         $scope.getBundles = function () { return _.keys($scope.agendaItems); };
@@ -249,21 +168,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             updateScopeItems();
         }, false);
 
-        $scope.getItems = function (dateFrom, dateTo) {
-            // search all of the planned items, and find the ones that
-            // are within our date range
-            return _.filter($scope.plannedItems, (item) => {
-                var ret = (item.plannedDate.isSame(dateFrom) || item.plannedDate.isAfter(dateFrom)) &&
-                    item.plannedDate.isBefore(dateTo);
-                return ret;
-            });
-        };
-
-    }])
-    .controller('wfDateListController', [ '$scope', function ($scope) {
-        $scope.$on('plan-view__planned-items-changed', (ev, eventItems) => {
-            $scope.items = $scope.getItems($scope.date.date, $scope.date.date.clone().add(1, 'days'));
-        });
     }])
     .directive('wfOnResize', ['$window', '$parse', function ($window, $parse) {
         return {
