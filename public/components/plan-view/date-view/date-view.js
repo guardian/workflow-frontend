@@ -17,9 +17,9 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService) {
         templateUrl: '/assets/components/plan-view/date-view/date-view.html',
         scope: {
             'newsList': '=newsList',
-            'dateListFormatter': '=wfDateListFormatter',
             'plannedItems': '=wfPlannedItems',
-            'onSelectDate': '&wfOnSelectDate'
+            'onSelectDate': '&wfOnSelectDate',
+            'selectedDate': '=wfSelectedDate'
         },
         controller: function ($scope) {
 
@@ -53,7 +53,6 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService) {
             }
 
             $scope.dateList = makeDateList();
-            $scope.selectedDate = moment().startOf('day');
 
             function buildDateListAndDayNotes() {
 
@@ -120,10 +119,13 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService) {
                 return getItems(date, date.clone().add(1, 'days')).length;
             }
 
+            $scope.formatDate = function(date) {
+                return moment(date).calendar();
+            }
+
         },
         link: ($scope) => {
             $scope.onSelect = function(date) {
-                $scope.selectedDate = date.date;
                 $scope.onSelectDate(date);
             };
         }

@@ -45,13 +45,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
         this.poller.startPolling();
     }])
-    // TODO: This should be in date-view.js
-    .filter('dateListFormatter', [function () {
-        return function(date) {
-            // date should be a moment() instance but we can make sure it is
-            return moment(date).calendar();
-        }
-    }])
     .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', 'wfDayNoteService', 'wfFiltersService', 'wfPlannedItemService', function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDayNoteService, wfFiltersService, wfPlannedItemService) {
 
 
@@ -78,7 +71,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 .then(updateScopeItems);
         });
 
-        // TODO: this is duplicated in date-view, should fix
         $scope.selectedDate = moment().startOf('day');
 
         $scope.selectDay = function (date) {
