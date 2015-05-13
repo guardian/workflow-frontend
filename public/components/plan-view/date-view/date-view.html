@@ -1,22 +1,21 @@
-<div class="date-list">
-    <ul class="date-list__list list-unstyled">
-        <li class="date-list__date" ng-class="{'date-list__date--selected': date.date.isSame(selectedDate, 'day')}" ng-repeat="date in dateList track by date.date"
-             ng-click="onSelect(date)">
-            <span class="date-list__date-title">{{ formatDate(date.date) }}</span>
-            <span class="date-list__date-items-indicator" ng-class="{'date-list__date-items-indicator--faded': getNumDateItems(date.date) === 0}"> - {{ getNumDateItems(date.date) }} {{ getNumDateItems(date.date) === 1 ? "item" : "items" }}</span>
-            <span class="date-list__date-date">({{ date.date.format('DD/MM/YY') }})</span>
+<ul class="date-list__list list-unstyled">
+    <li class="date-list__date" ng-class="{'date-list__date--selected': date.date.isSame(selectedDate, 'day')}" ng-repeat="date in dateList track by date.date"
+         ng-click="onSelect(date)">
+        <span class="date-list__date-title">{{ formatDate(date.date) }}</span>
+        <span class="date-list__date-items-indicator" ng-class="{'date-list__date-items-indicator--faded': getNumDateItems(date.date) === 0}"> - {{ getNumDateItems(date.date) }} {{ getNumDateItems(date.date) === 1 ? "item" : "items" }}</span>
+        <span class="date-list__date-date">({{ date.date.format('DD/MM/YY') }})</span>
 
-            <ul ng-if="newsList">
-                <li ng-repeat="dayNote in date.dayNotes">
-                    <wf-editable class="date-list__date-note" ng-model="dayNote.note" wf-editable-on-update="updateDayNote(dayNote.id, newValue, date.date)" wf-editable-required="true">
-                        {{ dayNote.note}}
-                    </wf-editable>
-                </li>
-            </ul>
+        <ul ng-if="newsList">
+            <li ng-repeat="dayNote in date.dayNotes">
+                <wf-editable class="date-list__date-note" ng-model="dayNote.note" wf-editable-on-update="updateDayNote(dayNote.id, newValue, date.date)" wf-editable-required="true">
+                    {{ dayNote.note}}
+                </wf-editable>
+            </li>
+        </ul>
 
-            <wf-editable class="date-list__date-note" ng-if="newsList" ng-model="newNote" wf-editable-on-update="updateDayNote(0, newValue, date)" wf-editable-on-cancel="newNote=null" wf-no-close-mode="true">
-                {{ "Add note..." }}
-            </wf-editable>
-        </li>
-    </ul>
-</div>
+        <wf-editable class="date-list__date-note" ng-if="newsList" ng-model="newNote" wf-editable-on-update="updateDayNote(0, newValue, date)" wf-editable-on-cancel="newNote=null" wf-no-close-mode="true">
+            {{ "Add note..." }}
+        </wf-editable>
+    </li>
+</ul>
+
