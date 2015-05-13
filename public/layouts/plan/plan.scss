@@ -1,6 +1,7 @@
 @import "layouts/global/colours";
 @import "layouts/plan/mixins";
 @import "components/plan-view/quick-add/quick-add";
+@import "components/plan-view/date-view/date-view";
 @import "components/plan-view/bundle-view/bundle-view";
 @import "components/plan-view/day-view/day-view";
 @import "components/plan-view/plan-item/plan-item";
@@ -90,113 +91,7 @@
 //    }
 //}
 
-// Date Panel
-// ---------------------------------------------------------- //
 
-.date-list {
-    overflow-x: auto;
-    border-right: 1px solid $c-grey-400;
-}
-
-.date-list__list {
-    color: #333333;
-}
-
-.date-list__date {
-    padding: 2px 0 2px 9px;
-    border-left: 3px solid #fff;
-    @extend %fs-data-4;
-}
-
-.date-list__date-note,
-.date-list__date-date,
-.date-list__date-items-indicator--faded {
-    color: $c-grey-400;
-    @extend %fs-data-2;
-    line-height: 18px;
-    line-height: 1.8rem;
-    .editable__view-value {
-        border-bottom-color: $c-grey-400;
-    }
-}
-
-.date-list__date-note {
-    display: block;
-
-    &:hover {
-        color: $c-grey-700;
-        .editable__view-value {
-            border-bottom-color: $c-grey-700;
-        }
-    }
-}
-
-//.three-month-view ul li .label {
-//    padding-bottom: 4px;
-//}
-
-//.three-month-view li:hover {
-//    padding-bottom: 4px;
-//    background-color: #d0d0d0;
-//    margin-left: -10px;
-//    padding-left: 10px;
-//    cursor: pointer;
-//}
-
-.date-list__date:hover{
-    background-color: $c-grey-200;
-    cursor: pointer;
-}
-
-.date-list__date--selected {
-    border-left: 3px solid #00adee;
-    background-color: $c-grey-200;
-    .date-list__date-note {
-        color: $c-grey-700;
-        .editable__view-value {
-            border-bottom-color: $c-grey-700;
-        }
-    }
-}
-
-.day-event:hover .add-event {
-    display: block;
-    border: 1px solid #000000;
-    display: inline-block;
-    width: 15px;
-    text-align: center;
-}
-
-.label:hover .add-event {
-    display: block;
-    border: 1px solid #000000;
-    display: inline-block;
-    width: 15px;
-    text-align: center;
-}
-
-.day-events {
-    padding: 0 0 0 6px;
-    margin: 2px 0 2px 4px;
-    border-left: 1px solid $c-grey-600;
-}
-
-.day-event {
-    border: none;
-    //font-weight: bold;
-    padding: 2px 0;
-    @extend %fs-data-2;
-}
-
-.day-event-item {
-    border: none;
-    font-weight: normal;
-    font-style: normal;
-}
-
-.add-event {
-    display: none;
-}
 
 // View Container + views layout
 // ================================================================= //
