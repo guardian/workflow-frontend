@@ -2,7 +2,7 @@
     <ul class="date-list__list list-unstyled">
         <li class="date-list__date" ng-class="{'date-list__date--selected': date.date.isSame(selectedDate, 'day')}" ng-repeat="date in dateList track by date.date"
              ng-click="onSelect(date)">
-            <span class="date-list__date-title">{{ date.date | dateListFormatter }}</span>
+            <span class="date-list__date-title">{{ formatDate(date.date) }}</span>
             <span class="date-list__date-items-indicator" ng-class="{'date-list__date-items-indicator--faded': getNumDateItems(date.date) === 0}"> - {{ getNumDateItems(date.date) }} {{ getNumDateItems(date.date) === 1 ? "item" : "items" }}</span>
             <span class="date-list__date-date">({{ date.date.format('DD/MM/YY') }})</span>
 
