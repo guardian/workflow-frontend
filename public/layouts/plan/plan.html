@@ -1,6 +1,12 @@
 <div class="plan-container" ng-class="{ 'loaded': isLoaded }">
 
-    <wf-date-view class="date-view" news-list="newsList" wf-planned-items="plannedItems" wf-on-select-date="selectDay(date)" wf-selected-date="selectedDate"></wf-date-view>
+    <div class="date-list">
+
+        <wf-date-range-widget wf-date-range-widget-start-date="planStartDate" wf-date-range-widget-end-date="planEndDate"></wf-date-range-widget>
+
+        <wf-date-view class="date-view" news-list="newsList" wf-planned-items="plannedItems" wf-on-select-date="selectDay(date)" wf-selected-date="selectedDate"></wf-date-view>
+
+    </div>
 
     <div class="plan__view-container">
 
