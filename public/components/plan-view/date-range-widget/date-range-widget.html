@@ -1,2 +1,12 @@
-<input type="date" ng-model="startDateJS"/>
-<input type="date" ng-model="endDateJS"/>
+<div class="date-range">
+    <div class="date-range__inputs">
+        <input class="date-range__date-input date-range__start" type="date" ng-model="startDateJS" ng-change="parseDateRange(); resetShortcutsActiveState();"/>
+        <span class="date-range__input-sep">to</span>
+        <input class="date-range__date-input date-range__end" type="date" ng-model="endDateJS" ng-change="parseDateRange(); resetShortcutsActiveState();"/>
+    </div>
+
+    <div class="date-range__short-cuts">
+        <button class="date-range__short-cut btn btn-default btn-xs" ng-repeat="shortCut in shortCuts track by $index" ng-class="{'btn-info': shortCut.active}" ng-click="activateShortCut(shortCut);">{{ shortCut.name }}</button>
+    </div>
+
+</div>

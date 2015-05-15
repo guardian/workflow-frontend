@@ -17,18 +17,20 @@ import { wfDateRangeWidget } from  'components/plan-view/date-range-widget/date-
 
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
-    .directive('wfDateView', ['$rootScope','$timeout', 'wfDayNoteService', wfDateView])
+    .directive('wfDateView', ['$rootScope','$timeout', 'wfDayNoteService', '$sce', wfDateView])
     .directive('wfBundleView', ['$rootScope','$timeout', 'wfBundleService', 'wfPlannedItemService', 'wfFiltersService', wfBundleView])
     .directive('wfDayView', ['$rootScope', 'wfPlannedItemService', '$http', '$timeout', 'wfFiltersService', wfDayView])
     .directive('wfPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', 'wfBundleService', 'wfPlannedItemService', wfPlanItem])
     .directive('wfInlineAddItem', ['$timeout', wfInlineAddItem])
-    .directive('wfDateRangeWidget', ['$timeout', wfDateRangeWidget])
+    .directive('wfDateRangeWidget', ['$timeout', 'wfFiltersService', wfDateRangeWidget])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
         var filterParams = wfFiltersService.getAll();
         function params() {
             return {
-                'newsList': filterParams['news-list']
+                'newsList': filterParams['news-list'],
+                'startDate': filterParams['plan-start-date'],
+                'endDate': filterParams['plan-end-date']
             }
         }
 
@@ -49,7 +51,21 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
     }])
     .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', 'wfDayNoteService', 'wfFiltersService', 'wfPlannedItemService', function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDayNoteService, wfFiltersService, wfPlannedItemService) {
 
+        let ISO_8601 = 'YYYY-MM-DD';
 
+        $scope.planDateRange = null;
+
+        $scope.$watch('planDateRange.startDate', (newValue, oldValue) => {
+            if (newValue) {
+                $scope.$emit('plan-view__filters-changed.plan-start-date', newValue.format(ISO_8601));
+            }
+        }, true);
+
+        $scope.$watch('planDateRange.endDate', (newValue, oldValue) => {
+            if (newValue) {
+                $scope.$emit('plan-view__filters-changed.plan-end-date', newValue.format(ISO_8601));
+            }
+        }, true);
 
         $rootScope.$on('plan-view__ui-loaded', function() {
             $scope.isLoaded = true;
@@ -145,7 +161,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             });
         }
 
-        $scope.$on('pvFiltersChanged', function() {
+        $scope.$on('plan-view__filters-changed', function() {
 
             planLoader.poller.refresh();
             $scope.newsList = wfFiltersService.get('news-list');
@@ -162,26 +178,4 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             updateScopeItems();
         }, false);
 
-    }])
-    .directive('wfOnResize', ['$window', '$parse', function ($window, $parse) {
-        return {
-            restrict: 'A',
-            link: function ($scope, elem, attrs) {
-                //console.log("AATTRS>>>>>>>>>>>", attrs.wfOnResize);
-                //let fn = $parse(attrs.wfOnResize);
-                //console.log(typeof fn);
-                //console.log(fn($scope));
-            }
-        }
-    }])
-    //.controller('wfNewsAgendaController', [ '$scope', function ($scope) {
-    //
-    //
-    //}]);
-    //.controller('wfDetailedListController', ['$scope', function($scope){
-    //    $scope.$watch('selectedDate', (newValue, oldValue) => {
-    //        $scope.morningItems = $scope.getItems(moment(newValue),moment(newValue).add(12,'hours'));
-    //        $scope.afternoonItems = $scope.getItems(moment(newValue).add(12,'hours'),moment(newValue).add(18,'hours'));
-    //        $scope.eveningItems = $scope.getItems(moment(newValue).add(18,'hours'),moment(newValue).add(24,'hours'));
-    //    }, true);
-    //}]);
+    }]);

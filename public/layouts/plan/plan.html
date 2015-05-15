@@ -2,9 +2,9 @@
 
     <div class="date-list">
 
-        <wf-date-range-widget wf-date-range-widget-start-date="planStartDate" wf-date-range-widget-end-date="planEndDate"></wf-date-range-widget>
+        <wf-date-range-widget wf-date-range-widget-date-range="planDateRange"></wf-date-range-widget>
 
-        <wf-date-view class="date-view" news-list="newsList" wf-planned-items="plannedItems" wf-on-select-date="selectDay(date)" wf-selected-date="selectedDate"></wf-date-view>
+        <wf-date-view class="date-view" news-list="newsList" wf-planned-items="plannedItems" wf-date-view-date-range="planDateRange" wf-on-select-date="selectDay(date)" wf-selected-date="selectedDate"></wf-date-view>
 
     </div>
 
