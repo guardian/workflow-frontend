@@ -1,5 +1,5 @@
 <ul class="date-list__list list-unstyled">
-    <li class="date-list__date" ng-class="{'date-list__date--selected': date.date.isSame(selectedDate, 'day')}" ng-repeat="date in dateList track by date.date"
+    <li class="date-list__date" ng-class="{'date-list__date--selected': date.date.isSame(selectedDate, 'day'), 'date-list__date--today': isToday(date.date)}" ng-repeat="date in dateList track by date.date"
          ng-click="onSelect(date)">
         <span class="date-list__date-title" ng-bind-html="ordinalToSuperScript(date.date)"></span>
         <span class="date-list__date-date">({{ date.date.format('DD/MM/YY') }})</span>

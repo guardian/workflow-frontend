@@ -141,8 +141,14 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, $sce) {
                 let d = date.format('dddd Do'),
                     ordinal = d.slice(-2);
                 return $sce.trustAsHtml(d.substring(0,d.length-2) + '<sup>' + ordinal + '</sup>');
-            }
+            };
 
+            $scope.isToday = (() => {
+                let now = moment();
+                return (date) => {
+                    return date.isSame(now, 'day');
+                }
+            })();
         },
         link: ($scope) => {
             $scope.onSelect = function(date) {
