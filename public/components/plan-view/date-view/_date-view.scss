@@ -67,6 +67,10 @@
     }
 }
 
+.date-list__date--today {
+    background-color: transparentize($c-composer-blue, 0.9);
+}
+
 .day-event:hover .add-event {
     display: block;
     border: 1px solid #000000;
