@@ -129,14 +129,24 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
-                $rootScope.$on('pvFiltersChanged.news-list', function(event, data) {
+                $rootScope.$on('plan-view__filters-changed.news-list', function(event, data) {
                     if (data === 'all') {
                         self.update('news-list', null)
                     } else {
                         self.update('news-list', data);
                     }
-                    $rootScope.$broadcast('pvFiltersChanged');
-                })
+                    $rootScope.$broadcast('plan-view__filters-changed');
+                });
+
+                $rootScope.$on('plan-view__filters-changed.plan-start-date', function(event, data) {
+                    self.update('plan-start-date', data);
+                    $rootScope.$broadcast('plan-view__filters-changed');
+                });
+
+                $rootScope.$on('plan-view__filters-changed.plan-end-date', function(event, data) {
+                    self.update('plan-end-date', data);
+                    $rootScope.$broadcast('plan-view__filters-changed');
+                });
 
             }
 
@@ -170,7 +180,9 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'incopy'       : params['incopy'],
                         'touched'      : params['touched'],
                         'composerId'   : params['composerId'],
-                        'news-list'    : params['news-list']
+                        'news-list'    : params['news-list'],
+                        'plan-start-date': params['plan-start-date'],
+                        'plan-end-date': params['plan-end-date']
                     };
 
                     $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);

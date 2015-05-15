@@ -107,7 +107,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                     $scope.active = false;
                 });
 
-                $scope.$on('pvFiltersChanged', function() {
+                $scope.$on('plan-view__filters-changed', function() {
                     var filters = wfFiltersService.getAll();
                     $scope.currentNewsListId = filters['news-list'] ? filters['news-list'] : null;
                 });

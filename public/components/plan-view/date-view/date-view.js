@@ -11,15 +11,16 @@ function withLocale(locale, f) {
     return ret;
 }
 
-function wfDateView ($rootScope, $timeout, wfDayNoteService) {
+function wfDateView ($rootScope, $timeout, wfDayNoteService, $sce) {
     return {
         restrict: 'E',
         templateUrl: '/assets/components/plan-view/date-view/date-view.html',
         scope: {
-            'newsList': '=newsList',
-            'plannedItems': '=wfPlannedItems',
-            'onSelectDate': '&wfOnSelectDate',
-            'selectedDate': '=wfSelectedDate'
+            'newsList'      : '=newsList',
+            'plannedItems'  : '=wfPlannedItems',
+            'dateRange'     : '=wfDateViewDateRange',
+            'onSelectDate'  : '&wfOnSelectDate',
+            'selectedDate'  : '=wfSelectedDate'
         },
         controller: function ($scope) {
 
@@ -32,27 +33,44 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService) {
                         nextDay : '[Tomorrow]',
                         lastWeek : '[Last] dddd',
                         nextWeek : 'dddd',
-                        sameElse : 'L'
+                        sameElse : 'DD/MM/YYYY'
                     }
                 };
                 moment.locale('wfPlan', calLocale);
             });
 
             function makeDateList() {
-                var ret = withLocale('wfPlan', () => {
-                    var start = moment().subtract(3, 'days').startOf('day');
 
-                    let dateList = _.map(_.range(0, 10), (days) => {
-                        var date = start.clone();
-                        date.add(days, 'days');
-                        return {'date': date};
-                    });
+                return withLocale('wfPlan', () => {
+
+                    let start = $scope.dateRange.startDate;
+
+                    let dateList = [{
+                        'date': start
+                    }];
+
+                    for (let i = 1; i <= $scope.dateRange.durationInDays; i++) {
+                        dateList.push({
+                            'date': start.clone().add(i, 'days')
+                        });
+                    }
+
                     return dateList;
                 });
-                return ret;
             }
 
             $scope.dateList = makeDateList();
+
+            $scope.$watch('dateRange', (newValue, oldValue) => {
+                if (newValue && newValue.startDate && newValue.endDate) {
+                    $timeout(() => {
+                        $scope.dateList = makeDateList();
+                        if ($scope.newsList) {
+                            buildDateListAndDayNotes()
+                        };
+                    });
+                }
+            }, true);
 
             function buildDateListAndDayNotes() {
 
@@ -117,10 +135,12 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService) {
 
             $scope.getNumDateItems = function(date) {
                 return getItems(date, date.clone().add(1, 'days')).length;
-            }
+            };
 
-            $scope.formatDate = function(date) {
-                return moment(date).calendar();
+            $scope.ordinalToSuperScript = (date) => {
+                let d = date.format('dddd Do'),
+                    ordinal = d.slice(-2);
+                return $sce.trustAsHtml(d.substring(0,d.length-2) + '<sup>' + ordinal + '</sup>');
             }
 
         },

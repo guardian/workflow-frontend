@@ -20,9 +20,9 @@ angular.module('wfPlanToolbar', ['wfFiltersService'])
         $scope.$watch('selectedNewsList', function() {
             console.log("selected news list changed", $scope.selectedNewsList);
             if ($scope.selectedNewsList === null) { // All lists
-                $scope.$emit('pvFiltersChanged.news-list', 'all');
+                $scope.$emit('plan-view__filters-changed.news-list', 'all');
             } else {
-                $scope.$emit('pvFiltersChanged.news-list', $scope.selectedNewsList.id);
+                $scope.$emit('plan-view__filters-changed.news-list', $scope.selectedNewsList.id);
             }
         })
 
