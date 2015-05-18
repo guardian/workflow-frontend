@@ -178,4 +178,8 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             updateScopeItems();
         }, false);
 
+        $scope.$watch('newsList', () => {
+            debugger
+        });
+
     }]);

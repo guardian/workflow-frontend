@@ -59,15 +59,13 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, $sce) {
                 });
             }
 
-            $scope.dateList = makeDateList();
-
             $scope.$watch('dateRange', (newValue, oldValue) => {
                 if (newValue && newValue.startDate && newValue.endDate) {
                     $timeout(() => {
                         $scope.dateList = makeDateList();
                         if ($scope.newsList) {
                             buildDateListAndDayNotes()
-                        };
+                        }
                     });
                 }
             }, true);
@@ -118,10 +116,6 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, $sce) {
                     });
                 }
             };
-
-            $scope.$watch('newsList', () => {
-                buildDateListAndDayNotes();
-            });
 
             function getItems (dateFrom, dateTo) {
                 // search all of the planned items, and find the ones that
