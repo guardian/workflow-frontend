@@ -143,6 +143,13 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, $sce) {
                     return date.isSame(now, 'day');
                 }
             })();
+
+            $scope.isInPast =  (() => {
+                let now = moment();
+                return (date) => {
+                    return date.isBefore(now, 'day');
+                }
+            })();
         },
         link: ($scope) => {
             $scope.onSelect = function(date) {

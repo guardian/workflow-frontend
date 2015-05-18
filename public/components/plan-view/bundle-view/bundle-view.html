@@ -1,6 +1,8 @@
 <div class="bundle-view__list">
     <ul class="bundle-list-items list-unstyled">
 
+        <div ng-if="dayItemsByBundle.length === 0">No items!!!!!!!!!!!!!!</div>
+
         <li class="day-bundle" ng-repeat="bundle in dayItemsByBundle track by bundle.id" ng-class="{ 'day-bundle--unscheduled': bundle.id === 0 }" data-jqyoui-options="bundleDraggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday" ng-if="bundle.itemsToday.length > 0">
 
             <div class="day-bundle__title" ng-style="genColor(bundle.title)">
