@@ -5,6 +5,7 @@ import play.Logger
 
 case class PrototypeConfiguration(
                                    composerUrl: String,
+                                   composerRestorerUrl: String,
                                    googleClientId: String,
                                    googleClientSecret: String,
                                    host: String,
@@ -26,6 +27,7 @@ object PrototypeConfiguration {
   def apply: PrototypeConfiguration = {
       val configEit = (for {
         composerUrl <- Config.getConfigString("composer.url").right
+        composerRestorerUrl <- Config.getConfigString("composer.restorer.url").right
         googleClientId <- Config.getConfigString("google.clientId").right
         googleClientSecret <- Config.getConfigString("google.clientSecret").right
         host <- Config.getConfigString("host").right
@@ -37,7 +39,7 @@ object PrototypeConfiguration {
         logStashHost <- Config.getConfigString("logging.logstash.host").right
         logStashPort <- Config.getConfigInt("logging.logstash.port").right
         logStashEnabled <- Config.getConfigBoolean("logging.logstash.enabled").right
-      } yield PrototypeConfiguration(composerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl, LogStashConf(logStashHost, logStashPort, logStashEnabled)))
+      } yield PrototypeConfiguration(composerUrl, composerRestorerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl, LogStashConf(logStashHost, logStashPort, logStashEnabled)))
     configEit.fold(error => {
       Logger.error(s"could not instantiate Prototype Configuration ${error}")
       sys.error(error)
