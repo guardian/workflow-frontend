@@ -89,7 +89,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
 
             $scope.toMeridiem = function (time) {
                 if (time === 0 || time === 24) {
-                    return 'Midnight';
+                    return 'midnight';
                 }else if (time > 12) {
                     return (time - 12) + 'pm';
                 } else if (time == 12) {

@@ -48,12 +48,12 @@
         display: block;
         width: 100%;
         background-color: $c-grey-300;
-        padding: 2px 0 2px 6px;
+        padding: 0 0 0 6px;
         @include bundle-border();
         @extend %fs-data-4;
         font-weight: bold;
         height: 26px;
-        line-height: 22px;
+        line-height: 26px;
     }
 
     &.dnd__status--hovered {
@@ -70,23 +70,28 @@
     }
 
     .day-bundle__actions {
-        position: absolute;
-        right: 12px;
-        top: 0;
+        display: inline-block;
+        margin-left: 12px;
         height: 100%;
         @extend %fs-data-4;
         line-height: 26px;
-    }
 
-    .inline-add-item__form {
-        height: 26px;
-        line-height: 26px;
+        .inline-add-item__toggle {
+            @extend %fs-data-2;
+            line-height: 26px;
+            font-weight: normal;
+            border-bottom: 1px dashed $c-grey-700;
+        }
+
+        .inline-add-item__form {
+            height: 26px;
+            line-height: 26px;
+            margin-top: -2px;
+        }
     }
 
     .editable {
-        width: 30%;
-        position: absolute;
-        top: 0;
+        display: inline-block;
         height: 26px;
         line-height: 26px;
         .editable__text-field {

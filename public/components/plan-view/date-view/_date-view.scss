@@ -13,7 +13,17 @@
 .date-list__date {
     padding: 2px 0 2px 9px;
     border-left: 3px solid #fff;
+    margin-bottom: 1px;
     @extend %fs-data-4;
+}
+
+.date-list__date-note-list {
+    list-style: disc outside;
+    padding: 0 0 0 30px;
+}
+
+.date-list__date-note--entry {
+    margin-left: 29px;
 }
 
 .date-list__date-note,
@@ -39,18 +49,6 @@
     }
 }
 
-//.three-month-view ul li .label {
-//    padding-bottom: 4px;
-//}
-
-//.three-month-view li:hover {
-//    padding-bottom: 4px;
-//    background-color: #d0d0d0;
-//    margin-left: -10px;
-//    padding-left: 10px;
-//    cursor: pointer;
-//}
-
 .date-list__date:hover{
     background-color: $c-grey-200;
     cursor: pointer;
@@ -65,10 +63,17 @@
             border-bottom-color: $c-grey-700;
         }
     }
+    .date-list__date-title {
+        font-weight: bold;
+    }
 }
 
 .date-list__date--today {
     background-color: transparentize($c-composer-blue, 0.9);
+}
+
+.date-list__date--past {
+    color: $c-grey-400;
 }
 
 .day-event:hover .add-event {
