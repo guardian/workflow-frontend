@@ -49,6 +49,20 @@
     }
 }
 
+// Beta label
+.plan-view__title {
+    display: block;
+    position: absolute;
+    top: 36px;
+    left: 46px;
+    font-size: 12px;
+    height: 12px;
+    line-height: 12px;
+    .plan-view__title--beta {
+        color: $c-red;
+    }
+}
+
 // Loading animation
 // ---------------------------------------------------------- //
 
