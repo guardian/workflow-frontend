@@ -51,6 +51,13 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
     }])
     .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', 'wfDayNoteService', 'wfFiltersService', 'wfPlannedItemService', function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDayNoteService, wfFiltersService, wfPlannedItemService) {
 
+        // ADD BETA LABEL
+        (function createBetaLabel () {
+            let title = angular.element('<span class="plan-view__title">Plan view <span class="plan-view__title--beta">BETA</span></span>');
+            document.querySelector('.top-toolbar__title').appendChild(title[0]);
+        })();
+        // ! ADD BETA LABEL
+
         let ISO_8601 = 'YYYY-MM-DD';
 
         $scope.planDateRange = null;
