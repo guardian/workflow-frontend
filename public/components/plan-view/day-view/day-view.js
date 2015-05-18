@@ -30,7 +30,6 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
             $scope.unscheduledItems = [];
 
             $scope.$watchCollection(() => $scope.planItems, (newValue, oldValue) => {
-
                 if (newValue && oldValue) {
                     if (!comparePlannedItems(newValue, oldValue)) {
 
@@ -154,13 +153,15 @@ function comparePlannedItems(newPlannedItems, oldPlannedItems) {
 
     if (newPlannedItems.length !== oldPlannedItems.length) { return false; }
 
-    let equal = true;
-
     for (let i = 0; i < newPlannedItems.length; i++) {
-        equal = newPlannedItems[i].plannedDate.isSame(oldPlannedItems[i].plannedDate);
+        if (!newPlannedItems[i].plannedDate.isSame(oldPlannedItems[i].plannedDate)) {
+            return false;
+        } else if (newPlannedItems[i].bundleId !== oldPlannedItems[i].bundleId) {
+            return false;
+        }
     }
 
-    return equal;
+    return true;
 }
 
 export { wfDayView };
