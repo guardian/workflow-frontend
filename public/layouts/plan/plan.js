@@ -51,50 +51,35 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
     }])
     .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', 'wfDayNoteService', 'wfFiltersService', 'wfPlannedItemService', function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDayNoteService, wfFiltersService, wfPlannedItemService) {
 
-        // ADD BETA LABEL
+        // ADD ALPHA LABEL
         (function createBetaLabel () {
-            let title = angular.element('<span class="plan-view__title">Plan view <span class="plan-view__title--beta">BETA</span></span>');
+            let title = angular.element('<span class="plan-view__title">Plan view <span class="plan-view__title--beta">ALPHA</span></span>');
             document.querySelector('.top-toolbar__title').appendChild(title[0]);
         })();
-        // ! ADD BETA LABEL
-
-        let ISO_8601 = 'YYYY-MM-DD';
-
-        $scope.planDateRange = null;
-
-        $scope.$watch('planDateRange.startDate', (newValue, oldValue) => {
-            if (newValue) {
-                $scope.$emit('plan-view__filters-changed.plan-start-date', newValue.format(ISO_8601));
-            }
-        }, true);
-
-        $scope.$watch('planDateRange.endDate', (newValue, oldValue) => {
-            if (newValue) {
-                $scope.$emit('plan-view__filters-changed.plan-end-date', newValue.format(ISO_8601));
-            }
-        }, true);
+        // ! ADD ALPHA LABEL
 
         $rootScope.$on('plan-view__ui-loaded', function() {
             $scope.isLoaded = true;
         });
 
-        $scope.$on('quick-add-submit', function (ev, item) {
+        (function monitorDateRangeForChanges () {
 
-            wfPlannedItemService.add(item)
-                .then((res) => {
-                    planLoader.poller.refresh()
-                        .then(updateScopeItems);
-                    $rootScope.$emit('quick-add-success');
-                })
-                .catch((err) => {
-                    $rootScope.$emit('quick-add-failure');
-                });
-        });
+            let ISO_8601 = 'YYYY-MM-DD';
 
-        $scope.$on('bundles-edited', () => {
-            planLoader.poller.refresh()
-                .then(updateScopeItems);
-        });
+            $scope.planDateRange = null;
+
+            $scope.$watch('planDateRange.startDate', (newValue, oldValue) => {
+                if (newValue) {
+                    $scope.$emit('plan-view__filters-changed.plan-start-date', newValue.format(ISO_8601));
+                }
+            }, true);
+
+            $scope.$watch('planDateRange.endDate', (newValue, oldValue) => {
+                if (newValue) {
+                    $scope.$emit('plan-view__filters-changed.plan-end-date', newValue.format(ISO_8601));
+                }
+            }, true);
+        })();
 
         $scope.selectedDate = moment().startOf('day');
 
@@ -102,11 +87,6 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $scope.selectedDate = date;
         };
 
-        //$scope.$watch('startDate', () => {
-        //   console.log(arguments);
-        //});
-
-        // controller stuff
         $scope.plannedItems = [];
         $scope.plannedItemsByBundle = [];
 
@@ -128,10 +108,60 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $scope.$broadcast('plan-view__planned-items-changed', $scope.plannedItemsByBundle);
         });
 
-        $scope.newNote = '';
+        /**
+         * These watchers handle changes to various scope properties when they are changed
+         * and ensure that the data is correctly processed for use by the UI via updateScopeItems
+         */
+        (function setUpWatchersForUserActionScopeChanges () {
+
+            // Currently Selected Date
+            $scope.$watch('selectedDate', (newValue, oldValue) => {
+                $scope.currentlySelectedDay = newValue;
+                $timeout(updateScopeItems);
+            }, false);
+
+            // arameters loaded from the URL
+            $scope.$on('plan-view__filters-changed', function() {
+
+                planLoader.poller.refresh()
+                    .then(() => {
+                        $timeout(updateScopeItems);
+                    });
+                $scope.newsList = wfFiltersService.get('news-list');
+            });
+
+            // Item added to interface via quick add
+            $scope.$on('quick-add-submit', function (ev, item) {
+
+                wfPlannedItemService.add(item)
+                    .then((res) => {
+                        planLoader.poller.refresh()
+                            .then(() => {
+                                $timeout(updateScopeItems);
+                            });
+                        $rootScope.$emit('quick-add-success');
+                    })
+                    .catch((err) => {
+                        $rootScope.$emit('quick-add-failure');
+                    });
+            });
+
+            // Items altered in Plan View
+            $scope.$on('plan-view__planned-items-changed', function () {
+                $timeout(updateScopeItems);
+            });
+
+            // Items altered in bundle view
+            $scope.$on('plan-view__bundles-edited', () => {
+                planLoader.poller.refresh()
+                    .then(() => {
+                        $timeout(updateScopeItems);
+                    });
+            });
+        })();
 
         /**
-         * Create the scope items for the bundle view and the day view using the currently selected date
+         * Create the scope items for the bundle and day view using the currently selected date
          */
         function updateScopeItems() {
 
@@ -167,22 +197,5 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 return itemIsWithinDateRange(item, selectedDay, selectedDayPlusOne);
             });
         }
-
-        $scope.$on('plan-view__filters-changed', function() {
-
-            planLoader.poller.refresh();
-            $scope.newsList = wfFiltersService.get('news-list');
-        });
-
-        $scope.$on('plan-view__planned-items-changed', function () {
-            $timeout(updateScopeItems); // Ensure scope is applied on the next digest loop
-        });
-
-
-        $scope.getBundles = function () { return _.keys($scope.agendaItems); };
-        $scope.$watch('selectedDate', (newValue, oldValue) => {
-            $scope.currentlySelectedDay = newValue;
-            updateScopeItems();
-        }, false);
 
     }]);

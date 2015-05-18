@@ -210,56 +210,6 @@
     }
 }
 
-/* group time jumpers */
-
-.time-jumper {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-align-items: stretch;
-    -webkit-flex: 0 0 50px;
-    flex: 0 0 50px;
-    /*background-color: #2eb859;*/
-}
-
-.time-jumper ul {
-    list-style-type: none;
-    font: 70%/27px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
-    width: 50px;
-    padding: 0;
-    /*	background-color: #1c78cf;*/
-    vertical-align: middle;
-    text-align: right;
-    border-right: 1px dotted silver;
-    color: #333333;
-    li {
-        padding-right: 4px;
-    }
-}
-
-.time-jumper ul li:hover {
-    background-color: #d0d0d0;
-    color: #ffffff;
-    cursor: pointer;
-}
-
-//
-//td	{
-//    color:black;
-//    font-style:normal;
-//    display: table-cell;
-//    vertical-align: top;
-//}
-//
-//table {
-//    table-layout: fixed;
-//    font: 0.8em "AS32 Agate Sans";
-//}
-
-//.time {
-//    width: 50px;
-//    text-indent: 17px;
-//}
-
 .section {
     text-align: right;
     padding-right: 5px;
@@ -307,38 +257,6 @@
     white-space: normal;
 }
 
-//.timeBars {
-//    font-size: 13px;
-//    height: 20px;
-//    line-height: 20px;
-//    padding-left: 3px;
-//    font-weight: bold;
-//    max-width: 500px;
-//    border-collapse: collapse;
-//    border-top-color: #DCDCDC;
-//    border-bottom-width: 1px;
-//    background-color: rgb(222, 226, 227);
-//    border-bottom-color: rgb(255, 255, 255);
-//    border-bottom-style: solid;
-//    border-bottom-width: 1px;
-//    border-collapse: collapse;
-//    border-left-color: rgb(128, 128, 128);
-//    border-right-color: rgb(128, 128, 128);
-//    border-top-color: #DCDCDC;
-//    border-top-style: solid;
-//    border-top-width: 1px;
-//    box-sizing: content-box;
-//    font-family: "AS32 Agate Sans", 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
-//    font-size: 14px;
-//    height: 19px;
-//    line-height: 18px;
-//    vertical-align: middle;
-//    font-weight: bold;
-//    text-indent: 4px;
-//    margin: 2px 0;
-//    background-color: $c-grey-300;
-//}
-
 .hour_count {
     font-weight: normal;
 }
@@ -361,6 +279,17 @@
     &:hover {
         .handle__mark {
             background-color: $c-grey-500;
+        }
+    }
+}
+
+// Editable fields
+
+.plan-container {
+    .editable__view-value {
+        border: none;
+        &:hover {
+            border-bottom: 1px dashed $c-grey-700;
         }
     }
 }
