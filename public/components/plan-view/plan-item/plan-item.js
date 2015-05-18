@@ -26,10 +26,6 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
         },
         link: ($scope, elem, attrs) => {
 
-            //$scope.$watch('item', () => {
-            //    debugger;
-            //});
-
             $scope.shiftToTomorrow = function () {
                 $scope.MoveToTomorrowLoading = true;
                 $scope.updateField('plannedDate', $scope.item.plannedDate.add(1, 'day'));
@@ -100,16 +96,6 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             $scope.removeFromBundleProxy = (item) => {
                 $scope.$emit('plan-view__remove-item-from-bundle', item);
             };
-
-            //$scope.$watch('item.bundleId', (newValue, oldValue) => {
-            //
-            //    $timeout(() => {
-            //
-            //        debugger
-            //
-
-            //    });
-            //});
         }
     }
 }
