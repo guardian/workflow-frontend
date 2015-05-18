@@ -16,7 +16,7 @@ angular.module('wfUserMessage', ['wfSupportedBrowserService'])
 function wfUserMessageConfig($provide) {
     $provide.decorator('$exceptionHandler', ['$delegate', '$injector', wfErrorExceptionHandlerDecorator]);
 
-    angular.element(document.body).prepend('<wf-user-message class="user-message__container"></wf-user-message>');
+    angular.element(document.body).prepend('<wf-user-message></wf-user-message>');
 }
 
 
