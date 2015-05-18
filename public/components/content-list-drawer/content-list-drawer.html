@@ -123,7 +123,8 @@
                     <li class="drawer__section">
                         <span class="drawer__section-title">Optimised For Web</span>
                         <span class="drawer__section-data-row" ng-if="contentItem.optimisedForWeb">Optimised</span>
-                        <span class="drawer__section-data-row" ng-if="!contentItem.optimisedForWeb">Not Optimised</span>
+                        <span class="drawer__section-data-row" ng-if="!contentItem.optimisedForWeb && !contentItem.optimisedForWebChanged">Not Optimised</span>
+                        <span class="drawer__section-data-row" ng-if="contentItem.optimisedForWebChanged">Modified since being optimised</span>
                     </li>
                 </ul>
 
