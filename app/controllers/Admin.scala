@@ -204,14 +204,14 @@ object Admin extends Controller with PanDomainAuthActions {
 
   val addNewsListForm = Form(
     mapping(
-      "title" -> nonEmptyText,
+      "title" -> text,
       "id" -> longNumber
     )(NewsList.apply)(NewsList.unapply)
   )
 
   def addNewsList = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addNewsListForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(s"failed to add desk ${formWithErrors.errors}"),
+      formWithErrors => BadRequest(s"failed to add news list ${formWithErrors.errors}"),
       newsList => {
         NewsListDB.upsert(newsList)
         Redirect(routes.Admin.newsLists())
@@ -221,7 +221,7 @@ object Admin extends Controller with PanDomainAuthActions {
 
   def removeNewsList = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addNewsListForm.bindFromRequest.fold(
-      formWithErrors => BadRequest("failed to remove desk"),
+      formWithErrors => BadRequest("failed to remove news list"),
       newsList => {
         NewsListDB.remove(newsList)
         NoContent
