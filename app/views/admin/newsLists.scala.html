@@ -7,12 +7,16 @@
     <div class="row">
 
         <div class="col-md-6">
+
+            <div class="alert alert-info delete-message" style="display: none; margin-top: 12px;">The Newslist was deleted :-)</div>
+
             <h1>Current NewsLists</h1>
             <ul class="list-unstyled list-group" >
 
             @for(newsList <- newsLists) {
                 <li class="list-group-item">
                     @{newsList.title} (@{newsList.id})
+                    <button class="list-group-item__delete pull-right btn btn-danger btn-xs" data-id="@{newsList.id}">Delete</button>
                 </li>
             }
             </ul>
@@ -20,12 +24,39 @@
             <div class="form">
                 <h3>Add a new NewsList</h3>
                 @form(action=routes.Admin.addNewsList){
-                    @inputText(addNewsListForm("title"))
+                    @inputText(field=addNewsListForm("title"), args='required -> "required")
                     <input type="hidden" name="id" value="0">
                     <input type="hidden" name="selected" value="false">
-                    <input type="submit" value="Add">
+                    <input type="submit" value="Add" class="btn btn-primary">
                     }
             </div>
+
+            <script type="application/javascript">
+
+                $(function () {
+                    $('.list-group-item__delete').on('click', function (event) {
+
+                        var $el = $(event.target);
+                        var id = $el.data('id');
+
+                        $.ajax({
+                            url: '/admin/newslists',
+                            method: 'DELETE',
+                            data: {
+                                id: id,
+                                title: ""
+                            }
+                        }).success(function () {
+                            $el.parents('.list-group-item').remove();
+                            $('.delete-message').fadeIn().delay(2000).fadeOut();
+                        }).error(function () {
+                            alert("Coudln't delete item: "+ id + ". Probably there are plan items in this newslist...");
+                        });
+
+                    });
+                });
+
+            </script>
 
         </div>
 
