@@ -151,7 +151,9 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                 }
             })();
 
-            $scope.createItemFromDayNote = (dayNote) => {
+            $scope.createItemFromDayNote = (dayNote, $event) => {
+
+                $event.target.innerHTML = "Moving...";
 
                 wfPlannedItemService.add({
                     title: dayNote.note,
@@ -163,7 +165,10 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                     hasSpecificTime: false
                 }).then(() => {
                     $scope.$emit('plan-view__planned-items-changed');
-                    wfDayNoteService.remove(dayNote)
+                    wfDayNoteService.remove(dayNote).then(() => {
+                        $timeout(buildDateListAndDayNotes);
+                        dayNote.loading = false;
+                    })
                 });
             }
         },
