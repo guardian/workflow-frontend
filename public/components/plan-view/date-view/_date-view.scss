@@ -39,7 +39,7 @@
 }
 
 .date-list__date-note {
-    display: block;
+    display: inline-block;
 
     &:hover {
         color: $c-grey-700;

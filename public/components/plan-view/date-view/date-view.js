@@ -11,7 +11,7 @@ function withLocale(locale, f) {
     return ret;
 }
 
-function wfDateView ($rootScope, $timeout, wfDayNoteService, $sce) {
+function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemService, wfFiltersService, $sce) {
     return {
         restrict: 'E',
         templateUrl: '/assets/components/plan-view/date-view/date-view.html',
@@ -150,6 +150,22 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, $sce) {
                     return date.isBefore(now, 'day');
                 }
             })();
+
+            $scope.createItemFromDayNote = (dayNote) => {
+
+                wfPlannedItemService.add({
+                    title: dayNote.note,
+                    id: 0,
+                    newsList: wfFiltersService.get('news-list') || 0,
+                    plannedDate: $scope.selectedDate.toISOString(),
+                    bundleId: 0,
+                    bucketed: false,
+                    hasSpecificTime: false
+                }).then(() => {
+                    $scope.$emit('plan-view__planned-items-changed');
+                    wfDayNoteService.remove(dayNote)
+                });
+            }
         },
         link: ($scope) => {
             $scope.onSelect = function(date) {

@@ -33,14 +33,15 @@
 }
 
 .bundle-list-items {
-//    border-left: 1px solid $c-grey-400;
     margin: 0;
     height: 100%;
     flex: 1;
+    .alert {
+        margin: 12px;
+    }
 }
 
 .day-bundle {
-//    padding: 0 0 6px 0;
     border-bottom: 1px solid #fff;
 
     .day-bundle__title {
@@ -54,6 +55,11 @@
         font-weight: bold;
         height: 26px;
         line-height: 26px;
+        .day-bundle__title-text {
+            display: inline-block;
+            height: 26px;
+            line-height: 26px;
+        }
     }
 
     &.dnd__status--hovered {

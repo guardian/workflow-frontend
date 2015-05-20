@@ -6,7 +6,7 @@ CREATE TABLE bundle
     title TEXT NOT NULL
 );
 
-INSERT INTO bundle VALUES (0, 'No Bundle');
+INSERT INTO bundle VALUES (0, 'No bundle');
 
 # --- !Downs
 

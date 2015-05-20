@@ -17,7 +17,7 @@ import { wfDateRangeWidget } from  'components/plan-view/date-range-widget/date-
 
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
-    .directive('wfDateView', ['$rootScope','$timeout', 'wfDayNoteService', '$sce', wfDateView])
+    .directive('wfDateView', ['$rootScope','$timeout', 'wfDayNoteService', 'wfPlannedItemService', 'wfFiltersService', '$sce', wfDateView])
     .directive('wfBundleView', ['$rootScope','$timeout', 'wfBundleService', 'wfPlannedItemService', 'wfFiltersService', wfBundleView])
     .directive('wfDayView', ['$rootScope', 'wfPlannedItemService', '$http', '$timeout', 'wfFiltersService', wfDayView])
     .directive('wfPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', 'wfBundleService', 'wfPlannedItemService', wfPlanItem])
