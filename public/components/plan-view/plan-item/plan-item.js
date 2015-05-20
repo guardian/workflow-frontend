@@ -12,6 +12,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             $scope.getBundleName = wfBundleService.getTitle;
             $scope.genColor = wfBundleService.genBundleColor;
             $scope.drawerOpen = false;
+            $scope.awaitingDeleteConfirmation = false;
             $scope.newsLists = _wfConfig.newsLists;
             $scope.priorities = [{
                 value: 0,
@@ -97,11 +98,10 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                 $scope.$emit('plan-view__remove-item-from-bundle', item);
             };
 
-            $scope.awaitingDeleteConfirmation = false;
             $scope.deletePlanItem = () => {
                 if ($scope.awaitingDeleteConfirmation) {
                     wfPlannedItemService.remove($scope.item).then(()=> {
-                            $rootScope.$broadcast('plan-view__planned-items-changed');
+                            $rootScope.$broadcast('plan-view__plan-item-deleted', $scope.item);
                             $scope.drawerOpen = false;
                     });
                 } else {

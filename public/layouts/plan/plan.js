@@ -148,10 +148,24 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
             // Items altered in Plan View
             $scope.$on('plan-view__planned-items-changed', () => {
-                planLoader.poller.refresh()
-                    .then(() => {
-                        $timeout(updateScopeItems);
-                    });
+                 $timeout(updateScopeItems);
+            });
+
+            $scope.$on('plan-view__plan-item-deleted', (ev, deletedItem) => {
+
+                function removeItemFromList(list, item) {
+                    return list.filter((i) => i.id !== item.id);
+                }
+                $timeout( () => {
+                    $scope.dayItems = removeItemFromList($scope.dayItems, deletedItem);
+                    $scope.dayItemsByBundle = $scope.dayItemsByBundle.map( (bundle) => {
+                        if (bundle.id === deletedItem.bundleId) {
+                            bundle.itemsToday =  removeItemFromList(bundle.itemsToday, deletedItem);
+                            bundle.items = removeItemFromList(bundle.items, deletedItem);
+                        }
+                        return bundle;
+                    })
+                });
             });
 
             // Items altered in bundle view TODO <<< merge with above method
