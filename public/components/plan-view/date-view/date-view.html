@@ -10,6 +10,7 @@
                 <wf-editable class="date-list__date-note" ng-model="dayNote.note" wf-editable-on-update="updateDayNote(dayNote.id, newValue, date.date)" wf-editable-required="true">
                     {{ dayNote.note}}
                 </wf-editable>
+                <button class="btn btn-xs btn-default" ng-click="createItemFromDayNote(dayNote)">Create</button>
             </li>
         </ul>
 

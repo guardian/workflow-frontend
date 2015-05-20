@@ -1,14 +1,14 @@
 <div class="bundle-view__list">
     <ul class="bundle-list-items list-unstyled">
 
-        <div ng-if="dayItemsByBundle.length === 0">No items!!!!!!!!!!!!!!</div>
+        <div ng-if="dayItemsByBundle.length === 0" class="alert alert-info">No items found.</div>
 
         <li class="day-bundle" ng-repeat="bundle in dayItemsByBundle track by bundle.id" ng-class="{ 'day-bundle--unscheduled': bundle.id === 0 }" data-jqyoui-options="bundleDraggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday" ng-if="bundle.itemsToday.length > 0">
 
             <div class="day-bundle__title" ng-style="genColor(bundle.title)">
 
                 <!--Title for unscheduled-->
-                <span ng-if="bundle.id === 0">{{ bundle.title }}</span>
+                <span ng-if="bundle.id === 0" class="day-bundle__title-text">{{ bundle.title }}</span>
 
                 <!--Editable title for all other budles-->
                 <wf-editable ng-if="bundle.id !== 0" ng-model="bundle.title" wf-editable-on-update="updateTitle(bundle, newValue)" wf-editable-required="true">
