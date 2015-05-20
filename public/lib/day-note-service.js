@@ -27,13 +27,11 @@ angular
                 }
 
                 remove(dayNote) {
-
-                    dayNote.day = moment(dayNote.day).format('YYYY-MM-DD');
-
                     return httpRequest({
                         method: 'DELETE',
                         url: '/api/v1/plan/day-note',
-                        data: dayNote
+                        data: dayNote,
+                        headers: {'Content-Type': 'application/json'}
                     });
                 }
 
