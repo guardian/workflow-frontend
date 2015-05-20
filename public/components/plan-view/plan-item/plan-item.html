@@ -90,6 +90,21 @@
         </li>
     </ul>
 
+    <ul class="drawer__column--control">
+        <li class="drawer__control">
+                        <span class="drawer__section-data-row drawer__control-item" ng-click="drawerOpen= false" title="Close details">
+                            <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="cross"></i>
+                            Close details
+                        </span>
+        </li>
+        <li class="drawer__control" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}">
+                    <span class="drawer__section-data-row drawer__control-item drawer__control-item--delete" ng-click="deletePlanItem()" title="Delete from Workflow">
+                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
+                            {{ awaitingDeleteConfirmation ? 'Delete' : 'Delete from Workflow' }}
+                        </span>
+        </li>
+    </ul>
+
 
 
 </div>

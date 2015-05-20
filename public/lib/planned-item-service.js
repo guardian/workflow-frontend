@@ -43,6 +43,15 @@ angular
                     });
                 }
 
+                remove(plannedItem) {
+                    return httpRequest({
+                        method: 'DELETE',
+                        url: '/api/v1/plan/item',
+                        data: plannedItem,
+                        headers: {'Content-Type': 'application/json'}
+                    });
+                }
+
                 /**
                  * Update multiple fields on a plannedItem and return a single promise
                  * @param plannedItemId

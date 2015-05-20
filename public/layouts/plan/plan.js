@@ -147,11 +147,14 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             });
 
             // Items altered in Plan View
-            $scope.$on('plan-view__planned-items-changed', function () {
-                $timeout(updateScopeItems);
+            $scope.$on('plan-view__planned-items-changed', () => {
+                planLoader.poller.refresh()
+                    .then(() => {
+                        $timeout(updateScopeItems);
+                    });
             });
 
-            // Items altered in bundle view
+            // Items altered in bundle view TODO <<< merge with above method
             $scope.$on('plan-view__bundles-edited', () => {
                 planLoader.poller.refresh()
                     .then(() => {
