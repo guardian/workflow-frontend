@@ -96,6 +96,19 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             $scope.removeFromBundleProxy = (item) => {
                 $scope.$emit('plan-view__remove-item-from-bundle', item);
             };
+
+            $scope.awaitingDeleteConfirmation = false;
+            $scope.deletePlanItem = () => {
+                if ($scope.awaitingDeleteConfirmation) {
+                    wfPlannedItemService.remove($scope.item).then(()=> {
+                            $rootScope.$broadcast('plan-view__planned-items-changed');
+                            $scope.drawerOpen = false;
+                    });
+                } else {
+                    $scope.awaitingDeleteConfirmation = true;
+                }
+
+            }
         }
     }
 }
