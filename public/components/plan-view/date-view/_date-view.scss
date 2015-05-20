@@ -1,3 +1,5 @@
+@import "layouts/global/mixins";
+
 // Date Panel
 // ---------------------------------------------------------- //
 
@@ -113,4 +115,31 @@
 
 .add-event {
     display: none;
+}
+
+.date-note__action { // TODO finalise and tidy up stying for day note action
+
+    color: $c-grey-400 !important;
+    border-bottom: 1px solid transparent;
+
+    .date-list__date-note-create-icon {
+        height: 14px;
+        width: 14px;
+        transform: rotate(90deg);
+        display: inline-block;
+        position: relative;
+        top: 2px;
+        margin: 0 0 0 2px;
+        svg {
+            fill: #bdbdbd;
+        }
+    }
+
+    &:hover {
+        color: $c-grey-700 !important;
+        border-bottom: 1px solid $c-grey-700;
+        .date-list__date-note-create-icon svg {
+            fill: #333333;
+        }
+    }
 }
