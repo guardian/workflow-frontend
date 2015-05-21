@@ -13,7 +13,7 @@ function wfDateRangeWidget ($timeout, wfFiltersService) {
             $scope.dateRange = {};
 
             $scope.dateRange.startDate = startDateOption ? moment(startDateOption) : moment().subtract(3, 'days').startOf('day');
-            $scope.dateRange.endDate = endDateOption ? moment(endDateOption) : $scope.dateRange.startDate.add(6, 'days').startOf('day');
+            $scope.dateRange.endDate = endDateOption ? moment(endDateOption) : $scope.dateRange.startDate.clone().add(6, 'days').startOf('day');
 
             $scope.dateRange.durationInDays = $scope.dateRange.endDate.diff($scope.dateRange.startDate, 'days');
 
