@@ -153,22 +153,20 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
 
             $scope.createItemFromDayNote = (dayNote, $event) => {
 
-                $event.target.innerHTML = "Moving...";
+                $event.target.innerHTML = "Copying...";
 
                 wfPlannedItemService.add({
                     title: dayNote.note,
                     id: 0,
                     newsList: wfFiltersService.get('news-list') || 0,
-                    plannedDate: $scope.selectedDate.toISOString(),
+                    plannedDate: dayNote.day,
                     bundleId: 0,
                     bucketed: false,
                     hasSpecificTime: false
                 }).then(() => {
                     $scope.$emit('plan-view__planned-items-changed');
-                    wfDayNoteService.remove(dayNote).then(() => {
-                        $timeout(buildDateListAndDayNotes);
-                        dayNote.loading = false;
-                    })
+                    $timeout(buildDateListAndDayNotes);
+                    dayNote.loading = false;
                 });
             }
         },

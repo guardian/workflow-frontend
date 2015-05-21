@@ -10,8 +10,10 @@
                 <wf-editable class="date-list__date-note" ng-model="dayNote.note" wf-editable-on-update="updateDayNote(dayNote.id, newValue, date.date)" wf-editable-required="true">
                     {{ dayNote.note}}
                 </wf-editable>
-                <span class="date-list__sep"> | </span>
-                <span class="date-list__date-note date-note__action" ng-click="createItemFromDayNote(dayNote, $event)" ng-class="{'loading': dayNote.loading}">Move to agenda <i class="date-list__date-note-create-icon" wf-icon="arrow-up"></i></span>
+                <div class="date-note__actions" ng-if="date.date.isSame(selectedDate, 'day')">
+                    <span class="date-list__sep"> | </span>
+                    <span class="date-list__date-note date-note__action" ng-click="createItemFromDayNote(dayNote, $event)" ng-class="{'loading': dayNote.loading}">Copy to agenda <i class="date-list__date-note-create-icon" wf-icon="arrow-up"></i></span>
+                </div>
             </li>
         </ul>
 

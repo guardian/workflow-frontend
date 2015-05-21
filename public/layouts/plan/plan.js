@@ -168,7 +168,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 });
             });
 
-            // Items altered in bundle view TODO <<< merge with above method
+            // Items altered in bundle view
             $scope.$on('plan-view__bundles-edited', () => {
                 planLoader.poller.refresh()
                     .then(() => {
