@@ -265,31 +265,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              * Update the deadline manually using value from datepicker
              */
             $scope.updateDeadline = function () {
-
-                switch ($scope.currentDatePickerValue) {
-                    // If an empty value is submitted, clear the field
-                    case null:
-                        // this is needed to prevent the old deadline from being displayed briefly
-                        $scope.contentItem.item.due = null;
-
-                        updateField("dueDate", null);
-                        break;
-                    // If date is invalid, revert date in text box to previous value (and don't update database)
-                    case undefined:
-                        $scope.currentDatePickerValue = $scope.contentItem.item.due
-                        break;
-                    // If the date is valid, parse it to a string and update the database
-                    default:
-                        var parsedDate, parsedDateAsString;
-                        parsedDate = moment($scope.currentDatePickerValue);
-                        if (parsedDate.isValid()) {
-                            parsedDateAsString = parsedDate.toISOString();
-                            $scope.currentDatePickerValue = parsedDateAsString;
-                            // this is needed to prevent the old deadline from being displayed briefly
-                            $scope.contentItem.item.due = parsedDateAsString;
-                            updateField("dueDate", parsedDateAsString);
-                        }
-                }
+                updateField("dueDate", $scope.currentDatePickerValue);
             };
 
             /**
