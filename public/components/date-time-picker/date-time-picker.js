@@ -209,7 +209,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                         $browser.defer(commitUpdate);
 
                         if (updateOn == 'enter' && key === KEYCODE_ENTER) {
-                            scope.onSubmit();
+                            scope.updateOnEnter();
                         }
                     }
 
@@ -237,6 +237,28 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                     ngModel.$render();
                 });
 
+                scope.updateOnEnter = function () {
+
+                    switch (ngModel.$modelValue) {
+                        // If an empty value is submitted, clear the field
+                        case null:
+                            scope.onSubmit();
+                            break;
+                        // If date is invalid, revert date in text box to previous value (and don't update database)
+                        case undefined:
+                            scope.onCancel();
+                            break;
+                        // If the date is valid, parse it to a string and update the database
+                        default:
+                            var parsedDate, parsedDateAsString;
+                            parsedDate = moment(ngModel.$modelValue);
+                            if (parsedDate.isValid()) {
+                                parsedDateAsString = parsedDate.toISOString();
+                                ngModel.$modelValue = parsedDateAsString;
+                                scope.onSubmit();
+                            }
+                    }
+                };
             }
         };
     }]);
