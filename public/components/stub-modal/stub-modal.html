@@ -45,7 +45,7 @@
     </div>
     <div class="modal-body modal-body__advanced" ng-class="{'modal-body__advanced--open' : expanded}">
         <div class="form-group">
-            <div wf-date-time-picker class="modal-body__deadline" label="Production deadline" help-text="true" ng-model="stub.due"></div>
+            <div wf-date-time-picker label="Production deadline" help-text="true" ng-model="stub.due"></div>
             <div class="form-horizontal clearfix">
                 <div class="form-group col-xs-8">
                     <label for="stub_priority">Priority</label>
@@ -91,7 +91,7 @@
             <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=false)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'">
                 Save stub
             </button>
-            <button type="button" class="btn btn-primary" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status !== 'Stub'">
+            <button type="button" class="btn btn-primary" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status !== 'Stub'" testing-target="submit-button">
                 Create new
             </button>
         </div>
@@ -99,7 +99,7 @@
 
     <div class="modal-footer" ng-if="mode === 'import'" ng-hide="actionInProgress">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" ng-click="ok()" ng-disabled="stubForm.$invalid || !validImport">
+        <button type="submit" class="btn btn-primary" ng-click="ok()" ng-disabled="stubForm.$invalid || !validImport" testing-target="submit-button">
             Import
         </button>
     </div>

@@ -1,10 +1,7 @@
 # --- !Ups
 
-CREATE TABLE news_list(
-    pk serial NOT NULL PRIMARY KEY,
-    title varchar(128) not null unique
-);
+ALTER TABLE content ADD optimised_for_web_changed BOOLEAN NOT NULL DEFAULT FALSE;
 
 # --- !Downs
 
-DROP table news_list
+ALTER TABLE content DROP COLUMN optimised_for_web_changed;

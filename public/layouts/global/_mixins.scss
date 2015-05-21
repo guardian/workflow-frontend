@@ -139,3 +139,8 @@
         transform: rotate(360deg);
     }
 }
+
+@mixin keyframes($name) {
+    @-webkit-keyframes #{$name} { @content }
+    @keyframes #{$name} { @content }
+}

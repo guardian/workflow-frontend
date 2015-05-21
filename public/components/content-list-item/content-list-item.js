@@ -142,6 +142,15 @@ function wfContentItemParser(config, statusLabels, sections) {
                 'Linked with InCopy Story Bundle ' + this.storyBundleId :
                 'Not linked with InCopy';
 
+            this.optimisedForWeb = !!(item.statusFlags && item.statusFlags.optimisedForWeb);
+            this.optimisedForWebChanged = !!(item.statusFlags && item.statusFlags.optimisedForWebChanged);
+
+            if (this.optimisedForWebChanged) {
+                this.optimisedForWebTitle = 'Content has been modified since being optimised'
+            } else {
+                this.optimisedForWebTitle = this.optimisedForWeb ? 'Optimised for web' : 'Not optimised for web';
+            }
+
             this.item = item;
         }
 

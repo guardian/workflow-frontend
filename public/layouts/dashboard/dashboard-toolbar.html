@@ -20,6 +20,16 @@
 
 <div wf-toolbar-sections-dropdown  ng-model="selectedSections" sections="sections" selectedDesk="selectedDesk"></div>
 
+<div class="dashboard-toolbar__section" wf-toolbar-disable-on-search>
+    <form>
+        <label class="dashboard-toolbar__prod-office-label">Show
+            <select class="dashboard-toolbar__prod-office-select" ng-model="selectedView" ng-options="view.value as view.name for view in availableContentViews">
+                <option value="">All</option>
+            </select>
+        </label>
+    </form>
+</div>
+
 <div class="dashboard-toolbar__section" ng-controller="wfToolbarFreetextController">
     <form>
         <input ng-model="value" placeholder="Search" ng-change="update()" type="text" value=""/>

@@ -79,6 +79,11 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 function wfContentListController($rootScope, $scope, $anchorScroll, statuses, legalValues, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService, wfFiltersService) {
 
+
+    $scope.presenceIsActive = false;
+    $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = false);
+    $rootScope.$on("presence.connection.open",  () => $scope.presenceIsActive = true);
+
     /*jshint validthis:true */
 
     $scope.resetFilters = function () {
@@ -99,12 +104,44 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         $scope.columns = data;
     });
 
+    $scope.getColumnTitle = function(col) {
+        if (col.name !== 'presence') {
+            return (col.title.length > 0) ? col.title : undefined;
+        } else {
+            return $scope.presenceIsActive ? col.title : col.unavailableTitle;
+        }
+    };
+
     wfColumnService.getContentItemTemplate().then((template) => {
 
         $rootScope.contentItemTemplate = template;
     });
 
     $scope.showColumnMenu = false;
+
+    /**
+     * If the user has not clicked in to the column configurator then show
+     * the new labels against the configurator button and the new field.
+     */
+    (function displayNewIndicatorsIfNotSeenBefore () {
+
+        $scope.showColumnMenuNewIndicator = false;
+        wfPreferencesService.getPreference('ofwFieldNotYetSeen').then((data) => {
+
+            $scope.showColumnMenuNewIndicator = data;
+        }, () => {
+
+            $scope.showColumnMenuNewIndicator = true;
+
+            $scope.$watch('showColumnMenu', (newValue, oldValue) => {
+
+                if (newValue !== oldValue) {
+                    wfPreferencesService.setPreference('ofwFieldNotYetSeen', false);
+                }
+            }, false);
+        });
+    })();
+
     $scope.colChange = function () {
         wfColumnService.setColumns($scope.columns).then(() => {
             if (confirm('Configuring columns requires a refresh, reload the page?')) {
@@ -176,9 +213,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         }
     }, true);
 
-    $scope.$on('presence.connection.success', function(){
-        wfPresenceService.subscribe($scope.contentIds);
-    });
 
     // Infinite Scrolling functionality
     // See infinite-scroll http://sroze.github.io/ngInfiniteScroll/documentation.html

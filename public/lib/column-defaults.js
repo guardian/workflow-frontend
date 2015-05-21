@@ -4,6 +4,7 @@ import titleTemplate            from "components/content-list-item/templates/tit
 import commentsTemplate         from "components/content-list-item/templates/comments.html!text";
 import mainImageTemplate        from "components/content-list-item/templates/main-image.html!text";
 import incopyTemplate           from "components/content-list-item/templates/incopy.html!text";
+import optimisedForWebTemplate  from "components/content-list-item/templates/optimisedForWeb.html!text";
 import presenceTemplate         from "components/content-list-item/templates/presence.html!text";
 import assigneeTemplate         from "components/content-list-item/templates/assignee.html!text";
 import officeTemplate           from "components/content-list-item/templates/office.html!text";
@@ -95,11 +96,22 @@ var columnDefaults = [{
     template: incopyTemplate,
     active: true
 },{
+    name: 'optimisedForWeb',
+    prettyName: 'Optimised For Web',
+    labelHTML: '',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'optimisedForWeb.html',
+    template: optimisedForWebTemplate,
+    active: true,
+    isNew: true
+},{
     name: 'presence',
     prettyName: 'Presence',
-    labelHTML: '<i class="content-list-head__heading-icon--presence" wf-icon="presence"/>',
+    labelHTML: '<div ng-switch="presenceIsActive"><i class="content-list-head__heading-icon--presence" ng-switch-when="false" wf-icon="presence-unavailable"/><i class="content-list-head__heading-icon--presence" ng-switch-default wf-icon="presence"/></div>',
     colspan: 1,
     title: 'In use by',
+    unavailableTitle: 'Presence is currently unavailable, reloading your browser might fix this.',
     templateUrl: templateRoot + 'presence.html',
     template: presenceTemplate,
     active: true
