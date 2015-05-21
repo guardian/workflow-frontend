@@ -119,7 +119,7 @@ angular.module('wfPreferencesService', [])
                         }
                     } else {
                         return this.prefsPromise.then(function resolve (data) {
-                            if (data[name]) {
+                            if (typeof data[name] !== "undefined") {
                                 return data[name];
                             } else {
                                 $log.info('No preference set for: ' + name);

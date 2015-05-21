@@ -2,6 +2,8 @@
  * Workflow global icons.
  */
 
+$optimised-for-web-size: 16px;
+
 .wf-icon {
     width: 100%;
     height: 100%;
@@ -26,6 +28,12 @@
 
         &--priority-very-urgent {
             fill: $c-red;
+        }
+
+        &--optimised-for-web-changed,
+        &--optimised-for-web {
+            height: $optimised-for-web-size;
+            width: $optimised-for-web-size;
         }
     }
 }

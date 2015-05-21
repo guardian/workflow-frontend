@@ -153,6 +153,7 @@ angular.module('workflow',
             'composerContentDetails': _wfConfig.composer.details,
             'presenceUrl': _wfConfig.presenceUrl,
             'incopyExportUrl': _wfConfig.incopyExportUrl,
+            'composerRestorerUrl': _wfConfig.composerRestorerUrl,
             'maxNoteLength': 500
         }
     )

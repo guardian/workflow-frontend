@@ -129,6 +129,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('filtersChanged.view', function(event, data) {
+                    self.update('view', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
                 $rootScope.$on('plan-view__filters-changed.news-list', function(event, data) {
                     if (data === 'all') {
                         self.update('news-list', null)
@@ -180,6 +185,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'incopy'       : params['incopy'],
                         'touched'      : params['touched'],
                         'composerId'   : params['composerId'],
+                        'view'         : params['view'],
                         'news-list'    : params['news-list'],
                         'plan-start-date': params['plan-start-date'],
                         'plan-end-date': params['plan-end-date']

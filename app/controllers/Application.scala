@@ -95,7 +95,8 @@ object Application extends Controller with PanDomainAuthActions {
         "presenceClientLib" -> PrototypeConfiguration.cached.presenceClientLib,
         "preferencesUrl" -> PrototypeConfiguration.cached.preferencesUrl,
         "user" -> Json.parse(user.toJson),
-        "incopyExportUrl" -> PrototypeConfiguration.cached.incopyExportUrl
+        "incopyExportUrl" -> PrototypeConfiguration.cached.incopyExportUrl,
+        "composerRestorerUrl" -> PrototypeConfiguration.cached.composerRestorerUrl
       )
 
       Ok(views.html.app(title, Some(user), config))

@@ -1,13 +1,13 @@
 # --- !Ups
 
-CREATE TABLE day_note
+CREATE TABLE bundle
 (
     pk SERIAL NOT NULL PRIMARY KEY,
-    note TEXT NOT NULL,
-    day TIMESTAMP NOT NULL,
-    news_list INTEGER NOT NULL REFERENCES news_list (pk)
+    title TEXT NOT NULL
 );
+
+INSERT INTO bundle VALUES (0, 'No bundle');
 
 # --- !Downs
 
-DROP table day_note
+DROP table bundle

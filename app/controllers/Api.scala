@@ -5,6 +5,7 @@ import lib._
 import Response.Response
 import models.Flag.Flag
 import models._
+import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
 
 import play.api.libs.ws.WS
 import play.api.data.Form
@@ -71,6 +72,7 @@ object Api extends Controller with PanDomainAuthActions {
     val touched   = queryData.touched
     val published = queryData.published
     val assigned  = queryData.assignedToEmail
+    val view      = queryData.viewTimes
 
     def getContent = {
        PostgresDB.getContent(queryData)
