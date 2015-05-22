@@ -25,8 +25,8 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
     .directive('wfDateRangeWidget', ['$timeout', 'wfFiltersService', wfDateRangeWidget])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
-        var filterParams = wfFiltersService.getAll();
         function params() {
+            let filterParams = wfFiltersService.getAll();
             return {
                 'newsList': filterParams['news-list'],
                 'startDate': filterParams['plan-start-date'],
