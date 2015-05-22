@@ -70,10 +70,25 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                 }
             }, true);
 
+            $scope.$watch('newsList', () => {
+                buildDateListFromDateRange()
+            });
+
+            function buildDateListFromDateRange() {
+                if ($scope.dateRange && $scope.dateRange.startDate && $scope.dateRange.endDate) {
+                    $timeout(() => {
+                        $scope.dateList = makeDateList();
+                        if ($scope.newsList) {
+                            buildDateListAndDayNotes();
+                        }
+                    });
+                }
+            }
+
             function buildDateListAndDayNotes() {
 
                 var tempDateList = $scope.dateList;
-                if ($scope.newsList) {
+                if (tempDateList && $scope.newsList) {
 
                     wfDayNoteService.get({
                         'newsList': $scope.newsList,
