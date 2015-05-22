@@ -120,7 +120,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 $timeout(updateScopeItems);
             }, false);
 
-            // arameters loaded from the URL
+            // parameters loaded from the URL
             $scope.$on('plan-view__filters-changed', function() {
 
                 planLoader.poller.refresh()

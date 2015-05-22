@@ -136,7 +136,7 @@ angular.module('wfFiltersService', ['wfDateService'])
 
                 $rootScope.$on('plan-view__filters-changed.news-list', function(event, data) {
                     if (data === 'all') {
-                        self.update('news-list', null)
+                        self.update('news-list', null);
                     } else {
                         self.update('news-list', data);
                     }
