@@ -48,11 +48,11 @@
                         <span class="drawer__section-title">Production deadline</span>
 
                             <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.item.due, 'drawer__section-data-row--editable-empty': !contentItem.item.due }" title="{{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}">
-                                {{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
+                                {{ (contentItem.item.duec | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
                             </span>
 
                         <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
-                            <div wf-date-time-picker wf-update-on="enter" ng-model="currentDatePickerValue" wf-on-cancel="dateTimeEdit = false; revertDeadline()"  wf-cancel-on="blur" wf-on-submit="updateDeadline(); dateTimeEdit = false;" wf-small="true" help-text="true"></div>
+                            <div wf-date-time-picker wf-update-on="enter" ng-model="currentDatePickerValue" wf-on-cancel="dateTimeEdit = false; revertDeadline()" wf-cancel-on="blur" wf-on-submit="updateDeadline(); dateTimeEdit = false;" wf-small="true" help-text="true"></div>
                         </form>
 
                     </li>
