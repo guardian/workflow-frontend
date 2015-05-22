@@ -10,6 +10,10 @@
 
     <div class="plan__view-container">
 
+        <div class="plan__view-container--overlay" ng-if="!newsList">
+            <div class="alert alert-info">Please select a News List</div>
+        </div>
+
         <div class="plan__title-bar">
 
             <h1 class="plan__title">{{ selectedDate.format('dddd Do MMMM YYYY') }}</h1>
