@@ -28,7 +28,12 @@
 
         <div ng-switch-when="day">
             <button class="plan-item__action plan-item__action-start" ng-if="!item.composerId" ng-click="startWork(); $event.stopPropagation();" ng-class="{'loading': startWorkLoading}">Start work <span class="loader"></span></button>
-            <a class="plan-item__action plan-item__action-view" ng-if="item.composerId" href="/dashboard?composerId={{ item.composerId }}">View in produce</a>
+
+            <div class="plan-item__action-view-container" ng-if="item.composerId">
+                <span>View in: </span>
+                <a class="plan-item__action plan-item__action-view" href="{{ composerViewUrl }}/{{ item.composerId }}" target="_blank">Composer</a>
+                <a class="plan-item__action plan-item__action-view" href="/dashboard?composerId={{ item.composerId }}" target="_blank">Produce</a>
+            </div>
             <button class="plan-item__action plan-item__action-tomorrow" ng-click="shiftToTomorrow(); $event.stopPropagation();" ng-class="{'loading': MoveToTomorrowLoading}">Move to tomorrow  <span class="loader"></span></button>
             <div class="plan-item__item-drag-handle plan__drag-handle">
                 <span class="handle__mark"></span>

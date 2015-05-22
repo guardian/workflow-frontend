@@ -15,6 +15,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             $scope.awaitingDeleteConfirmation = false;
             $scope.newsLists = _wfConfig.newsLists;
             $scope.currentDatePickerValue = $scope.item.plannedDate ? $scope.item.plannedDate : undefined;
+            $scope.composerViewUrl = _wfConfig.composer.view;
             $scope.priorities = [{
                 value: 0,
                 title: 'Normal'
@@ -58,10 +59,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                         $scope.item.composerId = $scope.fakeStub.composerId;
                     });
 
-                    return wfPlannedItemService.updateField($scope.item.id, 'composerId', $scope.fakeStub.composerId).then(() => {
-
-                        window.location = "/dashboard?composerId=" + $scope.fakeStub.composerId;
-                    });
+                    return wfPlannedItemService.updateField($scope.item.id, 'composerId', $scope.fakeStub.composerId);
                 });
             };
 
