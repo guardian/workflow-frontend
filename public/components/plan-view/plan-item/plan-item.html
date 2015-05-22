@@ -71,7 +71,8 @@
             </span>
 
             <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
-                <div wf-date-time-picker ng-model="item.plannedDate" wf-on-cancel="dateTimeEdit = false" wf-update-on="none" wf-cancel-on="blur" wf-on-update="updateField('plannedDate', item.plannedDate); dateTimeEdit = false" wf-small="true"></div>
+                <div wf-date-time-picker wf-update-on="enter" ng-model="currentDatePickerValue" wf-on-cancel="dateTimeEdit = false; currentDatePickerValue = item.PlannedDate"  wf-cancel-on="blur" wf-on-submit="updateField('plannedDate', currentDatePickerValue); dateTimeEdit = false;" wf-small="true" help-text="true"></div>
+                <!--<div wf-date-time-picker ng-model="item.plannedDate" wf-on-cancel="dateTimeEdit = false" wf-update-on="enter" wf-cancel-on="blur" wf-on-update="updateField('plannedDate', item.plannedDate); dateTimeEdit = false" wf-small="true"></div>-->
             </form>
 
         </li>

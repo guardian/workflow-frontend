@@ -14,6 +14,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             $scope.drawerOpen = false;
             $scope.awaitingDeleteConfirmation = false;
             $scope.newsLists = _wfConfig.newsLists;
+            $scope.currentDatePickerValue = $scope.item.plannedDate ? $scope.item.plannedDate : undefined;
             $scope.priorities = [{
                 value: 0,
                 title: 'Normal'
