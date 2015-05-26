@@ -150,6 +150,27 @@ angular.module('wfAnalytics', ['wfUser'])
             track('Content deleted', data.contentItem);
         });
 
+        let ignoreFirstCall = (fn) => {
+            let c = false;
+            return () => {
+                if (!c) {
+                    c = !c;
+                } else {
+                    fn.apply(this, arguments);
+                }
+            }
+        };
+
+        $rootScope.$on('plan-view__filters-changed.plan-start-date', ignoreFirstCall((event, data) => {
+            console.log('called start', event, data);
+            track('Plan view | Start date edited', data);
+        }));
+
+        $rootScope.$on('plan-view__filters-changed.plan-end-date', ignoreFirstCall((event, data) => {
+            console.log('called end', event, data);
+            track('Plan view | End date edited', data);
+        }));
+
         // TODO Things to track:
         //  View in Composer
         //  Content list filtered
