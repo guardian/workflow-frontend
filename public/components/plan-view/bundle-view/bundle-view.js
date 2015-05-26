@@ -157,13 +157,19 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
 
             $scope.addNewItemToBundle = (bundle, newItemName) => {
 
-                wfPlannedItemService.add({
+                let newItem = {
                     title: newItemName ? newItemName : "New Item",
                     id: 0,
                     newsList: wfFiltersService.get('news-list') || 0,
                     plannedDate: $scope.selectedDate.toISOString(),
                     bundleId: bundle.id
-                }).then(() => {
+                };
+
+                $timeout(() => { // Add to model directly
+                    bundle.itemsToday.push(newItem);
+                });
+
+                wfPlannedItemService.add(newItem).then(() => { // persist
                     delete $scope.newItemName;
                 });
             };
