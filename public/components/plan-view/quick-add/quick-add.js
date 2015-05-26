@@ -83,7 +83,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                     $rootScope.$broadcast('plan-view__quick-add-submit', content);
                 };
 
-                $rootScope.$on('quick-add-success', function () {
+                $rootScope.$on('plan-view__quick-add-success', function () {
                     $scope.showSuccess = true;
                     $scope.buttonText = QA_BUTTON_SUCCESS_TEXT;
 //                    $scope.disabled = true;
@@ -91,22 +91,13 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                     $timeout(function() { $scope.showSuccess = false; $scope.buttonText = QA_BUTTON_DEFAULT_TEXT; }, 1000);
                 });
 
-                $rootScope.$on('quick-add-failure', function () {
+                $rootScope.$on('plan-view__quick-add-failure', function () {
                     $scope.showFailure = true;
 //                    $scope.disabled = true;
                     $scope.buttonText = QA_BUTTON_FAILURE_TEXT;
                     $timeout(function() { $scope.showFailure = false; $scope.buttonText = QA_BUTTON_DEFAULT_TEXT;}, 1000);
                 });
 
-                $scope.$on('wf-quick-add-activate', function () {
-                    $scope.disabled = false;
-                    $scope.active = true;
-                });
-
-                $scope.$on('wf-quick-add-deactivate', function () {
-                    $scope.disabled = true;
-                    $scope.active = false;
-                });
 
                 $scope.$on('plan-view__filters-changed', function() {
                     var filters = wfFiltersService.getAll();

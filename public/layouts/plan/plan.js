@@ -138,10 +138,10 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                             .then(() => {
                                 $timeout(updateScopeItems);
                             });
-                        $rootScope.$emit('quick-add-success');
+                        $rootScope.$emit('plan-view__quick-add-success');
                     })
                     .catch((err) => {
-                        $rootScope.$emit('quick-add-failure');
+                        $rootScope.$emit('plan-view__quick-add-failure');
                     });
             });
 
