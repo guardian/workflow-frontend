@@ -69,13 +69,13 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $scope.planDateRange = null;
 
             $scope.$watch('planDateRange.startDate', (newValue, oldValue) => {
-                if (newValue) {
+                if (newValue && !newValue.isSame(oldValue)) {
                     $scope.$emit('plan-view__filters-changed.plan-start-date', newValue.format(ISO_8601));
                 }
             }, true);
 
             $scope.$watch('planDateRange.endDate', (newValue, oldValue) => {
-                if (newValue) {
+                if (newValue && !newValue.isSame(oldValue)) {
                     $scope.$emit('plan-view__filters-changed.plan-end-date', newValue.format(ISO_8601));
                 }
             }, true);
