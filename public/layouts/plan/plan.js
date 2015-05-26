@@ -216,7 +216,9 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
         // Interface tracking
         $scope.$watch('byBundle', (newValue, oldValue) => {
-            console.log('bundles?', newValue, oldValue);
+            if (newValue) {
+                $scope.$emit('plan-view__bundle-tab-chosen', {});
+            }
         });
 
     }]);

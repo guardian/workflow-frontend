@@ -102,15 +102,19 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
 
                 var el = ui.draggable.detach();
 
-                $scope.draggedItem.bucketed = true;
-                $scope.draggedItem.hasSpecificTime = false;
+                $timeout(() => {
+                    $scope.draggedItem.bucketed = true;
+                    $scope.draggedItem.hasSpecificTime = false;
 
-                $scope.draggedItem.plannedDate.hours(event.target.getAttribute('data-bucket-start'));
+                    $scope.draggedItem.plannedDate.hours(event.target.getAttribute('data-bucket-start'));
+                });
 
                 wfPlannedItemService.updateFields($scope.draggedItem.id, {
                     'bucketed': true,
                     'hasSpecificTime': false,
                     'plannedDate': $scope.draggedItem.plannedDate.toISOString()
+                }).then(() => {
+                    $scope.$emit('plan-view__item-dropped-on-bucket', $scope.draggedItem);
                 });
             };
 
@@ -147,6 +151,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
 
                 wfPlannedItemService.add(newItem).then(() => { // persist to DB
                     delete $scope.newItemName;
+                    $scope.$emit('plan-view__item-added-to-bucket-via-inline-add', newItem);1
                 });
             };
 
