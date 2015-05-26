@@ -82,7 +82,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                 $scope.submit = function () {
                     var parsed = parseQuickAdd($scope.addText);
                     var content = _.defaults(parsed, $scope.defaultProps($scope.addDate));
-                    $rootScope.$broadcast("quick-add-submit", content);
+                    $rootScope.$broadcast('plan-view__quick-add-submit', content);
                 };
 
                 $rootScope.$on('quick-add-success', function () {
