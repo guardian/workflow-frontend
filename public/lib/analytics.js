@@ -161,8 +161,14 @@ angular.module('wfAnalytics', ['wfUser'])
             }
         };
 
-        $rootScope.$on('plan-view__ui-loaded', (event, data) => {         // what date range are they looking at on load
+        // PLAN VIEW TRACKING ==================================================== //
+
+        $rootScope.$on('plan-view__ui-loaded', (event, data) => { // TODO: what date range are they looking at on load?
             track('Plan view | Plan view loaded', {});
+        });
+
+        $rootScope.$on('plan-view__bundle-tab-chosen', (event, data) => {
+            track('Plan view | Bundle tab selected', data);
         });
 
         $rootScope.$on('plan-view__filters-changed.plan-start-date', ignoreFirstCall((event, data) => {
@@ -185,19 +191,33 @@ angular.module('wfAnalytics', ['wfUser'])
             track('Plan view | Item deleted', data);
         });
 
-        // create bundle via dnd
+        $rootScope.$on('plan-view__bundle-created-via-dnd', (event, data) => {
+            track('Plan view | Bundle created via drag and drop', data);
+        });
 
-        // create item from day note
+        $rootScope.$on('plan-view__item-added-to-bundle-via-dnd', (event, data) => {
+            track('Plan view | Item added to bundle via drag and drop', data);
+        });
 
-        // Added a day note
+        $rootScope.$on('plan-view__item-added-to-bundle-via-inline-add', (event, data) => {
+            track('Plan view | Item create in BUNDLE via inline', data);
+        });
 
-        // Drag item to bucket
+        $rootScope.$on('plan-view__day-note-added', (event, data) => {
+            track('Plan view | Day note created', data);
+        });
 
-        // use inline add to BUCKET
+        $rootScope.$on('plan-view__item-created-from-day-note', (event, data) => {
+            track('Plan view | Item create from day note', data);
+        });
 
-        // use inline add to BUNDLE
+        $rootScope.$on('plan-view__item-added-to-bucket-via-inline-add', (event, data) => {
+            track('Plan view | Item create in BUCKET via inline', data);
+        });
 
-
+        $rootScope.$on('plan-view__item-dropped-on-bucket', (event, data) => {
+            track('Plan view | Item dropped on BUCKET', data);
+        });
 
         // TODO Things to track:
         //  View in Composer

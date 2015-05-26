@@ -92,6 +92,10 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                         wfPlannedItemService.updateField(droppedOnItem.id, 'bundleId', response.data.data)
                     ]).then(() => {
                         $scope.$emit('plan-view__bundles-edited');
+                        $scope.$emit('plan-view__bundle-created-via-dnd', {
+                            'draggedItem': $scope.draggedItem,
+                            'droppedOnItem': droppedOnItem
+                        });
                     });
                 })
             };
@@ -114,6 +118,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                         draggedItem.bundleId = droppedBundle.id;
 
                         $scope.$emit('plan-view__bundles-edited');
+                        $scope.$emit('plan-view__item-added-to-bundle-via-dnd', draggedItem);
                     });
                 });
             };
@@ -171,6 +176,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
 
                 wfPlannedItemService.add(newItem).then(() => { // persist
                     delete $scope.newItemName;
+                    $scope.$emit('plan-view__item-added-to-bundle-via-inline-add', newItem);1
                 });
             };
 

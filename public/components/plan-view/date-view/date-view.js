@@ -112,22 +112,26 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
             $scope.updateDayNote = function (id, newValue, date) {
 
                 if (id) {
+
                     wfDayNoteService.updateField(id, 'note', newValue);
                 } else {
 
                     $scope.newNote = '';
+
                     let newNote = {
                         'id': 0,
                         'note': newValue,
                         'day': date.date.format('YYYY-MM-DD'),
                         'newsList': $scope.newsList
                     };
+
                     $timeout(() => {
                         date.dayNotes.push(newNote);
-
                     });
+
                     wfDayNoteService.add(newNote).then(() => {
                         buildDateListAndDayNotes();
+                        $scope.$emit('plan-view__day-note-added', newNote)
                     });
                 }
             };
@@ -180,6 +184,7 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                     hasSpecificTime: false
                 }).then(() => {
                     $scope.$emit('plan-view__planned-items-changed');
+                    $scope.$emit('plan-view__item-created-from-day-note');
                     $timeout(buildDateListAndDayNotes);
                     dayNote.loading = false;
                 });
