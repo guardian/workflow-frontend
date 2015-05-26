@@ -9,9 +9,10 @@ angular.module('wfPlanToolbar', ['wfFiltersService'])
         $scope.newsLists = _wfConfig.newsLists;
 
         var filterParams = wfFiltersService.getAll();
-        var selectedNewsListId = filterParams['news-list'];
-        if (selectedNewsListId && selectedNewsListId <= $scope.newsLists.length) {
-            $scope.selectedNewsList = $scope.newsLists[selectedNewsListId - 1];
+        var selectedNewsListId = parseInt(filterParams['news-list']);
+        if (selectedNewsListId) {
+            var newsList = $scope.newsLists.filter((nl) => nl.id === selectedNewsListId);
+            $scope.selectedNewsList = newsList ? newsList[0] : null;
         } else {
             $scope.selectedNewsList = null;
         }

@@ -64,19 +64,17 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
 
         (function monitorDateRangeForChanges () {
 
-            let ISO_8601 = 'YYYY-MM-DD';
-
             $scope.planDateRange = null;
 
             $scope.$watch('planDateRange.startDate', (newValue, oldValue) => {
-                if (newValue && !newValue.isSame(oldValue)) {
-                    $scope.$emit('plan-view__filters-changed.plan-start-date', newValue.format(ISO_8601));
+                if (newValue) {
+                    $scope.$emit('plan-view__filters-changed.plan-start-date', newValue.toISOString());
                 }
             }, true);
 
             $scope.$watch('planDateRange.endDate', (newValue, oldValue) => {
-                if (newValue && !newValue.isSame(oldValue)) {
-                    $scope.$emit('plan-view__filters-changed.plan-end-date', newValue.format(ISO_8601));
+                if (newValue) {
+                    $scope.$emit('plan-view__filters-changed.plan-end-date', newValue.toISOString());
                 }
             }, true);
         })();
@@ -84,7 +82,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
         $scope.selectedDate = moment().startOf('day');
 
         $scope.selectDay = function (date) {
-            $scope.selectedDate = date;
+            $scope.selectedDate = date.startOf('day');
         };
 
         $scope.plannedItems = [];

@@ -197,7 +197,7 @@ angular.module('wfAnalytics', ['wfUser'])
 
         // use inline add to BUNDLE
 
-        
+
 
         // TODO Things to track:
         //  View in Composer
