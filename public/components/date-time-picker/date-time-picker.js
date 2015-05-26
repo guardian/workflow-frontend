@@ -69,7 +69,6 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 cancelOn: '@wfCancelOn',
                 onCancel: '&wfOnCancel',
                 onUpdate: '&wfOnUpdate',
-                inToolbar: '@wfInToolbar',
                 onSubmit: '&wfOnSubmit'
             },
             templateUrl: '/assets/components/date-time-picker/date-time-picker.html',
@@ -79,12 +78,6 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
                 this.textInputId = 'wfDateTimePickerText' + idSuffix;
                 this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
-
-                // indication of default date (currently this time tomorrow) <<<<< TODO: Think about best default (or whether this field should be compulsory)
-                if ($scope.inToolbar) {
-                    var tomorrow = moment(moment()).add(1, 'days');
-                    $scope.placeholderText = wfFormatDateTimeFilter(wfLocaliseDateTimeFilter(tomorrow), 'D MMM YYYY HH:mm');
-                }
 
                 $element.addClass('date-time-picker');
 
