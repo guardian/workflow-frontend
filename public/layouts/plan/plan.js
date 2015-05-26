@@ -118,6 +118,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             $scope.$watch('selectedDate', (newValue, oldValue) => {
                 $scope.currentlySelectedDay = newValue;
                 $timeout(updateScopeItems);
+                $rootScope.$emit('plan-view__date-selected')
             }, false);
 
             // parameters loaded from the URL
@@ -131,7 +132,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
             });
 
             // Item added to interface via quick add
-            $scope.$on('quick-add-submit', function (ev, item) {
+            $scope.$on('plan-view__quick-add-submit', function (ev, item) {
 
                 wfPlannedItemService.add(item)
                     .then((res) => {
@@ -214,5 +215,10 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
                 return itemIsWithinDateRange(item, selectedDay, selectedDayPlusOne);
             });
         }
+
+        // Interface tracking
+        $scope.$watch('byBundle', (newValue, oldValue) => {
+            console.log('bundles?', newValue, oldValue);
+        });
 
     }]);

@@ -161,15 +161,43 @@ angular.module('wfAnalytics', ['wfUser'])
             }
         };
 
+        $rootScope.$on('plan-view__ui-loaded', (event, data) => {         // what date range are they looking at on load
+            track('Plan view | Plan view loaded', {});
+        });
+
         $rootScope.$on('plan-view__filters-changed.plan-start-date', ignoreFirstCall((event, data) => {
-            console.log('called start', event, data);
             track('Plan view | Start date edited', data);
         }));
 
         $rootScope.$on('plan-view__filters-changed.plan-end-date', ignoreFirstCall((event, data) => {
-            console.log('called end', event, data);
             track('Plan view | End date edited', data);
         }));
+
+        $rootScope.$on('plan-view__quick-add-submit', (event, data) => {
+            track('Plan view | Quick add submitted', data);
+        });
+
+        $rootScope.$on('plan-view__date-selected', ignoreFirstCall((event, data) => {
+            track('Plan view | Date selected', data);
+        }));
+
+        $rootScope.$on('plan-view__plan-item-deleted', (event, data) => {
+            track('Plan view | Item deleted', data);
+        });
+
+        // create bundle via dnd
+
+        // create item from day note
+
+        // Added a day note
+
+        // Drag item to bucket
+
+        // use inline add to BUCKET
+
+        // use inline add to BUNDLE
+
+        
 
         // TODO Things to track:
         //  View in Composer
