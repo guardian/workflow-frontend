@@ -131,7 +131,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
 
             $scope.addNewItemToBucket = (bucket, newItemName) => {
 
-                wfPlannedItemService.add({
+                let newItem = {
                     title: newItemName ? newItemName : "New Item",
                     id: 0,
                     newsList: wfFiltersService.get('news-list') || 0,
@@ -139,7 +139,13 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                     bundleId: 0,
                     bucketed: true,
                     hasSpecificTime: false
-                }).then(() => {
+                };
+
+                $timeout(() => { // add directly to model
+                    bucket.items.push(newItem);
+                });
+
+                wfPlannedItemService.add(newItem).then(() => { // persist to DB
                     delete $scope.newItemName;
                 });
             };
