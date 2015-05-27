@@ -107,14 +107,15 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                     $scope.draggedItem.hasSpecificTime = false;
 
                     $scope.draggedItem.plannedDate.hours(event.target.getAttribute('data-bucket-start'));
-                });
+                }).then( () => {
 
-                wfPlannedItemService.updateFields($scope.draggedItem.id, {
-                    'bucketed': true,
-                    'hasSpecificTime': false,
-                    'plannedDate': $scope.draggedItem.plannedDate.toISOString()
-                }).then(() => {
-                    $scope.$emit('plan-view__item-dropped-on-bucket', $scope.draggedItem);
+                    wfPlannedItemService.updateFields($scope.draggedItem.id, {
+                        'bucketed': true,
+                        'hasSpecificTime': false,
+                        'plannedDate': $scope.draggedItem.plannedDate.toISOString()
+                    }).then(() => {
+                        $scope.$emit('plan-view__item-dropped-on-bucket', $scope.draggedItem);
+                    });
                 });
             };
 
