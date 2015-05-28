@@ -38,7 +38,6 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
         });
 
         $scope.sections = sections;
-        console.log(sections);
 
         // Desks ================================
 
