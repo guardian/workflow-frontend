@@ -48,7 +48,7 @@
                         <span class="drawer__section-title">Production deadline</span>
 
                             <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.item.due, 'drawer__section-data-row--editable-empty': !contentItem.item.due }" title="{{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}">
-                                {{ (contentItem.item.duec | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
+                                {{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
                             </span>
 
                         <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
