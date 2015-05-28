@@ -6,8 +6,8 @@ import _ from 'lodash';
 import './date-service';
 
 angular.module('wfFiltersService', ['wfDateService'])
-    .factory('wfFiltersService', ['$rootScope', '$location', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfPreferencesService',
-        function($rootScope, $location, wfDateParser, wfFormatDateTimeFilter, wfPreferencesService) {
+    .factory('wfFiltersService', ['$rootScope', '$location', '$state', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfPreferencesService',
+        function($rootScope, $location, $state, wfDateParser, wfFormatDateTimeFilter, wfPreferencesService) {
 
         class FiltersService
         {
@@ -221,6 +221,12 @@ angular.module('wfFiltersService', ['wfDateService'])
 
 
             update(key, value, doNotUpdateprefs, doNotUpdateUrl) {
+
+                if ($state.is('dashboard')) {
+                    if (key === 'news-list' || key === 'plan-start-date' || key === 'plan-end-date') {
+                        value = null;
+                    }
+                }
 
                 if (value !== null && (value === undefined || value.length === 0)) { // empty String or Array
                     value = null; // Remove query param
