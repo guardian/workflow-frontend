@@ -103,6 +103,7 @@
 
     .plan__title-bar {
         flex: 0 0 58px;
+        min-height: 0px; // needed for firefox - see https://bugzilla.mozilla.org/show_bug.cgi?id=1108514
     }
 
     .day-view, .bundle-view {
