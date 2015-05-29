@@ -31,7 +31,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
 
             $scope.shiftToTomorrow = function () {
                 $scope.MoveToTomorrowLoading = true;
-                $scope.updateField('plannedDate', $scope.item.plannedDate.add(1, 'day')).then(() => {
+                $scope.updateField('plannedDate', $scope.item.plannedDate.add(1, 'day'), 'shiftToTomorrow').then(() => {
                     elem.remove();
                 });
             };
@@ -65,7 +65,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                 });
             };
 
-            $scope.updateField = function (key, value) {
+            $scope.updateField = function (key, value, mode) {
 
                 return new Promise((resolve, reject) => {
 
@@ -77,15 +77,16 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                     };
 
                     $timeout(() => {
-
                         if (key === 'plannedDate') {
                             $scope.item[key] = moment(value);
-                            $scope.item.bucketed = false;
-                            $scope.item.hasSpecificTime = true;
+                            if (mode !== 'shiftToTomorrow') {
+                                $scope.item.bucketed = false;
+                                $scope.item.hasSpecificTime = true;
+                            }
 
                             wfPlannedItemService.updateFields($scope.item.id, {
-                                'bucketed': false,
-                                'hasSpecificTime': true,
+                                'bucketed': $scope.item.bucketed,
+                                'hasSpecificTime': $scope.item.hasSpecificTime,
                                 'plannedDate': value
                             }).then(postUpdateHook);
                         } else {
