@@ -14,6 +14,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             $scope.drawerOpen = false;
             $scope.awaitingDeleteConfirmation = false;
             $scope.newsLists = _wfConfig.newsLists;
+            $scope.sections = _wfConfig.sections;
             $scope.currentDatePickerValue = $scope.item.plannedDate ? $scope.item.plannedDate : undefined;
             $scope.composerViewUrl = _wfConfig.composer.view;
             $scope.priorities = [{
@@ -43,11 +44,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                     needsLegal: "NA",
                     priority: $scope.item.priority,
                     prodOffice: "UK",
-                    section: {
-                        id: 2,
-                        name: "Technology",
-                        selected: false
-                    },
+                    section: $scope.getSection(),
                     status: "Writers",
                     title: $scope.item.title,
                     note: $scope.item.notes
@@ -61,6 +58,11 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
 
                     return wfPlannedItemService.updateField($scope.item.id, 'composerId', $scope.fakeStub.composerId);
                 });
+            };
+
+            $scope.getSection = () => {
+                let itemNewsList = $scope.newsLists.filter((ns) => ns.id === $scope.item.newsList)[0];
+                return $scope.sections.filter((s) => s.id === itemNewsList.default_section)[0];
             };
 
             $scope.updateField = function (key, value) {
