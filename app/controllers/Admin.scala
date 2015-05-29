@@ -60,7 +60,7 @@ object Admin extends Controller with PanDomainAuthActions {
   }
 
   def newsLists = (AuthAction andThen WhiteListAuthFilter) {
-    Ok(views.html.admin.newsLists(NewsListDB.newsListList, addNewsListForm))
+    Ok(views.html.admin.newsLists(NewsListDB.newsListList.sortBy(newsList => newsList.title), addNewsListForm, SectionDB.sectionList))
   }
 
   def syncComposer = (AuthAction andThen WhiteListAuthFilter) {
@@ -205,7 +205,8 @@ object Admin extends Controller with PanDomainAuthActions {
   val addNewsListForm = Form(
     mapping(
       "title" -> text,
-      "id" -> longNumber
+      "id" -> longNumber,
+      "default_section" -> longNumber
     )(NewsList.apply)(NewsList.unapply)
   )
 
@@ -214,6 +215,16 @@ object Admin extends Controller with PanDomainAuthActions {
       formWithErrors => BadRequest(s"failed to add news list ${formWithErrors.errors}"),
       newsList => {
         NewsListDB.upsert(newsList)
+        Redirect(routes.Admin.newsLists())
+      }
+    )
+  }
+
+  def updateNewsList = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
+    addNewsListForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(s"failed to update news list ${formWithErrors.errors}"),
+      newsList => {
+        NewsListDB.update(newsList)
         Redirect(routes.Admin.newsLists())
       }
     )
