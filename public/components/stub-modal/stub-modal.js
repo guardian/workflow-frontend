@@ -92,6 +92,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
                     if(composerId) {
                         $scope.composerUrl = config.composerViewContent + '/' + composerId;
                         $scope.stub.title = contentItem.headline;
+                        $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
 
                         wfContentService.getById(composerId).then(
                             function(res){
