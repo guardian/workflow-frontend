@@ -13,13 +13,14 @@ angular.module('wfGoogleApiService', [])
              */
             load: function () {
 
-                if (typeof gapi.client === 'undefined') {
+                var checkInterval = setInterval(() => {
 
-                    setTimeout(load, 500);
-                } else {
+                    if (!(typeof gapi === 'undefined') && !(typeof gapi.client === 'undefined')) {
 
-                    checkAuth();
-                }
+                        clearInterval(checkInterval);
+                        checkAuth();
+                    }
+                }, 500);
 
                 function checkAuth () {
 
