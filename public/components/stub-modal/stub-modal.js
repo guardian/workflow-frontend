@@ -92,6 +92,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
                     if(composerId) {
                         $scope.composerUrl = config.composerViewContent + '/' + composerId;
                         $scope.stub.title = contentItem.headline;
+                        // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
                         $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
 
                         wfContentService.getById(composerId).then(
