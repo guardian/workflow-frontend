@@ -112,6 +112,7 @@ function wfContentItemParser(config, statusLabels, sections) {
             this.created = item.createdAt;
             this.lastModified = item.lastModified;
             this.lastModifiedBy = item.lastModifiedBy;
+            this.firstPublished = item.timePublished;
 
             this.launchScheduleDetails = item.launchScheduleDetails || {};
 
