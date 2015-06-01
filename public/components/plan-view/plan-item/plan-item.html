@@ -63,9 +63,9 @@
 
         <li class="drawer__section">
             <span class="drawer__section-title">Note</span>
-            <wf-editable class="drawer__section-data-row" ng-model="item.notes" wf-editable-on-update="updateField('notes', newValue)" wf-editable-required="true">
-                {{ item.notes || 'Add note' }}
-            </wf-editable>
+            <wf-editable class="drawer__section-data-row plan__item__item-drawer__notes" wf-editable-type="textarea" ng-model="item.notes" wf-editable-on-update="updateField('notes', newValue)" wf-editable-maxlength="maxNoteLength"><!-- Prevent extra line being inserted before/after
+            -->{{ item.notes || 'Add note' }}<!--
+            --></wf-editable>
         </li>
     </ul>
 
