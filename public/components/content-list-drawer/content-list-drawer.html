@@ -75,12 +75,12 @@
                     </li>
                     <li class="drawer__section">
                         <span class="drawer__section-title">First published</span>
-                        <span class="drawer__section-data-row">{{ contentItem.firstPublishedTime || '-' }}</span>
+                        <span class="drawer__section-data-row">{{ (contentItem.firstPublished | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
                     </li>
-                    <li class="drawer__section">
-                        <span class="drawer__section-title">Last published</span>
-                        <span class="drawer__section-data-row">{{ contentItem.publishedTime || '-' }}</span>
-                    </li>
+                    <!--<li class="drawer__section">-->
+                        <!--<span class="drawer__section-title">Last published</span>-->
+                        <!--<span class="drawer__section-data-row">{{ contentItem.publishedTime || '-' }}</span>-->
+                    <!--</li>-->
                 </ul>
 
                 <ul class="drawer__column"><!--Status, switches and assignment-->
