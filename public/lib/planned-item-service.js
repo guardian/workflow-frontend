@@ -69,6 +69,16 @@ angular
 
                     return Promise.all(promises);
                 }
+
+                //blankItem() {
+                //    return {
+                //        title: newItemName ? newItemName : "New Item",
+                //        id: 0,
+                //        newsList: wfFiltersService.get('news-list') || 0,
+                //        plannedDate: moment().toISOString(),
+                //        bundleId: bundle.id
+                //    };
+                //}
             }
 
             return new PlannedItemService();
