@@ -154,7 +154,8 @@ angular.module('workflow',
             'presenceUrl': _wfConfig.presenceUrl,
             'incopyExportUrl': _wfConfig.incopyExportUrl,
             'composerRestorerUrl': _wfConfig.composerRestorerUrl,
-            'maxNoteLength': 500
+            'maxNoteLength': 500,
+            'pvPlanItemMaxNoteLength': 1000
         }
     )
     .constant({ 'statuses': _wfConfig.statuses })

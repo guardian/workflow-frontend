@@ -15,6 +15,10 @@
 
     &__view-value {
         border-bottom: dashed 1px #333;
+
+        &--preserve-whitespace {
+            white-space: pre-line;
+        }
     }
 
     // edit mode
@@ -39,7 +43,7 @@
         width: 100%;
 
         &--textarea {
-            height: 40px;
+            height: 80px;
         }
 
         &.ng-invalid {

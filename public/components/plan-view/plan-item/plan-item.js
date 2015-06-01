@@ -1,4 +1,4 @@
-function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleService, wfPlannedItemService) {
+function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleService, wfPlannedItemService, config) {
     return {
         restrict: 'A',
         templateUrl: '/assets/components/plan-view/plan-item/plan-item.html',
@@ -28,6 +28,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             }];
         },
         link: ($scope, elem, attrs) => {
+            $scope.maxNoteLength = config.pvPlanItemMaxNoteLength;
 
             $scope.shiftToTomorrow = function () {
                 $scope.MoveToTomorrowLoading = true;

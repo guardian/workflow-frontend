@@ -112,6 +112,8 @@ function wfEditableDirectiveFactory($timeout) {
             // one time bind of wfEditableType
             $scope.editableType = $attrs.wfEditableType;
 
+            $scope.preserveWhitespace = $scope.editableType === 'textarea';
+
             this.setEditMode = (newMode) => $scope.isEditMode = !!newMode;
 
             this.setErrors = (errors) => $scope.editableErrors = errors;
@@ -150,6 +152,9 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
 
         link: function($scope, $element, $attrs, [ ngModel, wfEditable ]) {
             $attrs.$addClass('editable__text-field');
+            if ($scope.editableType === 'textarea') {
+                $attrs.$addClass('editable__text-field--textarea');
+            }
 
             // resets / sets the ng-model-options (prevents default behaviour)
             ngModel.$options = ngModel.$options || {};

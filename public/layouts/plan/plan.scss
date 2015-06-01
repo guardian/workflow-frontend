@@ -304,14 +304,3 @@
         }
     }
 }
-
-// Editable fields
-
-.plan-container {
-    .editable__view-value {
-        border: none;
-        &:hover {
-            border-bottom: 1px dashed $c-grey-700;
-        }
-    }
-}

@@ -1,5 +1,5 @@
 <button class="editable__edit-button" ng-click="editableController.setEditMode(true)">
-    <ng-transclude class="editable__view-value"></ng-transclude>
+    <ng-transclude class="editable__view-value" ng-class="{'editable__view-value--preserve-whitespace' : preserveWhitespace}"></ng-transclude>
 </button>
 <wf-editable-field-target></wf-editable-field-target>
 <span class="editable__controls">

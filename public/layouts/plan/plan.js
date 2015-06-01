@@ -20,7 +20,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
     .directive('wfDateView', ['$rootScope','$timeout', 'wfDayNoteService', 'wfPlannedItemService', 'wfFiltersService', '$sce', wfDateView])
     .directive('wfBundleView', ['$rootScope','$timeout', 'wfBundleService', 'wfPlannedItemService', 'wfFiltersService', wfBundleView])
     .directive('wfDayView', ['$rootScope', 'wfPlannedItemService', '$http', '$timeout', 'wfFiltersService', wfDayView])
-    .directive('wfPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', 'wfBundleService', 'wfPlannedItemService', wfPlanItem])
+    .directive('wfPlanItem', ['$rootScope', '$http', '$timeout', 'wfContentService', 'wfBundleService', 'wfPlannedItemService', 'config', wfPlanItem])
     .directive('wfInlineAddItem', ['$timeout', wfInlineAddItem])
     .directive('wfDateRangeWidget', ['$timeout', 'wfFiltersService', wfDateRangeWidget])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {

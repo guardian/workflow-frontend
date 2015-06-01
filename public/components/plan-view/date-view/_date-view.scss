@@ -36,6 +36,7 @@
     line-height: 18px;
     line-height: 1.8rem;
     .editable__view-value {
+        border: none;
         border-bottom-color: $c-grey-400;
     }
 }
@@ -46,7 +47,7 @@
     &:hover {
         color: $c-grey-700;
         .editable__view-value {
-            border-bottom-color: $c-grey-700;
+            border-bottom: 1px dashed $c-grey-700;
         }
     }
 }
