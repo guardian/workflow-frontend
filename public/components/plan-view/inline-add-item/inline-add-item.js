@@ -17,12 +17,17 @@ function wfInlineAddItem ($timeout) {
                 });
             };
 
+            $scope.onBlur = () => {
+                $scope.display = false;
+            };
+
             $scope.submit = (title) => {
 
                 $scope.onSubmit({
                     title: title
                 });
                 $scope.title = null;
+                $scope.display = false;
             }
         }
     }
