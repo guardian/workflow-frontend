@@ -208,7 +208,7 @@ angular.module('wfAnalytics', ['wfUser'])
         });
 
         $rootScope.$on('plan-view__item-created-from-day-note', (event, data) => {
-            track('Plan view | Item create from day note', data);
+            track('Plan view | Item created from day note', data);
         });
 
         $rootScope.$on('plan-view__item-added-to-bucket-via-inline-add', (event, data) => {

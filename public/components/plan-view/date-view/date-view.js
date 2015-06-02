@@ -174,7 +174,7 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
 
                 $event.target.innerHTML = "Copying...";
 
-                wfPlannedItemService.add({
+                let newPlanItem = {
                     title: dayNote.note,
                     id: 0,
                     newsList: wfFiltersService.get('news-list') || 0,
@@ -182,9 +182,11 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                     bundleId: 0,
                     bucketed: false,
                     hasSpecificTime: false
-                }).then(() => {
+                };
+
+                wfPlannedItemService.add(newPlanItem).then(() => {
                     $scope.$emit('plan-view__planned-items-changed');
-                    $scope.$emit('plan-view__item-created-from-day-note');
+                    $scope.$emit('plan-view__item-created-from-day-note', newPlanItem);
                     $timeout(buildDateListAndDayNotes);
                     dayNote.loading = false;
                 });
