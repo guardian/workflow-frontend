@@ -27,7 +27,7 @@
 
                             <select name="default_section">
                                 @for(section <- sections) {
-                                    <option value="@section.id.toString" @if(section.id == newsList.default_section){selected}> @section.name </option>
+                                    <option value="@section.id.toString" @if(section.id == newsList.default_section.getOrElse(-1)){selected}> @section.name </option>
                                 }
                             </select>
 

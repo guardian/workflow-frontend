@@ -206,7 +206,7 @@ object Admin extends Controller with PanDomainAuthActions {
     mapping(
       "title" -> text,
       "id" -> longNumber,
-      "default_section" -> longNumber
+      "default_section" -> optional(longNumber)
     )(NewsList.apply)(NewsList.unapply)
   )
 
