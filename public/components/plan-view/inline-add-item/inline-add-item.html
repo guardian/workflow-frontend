@@ -1,6 +1,6 @@
 <span class="inline-add-item__toggle" ng-if="!display" ng-click="displayForm();">Add Item</span>
 
 <form class="inline-add-item__form" ng-if="display">
-    <input class="inline-add-item__input" type="text" placeholder="New item name" ng-model="title" ng-blur="onBlur()"/>
-    <input class="inline-add-item__submit" type="submit" value="Add"  ng-click="submit(title); $event.preventDefault();"/>
+    <input class="inline-add-item__input" type="text" placeholder="New item name" ng-model="newItem.title" ng-blur="onBlur()"/>
+    <input class="inline-add-item__submit" type="submit" value="Add"  ng-click="submit(); $event.preventDefault();"/>
 </form>
