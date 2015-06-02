@@ -32,7 +32,9 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
 
             $scope.shiftToTomorrow = function () {
                 $scope.MoveToTomorrowLoading = true;
-                $scope.updateField('plannedDate', $scope.item.plannedDate.add(1, 'day'));
+                $scope.updateField('plannedDate', $scope.item.plannedDate.add(1, 'day')).then(() => {
+                    elem.remove();
+                });
             };
 
             $scope.startWork = function () {
@@ -67,30 +69,34 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
 
             $scope.updateField = function (key, value) {
 
-                let postUpdateHook = () => {
-                    if (key === 'plannedDate' || key === 'newsList') {
-                        $scope.$emit('plan-view__update-plan-item', $scope.item);
-                    }
-                };
+                return new Promise((resolve, reject) => {
 
-                $timeout(() => {
+                    let postUpdateHook = () => {
+                        if (key === 'plannedDate' || key === 'newsList') {
+                            $scope.$emit('plan-view__update-plan-item', $scope.item);
+                        }
+                        resolve(true);
+                    };
 
-                    if (key === 'plannedDate') {
-                        $scope.item[key] = moment(value);
-                        $scope.item.bucketed = false;
-                        $scope.item.hasSpecificTime = true;
+                    $timeout(() => {
 
-                        wfPlannedItemService.updateFields($scope.item.id, {
-                            'bucketed': false,
-                            'hasSpecificTime': true,
-                            'plannedDate': value
-                        }).then(postUpdateHook);
-                    } else {
+                        if (key === 'plannedDate') {
+                            $scope.item[key] = moment(value);
+                            $scope.item.bucketed = false;
+                            $scope.item.hasSpecificTime = true;
 
-                        $scope.item[key] = value;
-                        wfPlannedItemService.updateField($scope.item.id, key, value)
-                            .then(postUpdateHook);
-                    }
+                            wfPlannedItemService.updateFields($scope.item.id, {
+                                'bucketed': false,
+                                'hasSpecificTime': true,
+                                'plannedDate': value
+                            }).then(postUpdateHook);
+                        } else {
+
+                            $scope.item[key] = value;
+                            wfPlannedItemService.updateField($scope.item.id, key, value)
+                                .then(postUpdateHook);
+                        }
+                    });
                 });
 
             };
