@@ -20,8 +20,9 @@ function wfInlineAddItem ($timeout) {
                 });
             };
 
-            $scope.onBlur = () => {
+            $scope.cancel = () => {
                 $scope.display = false;
+                $scope.newItem.title = '';
             };
 
             $scope.submit = () => {
