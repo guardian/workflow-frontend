@@ -102,6 +102,7 @@ DELETE         /admin/desks                                controllers.Admin.rem
 
 GET            /admin/newslists                            controllers.Admin.newsLists
 POST           /admin/newslists                            controllers.Admin.addNewsList
+POST           /admin/newslists/update                     controllers.Admin.updateNewsList
 DELETE         /admin/newslists                            controllers.Admin.removeNewsList
 
 POST           /admin/assign                               controllers.Admin.assignSectionToDesk

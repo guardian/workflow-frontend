@@ -19,6 +19,8 @@
                 <i class="plan-item__action-icon--cross" wf-icon="cross" wf-icon-active="true"></i>
             </span>
 
+            <button class="plan-item__action plan-item__action-tomorrow" ng-click="shiftToTomorrow(); $event.stopPropagation();" ng-class="{'loading': MoveToTomorrowLoading}">Move to tomorrow  <span class="loader"></span></button>
+
             <div class="plan-item__item-drag-handle  plan__drag-handle" ng-if="bundle.id === 0">
                 <span class="handle__mark"></span>
                 <span class="handle__mark"></span>
@@ -27,7 +29,7 @@
         </div>
 
         <div ng-switch-when="day">
-            <button class="plan-item__action plan-item__action-start" ng-if="!item.composerId" ng-click="startWork(); $event.stopPropagation();" ng-class="{'loading': startWorkLoading}">Start work <span class="loader"></span></button>
+            <button class="plan-item__action plan-item__action-start" ng-if="!item.composerId" ng-click="startWork(); $event.stopPropagation();" ng-class="{'loading': startWorkLoading}">Start work in {{ itemDefaultSection.name }}<span class="loader"></span></button>
 
             <div class="plan-item__action-view-container" ng-if="item.composerId">
                 <span>View in: </span>
