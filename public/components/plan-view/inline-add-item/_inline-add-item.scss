@@ -1,3 +1,5 @@
+@import "layouts/global/colours";
+
 .inline-add-item__toggle {
     cursor: pointer;
     &:hover {
@@ -15,18 +17,29 @@
     height: 100%;
     font-weight: normal;
 }
-
+.inline-add-item__cancel,
 .inline-add-item__submit {
     vertical-align: top;
     height: 100%;
-    border: 1px solid #357ebd; // TODO: Parameterise colours
-    background-color: #00ADEE;
     transition: background-color 0.5s ease;
     padding: 0 9px;
-    color: #fff;
     font-weight: normal;
+    border: none;
+}
+
+.inline-add-item__submit {
+    background-color: $c-highlight-blue;
+    color: $c-white;
     &:hover {
-        background-color: #008FC5;
+        background-color: $c-composer-dark-blue;
+    }
+}
+
+.inline-add-item__cancel {
+    background-color: $c-grey-500;
+    color: $c-white;
+    &:hover {
+        background-color: $c-grey-650;
     }
 }
 
