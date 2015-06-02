@@ -91,8 +91,8 @@ angular.module('wfAnalytics', ['wfUser'])
          */
         function track(eventName, contentItem, extraProperties) {
             var props = {
-                'Section': contentItem.section,
-                'Content type': contentItem.contentType
+                'Section': contentItem ? contentItem.section : null,
+                'Content type': contentItem ? contentItem.contentType : null
             };
 
             if (extraProperties) {
