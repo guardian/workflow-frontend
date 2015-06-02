@@ -3,5 +3,5 @@
 <form class="inline-add-item__form" ng-if="display">
     <input class="inline-add-item__input" type="text" placeholder="New item name" ng-model="newItem.title"/>
     <input class="inline-add-item__submit" type="submit" value="Add"  ng-click="submit(); $event.preventDefault();"/>
-    <input class="inline-add-item__cancel" type="submit" value="Cancel"  ng-click="cancel(); $event.preventDefault();"/>
+    <button class="inline-add-item__cancel" ng-click="cancel(); $event.preventDefault();">Cancel</button>
 </form>
