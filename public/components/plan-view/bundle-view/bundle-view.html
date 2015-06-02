@@ -1,8 +1,8 @@
 <div class="bundle-view__list">
 
-    <form class="bundle-view__add-bundle" ng-class="{'bundle-view__add-bundle--loading': createNewBundleLoading}">
-        <input class="bundle-view__new-bundle-name" ng-model="createNewBundleName" type="text" placeholder="New bundle title..."/>
-        <input type="submit" value="Create bundle" class="bundle-view__add-bundle btn btn-xs btn-info" ng-click="createNewBundle(); $event.preventDefault();" ng-disabled="createNewBundleLoading"/>
+    <form class="bundle-view__add-bundle" ng-class="{'bundle-view__add-bundle--loading': createNewBundleLoading}" ng-submit="createNewBundle()">
+        <input class="bundle-view__new-bundle-name" ng-model="createNewBundleName" type="text" placeholder="New bundle title..." name="New bundle title" required/>
+        <input type="submit" value="Create bundle" class="bundle-view__add-bundle btn btn-xs btn-info" ng-disabled="createNewBundleLoading"/>
         <div class="loading-indicator">
             <div class="bounce1"></div>
             <div class="bounce2"></div>
