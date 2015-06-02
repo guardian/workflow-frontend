@@ -188,7 +188,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                     title: '"' + $scope.createNewBundleName + '" first item',
                     id: 0,
                     newsList: wfFiltersService.get('news-list') || 0,
-                    plannedDate: moment().toISOString(),
+                    plannedDate: $scope.selectedDate.startOf('day'),
                     bundleId: 0
                 };
 
