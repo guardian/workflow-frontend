@@ -74,6 +74,8 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                 buildDateListFromDateRange()
             });
 
+            $scope.showCopyToAgenda = true;
+
             function buildDateListFromDateRange() {
                 if ($scope.dateRange && $scope.dateRange.startDate && $scope.dateRange.endDate) {
                     $timeout(() => {
