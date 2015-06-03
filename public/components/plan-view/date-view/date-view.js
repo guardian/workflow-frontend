@@ -93,7 +93,7 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                     wfDayNoteService.get({
                         'newsList': $scope.newsList,
                         'startDate': tempDateList[0].date.toISOString(),
-                        'endDate': tempDateList[tempDateList.length - 1].date.toISOString()
+                        'endDate': tempDateList[tempDateList.length - 1].date.clone().endOf('day').toISOString()
                     }).then((response) => {
                         let dayNotes = response.data.data;
                         tempDateList.map((date) => {
@@ -121,7 +121,7 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                     let newNote = {
                         'id': 0,
                         'note': newValue,
-                        'day': date.date.format('YYYY-MM-DD'),
+                        'day': date.date,
                         'newsList': $scope.newsList
                     };
 
