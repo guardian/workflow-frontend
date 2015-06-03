@@ -88,10 +88,10 @@
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         </div>
         <div class="pull-right">
-            <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=false)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'" testing-target="submit-button">
+            <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=false)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'" testing-target="stub-submit-button">
                 Save stub
             </button>
-            <button type="button" class="btn btn-primary" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status !== 'Stub'" testing-target="submit-button">
+            <button type="button" class="btn btn-primary" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status !== 'Stub'" testing-target="nonstub-submit-button">
                 Create new
             </button>
         </div>
