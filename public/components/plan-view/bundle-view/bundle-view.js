@@ -174,7 +174,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                     bundle.itemsToday.push(newItem);
                 });
 
-                wfPlannedItemService.add(newItem).then(() => { // persist
+                return wfPlannedItemService.add(newItem).then(() => { // persist
                     delete $scope.newItemName;
                     $scope.$emit('plan-view__item-added-to-bundle-via-inline-add', newItem);1
                 });
