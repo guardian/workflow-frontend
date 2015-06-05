@@ -37,7 +37,8 @@ function wfEditableDirectiveFactory($timeout) {
             validateRequired: '=wfEditableRequired',
             validateMinlength: '=wfEditableMinlength',
             validateMaxlength: '=wfEditableMaxlength',
-            noCloseMode:    '=wfNoCloseMode'
+            noCloseMode:    '=wfNoCloseMode',
+            onEditableEditModeUpdate: '&wfEditableOnEditModeUpdate'
         },
         compile: function(tElement, tAttrs) {
             var nodeName,
@@ -112,7 +113,12 @@ function wfEditableDirectiveFactory($timeout) {
             // one time bind of wfEditableType
             $scope.editableType = $attrs.wfEditableType;
 
-            this.setEditMode = (newMode) => $scope.isEditMode = !!newMode;
+            this.setEditMode = (newMode) => {
+                $scope.onEditableEditModeUpdate({
+                    newMode: newMode
+                });
+                $scope.isEditMode = !!newMode;
+            }
 
             this.setErrors = (errors) => $scope.editableErrors = errors;
 
