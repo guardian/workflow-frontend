@@ -1,7 +1,18 @@
 <div class="bundle-view__list">
+
+    <form class="bundle-view__add-bundle" ng-class="{'bundle-view__add-bundle--loading': createNewBundleLoading}" ng-submit="createNewBundle()">
+        <input class="bundle-view__new-bundle-name" ng-model="createNewBundleName" type="text" placeholder="New bundle title..." name="New bundle title" required/>
+        <input type="submit" value="Create bundle" class="bundle-view__add-bundle btn btn-xs btn-info" ng-disabled="createNewBundleLoading"/>
+        <div class="loading-indicator">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+    </form>
+
     <ul class="bundle-list-items list-unstyled">
 
-        <div ng-if="dayItemsByBundle.length === 0" class="alert alert-info">No items found.</div>
+        <div ng-if="dayItemsByBundle.itemsToday.length === 0" class="alert alert-info">No items found.</div>
 
         <li class="day-bundle" ng-repeat="bundle in dayItemsByBundle track by bundle.id" ng-class="{ 'day-bundle--unscheduled': bundle.id === 0 }" data-jqyoui-options="bundleDraggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday" ng-if="bundle.itemsToday.length > 0">
 
