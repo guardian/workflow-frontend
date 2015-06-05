@@ -7,6 +7,9 @@ function wfInlineAddItem ($timeout) {
         },
         controller: ($scope) => {
             $scope.display = false;
+            $scope.newItem = {
+                title: ''
+            };
         },
         link: ($scope, elem, attrs) => {
 
@@ -17,12 +20,18 @@ function wfInlineAddItem ($timeout) {
                 });
             };
 
-            $scope.submit = (title) => {
+            $scope.cancel = () => {
+                $scope.display = false;
+                $scope.newItem.title = '';
+            };
 
+            $scope.submit = () => {
                 $scope.onSubmit({
-                    title: title
+                    title: $scope.newItem.title
                 });
-                $scope.title = null;
+                $timeout(() => {
+                    $scope.newItem.title = '';
+                });
             }
         }
     }
