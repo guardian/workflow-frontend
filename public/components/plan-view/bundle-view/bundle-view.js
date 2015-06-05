@@ -180,6 +180,40 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 });
             };
 
+            $scope.createNewBundle = () => {
+
+                $scope.createNewBundleLoading = true;
+
+                let newItem = {
+                    title: '"' + $scope.createNewBundleName + '" first item',
+                    id: 0,
+                    newsList: wfFiltersService.get('news-list') || 0,
+                    plannedDate: $scope.selectedDate.startOf('day'),
+                    bundleId: 0
+                };
+
+                let newBundle = {
+                    title: $scope.createNewBundleName,
+                    id: 0,
+                    itemsToday: [newItem]
+                };
+
+                wfBundleService.add(newBundle).then((response) => {
+                    newBundle.id = response.data.data;
+                    newItem.bundleId = response.data.data;
+
+                    $timeout(() => {
+                        $scope.dayItemsByBundle.push(newBundle);
+                        $scope.createNewBundleLoading = false;
+                    });
+
+                    return wfPlannedItemService.add(newItem);
+                }).then((response) => {
+                    $scope.$emit('plan-view__bundles-edited');
+                    delete $scope.createNewBundleName;
+                });
+            };
+
             var util = {
 
                 /**
