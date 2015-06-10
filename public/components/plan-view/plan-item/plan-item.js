@@ -14,6 +14,9 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             $scope.drawerOpen = false;
             $scope.awaitingDeleteConfirmation = false;
             $scope.newsLists = _wfConfig.newsLists;
+            $scope.itemNewsList = $scope.newsLists.filter((ns) => ns.id === $scope.item.newsList)[0];
+            $scope.sections = _wfConfig.sections;
+            $scope.itemDefaultSection = $scope.sections.filter((s) => s.id === $scope.itemNewsList.default_section)[0];
             $scope.currentDatePickerValue = $scope.item.plannedDate ? $scope.item.plannedDate : undefined;
             $scope.composerViewUrl = _wfConfig.composer.view;
             $scope.priorities = [{
@@ -32,7 +35,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
 
             $scope.shiftToTomorrow = function () {
                 $scope.MoveToTomorrowLoading = true;
-                $scope.updateField('plannedDate', $scope.item.plannedDate.add(1, 'day')).then(() => {
+                $scope.updateField('plannedDate', $scope.item.plannedDate.add(1, 'day'), 'shiftToTomorrow').then(() => {
                     elem.remove();
                 });
             };
@@ -46,11 +49,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                     needsLegal: "NA",
                     priority: $scope.item.priority,
                     prodOffice: "UK",
-                    section: {
-                        id: 2,
-                        name: "Technology",
-                        selected: false
-                    },
+                    section: $scope.itemDefaultSection,
                     status: "Writers",
                     title: $scope.item.title,
                     note: $scope.item.notes
@@ -66,7 +65,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                 });
             };
 
-            $scope.updateField = function (key, value) {
+            $scope.updateField = function (key, value, mode) {
 
                 return new Promise((resolve, reject) => {
 
@@ -78,15 +77,16 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                     };
 
                     $timeout(() => {
-
                         if (key === 'plannedDate') {
                             $scope.item[key] = moment(value);
-                            $scope.item.bucketed = false;
-                            $scope.item.hasSpecificTime = true;
+                            if (mode !== 'shiftToTomorrow') {
+                                $scope.item.bucketed = false;
+                                $scope.item.hasSpecificTime = true;
+                            }
 
                             wfPlannedItemService.updateFields($scope.item.id, {
-                                'bucketed': false,
-                                'hasSpecificTime': true,
+                                'bucketed': $scope.item.bucketed,
+                                'hasSpecificTime': $scope.item.hasSpecificTime,
                                 'plannedDate': value
                             }).then(postUpdateHook);
                         } else {

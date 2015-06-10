@@ -44,6 +44,13 @@
 .date-list__date-note {
     display: inline-block;
 
+    .editable__text-field {
+        width: 270px;
+        @include smallScreen {
+            width: 195px;
+        }
+    }
+
     &:hover {
         color: $c-grey-700;
         .editable__view-value {

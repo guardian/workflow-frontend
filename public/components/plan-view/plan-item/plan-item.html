@@ -29,7 +29,7 @@
         </div>
 
         <div ng-switch-when="day">
-            <button class="plan-item__action plan-item__action-start" ng-if="!item.composerId" ng-click="startWork(); $event.stopPropagation();" ng-class="{'loading': startWorkLoading}">Start work <span class="loader"></span></button>
+            <button class="plan-item__action plan-item__action-start" ng-if="!item.composerId" ng-click="startWork(); $event.stopPropagation();" ng-class="{'loading': startWorkLoading}">Start work in {{ itemDefaultSection.name }}<span class="loader"></span></button>
 
             <div class="plan-item__action-view-container" ng-if="item.composerId">
                 <span>View in: </span>
