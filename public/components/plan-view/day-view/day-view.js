@@ -105,8 +105,8 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                 $timeout(() => {
                     $scope.draggedItem.bucketed = true;
                     $scope.draggedItem.hasSpecificTime = false;
-
                     $scope.draggedItem.plannedDate.hours(event.target.getAttribute('data-bucket-start'));
+                    $scope.sourceBucketStart = null;
                 }).then( () => {
 
                     wfPlannedItemService.updateFields($scope.draggedItem.id, {
@@ -119,7 +119,10 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                 });
             };
 
-            $scope.draggingStart = (event, ui, item) => {
+            $scope.sourceBucketStart = null;
+
+            $scope.draggingStart = (event, ui, item, bucket) => {
+                $timeout(() => {$scope.sourceBucketStart = bucket ? bucket.start : null});
                 $scope.draggedItem = item;
                 elem.addClass('day-view--dragging');
                 $scope.dragScrollBoxEl = ui.helper.parents('.day-view');
