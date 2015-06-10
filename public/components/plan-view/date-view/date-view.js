@@ -95,7 +95,7 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                     wfDayNoteService.get({
                         'newsList': $scope.newsList,
                         'startDate': tempDateList[0].date.toISOString(),
-                        'endDate': tempDateList[tempDateList.length - 1].date.toISOString()
+                        'endDate': tempDateList[tempDateList.length - 1].date.clone().endOf('day').toISOString()
                     }).then((response) => {
                         let dayNotes = response.data.data;
                         tempDateList.map((date) => {
@@ -123,7 +123,7 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                     let newNote = {
                         'id': 0,
                         'note': newValue,
-                        'day': date.date.format('YYYY-MM-DD'),
+                        'day': date.date,
                         'newsList': $scope.newsList
                     };
 
@@ -176,7 +176,7 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
 
                 $event.target.innerHTML = "Copying...";
 
-                wfPlannedItemService.add({
+                let newPlanItem = {
                     title: dayNote.note,
                     id: 0,
                     newsList: wfFiltersService.get('news-list') || 0,
@@ -184,9 +184,11 @@ function wfDateView ($rootScope, $timeout, wfDayNoteService, wfPlannedItemServic
                     bundleId: 0,
                     bucketed: false,
                     hasSpecificTime: false
-                }).then(() => {
+                };
+
+                wfPlannedItemService.add(newPlanItem).then(() => {
                     $scope.$emit('plan-view__planned-items-changed');
-                    $scope.$emit('plan-view__item-created-from-day-note');
+                    $scope.$emit('plan-view__item-created-from-day-note', newPlanItem);
                     $timeout(buildDateListAndDayNotes);
                     dayNote.loading = false;
                 });
