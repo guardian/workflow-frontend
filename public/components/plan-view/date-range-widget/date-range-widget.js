@@ -38,8 +38,8 @@ function wfDateRangeWidget ($timeout, wfFiltersService) {
                 {
                     name: "This week",
                     apply: shortCutApply(() => {
-                        $scope.dateRange.startDate = moment().startOf('week');
-                        $scope.dateRange.endDate = moment().endOf('week');
+                        $scope.dateRange.startDate = moment().startOf('week').add(1, 'days');
+                        $scope.dateRange.endDate = moment().endOf('week').add(1, 'days');
                     }),
                     active: false
                 },
