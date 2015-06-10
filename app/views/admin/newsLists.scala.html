@@ -1,4 +1,4 @@
-@(newsLists: List[NewsList], addNewsListForm: Form[NewsList])
+@(newsLists: List[NewsList], addNewsListForm: Form[NewsList], sections: List[Section])
 
 @import helper._
 
@@ -14,8 +14,28 @@
             <ul class="list-unstyled list-group" >
 
             @for(newsList <- newsLists) {
-                <li class="list-group-item">
-                    @{newsList.title} (@{newsList.id})
+                <li class="list-group-item clearfix">
+                    <span class="title__title col-md-4"><strong>@{newsList.title}</strong></span>
+
+                    <span class="item__section col-md-6">
+
+                        @form(action=routes.Admin.updateNewsList){
+                            <input type="hidden" name="id" value="@{newsList.id}">
+                            <input type="hidden" name="title" value="@{newsList.title}">
+
+                            <span>Default section:</span>
+
+                            <select name="default_section">
+                                @for(section <- sections) {
+                                    <option value="@section.id.toString" @if(section.id == newsList.default_section.getOrElse(-1)){selected}> @section.name </option>
+                                }
+                            </select>
+
+                            <input type="submit" value="update" class="btn btn-xs btn-warning"/>
+                        }
+
+                    </span>
+
                     <button class="list-group-item__delete pull-right btn btn-danger btn-xs" data-id="@{newsList.id}">Delete</button>
                 </li>
             }
@@ -24,7 +44,18 @@
             <div class="form">
                 <h3>Add a new NewsList</h3>
                 @form(action=routes.Admin.addNewsList){
-                    @inputText(field=addNewsListForm("title"), args='required -> "required")
+                    @inputText(field=addNewsListForm("title"), args='required -> "required", '_label -> "Title")
+
+                    @select(
+
+                        field = addNewsListForm("default_section"),
+
+                        options = sections.map(s => s.id.toString -> s.name),
+
+                        args = '_label -> "Default section", '_showConstraints -> false
+
+                    )
+
                     <input type="hidden" name="id" value="0">
                     <input type="hidden" name="selected" value="false">
                     <input type="submit" value="Add" class="btn btn-primary">

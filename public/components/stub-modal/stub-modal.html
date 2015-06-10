@@ -88,10 +88,10 @@
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         </div>
         <div class="pull-right">
-            <button type="submit" class="btn btn-default" ng-click="ok(addToComposer=false)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'">
+            <button type="submit" class="btn btn-default" id="testing-create-stub" ng-click="ok(addToComposer=false)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'">
                 Save stub
             </button>
-            <button type="button" class="btn btn-primary" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status !== 'Stub'" testing-target="submit-button">
+            <button type="button" class="btn btn-primary" id="testing-create-in-composer" ng-click="ok(addToComposer=true)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status !== 'Stub'">
                 Create new
             </button>
         </div>
@@ -99,7 +99,7 @@
 
     <div class="modal-footer" ng-if="mode === 'import'" ng-hide="actionInProgress">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" ng-click="ok()" ng-disabled="stubForm.$invalid || !validImport" testing-target="submit-button">
+        <button type="submit" class="btn btn-primary" id="testing-import-from-composer" ng-click="ok()" ng-disabled="stubForm.$invalid || !validImport">
             Import
         </button>
     </div>
@@ -113,7 +113,7 @@
 
 <div class="modal-footer" ng-show="actionSuccess && composerUrl">
    <button type="button" class="btn btn-default pull-left" ng-click="cancel()">Dismiss</button>
-    <a ng-href="{{composerUrl}}" class="btn btn-primary pull-right" target="_blank" ng-click="cancel()">View in Composer</a>
+    <a ng-href="{{composerUrl}}" class="btn btn-primary pull-right" target="_blank" ng-click="cancel()" id="testing-view-in-composer">View in Composer</a>
 </div>
 
 <div class="modal-footer__alert">

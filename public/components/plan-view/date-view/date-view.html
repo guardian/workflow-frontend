@@ -7,10 +7,10 @@
 
         <ul class="date-list__date-note-list list-unstyled" ng-if="newsList">
             <li ng-repeat="dayNote in date.dayNotes">
-                <wf-editable class="date-list__date-note" ng-model="dayNote.note" wf-editable-on-update="updateDayNote(dayNote.id, newValue, date.date)" wf-editable-required="true">
+                <wf-editable class="date-list__date-note" ng-model="dayNote.note" wf-editable-on-update="updateDayNote(dayNote.id, newValue, date.date)" wf-editable-required="true" wf-editable-on-edit-mode-update="showCopyToAgenda = !newMode">
                     {{ dayNote.note}}
                 </wf-editable>
-                <div class="date-note__actions" ng-if="date.date.isSame(selectedDate, 'day')">
+                <div class="date-note__actions" ng-if="date.date.isSame(selectedDate, 'day') && showCopyToAgenda">
                     <span class="date-list__sep"> | </span>
                     <span class="date-list__date-note date-note__action" ng-click="createItemFromDayNote(dayNote, $event)" ng-class="{'loading': dayNote.loading}">Copy to agenda <i class="date-list__date-note-create-icon" wf-icon="arrow-up"></i></span>
                 </div>

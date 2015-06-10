@@ -34,6 +34,7 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
         commentable: (d) => deepSearch(d, ['preview', 'data', 'settings', 'commentable', 'data']) === 'true',
         takenDown: (d) => false, // TODO: takenDown from composer feed
         activeInInCopy: (d) => deepSearch(d, ['toolSettings', 'activeInInCopy', 'data']) === 'true',
+        composerProdOffice: (d) => deepSearch(d, ['preview', 'data', 'settings', 'productionOffice', 'data']) || undefined,
 
         statusFlags:(d) => {
             return {
