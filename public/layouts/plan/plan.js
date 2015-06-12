@@ -15,6 +15,7 @@ import { wfPlanItem } from 'components/plan-view/plan-item/plan-item';
 import { wfInlineAddItem } from 'components/plan-view/inline-add-item/inline-add-item';
 import { wfDateRangeWidget } from  'components/plan-view/date-range-widget/date-range-widget';
 import { wfBundleSearch } from  'components/plan-view/bundle-search/bundle-search';
+import { wfDropZones } from  'components/plan-view/drop-zones/drop-zones';
 
 
 angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
@@ -25,6 +26,7 @@ angular.module('wfPlan', ['wfPlanService', 'wfPollingService', 'wfFiltersService
     .directive('wfInlineAddItem', ['$timeout', wfInlineAddItem])
     .directive('wfDateRangeWidget', ['$timeout', 'wfFiltersService', wfDateRangeWidget])
     .directive('wfBundleSearch', ['$timeout', wfBundleSearch])
+    .directive('wfDropZones', ['$timeout', wfDropZones])
     .service('wfPlanLoader', [ 'wfHttpSessionService', 'wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', '$http', function (http, planService, PollingService, wfFiltersService, $rootScope, $http) {
 
         function params() {
