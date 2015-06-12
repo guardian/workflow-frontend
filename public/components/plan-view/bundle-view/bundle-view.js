@@ -36,7 +36,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
             refreshBundles();
 
             $scope.getBundleName    = wfBundleService.getTitle;
-            $scope.genColor         = wfBundleService.genBundleColor;
+            $scope.genBundleColorStyle   = wfBundleService.genBundleColorStyle;
 
             $scope.draggingStart = (event, ui, item) => {
                 $scope.draggedItem = item;
@@ -180,12 +180,12 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 });
             };
 
-            $scope.createNewBundle = () => {
+            $scope.createNewBundle = (name) => {
 
                 $scope.createNewBundleLoading = true;
 
                 let newItem = {
-                    title: '"' + $scope.createNewBundleName + '" first item',
+                    title: '"' + name + '" first item',
                     id: 0,
                     newsList: wfFiltersService.get('news-list') || 0,
                     plannedDate: $scope.selectedDate.startOf('day'),
@@ -193,12 +193,12 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 };
 
                 let newBundle = {
-                    title: $scope.createNewBundleName,
+                    title: name,
                     id: 0,
                     itemsToday: [newItem]
                 };
 
-                wfBundleService.add(newBundle).then((response) => {
+                return wfBundleService.add(newBundle).then((response) => {
                     newBundle.id = response.data.data;
                     newItem.bundleId = response.data.data;
 
@@ -210,7 +210,6 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                     return wfPlannedItemService.add(newItem);
                 }).then((response) => {
                     $scope.$emit('plan-view__bundles-edited');
-                    delete $scope.createNewBundleName;
                 });
             };
 
