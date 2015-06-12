@@ -31,6 +31,30 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             }];
         },
         link: ($scope, elem, attrs) => {
+
+            elem.draggable({
+                revert: 'invalid',
+                handle: '.plan-item__item-drag-handle',
+                containment: '.day-view',
+                start: planItemDraggingStart,
+                stop: planItemDraggingStop,
+                helper: 'clone',
+                //cursorAt:{top: 5,
+                //left: 5}
+                //    containment: '.day-view',
+                //    refreshPositions: true,
+                    axis: 'y'
+                //    scroll: true,
+            });
+
+            function planItemDraggingStart () {
+                $scope.$emit('drag-start', $scope.item);
+            }
+
+            function planItemDraggingStop () {
+                $scope.$emit('drag-stop', $scope.item);
+            }
+
             $scope.maxNoteLength = config.pvPlanItemMaxNoteLength;
 
             $scope.shiftToTomorrow = function () {

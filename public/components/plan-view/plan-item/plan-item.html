@@ -1,4 +1,11 @@
 <div class="plan-item__item-wrapper" ng-click="drawerOpen = !drawerOpen" ng-class="{'priority-high': item.priority == 1, 'priority-very-high': item.priority == 2, 'created': !!item.composerId, 'drawer-open': drawerOpen}">
+
+    <div class="plan-item__item-drag-handle  plan__drag-handle">
+        <span class="handle__mark"></span>
+        <span class="handle__mark"></span>
+        <span class="handle__mark"></span>
+    </div>
+
     <div class="plan-item__item-top-row">
         <span class="plan-item__item-time" ng-if="item.hasSpecificTime">{{ item.plannedDate.format("HH:mm") }}</span>
         <div class="plan-item__item-title">
@@ -21,11 +28,6 @@
 
             <button class="plan-item__action plan-item__action-tomorrow" ng-click="shiftToTomorrow(); $event.stopPropagation();" ng-class="{'loading': MoveToTomorrowLoading}">Move to tomorrow  <span class="loader"></span></button>
 
-            <div class="plan-item__item-drag-handle  plan__drag-handle" ng-if="bundle.id === 0">
-                <span class="handle__mark"></span>
-                <span class="handle__mark"></span>
-                <span class="handle__mark"></span>
-            </div>
         </div>
 
         <div ng-switch-when="day">
@@ -37,11 +39,7 @@
                 <a class="plan-item__action plan-item__action-view" href="/dashboard?composerId={{ item.composerId }}" target="_blank">Produce</a>
             </div>
             <button class="plan-item__action plan-item__action-tomorrow" ng-click="shiftToTomorrow(); $event.stopPropagation();" ng-class="{'loading': MoveToTomorrowLoading}">Move to tomorrow  <span class="loader"></span></button>
-            <div class="plan-item__item-drag-handle plan__drag-handle">
-                <span class="handle__mark"></span>
-                <span class="handle__mark"></span>
-                <span class="handle__mark"></span>
-            </div>
+
         </div>
 
     </div>

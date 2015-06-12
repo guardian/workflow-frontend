@@ -7,7 +7,7 @@
 
             <ul class="bucket__items list-unstyled">
 
-                <li wf-plan-item variant="'day'" ng-repeat="item in unscheduledItems track by item.id" item="item" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', onDrag: 'onDrag', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
+                <li wf-plan-item variant="'day'" ng-repeat="item in unscheduledItems track by item.id" item="item" ng-model="item" class="day-view__item"></li>
 
             </ul>
         </li>
@@ -29,13 +29,23 @@
 
             <ul class="bucket__items list-unstyled">
 
-                <li class="bucket__drop-zone" ng-if="!bucket || sourceBucketStart == null || bucket.start !== sourceBucketStart" ng-model="bucket.items" data-bucket-start="{{ bucket.start }}" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="true" data-jqyoui-options="{tolerance: 'pointer', hoverClass: 'dnd__status--hovered'}"></li>
-
-                <li wf-plan-item variant="'day'" ng-repeat="item in bucket.items track by item.id" item="item" ng-model="item" class="day-view__item" data-drag="true" jqyoui-draggable="{onStart: 'draggingStart(item, bucket)', onStop: 'draggingStop', onDrag: 'onDrag', placeholder: true}" data-jqyoui-options="draggableOptions"></li>
+                <li wf-plan-item variant="'day'" ng-repeat="item in bucket.items track by item.id" item="item" ng-model="item" class="day-view__item"></li>
 
             </ul>
 
         </li>
     </ul>
+
+    <wf-drop-zones>
+        <ul class="list-unstyled">
+            <li ng-repeat="bucket in buckets track by bucket.start">
+                <span class="bucket__title-text">
+                    <span class="bucket__title-text--start">{{ toMeridiem(bucket.start) }}</span>
+                    <span class="bucket__title-text--sep"> &#8211; </span>
+                    <span class="bucket__title-text--end">{{ toMeridiem(bucket.end) }}</span>
+                </span>
+            </li>
+        </ul>
+    </wf-drop-zones>
 
 </div>
