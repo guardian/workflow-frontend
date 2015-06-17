@@ -268,6 +268,18 @@ object PostgresDB {
     }
   }
 
+  def updateStubTrashed(id: Long, trashed: Option[Boolean]): Response[Long] = {
+    DB.withTransaction { implicit session =>
+      val updatedRow = stubs
+        .filter(_.pk === id)
+        .map(s => s.trashed)
+        .update(trashed)
+      if(updatedRow==0) Left(ApiErrors.updateError(id))
+      else Right(ApiSuccess(id))
+    }
+
+  }
+
   def updateStubLegalStatus(id: Long, status: Flag): Response[Long] = {
     DB.withTransaction { implicit session =>
       val updatedRow = stubs
