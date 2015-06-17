@@ -297,6 +297,18 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
+  def putStubTrashed(stubId: Long) = CORSable(composerUrl) {
+    APIAuthAction { implicit request =>
+      Response(for {
+        jsValue <- readJsonFromRequestResponse(request.body).right
+        trashed <- extractResponse[Option[Boolean]](jsValue.data \ "data").right
+        id <- PostgresDB.updateStubTrashed(stubId, trashed.data).right
+      } yield {
+        id
+      })
+    }
+  }
+
   def deleteContent(composerId: String) = APIAuthAction {
     CommonDB.removeFromUI(composerId)
     NoContent
