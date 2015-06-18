@@ -282,15 +282,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             $scope.awaitingDeleteConfirmation = false;
             $scope.deleteContentItem = function () {
                 if(!$scope.awaitingDeleteConfirmation) { $scope.awaitingDeleteConfirmation = true; return; }
-
-                contentService.remove($scope.contentItem.id)
-                    .then(() => {
-
-                        contentListDrawerController.hide();
-
-                        $scope.$emit('content.deleted', { contentItem: $scope.contentItem });
-                        $scope.$apply();
-                    }, errorMessage);
+                    updateField("trashed", true)
             };
             function errorMessage(err) {
                 $scope.$apply(() => { throw new Error('Error deleting content: ' + (err.message || err)); });
