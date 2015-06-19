@@ -149,7 +149,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              */
             $rootScope.$on('contentItem.select', ($event, contentItem, contentListItemElement) => {
                 $scope.awaitingDeleteConfirmation = false;
-
                 $scope.selectedItem = contentItem;
 
                 if (contentItem.status === 'Stub') {
@@ -279,10 +278,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             /**
              * Delete manually as no event or tracking yet
              */
-            $scope.awaitingDeleteConfirmation = false;
-            $scope.deleteContentItem = function () {
-                if(!$scope.awaitingDeleteConfirmation) { $scope.awaitingDeleteConfirmation = true; return; }
-                    updateField("trashed", true)
+            $scope.deleteContentItem = function (trashedState) {
+                 updateField("trashed", trashedState)
             };
             function errorMessage(err) {
                 $scope.$apply(() => { throw new Error('Error deleting content: ' + (err.message || err)); });
