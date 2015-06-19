@@ -301,8 +301,8 @@ object Api extends Controller with PanDomainAuthActions {
     APIAuthAction { implicit request =>
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
-        trashed <- extractResponse[Option[Boolean]](jsValue.data \ "data").right
-        id <- PostgresDB.updateStubTrashed(stubId, trashed.data).right
+        trashed <- extractResponse[Boolean](jsValue.data \ "data").right
+        id <- PostgresDB.updateStubTrashed(stubId, Some(trashed.data)).right
       } yield {
         id
       })
