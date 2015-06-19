@@ -8,6 +8,7 @@
 @import "components/plan-view/inline-add-item/inline-add-item";
 @import "components/plan-view/date-range-widget/date-range-widget";
 @import "components/plan-view/bundle-search/bundle-search";
+@import "components/plan-view/unscheduled-view/unscheduled-view";
 
 .current.label {
     background-color: #dee2e3;
@@ -40,8 +41,23 @@
     flex: 0 0 400px;
 }
 
+.unscheduled-view {
+    flex: 0 0 300px;
+    &.main {
+        flex: 1 1 1000px;
+    }
+}
+
 .plan__view-container {
-    flex: 1 0 auto;
+    flex: 0 0 300px;
+    &.main {
+        flex: 1 1 1000px;
+    }
+}
+
+.unscheduled-view,
+.plan__view-container {
+    transition: flex-basis 0.3s ease-in-out;
 }
 
 @include smallScreen {
@@ -67,33 +83,33 @@
 // Loading animation
 // ---------------------------------------------------------- //
 
-.date-list,
-.plan__view-container {
-    position: relative;
-    transition: left 0.3s ease-in-out, box-shadow 0.7s ease-in-out;
-    background-color: #fff;
-    @include box-shadow(2px 0px 8px 2px $c-grey-500);
-}
-
-.date-list {
-    left: -400px;
-    z-index: 3;
-    transition-delay: 0s, 1.4s;
-}
-
-.plan__view-container {
-    left: -100%;
-    z-index: 2;
-    transition-delay: 0.35s, 1.4s;
-}
-
-.loaded {
-    .date-list,
-    .plan__view-container {
-        left: 0;
-        @include box-shadow(0 0 0 0 #fff);
-    }
-}
+//.date-list,
+//.plan__view-container {
+//    position: relative;
+//    transition: left 0.3s ease-in-out, box-shadow 0.7s ease-in-out;
+//    background-color: #fff;
+//    @include box-shadow(2px 0px 8px 2px $c-grey-500);
+//}
+//
+//.date-list {
+//    left: -400px;
+//    z-index: 3;
+//    transition-delay: 0s, 1.4s;
+//}
+//
+//.plan__view-container {
+//    left: -100%;
+//    z-index: 2;
+//    transition-delay: 0.35s, 1.4s;
+//}
+//
+//.loaded {
+//    .date-list,
+//    .plan__view-container {
+//        left: 0;
+//        @include box-shadow(0 0 0 0 #fff);
+//    }
+//}
 
 // View Container + views layout
 // ================================================================= //

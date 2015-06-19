@@ -1,0 +1,17 @@
+.unscheduled-view {
+    overflow-x: auto;
+    border-right: 1px solid #bdbdbd;
+
+    .unscheduled__title { // TODO: Abstract with _day-view.scss:22
+        position: relative;
+        z-index: 2;
+        display: block;
+        width: 100%;
+        background-color: $c-grey-200;
+        padding: 0 0 0 6px;
+        @extend %fs-data-4;
+        font-weight: bold;
+        height: 26px;
+        line-height: 26px;
+    }
+}
