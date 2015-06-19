@@ -73,6 +73,7 @@ object Api extends Controller with PanDomainAuthActions {
     val published = queryData.published
     val assigned  = queryData.assignedToEmail
     val view      = queryData.viewTimes
+    val trashed   = queryData.trashed
 
     def getContent = {
        PostgresDB.getContent(queryData)
