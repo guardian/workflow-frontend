@@ -15,6 +15,13 @@
         background-color: $c-grey-200;
     }
 
+    &--trashed {
+        opacity: 0.5;
+        &:hover {
+            opacity: 1;
+        }
+    }
+
     &:hover {
         background-color: $c-grey-150;
     }
