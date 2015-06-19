@@ -8,7 +8,11 @@
 
     </div>
 
-    <div class="plan__view-container">
+    <wf-unscheduled-view class="unscheduled-view" ng-class="{'main': focusUnscheduledView}"></wf-unscheduled-view>
+
+    <div class="plan__view-container" ng-class="{'main': !focusUnscheduledView}">
+
+        <button ng-click="focusUnscheduledView = !focusUnscheduledView">switch</button>
 
         <div class="plan__view-container--overlay" ng-if="!newsList">
             <div class="alert alert-info">Please select a News List</div>

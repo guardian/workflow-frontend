@@ -64,6 +64,14 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     })
   }
 
+  def getUnscheduledPlanItems() = APIAuthAction { implicit request =>
+    Response(for {
+      items <- queryDataToResponse(PlannedItemDB.getUnscheduledPlannedItems, "Could not fetch plan items").right
+    } yield {
+      items
+    })
+  }
+
   def getPlannedItem() = APIAuthAction { implicit request =>
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right

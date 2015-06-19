@@ -18,6 +18,13 @@ angular
                     });
                 }
 
+                getUnscheduledItems() {
+                    return httpRequest({
+                        method: 'GET',
+                        url: '/api/v1/plan/unscheduled'
+                    });
+                }
+
                 add(plannedItem) {
                     return httpRequest({
                         method: 'POST',
