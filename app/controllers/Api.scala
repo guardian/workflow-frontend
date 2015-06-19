@@ -75,7 +75,12 @@ object Api extends Controller with PanDomainAuthActions {
     val view      = queryData.viewTimes
 
     def getContent = {
-       PostgresDB.getContent(queryData)
+        if(queryData.composerId.isDefined) {
+          PostgresDB.contentItemLookup(queryData.composerId.get)
+        }
+        else {
+          PostgresDB.getContent(queryData)
+        }
     }
 
     def getStubs =
