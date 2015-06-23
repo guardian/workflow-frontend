@@ -2,6 +2,7 @@ package controllers
 
 import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
+import com.gu.workflow.query.WfQuery
 import lib._
 import Response._
 import org.joda.time.DateTime
@@ -64,13 +65,15 @@ object Admin extends Controller with PanDomainAuthActions {
   }
 
   def syncComposer = (AuthAction andThen WhiteListAuthFilter) {
-    val visibleContent = PostgresDB.getContent()
+    val q = WfQuery()
+    val visibleContent = PostgresDB.getContent(q)
     Ok(views.html.syncComposer(visibleContent.size))
   }
 
 
   def syncComposerPost = (AuthAction andThen WhiteListAuthFilter) { req =>
-    val visibleContent = PostgresDB.getContent()
+    val q = WfQuery()
+    val visibleContent = PostgresDB.getContent(q)
     val contentIds = visibleContent.map(_.wc.composerId)
     val composerDomain = PrototypeConfiguration.cached.composerUrl
     val composerUrl = composerDomain + "/api/content/"

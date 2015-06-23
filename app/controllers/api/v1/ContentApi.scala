@@ -2,7 +2,7 @@ package controllers
 
 import javax.ws.rs.PathParam
 import com.gu.workflow.lib._
-import lib.{Response, ApiErrors, ApiSuccess, PostgresDB}
+import lib._
 import Response.Response
 import com.gu.workflow.db.{CommonDB, Archive}
 import com.gu.workflow.query.WfQuery
@@ -24,7 +24,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
 
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
-    val queryData = WfQuery.fromRequest(req)
+    val queryData = RequestParameters.fromQueryString(req.queryString)
     //Note content items are not UI ordered yet
     Response(for{
       content <- PostgresDB.getContentItems(queryData).right
