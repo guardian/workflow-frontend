@@ -52,7 +52,7 @@ GET            /api/sections                               controllers.Api.secti
 # Plan
 # PlanItems
 GET            /api/v1/plan                                controllers.PlanApi.plan(newsList: Option[Long], startDate: Option[String], endDate: Option[String])
-GET            /api/v1/plan/unscheduled                    controllers.PlanApi.getUnscheduledPlanItems
+#GET            /api/v1/plan/unscheduled                    controllers.PlanApi.getUnscheduledPlanItems
 GET            /api/v1/plan/item                           controllers.PlanApi.getPlannedItem
 POST           /api/v1/plan/item                           controllers.PlanApi.addPlannedItem
 #POST           /api/v1/plan/item/:id/start-work        controllers.PlanApi.startWorkOnPlannedItem(id: Option[Long])

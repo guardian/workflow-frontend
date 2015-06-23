@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 import com.gu.workflow.db._
 import lib.Response.Response
 import models._
-import play.api.libs.json.{JsResult, Reads, JsValue}
+import play.api.libs.json._
 import play.api.mvc._
 import lib._
 
@@ -57,18 +57,20 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
     val planQuery = PlannedItemQuery(newsListIdOption, startDateOption.map(d => DateTime.parse(d)), endDateOption.map(d => DateTime.parse(d)))
 
-    Response(for {
-      items <- queryDataToResponse(PlannedItemDB.getPlannedItemsByQuery(planQuery), "Could not fetch plan items").right
-    } yield {
-      items
-    })
-  }
+    val items = PlannedItemDB.getPlannedItemsByQuery(planQuery) // List of bundles with items
+    val unscheduledItems = PlannedItemDB.getUnscheduledPlannedItems(planQuery) // Flat list of items
 
-  def getUnscheduledPlanItems() = APIAuthAction { implicit request =>
+    // TODO: Better way to do this?
+
+    val itemsAsJson = JsArray(items.get.map(Json.toJson(_)).toSeq)
+    val unscheduledItemsAsJson = JsArray(unscheduledItems.get.map(Json.toJson(_)).toSeq)
+
+    val resultAsJson = Map("plan" -> itemsAsJson, "unscheduled" ->  unscheduledItemsAsJson)
+
     Response(for {
-      items <- queryDataToResponse(PlannedItemDB.getUnscheduledPlannedItems, "Could not fetch plan items").right
+      response <- queryDataToResponse(Some(resultAsJson), "Could not fetch plan items").right
     } yield {
-      items
+      response
     })
   }
 

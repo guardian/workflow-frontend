@@ -1,5 +1,7 @@
 <div class="plan-container" ng-class="{ 'loaded': isLoaded }">
 
+    <wf-unscheduled-view class="unscheduled-view" ng-class="{'main': focusUnscheduledView}" unscheduled-items="unscheduledPlannedItemsByBundle"></wf-unscheduled-view>
+
     <div class="date-list">
 
         <wf-date-range-widget wf-date-range-widget-date-range="planDateRange"></wf-date-range-widget>
@@ -7,8 +9,6 @@
         <wf-date-view class="date-view" news-list="newsList" wf-planned-items="plannedItems" wf-date-view-date-range="planDateRange" wf-on-select-date="selectDay(date)" wf-selected-date="selectedDate"></wf-date-view>
 
     </div>
-
-    <wf-unscheduled-view class="unscheduled-view" ng-class="{'main': focusUnscheduledView}"></wf-unscheduled-view>
 
     <div class="plan__view-container" ng-class="{'main': !focusUnscheduledView}">
 
