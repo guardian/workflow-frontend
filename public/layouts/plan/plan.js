@@ -121,14 +121,15 @@ function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDa
 
     $scope.$on('plan-view__data-load', function (ev, data) {
 
-        data.forEach((bundle) => {
+        data['plan'].forEach((bundle) => {
             bundle.items.map((item) => {
                 item.plannedDate = moment(item.plannedDate);
                 return item;
             });
         });
 
-        $scope.plannedItemsByBundle = data;
+        $scope.plannedItemsByBundle = data['plan'];
+        $scope.unscheduledPlannedItemsByBundle = data['unscheduled'];
 
         $scope.plannedItems = $scope.plannedItemsByBundle.map((bundle) => {
             return bundle.items;
