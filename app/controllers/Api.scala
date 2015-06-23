@@ -76,7 +76,12 @@ object Api extends Controller with PanDomainAuthActions {
     val trashed   = queryData.trashed
 
     def getContent = {
-       PostgresDB.getContent(queryData)
+        if(queryData.composerId.isDefined) {
+          PostgresDB.contentItemLookup(queryData.composerId.get)
+        }
+        else {
+          PostgresDB.getContent(queryData)
+        }
     }
 
     def getStubs =
