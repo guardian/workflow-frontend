@@ -1,3 +1,5 @@
+@import "layouts/plan/mixins";
+
 .drop-zones-container {
     position: absolute;
     z-index: 9;
@@ -5,36 +7,52 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.4);
+    background-color: transparentize($c-grey-500, 0.6);
     &--show {
         left: 0;
     }
 }
 
-.drop-zones-list {
+.drop-zones-list ul {
     padding: 12px;
     position: absolute;
-    top: 50px;
+    height: 80%;
+    width: 40%;
+    top: 10%;
     left: 50%;
-    margin-left: -112px; // (200+12+12)/2
+    margin-left: -20%;
     background: #fff;
+    display: flex;
+    flex-direction: column;
+    @include border-radius(4px);
+
     li {
-        padding: 24px;
-        border: 1px solid #000;
-        width: 200px;
+        flex: 1 1 auto;
+        border: 1px solid $c-grey-500;
         margin: 0 0 12px 0;
         position: relative;
         background-color: #fff;
         transition: background-color 0.2s ease-in-out;
         font-weight: bold;
         text-align: center;
+        display: table-cell;
+        @include border-radius(4px);
+
+        > span {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            margin-top: -7px;
+            height: 14px;
+            width: 100%;
+        }
 
         &:last-child {
             margin: 0;
         }
 
         &.dz--hover {
-            background-color: pink;
+            background-color: transparentize($c-composer-blue, 0.5);
         }
     }
 }
