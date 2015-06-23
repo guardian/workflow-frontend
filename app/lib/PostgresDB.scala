@@ -53,8 +53,18 @@ object PostgresDB {
         .list.map { case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
           val content = WorkflowContent.fromContentRow(contentData)
-
           DashboardRow(stub, content)
+      }
+    }
+
+  def contentItemLookup(composerId: String): List[DashboardRow] =
+    DB.withTransaction { implicit session =>
+      WfQuery.contentLookup(composerId)
+        .filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
+        .list.map { case (stubData, contentData) =>
+        val stub    = Stub.fromStubRow(stubData)
+        val content = WorkflowContent.fromContentRow(contentData)
+        DashboardRow(stub, content)
       }
     }
 
