@@ -16,9 +16,9 @@
     }
 
     &--trashed {
-        opacity: 0.5;
-        &:hover {
-            opacity: 1;
+        .content-list-item__field--working-title,
+        .content-list-item__field--headline {
+            text-decoration: line-through;
         }
     }
 
