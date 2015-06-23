@@ -66,6 +66,7 @@ object Api extends Controller with PanDomainAuthActions {
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
 
+    val composerId = req.getQueryString("composerId")
     val queryData = WfQuery.fromRequest(req)
     val state     = queryData.state
     val status    = queryData.status
@@ -75,7 +76,12 @@ object Api extends Controller with PanDomainAuthActions {
     val view      = queryData.viewTimes
 
     def getContent = {
-       PostgresDB.getContent(queryData)
+      if (composerId.isDefined) {
+        DashboardRow.getDashboardRowByComposerId(composerId.get).toList
+      }
+       else {
+        PostgresDB.getContent(queryData)
+      }
     }
 
     def getStubs =
@@ -87,7 +93,7 @@ object Api extends Controller with PanDomainAuthActions {
         (queryData.inIncopy != Some(true)) &&
         touched.isEmpty &&
         assigned.isEmpty &&
-        queryData.composerId.isEmpty
+        composerId.isEmpty
       ) getStubs else Nil
 
     val contentGroupedByStatus = getContent.groupBy(_.wc.status)
@@ -124,7 +130,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def contentById(composerId: String) = {
     Response(for{
-      data <- PostgresDB.getDashboardRowByComposerId(composerId).right
+      data <- DashboardRow.getDashboardRowRepsonse(composerId).right
     }yield {
       data
     })
