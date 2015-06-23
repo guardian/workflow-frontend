@@ -57,7 +57,6 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                     var contentListItemDirective = '<tr wf-content-list-item class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-repeat="contentItem in group.items track by contentItem.id" ';
 
-                    //var contentListItemClasses = 'ng-class="(contentList.selectedItem === contentItem) ? \'content-list-item--selected\' : \'\'"';
                     var contentListItemClasses = 'ng-class="{\'content-list-item--selected\' : contentList.selectedItem === contentItem, \'content-list-item--trashed\': contentItem.item.trashed}"';
 
                     var contentListItemAttributes = 'content-item="contentItem" content-list="contentList" id="stub-{{contentItem.id}}" template="contentItemTemplate"></tr>';
