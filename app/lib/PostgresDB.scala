@@ -110,37 +110,11 @@ object PostgresDB {
     }
   }
 
-  def getContentByCompserId(composerId: String): Option[ContentItem] = {
+  def getContentItemByComposerId(composerId: String): Option[ContentItem] = {
     DB.withTransaction { implicit session =>
-      (for {
-        (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
-        if s.composerId === composerId
-      } yield (s,  c.?)).firstOption.map { case (s, c) => {
+      WfQuery.getByComposerIdQuery(composerId).firstOption.map { case (s, c) => {
         ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
       }}
-    }
-  }
-
-  def getDashboardRowByComposerId(composerId: String): Response[DashboardRow] = {
-    DB.withTransaction { implicit session =>
-
-      val query = for {
-        s <- stubs.filter(_.composerId === composerId)
-        c <- content
-        if s.composerId === c.composerId
-      } yield (s, c)
-
-      val dashboardRowOpt = query.firstOption map {case (stubData, contentData) =>
-        val stub    = Stub.fromStubRow(stubData)
-        val content = WorkflowContent.fromContentRow(contentData).copy(
-          section = Some(Section(stub.section))
-        )
-        DashboardRow(stub, content)
-      }
-      dashboardRowOpt match {
-        case None => Left(ApiErrors.composerIdNotFound(composerId))
-        case Some(d) => Right(ApiSuccess(d))
-      }
     }
   }
 
