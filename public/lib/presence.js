@@ -98,8 +98,8 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                 // replaces the return value with our presenceClient object
                 return p.startConnection().then(() => presenceResolve(p), () => promisePresenceError("unable to establish connection to presence"));
             },
-            () => {
-                promisePresenceError("Could not get access to the client library");
+            (err) => {
+                promisePresenceError("Could not get access to the client library: " + err);
             }).catch((err)=>{
                 promisePresenceError("error starting presence" + err);
             });
