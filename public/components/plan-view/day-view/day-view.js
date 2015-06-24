@@ -11,16 +11,6 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
         },
         controller: function ($scope) {
 
-            $scope.draggableOptions = {
-                helper: 'clone',
-                containment: '.day-view',
-                refreshPositions: true,
-                axis: 'y',
-                handle: '.plan-item__item-drag-handle',
-                scroll: true,
-                revert: 'invalid'
-            };
-
             $scope.buckets = _wfConfig.newsListBuckets[$scope.newsListName] ? _wfConfig.newsListBuckets[$scope.newsListName] : _wfConfig.newsListBuckets['default'];
 
             $scope.buckets.map((bucket) => {
@@ -68,6 +58,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                     let hour = item.plannedDate.hours();
 
                     if (!item.bucketed && !item.hasSpecificTime) {
+                        item.bucketStart = -1;
                         $scope.unscheduledItems.push(item);
                     } else {
                         for (let i = 0; i < $scope.buckets.length; i++) {
@@ -75,7 +66,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                             let bucket = $scope.buckets[i];
 
                             if (hour >= bucket.start && hour < bucket.end) {
-
+                                item.bucketStart = i;
                                 bucket.items.push(item);
                                 break;
                             }
@@ -83,6 +74,52 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                     }
                 });
             }
+
+            $scope.$on('drag-start', ($event, item) => {
+                $scope.draggingItem = item;
+                $scope.$broadcast('drop-zones-show');
+            });
+
+            $scope.$on('drag-stop', ($event, item) => {
+                $scope.$broadcast('drop-zones-hide');
+            });
+
+            $scope.$on('drop-zones-drop', ($event, droppedOnScope) => {
+
+                $timeout(() => {
+
+                    let currentBucket;
+
+                    if ($scope.draggingItem.bucketStart > -1) { // bucketed
+                        currentBucket = $scope.buckets[$scope.draggingItem.bucketStart];
+                    } else { // unscheduled
+                        currentBucket = $scope.unscheduledItems;
+                    }
+
+                    let indexInCurrentBucket = currentBucket.items.indexOf($scope.draggingItem);
+
+                    currentBucket.items.splice(indexInCurrentBucket, 1);
+
+                    droppedOnScope.bucket.items.push($scope.draggingItem);
+
+                    // Update the item with its new bucket details
+                    $scope.draggingItem.bucketed = true;
+                    $scope.draggingItem.hasSpecificTime = false;
+                    $scope.draggingItem.plannedDate.hours(droppedOnScope.bucket.start);
+                    $scope.sourceBucketStart = null;
+                    $scope.draggingItem.bucketStart = $scope.buckets.indexOf(droppedOnScope.bucket); // -1 if not found > unscheduled
+
+                }).then(() => {
+
+                    wfPlannedItemService.updateFields($scope.draggingItem.id, {
+                        'bucketed': true,
+                        'hasSpecificTime': false,
+                        'plannedDate': $scope.draggingItem.plannedDate.toISOString()
+                    }).then(() => {
+                        $scope.$emit('plan-view__item-dropped-on-bucket', $scope.draggingItem);
+                    });
+                });
+            });
         },
         link: ($scope, elem, attrs) => {
 
@@ -96,45 +133,6 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                 } else {
                     return time + 'am';
                 }
-            };
-
-            $scope.droppedOn = (event, ui) => {
-
-                var el = ui.draggable.detach();
-
-                $timeout(() => {
-                    $scope.draggedItem.bucketed = true;
-                    $scope.draggedItem.hasSpecificTime = false;
-                    $scope.draggedItem.plannedDate.hours(event.target.getAttribute('data-bucket-start'));
-                    $scope.sourceBucketStart = null;
-                }).then( () => {
-
-                    wfPlannedItemService.updateFields($scope.draggedItem.id, {
-                        'bucketed': true,
-                        'hasSpecificTime': false,
-                        'plannedDate': $scope.draggedItem.plannedDate.toISOString()
-                    }).then(() => {
-                        $scope.$emit('plan-view__item-dropped-on-bucket', $scope.draggedItem);
-                    });
-                });
-            };
-
-            $scope.sourceBucketStart = null;
-
-            $scope.draggingStart = (event, ui, item, bucket) => {
-                $timeout(() => {$scope.sourceBucketStart = bucket ? bucket.start : null});
-                $scope.draggedItem = item;
-                elem.addClass('day-view--dragging');
-                $scope.dragScrollBoxEl = ui.helper.parents('.day-view');
-                $scope.dragStartOffset = $scope.dragScrollBoxEl.scrollTop();
-            };
-
-            $scope.onDrag = (event, ui) => {
-                ui.position.top = ui.position.top + ($scope.dragScrollBoxEl.scrollTop() - $scope.dragStartOffset);
-            };
-
-            $scope.draggingStop = () => {
-                elem.removeClass('day-view--dragging')
             };
 
             $scope.addNewItemToBucket = (bucket, newItemName) => {
