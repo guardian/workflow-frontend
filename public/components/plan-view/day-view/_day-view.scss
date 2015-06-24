@@ -91,11 +91,9 @@
 
     &.ui-draggable-dragging {
         @include box-shadow(0px 1px 4px 2px #c0c0c0);
-        //z-index: 3;
         background-color: #fff;
         opacity: 0.8;
         z-index: 999;
-        //width: 100px;
     }
 
     &.dnd__status--hovered {

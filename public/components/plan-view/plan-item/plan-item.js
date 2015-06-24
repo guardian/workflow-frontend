@@ -39,12 +39,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                 start: planItemDraggingStart,
                 stop: planItemDraggingStop,
                 helper: 'clone',
-                //cursorAt:{top: 5,
-                //left: 5}
-                //    containment: '.day-view',
-                //    refreshPositions: true,
-                    axis: 'y'
-                //    scroll: true,
+                axis: 'y'
             });
 
             function planItemDraggingStart () {
