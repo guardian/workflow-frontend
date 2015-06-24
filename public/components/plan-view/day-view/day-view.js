@@ -88,19 +88,21 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
 
                 $timeout(() => {
 
-                    let currentBucket;
+                    if ($scope.draggingItem.bucketStart) { // only do the DOM swap if the item already has a bucketStart
+                        let currentBucket;
 
-                    if ($scope.draggingItem.bucketStart > -1) { // bucketed
-                        currentBucket = $scope.buckets[$scope.draggingItem.bucketStart];
-                    } else { // unscheduled
-                        currentBucket = $scope.unscheduledItems;
+                        if ($scope.draggingItem.bucketStart > -1) { // bucketed
+                            currentBucket = $scope.buckets[$scope.draggingItem.bucketStart];
+                        } else { // unscheduled
+                            currentBucket = $scope.unscheduledItems;
+                        }
+
+                        let indexInCurrentBucket = currentBucket.items.indexOf($scope.draggingItem);
+
+                        currentBucket.items.splice(indexInCurrentBucket, 1);
+
+                        droppedOnScope.bucket.items.push($scope.draggingItem);
                     }
-
-                    let indexInCurrentBucket = currentBucket.items.indexOf($scope.draggingItem);
-
-                    currentBucket.items.splice(indexInCurrentBucket, 1);
-
-                    droppedOnScope.bucket.items.push($scope.draggingItem);
 
                     // Update the item with its new bucket details
                     $scope.draggingItem.bucketed = true;
