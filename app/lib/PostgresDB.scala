@@ -24,28 +24,6 @@ object PostgresDB {
   import play.api.Play.current
   import play.api.db.slick.DB
 
-  def getContent(
-                  section:      Option[List[Section]]  = None,
-                  desk:         Option[Desk]     = None,
-                  dueFrom:      Option[DateTime] = None,
-                  dueUntil:     Option[DateTime] = None,
-                  status:       Option[Status]   = None,
-                  contentType:  Option[String]   = None,
-                  published:    Option[Boolean]  = None,
-                  flags:        Seq[String]      = Nil,
-                  prodOffice:   Option[String]   = None,
-                  createdFrom:  Option[DateTime] = None,
-                  createdUntil: Option[DateTime] = None,
-                  composerId:   Option[String]   = None,
-                  assignedToEmail: Option[Seq[String]] = None,
-                  touched:      Option[Seq[String]] = None
-  ): List[DashboardRow] =
-    getContent(WfQuery.fromOptions(
-                 section, desk, dueFrom, dueUntil, status, contentType,
-                 published, flags, prodOffice, createdFrom, createdUntil, composerId, assignedToEmail, touched
-               )
-    )
-
   def getContent(q: WfQuery): List[DashboardRow] =
     DB.withTransaction { implicit session =>
       WfQuery.getContentQuery(q)
@@ -120,37 +98,11 @@ object PostgresDB {
     }
   }
 
-  def getContentByCompserId(composerId: String): Option[ContentItem] = {
+  def getContentItemByComposerId(composerId: String): Option[ContentItem] = {
     DB.withTransaction { implicit session =>
-      (for {
-        (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
-        if s.composerId === composerId
-      } yield (s,  c.?)).firstOption.map { case (s, c) => {
+      WfQuery.getByComposerIdQuery(composerId).firstOption.map { case (s, c) => {
         ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
       }}
-    }
-  }
-
-  def getDashboardRowByComposerId(composerId: String): Response[DashboardRow] = {
-    DB.withTransaction { implicit session =>
-
-      val query = for {
-        s <- stubs.filter(_.composerId === composerId)
-        c <- content
-        if s.composerId === c.composerId
-      } yield (s, c)
-
-      val dashboardRowOpt = query.firstOption map {case (stubData, contentData) =>
-        val stub    = Stub.fromStubRow(stubData)
-        val content = WorkflowContent.fromContentRow(contentData).copy(
-          section = Some(Section(stub.section))
-        )
-        DashboardRow(stub, content)
-      }
-      dashboardRowOpt match {
-        case None => Left(ApiErrors.composerIdNotFound(composerId))
-        case Some(d) => Right(ApiSuccess(d))
-      }
     }
   }
 

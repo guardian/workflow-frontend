@@ -65,23 +65,23 @@ object Api extends Controller with PanDomainAuthActions {
 
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
+    val composerId = RequestParameters.getComposerId(req.queryString)
+    val queryData = RequestParameters.fromQueryString(req.queryString)
 
-    val queryData = WfQuery.fromRequest(req)
     val state     = queryData.state
     val status    = queryData.status
     val touched   = queryData.touched
-    val published = queryData.published
     val assigned  = queryData.assignedToEmail
     val view      = queryData.viewTimes
     val trashed   = queryData.trashed
 
     def getContent = {
-        if(queryData.composerId.isDefined) {
-          PostgresDB.contentItemLookup(queryData.composerId.get)
-        }
-        else {
-          PostgresDB.getContent(queryData)
-        }
+      if (composerId.isDefined) {
+        DashboardRow.getDashboardRowByComposerId(composerId.get).toList
+      }
+       else {
+        PostgresDB.getContent(queryData)
+      }
     }
 
     def getStubs =
@@ -93,7 +93,7 @@ object Api extends Controller with PanDomainAuthActions {
         (queryData.inIncopy != Some(true)) &&
         touched.isEmpty &&
         assigned.isEmpty &&
-        queryData.composerId.isEmpty
+        composerId.isEmpty
       ) getStubs else Nil
 
     val contentGroupedByStatus = getContent.groupBy(_.wc.status)
@@ -130,7 +130,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def contentById(composerId: String) = {
     Response(for{
-      data <- PostgresDB.getDashboardRowByComposerId(composerId).right
+      data <- DashboardRow.getDashboardRowRepsonse(composerId).right
     }yield {
       data
     })
