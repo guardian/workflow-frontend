@@ -73,6 +73,7 @@ object Admin extends Controller with PanDomainAuthActions {
 
   def syncComposerPost = (AuthAction andThen WhiteListAuthFilter) { req =>
     val q = WfQuery()
+    //todo - change this to a paginated get all query.
     val visibleContent = PostgresDB.getContent(q)
     val contentIds = visibleContent.map(_.wc.composerId)
     val composerDomain = PrototypeConfiguration.cached.composerUrl
