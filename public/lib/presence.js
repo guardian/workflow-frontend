@@ -6,10 +6,10 @@ var module = angular.module('wfPresenceService', []);
 
 module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $log, config, wfFeatureSwitches, wfUser) {
 
-    function presenceError(msg) {
+    function presenceError(msg, loggingFields) {
         var err = new Error(msg);
         err.name = "PresenceError";
-        $log.error(["Presence error: ", msg].join(' '));
+        $log.error(["Presence error: ", msg].join(' '), loggingFields);
         $rootScope.$apply(function () { throw err });
         broadcast("presence.connection.error", msg);
     }
@@ -82,7 +82,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                 // (this will happen on initial connection, but also if we
                 // lose connection and then it is restored)
                 p.on('connection.open', () => {
-                    $log.info('Presence connection open');
+                    $log.info('Presence connection open', {'sessionId':p.connectionId});
                     broadcast("presence.connection.open");
                     p.subscribe(currentArticleIds).catch((err) => $log.error(['error subscribing ', err].join(' ')));
                 });
@@ -90,12 +90,12 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                 // three retries, but 'connection.error' will only get
                 // triggered if we finally give up.
                 p.on('connection.error', msg => {
-                    presenceError(msg);
+                    presenceError(msg, {'sessionId':p.connectionId});
                 });
 
                 p.on('connectionRetry', msg => {
                     broadcast("presence.connection.retry")
-                    $log.info(["Presence connection lost, retrying", msg].join(' '));
+                    $log.info("Presence connection lost, retrying", {'sessionId':p.connectionId});
                 });
                 addHandlers(p, messageHandlers);
                 // startConnection() will return a promise that will be
