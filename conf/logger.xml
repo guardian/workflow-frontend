@@ -28,22 +28,6 @@
         </encoder>
     </appender>
 
-    <appender name="CLIENT_MESSAGES_LOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/client_messages.log</file>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/client_messages.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>%date %-5level %logger{36}:%L - %msg%n%xException{3}</pattern>
-        </encoder>
-    </appender>
-
-    <logger name="com.gu.workflow.lib.ClientMessageLoggable" additivity="false" level="DEBUG">
-        <appender-ref ref="CLIENT_MESSAGES_LOGFILE" />
-    </logger>
 
     <logger name="play" level="INFO" />
     <logger name="application" level="DEBUG" />
