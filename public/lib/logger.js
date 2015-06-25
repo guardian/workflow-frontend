@@ -13,13 +13,14 @@ function(angular, moment) {
 
     logger.factory('logger', ['$injector', function($injector) {
 
-        function send(message, level) {
+        function send(message, level, fields) {
             var $http = $injector.get('$http');
 
             var package = {
                 timestamp: moment().format("YYYY-MM-DDTHH:mm:ss.SSSZZ"),
                 message: message,
-                level: level || "INFO"
+                level: level || "INFO",
+                fields: fields
             };
 
             return $http({method: 'POST',
@@ -29,7 +30,7 @@ function(angular, moment) {
         }
 
         function log(args, level) {
-            send(args.join(" "), level);
+            send(args[0], level, args[1]);
         }
 
         return {
