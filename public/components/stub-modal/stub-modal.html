@@ -32,7 +32,9 @@
                 <label for="stub_section">Section *</label>
                 <div>
                     <select id="stub_section" name="section" ng-model="stub.section" ng-options="section.name for section in
-                 sections"></select>
+                 sections">
+                        <option value="">Please select a section</option>
+                    </select>
                 </div>
             </div>
         </div>

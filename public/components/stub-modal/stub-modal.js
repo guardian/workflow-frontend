@@ -37,12 +37,13 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
     $scope.stub = stub;
     $scope.stub.section = (function findSelectedSectionInAvailableSections () {
         var sect = $scope.stub.section;
+
         var filteredSections = $scope.sections.filter((el) => el.name === sect.name);
-        if (filteredSections.length === 0) {
-            return $scope.sections[0];
-        } else {
+        if (filteredSections.length > 0) {
             return filteredSections[0];
         }
+        
+        return sect;
     })();
     $scope.stub.status = 'Writers';
 
@@ -218,8 +219,13 @@ wfStubModal.run([
             return wfFiltersService.get('prodOffice');
         }
 
-        function getSectionFromSections(sectionName) {
-            return sections.filter((section) => section.name === sectionName)[0];
+        function getSectionFromSections(sectionName, defaultSection) {
+            if(sectionName) {
+                return sections.filter((section) => section.name === sectionName[0]);
+            }
+
+            console.log('Defaulting section');
+            return {name: defaultSection};
         }
 
         /**
@@ -230,13 +236,13 @@ wfStubModal.run([
          * @returns {Promise}
          */
         function setUpPreferedStub (contentType) {
-            var defaultSection = 'Technology'; // tech by default
+            var defaultSection = undefined; // tech by default
 
-            function createStubData (contentType, section) {
+            function createStubData (contentType, section, defaultSection) {
 
                 return {
                     contentType: contentType,
-                    section: getSectionFromSections(section) || defaultSection,
+                    section: getSectionFromSections(section, defaultSection),
                     priority: 0,
                     needsLegal: 'NA',
                     prodOffice: currentFilteredOffice() ||  'UK'
@@ -245,10 +251,10 @@ wfStubModal.run([
 
             return wfPreferencesService.getPreference('preferedStub').then((data) => {
 
-                return createStubData(contentType, data.section || defaultSection);
+                return createStubData(contentType, data.section, defaultSection);
             }, () => {
 
-                return createStubData(contentType, defaultSection);
+                return createStubData(contentType, undefined, defaultSection);
             });
         }
 
