@@ -10,12 +10,10 @@ function(angular, moment) {
     var LOG_URL = "/support/logger";
 
     var logger = angular.module('logger', []);
-    console.log('does the module get run?')
 
     logger.factory('logger', ['$injector', function($injector) {
 
         function send(message, level) {
-            console.log('do I get to the send fn?')
             var $http = $injector.get('$http');
 
             var package = {
