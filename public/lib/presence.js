@@ -9,8 +9,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     function presenceError(msg) {
         var err = new Error(msg);
         err.name = "PresenceError";
-         $log.warn(["Presence max-retries, error:", new Date()].join(' '));
-        $log.error("Presence error: " + msg);
+        $log.error(["Presence error: ", msg].join(' '));
         $rootScope.$apply(function () { throw err });
         broadcast("presence.connection.error", msg);
     }
@@ -83,14 +82,19 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                 // (this will happen on initial connection, but also if we
                 // lose connection and then it is restored)
                 p.on('connection.open', () => {
+                    $log.info("Presence connection open");
                     broadcast("presence.connection.open");
-                    p.subscribe(currentArticleIds).catch((err) => $log.error('error subscribing ', err));
+                    p.subscribe(currentArticleIds).catch((err) => $log.error(['error subscribing ', err].join(' '));
                 });
                 // the 'error' event gets triggered for each of the
                 // three retries, but 'connection.error' will only get
                 // triggered if we finally give up.
                 p.on('connection.error', msg => {
                     presenceError(msg);
+                });
+
+                p.on('connectionRetry', msg => {
+                    $log.info(["Presence connection lost, retrying", msg].join(' '));
                 });
                 addHandlers(p, messageHandlers);
                 // startConnection() will return a promise that will be
@@ -109,7 +113,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     self.subscribe = function (articleIds) {
         currentArticleIds = articleIds;
         presence.then((p) => p.subscribe(articleIds), (msg) => {
-            $log.error("could not subscribe to presence [" + msg + "]");
+            $log.error(["could not subscribe to presence", msg].join(' '));
         });
     };
 
