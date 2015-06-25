@@ -214,9 +214,12 @@ $plan-item-notes-line-height: 16px;
 }
 
 .plan-item__item-drag-handle {
+    display: inline-block;
     height: 20px;
     width: 22px;
     padding: 1px 0 0 0;
+    float: left;
+    margin: 6px 12px 6px 0;
     .handle__mark {
         height: 4px;
         margin-bottom: 3px;
