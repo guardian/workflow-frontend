@@ -42,7 +42,7 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
             },
             link: function($scope, elm) {
 
-                $scope.withDatePicker = $scope.preSelectedDate ? false : true;
+                $scope.withDatePicker = typeof $scope.preSelectedDate == 'undefined';
 
                 $scope.addDate = $scope.preSelectedDate;
 
@@ -61,13 +61,13 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                 $scope.defaultProps = function(addDate) {
 
                     // if date not set, use default of this time tomorrow <<<< TODO: Think about this - maybe date field should be compulsory
-                    if (!addDate) {
+                    if (typeof addDate == 'undefined') {
                         addDate = moment().add(1, 'days');
                     }
                     return {
                         id: 0,// Should not need to be here!
                         newsList: $scope.currentNewsListId,
-                        plannedDate: moment(addDate)
+                        plannedDate: addDate ? moment(addDate) : null
                     }
                 };
 
