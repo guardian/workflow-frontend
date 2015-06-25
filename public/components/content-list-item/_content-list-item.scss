@@ -255,6 +255,10 @@
             @extend %fs-data-1;
             padding: 2px 10px;
 
+            // Prevent text overflow
+            text-overflow: ellipsis;
+            overflow: hidden;
+
             //default
             min-width: 120px;
             max-width: 200px;

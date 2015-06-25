@@ -1,0 +1,58 @@
+@import "layouts/plan/mixins";
+
+.drop-zones-container {
+    position: absolute;
+    z-index: 9;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: transparentize($c-grey-500, 0.6);
+    &--show {
+        left: 0;
+    }
+}
+
+.drop-zones-list ul {
+    padding: 12px;
+    position: absolute;
+    height: 80%;
+    width: 40%;
+    top: 10%;
+    left: 50%;
+    margin-left: -20%;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    @include border-radius(4px);
+
+    li {
+        flex: 1 1 auto;
+        border: 1px solid $c-grey-500;
+        margin: 0 0 12px 0;
+        position: relative;
+        background-color: #fff;
+        transition: background-color 0.2s ease-in-out;
+        font-weight: bold;
+        text-align: center;
+        display: table-cell;
+        @include border-radius(4px);
+
+        > span {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            margin-top: -7px;
+            height: 14px;
+            width: 100%;
+        }
+
+        &:last-child {
+            margin: 0;
+        }
+
+        &.dz--hover {
+            background-color: transparentize($c-composer-blue, 0.5);
+        }
+    }
+}

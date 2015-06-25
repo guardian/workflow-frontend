@@ -16,6 +16,7 @@ import { wfInlineAddItem }      from 'components/plan-view/inline-add-item/inlin
 import { wfDateRangeWidget }    from 'components/plan-view/date-range-widget/date-range-widget';
 import { wfBundleSearch }       from 'components/plan-view/bundle-search/bundle-search';
 import { wfUnscheduledView }    from 'components/plan-view/unscheduled-view/unscheduled-view';
+import { wfDropZones }          from  'components/plan-view/drop-zones/drop-zones';
 
 // TODO: Tidy up order of injections to directives
 angular.module('wfPlan',            ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
@@ -27,6 +28,7 @@ angular.module('wfPlan',            ['wfPlanService', 'wfPollingService', 'wfFil
     .directive('wfDateRangeWidget', ['$timeout', 'wfFiltersService', wfDateRangeWidget])
     .directive('wfBundleSearch',    ['$timeout', wfBundleSearch])
     .directive('wfUnscheduledView', ['$rootScope', 'wfPlannedItemService', '$http', '$timeout', 'wfFiltersService', wfUnscheduledView])
+    .directive('wfDropZones',       ['$timeout', wfDropZones])
     .service('wfPlanLoader',        ['wfPlanService', 'wfPollingService', 'wfFiltersService', '$rootScope', wfPlanLoader])
     .controller('wfPlanController', ['$scope', '$rootScope', 'wfPlanLoader', '$http', '$timeout', 'wfDayNoteService', 'wfFiltersService', 'wfPlannedItemService', wfPlanController]);
 
