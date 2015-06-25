@@ -82,6 +82,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     $scope.presenceIsActive = false;
     $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = false);
+    $rootScope.$on("presence.connection.retry", () => $scope.presenceIsActive = false);
     $rootScope.$on("presence.connection.open",  () => $scope.presenceIsActive = true);
 
     /*jshint validthis:true */
