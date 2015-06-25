@@ -11,6 +11,8 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
         },
         controller: function ($scope) {
 
+            $scope.dropZonesLocation = 'day-view';
+
             $scope.buckets = _wfConfig.newsListBuckets[$scope.newsListName] ? _wfConfig.newsListBuckets[$scope.newsListName] : _wfConfig.newsListBuckets['default'];
 
             $scope.buckets.map((bucket) => {
@@ -75,16 +77,16 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                 });
             }
 
-            $scope.$on('drag-start', ($event, item) => {
+            $rootScope.$on('drag-start', ($event, item) => {
                 $scope.draggingItem = item;
                 $scope.$broadcast('drop-zones-show');
             });
 
-            $scope.$on('drag-stop', ($event, item) => {
+            $rootScope.$on('drag-stop', ($event, item) => {
                 $scope.$broadcast('drop-zones-hide');
             });
 
-            $scope.$on('drop-zones-drop', ($event, droppedOnScope) => {
+            $rootScope.$on('drop-zones-drop' + $scope.dropZonesLocation, ($event, droppedOnScope) => {
 
                 $timeout(() => {
 
