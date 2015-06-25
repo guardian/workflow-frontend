@@ -42,7 +42,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
         if (filteredSections.length > 0) {
             return filteredSections[0];
         }
-        
+
         return sect;
     })();
     $scope.stub.status = 'Writers';
@@ -223,8 +223,7 @@ wfStubModal.run([
             if(sectionName) {
                 return sections.filter((section) => section.name === sectionName[0]);
             }
-
-            console.log('Defaulting section');
+            
             return {name: defaultSection};
         }
 
