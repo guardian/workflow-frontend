@@ -9,6 +9,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     function presenceError(msg) {
         var err = new Error(msg);
         err.name = "PresenceError";
+         $log.warn(["Presence max-retries, error:", new Date()].join(' '));
         $log.error("Presence error: " + msg);
         $rootScope.$apply(function () { throw err });
         broadcast("presence.connection.error", msg);
