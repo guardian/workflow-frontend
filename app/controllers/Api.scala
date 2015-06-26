@@ -75,14 +75,9 @@ object Api extends Controller with PanDomainAuthActions {
     val assigned  = queryData.assignedToEmail
     val view      = queryData.viewTimes
 
-    def getContent = {
-      if (composerId.isDefined) {
-        DashboardRow.getDashboardRowByComposerId(composerId.get).toList
-      }
-       else {
-        PostgresDB.getContent(queryData)
-      }
-    }
+    def dashRow(composerId: String) = DashboardRow.getDashboardRowByComposerId(composerId).toList
+
+    def getContent = if (composerId.isDefined) dashRow(composerId.get) else  PostgresDB.getContent(queryData)
 
     def getStubs =
       CommonDB.getStubs(queryData, unlinkedOnly = true)
