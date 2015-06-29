@@ -35,11 +35,11 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             elem.draggable({
                 revert: 'invalid',
                 handle: '.plan-item__item-drag-handle',
-                containment: '.day-view',
+                containment: '.plan-container',
                 start: planItemDraggingStart,
                 stop: planItemDraggingStop,
-                helper: 'clone',
-                axis: 'y'
+                helper: 'clone'
+                //axis: 'y'
             });
 
             function planItemDraggingStart () {

@@ -31,7 +31,7 @@ function wfUnscheduledView ($rootScope, wfPlannedItemService, $http, $timeout, w
             });
 
             $rootScope.$on('drop-zones-drop' + $scope.dropZonesLocation, ($event, droppedOnScope) => {
-
+                debugger
             });
         }
     }
