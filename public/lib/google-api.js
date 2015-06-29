@@ -3,37 +3,30 @@ import angular from 'angular';
 angular.module('wfGoogleApiService', [])
     .service('wfGoogleApiService', ['$window', '$http', '$rootScope', function ($window, $http, $rootScope) {
 
-        var scope = 'https://www.googleapis.com/auth/admin.directory.user.readonly',
-            client_id = '715812401369-s2qbnkoiaup21bocaarrbf0mpat2ifjk.apps.googleusercontent.com';
+        class ApiService {
 
-        var apiService = {
+            constructor () {
+                this.scope = 'https://www.googleapis.com/auth/admin.directory.user.readonly';
+                this.client_id = '715812401369-s2qbnkoiaup21bocaarrbf0mpat2ifjk.apps.googleusercontent.com';
+            }
 
             /**
              * If the client had already authorised then authorize invisibly with immediate: true, else trigger auth pop up
              */
-            load: function () {
+            load () {
 
                 var checkInterval = setInterval(() => {
 
                     if (!(typeof gapi === 'undefined') && !(typeof gapi.client === 'undefined')) {
 
                         clearInterval(checkInterval);
-                        checkAuth();
+                        this.authInvis(this.handleAuthResult);
                     }
                 }, 500);
 
-                function checkAuth () {
+            }
 
-                    gapi.auth.authorize({
-                        'client_id': client_id,
-                        'scope': scope,
-                        immediate: true
-                    }, apiService.handleAuthResult);
-                }
-
-            },
-
-            handleAuthResult: (authResult) => {
+            handleAuthResult (authResult)  {
 
                 if (authResult && !authResult.error) {
 
@@ -45,32 +38,33 @@ angular.module('wfGoogleApiService', [])
                     console.info('Client not authorised, triggering auth popup');
                     $rootScope.$emit('wfGoogleApiService.userIsNotAuthorized');
                 }
-            },
+            }
 
-            authPrompt: () => {
+            authInvis (callBack) {
 
                 gapi.auth.authorize({
-                    'client_id': client_id,
-                    'scope': scope,
+                    'client_id': this.client_id,
+                    'scope': this.scope,
+                    immediate: true
+                }, callBack);
+            }
+
+            authPrompt () {
+
+                gapi.auth.authorize({
+                    'client_id': this.client_id,
+                    'scope': this.scope,
                     immediate: false
                 }, apiService.handleAuthResult);
-            },
+            }
 
-            /**
-             * Search for users via google api
-             *
-             * TODO: refactor in to separate service
-             *
-             * @param value search term
-             * @returns $http promise
-             */
-            searchUsers: function (value) {
+            requestUserList (query) {
 
                 var req = {
                     method: 'GET',
                     url: 'https://www.googleapis.com/admin/directory/v1/users',
                     params: {
-                        query: value,
+                        query: query,
                         domain: 'guardian.co.uk',
                         viewType: 'domain_public'
                     },
@@ -85,9 +79,36 @@ angular.module('wfGoogleApiService', [])
                     console.error('Could not query Google API for users');
                 });
             }
-        };
 
-        return apiService;
+            /**
+             * Search for users via google api
+             *
+             * TODO: refactor in to separate service
+             *
+             * @param query search term
+             * @returns $http promise
+             */
+            searchUsers (query) {
+
+                // Handle re-auth if necessary
+
+                if (new Date(parseInt(gapi.auth.expires_at, 10)*1000) <= new Date()) {
+                    // re-auth
+                    this.authInvis(() => {
+
+                        if (authResult && !authResult.error) {
+
+                            window.gapi.auth = gapi.auth.getToken();
+                            return this.requestUserList(query);
+                        }
+                    })
+                } else {
+                    return this.requestUserList(query);
+                }
+            }
+        }
+
+        return new ApiService();
 
     }]).directive('googleAuthBanner', ['wfGoogleApiService', '$rootScope', function (wfGoogleApiService, $rootScope) {
 
