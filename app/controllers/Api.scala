@@ -65,12 +65,13 @@ object Api extends Controller with PanDomainAuthActions {
 
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
-    val composerId = RequestParameters.getComposerId(req.queryString)
-    val queryData = RequestParameters.fromQueryString(req.queryString)
 
+    val composerId = req.getQueryString("composerId")
+    val queryData = WfQuery.fromRequest(req)
     val state     = queryData.state
     val status    = queryData.status
     val touched   = queryData.touched
+    val published = queryData.published
     val assigned  = queryData.assignedToEmail
     val view      = queryData.viewTimes
 
