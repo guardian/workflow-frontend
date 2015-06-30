@@ -237,12 +237,12 @@ wfStubModal.run([
          */
         function setUpPreferedStub (contentType) {
 
-            function createStubData (contentType, section) {
+            function createStubData (contentType, sectionName) {
 
                 return {
                     contentType: contentType,
                     // Only send through a section if one is found in the prefs
-                    section: section === null ? section : sections.filter((section) => section.name === sectionName[0]),
+                    section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
                     priority: 0,
                     needsLegal: 'NA',
                     prodOffice: currentFilteredOffice() ||  'UK'
