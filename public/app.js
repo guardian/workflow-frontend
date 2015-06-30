@@ -102,28 +102,16 @@ angular.module('workflow',
         );
 
         $provide.decorator('$log', ["$delegate", 'logger', function ($delegate, logger) {
+            const levels = ['error', 'warn', 'info', 'debug'];
 
-            var warn = $delegate.warn;
-            var info = $delegate.info;
-            var debug = $delegate.debug;
-
-            $delegate.warn = function () {
-                var args = Array.prototype.slice.call(arguments);
-                logger.log(args, "WARN");
-                warn.apply(null, args);
-            };
-
-            $delegate.info = function () {
-                var args = Array.prototype.slice.call(arguments);
-                logger.log(args, "INFO");
-                info.apply(null, args);
-            };
-
-            $delegate.debug = function () {
-                var args = Array.prototype.slice.call(arguments);
-                logger.log(args, "DEBUG");
-                debug.apply(null, args);
-            };
+            for(let key in levels) {
+                if(Object.hasOwnProperty) {
+                    $delegate[key] = (...args) => {
+                        args.push(key.toUpperCase())
+                        logger.log.apply(null, args);
+                    }
+                }
+            }
 
             return $delegate;
         }]);
