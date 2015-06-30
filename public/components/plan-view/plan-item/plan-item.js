@@ -38,7 +38,8 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                 containment: '.plan-container',
                 start: planItemDraggingStart,
                 stop: planItemDraggingStop,
-                helper: 'clone'
+                helper: 'clone',
+                appendTo: 'body'
                 //axis: 'y'
             });
 

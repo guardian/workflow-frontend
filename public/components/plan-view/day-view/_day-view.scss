@@ -98,6 +98,7 @@
         text-overflow: ellipsis;
         overflow: hidden;
         transform: rotate(-7deg);
+        z-index: 99999;
     }
 
     &.dnd__status--hovered {

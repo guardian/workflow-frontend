@@ -24,9 +24,13 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       case "plannedDate"|"created"|"day" =>
         // this could possibly be improved by replacing with a custom reads
         val dateString = extract[String](jsValueData).right.map { d => d.data}.right.getOrElse("")
-        Try(new DateTime(dateString)) match {
-          case Success(dt) => Right(ApiSuccess(dt))
-          case Failure(msg) => Left(ApiError("Could not parse date", "Could not parse date", 500, "Error"))
+        if (dateString.size > 0) {
+          Try(new DateTime(dateString)) match {
+            case Success(dt) => Right(ApiSuccess(Some(dt)))
+            case Failure(msg) => Left(ApiError("Could not parse date", "Could not parse date", 500, "Error"))
+          }
+        } else { // An empty datestring > unscheduled item
+          Right(ApiSuccess(None))
         }
 
       case "hasSpecificTime"|"bucketed" => extract[Boolean](jsValueData)
