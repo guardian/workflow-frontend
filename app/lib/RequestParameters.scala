@@ -11,8 +11,17 @@ import com.gu.workflow.lib.Formatting._
 
 object RequestParameters {
 
-  def getSeqFromQS(key: String, qs: Map[String, Seq[String]]): Seq[String] = {
-    qs.get(key).getOrElse(Nil)
+
+  def fromRequest(req: Request[AnyContent]): WfQuery = {
+    fromQueryString(getQueryString(req))
+  }
+
+  def getQueryString(req: Request[AnyContent]): Map[String, Seq[String]] = {
+    req.queryString
+  }
+
+  def getSeqFromQS(key: String, qs: Map[String, Seq[String]]): List[String] = {
+    getOptionFromQS(key, qs).map(_.split(",").toList).getOrElse(Nil)
   }
 
   def getOptionFromQS(key: String, qs: Map[String, Seq[String]]): Option[String] = {

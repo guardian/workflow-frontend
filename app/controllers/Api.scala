@@ -65,7 +65,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
-    val queryData = RequestParameters.fromQueryString(req.queryString)
+    val queryData = RequestParameters.fromRequest(req)
 
     val state     = queryData.state
     val status    = queryData.status
