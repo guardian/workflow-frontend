@@ -4,12 +4,15 @@
     position: absolute;
     z-index: 9;
     top: 0;
-    left: -100%;
+    left: 0;
     width: 100%;
     height: 100%;
     background-color: transparentize($c-grey-500, 0.6);
+
+    display: none;
+
     &--show {
-        left: 0;
+        display: block;
     }
 }
 
@@ -55,6 +58,10 @@
 
     > span {
         @include verticallyCenteredText();
+    }
+
+    &.dz--hover {
+        background-color: transparentize($c-composer-blue, 0.5);
     }
 }
 

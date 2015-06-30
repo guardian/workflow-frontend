@@ -30,8 +30,16 @@ function wfUnscheduledView ($rootScope, wfPlannedItemService, $http, $timeout, w
                 $scope.$broadcast('drop-zones-hide');
             });
 
-            $rootScope.$on('drop-zones-drop' + $scope.dropZonesLocation, ($event, droppedOnScope) => {
-                debugger
+            $rootScope.$on('drop-zones-drop--' + $scope.dropZonesLocation, ($event, droppedOnScope) => {
+
+                wfPlannedItemService.updateFields($scope.draggingItem.id, {
+                    'bucketed': false,
+                    'hasSpecificTime': false,
+                    'plannedDate': ''
+                }).then(() => {
+                    $scope.$emit('plan-view__item-dropped-on-bucket', $scope.draggingItem);
+                });
+
             });
         }
     }

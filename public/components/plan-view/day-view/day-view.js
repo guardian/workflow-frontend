@@ -86,7 +86,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                 $scope.$broadcast('drop-zones-hide');
             });
 
-            $rootScope.$on('drop-zones-drop' + $scope.dropZonesLocation, ($event, droppedOnScope) => {
+            $rootScope.$on('drop-zones-drop--' + $scope.dropZonesLocation, ($event, droppedOnScope) => {
 
                 $timeout(() => {
 
