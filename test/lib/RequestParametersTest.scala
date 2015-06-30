@@ -4,35 +4,45 @@ import com.gu.workflow.query.{DraftState, WfQueryTime, WfQuery}
 import models.{Flag, Status, Section}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec, FunSuite}
+import play.api.test.FakeRequest
 
 import scala.collection.mutable
 import RequestParameters._
 
+import scala.collection.mutable.ArrayBuffer
+
 
 class RequestParametersTest extends FreeSpec with  Matchers {
 
-  val fullQueryString = Map("state" -> mutable.Buffer("draft"),
-                            "assigneeEmail" -> mutable.Buffer("lindsey.dew@guardian.co.uk"),
-                            "flags" -> mutable.Buffer("needsLegal"),
-                            "prodOffice" -> mutable.Buffer("AU"),
-                            "section" -> mutable.Buffer("AU News", "Technology"),
-                            "content-type" -> mutable.Buffer("liveblog","gallery"),
-                            "status" -> mutable.Buffer("Writers","Desk"),
-                            "due.from" -> mutable.Buffer("2015-06-26T23:00:00.000Z"),
-                            "due.until" -> mutable.Buffer("2015-06-28T23:00:00.000Z"),
-                            "incopy" -> mutable.Buffer("true"),
-                            "notarealvalue" -> mutable.Buffer()
+  val fullQueryString = Map("assigneeEmail" -> ArrayBuffer("lindsey.dew@guardian.co.uk"),
+                            "content-type" -> ArrayBuffer("article,liveblog"),
+                            "created.from" -> ArrayBuffer("2015-06-28T23:00:00.000Z"),
+                            "created.until" -> ArrayBuffer("2015-06-29T23:00:00.000Z"),
+                            "due.from" -> ArrayBuffer("2015-07-03T23:00:00.000Z"),
+                            "due.until" -> ArrayBuffer("2015-07-05T23:00:00.000Z"),
+                            "flags" -> ArrayBuffer("needsLegal,approved"),
+                            "incopy" -> ArrayBuffer("true"),
+                            "section" -> ArrayBuffer("Developer+Blog,Arts"),
+                            "state" -> ArrayBuffer("draft"),
+                            "status" -> ArrayBuffer("Writers,Desk"),
+                            "touched" -> ArrayBuffer("lindsey.dew@guardian.co.uk"),
+                            "view.from" -> ArrayBuffer("2015-06-29T23:00:00.000Z"),
+                            "view.until" -> ArrayBuffer("2015-06-30T23:00:00.000Z")
                             )
 
-  val composerQuery = Map("composerId" ->  mutable.Buffer("1234"))
+  "getQueryString" - {
+    "should return query string map" in {
+      getQueryString(FakeRequest("GET", "/api/content?state=draft")) should equal (Map("state"->ArrayBuffer("draft")))
+      getQueryString(FakeRequest("GET", "/api/content?content-type=article,liveblog")) should equal (Map("content-type"->ArrayBuffer("article,liveblog")))
+      getQueryString(FakeRequest("GET", "/api/content?state=draft&content-type=article,liveblog")) should equal (Map("state"->ArrayBuffer("draft"), "content-type"->ArrayBuffer("article,liveblog")))
+    }
+  }
 
   "getOptionFromQS" - {
     "should return element if present" in {
       getOptionFromQS("state", fullQueryString) should equal (Some("draft"))
     }
-    "should return head element if multiple in the list" in {
-      getOptionFromQS("content-type", fullQueryString) should equal (Some("liveblog"))
-    }
+
     "should return none if key is not preset in qs" in {
       getOptionFromQS("notakey", fullQueryString) should equal (None)
     }
@@ -45,9 +55,7 @@ class RequestParametersTest extends FreeSpec with  Matchers {
     "should return list element if present" in {
       getSeqFromQS("state", fullQueryString) should equal (Seq("draft"))
     }
-    "should return list elements if multiple in the list" in {
-      getSeqFromQS("content-type", fullQueryString) should equal (Seq("liveblog", "gallery"))
-    }
+
     "should return empty list is not preset in qs" in {
       getSeqFromQS("notakey", fullQueryString) should equal (Seq())
     }
@@ -55,14 +63,6 @@ class RequestParametersTest extends FreeSpec with  Matchers {
       getSeqFromQS("notarealvalue", fullQueryString) should equal (Seq())
     }
   }
-
-  "getComposerId" - {
-    "should return composerId if in qsstring" in {
-      getComposerId(composerQuery) should equal (Some("1234"))
-      getComposerId(fullQueryString) should equal (None)
-    }
-  }
-
 
   "fromQueryString" - {
     "should return a wfquery object" in {
