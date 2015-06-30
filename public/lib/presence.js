@@ -9,7 +9,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     function presenceError(msg, loggingFields) {
         var err = new Error(msg);
         err.name = "PresenceError";
-        $log.error(["Presence error: ", msg].join(' '), loggingFields);
+        $log.error(["Presence error: ", JSON.stringify(msg)].join(' '), loggingFields);
         $rootScope.$apply(function () { throw err });
         broadcast("presence.connection.error", msg);
     }
@@ -95,7 +95,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 
                 p.on('connectionRetry', msg => {
                     broadcast("presence.connection.retry")
-                    $log.info("Presence connection lost, retrying", {'sessionId':p.connectionId});
+                    $log.warn("Presence connection lost, retrying", {'sessionId':p.connectionId});
                 });
                 addHandlers(p, messageHandlers);
                 // startConnection() will return a promise that will be
