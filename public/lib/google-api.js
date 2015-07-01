@@ -32,7 +32,6 @@ angular.module('wfGoogleApiService', [])
 
                     console.info('Client authorised via google');
                     $rootScope.$emit('wfGoogleApiService.userIsAuthorized');
-                    window.gapi.auth = gapi.auth.getToken();
                 } else {
 
                     console.info('Client not authorised, triggering auth popup');
@@ -42,7 +41,7 @@ angular.module('wfGoogleApiService', [])
 
             authInvis (callBack) {
 
-                gapi.auth.authorize({
+                return gapi.auth.authorize({
                     'client_id': this.client_id,
                     'scope': this.scope,
                     immediate: true
@@ -69,7 +68,7 @@ angular.module('wfGoogleApiService', [])
                         viewType: 'domain_public'
                     },
                     headers: {
-                        'Authorization': 'Bearer ' + window.gapi.auth['access_token']
+                        'Authorization': 'Bearer ' + window.gapi.auth.getToken()['access_token']
                     }
                 };
 
@@ -86,25 +85,31 @@ angular.module('wfGoogleApiService', [])
              * TODO: refactor in to separate service
              *
              * @param query search term
-             * @returns $http promise
+             * @returns Promise
              */
             searchUsers (query) {
 
                 // Handle re-auth if necessary
 
-                if (new Date(parseInt(gapi.auth.expires_at, 10)*1000) <= new Date()) {
-                    // re-auth
-                    this.authInvis(() => {
+                return new Promise((resolve, reject) => {
 
-                        if (authResult && !authResult.error) {
+                    if (new Date(parseInt(gapi.auth.getToken()['expires_at'], 10)*1000) <= new Date()) {
 
-                            window.gapi.auth = gapi.auth.getToken();
-                            return this.requestUserList(query);
-                        }
-                    })
-                } else {
-                    return this.requestUserList(query);
-                }
+                        // re-auth
+                        this.authInvis((authResult) => {
+
+                            if (authResult && !authResult.error) {
+
+                                resolve(this.requestUserList(query));
+                            } else {
+
+                                reject({msg: 'Could not re-authorise...'});
+                            }
+                        });
+                    } else {
+                        resolve(this.requestUserList(query));
+                    }
+                });
             }
         }
 
