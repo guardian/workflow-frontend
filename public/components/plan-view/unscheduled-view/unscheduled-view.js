@@ -32,6 +32,8 @@ function wfUnscheduledView ($rootScope, wfPlannedItemService, $http, $timeout, w
 
             $rootScope.$on('drop-zones-drop--' + $scope.dropZonesLocation, ($event, droppedOnScope) => {
 
+                // TODO: add directly in to DOM
+
                 wfPlannedItemService.updateFields($scope.draggingItem.id, {
                     'bucketed': false,
                     'hasSpecificTime': false,
