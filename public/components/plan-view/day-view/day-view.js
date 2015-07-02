@@ -109,7 +109,15 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                     // Update the item with its new bucket details
                     $scope.draggingItem.bucketed = true;
                     $scope.draggingItem.hasSpecificTime = false;
-                    $scope.draggingItem.plannedDate.hours(droppedOnScope.bucket.start);
+
+                    // Handle possibility of item coming from unscheduled view - ie: no planned date
+                    if ($scope.draggingItem.plannedDate && moment.isMoment($scope.draggingItem.plannedDate)) {
+                        $scope.draggingItem.plannedDate.hours(droppedOnScope.bucket.start);
+                    } else {
+                        $scope.draggingItem.plannedDate = $scope.selectedDate.clone();
+                        $scope.draggingItem.plannedDate.hours(droppedOnScope.bucket.start);
+                    }
+
                     $scope.sourceBucketStart = null;
                     $scope.draggingItem.bucketStart = $scope.buckets.indexOf(droppedOnScope.bucket); // -1 if not found > unscheduled
 
