@@ -89,8 +89,6 @@ function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDa
     })();
     // ! ADD ALPHA LABEL
 
-    $scope.focusUnscheduledView = false;
-
     $rootScope.$on('plan-view__ui-loaded', function() {
         $scope.isLoaded = true;
     });

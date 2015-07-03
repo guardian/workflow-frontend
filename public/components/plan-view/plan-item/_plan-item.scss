@@ -5,6 +5,19 @@
 $plan-item-notes-max-width: 750px;
 $plan-item-notes-line-height: 16px;
 
+.plan-item {
+    &.ui-draggable-dragging {
+        @include box-shadow(0px 1px 4px 2px #c0c0c0);
+        background-color: #fff;
+        width: 160px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        transform: rotate(-7deg);
+        z-index: 99999;
+        list-style: none;
+    }
+}
+
 .plan-item__item-wrapper {
     position: relative;
     height: 36px;
@@ -269,5 +282,25 @@ $plan-item-notes-line-height: 16px;
         width: 100%;
         height: $plan-item-notes-line-height;
         background: linear-gradient(to right, rgba(255, 255, 255, 0), $c-grey-200 50%);
+    }
+}
+
+.day-view__item--slim {
+    .plan-item__item-drawer {
+        flex-direction: column;
+    }
+
+    .drawer__column,
+    .drawer__column--wide {
+        flex-basis: auto;
+    }
+
+    .drawer__column--control {
+        margin-left: 0;
+        border-left: none;
+    }
+
+    .plan__item__item-drawer__notes {
+        min-height: 0;
     }
 }

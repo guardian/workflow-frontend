@@ -3,7 +3,17 @@
     overflow-x: auto;
     border-right: 1px solid #bdbdbd;
 
+    .quick-add__container {
+        flex: 0 0 58px;
+    }
+
+    .quick-add {
+        padding: 12px;
+        height: 58px;
+    }
+
     .unscheduled__title { // TODO: Abstract with _day-view.scss:22
+        flex: 0 0 26px;
         position: relative;
         z-index: 2;
         display: block;
@@ -15,4 +25,14 @@
         height: 26px;
         line-height: 26px;
     }
+
+    .unscheduled-view__list {
+        flex: 1 0 auto;
+        height: 100px;
+        overflow-y: auto;
+        position: relative;
+    }
+
 }
+
+

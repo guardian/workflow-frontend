@@ -89,18 +89,6 @@
         border: none;
     }
 
-    &.ui-draggable-dragging {
-        @include box-shadow(0px 1px 4px 2px #c0c0c0);
-        background-color: #fff;
-//        opacity: 0.8;
-        z-index: 999;
-        width: 160px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        transform: rotate(-7deg);
-        z-index: 99999;
-    }
-
     &.dnd__status--hovered {
         background-color: $c-highlight-blue;
     }
