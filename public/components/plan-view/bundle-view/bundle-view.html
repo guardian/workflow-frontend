@@ -10,14 +10,14 @@
 
         <div ng-if="dayItemsByBundle.itemsToday.length === 0" class="alert alert-info">No items found.</div>
 
-        <li class="day-bundle" ng-repeat="bundle in dayItemsByBundle track by bundle.id" ng-class="{ 'day-bundle--unscheduled': bundle.id === 0 }" data-jqyoui-options="bundleDraggableOptions" jqyoui-droppable="{onDrop: 'droppedOnExistingBundle'}" data-drop="bundle.id !== 0" ng-model="bundle.itemsToday" ng-if="bundle.itemsToday.length > 0">
+        <li class="day-bundle" ng-repeat="bundle in dayItemsByBundle track by bundle.id" ng-class="{ 'day-bundle--unscheduled': bundle.id === 0 }">
 
-            <div class="day-bundle__title" ng-style="genBundleColorStyle('border-left-color', bundle.title)">
+            <div class="day-bundle__title droppable" ng-style="genBundleColorStyle('border-left-color', bundle.title)">
 
                 <!--Title for unscheduled-->
                 <span ng-if="bundle.id === 0" class="day-bundle__title-text">{{ bundle.title }}</span>
 
-                <!--Editable title for all other budles-->
+                <!--Editable title for all other bundles-->
                 <wf-editable ng-if="bundle.id !== 0" ng-model="bundle.title" wf-editable-on-update="updateTitle(bundle, newValue)" wf-editable-required="true">
                     {{ bundle.title || 'Empty...' }}
                 </wf-editable>
@@ -30,7 +30,7 @@
 
             <ul class="day-bundle__items list-unstyled" ng-style="genBundleColorStyle('border-left-color', bundle.title)">
 
-                <li wf-plan-item variant="'bundle'" ng-repeat="item in bundle.itemsToday track by item.id" item="item" bundle="bundle" ng-model="item" class="day-view__item" data-drag="bundle.id === 0" jqyoui-draggable="{onStart: 'draggingStart(item)', onStop: 'draggingStop', onDrag: 'onDrag', placeholder: true}" data-jqyoui-options="bundleDraggableOptions" jqyoui-droppable="{onDrop: 'droppedOn'}" data-drop="!item.bundleId"></li>
+                <li wf-plan-item variant="'bundle'" ng-repeat="item in bundle.itemsToday track by item.id" item="item" bundle="bundle" ng-model="item" class="day-view__item plan-item"></li>
 
             </ul>
         </li>

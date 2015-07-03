@@ -10,48 +10,67 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
         },
         controller: function ($scope) {
 
-            $scope.bundleDraggableOptions = {
-                helper: 'clone',
-                containment: '.bundle-view',
-                axis: 'y',
-                revert: 'invalid',
-                handle: '.plan__drag-handle',
+            //$scope.bundleDraggableOptions = {
+            //    helper: 'clone',
+            //    containment: '.bundle-view',
+            //    axis: 'y',
+            //    revert: 'invalid',
+            //    handle: '.plan__drag-handle',
+            //
+            //    // For droppable on same item
+            //
+            //    tolerance: 'pointer',
+            //    hoverClass: 'dnd__status--hovered',
+            //    scroll: true
+            //};
 
-                // For droppable on same item
-
-                tolerance: 'pointer',
-                hoverClass: 'dnd__status--hovered',
-                scroll: true
+            $scope.droppable = {
+                hoverClass: 'dz--hover',
+                drop: (event, ui) => {
+                    var droppedOnScope = angular.element(event.target).scope();
+                    $scope.$emit('drop-zones-drop--bundle-view', droppedOnScope);
+                    $scope.droppedOnExistingBundle(droppedOnScope);
+                }
             };
+
+            $rootScope.$on('drag-start', ($event, item) => {
+                $scope.draggingItem = item;
+            });
 
             $scope.newItemName = null;
         },
         link: ($scope, elem, attrs) => {
 
             function refreshBundles() {
-                wfBundleService.getList().then((response) => {
+                return wfBundleService.getList().then((response) => {
                     $scope.bundleList = response.data.data;
                 });
             }
-            refreshBundles();
+            function setUpDroppables () {
+                $(elem[0].querySelectorAll('.droppable')).droppable($scope.droppable);
+            }
+
+            $timeout(() => {
+                refreshBundles().then(setUpDroppables);
+            });
 
             $scope.getBundleName    = wfBundleService.getTitle;
             $scope.genBundleColorStyle   = wfBundleService.genBundleColorStyle;
 
-            $scope.draggingStart = (event, ui, item) => {
-                $scope.draggedItem = item;
-                elem.addClass('bundle-view--dragging');
-                $scope.dragScrollBoxEl = ui.helper.parents('.day-view');
-                $scope.dragStartOffset = $scope.dragScrollBoxEl.scrollTop();
-            };
+            //$scope.draggingStart = (event, ui, item) => {
+            //    $scope.draggedItem = item;
+            //    elem.addClass('bundle-view--dragging');
+            //    $scope.dragScrollBoxEl = ui.helper.parents('.day-view');
+            //    $scope.dragStartOffset = $scope.dragScrollBoxEl.scrollTop();
+            //};
 
-            $scope.onDrag = (event, ui) => {
-                ui.position.top = ui.position.top + ($scope.dragScrollBoxEl.scrollTop() - $scope.dragStartOffset);
-            };
-
-            $scope.draggingStop = () => {
-                elem.removeClass('bundle-view--dragging')
-            };
+            //$scope.onDrag = (event, ui) => {
+            //    ui.position.top = ui.position.top + ($scope.dragScrollBoxEl.scrollTop() - $scope.dragStartOffset);
+            //};
+            //
+            //$scope.draggingStop = () => {
+            //    elem.removeClass('bundle-view--dragging')
+            //};
 
             /**
              * Create a new bundle from the result of dropping one item on to another. New bundle contains both items.
@@ -103,15 +122,14 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
             /**
              * Find the dragged item in the model and move it to the new bundle,
              * update the server with the new bundle id of the item.
-             * @param event
-             * @param ui
+             * @param bundleScope
              */
-            $scope.droppedOnExistingBundle = (event, ui) => {
+            $scope.droppedOnExistingBundle = (bundleScope) => {
 
-                let droppedBundle = angular.element(event.target).scope().bundle;
-                let draggedItem = util.removeItemFromCurrentBundle($scope.draggedItem);
+                let droppedBundle = bundleScope.bundle;
+                let draggedItem = util.removeItemFromCurrentBundle($scope.draggingItem);
 
-                wfPlannedItemService.updateField($scope.draggedItem.id, 'bundleId', droppedBundle.id).then(() => {
+                wfPlannedItemService.updateField($scope.draggingItem.id, 'bundleId', droppedBundle.id).then(() => {
 
                     $timeout(() => { // Create the bundle in the UI instantly
 

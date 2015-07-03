@@ -40,7 +40,6 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                 stop: planItemDraggingStop,
                 helper: 'clone',
                 appendTo: 'body'
-                //axis: 'y'
             });
 
             function planItemDraggingStart () {
