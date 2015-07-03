@@ -9,7 +9,7 @@
     <div class="plan-item__item-top-row">
         <span class="plan-item__item-time" ng-if="item.hasSpecificTime">{{ item.plannedDate.format("HH:mm") }}</span>
         <div class="plan-item__item-title">
-            <span class="bundle" ng-style="genColor(getBundleName(item.bundleId))" ng-if="item.bundleId && variant !== 'bundle'">{{ getBundleName(item.bundleId) }}</span>
+            <span class="bundle" ng-style="genColor('border-left-color', getBundleName(item.bundleId))" ng-if="item.bundleId && variant !== 'bundle'">{{ getBundleName(item.bundleId) }}</span>
             <span>{{ item.title }}</span>
         </div>
     </div>

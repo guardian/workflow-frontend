@@ -117,6 +117,9 @@ GET            /feature/:featureName/off                   controllers.Feature.f
 GET            /sharedsecret/content                       controllers.Api.sharedAuthGetContent
 GET            /sharedsecret/content/:id                   controllers.Api.sharedAuthGetContentById(id)
 
+# Support
+POST            /support/logger                            controllers.Support.logger
+
 # Management
 GET            /management/healthcheck                     controllers.Management.healthCheck
 

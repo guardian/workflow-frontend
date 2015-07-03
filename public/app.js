@@ -32,6 +32,7 @@ import 'lib/feature-switches';
 import 'lib/google-api';
 import 'lib/polling-service';
 import 'lib/title-service';
+import 'lib/logger';
 
 // Plan view specific
 import 'lib/plan-service';
@@ -74,6 +75,7 @@ angular.module('workflow',
         'wfGoogleApiService',
         'infinite-scroll',
         'wfTitleService',
+        'logger',
 
         // New
 
@@ -88,7 +90,7 @@ angular.module('workflow',
         'wfPlannedItemService',
         'wfDayNoteService'
     ])
-    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', '$animateProvider', function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider, $animateProvider ) {
+    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', '$animateProvider', "$provide", function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider, $animateProvider, $provide) {
         // TODO: remember user's state and redirect there on default '' route
         $urlRouterProvider.when('', '/dashboard');
 
@@ -98,6 +100,31 @@ angular.module('workflow',
             RegExp($compileProvider.aHrefSanitizationWhitelist().source +
                    "|^\\s*" + _wfConfig.incopyExportUrl.match("^.*?:")[0])
         );
+
+        $provide.decorator('$log', ["$delegate", 'logger', function ($delegate, logger) {
+
+            $delegate.error = function (...args) {
+                args.splice(1,0,"ERROR")
+                logger.log.apply(null, args);
+            };
+
+            $delegate.warn = function (...args) {
+                args.splice(1,0,"WARN")
+                logger.log.apply(null, args);
+            };
+
+            $delegate.info = function (...args) {
+                args.splice(1,0,"INFO")
+                logger.log.apply(null, args);
+            };
+
+            $delegate.debug = function (...args) {
+                args.splice(1,0,"DEBUG")
+                logger.log.apply(null, args);
+            };
+
+            return $delegate;
+        }]);
 
         $stateProvider.state('dashboard', {
             url: '/dashboard',

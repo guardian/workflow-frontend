@@ -1,7 +1,7 @@
 # --- !Ups
 
-ALTER TABLE plan_item ALTER COLUMN planned_date DROP NOT NULL;
+alter table stub add column trashed boolean;
 
 # --- !Downs
 
-ALTER TABLE plan_item ALTER COLUMN planned_date SET NOT NULL;
+alter table stub drop column trashed;
