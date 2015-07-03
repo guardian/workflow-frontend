@@ -1,14 +1,28 @@
 <form class="bundle-search" ng-class="{'bundle-search--loading': loading}">
-    <input type="text" ng-model="searchTerm" ng-keydown="search($event)" placeholder="Search existing bundles..."/>
-    <ul class="bundle-search__results-list" ng-show="results.length > 0">
-        <li class="bundle-search__result" ng-repeat="result in results track by result.id" ng-class="{'bundle-search__result--selected': selectedIndex == $index}">
+
+    <input type="text" ng-model="searchTerm" ng-keydown="search($event)" placeholder="Create or Add to bundle..."/>
+
+    <ul class="bundle-search__results-list" ng-show="searchTerm.length > 0">
+
+        <!-- List out search result bundles to add a new item to on this date -->
+
+        <li class="bundle-search__result" ng-repeat="result in results track by result.id" ng-class="{'bundle-search__result--selected': selectedIndex == $index}" ng-click="addTo(result)">
             <span class="bundle-search__result-title">{{ result.title }}</span>
             <span class="bundle-search__result-items">{{ result.items.length }} item{{ result.items.length > 1 ? "s" : "" }} ({{ result.itemsToday.length }} today)</span>
         </li>
+
+        <!-- Allow creation of a new bundle on this date if search results aren't useful -->
+
+        <li class="bundle-search__result bundle-search__result--create" ng-class="{'bundle-search__result--selected': selectedIndex == results.length}" ng-click="create()" ng-style="getColor(searchTerm)">
+            <span class="bundle-search__result-title">Create new a bundle called <strong>{{ searchTerm }}</strong></span>
+        </li>
+
     </ul>
+
     <div class="loading-indicator">
         <div class="bounce1"></div>
         <div class="bounce2"></div>
         <div class="bounce3"></div>
     </div>
+
 </form>
