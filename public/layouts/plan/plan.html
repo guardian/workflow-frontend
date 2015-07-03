@@ -1,6 +1,6 @@
 <div class="plan-container" ng-class="{ 'loaded': isLoaded }">
 
-    <wf-unscheduled-view class="unscheduled-view" ng-class="{'main': focusUnscheduledView}" unscheduled-items="unscheduledPlannedItemsByBundle"></wf-unscheduled-view>
+    <wf-unscheduled-view class="unscheduled-view" unscheduled-items="unscheduledPlannedItemsByBundle"></wf-unscheduled-view>
 
     <div class="date-list">
 
@@ -10,9 +10,7 @@
 
     </div>
 
-    <div class="plan__view-container" ng-class="{'main': !focusUnscheduledView}">
-
-        <button ng-click="focusUnscheduledView = !focusUnscheduledView">switch</button>
+    <div class="plan__view-container">
 
         <div class="plan__view-container--overlay" ng-if="!newsList">
             <div class="alert alert-info">Please select a News List</div>
