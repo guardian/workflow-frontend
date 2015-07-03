@@ -10,7 +10,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
         controller: ($scope) => {
             $scope.bundleList = wfBundleService.list();
             $scope.getBundleName = wfBundleService.getTitle;
-            $scope.genColor = wfBundleService.genBundleColor;
+            $scope.genColor = wfBundleService.genBundleColorStyle;
             $scope.drawerOpen = false;
             $scope.awaitingDeleteConfirmation = false;
             $scope.newsLists = _wfConfig.newsLists;

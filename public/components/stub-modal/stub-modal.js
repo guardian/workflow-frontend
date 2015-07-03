@@ -35,15 +35,21 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
     }
 
     $scope.stub = stub;
-    $scope.stub.section = (function findSelectedSectionInAvailableSections () {
-        var sect = $scope.stub.section;
-        var filteredSections = $scope.sections.filter((el) => el.name === sect.name);
-        if (filteredSections.length === 0) {
-            return $scope.sections[0];
-        } else {
-            return filteredSections[0];
-        }
-    })();
+
+    if ($scope.stub.section !== null) {
+        /**
+         * To ensure that a modal loaded without a preference for section does not validate,
+         * only set the section if a preference was found
+         */
+        $scope.stub.section = (function findSelectedSectionInAvailableSections (sect) {
+            var filteredSections = $scope.sections.filter((el) => el.name === sect.name);
+            if (filteredSections.length > 0) {
+                return filteredSections[0];
+            }
+            return sect;
+        })($scope.stub.section);
+    }
+
     $scope.stub.status = 'Writers';
 
     /**
@@ -61,20 +67,24 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
         }
 
         return sections
-    };
+    }
 
     $scope.legalStates = legalStatesService.getLegalStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
 
     $scope.$watch('stub.section', (newValue, oldValue) => {
-        wfPreferencesService.getPreference('preferedStub').then((data) => {
-            data.section = newValue.name;
-            wfPreferencesService.setPreference('preferedStub', data);
-        }, () => {
-            wfPreferencesService.setPreference('preferedStub', {
-                section: newValue.name
-            });
-        })
+
+        if (newValue) {
+            wfPreferencesService.getPreference('preferedStub').then((data) => {
+                data.section = newValue.name;
+                wfPreferencesService.setPreference('preferedStub', data);
+            }, () => {
+                wfPreferencesService.setPreference('preferedStub', {
+                    section: newValue.name
+                });
+            })
+        }
+
     }, true);
 
     $scope.validImport = false;
@@ -218,10 +228,6 @@ wfStubModal.run([
             return wfFiltersService.get('prodOffice');
         }
 
-        function getSectionFromSections(sectionName) {
-            return sections.filter((section) => section.name === sectionName)[0];
-        }
-
         /**
          * Return a promise for stub data based off the users stored preferences.
          * Currently only modifies section for content creation
@@ -230,13 +236,13 @@ wfStubModal.run([
          * @returns {Promise}
          */
         function setUpPreferedStub (contentType) {
-            var defaultSection = 'Technology'; // tech by default
 
-            function createStubData (contentType, section) {
+            function createStubData (contentType, sectionName) {
 
                 return {
                     contentType: contentType,
-                    section: getSectionFromSections(section) || defaultSection,
+                    // Only send through a section if one is found in the prefs
+                    section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
                     priority: 0,
                     needsLegal: 'NA',
                     prodOffice: currentFilteredOffice() ||  'UK'
@@ -245,10 +251,10 @@ wfStubModal.run([
 
             return wfPreferencesService.getPreference('preferedStub').then((data) => {
 
-                return createStubData(contentType, data.section || defaultSection);
+                return createStubData(contentType, data.section);
             }, () => {
 
-                return createStubData(contentType, defaultSection);
+                return createStubData(contentType, null);
             });
         }
 
