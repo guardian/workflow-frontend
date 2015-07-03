@@ -26,7 +26,6 @@
       "angular-animate": "1.3.8",
       "angular-bootstrap": "npm:angular-bootstrap-temporary@0.11.0",
       "angular-bootstrap-datetimepicker": "github:dalelotts/angular-bootstrap-datetimepicker@0.2.4",
-      "angular-dragdrop": "github:codef0rmer/angular-dragdrop@1.0.9",
       "angular-mocks": "1.3.8",
       "angular-ui-router": "0.2.11",
       "bootstrap": "github:components/bootstrap@3.2.0",

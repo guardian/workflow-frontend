@@ -15,6 +15,9 @@ $plan-item-notes-line-height: 16px;
         transform: rotate(-7deg);
         z-index: 99999;
         list-style: none;
+        .bundle {
+            display: none;
+        }
     }
 }
 

@@ -6,8 +6,6 @@ import 'jquery'
 import 'jquery-ui/draggable'
 import 'jquery-ui/droppable'
 
-import 'angular-dragdrop';
-
 import { wfDateView }           from 'components/plan-view/date-view/date-view';
 import { wfBundleView }         from 'components/plan-view/bundle-view/bundle-view';
 import { wfDayView }            from 'components/plan-view/day-view/day-view';
@@ -16,10 +14,10 @@ import { wfInlineAddItem }      from 'components/plan-view/inline-add-item/inlin
 import { wfDateRangeWidget }    from 'components/plan-view/date-range-widget/date-range-widget';
 import { wfBundleSearch }       from 'components/plan-view/bundle-search/bundle-search';
 import { wfUnscheduledView }    from 'components/plan-view/unscheduled-view/unscheduled-view';
-import { wfDropZones }          from  'components/plan-view/drop-zones/drop-zones';
+import { wfDropZones }          from 'components/plan-view/drop-zones/drop-zones';
 
 // TODO: Tidy up order of injections to directives
-angular.module('wfPlan',            ['wfPlanService', 'wfPollingService', 'wfFiltersService', 'ngDragDrop'])
+angular.module('wfPlan',            ['wfPlanService', 'wfPollingService', 'wfFiltersService'])
     .directive('wfDateView',        ['$rootScope','$timeout', 'wfDayNoteService', 'wfPlannedItemService', 'wfFiltersService', '$sce', wfDateView])
     .directive('wfBundleView',      ['$rootScope','$timeout', 'wfBundleService', 'wfPlannedItemService', 'wfFiltersService', wfBundleView])
     .directive('wfDayView',         ['$rootScope', 'wfPlannedItemService', '$http', '$timeout', 'wfFiltersService', wfDayView])
