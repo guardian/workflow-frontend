@@ -98,8 +98,8 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                     $log.warn("Presence connection lost, retrying", {'sessionId':p.connectionId});
                 });
 
-                p.on('presenceLogs', msg => {
-                    $log.debug("Presence log message" + JSON.parse(msg), {'sessionId':p.connectionId});
+                p.on('connectionLog', msg => {
+                    $log.debug("Presence log message " + msg, {'sessionId':p.connectionId});
                 })
                 addHandlers(p, messageHandlers);
                 // startConnection() will return a promise that will be
