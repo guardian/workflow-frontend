@@ -99,7 +99,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                 });
 
                 p.on('connectionLog', msg => {
-                    $log.debug("Presence log message " + msg, {'sessionId':p.connectionId});
+                    $log.debug("Presence log message " + JSON.stringify(msg), {'sessionId':p.connectionId});
                 })
                 addHandlers(p, messageHandlers);
                 // startConnection() will return a promise that will be
