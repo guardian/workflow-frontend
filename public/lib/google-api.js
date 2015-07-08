@@ -54,7 +54,7 @@ angular.module('wfGoogleApiService', [])
                     'client_id': this.client_id,
                     'scope': this.scope,
                     immediate: false
-                }, apiService.handleAuthResult);
+                }, this.handleAuthResult);
             }
 
             requestUserList (query) {

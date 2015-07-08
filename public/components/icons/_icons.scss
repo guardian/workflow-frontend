@@ -28,6 +28,19 @@
             fill: $c-red;
         }
 
+        &--priority-low,
+        &--priority-very-low {
+            transform: rotate(180deg);
+        }
+
+        &--priority-low {
+            fill: $c-composer-blue;
+        }
+
+        &--priority-very-low {
+            fill: $c-composer-dark-blue;
+        }
+
         // custom dimensions
         &--view-versions,
         &--optimised-for-web-changed,
