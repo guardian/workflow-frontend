@@ -287,6 +287,14 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         });
     }
 
+    function parseContentForComposerIds(content) {
+        var contentItems = _.flatten(_.map($scope.content, function(c) { return c.items; }));
+        var filteredItems = _.filter(contentItems, function(item) { return item !== undefined; });
+        var composerIds = _.map(filteredItems, function(item) { return item.composerId });
+        var filteredComposerIds = _.filter(composerIds, function(item) { return item !== undefined });
+        return filteredComposerIds;
+    }
+
     // =============================================================================== //
 
     this.render = (response) => {
@@ -318,17 +326,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
             doContentTrimAndSetContent();
 
             (function setUpPresenceContentIds () {
-
-                var contentIds = [];
-
-                for (var key in data.content) {
-                    if (key !== 'Stub') {
-                        contentIds = contentIds.concat(
-                            data.content[key].map((content) => content.composerId)
-                        );
-                    }
-                }
-
+                var contentIds = parseContentForComposerIds($scope.content);
                 $scope.contentIds = contentIds;
             })();
 
