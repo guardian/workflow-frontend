@@ -120,7 +120,7 @@ angular.module('wfGoogleApiService', [])
         return {
             restrict: 'E',
             scope: {},
-            template: '<div class="alert alert-info" ng-if="visible">To assign content to people or yourself, you'll need to <button class="btn btn-xs btn-primary " ng-click="auth()">Authorise Workflow</button>.</div>',
+            template: '<div class="alert alert-info" ng-if="visible">To assign content to yourself other people, you'll need to <button class="btn btn-xs btn-primary " ng-click="auth()">Authorise Workflow</button> access your Google contacts.</div>',
             link: ($scope, elem) => {
 
                 $scope.visible = false;
