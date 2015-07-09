@@ -119,8 +119,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     self.subscribe = function (articleIds) {
         currentArticleIds = articleIds;
         presence.then((p) => p.subscribe(articleIds), (msg) => {
-            var loggingFields =  {'sessionId':p.connectionId, 'userEmail': person.email}
-            $log.error("could not subscribe to presence " + msg, loggingFields);
+            $log.error("could not subscribe to presence " + msg);
         });
     };
 
