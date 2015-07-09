@@ -9,11 +9,6 @@ function wfUnscheduledView ($rootScope, wfPlannedItemService, $http, $timeout, w
         },
         controller: function ($scope) {
             $scope.dropZonesLocation = 'unscheduled-view';
-            //wfPlannedItemService.getUnscheduledItems().then((response) => {
-            //    $timeout(() => {
-            //        $scope.unscheduledItems = response.data.data[0].items; // ???
-            //    });
-            //})
         },
         link: ($scope, elem, attrs) => {
 
@@ -33,6 +28,10 @@ function wfUnscheduledView ($rootScope, wfPlannedItemService, $http, $timeout, w
             $rootScope.$on('drop-zones-drop--' + $scope.dropZonesLocation, ($event, droppedOnScope) => {
 
                 // TODO: add directly in to DOM
+
+                $timeout(() => {
+                    $scope.unscheduledItems.push($scope.draggingItem);
+                });
 
                 wfPlannedItemService.updateFields($scope.draggingItem.id, {
                     'bucketed': false,

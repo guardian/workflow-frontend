@@ -160,7 +160,7 @@ function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDa
         });
 
         // Item added to interface via quick add
-        $scope.$on('plan-view__quick-add-submit', function (ev, item) {
+        $scope.$on('plan-view__quick-add-submit', function (ev, item, quickAddId) {
 
             wfPlannedItemService.add(item)
                 .then((res) => {
@@ -168,10 +168,10 @@ function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDa
                         .then(() => {
                             $timeout(updateScopeItems);
                         });
-                    $rootScope.$emit('plan-view__quick-add-success');
+                    $rootScope.$emit('plan-view__quick-add-success', quickAddId);
                 })
                 .catch((err) => {
-                    $rootScope.$emit('plan-view__quick-add-failure');
+                    $rootScope.$emit('plan-view__quick-add-failure', quickAddId);
                 });
         });
 
