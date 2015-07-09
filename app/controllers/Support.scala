@@ -8,23 +8,22 @@ import play.api.mvc.{Action, Controller}
 
 object Support extends Controller {
 
-  def encodeEmail(msg: ClientLog) :ClientLog = {
-    val newFields = msg.fields match {
-      case Some(fields) => Some(fields map {
-        case ("userEmail", email) => ("userEmail", Base64.encodeBase64(email.getBytes()).toString())
-        case (key, value) => (key, value) // TODO: find out if this is the best way to do this
-      })
-      case None => None
-    }
-    ClientLog(msg.message, msg.level, msg.timestamp, newFields)
+  def encodeEmail(email: String) = {
+    Base64.encodeBase64(email.getBytes()).toString()
   }
+
+  def adjust[A, B](m: Map[A, B], k: A)(f: B => B): Option[Map[A,B]] = {
+    m.get(k).map(v => m.updated(k, f(v)))
+  }
+
 
   def logger = Action { req =>
     (for {
         js <- req.body.asJson
         msg <- js.validate[ClientLog].asOpt
     } yield {
-      ClientMessageLoggable.logClientMessage(encodeEmail(msg))
+      val logMsg  = msg.copy(fields = msg.fields.flatMap(f => adjust(f, "userEmail")(encodeEmail)))
+      ClientMessageLoggable.logClientMessage(logMsg)
     }).getOrElse {
       Logger.info(s"unrecognised message ${req.body}")
     }
