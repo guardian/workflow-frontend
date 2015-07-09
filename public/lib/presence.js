@@ -97,6 +97,10 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                     broadcast("presence.connection.retry");
                     $log.warn("Presence connection lost, retrying", {'sessionId':p.connectionId, 'userEmail': person.email});
                 });
+
+                p.on('connectionLog', msg => {
+                    $log.debug(["Presence logging: ", JSON.stringify(msg)].join(' '), {'sessionId':p.connectionId});
+                })
                 addHandlers(p, messageHandlers);
                 // startConnection() will return a promise that will be
                 // resolved once the conection has been successfully
