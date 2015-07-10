@@ -93,7 +93,11 @@ angular.module('wfGoogleApiService', [])
 
                 return new Promise((resolve, reject) => {
 
-                    if (new Date(parseInt(gapi.auth.getToken()['expires_at'], 10)*1000) <= new Date()) {
+                    var t = gapi.auth.getToken();
+
+                    if (t && // token exists
+                        t['expires_at'] && // has expires property
+                        new Date(parseInt(t['expires_at'], 10)*1000) <= new Date()) { // not already expired
 
                         // re-auth
                         this.authInvis((authResult) => {
