@@ -288,10 +288,10 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     }
 
     function parseContentForComposerIds(content) {
-        var contentItems = _.flatten(_.map($scope.content, function(c) { return c.items; }));
-        var filteredItems = _.filter(contentItems, function(item) { return item !== undefined; });
-        var composerIds = _.map(filteredItems, function(item) { return item.composerId });
-        var filteredComposerIds = _.filter(composerIds, function(item) { return item !== undefined });
+        let contentItems = _.flatten(content.map((c) => c.items));
+        let filteredItems = contentItems.filter((item) => item !== undefined);
+        let composerIds = filteredItems.map((item) => item.composerId);
+        let filteredComposerIds = composerIds.filter((item) => item !== undefined);
         return filteredComposerIds;
     }
 
@@ -326,8 +326,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
             doContentTrimAndSetContent();
 
             (function setUpPresenceContentIds () {
-                var contentIds = parseContentForComposerIds($scope.content);
-                $scope.contentIds = contentIds;
+                $scope.contentIds = parseContentForComposerIds($scope.content);
             })();
 
             $scope.$emit('content.render', {
