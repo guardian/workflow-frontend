@@ -12,8 +12,8 @@ object Support extends Controller {
     Base64.encodeBase64(email.getBytes()).toString()
   }
 
-  def adjust[A, B](m: Map[A, B], k: A)(f: B => B): Option[Map[A,B]] = {
-    m.get(k).map(v => m.updated(k, f(v)))
+  def adjust[A, B](m: Map[A, B], k: A)(f: B => B): Map[A,B] = {
+      m.get(k).map(v => m.updated(k, f(v))).getOrElse(m)
   }
 
 
@@ -22,7 +22,7 @@ object Support extends Controller {
         js <- req.body.asJson
         msg <- js.validate[ClientLog].asOpt
     } yield {
-      val logMsg  = msg.copy(fields = msg.fields.flatMap(f => adjust(f, "userEmail")(encodeEmail)))
+      val logMsg  = msg.copy(fields = msg.fields.map(f => adjust(f, "userEmail")(encodeEmail)))
       ClientMessageLoggable.logClientMessage(logMsg)
     }).getOrElse {
       Logger.info(s"unrecognised message ${req.body}")
