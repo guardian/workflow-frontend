@@ -29,6 +29,15 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                 value: 2,
                 title: 'Very High'
             }];
+
+            $scope.determineDragOrigin = () => {
+
+                if ($scope.item.plannedDate) {
+                    return "day"
+                } else {
+                    return 'unscheduled';
+                }
+            };
         },
         link: ($scope, elem, attrs) => {
 
@@ -43,11 +52,12 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
             });
 
             function planItemDraggingStart () {
-                $scope.$emit('drag-start', $scope.item);
+                $scope.$emit('drag-start', $scope.item, $scope.determineDragOrigin());
             }
 
             function planItemDraggingStop () {
                 $scope.$emit('drag-stop', $scope.item);
+                $scope.item.dragOrigin = $scope.determineDragOrigin();
             }
 
             $scope.maxNoteLength = config.pvPlanItemMaxNoteLength;
