@@ -79,6 +79,12 @@ angular.module('wfGoogleApiService', [])
                 });
             }
 
+            _tokenIsExpired (t) {
+                return t && // token exists
+                    t['expires_at'] && // has expires property
+                    new Date(parseInt(t['expires_at'], 10)*1000) <= new Date(); // not already expired
+            }
+
             /**
              * Search for users via google api
              *
@@ -93,11 +99,7 @@ angular.module('wfGoogleApiService', [])
 
                 return new Promise((resolve, reject) => {
 
-                    var t = gapi.auth.getToken();
-
-                    if (t && // token exists
-                        t['expires_at'] && // has expires property
-                        new Date(parseInt(t['expires_at'], 10)*1000) <= new Date()) { // not already expired
+                    if (this._tokenIsExpired(gapi.auth.getToken())) {
 
                         // re-auth
                         this.authInvis((authResult) => {
