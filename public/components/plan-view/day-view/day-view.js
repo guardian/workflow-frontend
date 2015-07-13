@@ -102,8 +102,6 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                         let indexInCurrentBucket = currentBucketItems.indexOf($scope.draggingItem);
 
                         currentBucketItems.splice(indexInCurrentBucket, 1);
-
-                        droppedOnScope.bucket.items.push($scope.draggingItem);
                     }
 
                     // Update the item with its new bucket details
@@ -121,6 +119,7 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                     $scope.sourceBucketStart = null;
                     $scope.draggingItem.bucketStart = $scope.buckets.indexOf(droppedOnScope.bucket); // -1 if not found > unscheduled
 
+                    droppedOnScope.bucket.items.push($scope.draggingItem);
                 }).then(() => {
 
                     wfPlannedItemService.updateFields($scope.draggingItem.id, {

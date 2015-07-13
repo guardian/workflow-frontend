@@ -10,20 +10,6 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
         },
         controller: function ($scope) {
 
-            //$scope.bundleDraggableOptions = {
-            //    helper: 'clone',
-            //    containment: '.bundle-view',
-            //    axis: 'y',
-            //    revert: 'invalid',
-            //    handle: '.plan__drag-handle',
-            //
-            //    // For droppable on same item
-            //
-            //    tolerance: 'pointer',
-            //    hoverClass: 'dnd__status--hovered',
-            //    scroll: true
-            //};
-
             $scope.droppable = {
                 hoverClass: 'dz--hover',
                 drop: (event, ui) => {
@@ -33,8 +19,9 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 }
             };
 
-            $rootScope.$on('drag-start', ($event, item) => {
+            $rootScope.$on('drag-start', ($event, item, origin) => {
                 $scope.draggingItem = item;
+                $scope.draggingItem.dragOrigin = origin;
             });
 
             $scope.newItemName = null;
@@ -56,21 +43,6 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
 
             $scope.getBundleName    = wfBundleService.getTitle;
             $scope.genBundleColorStyle   = wfBundleService.genBundleColorStyle;
-
-            //$scope.draggingStart = (event, ui, item) => {
-            //    $scope.draggedItem = item;
-            //    elem.addClass('bundle-view--dragging');
-            //    $scope.dragScrollBoxEl = ui.helper.parents('.day-view');
-            //    $scope.dragStartOffset = $scope.dragScrollBoxEl.scrollTop();
-            //};
-
-            //$scope.onDrag = (event, ui) => {
-            //    ui.position.top = ui.position.top + ($scope.dragScrollBoxEl.scrollTop() - $scope.dragStartOffset);
-            //};
-            //
-            //$scope.draggingStop = () => {
-            //    elem.removeClass('bundle-view--dragging')
-            //};
 
             /**
              * Create a new bundle from the result of dropping one item on to another. New bundle contains both items.
@@ -127,11 +99,21 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
             $scope.droppedOnExistingBundle = (bundleScope) => {
 
                 let droppedBundle = bundleScope.bundle;
-                let draggedItem = util.removeItemFromCurrentBundle($scope.draggingItem);
+                let draggedItem;
+
+                if ($scope.draggingItem.dragOrigin === 'unscheduled') {
+                    draggedItem = $scope.draggingItem;
+                    draggedItem.plannedDate = $scope.selectedDate.clone();
+                    wfPlannedItemService.updateFields(draggedItem.id, {
+                        'plannedDate': draggedItem.plannedDate.toISOString()
+                    });
+                } else {
+                    draggedItem = util.removeItemFromCurrentBundle($scope.draggingItem);
+                }
 
                 wfPlannedItemService.updateField($scope.draggingItem.id, 'bundleId', droppedBundle.id).then(() => {
 
-                    $timeout(() => { // Create the bundle in the UI instantly
+                    $timeout(() => { // Update the bundle in the UI instantly
 
                         draggedItem.bundleId = droppedBundle.id;
 
@@ -228,6 +210,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                     return wfPlannedItemService.add(newItem);
                 }).then((response) => {
                     $scope.$emit('plan-view__bundles-edited');
+                    setUpDroppables();
                 });
             };
 
