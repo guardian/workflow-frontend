@@ -18,14 +18,33 @@
     font-size: 18px;
     width: $dashboardSidebarWidth;
     min-width: $dashboardSidebarWidth;
-    background-color: $c-bluegrey;
+    background-color: $c-grey-350;
     margin: 0;
-    padding: 0 10px;
     line-height: 50px;
-    border-right: 1px solid #bdbdbd;
+    border-right: 1px solid $c-grey-400;
+    display: flex;
+
+    &-letter,
+    &-link {
+        display: inline-block;
+        text-align: center;
+        line-height: 55px;
+    }
+
+    &-letter {
+        border-right: 1px solid $c-grey-300;
+        padding: 0 10px;
+        font-size: 20px;
+        flex: 0 0 50px;
+    }
+    &-link {
+        flex: 1 1 auto;
+        font-size: 18px;
+        margin: 0px;
+    }
 }
 
-.top-toolbar__title-link {
+.top-toolbar__link-text {
     color: $c-text;
 }
 
