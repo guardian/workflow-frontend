@@ -16,20 +16,26 @@
 <body class="main-container">
 
   <header class="top-toolbar">
-    <h1 class="top-toolbar__title">
-      <a class="top-toolbar__title-link" href="@routes.Application.index" title="Welcome to Workflow">Workflow</a>
-    </h1>
-    <div class="top-toolbar__view-toolbar" ui-view="view-toolbar"></div>
-    <div class="top-toolbar__create" ui-view="view-create"></div>
-    <div class="top-toolbar__user" ui-view="view-user">
-        <noscript class="logout__noscript">
+      <div class="top-toolbar__title">
+          <div class="top-toolbar__title-letter">
+              <span class="top-toolbar__link-text">W</span>
+          </div>
+          <h1 class="top-toolbar__title-link">
+              <p class="top-toolbar__link-text">Workflow</p>
+          </h1>
+      </div>
+
+      <div class="top-toolbar__view-toolbar" ui-view="view-toolbar"></div>
+      <div class="top-toolbar__create" ui-view="view-create"></div>
+      <div class="top-toolbar__user" ui-view="view-user">
+          <noscript class="logout__noscript">
             @if(user.isEmpty) {
                 <a class="top-toolbar__user-link" href="@routes.Application.index">Log in</a>
             } else {
                 <a class="top-toolbar__user-link" href="@routes.Login.logout" title="Logout">Logout</a>
             }
-        </noscript>
-    </div>
+          </noscript>
+      </div>
   </header>
 
 @content
