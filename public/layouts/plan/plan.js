@@ -80,13 +80,6 @@ function wfPlanLoader (planService, PollingService, wfFiltersService, $rootScope
  */
 function wfPlanController ($scope, $rootScope, planLoader, $http, $timeout, wfDayNoteService, wfFiltersService, wfPlannedItemService) {
 
-    // ADD ALPHA LABEL
-    (function createBetaLabel () {
-        let title = angular.element('<span class="plan-view__title">Plan view <span class="plan-view__title--beta">ALPHA</span></span>');
-        document.querySelector('.top-toolbar__title').appendChild(title[0]);
-    })();
-    // ! ADD ALPHA LABEL
-
     $rootScope.$on('plan-view__ui-loaded', function() {
         $scope.isLoaded = true;
     });

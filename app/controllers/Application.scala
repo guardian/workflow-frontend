@@ -52,7 +52,7 @@ object Application extends Controller with PanDomainAuthActions {
         "bundleList" -> bundleList
       )
 
-      Ok(views.html.app("Plan View", Some(user), config))
+      Ok(views.html.app("Newslister", Some(user), config))
     }
   }
 
