@@ -65,7 +65,6 @@ object Api extends Controller with PanDomainAuthActions {
 
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
-    val composerId = RequestParameters.getComposerId(req.queryString)
     val queryData = RequestParameters.fromQueryString(req.queryString)
 
     val state     = queryData.state
@@ -74,15 +73,10 @@ object Api extends Controller with PanDomainAuthActions {
     val assigned  = queryData.assignedToEmail
     val view      = queryData.viewTimes
     val trashed   = queryData.trashed
+    val composerId = queryData.composerId
 
-    def getContent = {
-      if (composerId.isDefined) {
-        DashboardRow.getDashboardRowByComposerId(composerId.get).toList
-      }
-       else {
-        PostgresDB.getContent(queryData)
-      }
-    }
+
+    def getContent = PostgresDB.getContent(queryData)
 
     def getStubs =
       CommonDB.getStubs(queryData, unlinkedOnly = true)
