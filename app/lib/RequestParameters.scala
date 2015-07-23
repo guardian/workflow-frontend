@@ -11,7 +11,6 @@ import com.gu.workflow.lib.Formatting._
 
 object RequestParameters {
 
-
   def fromRequest(req: Request[AnyContent]): WfQuery = {
     fromQueryString(getQueryString(req))
   }
@@ -28,6 +27,7 @@ object RequestParameters {
     qs.get(key).flatMap(_.headOption)
   }
 
+
   def fromQueryString(qs: Map[String, Seq[String]]): WfQuery = {
     val dueFrom = getOptionFromQS("due.from", qs) flatMap parseDate
     val dueUntil = getOptionFromQS("due.until", qs) flatMap parseDate
@@ -36,7 +36,9 @@ object RequestParameters {
     val contentType   =  getSeqFromQS("content-type", qs)
     val flags         =  getSeqFromQS("flags", qs) flatMap parseFlag
     val prodOffice    =  getSeqFromQS("prodOffice", qs)
+
     val composerId    =  getOptionFromQS("composerId", qs)
+
 
     val createdFrom   =  getOptionFromQS("created.from", qs) flatMap parseDate
     val createdUntil  =  getOptionFromQS("created.until", qs) flatMap parseDate
