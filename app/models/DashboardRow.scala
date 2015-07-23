@@ -1,7 +1,5 @@
 package models
 
-import lib.{ApiSuccess, ApiErrors, PostgresDB}
-import lib.Response._
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.libs.json._
@@ -35,26 +33,6 @@ object DashboardRow {
         __.write[WorkflowContent].writes(d.wc)
     }
   }
-
-  def fromContentItem(ci: ContentItem): Option[DashboardRow] = {
-    ci match {
-      case ContentItem(stub, Some(wc)) => Some(DashboardRow(stub, wc.copy(section=Some(Section(stub.section)))))
-      case _ => None
-    }
-  }
-
-  def getDashboardRowByComposerId(composerId: String): Option[DashboardRow] = {
-    PostgresDB.getContentItemByComposerId(composerId).flatMap(fromContentItem(_))
-  }
-
-  def getDashboardRowRepsonse(composerId: String): Response[DashboardRow] = {
-    getDashboardRowByComposerId(composerId) match {
-      case None => Left(ApiErrors.composerIdNotFound(composerId))
-      case Some(d) => Right(ApiSuccess(d))
-    }
-  }
-
-
 }
 
 case class PublishedData(composerId: String, published: Boolean, publishedTime: Option[DateTime])

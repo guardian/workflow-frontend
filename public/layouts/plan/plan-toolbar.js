@@ -24,7 +24,5 @@ angular.module('wfPlanToolbar', ['wfFiltersService'])
             } else {
                 $scope.$emit('plan-view__filters-changed.news-list', $scope.selectedNewsList.id);
             }
-        })
-
-
+        });
     }]);
