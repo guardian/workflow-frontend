@@ -1,13 +1,14 @@
 package lib
 
+
 import com.gu.workflow.query.{DateRange, DraftState, WfQueryTime, WfQuery}
 import models.{Flag, Status, Section}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec, FunSuite}
 import play.api.test.FakeRequest
-
 import scala.collection.mutable
 import RequestParameters._
+
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -40,20 +41,24 @@ class RequestParametersTest extends FreeSpec with  Matchers {
 
   "getOptionFromQS" - {
     "should return element if present" in {
-      getOptionFromQS("state", qsString) should equal (Some("draft"))
+      getOptionFromQS("state", qsString) should equal(Some("draft"))
     }
 
     "should return none if key is not preset in qs" in {
-      getOptionFromQS("notakey", qsString) should equal (None)
+      getOptionFromQS("notakey", qsString) should equal(None)
     }
     "should return none if element is an empty list" in {
-      getOptionFromQS("notarealvalue", qsString) should equal (None)
+      getOptionFromQS("notarealvalue", qsString) should equal(None)
     }
   }
 
-  "getOptionFromQS" - {
+  "getSeqFromQS" - {
     "should return list element if present" in {
       getSeqFromQS("state", qsString) should equal (Seq("draft"))
+    }
+
+    "should return list elements if present" in {
+      getSeqFromQS("status", qsString) should equal (Seq("Writers", "Desk"))
     }
 
     "should return empty list is not preset in qs" in {
@@ -98,6 +103,7 @@ class RequestParametersTest extends FreeSpec with  Matchers {
       fromQueryString(qsString).touched           should equal (queryData.touched)
       fromQueryString(qsString).viewTimes         should equal (queryData.viewTimes)
       fromQueryString(qsString).trashed           should equal (queryData.trashed)
+
     }
 
   }
