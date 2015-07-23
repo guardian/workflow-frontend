@@ -2,6 +2,23 @@ import angular from 'angular';
 
 import 'lib/http-session-service';
 
+function hashCode(str) { // java String#hashCode
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
+}
+
+function intToARGB(i) {
+    let c = ((i>>24)&0xFF).toString(16) +
+        ((i>>16)&0xFF).toString(16) +
+        ((i>>8)&0xFF).toString(16)  +
+        (i&0xFF).toString(16);
+
+    return("#" + c.substr(0, 6));
+}
+
 angular
     .module('wfBundleService', ['wfHttpSessionService'])
     .factory('wfBundleService', ['$rootScope', '$log', 'wfHttpSessionService',
@@ -49,26 +66,10 @@ angular
                     });
                 }
 
-                genBundleColor(s) {
-
-                    function hashCode(str) { // java String#hashCode
-                        var hash = 0;
-                        for (var i = 0; i < str.length; i++) {
-                            hash = str.charCodeAt(i) + ((hash << 5) - hash);
-                        }
-                        return hash;
-                    }
-
-                    function intToARGB(i) {
-                        let c = ((i>>24)&0xFF).toString(16) +
-                            ((i>>16)&0xFF).toString(16) +
-                            ((i>>8)&0xFF).toString(16)  +
-                            (i&0xFF).toString(16);
-
-                        return("#" + c.substr(0, 6));
-                    }
-
-                    return { 'border-left-color': intToARGB(hashCode(s || "empty")) };
+                genBundleColorStyle(prop, s) {
+                    let ret = {};
+                    ret[prop] = intToARGB(hashCode(s || "empty"));
+                    return ret;
                 }
 
                 constructor () {

@@ -70,13 +70,14 @@ object Api extends Controller with PanDomainAuthActions {
     val state     = queryData.state
     val status    = queryData.status
     val touched   = queryData.touched
+    val published = queryData.published
     val assigned  = queryData.assignedToEmail
     val view      = queryData.viewTimes
     val trashed   = queryData.trashed
     val composerId = queryData.composerId
 
-
     def getContent = PostgresDB.getContent(queryData)
+
 
     def getStubs =
       CommonDB.getStubs(queryData, unlinkedOnly = true)
@@ -87,7 +88,7 @@ object Api extends Controller with PanDomainAuthActions {
         (queryData.inIncopy != Some(true)) &&
         touched.isEmpty &&
         assigned.isEmpty &&
-        composerId.isEmpty
+        queryData.composerId.isEmpty
       ) getStubs else Nil
 
     val contentGroupedByStatus = getContent.groupBy(_.wc.status)
@@ -124,7 +125,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def contentById(composerId: String) = {
     Response(for{
-      data <- DashboardRow.getDashboardRowRepsonse(composerId).right
+      data <- PostgresDB.getDashboardRowByComposerId(composerId).right
     }yield {
       data
     })

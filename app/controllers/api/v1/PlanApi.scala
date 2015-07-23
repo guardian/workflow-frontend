@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 import com.gu.workflow.db._
 import lib.Response.Response
 import models._
-import play.api.libs.json.{JsResult, Reads, JsValue}
+import play.api.libs.json._
 import play.api.mvc._
 import lib._
 
@@ -24,9 +24,13 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
       case "plannedDate"|"created"|"day" =>
         // this could possibly be improved by replacing with a custom reads
         val dateString = extract[String](jsValueData).right.map { d => d.data}.right.getOrElse("")
-        Try(new DateTime(dateString)) match {
-          case Success(dt) => Right(ApiSuccess(dt))
-          case Failure(msg) => Left(ApiError("Could not parse date", "Could not parse date", 500, "Error"))
+        if (dateString.size > 0) {
+          Try(new DateTime(dateString)) match {
+            case Success(dt) => Right(ApiSuccess(Some(dt)))
+            case Failure(msg) => Left(ApiError("Could not parse date", "Could not parse date", 500, "Error"))
+          }
+        } else { // An empty datestring > unscheduled item
+          Right(ApiSuccess(None))
         }
 
       case "hasSpecificTime"|"bucketed" => extract[Boolean](jsValueData)
@@ -57,10 +61,20 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
     val planQuery = PlannedItemQuery(newsListIdOption, startDateOption.map(d => DateTime.parse(d)), endDateOption.map(d => DateTime.parse(d)))
 
+    val items = PlannedItemDB.getPlannedItemsByQuery(planQuery) // List of bundles with items
+    val unscheduledItems = PlannedItemDB.getUnscheduledPlannedItems(planQuery) // Flat list of items
+
+    // TODO: Better way to do this?
+
+    val itemsAsJson = JsArray(items.get.map(Json.toJson(_)).toSeq)
+    val unscheduledItemsAsJson = JsArray(unscheduledItems.get.map(Json.toJson(_)).toSeq)
+
+    val resultAsJson = Map("plan" -> itemsAsJson, "unscheduled" ->  unscheduledItemsAsJson)
+
     Response(for {
-      items <- queryDataToResponse(PlannedItemDB.getPlannedItemsByQuery(planQuery), "Could not fetch plan items").right
+      response <- queryDataToResponse(Some(resultAsJson), "Could not fetch plan items").right
     } yield {
-      items
+      response
     })
   }
 

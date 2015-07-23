@@ -10,7 +10,7 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
         controller: ($scope) => {
             $scope.bundleList = wfBundleService.list();
             $scope.getBundleName = wfBundleService.getTitle;
-            $scope.genColor = wfBundleService.genBundleColor;
+            $scope.genColor = wfBundleService.genBundleColorStyle;
             $scope.drawerOpen = false;
             $scope.awaitingDeleteConfirmation = false;
             $scope.newsLists = _wfConfig.newsLists;
@@ -29,8 +29,37 @@ function wfPlanItem ($rootScope, $http, $timeout, wfContentService, wfBundleServ
                 value: 2,
                 title: 'Very High'
             }];
+
+            $scope.determineDragOrigin = () => {
+
+                if ($scope.item.plannedDate) {
+                    return "day"
+                } else {
+                    return 'unscheduled';
+                }
+            };
         },
         link: ($scope, elem, attrs) => {
+
+            elem.draggable({
+                revert: 'invalid',
+                handle: '.plan-item__item-drag-handle',
+                containment: '.plan-container',
+                start: planItemDraggingStart,
+                stop: planItemDraggingStop,
+                helper: 'clone',
+                appendTo: 'body'
+            });
+
+            function planItemDraggingStart () {
+                $scope.$emit('drag-start', $scope.item, $scope.determineDragOrigin());
+            }
+
+            function planItemDraggingStop () {
+                $scope.$emit('drag-stop', $scope.item);
+                $scope.item.dragOrigin = $scope.determineDragOrigin();
+            }
+
             $scope.maxNoteLength = config.pvPlanItemMaxNoteLength;
 
             $scope.shiftToTomorrow = function () {

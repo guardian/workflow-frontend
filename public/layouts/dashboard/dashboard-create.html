@@ -11,13 +11,13 @@
     <ul class="dashboard-toolbar__dropdown dropdown-toolbar__list list-unstyled content-type-list--hidden" ng-class="{'content-type-list--hidden' : !showDropdown }">
         <li class="dropdown-toolbar__item" ng-repeat="(key, value) in options" ng-click="createContent(key)">
 
-            <label class="dropdown-toolbar__item-label" for="{{ value }}">
+            <label id="testing-dashboard-create-dropdown-{{ value }}" class="dropdown-toolbar__item-label" for="{{ value }}">
                 <i class="content-list-item__icon--content-type" wf-icon="{{ key }}"></i>
                 <span class="dropdown-toolbar__item-title">{{ value }}</span>
             </label>
         </li>
         <li class="dropdown-toolbar__item" ng-mousedown="importContent()">
-            <label class="dropdown-toolbar__item-label" for="Import">
+            <label id="testing-dashboard-create-dropdown-import" class="dropdown-toolbar__item-label" for="Import">
                 <span class="dropdown-toolbar__item-title">Composer import</span>
             </label>
         </li>

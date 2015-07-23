@@ -40,9 +40,13 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                 onAddHook: '=',
                 preSelectedDate: '='
             },
+            controller: function ($scope) {
+                // With multiple quick adds on the page, ensure that THIS quick add is unique
+                $scope.id = Math.floor(Math.random()*1000000);
+            },
             link: function($scope, elm) {
 
-                $scope.withDatePicker = $scope.preSelectedDate ? false : true;
+                $scope.withDatePicker = typeof $scope.preSelectedDate == 'undefined';
 
                 $scope.addDate = $scope.preSelectedDate;
 
@@ -61,13 +65,13 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                 $scope.defaultProps = function(addDate) {
 
                     // if date not set, use default of this time tomorrow <<<< TODO: Think about this - maybe date field should be compulsory
-                    if (!addDate) {
+                    if (typeof addDate == 'undefined') {
                         addDate = moment().add(1, 'days');
                     }
                     return {
                         id: 0,// Should not need to be here!
                         newsList: $scope.currentNewsListId,
-                        plannedDate: moment(addDate)
+                        plannedDate: addDate ? moment(addDate) : null
                     }
                 };
 
@@ -80,24 +84,25 @@ angular.module('wfQuickAdd', ['wfContentService', 'wfFiltersService'])
                 $scope.submit = function () {
                     var parsed = parseQuickAdd($scope.addText);
                     var content = _.defaults(parsed, $scope.defaultProps($scope.addDate));
-                    $rootScope.$broadcast('plan-view__quick-add-submit', content);
+                    $rootScope.$broadcast('plan-view__quick-add-submit', content, $scope.id);
                 };
 
-                $rootScope.$on('plan-view__quick-add-success', function () {
-                    $scope.showSuccess = true;
-                    $scope.buttonText = QA_BUTTON_SUCCESS_TEXT;
-//                    $scope.disabled = true;
-                    $scope.clearFields();
-                    $timeout(function() { $scope.showSuccess = false; $scope.buttonText = QA_BUTTON_DEFAULT_TEXT; }, 1000);
+                $rootScope.$on('plan-view__quick-add-success', function (event, quickAddId) {
+                    if (quickAddId === $scope.id) {
+                        $scope.showSuccess = true;
+                        $scope.buttonText = QA_BUTTON_SUCCESS_TEXT;
+                        $scope.clearFields();
+                        $timeout(function() { $scope.showSuccess = false; $scope.buttonText = QA_BUTTON_DEFAULT_TEXT; }, 1000);
+                    }
                 });
 
-                $rootScope.$on('plan-view__quick-add-failure', function () {
-                    $scope.showFailure = true;
-//                    $scope.disabled = true;
-                    $scope.buttonText = QA_BUTTON_FAILURE_TEXT;
-                    $timeout(function() { $scope.showFailure = false; $scope.buttonText = QA_BUTTON_DEFAULT_TEXT;}, 1000);
+                $rootScope.$on('plan-view__quick-add-failure', function (event, quickAddId) {
+                    if (quickAddId === $scope.id) {
+                        $scope.showFailure = true;
+                        $scope.buttonText = QA_BUTTON_FAILURE_TEXT;
+                        $timeout(function() { $scope.showFailure = false; $scope.buttonText = QA_BUTTON_DEFAULT_TEXT;}, 1000);
+                    }
                 });
-
 
                 $scope.$on('plan-view__filters-changed', function() {
                     var filters = wfFiltersService.getAll();
