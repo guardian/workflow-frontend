@@ -23,11 +23,6 @@ trait PanDomainAuthActions extends AuthActions with Results {
     Ok(views.html.login(Some(message)))
   }
 
-  import com.gu.pandomainauth.service.CookieUtils
-  override def readAuthenticatedUser(request: RequestHeader): Option[AuthenticatedUser] = readCookie(request) map { cookie =>
-      CookieUtils.parseCookieData(cookie.value, settings.secret)
-  }
-
   override def invalidUserMessage(claimedAuth: AuthenticatedUser): String = {
     if( (claimedAuth.user.emailDomain == "guardian.co.uk") && !claimedAuth.multiFactor) {
       s"${claimedAuth.user.email} is not valid for use with Workflow as you need to have two factor authentication enabled." +
