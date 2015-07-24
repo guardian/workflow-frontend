@@ -52,10 +52,11 @@ var filterDefaults = function (statuses, wfFiltersService) {
             multi: true,
             filterOptions: [
                 { caption: 'Article', value: 'article', icon: 'article' },
-                { caption: 'Liveblog', value: 'liveblog', icon: 'liveblog' },
                 { caption: 'Gallery', value: 'gallery', icon: 'gallery' },
+                { caption: 'Interactive', value: 'interactive', icon: 'interactive' },
+                { caption: 'Liveblog', value: 'liveblog', icon: 'liveblog' },
                 { caption: 'Picture', value: 'picture', icon: 'picture' },
-                { caption: 'Interactive', value: 'interactive', icon: 'interactive' }
+                { caption: 'Video', value: 'video', icon: 'video' }
             ]
         },
         {
