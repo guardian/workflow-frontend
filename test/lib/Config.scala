@@ -1,5 +1,9 @@
 package test
 
+import java.util.Date
+
+import com.gu.pandomainauth.model.{AuthenticatedUser, User}
+import com.gu.pandomainauth.service.LegacyCookie
 import play.api.test.Helpers
 
 object Config {
@@ -16,9 +20,11 @@ object Config {
     s
   }
 
-  val pandaConfig = PandaConfig("workflow", "localhost", awsKey, awsSecret)
-  val pandaUser   = PandaUser("jim@guardian.co.uk", "jim", "bob")
-  val pandaCookie = PandaCookie(pandaUser, pandaConfig)
+  val authed = AuthenticatedUser(User("jim", "bob", "jim@guardian.co.uk", None), "workflow", Set("workflow"),new Date().getTime + 86400 * 1000, true)
+  //this test will break if localhost secret is changed in s3q
+  val cookieValue = LegacyCookie.generateCookieData(authed, "devsecret")
+
+  val pandaCookie = PandaCookie("gutoolsAuth", cookieValue)
 
   val appConfig = Map(
     "logging.logstash.enabled" -> false,
