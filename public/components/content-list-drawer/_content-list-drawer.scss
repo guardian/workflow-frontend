@@ -242,3 +242,44 @@ $drawer-breakpoint-small: 1400px;
 .drawer__user-name {
     display: inline-block;
 }
+
+.content-list-drawer.content-list-drawer--trashed .content-list-drawer__full-width {
+
+    position: relative;
+    overflow: hidden;
+
+    &:before {
+        display: block;
+        content: "TRASHED";
+        font-size: 16vw;
+        position: absolute;
+        z-index: 999;
+        top: 0;
+        height: 100%;
+        left: 0;
+        width: calc(100% - 120px);
+        line-height: 100%;
+        font-weight: bold;
+        transform: rotate(-12deg);
+        text-align: center;
+        color: transparentize($c-red, 0.8);
+
+    }
+
+    .drawer__column,
+    .drawer__column--wide,
+    .drawer__column--media {
+        pointer-events: none;
+    }
+    .drawer__column--control {
+        pointer-events: auto;
+    }
+
+    .drawer__control-item--restore {
+        background-color: transparentize($c-green, 0.1);
+        color: #fff;
+        &:hover {
+            background-color: $c-green;
+        }
+    }
+}

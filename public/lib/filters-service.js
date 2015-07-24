@@ -73,6 +73,11 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('filtersChanged.trashed', function(event, data) {
+                    self.update('trashed', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
                 var keywords = {
                     "type"       : "content-type",
                     "status"     : "status",
@@ -187,6 +192,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'composerId'   : params['composerId'],
                         'view'         : params['view'],
                         'news-list'    : params['news-list'],
+                        'trashed'      : params['trashed'],
                         'plan-start-date': params['plan-start-date'],
                         'plan-end-date': params['plan-end-date']
                     };

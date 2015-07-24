@@ -24,7 +24,9 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
 
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
-    val queryData = RequestParameters.fromQueryString(req.queryString)
+
+    val queryData = RequestParameters.fromRequest(req)
+
     //Note content items are not UI ordered yet
     Response(for{
       content <- PostgresDB.getContentItems(queryData).right
@@ -71,7 +73,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
   }
 
   def contentByComposerId(id: String) =  {
-    val contentOpt: Option[ContentItem] = PostgresDB.getContentItemByComposerId(id)
+    val contentOpt: Option[ContentItem] = PostgresDB.getContentByCompserId(id)
 
     val contentEither = contentOpt match {
       case Some(contentItem) => {

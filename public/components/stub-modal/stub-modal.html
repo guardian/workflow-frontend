@@ -26,13 +26,14 @@
                 <div>
                     <select id="stub_status" name="status" ng-model="stub.status" ng-options="status.value as status.label for status in statuses"></select>
                 </div>
-                <p class="help-block" ng-class="{ 'help-block--invisible': mode === 'import' || stub.status === 'Stub' }">To save as a Stub please change status to News List</p>
+                <p class="help-block" ng-class="{ 'help-block--invisible': mode === 'import' || stub.status === 'Stub' }">To save as a Stub, change status to News List</p>
             </div>
             <div class="form-group pull-right col-xs-5">
                 <label for="stub_section">Section *</label>
                 <div>
                     <select id="stub_section" name="section" ng-model="stub.section" ng-options="section.name for section in
-                 sections"></select>
+                 sections" required>
+                    </select>
                 </div>
             </div>
         </div>
@@ -139,7 +140,7 @@
         </p>
     </div>
 
-    <div class="modal-footer alert alert-success" ng-show="actionSuccess">
+    <div id="testing-modal-success-message" class="modal-footer alert alert-success" ng-show="actionSuccess">
         <p>Completed successfully!</p>
     </div>
 </div>

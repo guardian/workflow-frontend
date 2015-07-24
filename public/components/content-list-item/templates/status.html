@@ -1,4 +1,4 @@
 <td class="content-list-item__field--status" title="Status">
-    <select class="content-list-item__field--status--select" ng-click="$event.stopPropagation()" ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
+    <select id="testing-content-list-item__field--status--select" class="content-list-item__field--status--select" ng-click="$event.stopPropagation()" ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status" ng-disabled="contentItem.item.trashed">
     </select>
 </td>

@@ -45,6 +45,7 @@
     height: 40px;
     line-height: 16px;
     padding: 2px 4px;
+    cursor: pointer;
     .bundle-search__result-title {
         display: block;
     }
@@ -59,4 +60,21 @@
             font-weight: bold;
         }
     }
+
+    &:hover {
+        background-color: $c-grey-400;
+    }
+
+    &--create {
+
+        transition: background-color 0.2s ease-in-out;
+
+        background-color: transparentize($c-composer-blue, 0.9);
+
+        &:hover, &.bundle-search__result--selected {
+            background-color: transparentize($c-composer-blue, 0.7);
+        }
+    }
+
+
 }

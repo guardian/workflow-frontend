@@ -6,10 +6,10 @@ var module = angular.module('wfPresenceService', []);
 
 module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $log, config, wfFeatureSwitches, wfUser) {
 
-    function presenceError(msg) {
+    function presenceError(msg, loggingFields) {
         var err = new Error(msg);
         err.name = "PresenceError";
-        $log.error("Presence error: " + msg);
+        $log.error(["Presence error: ", JSON.stringify(msg)].join(' '), loggingFields);
         $rootScope.$apply(function () { throw err });
         broadcast("presence.connection.error", msg);
     }
@@ -78,19 +78,30 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
             // 2. Have we loaded the client library?
             (presenceClient) => {
                 var p = presenceClient(self.endpoint, person);
+                var loggingFields = {'sessionId':p.connectionId, 'userEmail': person.email}
                 // for all successful connections, trigger a subscribe
                 // (this will happen on initial connection, but also if we
                 // lose connection and then it is restored)
                 p.on('connection.open', () => {
+                    $log.info('Presence connection open', loggingFields);
                     broadcast("presence.connection.open");
-                    p.subscribe(currentArticleIds).catch((err) => $log.error('error subscribing ', err));
+                    p.subscribe(currentArticleIds).catch((err) => $log.error(['error subscribing ', err].join(' ')));
                 });
                 // the 'error' event gets triggered for each of the
                 // three retries, but 'connection.error' will only get
                 // triggered if we finally give up.
                 p.on('connection.error', msg => {
-                    presenceError(msg);
+                    presenceError(msg, loggingFields);
                 });
+
+                p.on('connectionRetry', msg => {
+                    broadcast("presence.connection.retry");
+                    $log.warn("Presence connection lost, retrying",loggingFields);
+                });
+
+                p.on('connectionLog', msg => {
+                    $log.debug(["Presence logging: ", JSON.stringify(msg)].join(' '), loggingFields);
+                })
                 addHandlers(p, messageHandlers);
                 // startConnection() will return a promise that will be
                 // resolved once the conection has been successfully
@@ -98,17 +109,17 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                 // replaces the return value with our presenceClient object
                 return p.startConnection().then(() => presenceResolve(p), () => promisePresenceError("unable to establish connection to presence"));
             },
-            () => {
-                promisePresenceError("Could not get access to the client library");
+            (err) => {
+                promisePresenceError("Could not get access to the client library: " + err);
             }).catch((err)=>{
-                promisePresenceError("error starting presence" + err);
+                promisePresenceError("error starting presence " + err);
             });
     });
 
     self.subscribe = function (articleIds) {
         currentArticleIds = articleIds;
         presence.then((p) => p.subscribe(articleIds), (msg) => {
-            $log.error("could not subscribe to presence [" + msg + "]");
+            $log.error("could not subscribe to presence " + msg);
         });
     };
 

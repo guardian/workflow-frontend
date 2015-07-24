@@ -15,6 +15,13 @@
         background-color: $c-grey-200;
     }
 
+    &--trashed {
+        .content-list-item__field--working-title,
+        .content-list-item__field--headline {
+            text-decoration: line-through;
+        }
+    }
+
     &:hover {
         background-color: $c-grey-150;
     }

@@ -258,14 +258,9 @@ function wfContentItemUpdateActionDirective() {
     };
 }
 
-function wfGetPriorityStringFilter () {
+function wfGetPriorityStringFilter (priorities) {
     return function (priorityValue) {
-        if (priorityValue == 1) {
-            return "urgent";
-        } else if (priorityValue == 2) {
-            return "very-urgent";
-        }
-        return "normal";
+        return (priorities.filter((priority) => priority.value === priorityValue)[0].name).toLowerCase();
     };
 }
 

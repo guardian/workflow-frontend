@@ -46,7 +46,7 @@ function wfDateRangeWidget ($timeout, wfFiltersService) {
                 {
                     name: "Next 7 days",
                     apply: shortCutApply(() => {
-                        $scope.dateRange.startDate = moment();
+                        $scope.dateRange.startDate = moment().startOf('day');
                         $scope.dateRange.endDate = $scope.dateRange.startDate.clone().add(7, 'days');
                     }),
                     active: false
@@ -54,7 +54,7 @@ function wfDateRangeWidget ($timeout, wfFiltersService) {
                 {
                     name: "Next 3 weeks",
                     apply: shortCutApply(() => {
-                        $scope.dateRange.startDate = moment();
+                        $scope.dateRange.startDate = moment().startOf('day');
                         $scope.dateRange.endDate = $scope.dateRange.startDate.clone().add(3, 'weeks').endOf('week');
                     }),
                     active: false
@@ -62,7 +62,7 @@ function wfDateRangeWidget ($timeout, wfFiltersService) {
                 {
                     name: "Next 3 months",
                     apply: shortCutApply(() => {
-                        $scope.dateRange.startDate = moment();
+                        $scope.dateRange.startDate = moment().startOf('day');
                         $scope.dateRange.endDate = $scope.dateRange.startDate.clone().add(3, 'months').endOf('month');
                     }),
                     active: false
