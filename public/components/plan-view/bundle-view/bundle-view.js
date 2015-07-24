@@ -10,48 +10,39 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
         },
         controller: function ($scope) {
 
-            $scope.bundleDraggableOptions = {
-                helper: 'clone',
-                containment: '.bundle-view',
-                axis: 'y',
-                revert: 'invalid',
-                handle: '.plan__drag-handle',
-
-                // For droppable on same item
-
-                tolerance: 'pointer',
-                hoverClass: 'dnd__status--hovered',
-                scroll: true
+            $scope.droppable = {
+                hoverClass: 'dz--hover',
+                drop: (event, ui) => {
+                    var droppedOnScope = angular.element(event.target).scope();
+                    $scope.$emit('drop-zones-drop--bundle-view', droppedOnScope);
+                    $scope.droppedOnExistingBundle(droppedOnScope);
+                }
             };
+
+            $rootScope.$on('drag-start', ($event, item, origin) => {
+                $scope.draggingItem = item;
+                $scope.draggingItem.dragOrigin = origin;
+            });
 
             $scope.newItemName = null;
         },
         link: ($scope, elem, attrs) => {
 
             function refreshBundles() {
-                wfBundleService.getList().then((response) => {
+                return wfBundleService.getList().then((response) => {
                     $scope.bundleList = response.data.data;
                 });
             }
-            refreshBundles();
+            function setUpDroppables () {
+                $(elem[0].querySelectorAll('.droppable')).droppable($scope.droppable);
+            }
+
+            $timeout(() => {
+                refreshBundles().then(setUpDroppables);
+            });
 
             $scope.getBundleName    = wfBundleService.getTitle;
-            $scope.genColor         = wfBundleService.genBundleColor;
-
-            $scope.draggingStart = (event, ui, item) => {
-                $scope.draggedItem = item;
-                elem.addClass('bundle-view--dragging');
-                $scope.dragScrollBoxEl = ui.helper.parents('.day-view');
-                $scope.dragStartOffset = $scope.dragScrollBoxEl.scrollTop();
-            };
-
-            $scope.onDrag = (event, ui) => {
-                ui.position.top = ui.position.top + ($scope.dragScrollBoxEl.scrollTop() - $scope.dragStartOffset);
-            };
-
-            $scope.draggingStop = () => {
-                elem.removeClass('bundle-view--dragging')
-            };
+            $scope.genBundleColorStyle   = wfBundleService.genBundleColorStyle;
 
             /**
              * Create a new bundle from the result of dropping one item on to another. New bundle contains both items.
@@ -103,17 +94,26 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
             /**
              * Find the dragged item in the model and move it to the new bundle,
              * update the server with the new bundle id of the item.
-             * @param event
-             * @param ui
+             * @param bundleScope
              */
-            $scope.droppedOnExistingBundle = (event, ui) => {
+            $scope.droppedOnExistingBundle = (bundleScope) => {
 
-                let droppedBundle = angular.element(event.target).scope().bundle;
-                let draggedItem = util.removeItemFromCurrentBundle($scope.draggedItem);
+                let droppedBundle = bundleScope.bundle;
+                let draggedItem;
 
-                wfPlannedItemService.updateField($scope.draggedItem.id, 'bundleId', droppedBundle.id).then(() => {
+                if ($scope.draggingItem.dragOrigin === 'unscheduled') {
+                    draggedItem = $scope.draggingItem;
+                    draggedItem.plannedDate = $scope.selectedDate.clone();
+                    wfPlannedItemService.updateFields(draggedItem.id, {
+                        'plannedDate': draggedItem.plannedDate.toISOString()
+                    });
+                } else {
+                    draggedItem = util.removeItemFromCurrentBundle($scope.draggingItem);
+                }
 
-                    $timeout(() => { // Create the bundle in the UI instantly
+                wfPlannedItemService.updateField($scope.draggingItem.id, 'bundleId', droppedBundle.id).then(() => {
+
+                    $timeout(() => { // Update the bundle in the UI instantly
 
                         draggedItem.bundleId = droppedBundle.id;
 
@@ -180,12 +180,12 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 });
             };
 
-            $scope.createNewBundle = () => {
+            $scope.createNewBundle = (name) => {
 
                 $scope.createNewBundleLoading = true;
 
                 let newItem = {
-                    title: '"' + $scope.createNewBundleName + '" first item',
+                    title: '"' + name + '" first item',
                     id: 0,
                     newsList: wfFiltersService.get('news-list') || 0,
                     plannedDate: $scope.selectedDate.startOf('day'),
@@ -193,12 +193,12 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                 };
 
                 let newBundle = {
-                    title: $scope.createNewBundleName,
+                    title: name,
                     id: 0,
                     itemsToday: [newItem]
                 };
 
-                wfBundleService.add(newBundle).then((response) => {
+                return wfBundleService.add(newBundle).then((response) => {
                     newBundle.id = response.data.data;
                     newItem.bundleId = response.data.data;
 
@@ -210,7 +210,7 @@ function wfBundleView ($rootScope, $timeout, wfBundleService, wfPlannedItemServi
                     return wfPlannedItemService.add(newItem);
                 }).then((response) => {
                     $scope.$emit('plan-view__bundles-edited');
-                    delete $scope.createNewBundleName;
+                    setUpDroppables();
                 });
             };
 

@@ -1,4 +1,4 @@
-<tr class="content-list-drawer content-list-drawer--hidden">
+<tr class="content-list-drawer content-list-drawer--hidden" ng-class="{'content-list-drawer--trashed': contentItem.item.trashed}">
     <td colspan="100" class="content-list-drawer__full-width">
 
         <div class="content-list-drawer__container"><!-- div for animation -->
@@ -225,12 +225,13 @@
                         <span class="drawer__section-data-row drawer__control-item" ng-click="contentListDrawerController.hide()" title="Close details">
                             <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="cross"></i>
                             Close details
+
                         </span>
                     </li>
                     <li class="drawer__control" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}">
-                    <span class="drawer__section-data-row drawer__control-item drawer__control-item--delete" ng-click="deleteContentItem()" title="Delete from Workflow">
+                    <span class="drawer__section-data-row drawer__control-item drawer__control-item--delete" ng-click="deleteContentItem(!contentItem.item.trashed)" title="{{ contentItem.item.trashed ? 'Restore' : 'Trash' }}" ng-class="{'drawer__control-item--restore': contentItem.item.trashed}">
                         <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
-                            {{ awaitingDeleteConfirmation ? 'Delete' : 'Delete from Workflow' }}
+                            {{ contentItem.item.trashed ? 'Restore' : 'Trash' }}
                         </span>
                     </li>
                     <li class="drawer__control">

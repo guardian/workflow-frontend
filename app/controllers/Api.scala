@@ -65,18 +65,18 @@ object Api extends Controller with PanDomainAuthActions {
 
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
-    val composerId = RequestParameters.getComposerId(req.queryString)
-    val queryData = RequestParameters.fromQueryString(req.queryString)
+    val queryData = RequestParameters.fromRequest(req)
 
     val state     = queryData.state
     val status    = queryData.status
     val touched   = queryData.touched
     val assigned  = queryData.assignedToEmail
     val view      = queryData.viewTimes
+    val trashed   = queryData.trashed
+    val composerId = queryData.composerId
 
-    def dashRow(composerId: String) = DashboardRow.getDashboardRowByComposerId(composerId).toList
+    def getContent = PostgresDB.getContent(queryData)
 
-    def getContent = if (composerId.isDefined) dashRow(composerId.get) else  PostgresDB.getContent(queryData)
 
     def getStubs =
       CommonDB.getStubs(queryData, unlinkedOnly = true)
@@ -87,7 +87,7 @@ object Api extends Controller with PanDomainAuthActions {
         (queryData.inIncopy != Some(true)) &&
         touched.isEmpty &&
         assigned.isEmpty &&
-        composerId.isEmpty
+        queryData.composerId.isEmpty
       ) getStubs else Nil
 
     val contentGroupedByStatus = getContent.groupBy(_.wc.status)
@@ -124,7 +124,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def contentById(composerId: String) = {
     Response(for{
-      data <- DashboardRow.getDashboardRowRepsonse(composerId).right
+      data <- PostgresDB.getDashboardRowByComposerId(composerId).right
     }yield {
       data
     })
@@ -291,6 +291,18 @@ object Api extends Controller with PanDomainAuthActions {
         jsValue <- readJsonFromRequestResponse(request.body).right
         status <- extractResponse[Flag](jsValue.data \ "data").right
         id <- PostgresDB.updateStubLegalStatus(stubId, status.data).right
+      } yield {
+        id
+      })
+    }
+  }
+
+  def putStubTrashed(stubId: Long) = CORSable(composerUrl) {
+    APIAuthAction { implicit request =>
+      Response(for {
+        jsValue <- readJsonFromRequestResponse(request.body).right
+        trashed <- extractResponse[Boolean](jsValue.data \ "data").right
+        id <- PostgresDB.updateStubTrashed(stubId, Some(trashed.data)).right
       } yield {
         id
       })

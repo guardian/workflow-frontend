@@ -61,10 +61,10 @@
             line-height: 22px;
             vertical-align: top;
         }
-    }
 
-    &.dnd__status--hovered {
-        background-color: $c-highlight-blue;
+        &.dz--hover {
+            background-color: $c-highlight-blue;
+        }
     }
 
     &.day-bundle--unscheduled {

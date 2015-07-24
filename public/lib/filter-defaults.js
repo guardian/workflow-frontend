@@ -153,6 +153,15 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'In InCopy', value: 'true' },
                 { caption: 'Not in InCopy', value: 'false' }
             ]
+        },
+        {
+            title: 'Trashed',
+            namespace: 'trashed',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'trashed', value: 'true'}
+            ]
         }
     ];
 };

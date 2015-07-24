@@ -57,7 +57,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                     var contentListItemDirective = '<tr wf-content-list-item class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-repeat="contentItem in group.items track by contentItem.id" ';
 
-                    var contentListItemClasses = 'ng-class="(contentList.selectedItem === contentItem) ? \'content-list-item--selected\' : \'\'"';
+                    var contentListItemClasses = 'ng-class="{\'content-list-item--selected\' : contentList.selectedItem === contentItem, \'content-list-item--trashed\': contentItem.item.trashed}"';
 
                     var contentListItemAttributes = 'content-item="contentItem" content-list="contentList" id="stub-{{contentItem.id}}" template="contentItemTemplate"></tr>';
 
@@ -82,6 +82,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     $scope.presenceIsActive = false;
     $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = false);
+    $rootScope.$on("presence.connection.retry", () => $scope.presenceIsActive = false);
     $rootScope.$on("presence.connection.open",  () => $scope.presenceIsActive = true);
 
     /*jshint validthis:true */
@@ -286,6 +287,14 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         });
     }
 
+    function parseContentForComposerIds(content) {
+        let contentItems = _.flatten(content.map((c) => c.items));
+        let filteredItems = contentItems.filter((item) => item !== undefined);
+        let composerIds = filteredItems.map((item) => item.composerId);
+        let filteredComposerIds = composerIds.filter((item) => item !== undefined);
+        return filteredComposerIds;
+    }
+
     // =============================================================================== //
 
     this.render = (response) => {
@@ -317,18 +326,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
             doContentTrimAndSetContent();
 
             (function setUpPresenceContentIds () {
-
-                var contentIds = [];
-
-                for (var key in data.content) {
-                    if (key !== 'Stub') {
-                        contentIds = contentIds.concat(
-                            data.content[key].map((content) => content.composerId)
-                        );
-                    }
-                }
-
-                $scope.contentIds = contentIds;
+                $scope.contentIds = parseContentForComposerIds($scope.content);
             })();
 
             $scope.$emit('content.render', {

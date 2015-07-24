@@ -11,6 +11,8 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
         },
         controller: function ($scope) {
 
+            $scope.dropZonesLocation = 'day-view';
+
             $scope.buckets = _wfConfig.newsListBuckets[$scope.newsListName] ? _wfConfig.newsListBuckets[$scope.newsListName] : _wfConfig.newsListBuckets['default'];
 
             $scope.buckets.map((bucket) => {
@@ -75,16 +77,16 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                 });
             }
 
-            $scope.$on('drag-start', ($event, item) => {
+            $rootScope.$on('drag-start', ($event, item) => {
                 $scope.draggingItem = item;
                 $scope.$broadcast('drop-zones-show');
             });
 
-            $scope.$on('drag-stop', ($event, item) => {
+            $rootScope.$on('drag-stop', ($event, item) => {
                 $scope.$broadcast('drop-zones-hide');
             });
 
-            $scope.$on('drop-zones-drop', ($event, droppedOnScope) => {
+            $rootScope.$on('drop-zones-drop--' + $scope.dropZonesLocation, ($event, droppedOnScope) => {
 
                 $timeout(() => {
 
@@ -100,17 +102,24 @@ function wfDayView ($rootScope, wfPlannedItemService, $http, $timeout, wfFilters
                         let indexInCurrentBucket = currentBucketItems.indexOf($scope.draggingItem);
 
                         currentBucketItems.splice(indexInCurrentBucket, 1);
-
-                        droppedOnScope.bucket.items.push($scope.draggingItem);
                     }
 
                     // Update the item with its new bucket details
                     $scope.draggingItem.bucketed = true;
                     $scope.draggingItem.hasSpecificTime = false;
-                    $scope.draggingItem.plannedDate.hours(droppedOnScope.bucket.start);
+
+                    // Handle possibility of item coming from unscheduled view - ie: no planned date
+                    if ($scope.draggingItem.plannedDate && moment.isMoment($scope.draggingItem.plannedDate)) {
+                        $scope.draggingItem.plannedDate.hours(droppedOnScope.bucket.start);
+                    } else {
+                        $scope.draggingItem.plannedDate = $scope.selectedDate.clone();
+                        $scope.draggingItem.plannedDate.hours(droppedOnScope.bucket.start);
+                    }
+
                     $scope.sourceBucketStart = null;
                     $scope.draggingItem.bucketStart = $scope.buckets.indexOf(droppedOnScope.bucket); // -1 if not found > unscheduled
 
+                    droppedOnScope.bucket.items.push($scope.draggingItem);
                 }).then(() => {
 
                     wfPlannedItemService.updateFields($scope.draggingItem.id, {

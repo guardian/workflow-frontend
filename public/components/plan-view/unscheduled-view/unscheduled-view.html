@@ -1,0 +1,13 @@
+<wf-quick-add on-add-hook="quickAddHook" pre-selected-date="false" class="quick-add__container"></wf-quick-add>
+
+<div class="unscheduled__title">Unscheduled <small>(any day, any time)</small></div>
+
+<ul class="unscheduled-view__list list-unstyled">
+    <li wf-plan-item variant="'unscheduled'" ng-repeat="item in unscheduledItems track by item.id" item="item" ng-model="item" class="plan-item day-view__item day-view__item--slim"></li>
+</ul>
+
+<wf-drop-zones drop-zones-location="dropZonesLocation">
+    <h2 class="droppable">
+        <span>Unscheduled</span>
+    </h2>
+</wf-drop-zones>
