@@ -1,15 +1,15 @@
 package controllers
 
 import com.gu.workflow.lib.{ClientLog, ClientMessageLoggable}
-import org.apache.commons.codec.binary.Base64
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
+import play.api.libs.Crypto
 
 object Support extends Controller {
 
   def encodeEmail(email: String) = {
-    Base64.encodeBase64(email.getBytes()).toString()
+    Crypto.encryptAES(email)
   }
 
   def adjust[A, B](m: Map[A, B], k: A)(f: B => B): Map[A,B] = {
