@@ -23,9 +23,9 @@ object Support extends Controller with PanDomainAuthActions {
         js <- request.body.asJson
         msg <- js.validate[ClientLog].asOpt
     } yield {
-        val logMsg  = msg.copy(fields = msg.fields.map(f => {
-          val fWithEmail = f + ("userEmail" -> request.user.email)
-          adjust(fWithEmail, "userEmail")(encodeEmail)
+        val logMsg  = msg.copy(fields = msg.fields.map(fields => {
+          val fieldsWithEmail = fields + ("userEmail" -> request.user.email)
+          adjust(fieldsWithEmail, "userEmail")(encodeEmail)
         }))
         ClientMessageLoggable.logClientMessage(logMsg)
     }).getOrElse {
