@@ -3,10 +3,10 @@ package controllers
 import com.gu.workflow.lib.{ClientLog, ClientMessageLoggable}
 import play.api.Logger
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Controller
 import play.api.libs.Crypto
 
-object Support extends Controller {
+object Support extends Controller with PanDomainAuthActions {
 
   def encodeEmail(email: String) = {
     Crypto.encryptAES(email)
@@ -17,15 +17,19 @@ object Support extends Controller {
   }
 
 
-  def logger = Action { req =>
+  def logger = APIAuthAction { implicit request =>
+    println(request.body)
+    println(request.user.email)
+
     (for {
-        js <- req.body.asJson
+        js <- request.body.asJson
         msg <- js.validate[ClientLog].asOpt
     } yield {
-      val logMsg  = msg.copy(fields = msg.fields.map(f => adjust(f, "userEmail")(encodeEmail)))
-      ClientMessageLoggable.logClientMessage(logMsg)
+        val msgWithEmail = msg.copy(fields = msg.fields + ("userEmail" -> request.user.email))
+        val logMsg  = msgWithEmail.copy(fields = msgWithEmail.fields.map(f => adjust(f, "userEmail")(encodeEmail)))
+        ClientMessageLoggable.logClientMessage(logMsg)
     }).getOrElse {
-      Logger.info(s"unrecognised message ${req.body}")
+      Logger.info(s"unrecognised message ${request.body}")
     }
     NoContent
   }
