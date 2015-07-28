@@ -18,15 +18,15 @@ object Support extends Controller with PanDomainAuthActions {
 
 
   def logger = APIAuthAction { implicit request =>
-    println(request.body)
-    println(request.user.email)
 
     (for {
         js <- request.body.asJson
         msg <- js.validate[ClientLog].asOpt
     } yield {
-        val msgWithEmail = msg.copy(fields = msg.fields + ("userEmail" -> request.user.email))
-        val logMsg  = msgWithEmail.copy(fields = msgWithEmail.fields.map(f => adjust(f, "userEmail")(encodeEmail)))
+        val logMsg  = msg.copy(fields = msg.fields.map(f => {
+          val fWithEmail = f + ("userEmail" -> request.user.email)
+          adjust(fWithEmail, "userEmail")(encodeEmail)
+        }))
         ClientMessageLoggable.logClientMessage(logMsg)
     }).getOrElse {
       Logger.info(s"unrecognised message ${request.body}")
