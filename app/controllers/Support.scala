@@ -8,8 +8,8 @@ import play.api.libs.Crypto
 
 object Support extends Controller with PanDomainAuthActions {
 
-  def encodeEmail(email: String) = {
-    Crypto.encryptAES(email)
+  def encryptWithApplicationSecret(s: String) = {
+    Crypto.encryptAES(s)
   }
 
   def adjust[A, B](m: Map[A, B], k: A)(f: B => B): Map[A,B] = {
@@ -25,7 +25,7 @@ object Support extends Controller with PanDomainAuthActions {
     } yield {
         val logMsg  = msg.copy(fields = msg.fields.map(fields => {
           val fieldsWithEmail = fields + ("userEmail" -> request.user.email)
-          adjust(fieldsWithEmail, "userEmail")(encodeEmail)
+          adjust(fieldsWithEmail, "userEmail")(encryptWithApplicationSecret)
         }))
         ClientMessageLoggable.logClientMessage(logMsg)
     }).getOrElse {
