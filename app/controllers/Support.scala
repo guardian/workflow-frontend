@@ -9,6 +9,7 @@ import play.api.libs.Crypto
 object Support extends Controller with PanDomainAuthActions {
 
   def encryptWithApplicationSecret(s: String) = {
+    // encryptAES uses the first 16 characters of application.secret to encrypt the string
     Crypto.encryptAES(s)
   }
 
