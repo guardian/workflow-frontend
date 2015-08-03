@@ -4,13 +4,13 @@ import play.api.libs.json._
 import org.scalatest._
 
 
-class WorkflowSpec extends WorkflowIntegrationSuite with Inside {
+class WorkflowSpec extends FlatSpec  with  WorkflowIntegrationSuite with Inside {
   s"$host/api/content" should "show content in db" in {
     val expectedTitle = "Content Item"
     val content = createContent(contentItem(defaultStub(title=expectedTitle)))
 
     val js: JsValue = getJs("api/content")
-    
+
     val actualTitle = ((js \ "stubs").apply(0) \ "title").validate[String].asOpt.get
 
     expectedTitle should equal(actualTitle)
