@@ -16,7 +16,9 @@ object DatabaseManager {
         Q.updateNA(sql).execute
       }
     } catch {
-      case e: PSQLException=> println(s"Could not execute $sql${e.toString}")
+      case e: PSQLException=> {
+        println(s"Could not execute $sql${e.toString}")
+      }
     }
   }
 
@@ -25,7 +27,7 @@ object DatabaseManager {
   }
 
   def truncate(tableName: String): Unit = {
-    execute(s"""TRUNCATE TABLE "$tableName";""")
+    execute(s"""TRUNCATE TABLE "${tableName}" CASCADE;""")
   }
 
   def truncate(tables: List[String]): Unit = tables.foreach(t => truncate(t))

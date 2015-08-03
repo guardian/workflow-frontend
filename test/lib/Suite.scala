@@ -36,7 +36,12 @@ trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with BeforeA
   }
 
   override def beforeEach() {
+
+    //todo - fix the clear content
     DatabaseManager.clearContent
+
+//    DatabaseManager.destroy
+//    DatabaseManager.create
   }
 
   val host = Config.appConfig("host")
