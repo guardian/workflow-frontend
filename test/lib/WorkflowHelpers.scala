@@ -1,7 +1,10 @@
 package test
 
 import lib.{PostgresDB}
-import models.{ContentItem, Stub, WorkflowContent, Flag}
+import models._
+import org.joda.time.DateTime
+import scala.util.Random
+import scala.util.Random._
 
 
 trait WorkflowHelpers {
@@ -10,17 +13,68 @@ trait WorkflowHelpers {
     item
   }
 
-  def contentItem(title: String = "Title"): ContentItem =
+//default stub, default workflow item?
+  def contentItem(stub: Stub, wcOpt: Option[WorkflowContent]=None): ContentItem = {
     ContentItem(
-      Stub(
-        title = title,
-        prodOffice = "UK",
-        priority = 1,
-        section = "Section",
-        needsLegal = Flag.NotRequired
-      ),
-      None
+      stub.copy(composerId = wcOpt.map(wc => wc.composerId)),
+      wcOpt
     )
+  }
+
+
+  def defaultStub(title: String = "Title",
+                  prodOffice: String = "UK",
+                  priority: Int = 1,
+                  section: String = "Section",
+                  needsLegal:  Flag.Flag = Flag.NotRequired) = {
+    Stub(title = title,
+        prodOffice = prodOffice,
+        priority = priority,
+        section = section,
+        needsLegal = needsLegal
+    )
+  }
+
+  def defaultWorkflow(contentType: String = "article",
+                       status: Status = Status("Writers"),
+                       lastModified: DateTime = DateTime.now(),
+                       lastModifiedBy: Option[String] = Some("testbunny"),
+                       published: Boolean = false,
+                       timePublished: Option[DateTime] = None,
+                       activeInInCopy: Boolean = false,
+                       storyBundleId: Option[String] = None,
+                       takenDown: Boolean = false) = {
+      val composerIdRng = Random.nextDouble.toString
+    
+      WorkflowContent(
+        composerId =composerIdRng,
+        path = None,
+        headline = None,
+        standfirst = None,
+        trailtext = None,
+        mainMedia = None,
+        trailImageUrl = None,
+        contentType = contentType,
+        section = None,
+        status = status,
+        lastModified = lastModified,
+        lastModifiedBy = lastModifiedBy,
+        published = published,
+        timePublished = timePublished,
+        storyBundleId = storyBundleId,
+        activeInInCopy = activeInInCopy,
+        takenDown = takenDown,
+        timeTakenDown = None,
+        wordCount = 0,
+        launchScheduleDetails = None,
+        statusFlags = WorkflowContentStatusFlags(
+          commentable = false,
+          optimisedForWeb = false,
+          optimisedForWebChanged = false
+        )
+      )
+  }
+
 }
 
 
