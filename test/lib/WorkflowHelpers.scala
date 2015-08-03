@@ -8,9 +8,9 @@ import scala.util.Random._
 
 
 trait WorkflowHelpers {
-  def createContent(item: ContentItem) = {
-    PostgresDB.createContent(item)
-    item
+  def createContent(item: ContentItem): Option[ContentItem] = {
+    val stubId = PostgresDB.createContent(item)
+    stubId.fold(err => None, apiSucc => Some(ContentItem(item.stub.copy(Some(apiSucc.data)), item.wcOpt)))
   }
 
 //default stub, default workflow item?
@@ -45,14 +45,14 @@ trait WorkflowHelpers {
                        storyBundleId: Option[String] = None,
                        takenDown: Boolean = false) = {
       val composerIdRng = Random.nextDouble.toString
-    
+
       WorkflowContent(
         composerId =composerIdRng,
         path = None,
         headline = None,
         standfirst = None,
         trailtext = None,
-        mainMedia = None,
+        mainMedia = Some(WorkflowContentMainMedia()),
         trailImageUrl = None,
         contentType = contentType,
         section = None,
@@ -66,7 +66,7 @@ trait WorkflowHelpers {
         takenDown = takenDown,
         timeTakenDown = None,
         wordCount = 0,
-        launchScheduleDetails = None,
+        launchScheduleDetails = Some(LaunchScheduleDetails(scheduledLaunchDate=None, embargoedUntil=None, embargoedIndefinitely=false)),
         statusFlags = WorkflowContentStatusFlags(
           commentable = false,
           optimisedForWeb = false,

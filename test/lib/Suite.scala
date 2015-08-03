@@ -12,7 +12,7 @@ import scala.language.implicitConversions
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.WebDriver
 
-trait WorkflowIntegrationSuite extends FlatSpec with OneServerPerSuite with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with ShouldMatchers with Http with WorkflowHelpers {
+trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with ShouldMatchers with Http with WorkflowHelpers {
   implicit override lazy val app: FakeApplication = FakeApplication(
     additionalConfiguration = Config.appConfig)
 
