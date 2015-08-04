@@ -31,13 +31,15 @@ object FilterTestOps extends Matchers {
     }
 
     def matchWith(query: WfQuery): MatchResult = {
+      def prettyPrint(items: Content): String = items.map(_.stub.id).mkString(",")
       val dbResult = DBResult(query, testData)
       val (testIn, testOut) = splitTestData
       MatchResult(
         compareTo(dbResult),
-        s"Result from database (${dbResult.results}) did not contain expected elements (${testOut})",
+        s"Result from database (${prettyPrint(dbResult.results)} did not contain expected " +
+          s"elements (${prettyPrint(testIn)})",
         s"Result from database (${dbResult.results}) contained unexpected elements (" +
-          testOut diff dbResult.results + ")"
+          testIn diff dbResult.results + ")"
       )
     }
   }
