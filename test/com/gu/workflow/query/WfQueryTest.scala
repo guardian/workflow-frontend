@@ -17,6 +17,7 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
     }
   }
 
+  //todo - smarter way to programmatically generate test data
   val testData = generateStatus(
     ("Writers" ::
       "Desk" ::
@@ -29,65 +30,28 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
   "One parameter set for a status" in {
     val dataInserted = testData.map(createContent(_)).flatten
-    //the problem with this is you have to access each time
-    //statusAccessor = .wcOpt.map(_.status)
-    val filteredDataInserted = dataInserted.filter(fieldOpt[Status](status, Status("Writers")))
+    val oneStatusFilter = FilterTest(subs, dataInserted)
+    val query = WfQuery(status=Seq(Status("Subs")))
 
-    //contentItem to boolean
-    //status === Writers
-
-//    dataInserted.filter(status==="Writers",status==="Desk",lastModied===now())
-
-    val wfQuery = WfQuery(status=Seq(Status("Writers")))
-    val list: List[DashboardRow] = PostgresDB.getContent(wfQuery)
-    val dataQueried = list.map(DashboardRow.toContentItem(_))
-    filteredDataInserted should contain theSameElementsAs (dataQueried)
+    query should selectSameResultsAs (oneStatusFilter)
   }
 
   "No parameter set for a status" in {
     val dataInserted = testData.map(createContent(_)).flatten
-    val wfQuery = WfQuery()
-    val list: List[DashboardRow] = PostgresDB.getContent(wfQuery)
-    val dataQueried = list.map(DashboardRow.toContentItem(_))
-    dataInserted should contain theSameElementsAs (dataQueried)
+    val noFilter = FilterTest(noFilter, dataInserted)
+    val query = WfQuery()
+
+    query should selectSameResultsAs (noFilter)
   }
 
   "Multiple parameters set for status" in {
     val dataInserted = testData.map(createContent(_)).flatten
-    val wfQuery = WfQuery(status = Seq(Status("Writers"), Status("Desk")))
-    val filteredDataInserted = dataInserted.filter(d => d.wcOpt.map(wc => wc.status) == Some(Status("Writers")) || d.wcOpt.map(wc => wc.status) == Some(Status("Desk")))
-    val list: List[DashboardRow] = PostgresDB.getContent(wfQuery)
 
-    val dataQueried = list.map(DashboardRow.toContentItem(_))
+    val multiFilter = FilterTest(or(writers, desk), dataInserted)
+    val query = WfQuery(status=Seq(Status("Writers")))
 
-    filteredDataInserted should contain theSameElementsAs (dataQueried)
+    query should selectSameResultsAs (multiFilter)
   }
 
-    "Matcher test" in {
-
-      val dataInserted = testData.map(createContent(_)).flatten
-      val oneStatusFilter = FilterTest(subs, dataInserted)
-      val query = WfQuery(status=Seq(Status("Subs")))
-
-      query should selectSameResultsAs (oneStatusFilter)
-    }
-
-      // TODO :- trying achieve something like this:
-      //      query should returnSameResultsAs oneStatusFilter
-
-
-    //   DBResult(query, dataInserted) should selectSameResultsAs(oneStatusFilter, dataInserted)
-
-      // val dataInserted = testData.map(createContent(_)).flatten
-      // val filteredDataInserted = dataInserted.filter(_.wcOpt.map(wc => wc.status) == Some(Status("Writers")))
-      // val wfQuery =
-      // val list: List[DashboardRow] = PostgresDB.getContent(wfQuery)
-      // val dataQueried = list.map(DashboardRow.toContentItem(_))
-      // filteredDataInserted should contain theSameElementsAs (dataQueried)
-
-  // "second test" - {
-  //   "No parameter set for a status" in {
-  //     val dataInserted = testData.map(createContent(_)).flatten
-  //     val wfQuery = WfQuery()
 
 }

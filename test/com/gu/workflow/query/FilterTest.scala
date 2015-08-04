@@ -11,6 +11,8 @@ object FilterTestOps extends Matchers {
   type Content = List[ContentItem]
   type FieldTest = ContentItem => Boolean
 
+  val noFilter: FieldTest = _ => true
+
   def statusCheck(s: String): ContentItem => Boolean  = c => status(c) == Some(Status(s))
   val writers: FieldTest = statusCheck("Writers")
   val desk: FieldTest = statusCheck("Desk")
