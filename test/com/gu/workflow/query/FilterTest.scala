@@ -2,6 +2,7 @@ package com.gu.workflow.query
 
 import lib.PostgresDB
 import models.{Status, ContentItem, DashboardRow}
+import org.joda.time.DateTime
 import org.scalatest.Matchers
 import org.scalatest.matchers.{Matcher, MatchResult}
 import models.ContentItem._
@@ -14,6 +15,10 @@ object FilterTestOps extends Matchers {
   val noFilter: FieldTest = _ => true
 
   def statusCheck(s: String): ContentItem => Boolean  = c => status(c) == Some(Status(s))
+
+  def fieldCheck[A](f: ContentItem => A, a: A): ContentItem => Boolean = c => f(c) == a
+  def fieldOptCheck[A](f: ContentItem => Option[A], a: A): ContentItem => Boolean = c => f(c) == Some(a)
+
   val writers: FieldTest = statusCheck("Writers")
   val desk: FieldTest = statusCheck("Desk")
   val subs: FieldTest = statusCheck("Subs")
