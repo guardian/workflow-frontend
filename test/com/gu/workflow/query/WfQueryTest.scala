@@ -32,12 +32,10 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with FilterTest
 
     "One parameter set for a status" in {
       val dataInserted = testData.map(createContent(_)).flatten
-      val oneStatus = FilterTest { _.wcOpt.map(wc => wc.status) == Some(Status("Writers")) }
-      val query = WfQuery(status=Seq(Status("Writers")))
+      val oneStatusFilter = FilterTest { _.wcOpt.map(wc => wc.status) == Some(Status("Subs")) }
+      val query = WfQuery(status=Seq(Status("Subs")))
 
-      println(s"PMR DataInserted: ${dataInserted}")
-
-      oneStatus.compareTo(dataInserted, DBResult(query, dataInserted))
+      DBResult(query, dataInserted) should selectSameResultsAs(oneStatusFilter, dataInserted)
 
       // val dataInserted = testData.map(createContent(_)).flatten
       // val filteredDataInserted = dataInserted.filter(_.wcOpt.map(wc => wc.status) == Some(Status("Writers")))
