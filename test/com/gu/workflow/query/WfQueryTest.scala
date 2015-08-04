@@ -38,17 +38,16 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
   "No parameter set for a status" in {
     val dataInserted = testData.map(createContent(_)).flatten
-    val noFilter = FilterTest(noFilter, dataInserted)
     val query = WfQuery()
 
-    query should selectSameResultsAs (noFilter)
+    query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
   }
 
   "Multiple parameters set for status" in {
     val dataInserted = testData.map(createContent(_)).flatten
 
     val multiFilter = FilterTest(or(writers, desk), dataInserted)
-    val query = WfQuery(status=Seq(Status("Writers")))
+    val query = WfQuery(status=Seq(Status("Writers"), Status("Desk")))
 
     query should selectSameResultsAs (multiFilter)
   }
