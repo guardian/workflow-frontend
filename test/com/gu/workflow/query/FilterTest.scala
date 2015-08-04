@@ -1,15 +1,14 @@
 package com.gu.workflow.query
 
 import lib.PostgresDB
-import models.ContentItem
+import models.{ContentItem, DashboardRow}
 import org.scalatest.Matchers
 
 trait FilterTestOps extends Matchers {
 
   case class FilterTest(p: (ContentItem) => Boolean) {
-    def splitTestData(testData: List[ContentItem]): (List[ContentItem], List[ContentItem]) = {
-      (Nil, Nil)
-    }
+    def splitTestData(testData: List[ContentItem]): (List[ContentItem], List[ContentItem]) =
+      testData.partition(p)
 
     def compareTo(testData: List[ContentItem], dbResult: DBResult) = {
       val (testIn, testOut) = splitTestData(testData)
@@ -19,7 +18,7 @@ trait FilterTestOps extends Matchers {
   }
 
   case class DBResult(query: WfQuery, inputData: List[ContentItem]) {
-    val results = PostgresDB.getContent(query)
+    val results = PostgresDB.getContent(query).map(DashboardRow.toContentItem(_))
     val rest = inputData diff results
   }
 
