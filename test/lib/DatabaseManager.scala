@@ -5,14 +5,15 @@ import scala.slick.jdbc.{ StaticQuery => Q }
 import org.postgresql.util.PSQLException
 
 object DatabaseManager {
-  def execute(sql: String) = {
+  def execute(sql: String, withDB: Boolean = true) = {
     try {
       Database.forURL(
         driver = "org.postgresql.Driver",
-        url = Config.dbUrl,
+        url = Config.dbUrl + (if(withDB) Config.dbName else ""),
         user = Config.dbUser,
         password = Config.dbPass
       ) withSession { implicit session =>
+        println(s"PMR - Connecting to ${Config.dbName}")
         Q.updateNA(sql).execute
       }
     } catch {
@@ -23,7 +24,7 @@ object DatabaseManager {
   }
 
   def create = {
-    execute(s"""CREATE DATABASE "${Config.dbName}";""")
+    execute(s"""CREATE DATABASE "${Config.dbName}";""", withDB = false)
   }
 
   def truncate(tableName: String): Unit = {
@@ -33,10 +34,8 @@ object DatabaseManager {
   def truncate(tables: List[String]): Unit = tables.foreach(t => truncate(t))
 
   def destroy = {
-    execute(s"""DROP DATABASE "${Config.dbName}";""")
+    execute(s"""DROP DATABASE "${Config.dbName}";""", false)
   }
 
   def clearContent = truncate(List("content", "stub"))
 }
-
-
