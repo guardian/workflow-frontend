@@ -31,9 +31,14 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with FilterTest
     //persist
 
     "One parameter set for a status" in {
+
       val dataInserted = testData.map(createContent(_)).flatten
       val oneStatusFilter = FilterTest { _.wcOpt.map(wc => wc.status) == Some(Status("Subs")) }
       val query = WfQuery(status=Seq(Status("Subs")))
+
+      // TODO :- trying achieve something like this:
+      //      query should returnSameResultsAs oneStatusFilter
+
 
       DBResult(query, dataInserted) should selectSameResultsAs(oneStatusFilter, dataInserted)
 
