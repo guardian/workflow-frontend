@@ -6,8 +6,10 @@ import test._
 import models._
 import org.scalatest.{Matchers, FreeSpec}
 import FilterTestOps._
+import ContentItem._
 
 class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
+
 
   def generateStatus(statuses: List[Status]): List[ContentItem] = {
     statuses.map { st =>
@@ -27,7 +29,15 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
   "One parameter set for a status" in {
     val dataInserted = testData.map(createContent(_)).flatten
-    val filteredDataInserted = dataInserted.filter(_.wcOpt.map(wc => wc.status) == Some(Status("Writers")))
+    //the problem with this is you have to access each time
+    //statusAccessor = .wcOpt.map(_.status)
+    val filteredDataInserted = dataInserted.filter(fieldOpt[Status](status, Status("Writers")))
+
+    //contentItem to boolean
+    //status === Writers
+
+//    dataInserted.filter(status==="Writers",status==="Desk",lastModied===now())
+
     val wfQuery = WfQuery(status=Seq(Status("Writers")))
     val list: List[DashboardRow] = PostgresDB.getContent(wfQuery)
     val dataQueried = list.map(DashboardRow.toContentItem(_))
@@ -56,7 +66,7 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
     "Matcher test" in {
 
       val dataInserted = testData.map(createContent(_)).flatten
-      val oneStatusFilter = FilterTest(_.wcOpt.map(wc => wc.status) == Some(Status("Subs")), dataInserted)
+      val oneStatusFilter = FilterTest(fieldOpt[Status](status, Status("Writers")), dataInserted)
       val query = WfQuery(status=Seq(Status("Subs")))
 
       query should selectSameResultsAs (oneStatusFilter)

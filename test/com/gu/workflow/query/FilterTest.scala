@@ -9,6 +9,13 @@ object FilterTestOps extends Matchers {
 
   type Content = List[ContentItem]
 
+  def fieldOpt[A](f: ContentItem => Option[A], a: A): ContentItem => Boolean = { c: ContentItem =>
+    f(c) == Some(a)
+  }
+
+  def field[A](f: ContentItem => A, a: A): ContentItem => Boolean = { c: ContentItem =>
+    f(c) == a
+  }
 
   case class FilterTest(p: (ContentItem) => Boolean, testData: Content) {
     val splitTestData = testData.partition(p)
