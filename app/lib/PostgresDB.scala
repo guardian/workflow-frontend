@@ -26,6 +26,7 @@ object PostgresDB {
 
   def getContent(q: WfQuery): List[DashboardRow] =
     DB.withTransaction { implicit session =>
+      //todo- remove any extra filter logic
       WfQuery.getContentQuery(q)
         .filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
         .list.map { case (stubData, contentData) =>
