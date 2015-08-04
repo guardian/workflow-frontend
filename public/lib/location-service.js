@@ -6,13 +6,7 @@ import './settings-service';
 
 var SETTING_LOCATION_KEY = 'location',
 
-    // map of available locations <city airport code>:<city metadata>
-    //locations = {
-    //    'LON': { 'title': 'London' },
-    //    'NYC': { 'title': 'New York' },
-    //    'SYD': { 'title': 'Sydney' },
-    //    'SFO': { 'title': 'San Francisco' }
-    //};
+// map of available locations {id: <city airport code>, title: <city name>}
 
     locations = [
         {id: 'SFO', title: 'San Francisco'},
