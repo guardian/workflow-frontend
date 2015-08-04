@@ -10,7 +10,8 @@ var SETTING_LOCATION_KEY = 'location',
     locations = {
         'LON': { 'title': 'London' },
         'NYC': { 'title': 'New York' },
-        'SYD': { 'title': 'Sydney' }
+        'SYD': { 'title': 'Sydney' },
+        'SFO': { 'title': 'San Francisco' }
     };
 
 
@@ -90,7 +91,9 @@ function wfLocationServiceFactory($rootScope, wfSettingsService) {
             // don't blame me.
             if (offset <= -480 && offset >= -660) {
                 return 'SYD';
-            } else if (offset <= 560 && offset >= 240) {
+            } else if (offset <= 560 && offset >= 400) {
+                return 'SFO';
+            } else if (offset <= 399 && offset >= 240) {
                 return 'NYC';
             } else {
                 return 'LON';

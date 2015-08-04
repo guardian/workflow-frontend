@@ -40,6 +40,11 @@ var timezones = {
     'SYD': {
         tzKey: 'Australia/Sydney',
         locale: 'en-AU'
+    },
+
+    'SFO': {
+        tzKey: 'America/Los_Angeles',
+        locale: 'en-US'
     }
 };
 
