@@ -71,6 +71,10 @@ function wfLocationPickerController ($scope, $rootScope, $timeout, wfLocationSer
         this.toggleOpen();
     };
 
+    this.getLocation = function(locationKey) {
+        return wfLocationService.getLocation(locationKey);
+    }
+
     this.toggleOpen = function() {
         $scope.isOpen = !$scope.isOpen;
     };

@@ -7,12 +7,19 @@ import './settings-service';
 var SETTING_LOCATION_KEY = 'location',
 
     // map of available locations <city airport code>:<city metadata>
-    locations = {
-        'LON': { 'title': 'London' },
-        'NYC': { 'title': 'New York' },
-        'SYD': { 'title': 'Sydney' },
-        'SFO': { 'title': 'San Francisco' }
-    };
+    //locations = {
+    //    'LON': { 'title': 'London' },
+    //    'NYC': { 'title': 'New York' },
+    //    'SYD': { 'title': 'Sydney' },
+    //    'SFO': { 'title': 'San Francisco' }
+    //};
+
+    locations = [
+        {id: 'SFO', title: 'San Francisco'},
+        {id: 'NYC', title: 'New York'},
+        {id: 'LON', title: 'London'},
+        {id: 'SYD', title: 'Sydney'}
+    ];
 
 
 angular.module('wfLocationService', ['wfSettingsService'])
@@ -28,11 +35,19 @@ function wfLocationServiceFactory($rootScope, wfSettingsService) {
         }
 
         isValidLocation(locationKey) {
-            return !!locations[locationKey];
+            return !! this.getLocation(locationKey);
         }
 
         getLocation(locationKey) {
-            return locations[this.getLocationKey(locationKey)];
+            var foundLocation = null;
+
+            locations.forEach(function(location) {
+                if (location.id === locationKey) {
+                    foundLocation = location;
+                }
+            });
+
+            return foundLocation;
         }
 
         /**
