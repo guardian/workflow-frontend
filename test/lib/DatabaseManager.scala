@@ -13,7 +13,6 @@ object DatabaseManager {
         user = Config.dbUser,
         password = Config.dbPass
       ) withSession { implicit session =>
-        println(s"PMR - Connecting to ${Config.dbName}")
         Q.updateNA(sql).execute
       }
     } catch {
