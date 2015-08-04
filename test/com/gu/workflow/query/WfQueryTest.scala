@@ -66,7 +66,7 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
     "Matcher test" in {
 
       val dataInserted = testData.map(createContent(_)).flatten
-      val oneStatusFilter = FilterTest(fieldOpt[Status](status, Status("Writers")), dataInserted)
+      val oneStatusFilter = FilterTest(subs, dataInserted)
       val query = WfQuery(status=Seq(Status("Subs")))
 
       query should selectSameResultsAs (oneStatusFilter)

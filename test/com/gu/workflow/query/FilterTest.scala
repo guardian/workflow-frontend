@@ -1,21 +1,24 @@
 package com.gu.workflow.query
 
 import lib.PostgresDB
-import models.{ContentItem, DashboardRow}
+import models.{Status, ContentItem, DashboardRow}
 import org.scalatest.Matchers
 import org.scalatest.matchers.{Matcher, MatchResult}
+import models.ContentItem._
 
 object FilterTestOps extends Matchers {
 
   type Content = List[ContentItem]
+  type FieldTest = ContentItem => Boolean
 
-  def fieldOpt[A](f: ContentItem => Option[A], a: A): ContentItem => Boolean = { c: ContentItem =>
-    f(c) == Some(a)
-  }
+  def statusCheck(s: String): ContentItem => Boolean  = c => status(c) == Some(Status(s))
+  val writers: FieldTest = statusCheck("Writers")
+  val desk: FieldTest = statusCheck("Desk")
+  val subs: FieldTest = statusCheck("Subs")
 
-  def field[A](f: ContentItem => A, a: A): ContentItem => Boolean = { c: ContentItem =>
-    f(c) == a
-  }
+
+  def or(a: FieldTest, b: FieldTest): FieldTest = (c) => a(c) || b(c)
+
 
   case class FilterTest(p: (ContentItem) => Boolean, testData: Content) {
     val splitTestData = testData.partition(p)
