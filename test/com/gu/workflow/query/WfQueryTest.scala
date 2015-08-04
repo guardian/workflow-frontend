@@ -36,7 +36,7 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite  with Matchers{
       val wfQuery = WfQuery(status=Seq(Status("Writers")))
       val list: List[DashboardRow] = PostgresDB.getContent(wfQuery)
       val dataQueried = list.map(DashboardRow.toContentItem(_))
-      filteredDataInserted should equal (dataQueried)
+      filteredDataInserted should contain theSameElementsAs (dataQueried)
     }
 
   }
@@ -47,7 +47,7 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite  with Matchers{
       val wfQuery = WfQuery()
       val list: List[DashboardRow] = PostgresDB.getContent(wfQuery)
       val dataQueried = list.map(DashboardRow.toContentItem(_))
-      dataInserted should equal(dataQueried)
+      dataInserted should contain theSameElementsAs (dataQueried)
     }
   }
 
@@ -60,7 +60,7 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite  with Matchers{
 
       val dataQueried = list.map(DashboardRow.toContentItem(_))
 
-      filteredDataInserted should equal (dataQueried)
+      filteredDataInserted should contain theSameElementsAs (dataQueried)
 
     }
 
