@@ -9,19 +9,19 @@ trait FilterTestOps extends Matchers {
 
   type Content = List[ContentItem]
 
-  case class FilterTest(p: (ContentItem) => Boolean) {
-    def splitTestData(testData: Content): (Content, Content) =
-      testData.partition(p)
+  case class FilterTest(p: (ContentItem) => Boolean, testData: Content) {
+    val splitTestData = testData.partition(p)
 
-    def compareTo(testData: Content, dbResult: DBResult): Boolean = {
-      val (testIn, testOut) = splitTestData(testData)
+    def compareTo(dbResult: DBResult): Boolean = {
+      val (testIn, testOut) = splitTestData
       (dbResult.results sameElements testIn) && (dbResult.rest sameElements testOut)
     }
 
-    def matchWith(testData: Content, dbResult: DBResult): MatchResult = {
-      val (testIn, testOut) = splitTestData(testData)
+    def matchWith(query: WfQuery): MatchResult = {
+      val dbResult = DBResult(query, testData)
+      val (testIn, testOut) = splitTestData
       MatchResult(
-        compareTo(testData, dbResult),
+        compareTo(dbResult),
         s"Result from database (${dbResult.results}) did not contain expected elements (${testOut})",
         s"Result from database (${dbResult.results}) contained unexpected elements (" +
           testOut diff dbResult.results + ")"
@@ -34,12 +34,12 @@ trait FilterTestOps extends Matchers {
     val rest = inputData diff results
   }
 
-  class DBResultMatcher(filterTest: FilterTest, testData: Content) extends Matcher[DBResult] {
-    def apply(dbResult: DBResult) = filterTest.matchWith(testData, dbResult)
+  class DBResultMatcher(filterTest: FilterTest) extends Matcher[WfQuery] {
+    def apply(query: WfQuery) = filterTest.matchWith(query)
   }
 
-  def selectSameResultsAs(filterTest: FilterTest, testData: Content) =
-    new DBResultMatcher(filterTest, testData)
+  def selectSameResultsAs(filterTest: FilterTest) =
+    new DBResultMatcher(filterTest)
 
 }
 // trait FilterTestOps extends Matchers {
