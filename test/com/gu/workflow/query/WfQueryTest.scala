@@ -5,8 +5,9 @@ import org.joda.time.DateTime
 import test._
 import models._
 import org.scalatest.{Matchers, FreeSpec}
+import FilterTestOps._
 
-class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with FilterTestOps with Matchers{
+class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
   def generateStatus(statuses: List[Status]): List[ContentItem] = {
     statuses.map { st =>

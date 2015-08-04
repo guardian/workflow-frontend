@@ -5,9 +5,10 @@ import models.{ContentItem, DashboardRow}
 import org.scalatest.Matchers
 import org.scalatest.matchers.{Matcher, MatchResult}
 
-trait FilterTestOps extends Matchers {
+object FilterTestOps extends Matchers {
 
   type Content = List[ContentItem]
+
 
   case class FilterTest(p: (ContentItem) => Boolean, testData: Content) {
     val splitTestData = testData.partition(p)
