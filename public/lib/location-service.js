@@ -93,7 +93,7 @@ function wfLocationServiceFactory($rootScope, wfSettingsService) {
                 return 'SYD';
             } else if (offset <= 560 && offset >= 400) {
                 return 'SFO';
-            } else if (offset <= 399 && offset >= 240) {
+            } else if (offset < 400 && offset >= 240) {
                 return 'NYC';
             } else {
                 return 'LON';
