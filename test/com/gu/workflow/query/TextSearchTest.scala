@@ -1,6 +1,7 @@
 package com.gu.workflow.query
 
 // import lib.PostgresDB
+import lib.PostgresDB
 import test._
 import models.ContentItem
 import org.scalatest.{Matchers, FreeSpec}
@@ -9,8 +10,19 @@ import FilterTestOps._
 
 class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
+  def doTest(f: ContentItem => Boolean,
+             query: WfQuery,
+             data: List[ContentItem] = testData): Unit =
+    withTestData(data) { dataInserted =>
+      val ft = FilterTest(f, dataInserted)
+      val res = PostgresDB.getContent(query)
+      println(s"Res has ${res.length} results")
+      query should selectSameResultsAs (ft)
+    }
+
   def testData: List[ContentItem] = List(
     contentItem(defaultStub(title = "This has the magic word, xyzzy, in it"), None),
+    contentItem(defaultStub().copy(note = Some("This has the magic word, xyzzy, in it")), None),
     contentItem(defaultStub(), None)
   )
 
@@ -23,6 +35,14 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       val query = WfQuery(text = Option("xyzzy"))
       query should selectSameResultsAs (ft)
     }
+
+    "Should find text in note" in withTestData(testData) { dataInserted =>
+      val ft = matchesText("xyzzy", dataInserted)
+      val query = WfQuery(text = Option("xyzzy"))
+      query should selectSameResultsAs (ft)
+    }
+
+    "Empty search sanity check" in doTest(noFilter, WfQuery(), testData)
   }
 
 }

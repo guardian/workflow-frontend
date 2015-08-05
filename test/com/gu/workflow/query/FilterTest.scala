@@ -39,7 +39,7 @@ object FilterTestOps extends Matchers {
       val (testIn, testOut) = splitTestData
       MatchResult(
         compareTo(dbResult),
-        s"Result from database (${prettyPrint(dbResult.results)}) did not contain expected " +
+        s"Result from database (in:${prettyPrint(dbResult.results)}, out:${prettyPrint(dbResult.rest)}) did not contain expected " +
           s"elements (${prettyPrint(testIn)})",
         s"Result from database (${dbResult.results}) contained unexpected elements (" +
           testIn diff dbResult.results + ")"
