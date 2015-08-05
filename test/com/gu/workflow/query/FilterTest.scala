@@ -57,14 +57,3 @@ object FilterTestOps extends Matchers {
     new DBResultMatcher(filterTest)
 
 }
-// trait FilterTestOps extends Matchers {
-//   def compare(filter: FilterTest, res: DBResult, testData: Content) = {
-//               testData: Content,
-//               dbAll: Content,
-//               dbIn: Content) = {
-//     val (testIn, testOut) = filter.splitTestData(testData)
-//     val dbOut = dbAll diff dbIn
-
-//     dbIn should contain theSameElementsAs (testIn)
-//   }
-// }
