@@ -1,6 +1,5 @@
 package com.gu.workflow.query
 
-// import lib.PostgresDB
 import lib.PostgresDB
 import test._
 import models.ContentItem
@@ -14,20 +13,21 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
              query: WfQuery,
              data: List[ContentItem] = testData): Unit =
     withTestData(data) { dataInserted =>
-      val ft = FilterTest(f, dataInserted)
-      val res = PostgresDB.getContent(query)
-      println(s"Res has ${res.length} results")
-      query should selectSameResultsAs (ft)
+      query should selectSameResultsAs (FilterTest(f, dataInserted))
     }
 
   def testData: List[ContentItem] = List(
-    contentItem(defaultStub(title = "This has the magic word, xyzzy, in it"), None),
-    contentItem(defaultStub().copy(note = Some("This has the magic word, xyzzy, in it")), None),
-    contentItem(defaultStub(), None)
+    contentItem(defaultStub(title = "This has the magic word, xyzzy, in it"),
+                Some(defaultWorkflow())),
+    contentItem(defaultStub().copy(note = Some("This has the magic word, xyzzy, in it")),
+                Some(defaultWorkflow())),
+    contentItem(defaultStub(), Some(defaultWorkflow()))
   )
 
-  def matchesText(s: String, testData: List[ContentItem]) =
-    FilterTest(c => c.stub.title.containsSlice(s), testData)
+  def matchesText(s: String, testData: List[ContentItem]) = {
+    val op = ((c: ContentItem) => c.stub.title.containsSlice(s)) or (c => c.stub.note.exists(_.containsSlice(s)))
+    FilterTest(op, testData)
+  }
 
   "TextSearch" - {
     "Should find text in stub working title" in withTestData(testData) { dataInserted =>
@@ -42,7 +42,7 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       query should selectSameResultsAs (ft)
     }
 
-    "Empty search sanity check" in doTest(noFilter, WfQuery(), testData)
+    "Empty search sanity check" in doTest(noFilter, WfQuery())
   }
 
 }
