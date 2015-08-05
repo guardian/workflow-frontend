@@ -21,7 +21,7 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
 
   // optional fields that should be included if present
   val optTextSearchFields: List[TextFieldOpt] = List(
-    _.stub.note
+    _.stub.note, _.wcOpt.flatMap(_.headline)
   )
 
   val fields = textSearchFields.map(_.andThen(Some(_))) ++ optTextSearchFields
@@ -58,6 +58,8 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       // match in both title and note
       contentItem(defaultStub(title = stringWithMatch).copy(note = Some(stringWithMatch)),
                   Some(defaultWorkflow())),
+      // match in headline
+      contentItem(defaultStub(), Some(defaultWorkflow().copy(headline = Some(stringWithMatch)))),
       // no match
       contentItem(defaultStub(), Some(defaultWorkflow()))
     )
