@@ -40,11 +40,7 @@ object FilterTestOps extends Matchers {
   val `final`: FieldTest = statusCheck("Final")
   val hold: FieldTest = statusCheck("Hold")
 
-//  val wcLastMod: ContentItem => Option[DateTime] = c => c.wcOpt.map(_.lastModified)
-//  val timePublished: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.timePublished)
-//  val takenDown: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.timeTakenDown)
-//  val embargoedUntil: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.launchScheduleDetails.flatMap(_.embargoedUntil))
-//  val scheduledLaunch: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.launchScheduleDetails.flatMap(_.scheduledLaunchDate))
+
 
   val dateFields: DateRange => FieldTest = { dt =>
     dateRange(stubLastMod, dt) |
