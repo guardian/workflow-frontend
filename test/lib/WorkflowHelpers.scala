@@ -26,12 +26,18 @@ trait WorkflowHelpers {
                   prodOffice: String = "UK",
                   priority: Int = 1,
                   section: String = "Section",
-                  needsLegal:  Flag.Flag = Flag.NotRequired) = {
+                  needsLegal:  Flag.Flag = Flag.NotRequired,
+                  due: Option[DateTime] = None,
+                  createdAt: DateTime = DateTime.now(),
+                  lastModified: DateTime = DateTime.now()) = {
     Stub(title = title,
         prodOffice = prodOffice,
         priority = priority,
         section = section,
-        needsLegal = needsLegal
+        needsLegal = needsLegal,
+        due = due,
+        createdAt = createdAt,
+        lastModified = lastModified
     )
   }
 
@@ -43,6 +49,9 @@ trait WorkflowHelpers {
                        timePublished: Option[DateTime] = None,
                        activeInInCopy: Boolean = false,
                        storyBundleId: Option[String] = None,
+                       timeTakenDown: Option[DateTime] = None,
+                       scheduledLaunchDate: Option[DateTime] = None,
+                       embargoedUntil: Option[DateTime] = None,
                        takenDown: Boolean = false) = {
       val composerIdRng = Random.nextDouble.toString
 

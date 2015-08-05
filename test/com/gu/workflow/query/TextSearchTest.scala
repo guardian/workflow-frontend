@@ -10,7 +10,7 @@ import FilterTestOps._
 class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
   def findTextOp(s: String) = (
-    ((c: ContentItem) => c.stub.title.containsSlice(s)) or
+    ((c: ContentItem) => c.stub.title.containsSlice(s)) |
       (c => c.stub.note.exists(_.containsSlice(s)))
   )
 
