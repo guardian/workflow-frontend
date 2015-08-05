@@ -1,5 +1,6 @@
 package test
 
+import models.ContentItem
 import play.api.test._
 import play.api.libs.json._
 import play.api.{Play, Application}
@@ -22,6 +23,9 @@ trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with BeforeA
 
     Json.parse(connection.body)
   }
+
+  def withTestData(testData: List[ContentItem])(f: (List[ContentItem]) => Unit) =
+    f(testData.map(createContent(_)).flatten)
 
   override def beforeAll() {
     val props = System.getProperties();
