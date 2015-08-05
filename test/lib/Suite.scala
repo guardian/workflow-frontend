@@ -36,7 +36,7 @@ trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with BeforeA
   }
 
   override def afterAll() {
-    DatabaseManager.destroy
+    if(Config.dropDB) DatabaseManager.destroy
   }
 
   override def beforeEach() {
