@@ -19,6 +19,7 @@ object Config {
     println(s"Connecting to database: $s")
     s
   }
+  val dropDB: Boolean = sys.env.get("WF_DROP_DB").map(_ == "yes").getOrElse(true)
 
   val authed = AuthenticatedUser(User("jim", "bob", "jim@guardian.co.uk", None), "workflow", Set("workflow"),new Date().getTime + 86400 * 1000, true)
   //this test will break if localhost secret is changed in s3q

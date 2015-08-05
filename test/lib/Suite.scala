@@ -1,5 +1,6 @@
 package test
 
+import models.ContentItem
 import play.api.test._
 import play.api.libs.json._
 import play.api.{Play, Application}
@@ -23,6 +24,9 @@ trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with BeforeA
     Json.parse(connection.body)
   }
 
+  def withTestData(testData: List[ContentItem])(f: (List[ContentItem]) => Unit) =
+    f(testData.map(createContent(_)).flatten)
+
   override def beforeAll() {
     val props = System.getProperties();
     props.setProperty("config.resource", "application.ci.conf");
@@ -32,7 +36,8 @@ trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with BeforeA
   }
 
   override def afterAll() {
-    DatabaseManager.destroy
+    if(Config.dropDB) DatabaseManager.destroy
+    else println("Not dropping database")
   }
 
   override def beforeEach() {
