@@ -9,10 +9,10 @@ import FilterTestOps._
 
 class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
+  // field getters, here we are working with two types of fields, string
+  // or optional string
   type TextField = (ContentItem) => String
   type TextFieldOpt = (ContentItem) => Option[String]
-
-  //def makeOpt(f: TextField): TextFieldOpt =
 
   // a list of String fields that text search should look at
   val textSearchFields: List[TextField] = List(
@@ -29,13 +29,6 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
   def fieldCheckers(pattern: String) = fields.map { field =>
     (c: ContentItem) => field(c).map(_.containsSlice(pattern)).getOrElse(false)
   }
-
-// def ma
-
-// val x = textSearchFields.map(
-
-  // def findTextField(getter: ContentItem => String) =
-  //   (c: ContentItem) => getter(c).containsSlice(pattern)
 
   // combine with or (`|`)
   def findTextOp(s: String): FieldTest = fieldCheckers(s).reduce(_ | _)
