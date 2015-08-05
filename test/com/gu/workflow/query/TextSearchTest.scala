@@ -18,7 +18,7 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     FilterTest(c => c.stub.title.containsSlice(s), testData)
 
   "TextSearch" - {
-    "Should find text in headline" in withTestData(testData) { dataInserted =>
+    "Should find text in stub working title" in withTestData(testData) { dataInserted =>
       val ft = matchesText("xyzzy", dataInserted)
       val query = WfQuery(text = Option("xyzzy"))
       query should selectSameResultsAs (ft)
