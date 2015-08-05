@@ -9,10 +9,29 @@ import FilterTestOps._
 
 class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
-  def findTextOp(s: String) = (
-    ((c: ContentItem) => c.stub.title.containsSlice(s)) |
-      (c => c.stub.note.exists(_.containsSlice(s)))
+  // field getters, here we are working with two types of fields, string
+  // or optional string
+  type TextField = (ContentItem) => String
+  type TextFieldOpt = (ContentItem) => Option[String]
+
+  // a list of String fields that text search should look at
+  val textSearchFields: List[TextField] = List(
+    _.stub.title
   )
+
+  // optional fields that should be included if present
+  val optTextSearchFields: List[TextFieldOpt] = List(
+    _.stub.note, _.wcOpt.flatMap(_.headline)
+  )
+
+  val fields = textSearchFields.map(_.andThen(Some(_))) ++ optTextSearchFields
+
+  def fieldCheckers(pattern: String) = fields.map { field =>
+    (c: ContentItem) => field(c).map(_.containsSlice(pattern)).getOrElse(false)
+  }
+
+  // combine with or (`|`)
+  def findTextOp(s: String): FieldTest = fieldCheckers(s).reduce(_ | _)
 
   def doTest(f: FieldTest, query: WfQuery,
              data: List[ContentItem] = testData): Unit =
@@ -32,6 +51,8 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       // match in both title and note
       contentItem(defaultStub(title = stringWithMatch).copy(note = Some(stringWithMatch)),
                   Some(defaultWorkflow())),
+      // match in headline
+      contentItem(defaultStub(), Some(defaultWorkflow().copy(headline = Some(stringWithMatch)))),
       // no match
       contentItem(defaultStub(), Some(defaultWorkflow()))
     )
@@ -41,10 +62,10 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
 
     "empty should return everything" in doTest(noFilter, WfQuery(text = None))
 
-    "with should match against correct fields" in {
+    "with should match against correct fields" in (
       doTest(findTextOp(matchStr), WfQuery(text = Some(matchStr)))
-    }
+    )
 
- }
+  }
 
 }
