@@ -34,6 +34,7 @@ object PostgresDB {
           val content = WorkflowContent.fromContentRow(contentData)
           DashboardRow(stub, content)
       }
+
     }
 
   def contentItemLookup(composerId: String): List[DashboardRow] =
