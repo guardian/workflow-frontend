@@ -6,26 +6,64 @@ import org.joda.time.DateTime
 import org.scalatest.Matchers
 import org.scalatest.matchers.{Matcher, MatchResult}
 import models.ContentItem._
+import scala.language.implicitConversions
 
 object FilterTestOps extends Matchers {
 
   type Content = List[ContentItem]
   type FieldTest = ContentItem => Boolean
 
+  implicit def operators[A](t: FieldTest) = FilterTestOps(t)
+
   val noFilter: FieldTest = _ => true
 
-  def statusCheck(s: String): ContentItem => Boolean  = c => status(c) == Some(Status(s))
+  def statusCheck(s: String): FieldTest  = c => status(c) == Some(Status(s))
 
   def fieldCheck[A](f: ContentItem => A, a: A): ContentItem => Boolean = c => f(c) == a
   def fieldOptCheck[A](f: ContentItem => Option[A], a: A): ContentItem => Boolean = c => f(c) == Some(a)
 
+  def dateRange(f: ContentItem => DateTime, dt: DateRange): FieldTest = c => (f(c) isAfter dt.from) && (f(c) isBefore dt.until)
+
+  //todo - abstract the boolean operation repition
+  def dateRangeOpt(f: ContentItem => Option[DateTime], dt: DateRange): FieldTest = { c=>
+    f(c) match {
+      case Some(v) => (v isAfter dt.from) && (v isBefore dt.until)
+      case None => false
+    }
+  }
+
   val writers: FieldTest = statusCheck("Writers")
   val desk: FieldTest = statusCheck("Desk")
   val subs: FieldTest = statusCheck("Subs")
+  val prodEd: FieldTest = statusCheck("Production Editor")
+  val revise: FieldTest = statusCheck("Revise")
+  val `final`: FieldTest = statusCheck("Final")
+  val hold: FieldTest = statusCheck("Hold")
 
+//  val wcLastMod: ContentItem => Option[DateTime] = c => c.wcOpt.map(_.lastModified)
+//  val timePublished: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.timePublished)
+//  val takenDown: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.timeTakenDown)
+//  val embargoedUntil: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.launchScheduleDetails.flatMap(_.embargoedUntil))
+//  val scheduledLaunch: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.launchScheduleDetails.flatMap(_.scheduledLaunchDate))
+
+  val dateFields: DateRange => FieldTest = { dt =>
+    dateRange(stubLastMod, dt) |
+    dateRange(createdAt, dt) |
+      dateRangeOpt(due, dt) |
+    dateRangeOpt(wcLastMod, dt) |
+    dateRangeOpt(timePublished, dt) |
+    dateRangeOpt(takenDown, dt) |
+    dateRangeOpt(embargoedUntil, dt) |
+    dateRangeOpt(scheduledLaunch, dt)
+
+  }
 
   def or(a: FieldTest, b: FieldTest): FieldTest = (c) => a(c) || b(c)
 
+  case class FilterTestOps(t1: FieldTest) {
+    def |(t2: FieldTest) = or(t1,t2)
+
+  }
 
   case class FilterTest(p: (ContentItem) => Boolean, testData: Content) {
     val splitTestData = testData.partition(p)
@@ -34,7 +72,7 @@ object FilterTestOps extends Matchers {
       val (testIn, testOut) = splitTestData
       (dbResult.results sameElements testIn) && (dbResult.rest sameElements testOut)
     }
-
+    //todo - figure out a way of printing the db filter and scala filter as part of debugging
     def matchWith(query: WfQuery): MatchResult = {
       def prettyPrint(items: Content): String = items.map(_.stub.id).mkString(",")
       val dbResult = DBResult(query, testData)
@@ -58,18 +96,6 @@ object FilterTestOps extends Matchers {
     def apply(query: WfQuery) = filterTest.matchWith(query)
   }
 
-  def selectSameResultsAs(filterTest: FilterTest) =
-    new DBResultMatcher(filterTest)
+  def selectSameResultsAs(filterTest: FilterTest) = new DBResultMatcher(filterTest)
 
 }
-// trait FilterTestOps extends Matchers {
-//   def compare(filter: FilterTest, res: DBResult, testData: Content) = {
-//               testData: Content,
-//               dbAll: Content,
-//               dbIn: Content) = {
-//     val (testIn, testOut) = filter.splitTestData(testData)
-//     val dbOut = dbAll diff dbIn
-
-//     dbIn should contain theSameElementsAs (testIn)
-//   }
-// }

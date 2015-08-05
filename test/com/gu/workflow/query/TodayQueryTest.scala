@@ -6,18 +6,23 @@ import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
 import test.WorkflowIntegrationSuite
 import scala.util.Random._
+import models.ContentItem._
 
 
 class TodayQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
-
+//todo - use seed for generating data
   def randomDate = DateTime.now().minusDays(scala.util.Random.nextInt(100))
+
+  def todayInt = DateTime.now().minusHours(12)
+
+  def yesInt = DateTime.now().minusHours(36)
 
   def generateTestData(n:Int=20, acc: List[ContentItem]=Nil): List[ContentItem] = {
       if(n==0) acc
       else {
         val ci = contentItem(defaultStub(
           lastModified = randomDate,
-          createdAt =randomDate,
+          createdAt = randomDate,
           due = Some(randomDate)
         ), Some(defaultWorkflow(
           lastModified = randomDate,
@@ -30,11 +35,16 @@ class TodayQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       }
   }
 
+
+
   val testData = generateTestData()
 
-  val todayRange = DateRange(DateTime.now().minusDays(1), DateTime.now())
+  lazy val now =  DateTime.now()
+  lazy val oneDayAgo = DateTime.now().minusDays(1)
+  lazy val twoDaysAgo = DateTime.now().minusDays(2)
 
-  val yesterdayRange = DateRange(DateTime.now().minusDays(2), DateTime.now().minusDays(1))
+  val todayRange = DateRange(oneDayAgo, now)
+  val yesterdayRange = DateRange(twoDaysAgo, oneDayAgo)
 
   "No date range set" in {
     val dataInserted = testData.map(createContent(_)).flatten
@@ -44,16 +54,14 @@ class TodayQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
 
   "Date range set for today" in {
     val dataInserted = testData.map(createContent(_)).flatten
-
     val query = WfQuery(viewTimes = Some(todayRange))
-    //todo - figure out how to filter the scala model properly
-    query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
+    query should selectSameResultsAs (FilterTest(dateFields(todayRange), dataInserted))
   }
 
   "Date range set for yesterday" in {
     val dataInserted = testData.map(createContent(_)).flatten
     val query = WfQuery(viewTimes = Some(yesterdayRange))
-    query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
+    query should selectSameResultsAs (FilterTest(dateFields(yesterdayRange), dataInserted))
   }
 
 
