@@ -26,6 +26,7 @@ object PostgresDB {
 
   def getContent(q: WfQuery): List[DashboardRow] =
     DB.withTransaction { implicit session =>
+      //todo- remove any extra filter logic
       WfQuery.getContentQuery(q)
         .filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
         .list.map { case (stubData, contentData) =>
@@ -70,6 +71,9 @@ object PostgresDB {
    * @return Either: Left(Long) if item exists already with composerId.
    *         Right(Long) of newly created item.
    */
+
+  /* TODO :- Return Option of Long with another function for the API response */
+
   def createContent(contentItem: ContentItem): Response[Long] = {
     DB.withTransaction { implicit session =>
 
