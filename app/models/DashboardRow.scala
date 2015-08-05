@@ -33,6 +33,8 @@ object DashboardRow {
         __.write[WorkflowContent].writes(d.wc)
     }
   }
+
+  def toContentItem(d: DashboardRow) = ContentItem(d.stub, Some(d.wc))
 }
 
 case class PublishedData(composerId: String, published: Boolean, publishedTime: Option[DateTime])

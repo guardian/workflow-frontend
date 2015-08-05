@@ -1,4 +1,4 @@
-  package com.gu.workflow.lib
+package com.gu.workflow.lib
 import Formatting._
 import com.gu.workflow.query._
 import models.{Status, Flag, Section}
