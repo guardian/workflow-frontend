@@ -9,7 +9,10 @@ import models.ContentItem._
 object FilterTestOps extends Matchers {
 
   type Content = List[ContentItem]
-  type FieldTest = ContentItem => Boolean
+  type FieldTest = (ContentItem) => Boolean
+  implicit class FieldTestOps(a: FieldTest) {
+    def or(b: FieldTest): FieldTest = (c) => a(c) || b(c)
+  }
 
   val noFilter: FieldTest = _ => true
 
@@ -18,16 +21,17 @@ object FilterTestOps extends Matchers {
   val desk: FieldTest = statusCheck("Desk")
   val subs: FieldTest = statusCheck("Subs")
 
-
-  def or(a: FieldTest, b: FieldTest): FieldTest = (c) => a(c) || b(c)
-
-
   case class FilterTest(p: (ContentItem) => Boolean, testData: Content) {
     val splitTestData = testData.partition(p)
 
     def compareTo(dbResult: DBResult): Boolean = {
+
+      implicit val contentItemOrder =
+        Ordering.by((c: ContentItem) => c.stub.id.getOrElse(-1L))
+
       val (testIn, testOut) = splitTestData
-      (dbResult.results sameElements testIn) && (dbResult.rest sameElements testOut)
+      (dbResult.results.sorted sameElements testIn.sorted) &&
+        (dbResult.rest.sorted sameElements testOut.sorted)
     }
 
     def matchWith(query: WfQuery): MatchResult = {

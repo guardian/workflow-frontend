@@ -23,7 +23,6 @@ object DatabaseManager {
   }
 
   def create = {
-    println("PMR - create database...")
     execute(s"""CREATE DATABASE "${Config.dbName}";""", withDB = false)
   }
 
