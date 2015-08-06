@@ -11,20 +11,12 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
 
   // field getters, here we are working with two types of fields, string
   // or optional string
-  type TextField = (ContentItem) => String
-  type TextFieldOpt = (ContentItem) => Option[String]
+  type TextField = FieldGetter[String]
 
   // a list of String fields that text search should look at
-  val textSearchFields: List[TextField] = List(
-    _.stub.title
+  val fields: List[TextField] = List(
+    _.stub.title, _.stub.note, _.wcOpt.flatMap(_.headline)
   )
-
-  // optional fields that should be included if present
-  val optTextSearchFields: List[TextFieldOpt] = List(
-    _.stub.note, _.wcOpt.flatMap(_.headline)
-  )
-
-  val fields = textSearchFields.map(_.andThen(Some(_))) ++ optTextSearchFields
 
   def fieldCheckers(pattern: String) = fields.map { field =>
     (c: ContentItem) => field(c).map(_.containsSlice(pattern)).getOrElse(false)

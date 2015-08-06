@@ -10,8 +10,65 @@ import scala.language.implicitConversions
 
 object FilterTestOps extends Matchers {
 
+  import scala.language.implicitConversions
+  implicit def lift[A](a: A): Option[A] = Some(a)
+
   type Content = List[ContentItem]
+
+  /**
+    * In order to perform a test on a field, we have two stages:
+    * Getting the field, and testing it. We split this out so that
+    * they can be re-used in different combinations.
+    */
+
+  /**
+    * First, we need to indicate which field we are testing. This is
+    * represented by the type `FieldGetter[A]` which takes a content
+    * item and returns the value of the field, which is of type `A`.
+    */
+
+  type FieldGetter[A] = (ContentItem) => Option[A]
+
+  /**
+    * We then represent the actual check that we want to make. This
+    * represented by `DataTest[A]` and it takes a value of type `A`
+    * (e.g. the value from of a field returned by one of the getters
+    * above) and returns a `Boolean`, indicating whether this field is
+    * a match or not.
+    */
+
+  type DataTest[A] = (A) => Boolean
+
+  /**
+    * When these are combined, we end up with a test which will take a
+    * `ContentItem` and return a `Boolean` describing whether or not
+    * it is a match for the filter being recreated.
+    */
+
+  // TODO => should this be called FilterTest?
   type FieldTest = (ContentItem) => Boolean
+
+  /**
+    * We can then provide some useful combinators which will build
+    * upon the basic logic represented by one of types above and apply
+    * it to more complicated situations.
+    */
+
+  /**
+    * Apply a normal test to an optional field, by first checking
+    * whether or not the optional field is present: if it is not, then
+    * we return a negative match (i.e. false). If it is present, then
+    * we extract the value and apply the DataTest to it.
+    */
+
+  def optTest[A](test: DataTest[A]): DataTest[Option[A]] =
+    (opt: Option[A]) => opt.map(test(_)).getOrElse(false)
+
+  /**
+    * And now we can create some generic types of test.
+    */
+
+  def stringContains(pattern: String): DataTest[String] = _.containsSlice(pattern)
 
   implicit def operators[A](t: FieldTest) = FilterTestOps(t)
 
@@ -43,7 +100,7 @@ object FilterTestOps extends Matchers {
   val dateFields: DateRange => FieldTest = { dt =>
     dateRange(stubLastMod, dt) |
     dateRange(createdAt, dt) |
-      dateRangeOpt(due, dt) |
+    dateRangeOpt(due, dt) |
     dateRangeOpt(wcLastMod, dt) |
     dateRangeOpt(timePublished, dt) |
     dateRangeOpt(takenDown, dt) |
@@ -69,7 +126,7 @@ object FilterTestOps extends Matchers {
 
       val (testIn, testOut) = splitTestData
       (dbResult.results.sorted sameElements testIn.sorted) &&
-        (dbResult.rest.sorted sameElements testOut.sorted)
+      (dbResult.rest.sorted sameElements testOut.sorted)
     }
     //todo - figure out a way of printing the db filter and scala filter as part of debugging
     def matchWith(query: WfQuery): MatchResult = {
