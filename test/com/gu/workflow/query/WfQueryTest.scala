@@ -12,22 +12,7 @@ import lib.TestData._
 class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
 
-  def generateStatus(statuses: List[Status]): List[ContentItem] = {
-    statuses.map { st =>
-      contentItem(defaultStub(), Some(defaultWorkflow(status = st)))
-    }
-  }
-
-  //todo - smarter way to programmatically generate test data
-  val testData = generateStatus(
-    ("Writers" ::
-      "Desk" ::
-      "Production Editor" ::
-      "Subs" ::
-      "Revise" ::
-      "Final" ::
-      "Hold" ::
-      Nil) map (Status(_)))
+  val testData = generateTestData()
 
   "One parameter set for a status" in {
     val dataInserted = testData.map(createContent(_)).flatten

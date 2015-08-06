@@ -8,13 +8,14 @@ import scala.util.Random
 object TestData {
 
 
-  val titles: List[String] = List("Title", "Hello", "Working Title")
+  val text: List[String] = List("Title", "Hello", "Working Title")
   val prodOffice: List[String] = List("UK","US","AU")
   val priority: List[Int] = List(-2,-1,0,1,2)
   val section: List[String] = List("Arts","Business","Cities","Environment","Film")
   val needsLegal: List[Flag.Flag] = List(Flag.NotRequired, Flag.Complete, Flag.Required)
-  val notes: List[Option[String]] = List(Some("one"), Some("two"), Some("three"), Some("four"), None)
-  val assignee: List[String] = List("testcake@testcake.com", "google@google.com", "facebook@facebook.com")
+  val user: List[String] = List("testcake@testcake.com", "google@google.com", "facebook@facebook.com")
+  val status: List[Status] = Status.All
+  val contentType: List[String] = List("article","gallery","live-blog","video","interactive","picture")
 
 
   def chooseDate: DateTime = DateTime.now().minusHours(scala.util.Random.nextInt(120))
@@ -25,8 +26,12 @@ object TestData {
 
   def opt[A](a: A): Option[A] = if(chooseBool) Some(a) else None
 
+  def chooseId: String = scala.util.Random.nextDouble.toString
+
+  def chooseInt: Int = scala.util.Random.nextInt
+
   def randomContentItem(): ContentItem = {
-    contentItem(generateRandomStub(), Some(defaultWorkflow()))
+    contentItem(generateRandomStub(), Some(generateRandomWC()))
   }
 
   def generateTestData(size: Int = 50, acc: List[ContentItem]=Nil): List[ContentItem] = {
@@ -36,19 +41,54 @@ object TestData {
 
 
   def generateRandomStub(): Stub = {
-    Stub(title = chooseItem(titles),
+    //todo-handle the trashed logic better
+    Stub(title = chooseItem(text),
       section = chooseItem(section),
       due = opt(chooseDate),
-      assignee = opt(chooseItem(assignee)),
-      assigneeEmail = opt(chooseItem(assignee)),
+      assignee = opt(chooseItem(user)),
+      assigneeEmail = opt(chooseItem(user)),
       priority = chooseItem(priority),
       needsLegal = chooseItem(needsLegal),
-      note = chooseItem(notes),
+      note = opt(chooseItem(text)),
       prodOffice = chooseItem(prodOffice),
       createdAt = chooseDate,
       lastModified = chooseDate,
-      trashed = chooseBool
+      trashed = false
     )
+  }
+
+  def generateRandomWC(): WorkflowContent = {
+    val composerIdRng = Random.nextDouble.toString
+
+
+    WorkflowContent(
+      composerId =composerIdRng,
+      path = opt(chooseItem(text)),
+      headline = opt(chooseItem(text)),
+      standfirst = opt(chooseItem(text)),
+      trailtext = opt(chooseItem(text)),
+      mainMedia = Some(WorkflowContentMainMedia()),
+      trailImageUrl = None,
+      contentType = chooseItem(contentType),
+      section = None,
+      status = chooseItem(status),
+      lastModified = chooseDate,
+      lastModifiedBy = opt(chooseItem(user)),
+      published = false,
+      timePublished = opt(chooseDate),
+      storyBundleId = opt(chooseId),
+      activeInInCopy = chooseBool,
+      takenDown = chooseBool,
+      timeTakenDown = opt(chooseDate),
+      wordCount = chooseInt,
+      launchScheduleDetails = Some(LaunchScheduleDetails(scheduledLaunchDate=opt(chooseDate), embargoedUntil=opt(chooseDate), embargoedIndefinitely=chooseBool)),
+      statusFlags = WorkflowContentStatusFlags(
+        commentable = chooseBool,
+        optimisedForWeb = chooseBool,
+        optimisedForWebChanged = chooseBool
+      )
+    )
+
   }
 
   //default stub, default workflow item?
@@ -60,7 +100,7 @@ object TestData {
   }
 
 
-
+//todo - deprecate default stub/wc
   def defaultStub(title: String = "Title",
                   prodOffice: String = "UK",
                   priority: Int = 1,
