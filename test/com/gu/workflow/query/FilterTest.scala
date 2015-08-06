@@ -10,9 +10,6 @@ import scala.language.implicitConversions
 
 object FilterTestOps extends Matchers {
 
-  import scala.language.implicitConversions
-  implicit def lift[A](a: A): Option[A] = Some(a)
-
   type Content = List[ContentItem]
 
   /**
@@ -27,7 +24,7 @@ object FilterTestOps extends Matchers {
     * item and returns the value of the field, which is of type `A`.
     */
 
-  type FieldGetter[A] = (ContentItem) => Option[A]
+  type FieldGetter[A] = (ContentItem) => A
 
   /**
     * We then represent the actual check that we want to make. This
@@ -47,6 +44,9 @@ object FilterTestOps extends Matchers {
 
   // TODO => should this be called FilterTest?
   type FieldTest = (ContentItem) => Boolean
+
+  def fieldTest[A](getter: FieldGetter[A], test: DataTest[A]): FieldTest =
+    getter andThen test
 
   /**
     * We can then provide some useful combinators which will build
