@@ -19,12 +19,14 @@ class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matche
   val testData: Content = List(
     contentItem(defaultStub(), Some(defaultWorkflow())),
     contentItem(defaultStub().copy(assigneeEmail = Some(testEmail)),
-                Some(defaultWorkflow()))
+                Some(defaultWorkflow())),
+    contentItem(defaultStub().copy(assigneeEmail = Some("nomatch@example.com")),
+                                   Some(defaultWorkflow()))
     )
 
   "YourContent query" - {
     "should find correctly assigned content" in withTestData(testData) { insertedData =>
-      (WfQuery(assignedToEmail = List(testEmail + "x"))
+      (WfQuery(assignedToEmail = List(testEmail))
          should selectSameResultsAs (FilterTest(assignedToTest(testEmail), insertedData)))
     }
   }
