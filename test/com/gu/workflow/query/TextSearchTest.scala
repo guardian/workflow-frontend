@@ -11,19 +11,33 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
 
   // field getters, here we are working with two types of fields, string
   // or optional string
-  type TextField = FieldGetter[String]
+  type TextField = FieldGetter[Option[String]]
+
+  // some text fields are optional and it's simpler to treat them all
+  // the same by converting non optional fields to Some(_) (this could
+  // be implicit but it's not used often enough to make it worth the
+  // ensuing confusion)
+  def toOpt(f: FieldGetter[String]): TextField = (c: ContentItem) => Some(f(c))
 
   // a list of String fields that text search should look at
   val fields: List[TextField] = List(
-    _.stub.title, _.stub.note, _.wcOpt.flatMap(_.headline)
+    toOpt(_.stub.title), _.stub.note, _.wcOpt.flatMap(_.headline)
   )
 
-  def fieldCheckers(pattern: String) = fields.map { field =>
-    (c: ContentItem) => field(c).map(_.containsSlice(pattern)).getOrElse(false)
-  }
+  // for matching a text field, we want to use the `stringContains`
+  // operator to find out whether the field contains the pattern that
+  // we are matching (filtering) against, converted to handle the
+  // optional fields
+  def textSearchOp(pattern: String) = optTest(stringContains(pattern))
 
-  // combine with or (`|`)
-  def findTextOp(s: String): FieldTest = fieldCheckers(s).reduce(_ | _)
+  // so we can now combine each field getters and the data test to
+  // produce a list of `FieldTest`s ...
+  def textSearchTest(pattern: String) = {
+    val tests = fields map (fieldTest(_, textSearchOp(pattern)))
+    // ... and then use the `|` (or) combinator to bring them together into
+    // a single test.
+    tests.reduce(_ | _)
+  }
 
   def doTest(f: FieldTest, query: WfQuery,
              data: List[ContentItem] = testData): Unit =
@@ -55,7 +69,7 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     "empty should return everything" in doTest(noFilter, WfQuery(text = None))
 
     "with should match against correct fields" in (
-      doTest(findTextOp(matchStr), WfQuery(text = Some(matchStr)))
+      doTest(textSearchTest(matchStr), WfQuery(text = Some(matchStr)))
     )
 
   }
