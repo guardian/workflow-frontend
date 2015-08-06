@@ -7,6 +7,7 @@ import models._
 import org.scalatest.{Matchers, FreeSpec}
 import FilterTestOps._
 import ContentItem._
+import lib.TestData._
 
 class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 

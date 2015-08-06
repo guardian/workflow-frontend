@@ -5,37 +5,11 @@ import models.{ContentItem, Status}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
 import test.WorkflowIntegrationSuite
-import scala.util.Random._
-import models.ContentItem._
+import lib.TestData._
+
 
 
 class TodayQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
-//todo - use seed for generating data
-  def randomDate = DateTime.now().minusDays(scala.util.Random.nextInt(100))
-
-  def todayInt = DateTime.now().minusHours(12)
-
-  def yesInt = DateTime.now().minusHours(36)
-
-  def generateTestData(n:Int=20, acc: List[ContentItem]=Nil): List[ContentItem] = {
-      if(n==0) acc
-      else {
-        val ci = contentItem(defaultStub(
-          lastModified = randomDate,
-          createdAt = randomDate,
-          due = Some(randomDate)
-        ), Some(defaultWorkflow(
-          lastModified = randomDate,
-          timePublished = Some(randomDate),
-          timeTakenDown = Some(randomDate),
-          embargoedUntil = Some(randomDate),
-          scheduledLaunchDate = Some(randomDate)
-        )))
-        generateTestData(n-1, ci :: acc)
-      }
-  }
-
-
 
   val testData = generateTestData()
 
