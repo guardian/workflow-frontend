@@ -70,9 +70,14 @@ object FilterTestOps extends Matchers {
 
   def stringContains(pattern: String): DataTest[String] = _.containsSlice(pattern)
 
+  def dateRange(dt: DateRange): DataTest[DateTime] = d => (d isAfter dt.from) && (d isBefore dt.until)
+
+  def statusTest(str: String): DataTest[Status] = st => Status(str) === st
+
   implicit def operators[A](t: FieldTest) = FilterTestOps(t)
 
   val noFilter: FieldTest = _ => true
+  val noResults: FieldTest = _ => false
 
   def statusCheck(s: String): FieldTest  = c => status(c) == Some(Status(s))
 
@@ -81,7 +86,6 @@ object FilterTestOps extends Matchers {
 
   def dateRange(f: ContentItem => DateTime, dt: DateRange): FieldTest = c => (f(c) isAfter dt.from) && (f(c) isBefore dt.until)
 
-  //todo - abstract the boolean operation repition
   def dateRangeOpt(f: ContentItem => Option[DateTime], dt: DateRange): FieldTest = { c=>
     f(c) match {
       case Some(v) => (v isAfter dt.from) && (v isBefore dt.until)
@@ -106,7 +110,6 @@ object FilterTestOps extends Matchers {
     dateRangeOpt(takenDown, dt) |
     dateRangeOpt(embargoedUntil, dt) |
     dateRangeOpt(scheduledLaunch, dt)
-
   }
 
   def or(a: FieldTest, b: FieldTest): FieldTest = (c) => a(c) || b(c)

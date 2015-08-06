@@ -9,7 +9,7 @@ import lib.TestData._
 
 
 
-class TodayQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
+class DateRangeSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
   val testData = generateTestData()
 

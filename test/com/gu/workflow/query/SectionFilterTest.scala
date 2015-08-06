@@ -1,35 +1,23 @@
 package com.gu.workflow.query
 
-import lib.PostgresDB
-import org.joda.time.DateTime
-import test._
-import models._
-import org.scalatest.{Matchers, FreeSpec}
-import FilterTestOps._
-import ContentItem._
+import com.gu.workflow.query.FilterTestOps._
 import lib.TestData._
+import models.Status
+import org.scalatest.{Matchers, FreeSpec}
+import test.WorkflowIntegrationSuite
 
-class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
-
-
+class SectionFilterTest extends FreeSpec with WorkflowIntegrationSuite with Matchers{
   val testData = generateTestData()
 
-  "One parameter set for a status" in {
-    val dataInserted = testData.map(createContent(_)).flatten
-    val oneStatusFilter = FilterTest(subs, dataInserted)
-    val query = WfQuery(status=Seq(Status("Subs")))
-
-    query should selectSameResultsAs (oneStatusFilter)
-  }
-
-  "No parameter set for a status" in {
+  "No parameter set for a section" in {
     val dataInserted = testData.map(createContent(_)).flatten
     val query = WfQuery()
 
     query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
   }
 
-  "Multiple parameters set for status" in {
+
+  "One parameter set for section" in {
     val dataInserted = testData.map(createContent(_)).flatten
 
     val multiFilter = FilterTest((writers | desk), dataInserted)
@@ -39,7 +27,7 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
   }
 
 
-  "All parameters set for status" in {
+  "Multiple paramets set for section" in {
     val dataInserted = testData.map(createContent(_)).flatten
     val query = WfQuery(status=Seq(Status("Writers"), Status("Desk"), Status("Subs"), Status("Production Editor"), Status("Revise"), Status("Final"), Status("Hold")))
 
@@ -48,5 +36,4 @@ class WfQueryTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
     query should selectSameResultsAs (multiFilter)
     query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
   }
-
 }
