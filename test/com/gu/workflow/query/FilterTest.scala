@@ -114,9 +114,41 @@ object FilterTestOps extends Matchers {
 
   def or(a: FieldTest, b: FieldTest): FieldTest = (c) => a(c) || b(c)
 
+  case class Tmp[A](tmp1: ContentItem => A, tmp2: A => Boolean, testData: Content) {
+    val splitTestData = testData.partition(tmp1 andThen tmp2)
+
+    def compareTo(dbResult: DBResult): Boolean = {
+
+      implicit val contentItemOrder =
+        Ordering.by((c: ContentItem) => c.stub.id.getOrElse(-1L))
+
+      val (testIn, testOut) = splitTestData
+      (dbResult.results.sorted sameElements testIn.sorted) &&
+        (dbResult.rest.sorted sameElements testOut.sorted)
+    }
+    //todo - figure out a way of printing the db filter and scala filter as part of debugging
+    def matchWith(query: WfQuery): MatchResult = {
+      def prettyPrint(items: Content): String = {
+        val ids = items.map(_.stub.id.map(_.toString))
+        val fieldValues = items.map(c => tmp1(c))
+        if(ids.length > 0) "ids:" +  ids.mkString(",") + "fieldValues: " + fieldValues.mkString(",")
+        else "<empty>"
+      }
+      val dbResult = DBResult(query, testData)
+      val (testIn, testOut) = splitTestData
+      MatchResult(
+        compareTo(dbResult),
+        s"Result from database (in:${prettyPrint(dbResult.results)}, out:${prettyPrint(dbResult.rest)}) did not contain expected " +
+          s"elements (${prettyPrint(testIn)}) ",
+        s"Result from database (${dbResult.results}) contained unexpected elements (" +
+          testIn diff dbResult.results + ")"
+      )
+    }
+
+  }
+
   case class FilterTestOps(t1: FieldTest) {
     def |(t2: FieldTest) = or(t1,t2)
-
   }
 
   case class FilterTest(p: (ContentItem) => Boolean, testData: Content) {
