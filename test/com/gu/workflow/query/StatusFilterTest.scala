@@ -56,4 +56,15 @@ class StatusFilterTest extends FreeSpec with WorkflowIntegrationSuite with Match
   }
 
 
+  "Tmp" in {
+    val dataInserted = testData.map(createContent(_)).flatten
+    val query = WfQuery(status=Seq(Status("Writers")))
+
+    val filter = Tmp[Option[Status]](c => c.wcOpt.map(_.status), a => a==Some(Status("Writers")), dataInserted)
+
+    query should selectSameResultsAs (filter)
+
+
+  }
+
 }
