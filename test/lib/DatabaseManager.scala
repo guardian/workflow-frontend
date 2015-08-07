@@ -47,12 +47,13 @@ object DatabaseManager {
   def clearContent = truncate(List("content", "stub"))
 
   def getCollaborators: List[(String, String)] =
-    query[(String, String)]("select email,composer_id from collaborator;")
+    query[(String, String)]("select composer_id,email from collaborator;")
 
-  def hasCollaborator(composerId: String, email: String): Boolean =
+  def hasCollaborator(composerId: String, email: String): Boolean = {
     getCollaborators exists {
       case (`composerId`, `email`) => true
       case _ => false
     }
+  }
 
 }
