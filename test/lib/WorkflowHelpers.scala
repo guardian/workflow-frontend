@@ -12,7 +12,14 @@ import play.api.Play.current
 
 trait WorkflowHelpers {
 
-  case class ContentItemWithCollaborators(contentItem: ContentItem, collaborators: List[User] = Nil)
+  import scala.language.implicitConversions
+
+  case class ContentItemWithCollaborators(contentItem: ContentItem, collaborators: List[User] = Nil) {
+    def withCollaborators(updatedCollabs: User*) = this.copy(collaborators = updatedCollabs.toList)
+  }
+
+  implicit def hasCollaborators(c: ContentItem): ContentItemWithCollaborators =
+    ContentItemWithCollaborators(c)
 
   def createContent(item: ContentItem): Option[ContentItem] = {
     val stubId = PostgresDB.createContent(item)
