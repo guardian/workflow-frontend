@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
 import test.WorkflowIntegrationSuite
 import models.ContentItem._
+import models.ContentItem
 
 class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
@@ -14,52 +15,47 @@ class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Ma
   lazy val oneDayAgo = DateTime.now().minusDays(1)
   val todayRange = DateRange(oneDayAgo, now)
 
-  "Should query on date selected due times" in {
-    val dataInserted = testData.map(createContent(_)).flatten
-    val wfQueryTime = WfQueryTime(Some(oneDayAgo),Some(now))
-    val query = WfQuery(dueTimes=Seq(wfQueryTime))
-    val dueTimeFilter = FilterTest(dateRangeOpt(due, todayRange), dataInserted)
+  val withinRange: (DateRange, DateTime) => Boolean = (dr,d) => (d isAfter dr.from) && (d isBefore dr.until)
 
-    query should selectSameResultsAs (dueTimeFilter)
+  "Should query on date selected times" - {
+    "field is due" in {
+      val dataInserted = testData.map(createContent(_)).flatten
+      val wfQueryTime = WfQueryTime(Some(oneDayAgo),Some(now))
+      val query = WfQuery(dueTimes=Seq(wfQueryTime))
+      val dueTimeFilter = FilterTest(c => due(c).exists(d => withinRange(todayRange,d)), dataInserted)
+
+      query should selectSameResultsAs (dueTimeFilter)
+    }
+
+    "field is createdAt" in {
+      val dataInserted = testData.map(createContent(_)).flatten
+      val wfQueryTime = WfQueryTime(Some(oneDayAgo),Some(now))
+      val query = WfQuery(creationTimes=Seq(wfQueryTime))
+      val dueTimeFilter = FilterTest(c => withinRange(todayRange,createdAt(c)), dataInserted)
+
+      query should selectSameResultsAs (dueTimeFilter)
+
+    }
   }
 
+  "Should return all results if date range is wrong way round" - {
+    "field is due" in {
+      val dataInserted = testData.map(createContent(_)).flatten
 
-  "Should return all results if only from is set" in {
-    val dataInserted = testData.map(createContent(_)).flatten
+      val wfQueryTime = WfQueryTime(Some(now), Some(oneDayAgo))
+      val query = WfQuery(dueTimes=Seq(wfQueryTime))
 
-    val wfQueryTime = WfQueryTime(Some(oneDayAgo),None)
-    val query = WfQuery(dueTimes=Seq(wfQueryTime))
+      query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
+    }
 
-    query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
+    "field is createdAt" in {
+      val dataInserted = testData.map(createContent(_)).flatten
+
+      val wfQueryTime = WfQueryTime(Some(now),Some(oneDayAgo))
+      val query = WfQuery(creationTimes=Seq(wfQueryTime))
+
+      query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
+    }
   }
-
-  "Should return all results if only until element is set" in {
-    val dataInserted = testData.map(createContent(_)).flatten
-
-    val wfQueryTime = WfQueryTime(None,Some(now))
-    val query = WfQuery(dueTimes=Seq(wfQueryTime))
-
-    query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
-  }
-
-  "Should return all results if date range is wrong way round" in {
-    val dataInserted = testData.map(createContent(_)).flatten
-
-    val wfQueryTime = WfQueryTime(Some(now), Some(oneDayAgo))
-    val query = WfQuery(dueTimes=Seq(wfQueryTime))
-
-    query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
-  }
-
-
-  "Should query on date selected created at times" in {
-    val dataInserted = testData.map(createContent(_)).flatten
-    val wfQueryTime = WfQueryTime(Some(oneDayAgo),Some(now))
-    val query = WfQuery(creationTimes=Seq(wfQueryTime))
-    val dueTimeFilter = FilterTest(dateRange(createdAt, todayRange), dataInserted)
-
-    query should selectSameResultsAs (dueTimeFilter)
-  }
-
 }
 
