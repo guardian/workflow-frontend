@@ -1,5 +1,6 @@
 package lib
 
+import com.gu.workflow.query._
 import models._
 import org.joda.time.DateTime
 
@@ -7,16 +8,15 @@ import scala.util.Random
 
 object TestData {
 
-
   val text: List[String] = List("Title", "Hello", "Working Title")
-  val prodOffice: List[String] = List("UK","US","AU")
+  val prodOffices: List[String] = List("UK","US","AU")
   val priority: List[Int] = List(-2,-1,0,1,2)
-  val section: List[String] = List("Arts","Business","Cities","Environment","Film")
+  val sections: List[String] = List("Arts","Business","Cities","Environment","Film")
   val needsLegal: List[Flag.Flag] = List(Flag.NotRequired, Flag.Complete, Flag.Required)
   val user: List[String] = List("testcake@testcake.com", "google@google.com", "facebook@facebook.com")
-  val status: List[Status] = Status.All
-  val contentType: List[String] = List("article","gallery","live-blog","video","interactive","picture")
-
+  val statuses: List[Status] = Status.All
+  val contentTypes: List[String] = List("article","gallery","live-blog","video","interactive","picture")
+  val state: List[ContentState] = List(PublishedState, TakenDownState, ScheduledState, EmbargoedState, DraftState)
 
   def chooseDate: DateTime = DateTime.now().minusHours(scala.util.Random.nextInt(120))
 
@@ -43,15 +43,16 @@ object TestData {
   def generateRandomStub(): Stub = {
     //todo-handle the trashed logic better
     Stub(title = chooseItem(text),
-      section = chooseItem(section),
+      section = chooseItem(sections),
       due = opt(chooseDate),
       assignee = opt(chooseItem(user)),
       assigneeEmail = opt(chooseItem(user)),
       priority = chooseItem(priority),
       needsLegal = chooseItem(needsLegal),
       note = opt(chooseItem(text)),
-      prodOffice = chooseItem(prodOffice),
+      prodOffice = chooseItem(prodOffices),
       createdAt = chooseDate,
+      contentType = opt(chooseItem(contentTypes)),
       lastModified = chooseDate,
       trashed = false
     )
@@ -59,8 +60,6 @@ object TestData {
 
   def generateRandomWC(): WorkflowContent = {
     val composerIdRng = Random.nextDouble.toString
-
-
     WorkflowContent(
       composerId =composerIdRng,
       path = opt(chooseItem(text)),
@@ -69,9 +68,9 @@ object TestData {
       trailtext = opt(chooseItem(text)),
       mainMedia = Some(WorkflowContentMainMedia()),
       trailImageUrl = None,
-      contentType = chooseItem(contentType),
+      contentType = chooseItem(contentTypes),
       section = None,
-      status = chooseItem(status),
+      status = chooseItem(statuses),
       lastModified = chooseDate,
       lastModifiedBy = opt(chooseItem(user)),
       published = false,

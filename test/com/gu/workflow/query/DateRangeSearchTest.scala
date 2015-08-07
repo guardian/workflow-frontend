@@ -1,6 +1,7 @@
 package com.gu.workflow.query
 
 import com.gu.workflow.query.FilterTestOps._
+import models.ContentItem._
 import models.{ContentItem, Status}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
@@ -19,6 +20,26 @@ class DateRangeSearchTest extends FreeSpec with WorkflowIntegrationSuite with Ma
 
   val todayRange = DateRange(oneDayAgo, now)
   val yesterdayRange = DateRange(twoDaysAgo, oneDayAgo)
+
+  def dateRange(f: ContentItem => DateTime, dt: DateRange): FieldTest = c => (f(c) isAfter dt.from) && (f(c) isBefore dt.until)
+
+  def dateRangeOpt(f: ContentItem => Option[DateTime], dt: DateRange): FieldTest = { c=>
+    f(c) match {
+      case Some(v) => (v isAfter dt.from) && (v isBefore dt.until)
+      case None => false
+    }
+  }
+
+  val dateFields: DateRange => FieldTest = { dt =>
+    dateRange(stubLastMod, dt) |
+      dateRange(createdAt, dt) |
+      dateRangeOpt(due, dt) |
+      dateRangeOpt(wcLastMod, dt) |
+      dateRangeOpt(timePublished, dt) |
+      dateRangeOpt(timeTakenDown, dt) |
+      dateRangeOpt(embargoedUntil, dt) |
+      dateRangeOpt(scheduledLaunchDate, dt)
+  }
 
   "No date range set" in {
     val dataInserted = testData.map(createContent(_)).flatten

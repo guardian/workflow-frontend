@@ -45,8 +45,7 @@ object FilterTestOps extends Matchers {
   // TODO => should this be called FilterTest?
   type FieldTest = (ContentItem) => Boolean
 
-  def fieldTest[A](getter: FieldGetter[A], test: DataTest[A]): FieldTest =
-    getter andThen test
+  def fieldTest[A](getter: FieldGetter[A], test: DataTest[A]): FieldTest = getter andThen test
 
   /**
     * We can then provide some useful combinators which will build
@@ -61,8 +60,7 @@ object FilterTestOps extends Matchers {
     * we extract the value and apply the DataTest to it.
     */
 
-  def optTest[A](test: DataTest[A]): DataTest[Option[A]] =
-    (opt: Option[A]) => opt.map(test(_)).getOrElse(false)
+  def optTest[A](test: DataTest[A]): DataTest[Option[A]] = (opt: Option[A]) => opt.map(test(_)).getOrElse(false)
 
   /**
     * And now we can create some generic types of test.
@@ -71,6 +69,8 @@ object FilterTestOps extends Matchers {
   def stringContains(pattern: String): DataTest[String] = _.containsSlice(pattern)
 
   def dateRange(dt: DateRange): DataTest[DateTime] = d => (d isAfter dt.from) && (d isBefore dt.until)
+
+  def eq[A](attr: A): DataTest[A] = a => a == attr
 
   def statusTest(str: String): DataTest[Status] = st => Status(str) === st
 
@@ -84,68 +84,9 @@ object FilterTestOps extends Matchers {
   def fieldCheck[A](f: ContentItem => A, a: A): ContentItem => Boolean = c => f(c) == a
   def fieldOptCheck[A](f: ContentItem => Option[A], a: A): ContentItem => Boolean = c => f(c) == Some(a)
 
-  def dateRange(f: ContentItem => DateTime, dt: DateRange): FieldTest = c => (f(c) isAfter dt.from) && (f(c) isBefore dt.until)
 
-  def dateRangeOpt(f: ContentItem => Option[DateTime], dt: DateRange): FieldTest = { c=>
-    f(c) match {
-      case Some(v) => (v isAfter dt.from) && (v isBefore dt.until)
-      case None => false
-    }
-  }
-
-  val writers: FieldTest = statusCheck("Writers")
-  val desk: FieldTest = statusCheck("Desk")
-  val subs: FieldTest = statusCheck("Subs")
-  val prodEd: FieldTest = statusCheck("Production Editor")
-  val revise: FieldTest = statusCheck("Revise")
-  val `final`: FieldTest = statusCheck("Final")
-  val hold: FieldTest = statusCheck("Hold")
-
-  val dateFields: DateRange => FieldTest = { dt =>
-    dateRange(stubLastMod, dt) |
-    dateRange(createdAt, dt) |
-    dateRangeOpt(due, dt) |
-    dateRangeOpt(wcLastMod, dt) |
-    dateRangeOpt(timePublished, dt) |
-    dateRangeOpt(takenDown, dt) |
-    dateRangeOpt(embargoedUntil, dt) |
-    dateRangeOpt(scheduledLaunch, dt)
-  }
 
   def or(a: FieldTest, b: FieldTest): FieldTest = (c) => a(c) || b(c)
-
-  case class Tmp[A](tmp1: ContentItem => A, tmp2: A => Boolean, testData: Content) {
-    val splitTestData = testData.partition(tmp1 andThen tmp2)
-
-    def compareTo(dbResult: DBResult): Boolean = {
-
-      implicit val contentItemOrder =
-        Ordering.by((c: ContentItem) => c.stub.id.getOrElse(-1L))
-
-      val (testIn, testOut) = splitTestData
-      (dbResult.results.sorted sameElements testIn.sorted) &&
-        (dbResult.rest.sorted sameElements testOut.sorted)
-    }
-    //todo - figure out a way of printing the db filter and scala filter as part of debugging
-    def matchWith(query: WfQuery): MatchResult = {
-      def prettyPrint(items: Content): String = {
-        val ids = items.map(_.stub.id.map(_.toString))
-        val fieldValues = items.map(c => tmp1(c))
-        if(ids.length > 0) "ids:" +  ids.mkString(",") + "fieldValues: " + fieldValues.mkString(",")
-        else "<empty>"
-      }
-      val dbResult = DBResult(query, testData)
-      val (testIn, testOut) = splitTestData
-      MatchResult(
-        compareTo(dbResult),
-        s"Result from database (in:${prettyPrint(dbResult.results)}, out:${prettyPrint(dbResult.rest)}) did not contain expected " +
-          s"elements (${prettyPrint(testIn)}) ",
-        s"Result from database (${dbResult.results}) contained unexpected elements (" +
-          testIn diff dbResult.results + ")"
-      )
-    }
-
-  }
 
   case class FilterTestOps(t1: FieldTest) {
     def |(t2: FieldTest) = or(t1,t2)
