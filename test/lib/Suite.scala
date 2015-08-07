@@ -27,6 +27,14 @@ trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with BeforeA
   def withTestData(testData: List[ContentItem])(f: (List[ContentItem]) => Unit) =
     f(testData.map(createContent(_)).flatten)
 
+  def withCollaboratorTestData(testData: List[ContentItemWithCollaborators])
+                              (f: (List[ContentItem]) => Unit) = {
+    val content = testData.map(_.contentItem)
+    val dataInserted = content.map(createContent(_)).flatten
+    testData.foreach(item => addCollaborators(item.contentItem, item.collaborators))
+    f(dataInserted)
+  }
+
   override def beforeAll() {
     val props = System.getProperties();
     props.setProperty("config.resource", "application.ci.conf");
