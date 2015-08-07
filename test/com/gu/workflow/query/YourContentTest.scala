@@ -26,7 +26,7 @@ class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matche
   )
 
   "YourContent query" - {
-    "should find correctly assigned content" in withCollaboratorTestData(testData) { insertedData =>
+    "should correctly find assigned content" in withCollaboratorTestData(testData) { insertedData =>
       (WfQuery(assignedToEmail = List(testEmail))
          should selectSameResultsAs (FilterTest(assignedToTest(testEmail), insertedData)))
     }
