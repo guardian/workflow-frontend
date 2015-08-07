@@ -1,18 +1,26 @@
 package test
 
 import scala.slick.driver.PostgresDriver.simple._
-import scala.slick.jdbc.{ StaticQuery => Q }
+import scala.slick.jdbc.{ StaticQuery => Q, GetResult }
 import org.postgresql.util.PSQLException
 
 object DatabaseManager {
+  def getDB(withDB: Boolean = true) =
+    Database.forURL(
+      driver = "org.postgresql.Driver",
+      url = Config.dbUrl + (if(withDB) Config.dbName else ""),
+      user = Config.dbUser,
+      password = Config.dbPass
+    )
+
+  def query[R](sql: String)(implicit gr: GetResult[R]): List[R] =
+    getDB() withSession { implicit session =>
+      Q.queryNA(sql).list
+    }
+
   def execute(sql: String, withDB: Boolean = true) = {
     try {
-      Database.forURL(
-        driver = "org.postgresql.Driver",
-        url = Config.dbUrl + (if(withDB) Config.dbName else ""),
-        user = Config.dbUser,
-        password = Config.dbPass
-      ) withSession { implicit session =>
+      getDB() withSession { implicit session =>
         Q.updateNA(sql).execute
       }
     } catch {
@@ -37,4 +45,14 @@ object DatabaseManager {
   }
 
   def clearContent = truncate(List("content", "stub"))
+
+  def getCollaborators: List[(String, String)] =
+    query[(String, String)]("select email,composer_id from collaborator;")
+
+  def hasCollaborator(composerId: String, email: String): Boolean =
+    getCollaborators exists {
+      case (`composerId`, `email`) => true
+      case _ => false
+    }
+
 }
