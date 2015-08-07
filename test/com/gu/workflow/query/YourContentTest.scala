@@ -14,6 +14,10 @@ class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matche
 
   val assignedToField: FieldGetter[Option[String]] = _.stub.assigneeEmail
 
+  def matchCollaboratorsTest(email: String) =
+    fieldTest(_.stub.composerId,
+              optTest[String](composerId => DatabaseManager.hasCollaborator(composerId, email)))
+
   def assignedToTest(pattern: String) = fieldTest(_.stub.assigneeEmail,
                                                   optTest[String](_ == pattern))
 
@@ -29,6 +33,10 @@ class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matche
     "should correctly find assigned content" in withCollaboratorTestData(testData) { insertedData =>
       (WfQuery(assignedToEmail = List(testEmail))
          should selectSameResultsAs (FilterTest(assignedToTest(testEmail), insertedData)))
+    }
+    "should correctly find touched content" in withCollaboratorTestData(testData) { insertedData =>
+      (WfQuery(touched = List(testEmail))
+         should selectSameResultsAs (FilterTest(matchCollaboratorsTest(testEmail), insertedData)))
     }
   }
 }
