@@ -3,7 +3,7 @@ package lib
 import com.gu.workflow.query._
 import models._
 import org.joda.time.DateTime
-import test.Config
+import com.gu.workflow.test.Config
 
 object TestData {
 
