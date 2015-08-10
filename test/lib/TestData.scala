@@ -13,7 +13,7 @@ object TestData {
   val priority: List[Int] = List(-2,-1,0,1,2)
   val sections: List[String] = List("Arts","Business","Cities","Environment","Film")
   val needsLegal: List[Flag.Flag] = List(Flag.NotRequired, Flag.Complete, Flag.Required)
-  val user: List[String] = List("testcake@testcake.com", "google@google.com", "facebook@facebook.com")
+  val user: List[String] = List("testcake@testcake.com", "google@google.com", "facebook@facebook.com", "guardian@example.com")
   val statuses: List[Status] = Status.All
   val contentTypes: List[String] = List("article","gallery","live-blog","video","interactive","picture")
   val state: List[ContentState] = List(PublishedState, TakenDownState, ScheduledState, EmbargoedState, DraftState)
@@ -37,6 +37,18 @@ object TestData {
   def generateTestData(size: Int = 50, acc: List[ContentItem]=Nil): List[ContentItem] = {
     if(size == 0) acc
     else generateTestData(size-1,randomContentItem()::acc)
+  }
+
+  def generateRandomSizeCollaborators(): List[User] = {
+    val size = scala.util.Random.nextInt(10)
+    generateCollaborates(size)
+
+  }
+
+  def generateCollaborates(size: Int=10, acc: List[User]=Nil): List[User] = {
+    if(size == 0) acc
+    else generateCollaborates(size-1,generateUser()::acc)
+
   }
 
 
@@ -86,6 +98,14 @@ object TestData {
         optimisedForWeb = chooseBool,
         optimisedForWebChanged = chooseBool
       )
+    )
+  }
+
+  def generateUser(): User = {
+    User(
+      email = chooseItem(user),
+      firstName = "test",
+      lastName = "bunny"
     )
 
   }
