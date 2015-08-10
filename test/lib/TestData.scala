@@ -52,7 +52,7 @@ object TestData {
       note = opt(chooseItem(text)),
       prodOffice = chooseItem(prodOffices),
       createdAt = chooseDate,
-      contentType = opt(chooseItem(contentTypes)),
+      contentType = None,
       lastModified = chooseDate,
       trashed = false
     )
@@ -93,7 +93,7 @@ object TestData {
   //default stub, default workflow item?
   def contentItem(stub: Stub, wcOpt: Option[WorkflowContent]=None): ContentItem = {
     ContentItem(
-      stub.copy(composerId = wcOpt.map(wc => wc.composerId)),
+      stub.copy(composerId = wcOpt.map(wc => wc.composerId), contentType = wcOpt.map(wc => wc.contentType)),
       wcOpt
     )
   }

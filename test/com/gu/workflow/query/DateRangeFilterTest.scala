@@ -38,14 +38,14 @@ class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Ma
     }
   }
 
-  "Should return all results if date range is wrong way round" - {
+  "Should return no results if date range is wrong way round" - {
     "field is due" in {
       val dataInserted = testData.map(createContent(_)).flatten
 
       val wfQueryTime = WfQueryTime(Some(now), Some(oneDayAgo))
       val query = WfQuery(dueTimes=Seq(wfQueryTime))
 
-      query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
+      query should selectSameResultsAs (FilterTest(noResults, dataInserted))
     }
 
     "field is createdAt" in {
@@ -54,7 +54,7 @@ class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Ma
       val wfQueryTime = WfQueryTime(Some(now),Some(oneDayAgo))
       val query = WfQuery(creationTimes=Seq(wfQueryTime))
 
-      query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
+      query should selectSameResultsAs (FilterTest(noResults, dataInserted))
     }
   }
 }

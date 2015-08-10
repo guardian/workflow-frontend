@@ -70,12 +70,21 @@ class OneValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with Mat
 
       }
     }
+    "field is inInCopy" - {
+      "value is true" in {
+        val dataInserted = testData.map(createContent(_)).flatten
+        val query = WfQuery(inIncopy=Some(true))
+        val oneFilter = FilterTest(c => storyBundleId(c).isDefined, dataInserted)
+        query should selectSameResultsAs(oneFilter)
+      }
 
-    "field is inInCopy" in {
-      val dataInserted = testData.map(createContent(_)).flatten
-      val query = WfQuery(inIncopy=Some(true))
-      val oneFilter = FilterTest(c => inInCopy(c).exists(identity), dataInserted)
-      query should selectSameResultsAs(oneFilter)
+      "value is false" in {
+        val dataInserted = testData.map(createContent(_)).flatten
+        val query = WfQuery(inIncopy=Some(false))
+        val oneFilter = FilterTest(c => storyBundleId(c).isEmpty, dataInserted)
+        query should selectSameResultsAs(oneFilter)
+      }
+
 
     }
 
