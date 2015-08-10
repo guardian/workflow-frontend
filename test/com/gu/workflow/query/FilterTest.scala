@@ -66,7 +66,7 @@ object FilterTestOps extends Matchers {
     * And now we can create some generic types of test.
     */
 
-  def stringContains(pattern: String): DataTest[String] = _.containsSlice(pattern)
+  def stringContains(pattern: String): DataTest[String] = _.toUpperCase.containsSlice(pattern.toUpperCase)
 
   def dateRange(dt: DateRange): DataTest[DateTime] = d => (d isAfter dt.from) && (d isBefore dt.until)
 
