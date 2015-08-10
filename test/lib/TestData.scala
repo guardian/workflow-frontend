@@ -8,7 +8,7 @@ import scala.util.Random
 
 object TestData {
 
-  val text: List[String] = List("Title", "Hello", "Working Title")
+  val text: List[String] = List("Title", "Hello", "Working Title", "More", "Words", "Blah")
   val prodOffices: List[String] = List("UK","US","AU")
   val priority: List[Int] = List(-2,-1,0,1,2)
   val sections: List[String] = List("Arts","Business","Cities","Environment","Film")

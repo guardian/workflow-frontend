@@ -6,7 +6,7 @@ import models.ContentItem
 import org.scalatest.{Matchers, FreeSpec}
 import FilterTestOps._
 import lib.TestData._
-// import ContentItem._
+import ContentItem._
 
 class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
@@ -46,32 +46,23 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       query should selectSameResultsAs (FilterTest(f, dataInserted))
     }
 
-  val matchStr = "xyzzy"
+  val matchStr = "titl"
+  val nonExistantStr = "xy"
 
-  val testData: List[ContentItem] = {
-    val stringWithMatch = s"This has the magic word, ${matchStr}, in it"
-    List(
-      // just title
-      contentItem(defaultStub(title = stringWithMatch), Some(defaultWorkflow())),
-      // just note
-      contentItem(defaultStub().copy(note = Some(stringWithMatch)), Some(defaultWorkflow())),
-      // match in both title and note
-      contentItem(defaultStub(title = stringWithMatch).copy(note = Some(stringWithMatch)),
-                  Some(defaultWorkflow())),
-      // match in headline
-      contentItem(defaultStub(), Some(defaultWorkflow().copy(headline = Some(stringWithMatch)))),
-      // no match
-      contentItem(defaultStub(), Some(defaultWorkflow()))
-    )
-  }
+
+  val testData: List[ContentItem] = generateTestData()
 
   "TextSearch" - {
 
     "empty should return everything" in doTest(noFilter, WfQuery(text = None))
 
-    "with should match against correct fields" in (
+    "with should match against correct fields" in {
       doTest(textSearchTest(matchStr), WfQuery(text = Some(matchStr)))
-    )
+    }
+  
+    "should return no results if string doesnt exist" in (
+        doTest(noResults, WfQuery(text=Some(nonExistantStr)))
+      )
 
   }
 
