@@ -2,11 +2,13 @@ package lib
 
 import models._
 import org.joda.time.DateTime
-
-import scala.util.Random
+import test.Config
 
 object TestData {
 
+  val randomSeed = Config.randomSeed.getOrElse(scala.util.Random.nextLong)
+  println(s"Using random seed: $randomSeed")
+  private val random = new scala.util.Random(randomSeed)
 
   val text: List[String] = List("Title", "Hello", "Working Title")
   val prodOffice: List[String] = List("UK","US","AU")
@@ -18,17 +20,17 @@ object TestData {
   val contentType: List[String] = List("article","gallery","live-blog","video","interactive","picture")
 
 
-  def chooseDate: DateTime = DateTime.now().minusHours(scala.util.Random.nextInt(120))
+  def chooseDate: DateTime = DateTime.now().minusHours(random.nextInt(120))
 
-  def chooseItem[A](list: List[A]): A = list(scala.util.Random.nextInt(list.size-1))
+  def chooseItem[A](list: List[A]): A = list(random.nextInt(list.size-1))
 
-  def chooseBool: Boolean = scala.util.Random.nextInt(2) % 2 == 0
+  def chooseBool: Boolean = random.nextInt(2) % 2 == 0
 
   def opt[A](a: A): Option[A] = if(chooseBool) Some(a) else None
 
-  def chooseId: String = scala.util.Random.nextDouble.toString
+  def chooseId: String = random.nextDouble.toString
 
-  def chooseInt: Int = scala.util.Random.nextInt
+  def chooseInt: Int = random.nextInt
 
   def randomContentItem(): ContentItem = {
     contentItem(generateRandomStub(), Some(generateRandomWC()))
@@ -58,7 +60,7 @@ object TestData {
   }
 
   def generateRandomWC(): WorkflowContent = {
-    val composerIdRng = Random.nextDouble.toString
+    val composerIdRng = random.nextDouble.toString
 
 
     WorkflowContent(
@@ -132,7 +134,7 @@ object TestData {
                       scheduledLaunchDate: Option[DateTime] = None,
                       embargoedUntil: Option[DateTime] = None,
                       takenDown: Boolean = false) = {
-    val composerIdRng = Random.nextDouble.toString
+    val composerIdRng = random.nextDouble.toString
 
     WorkflowContent(
       composerId =composerIdRng,
