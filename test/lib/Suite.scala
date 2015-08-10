@@ -1,5 +1,6 @@
 package test
 
+import models.ContentItem
 import play.api.test._
 import play.api.libs.json._
 import play.api.{Play, Application}
@@ -23,6 +24,17 @@ trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with BeforeA
     Json.parse(connection.body)
   }
 
+  def withTestData(testData: List[ContentItem])(f: (List[ContentItem]) => Unit) =
+    f(testData.map(createContent(_)).flatten)
+
+  def withCollaboratorTestData(testData: List[ContentItemWithCollaborators])
+                              (f: (List[ContentItem]) => Unit) = {
+    val content = testData.map(_.contentItem)
+    val dataInserted = content.map(createContent(_)).flatten
+    testData.foreach(item => addCollaborators(item.contentItem, item.collaborators))
+    f(dataInserted)
+  }
+
   override def beforeAll() {
     val props = System.getProperties();
     props.setProperty("config.resource", "application.ci.conf");
@@ -32,7 +44,8 @@ trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with BeforeA
   }
 
   override def afterAll() {
-    DatabaseManager.destroy
+    if(Config.dropDB) DatabaseManager.destroy
+    else println("Not dropping database")
   }
 
   override def beforeEach() {

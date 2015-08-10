@@ -2,6 +2,7 @@ package test
 
 import play.api.libs.json._
 import org.scalatest._
+import lib.TestData._
 
 
 class WorkflowSpec extends FlatSpec  with  WorkflowIntegrationSuite with Inside {

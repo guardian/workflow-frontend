@@ -77,7 +77,6 @@ object Api extends Controller with PanDomainAuthActions {
 
     def getContent = PostgresDB.getContent(queryData)
 
-
     def getStubs =
       CommonDB.getStubs(queryData, unlinkedOnly = true)
 
