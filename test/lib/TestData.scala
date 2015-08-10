@@ -74,13 +74,7 @@ object TestData {
   }
 
   def generateRandomWC(): WorkflowContent = {
-<<<<<<< HEAD
-    val composerIdRng = Random.nextDouble.toString
-=======
     val composerIdRng = random.nextDouble.toString
-
-
->>>>>>> add-tests
     WorkflowContent(
       composerId =composerIdRng,
       path = opt(chooseItem(text)),
