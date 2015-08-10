@@ -1,5 +1,6 @@
 package com.gu.workflow.query
 
+import com.gu.workflow.test.DatabaseManager
 import lib.PostgresDB
 import lib.TestData._
 import models.{ContentItem, User}
