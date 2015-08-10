@@ -1,5 +1,6 @@
 package test
 
+import com.gu.workflow.test.CommonDBIntegrationSuite
 import com.gu.workflow.test.Config
 import models.ContentItem
 import play.api.test._
@@ -16,7 +17,7 @@ import org.openqa.selenium.WebDriver
 
 import com.gu.workflow.test.CommonDBIntegrationSuite
 
-trait WorkflowIntegrationSuite extends Suite with CommonDBIntegrationSuite with OneServerPerSuite with Matchers with ShouldMatchers with Http with WorkflowHelpers {
+trait WorkflowIntegrationSuite extends Suite  with OneServerPerSuite with Matchers with ShouldMatchers with Http with WorkflowHelpers with CommonDBIntegrationSuite {
   implicit override lazy val app: FakeApplication = FakeApplication(
     additionalConfiguration = Config.appConfig)
 
