@@ -20,7 +20,7 @@ object DatabaseManager {
 
   def execute(sql: String, withDB: Boolean = true) = {
     try {
-      getDB() withSession { implicit session =>
+      getDB(withDB) withSession { implicit session =>
         Q.updateNA(sql).execute
       }
     } catch {
