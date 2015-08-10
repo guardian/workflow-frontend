@@ -13,7 +13,9 @@ import scala.language.implicitConversions
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.WebDriver
 
-trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with ShouldMatchers with Http with WorkflowHelpers {
+import com.gu.workflow.test.CommonDBIntegrationSuite
+
+trait WorkflowIntegrationSuite extends Suite with CommonDBIntegrationSuite with OneServerPerSuite with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with ShouldMatchers with Http with WorkflowHelpers {
   implicit override lazy val app: FakeApplication = FakeApplication(
     additionalConfiguration = Config.appConfig)
 
