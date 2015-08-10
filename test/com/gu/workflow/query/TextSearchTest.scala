@@ -59,7 +59,7 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     "with should match against correct fields" in {
       doTest(textSearchTest(matchStr), WfQuery(text = Some(matchStr)))
     }
-  
+
     "should return no results if string doesnt exist" in (
         doTest(noResults, WfQuery(text=Some(nonExistantStr)))
       )

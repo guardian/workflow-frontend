@@ -20,6 +20,7 @@ object Config {
     s
   }
   val dropDB: Boolean = sys.env.get("WF_DROP_DB").map(_ == "yes").getOrElse(true)
+  val randomSeed: Option[Long] = sys.env.get("WF_RANDOM_SEED").map(_.toLong)
 
   val authed = AuthenticatedUser(User("jim", "bob", "jim@guardian.co.uk", None), "workflow", Set("workflow"),new Date().getTime + 86400 * 1000, true)
   //this test will break if localhost secret is changed in s3q
