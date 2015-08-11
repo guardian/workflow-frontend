@@ -1,7 +1,7 @@
 package com.gu.workflow.query
 
 import com.gu.workflow.query.FilterTestOps._
-import lib.TestData._
+import com.gu.workflow.test.lib.TestData._
 import models.{Flag, ContentItem, Section, Status}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}

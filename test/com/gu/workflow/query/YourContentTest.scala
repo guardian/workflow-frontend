@@ -2,7 +2,7 @@ package com.gu.workflow.query
 
 import com.gu.workflow.test.DatabaseManager
 import lib.PostgresDB
-import lib.TestData._
+import com.gu.workflow.test.lib.TestData._
 import models.{ContentItem, User}
 import FilterTestOps._
 import test._

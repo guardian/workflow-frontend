@@ -6,7 +6,7 @@ import models.{ContentItem, Status}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
 import test.WorkflowIntegrationSuite
-import lib.TestData._
+import com.gu.workflow.test.lib.TestData._
 
 
 
