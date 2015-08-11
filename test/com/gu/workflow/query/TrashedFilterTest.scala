@@ -15,8 +15,14 @@ class TrashedFilterTest extends FreeSpec with WorkflowIntegrationSuite with Matc
   }
 
   "Parameter set to true trashed" in withTestData(testData) {  dataInserted =>
-    val query = WfQuery()
-    query should selectSameResultsAs (FilterTest(noFilter, dataInserted, isVisible))
+    val query = WfQuery(trashed=true)
+    query should selectSameResultsAs (FilterTest(c=>c.stub.trashed, dataInserted, isVisible))
   }
+
+  "Parameter set to false trashed" in withTestData(testData) {  dataInserted =>
+    val query = WfQuery(trashed=false)
+    query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
+  }
+
 
 }
