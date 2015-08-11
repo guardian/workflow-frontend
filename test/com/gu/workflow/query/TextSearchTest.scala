@@ -5,7 +5,7 @@ import test._
 import models.ContentItem
 import org.scalatest.{Matchers, FreeSpec}
 import FilterTestOps._
-import lib.TestData._
+import com.gu.workflow.test.lib.TestData._
 import ContentItem._
 
 class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
