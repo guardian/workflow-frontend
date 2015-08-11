@@ -19,7 +19,7 @@ import com.gu.workflow.test.CommonDBIntegrationSuite
 
 trait WorkflowIntegrationSuite extends Suite  with OneServerPerSuite with Matchers with ShouldMatchers with Http with WorkflowHelpers with CommonDBIntegrationSuite {
   implicit override lazy val app: FakeApplication = FakeApplication(
-    additionalConfiguration = Config.appConfig)
+    additionalConfiguration = Config.appConfig.updated("db.default.url", Config.dbFullUrl + suiteName))
 
   def getJs(path: String, expectedCode: Int = 200): JsValue = {
     val connection = GET(s"$host/$path")
