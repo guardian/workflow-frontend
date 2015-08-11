@@ -28,7 +28,6 @@ object PostgresDB {
     DB.withTransaction { implicit session =>
       //todo- remove any extra filter logic
       WfQuery.getContentQuery(q)
-        .filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
         .list.map { case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
           val content = WorkflowContent.fromContentRow(contentData)
