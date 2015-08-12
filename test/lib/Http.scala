@@ -12,7 +12,7 @@ trait Http {
   def GET(url: String, headers: Seq[(String, String)] = Nil): Response = {
 
     val authed = AuthenticatedUser(User("jim", "bob", "jim@guardian.co.uk", None), "workflow", Set("workflow"),new Date().getTime + 86400 * 1000, true)
-    //this test will break if localhost secret is changed in s3q
+    //this test will break if localhost secret is changed in s3
     val cookieValue = LegacyCookie.generateCookieData(authed, "devsecret")
 
     val cookie = PandaCookie("gutoolsAuth", cookieValue)
