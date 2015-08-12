@@ -84,8 +84,8 @@ object FilterTestOps extends Matchers {
   def fieldCheck[A](f: ContentItem => A, a: A): ContentItem => Boolean = c => f(c) == a
   def fieldOptCheck[A](f: ContentItem => Option[A], a: A): ContentItem => Boolean = c => f(c) == Some(a)
 
-  lazy val isVisible: ContentItem => Boolean = c => c.wcOpt.exists(wc => visibleOnUi(c.stub, wc))
   lazy val notTrashed: ContentItem => Boolean = c => !c.stub.trashed
+  lazy val trashed: ContentItem => Boolean = c => c.stub.trashed
 
   def or(a: FieldTest, b: FieldTest): FieldTest = (c) => a(c) || b(c)
 
@@ -95,7 +95,7 @@ object FilterTestOps extends Matchers {
 
   case class FilterTest(p: (ContentItem) => Boolean,
                         testData: Content,
-                        globalFilter: ContentItem=>Boolean = c => isVisible(c) && notTrashed(c)) {
+                        globalFilter: ContentItem=>Boolean = c =>notTrashed(c)) {
 
     val filteredData = testData.filter(globalFilter)
     val splitTestData = filteredData.partition(p)
