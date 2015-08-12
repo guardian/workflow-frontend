@@ -5,7 +5,6 @@ import play.api.libs.json._
 import org.scalatest._
 import com.gu.workflow.test.lib.TestData._
 
-
 class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside {
   s"$host/api/content" - {
     "show content in db" ignore {
@@ -53,5 +52,17 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
 
       actualStubs should contain theSameElementsAs (expectedStubs)
     }
+
+    "content field should contain the expected statuses" in withTestData(unprocessedTestData) { testData =>
+      val expectedStatuses =
+        (for(i <- testData; c <- i.wcOpt) yield c.status.name).toSet
+
+      val js = getJs("api/content")
+      val actualStatuses = (js \ "content")
+        .as[JsObject].fieldSet.map { case (key, value) => key }
+
+      actualStatuses should contain theSameElementsAs (expectedStatuses)
+    }
+
   }
 }
