@@ -95,7 +95,7 @@ object FilterTestOps extends Matchers {
 
   case class FilterTest(p: (ContentItem) => Boolean,
                         testData: Content,
-                        globalFilter: ContentItem=>Boolean = c =>notTrashed(c)) {
+                        globalFilter: ContentItem=>Boolean = notTrashed) {
 
     val filteredData = testData.filter(globalFilter)
     val splitTestData = filteredData.partition(p)
