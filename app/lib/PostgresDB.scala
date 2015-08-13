@@ -49,20 +49,22 @@ object PostgresDB {
       }
     }
 
-  def getContentItems(q: WfQuery): List[ContentItem] = {
-    val dbRes = getContentItemsDBRes(q)
+  def getContentItems(q: WfQuery, pred: (DBStub, DBContent) => Column[Boolean]): List[ContentItem] = {
+    val dbRes = getContentItemsDBRes(q, pred)
     val content: List[ContentItem] = dbRes.map { case (s, c) => {
       ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
     }}
     content
   }
-
-  def getContentItemsDBRes(q: WfQuery) = {
+  //this wont work its current form.
+  def getContentItemsDBRes(q: WfQuery, pred: (DBStub, DBContent) => Column[Boolean]) = {
     DB.withTransaction { implicit session =>
       val leftJoinQ = (for {
-        (s, c) <- (WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId))
+        (s, c) <- (WfQuery.stubsQuery(q) leftJoin content on (_.composerId === _.composerId))
+        if(pred(s,c))
       } yield (s,  c.?))
-      leftJoinQ
+      Logger.info(leftJoinQ.selectStatement)
+      leftJoinQ.list
     }
   }
 

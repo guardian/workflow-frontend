@@ -7,6 +7,7 @@ import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
 import test.WorkflowIntegrationSuite
 import models.ContentItem._
+import scala.slick.driver.PostgresDriver.simple._
 class OneValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
   val testData = generateTestData()
