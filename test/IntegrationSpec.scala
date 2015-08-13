@@ -2,6 +2,7 @@ package test
 
 import models.ContentItem
 import models.Status
+import org.scalactic.Equality
 import play.api.libs.json._
 import org.scalatest._
 import com.gu.workflow.test.lib.TestData._
@@ -42,13 +43,22 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
   def extractSubField[A](js: JsValue, fieldName: String, subFieldName: String)(implicit r: Reads[A]): List[A] =
     (js \ fieldName).as[List[JsValue]].map(jsStub => (jsStub \ subFieldName).as[A])
 
-  def jsonShouldMatch(contentItem: ContentItem, json: JsValue) = json match {
-    case obj: JsObject =>
-      val stub = contentItem.stub
-      val content = contentItem.wcOpt.get
-      (json \ "composerId") should equal (content.composerId)
-    case _ =>
-      fail("JSON contentItem wasn't even an object")
+  /* specify the equality by which a JsObject is considered to be the
+   * same as a ContentItem instance, in other words, for each
+   * candidate, extract some appropriate fields and compare their
+   * values. */
+  val jsonContentEquality = new Equality[JsObject] {
+    def compareField[A](field: String, value: A, obj: JsObject)(implicit r: Reads[A]): Boolean =
+      ((obj \ field).as[A] == value)
+
+    def areEqual(obj: JsObject, any: Any) = any match {
+      case contentItem: ContentItem =>
+        val content = contentItem.wcOpt.get
+        val stub = contentItem.stub
+        (compareField("composerId", content.composerId, obj) &&
+           compareField("stubId", stub.id.get, obj))
+      case _ => false
+    }
   }
 
   "api response for getContent" - {
