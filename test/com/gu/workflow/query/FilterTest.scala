@@ -1,11 +1,13 @@
 package com.gu.workflow.query
 
+import com.gu.workflow.db.Schema.{DBContent, DBStub}
 import lib.PostgresDB
 import models.{Status, ContentItem, DashboardRow}
 import org.joda.time.DateTime
 import org.scalatest.Matchers
 import org.scalatest.matchers.{Matcher, MatchResult}
 import models.ContentItem._
+import play.api.Logger
 import scala.language.implicitConversions
 
 object FilterTestOps extends Matchers {
@@ -126,6 +128,7 @@ object FilterTestOps extends Matchers {
       )
     }
   }
+
 
   case class DBResult(query: WfQuery, inputData: Content) {
     val results = PostgresDB.getContent(query).map(DashboardRow.toContentItem(_))
