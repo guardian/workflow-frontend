@@ -24,17 +24,19 @@ object PostgresDB {
   import play.api.Play.current
   import play.api.db.slick.DB
 
-  def getContent(q: WfQuery): List[DashboardRow] =
-    DB.withTransaction { implicit session =>
-      //todo- remove any extra filter logic
-      WfQuery.getContentQuery(q)
-        .list.map { case (stubData, contentData) =>
-          val stub    = Stub.fromStubRow(stubData)
-          val content = WorkflowContent.fromContentRow(contentData)
-          DashboardRow(stub, content)
-      }
-
+  def getContent(q: WfQuery): List[DashboardRow] = {
+    getContentDBRes(q).map { case (stubData, contentData) =>
+      val stub = Stub.fromStubRow(stubData)
+      val content = WorkflowContent.fromContentRow(contentData)
+      DashboardRow(stub, content)
     }
+  }
+
+  def getContentDBRes(q: WfQuery) = {
+    DB.withTransaction { implicit session =>
+      WfQuery.getContentQuery(q).list
+    }
+  }
 
   def contentItemLookup(composerId: String): List[DashboardRow] =
     DB.withTransaction { implicit session =>
@@ -47,20 +49,22 @@ object PostgresDB {
       }
     }
 
-  def getContentItems(q: WfQuery): Response[List[ContentItem]] = {
-    DB.withTransaction { implicit session =>
-      val leftJoinQ = (for {
-        (s, c)<- (WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId))
-        if(ContentItem.visibleOnUi(s, c))
-      } yield (s,  c.?))
-
-      val content: List[ContentItem] = leftJoinQ.list.map { case (s, c) => {
-        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
-      }}
-      Right(ApiSuccess(content))
-    }
+  def getContentItems(q: WfQuery): List[ContentItem] = {
+    val dbRes = getContentItemsDBRes(q)
+    val content: List[ContentItem] = dbRes.map { case (s, c) => {
+      ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
+    }}
+    content
   }
 
+  def getContentItemsDBRes(q: WfQuery) = {
+    DB.withTransaction { implicit session =>
+      val leftJoinQ = (for {
+        (s, c) <- (WfQuery.stubsQuery(q) leftJoin WfQuery.contentQuery(q) on (_.composerId === _.composerId))
+      } yield (s,  c.?))
+      leftJoinQ
+    }
+  }
 
 
   /**
