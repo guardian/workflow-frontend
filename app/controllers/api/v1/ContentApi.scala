@@ -28,11 +28,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
     val queryData = RequestParameters.fromRequest(req)
 
     //Note content items are not UI ordered yet
-    Response(for{
-      content <- PostgresDB.getContentItems(queryData).right
-    }yield {
-      content
-    })
+    NotImplemented
   }
 
   def content = APIAuthAction { request =>

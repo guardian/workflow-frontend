@@ -34,7 +34,18 @@ object DashboardRow {
     }
   }
 
+  //todo - add unit test
   def toContentItem(d: DashboardRow) = ContentItem(d.stub, Some(d.wc))
+  //todo - better way of saying this
+  def fromContentItems(cis: List[ContentItem], stAcc: List[Stub] = Nil, dAcc: List[DashboardRow] = Nil): (List[Stub], List[DashboardRow]) = {
+    cis match {
+      case ci :: tail => ci match{
+        case ContentItem(s, Some(wc)) => fromContentItems(tail, stAcc, DashboardRow(s, wc)::dAcc)
+        case ContentItem(s, None) => fromContentItems(tail, s :: stAcc, dAcc)
+      }
+      case Nil => (stAcc, dAcc)
+    }
+  }
 }
 
 case class PublishedData(composerId: String, published: Boolean, publishedTime: Option[DateTime])
