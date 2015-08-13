@@ -75,13 +75,22 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
 
     "content field should contain the content items" in withTestData(unprocessedTestData) { testData =>
       def itemsWithStatus(name: String) =
-        testData.filter(_.wcOpt.exists(_.status.name == name)).sortBy(_.wcOpt.map(_.composerId).getOrElse("*"))
+        testData.filter(_.wcOpt.exists(_.status.name == name)).sortBy(_.wcOpt.map(_.composerId).getOrElse("X"))
 
       val js = (getJs("api/content") \ "content").as[JsObject]
+
+      // TODO => this should work unsorted but for some reason it doesn't. [grrr]
 
       val expectedStatuses = (for(i <- testData; c <- i.wcOpt) yield c.status.name).toSet
       val actualStatuses = js.keys
       actualStatuses should contain theSameElementsAs (expectedStatuses)
+
+      // our list of statuses is correct, now check the contents attached to each status
+      js.keys.foreach { key =>
+        val expectedItems = itemsWithStatus(key)
+        val actualItems = (js \ key).as[List[JsObject]].sortBy(js => (js \ "composerId").as[String])
+        (actualItems should contain theSameElementsAs (expectedItems)) (decided by jsonContentEquality)
+      }
     }
   }
 }
