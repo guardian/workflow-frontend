@@ -1,5 +1,6 @@
 package test
 
+import models.ContentItem
 import models.Status
 import play.api.libs.json._
 import org.scalatest._
@@ -41,6 +42,15 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
   def extractSubField[A](js: JsValue, fieldName: String, subFieldName: String)(implicit r: Reads[A]): List[A] =
     (js \ fieldName).as[List[JsValue]].map(jsStub => (jsStub \ subFieldName).as[A])
 
+  def jsonShouldMatch(contentItem: ContentItem, json: JsValue) = json match {
+    case obj: JsObject =>
+      val stub = contentItem.stub
+      val content = contentItem.wcOpt.get
+      (json \ "composerId") should equal (content.composerId)
+    case _ =>
+      fail("JSON contentItem wasn't even an object")
+  }
+
   "api response for getContent" - {
     val unprocessedTestData = generateTestData().filterNot(_.stub.trashed)
 
@@ -53,16 +63,15 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
       actualStubs should contain theSameElementsAs (expectedStubs)
     }
 
-    "content field should contain the expected statuses" in withTestData(unprocessedTestData) { testData =>
-      val expectedStatuses =
-        (for(i <- testData; c <- i.wcOpt) yield c.status.name).toSet
+    "content field should contain the content items" in withTestData(unprocessedTestData) { testData =>
+      def itemsWithStatus(name: String) =
+        testData.filter(_.wcOpt.exists(_.status.name == name)).sortBy(_.wcOpt.map(_.composerId).getOrElse("*"))
 
-      val js = getJs("api/content")
-      val actualStatuses = (js \ "content")
-        .as[JsObject].fieldSet.map { case (key, value) => key }
+      val js = (getJs("api/content") \ "content").as[JsObject]
 
+      val expectedStatuses = (for(i <- testData; c <- i.wcOpt) yield c.status.name).toSet
+      val actualStatuses = js.keys
       actualStatuses should contain theSameElementsAs (expectedStatuses)
     }
-
   }
 }
