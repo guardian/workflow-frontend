@@ -2,6 +2,8 @@ package test
 
 import models.ContentItem
 import models.Status
+import models.Stub
+import org.joda.time.DateTime
 import org.scalactic.Equality
 import play.api.libs.json._
 import org.scalatest._
@@ -64,12 +66,23 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
   "api response for getContent" - {
     val unprocessedTestData = generateTestData().filterNot(_.stub.trashed)
 
+    /* we need to override the implicit reads here that come from the
+     * companion objects (which is also searched for implicits; news
+     * to me ...) as they don't represent the format that we are
+     * expecting to output to the API. Currently the actual output
+     * (Writes[Stub]) just uses the default generated format, so the
+     * default generated Reads[Stub] should be enough to read it back
+     * again.
+     */
+
+    implicit val dateFormat = models.DateFormat
+    implicit val stubReads  = Json.reads[Stub]
+
     "stub field should contain the content-less stubs" in withTestData(unprocessedTestData) { testData =>
-      val expectedStubs = testData.filter(_.wcOpt.isEmpty).map(_.stub.id).flatten
+      val expectedStubs = testData.filter(_.wcOpt.isEmpty).map(_.stub)
 
       val js = getJs("api/content")
-      val actualStubs = extractSubField[Long](js, "stubs", "id")
-
+      val actualStubs = (js \ "stubs").as[List[Stub]]
       actualStubs should contain theSameElementsAs (expectedStubs)
     }
 
