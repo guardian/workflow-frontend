@@ -92,19 +92,18 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
         actualStubs should contain theSameElementsAs (expectedStubs)
       }
 
+      /* these need to be lazy as they can't accessed until we are actually
+       * in a test, and the FakeApp is running (and the DB is accessible) */
+
+      lazy val itemsByStatus =
+        testData.groupBy(_.wcOpt.map(_.status.name).getOrElse("Stub"))
+
       "content field should" - {
 
-        /* these need to be lazy as they can't accessed until we are actually
-         * in a test, and the FakeApp is running (and the DB is accessible) */
-
-        lazy val itemsByStatus =
-          testData.groupBy(_.wcOpt.map(_.status.name).getOrElse("Stub"))
-
-        lazy val js = (getJs("api/content") \ "content").as[JsObject]
-
         "contain the correct statuses" in {
+          val jsContent =  (getJs("api/content") \ "content").as[JsObject]
           val expectedStatuses = itemsByStatus.keySet.filterNot(_ == "Stub")
-          val actualStatuses = js.keys
+          val actualStatuses = jsContent.keys
           actualStatuses should contain theSameElementsAs (expectedStatuses)
         }
 
@@ -114,9 +113,14 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
         //   val actualItems = (js \ key).as[List[ContentItem]]
         //   //        (actualItems should contain theSameElementsAs (expectedItems)) (decided by jsonContentEquality)
         //}
+      }
 
-        "contain the correct counts summary" in pending
-
+      "contain the correct counts summary" in {
+        val statusCounts = itemsByStatus.mapValues(_.length)
+        val total = statusCounts.values.sum
+        val expectedCounts = statusCounts + ("total" -> total)
+        val actualCounts = (getJs("api/content") \ "count").as[Map[String, Int]]
+        actualCounts should contain theSameElementsAs (expectedCounts)
       }
     }
   }
