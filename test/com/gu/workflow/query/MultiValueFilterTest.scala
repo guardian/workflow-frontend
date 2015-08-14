@@ -12,7 +12,7 @@ class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with M
 
   val testData = generateTestData()
 
-  "No parameter set for a field" ignore withTestData(testData) { dataInserted =>
+  "No parameter set for a field" in withTestData(testData) { dataInserted =>
     val query = WfQuery()
     query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
   }
