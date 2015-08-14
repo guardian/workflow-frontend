@@ -21,7 +21,7 @@ class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matche
               optTest[String](composerId => DatabaseManager.hasCollaborator(composerId, email)))
 
   def assignedToTest(pattern: String) = fieldTest(_.stub.assigneeEmail,
-                                                  optTest[String](_ == pattern))
+                                                  optTest[String](_ contains pattern))
 
 
   val testData = generateTestData()
