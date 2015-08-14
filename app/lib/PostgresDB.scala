@@ -35,7 +35,6 @@ object PostgresDB {
   def getContentDBRes(q: WfQuery) = {
     DB.withTransaction { implicit session =>
       val statement =  WfQuery.getContentQuery(q)
-      Logger.info("WHAT DOES THE SQL LOOK LIKE?")
       Logger.info(statement.selectStatement)
       statement.list
     }
