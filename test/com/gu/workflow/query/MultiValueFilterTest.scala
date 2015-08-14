@@ -109,18 +109,9 @@ class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with M
   }
 
   "All parameters set for a field" - {
-    "field is status" in withTestData(testData) { dataInserted =>
-      val query = WfQuery(status=statuses)
-      query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
-    }
 
     "field is section" in withTestData(testData) { dataInserted =>
       val query = WfQuery(section=sections.map(Section(_)))
-      query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
-    }
-
-    "field is contentType" in withTestData(testData) { dataInserted =>
-      val query = WfQuery(contentType=contentTypes)
       query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
     }
 
@@ -132,7 +123,6 @@ class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with M
     "field is prodOffice" in withTestData(testData) { dataInserted =>
       val query = WfQuery(prodOffice=prodOffices)
       query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
-
     }
   }
 }

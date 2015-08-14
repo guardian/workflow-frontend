@@ -24,6 +24,7 @@ object PostgresDB {
   import play.api.Play.current
   import play.api.db.slick.DB
 
+
   def getContent(q: WfQuery): List[DashboardRow] = {
     getContentDBRes(q).map { case (stubData, contentData) =>
       val stub = Stub.fromStubRow(stubData)

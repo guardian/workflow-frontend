@@ -133,6 +133,18 @@ object FilterTestOps extends Matchers {
   case class DBResult(query: WfQuery, inputData: Content) {
 //    val results = PostgresDB.getContent(query).map(DashboardRow.toContentItem(_))
     val results = PostgresDB.getContentItems(WfQuery.queryPred(query))
+//    val dashboardRows = PostgresDB.getContent(query).map(DashboardRow.toContentItem(_))
+//    //reproduced some crazy api logic
+//    val stubs =
+//      (if((query.status.isEmpty || query.status.exists(_ == models.Status("Stub"))) &&
+//        (query.state.isEmpty   || query.state == Some(DraftState)) &&
+//        (query.inIncopy != Some(true)) &&
+//        query.touched.isEmpty &&
+//        query.assignedToEmail.isEmpty &&
+//        query.composerId.isEmpty
+//      )  CommonDB.getStubs(query, unlinkedOnly=true) else Nil).map(s => ContentItem(s, None))
+//
+//    val results =  stubs ::: dashboardRows
     val rest = inputData diff results
   }
 
