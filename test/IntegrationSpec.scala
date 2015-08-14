@@ -100,21 +100,40 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
 
       "content field should" - {
 
+        lazy val jsContent =  (getJs("api/content") \ "content").as[JsObject]
+
         "contain the correct statuses" in {
-          val jsContent =  (getJs("api/content") \ "content").as[JsObject]
           val expectedStatuses = itemsByStatus.keySet.filterNot(_ == "Stub")
           val actualStatuses = jsContent.keys
           actualStatuses should contain theSameElementsAs (expectedStatuses)
         }
 
-        // our list of statuses is correct, now check the contents attached to each status
-        // js.keys.foreach { key =>
-        //   val expectedItems = itemsByStatus(key)
-        //   val actualItems = (js \ key).as[List[ContentItem]]
-        //   //        (actualItems should contain theSameElementsAs (expectedItems)) (decided by jsonContentEquality)
-        //}
-      }
+        /* our list of statuses is correct, now check the contents attached to
+         * each status. We won't test the inner structure of the
+         * content items because here we are testing the outer
+         * structure of the API response to make sure that it is
+         * correct. We assume that the serialisation of ContentItem ->
+         * JSON works. */
 
+        "contain the correct list of items" in {
+          val expected = itemsByStatus
+              .filterKeys(_ != "Stub")
+              .mapValues(items => for(i <- items; c <- i.wcOpt) yield c.composerId)
+
+          val actual =
+            jsContent.as[Map[String, List[JsObject]]].mapValues( items =>
+              items.map(obj => (obj \ "composerId").as[String])
+            )
+
+          actual.keys should contain theSameElementsAs (expected.keys)
+          /* the only reason to test each on individually here is to produce
+           * error messages that are easier to parse, that is, if only one
+           * status is mismatched, you will be able to see which one it is that
+           * didn't work */
+          for(k <- actual.keys)
+            actual(k) should contain theSameElementsAs (expected(k))
+        }
+      }
       "contain the correct counts summary" in {
         val statusCounts = itemsByStatus.mapValues(_.length)
         val total = statusCounts.values.sum
