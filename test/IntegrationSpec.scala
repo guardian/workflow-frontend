@@ -46,29 +46,11 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
     }
   }
 
-  def extractSubField[A](js: JsValue, fieldName: String, subFieldName: String)(implicit r: Reads[A]): List[A] =
-    (js \ fieldName).as[List[JsValue]].map(jsStub => (jsStub \ subFieldName).as[A])
-
-  /* specify the equality by which a JsObject is considered to be the
-   * same as a ContentItem instance, in other words, for each
-   * candidate, extract some appropriate fields and compare their
-   * values. */
-  val jsonContentEquality = new Equality[JsObject] {
-    def compareField[A](field: String, value: A, obj: JsObject)(implicit r: Reads[A]): Boolean =
-      ((obj \ field).as[A] == value)
-
-    def areEqual(obj: JsObject, any: Any) = any match {
-      case contentItem: ContentItem =>
-        val content = contentItem.wcOpt.get
-        val stub = contentItem.stub
-        (compareField("composerId", content.composerId, obj) &&
-           compareField("stubId", stub.id.get, obj))
-      case _ => false
-    }
-  }
-
   "api response for getContent" - {
-    val unprocessedTestData = generateTestData().filterNot(_.stub.trashed)
+    /* stubProbability settings means there's a 1 in 4 chance of
+     * getting a Stub with no Content, which is an essential part of
+     * this test. */
+    val unprocessedTestData = generateTestData(stubProbability = 0.25).filterNot(_.stub.trashed)
 
     withTestData(unprocessedTestData) { testData =>
 
