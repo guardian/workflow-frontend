@@ -10,6 +10,10 @@ import org.scalatest._
 import com.gu.workflow.test.lib.TestData._
 
 class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside {
+
+  // this is a 'read-only' test so there's no need to clear the DB after each test
+  override def clearContentHook = ()
+
   s"$host/api/content" - {
     "show content in db" ignore {
       val expectedTitle = "Content Item"
@@ -66,43 +70,53 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
   "api response for getContent" - {
     val unprocessedTestData = generateTestData().filterNot(_.stub.trashed)
 
-    /* we need to override the implicit reads here that come from the
-     * companion objects (which is also searched for implicits; news
-     * to me ...) as they don't represent the format that we are
-     * expecting to output to the API. Currently the actual output
-     * (Writes[Stub]) just uses the default generated format, so the
-     * default generated Reads[Stub] should be enough to read it back
-     * again.
-     */
+    withTestData(unprocessedTestData) { testData =>
 
-    implicit val dateFormat = models.DateFormat
-    implicit val stubReads  = Json.reads[Stub]
+      /* we need to override the implicit reads here that come from the
+       * companion objects (which is also searched for implicits; news
+       * to me ...) as they don't represent the format that we are
+       * expecting to output to the API. Currently the actual output
+       * (Writes[Stub]) just uses the default generated format, so the
+       * default generated Reads[Stub] should be enough to read it back
+       * again.
+       */
 
-    "stub field should contain the content-less stubs" in withTestData(unprocessedTestData) { testData =>
-      val expectedStubs = testData.filter(_.wcOpt.isEmpty).map(_.stub)
+      implicit val dateFormat = models.DateFormat
+      implicit val stubReads  = Json.reads[Stub]
 
-      val js = getJs("api/content")
-      val actualStubs = (js \ "stubs").as[List[Stub]]
-      actualStubs should contain theSameElementsAs (expectedStubs)
-    }
+      "stub field should contain the content-less stubs" in {
+        val expectedStubs = testData.filter(_.wcOpt.isEmpty).map(_.stub)
 
-    "content field should contain the content items" in withTestData(unprocessedTestData) { testData =>
-      val itemsByStatus =
-        testData.groupBy(_.wcOpt.map(_.status.name).getOrElse("Stub"))
+        val js = getJs("api/content")
+        val actualStubs = (js \ "stubs").as[List[Stub]]
+        actualStubs should contain theSameElementsAs (expectedStubs)
+      }
 
-      val js = (getJs("api/content") \ "content").as[JsObject]
+      "content field should" - {
 
-      // TODO => this should work unsorted but for some reason it doesn't. [grrr]
+        /* these need to be lazy as they can't accessed until we are actually
+         * in a test, and the FakeApp is running (and the DB is accessible) */
 
-      val expectedStatuses = itemsByStatus.keySet.filterNot(_ == "Stub")
-      val actualStatuses = js.keys
-      actualStatuses should contain theSameElementsAs (expectedStatuses)
+        lazy val itemsByStatus =
+          testData.groupBy(_.wcOpt.map(_.status.name).getOrElse("Stub"))
 
-      // our list of statuses is correct, now check the contents attached to each status
-      js.keys.foreach { key =>
-        val expectedItems = itemsByStatus(key)
-        val actualItems = (js \ key).as[List[ContentItem]]
-//        (actualItems should contain theSameElementsAs (expectedItems)) (decided by jsonContentEquality)
+        lazy val js = (getJs("api/content") \ "content").as[JsObject]
+
+        "contain the correct statuses" in {
+          val expectedStatuses = itemsByStatus.keySet.filterNot(_ == "Stub")
+          val actualStatuses = js.keys
+          actualStatuses should contain theSameElementsAs (expectedStatuses)
+        }
+
+        // our list of statuses is correct, now check the contents attached to each status
+        // js.keys.foreach { key =>
+        //   val expectedItems = itemsByStatus(key)
+        //   val actualItems = (js \ key).as[List[ContentItem]]
+        //   //        (actualItems should contain theSameElementsAs (expectedItems)) (decided by jsonContentEquality)
+        //}
+
+        "contain the correct counts summary" in pending
+
       }
     }
   }
