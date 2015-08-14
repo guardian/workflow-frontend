@@ -131,7 +131,8 @@ object FilterTestOps extends Matchers {
 
 
   case class DBResult(query: WfQuery, inputData: Content) {
-    val results = PostgresDB.getContent(query).map(DashboardRow.toContentItem(_))
+//    val results = PostgresDB.getContent(query).map(DashboardRow.toContentItem(_))
+    val results = PostgresDB.getContentItems(WfQuery.queryPred(query))
     val rest = inputData diff results
   }
 
