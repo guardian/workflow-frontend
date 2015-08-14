@@ -20,7 +20,7 @@ class OneValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with Mat
   "Parameter set for field" - {
     "field is composerId" in {
       val dataInserted = testData.map(createContent(_)).flatten
-      val insertedComposerId = dataInserted.headOption.flatMap(_.wcOpt.map(_.composerId))
+      val insertedComposerId = dataInserted.filter(c => c.wcOpt.map(_.composerId).isDefined).headOption.flatMap(_.wcOpt.map(_.composerId))
       val query = WfQuery(composerId=insertedComposerId)
       val oneFilter = FilterTest(c => c.wcOpt.map(_.composerId) == insertedComposerId, dataInserted)
       query should selectSameResultsAs(oneFilter)

@@ -27,9 +27,9 @@ object PostgresDB {
   def getContent(q: WfQuery): List[DashboardRow] =
     DB.withTransaction { implicit session =>
       //todo- remove any extra filter logic
-      val q = WfQuery.getContentQuery(q)
-        Logger.info(q.selectStatement)
-        q.list.map { case (stubData, contentData) =>
+      val sql = WfQuery.getContentQuery(q)
+        Logger.info(sql.selectStatement)
+        sql.list.map { case (stubData, contentData) =>
           val stub    = Stub.fromStubRow(stubData)
           val content = WorkflowContent.fromContentRow(contentData)
           DashboardRow(stub, content)
