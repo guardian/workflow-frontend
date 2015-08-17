@@ -15,7 +15,7 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
   override def clearContentHook = ()
 
   s"$host/api/content" - {
-    "show content in db" ignore {
+    "show content in db" in {
       val expectedTitle = "Content Item"
       val content = createContent(contentItem(defaultStub(title=expectedTitle)))
 
@@ -28,7 +28,7 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
   }
 
   s"$host/api/content?text=query" - {
-    "show filter results from api" ignore {
+    "show filter results from api" in {
       createContent(contentItem(defaultStub(title="Foo")))
       createContent(contentItem(defaultStub(title="Bar")))
 
