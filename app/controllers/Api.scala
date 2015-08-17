@@ -67,37 +67,14 @@ object Api extends Controller with PanDomainAuthActions {
   val getContentBlock = { implicit req: Request[AnyContent] =>
     val queryData = RequestParameters.fromRequest(req)
 
-    val state     = queryData.state
-    val status    = queryData.status
-    val touched   = queryData.touched
-    val assigned  = queryData.assignedToEmail
-    val view      = queryData.viewTimes
-    val trashed   = queryData.trashed
-    val composerId = queryData.composerId
-
-    def getContent: List[DashboardRow] = PostgresDB.getContent(queryData)
-
-    def getStubs =
-      CommonDB.getStubs(queryData, unlinkedOnly = true)
-
-    val stubs =
-      if((status.isEmpty || status.exists(_ == models.Status("Stub"))) &&
-        (state.isEmpty   || state == Some(DraftState)) &&
-        (queryData.inIncopy != Some(true)) &&
-        touched.isEmpty &&
-        assigned.isEmpty &&
-        queryData.composerId.isEmpty
-      ) getStubs else Nil
-
     val contentItems = PostgresDB.getContentItems(WfQuery.queryPred(queryData))
 
-    val (stubsTmp, dashboardRows) = contentItems.partition(_.wcOpt.isEmpty)
+    //contentItems are serialised to stubs and dashboardRows as JSON response handles these different.
+    //todo-write a method which accepts contentItems and serialises to correct JSON response.
+    val stubs = contentItems.collect({case ContentItem(s: Stub, None) => s})
+    val dashboardRows = contentItems.collect({case ContentItem(s: Stub, Some(wc: WorkflowContent)) => DashboardRow(s, wc)})
 
-    val stubsList = stubsTmp.map(ci => ci.stub)
-
-    val dashboardRowsList = dashboardRows.map({case ContentItem(s: Stub, Some(wc: WorkflowContent)) => DashboardRow(s, wc)})
-
-    val contentGroupedByStatus = dashboardRowsList.groupBy(_.wc.status)
+    val contentGroupedByStatus = dashboardRows.groupBy(_.wc.status)
 
     val jsContentGroupedByStatus = contentGroupedByStatus.map({
       case (status, content) => (status.toString, Json.toJson(content))
@@ -110,12 +87,12 @@ object Api extends Controller with PanDomainAuthActions {
         countTotal += content.length
         (status.toString, Json.toJson(content.length))
       }
-    }).toSeq ++ Map("Stub" -> Json.toJson(stubsList.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+stubsList.length)).toSeq
+    }).toSeq ++ Map("Stub" -> Json.toJson(stubs.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+stubs.length)).toSeq
 
     Ok(
       Json.obj(
         "content" -> JsObject(jsContentGroupedByStatus),
-        "stubs" -> stubsList,
+        "stubs" -> stubs,
         "count" -> JsObject(counts)
       )
     )
