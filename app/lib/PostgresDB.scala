@@ -64,9 +64,9 @@ object PostgresDB {
     DB.withTransaction { implicit session =>
       val baseQuery = for {
         (s, c) <- stubs.sortBy(s => (s.priority.desc, s.workingTitle)) leftJoin content on (_.composerId === _.composerId)
-        (ys, yc) <- stubs outerJoin collaboratorTableQuery on (_.composerId === _.composer_id)
+        (ys, yc) <- stubs outerJoin collaborator on (_.composerId === _.composer_id)
         if(pred(s,c,yc))
-        if (ys.composerId === s.composerId) || (c.composerId === yc.composer_id)
+        if (ys.composerId === s.composerId)
       } yield (s,  c.?)
       Logger.info(baseQuery.selectStatement)
       baseQuery.list
