@@ -11,7 +11,7 @@ import org.scalatest.{Matchers, FreeSpec}
 
 class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
-  val testEmail = "guardian@example.com"
+  val testEmail = "testcake@testcake.com"
   val testUser = User(testEmail, "Test", "Bunny")
 
   val assignedToField: FieldGetter[Option[String]] = _.stub.assigneeEmail
@@ -24,7 +24,7 @@ class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matche
                                                   optTest[String](_ contains pattern))
 
 
-  val testData = generateTestData()
+  val testData = generateTestData(stubProbability = 0.0)
 
   val withCollaborators = testData.map(c => ContentItemWithCollaborators(c, generateRandomSizeCollaborators()))
 
