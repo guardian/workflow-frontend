@@ -52,22 +52,25 @@ object PostgresDB {
       }
     }
 
-  def getContentItems(pred: (DBStub, DBContent) => Column[Option[Boolean]]): List[ContentItem] = {
-    val dbRes = getContentItemsDBRes(pred)
+  def getContentItems(pred: (DBStub, DBContent) => Column[Option[Boolean]], coll: DBCollaborator => Column[Option[Boolean]]): List[ContentItem] = {
+    val dbRes = getContentItemsDBRes(pred, coll)
     val content: List[ContentItem] = dbRes.map { case (s, c) => {
       ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
     }}
     content
   }
   //this wont work its current form.
-  def getContentItemsDBRes(pred: (DBStub, DBContent) => Column[Option[Boolean]]) = {
+  def getContentItemsDBRes(pred: (DBStub, DBContent) => Column[Option[Boolean]], coll: DBCollaborator => Column[Option[Boolean]]) = {
     DB.withTransaction { implicit session =>
-      val leftJoinQ = (for {
-        (s, c) <- (stubs.sortBy(s => (s.priority.desc, s.workingTitle)) leftJoin content on (_.composerId === _.composerId))
+      val baseQuery = for {
+        (s, c) <- stubs.sortBy(s => (s.priority.desc, s.workingTitle)) leftJoin content on (_.composerId === _.composerId)
+        (ys, yc) <- stubs outerJoin collaboratorTableQuery on (_.composerId === _.composer_id)
+        if(coll(yc))
         if(pred(s,c))
-      } yield (s,  c.?))
-      Logger.info(leftJoinQ.selectStatement)
-      leftJoinQ.list
+        if (ys.composerId === s.composerId) || (c.composerId === yc.composer_id)
+      } yield (s,  c.?)
+      Logger.info(baseQuery.selectStatement)
+      baseQuery.list
     }
   }
 
