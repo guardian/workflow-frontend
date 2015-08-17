@@ -12,7 +12,7 @@ class OneValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with Mat
 
   val testData = generateTestData()
 
-  "No parameter set for" in {
+  "No parameter set" in {
     val dataInserted = testData.map(createContent(_)).flatten
     val query = WfQuery()
     query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
