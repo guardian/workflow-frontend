@@ -38,5 +38,10 @@ class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matche
       (WfQuery(touched = List(testEmail))
          should selectSameResultsAs (FilterTest(matchCollaboratorsTest(testEmail), insertedData)))
     }
+
+    "should correctly find touched and assigned content" in withCollaboratorTestData(withCollaborators) { insertedData =>
+      (WfQuery(touched = List(testEmail), assignedToEmail=List(testEmail))
+        should selectSameResultsAs (FilterTest(matchCollaboratorsTest(testEmail)|assignedToTest(testEmail), insertedData)))
+    }
   }
 }
