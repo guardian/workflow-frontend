@@ -63,7 +63,7 @@ object PostgresDB {
   def getContentItemsDBRes(pred: (DBStub, DBContent) => Column[Option[Boolean]]) = {
     DB.withTransaction { implicit session =>
       val leftJoinQ = (for {
-        (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
+        (s, c) <- (stubs.sortBy(s => (s.priority.desc, s.workingTitle)) leftJoin content on (_.composerId === _.composerId))
         if(pred(s,c))
       } yield (s,  c.?))
       Logger.info(leftJoinQ.selectStatement)
