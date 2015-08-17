@@ -24,6 +24,7 @@ class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matche
                                                   optTest[String](_ contains pattern))
 
 
+  //todo - this query should work for stubs with the inner join logic
   val testData = generateTestData(stubProbability = 0.0)
 
   val withCollaborators = testData.map(c => ContentItemWithCollaborators(c, generateRandomSizeCollaborators()))
