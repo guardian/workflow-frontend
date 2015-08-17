@@ -75,7 +75,7 @@ object Api extends Controller with PanDomainAuthActions {
     val trashed   = queryData.trashed
     val composerId = queryData.composerId
 
-    def getContent = PostgresDB.getContent(queryData)
+    def getContent: List[DashboardRow] = PostgresDB.getContent(queryData)
 
     def getStubs =
       CommonDB.getStubs(queryData, unlinkedOnly = true)
@@ -89,7 +89,15 @@ object Api extends Controller with PanDomainAuthActions {
         queryData.composerId.isEmpty
       ) getStubs else Nil
 
-    val contentGroupedByStatus = getContent.groupBy(_.wc.status)
+    val contentItems = PostgresDB.getContentItems(WfQuery.queryPred(queryData))
+
+    val (stubsTmp, dashboardRows) = contentItems.partition(_.wcOpt.isEmpty)
+
+    val stubsList = stubsTmp.map(ci => ci.stub)
+
+    val dashboardRowsList = dashboardRows.map({case ContentItem(s: Stub, Some(wc: WorkflowContent)) => DashboardRow(s, wc)})
+
+    val contentGroupedByStatus = dashboardRowsList.groupBy(_.wc.status)
 
     val jsContentGroupedByStatus = contentGroupedByStatus.map({
       case (status, content) => (status.toString, Json.toJson(content))
@@ -102,12 +110,12 @@ object Api extends Controller with PanDomainAuthActions {
         countTotal += content.length
         (status.toString, Json.toJson(content.length))
       }
-    }).toSeq ++ Map("Stub" -> Json.toJson(stubs.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+stubs.length)).toSeq
+    }).toSeq ++ Map("Stub" -> Json.toJson(stubsList.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+stubsList.length)).toSeq
 
     Ok(
       Json.obj(
         "content" -> JsObject(jsContentGroupedByStatus),
-        "stubs" -> stubs,
+        "stubs" -> stubsList,
         "count" -> JsObject(counts)
       )
     )
