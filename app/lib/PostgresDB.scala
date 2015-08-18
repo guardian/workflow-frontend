@@ -52,24 +52,34 @@ object PostgresDB {
       }
     }
 
-  def getContentItems(pred: (DBStub, DBContent, DBCollaborator) => Column[Option[Boolean]]): List[ContentItem] = {
-    val dbRes = getContentItemsDBRes(pred)
+  def getContentItems(query: WfQuery): List[ContentItem] = {
+    val dbRes = getContentItemsDBRes(WfQuery.stubAndContentFilters(query), WfQuery.callCollaborator(query), WfQuery.stubAndCollaborator(query))
     val content: List[ContentItem] = dbRes.map { case (s, c) => {
       ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
     }}
     content
   }
   //this wont work its current form.
-  def getContentItemsDBRes(pred: (DBStub, DBContent, DBCollaborator) => Column[Option[Boolean]]) = {
+  def getContentItemsDBRes(pred: (DBStub, DBContent) => Column[Option[Boolean]], outerJoin: Boolean, pred1: (DBStub, DBCollaborator) => Column[Option[Boolean]]) = {
     DB.withTransaction { implicit session =>
       val baseQuery = for {
         (s, c) <- stubs.sortBy(s => (s.priority.desc, s.workingTitle)) leftJoin content on (_.composerId === _.composerId)
-        (ys, yc) <- stubs outerJoin collaborator on (_.composerId === _.composer_id)
-        if(pred(s,c,yc))
-        if (ys.composerId === s.composerId)
+        if(pred(s,c))
       } yield (s,  c.?)
-      Logger.info(baseQuery.selectStatement)
-      baseQuery.list
+      if(outerJoin) {
+        val tmp = for {
+          (s,c) <- baseQuery
+          (ys, yc) <- stubs outerJoin collaboratorTableQuery on (_.composerId === _.composer_id)
+          if(pred1(s,yc))
+          if (ys.composerId === s.composerId)
+        } yield (s, c)
+        Logger.info(tmp.selectStatement)
+        tmp.list
+      }
+      else {
+        Logger.info(baseQuery.selectStatement)
+        baseQuery.list
+      }
     }
   }
 
