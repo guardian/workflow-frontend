@@ -25,7 +25,7 @@ class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with M
         query should selectSameResultsAs(oneFilter)
       }
       "value is stubs"  in withTestData(testData) { dataInserted =>
-        val query = WfQuery(status = Seq(Status("Stubs")))
+        val query = WfQuery(status = Seq(Status("Stub")))
         val oneFilter = FilterTest(c => c.wcOpt.isEmpty, dataInserted)
         query should selectSameResultsAs(oneFilter)
       }
@@ -68,7 +68,7 @@ class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with M
       }
 
       "values are stubs, writers, desk" in withTestData(testData) { dataInserted =>
-        val query = WfQuery(status=Seq(Status("Writers"), Status("Desk"), Status("Stubs")))
+        val query = WfQuery(status=Seq(Status("Writers"), Status("Desk"), Status("Stub")))
         val multiFilter = FilterTest(c => (c.wcOpt.map(_.status) == Some(Status("Writers")) || c.wcOpt.map(_.status) == Some(Status("Desk")) || c.wcOpt.isEmpty), dataInserted)
         query should selectSameResultsAs (multiFilter)
       }
