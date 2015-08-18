@@ -124,20 +124,6 @@ object Api extends Controller with PanDomainAuthActions {
 
   val STUB_NOTE_MAXLEN = 500
 
-  def stubs = CORSable(composerUrl) {
-    APIAuthAction { implicit req =>
-      stubFilters.bindFromRequest.fold(
-      formWithErrors => BadRequest(formWithErrors.errorsAsJson), {
-        case (dueFrom, dueUntil) => Ok(renderJsonResponse(
-          CommonDB.getStubs(
-            WfQuery(dueTimes = List(WfQueryTime(dueFrom, dueUntil)))
-          )
-        ))
-      }
-      )
-    }
-  }
-
 
   def createContent() =  CORSable(composerUrl) {
     APIAuthAction { implicit request =>

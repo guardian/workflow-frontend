@@ -30,7 +30,6 @@ GET            /api/content/:composerId                    controllers.Api.getCo
 PUT            /api/content/:composerId/status             controllers.Api.putContentStatus(composerId: String)
 DELETE         /api/content/:composerId                    controllers.Api.deleteContent(composerId: String)
 
-GET            /api/stubs                                  controllers.Api.stubs
 POST           /api/stubs                                  controllers.Api.createContent
 PUT            /api/stubs/:stubId                          controllers.Api.putStub(stubId: Long)
 PUT            /api/stubs/:stubId/assignee                 controllers.Api.putStubAssignee(stubId: Long)
