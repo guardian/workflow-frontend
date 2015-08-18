@@ -25,21 +25,6 @@ object PostgresDB {
   import play.api.db.slick.DB
 
 
-  def getContent(q: WfQuery): List[DashboardRow] = {
-    getContentDBRes(q).map { case (stubData, contentData) =>
-      val stub = Stub.fromStubRow(stubData)
-      val content = WorkflowContent.fromContentRow(contentData)
-      DashboardRow(stub, content)
-    }
-  }
-
-  def getContentDBRes(q: WfQuery) = {
-    DB.withTransaction { implicit session =>
-      val statement =  WfQuery.getContentQuery(q)
-      Logger.info(statement.selectStatement)
-      statement.list
-    }
-  }
 
   def contentItemLookup(composerId: String): List[DashboardRow] =
     DB.withTransaction { implicit session =>
@@ -59,13 +44,14 @@ object PostgresDB {
     }}
     content
   }
-  //this wont work its current form.
+ //todo -neate
   def getContentItemsDBRes(pred: (DBStub, DBContent) => Column[Option[Boolean]], outerJoin: Boolean, pred1: (DBStub, DBCollaborator) => Column[Option[Boolean]]) = {
     DB.withTransaction { implicit session =>
       val baseQuery = for {
         (s, c) <- stubs.sortBy(s => (s.priority.desc, s.workingTitle)) leftJoin content on (_.composerId === _.composerId)
         if(pred(s,c))
       } yield (s,  c.?)
+
       if(outerJoin) {
         val tmp = for {
           (s,c) <- baseQuery
@@ -73,7 +59,6 @@ object PostgresDB {
           if(pred1(s,yc))
           if (ys.composerId === s.composerId)
         } yield (s, c)
-//        val tmp1 = tmp.groupBy(x=>x).map(_._1)
         Logger.info(tmp.selectStatement)
         tmp.list.distinct
       }
@@ -83,7 +68,6 @@ object PostgresDB {
       }
     }
   }
-
 
   /**
    * Creates a new content item in Workflow.
