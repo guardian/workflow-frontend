@@ -38,34 +38,31 @@ object PostgresDB {
     }
 
   def getContentItems(query: WfQuery): List[ContentItem] = {
-    val dbRes = getContentItemsDBRes(WfQuery.stubAndContentFilters(query), WfQuery.callCollaborator(query), WfQuery.stubAndCollaborator(query))
+    val dbRes = getContentItemsDBRes(WfQuery.stubAndContentFilters(query), WfQuery.stubAndCollaboratorPredOpt(query))
     val content: List[ContentItem] = dbRes.map { case (s, c) => {
       ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
     }}
     content
   }
- //todo -neate
-  def getContentItemsDBRes(pred: (DBStub, DBContent) => Column[Option[Boolean]], outerJoin: Boolean, pred1: (DBStub, DBCollaborator) => Column[Option[Boolean]]) = {
-    DB.withTransaction { implicit session =>
-      val baseQuery = for {
-        (s, c) <- stubs.sortBy(s => (s.priority.desc, s.workingTitle)) leftJoin content on (_.composerId === _.composerId)
-        if(pred(s,c))
-      } yield (s,  c.?)
 
-      if(outerJoin) {
-        val tmp = for {
-          (s,c) <- baseQuery
+  //this wont work its current form.
+  def getContentItemsDBRes(scFilters: (DBStub, DBContent) => Column[Option[Boolean]], collFilters: Option[(DBStub, DBCollaborator) => Column[Option[Boolean]]]) = {
+    DB.withTransaction { implicit session =>
+      val stubsAndContentQ = for {
+        (s, c) <- stubs.sortBy(s => (s.priority.desc, s.workingTitle)) leftJoin content on (_.composerId === _.composerId)
+        if(scFilters(s,c))
+      } yield (s,  c.?)
+      val fullQ = collFilters.fold(stubsAndContentQ)(pred =>
+        for {
+          (s,c) <- stubsAndContentQ
           (ys, yc) <- stubs outerJoin collaboratorTableQuery on (_.composerId === _.composer_id)
-          if(pred1(s,yc))
+          if(pred(s,yc))
           if (ys.composerId === s.composerId)
         } yield (s, c)
-        Logger.info(tmp.selectStatement)
-        tmp.list.distinct
-      }
-      else {
-        Logger.info(baseQuery.selectStatement)
-        baseQuery.list
-      }
+      )
+      Logger.info(fullQ.selectStatement)
+      fullQ.list.distinct
+
     }
   }
 
