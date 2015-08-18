@@ -67,7 +67,7 @@ object Api extends Controller with PanDomainAuthActions {
   val getContentBlock = { implicit req: Request[AnyContent] =>
     val queryData = RequestParameters.fromRequest(req)
 
-    val contentItems = PostgresDB.getContentItems(WfQuery.queryPred(queryData))
+    val contentItems = PostgresDB.getContentItems(queryData)
 
     //contentItems are serialised to stubs and dashboardRows as JSON response handles these different.
     //todo-write a method which accepts contentItems and serialises to correct JSON response.
