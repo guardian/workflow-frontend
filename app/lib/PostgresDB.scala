@@ -73,8 +73,9 @@ object PostgresDB {
           if(pred1(s,yc))
           if (ys.composerId === s.composerId)
         } yield (s, c)
+//        val tmp1 = tmp.groupBy(x=>x).map(_._1)
         Logger.info(tmp.selectStatement)
-        tmp.list
+        tmp.list.distinct
       }
       else {
         Logger.info(baseQuery.selectStatement)
