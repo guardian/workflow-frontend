@@ -18,10 +18,18 @@ class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with M
   }
 
   "One parameter set for field" - {
-    "field is status" in withTestData(testData) { dataInserted =>
-      val query = WfQuery(status=Seq(Status("Writers")))
-      val oneFilter = FilterTest(c => c.wcOpt.map(_.status) == Some(Status("Writers")), dataInserted)
-      query should selectSameResultsAs (oneFilter)
+    "field is status" - {
+      "value is writers"  in withTestData(testData) { dataInserted =>
+        val query = WfQuery(status = Seq(Status("Writers")))
+        val oneFilter = FilterTest(c => c.wcOpt.map(_.status) == Some(Status("Writers")), dataInserted)
+        query should selectSameResultsAs(oneFilter)
+      }
+      "value is stubs"  in withTestData(testData) { dataInserted =>
+        val query = WfQuery(status = Seq(Status("Stubs")))
+        val oneFilter = FilterTest(c => c.wcOpt.isEmpty, dataInserted)
+        query should selectSameResultsAs(oneFilter)
+      }
+
     }
 
     "field is section" in withTestData(testData) { dataInserted =>
@@ -52,11 +60,18 @@ class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with M
   }
 
   "Multiple paramets set for field" - {
-    "field is status" in withTestData(testData) { dataInserted =>
-      val query = WfQuery(status=Seq(Status("Writers"), Status("Desk")))
-      val multiFilter = FilterTest(c => c.wcOpt.map(_.status) == Some(Status("Writers")) || c.wcOpt.map(_.status) == Some(Status("Desk")), dataInserted)
-      query should selectSameResultsAs (multiFilter)
+    "field is status" - {
+      "values are writers, desk" in withTestData(testData) { dataInserted =>
+        val query = WfQuery(status=Seq(Status("Writers"), Status("Desk")))
+        val multiFilter = FilterTest(c => c.wcOpt.map(_.status) == Some(Status("Writers")) || c.wcOpt.map(_.status) == Some(Status("Desk")), dataInserted)
+        query should selectSameResultsAs (multiFilter)
+      }
 
+      "values are stubs, writers, desk" in withTestData(testData) { dataInserted =>
+        val query = WfQuery(status=Seq(Status("Writers"), Status("Desk"), Status("Stubs")))
+        val multiFilter = FilterTest(c => (c.wcOpt.map(_.status) == Some(Status("Writers")) || c.wcOpt.map(_.status) == Some(Status("Desk")) || c.wcOpt.isEmpty), dataInserted)
+        query should selectSameResultsAs (multiFilter)
+      }
     }
 
     "field is section" in withTestData(testData) { dataInserted =>
