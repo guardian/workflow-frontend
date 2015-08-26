@@ -1,5 +1,6 @@
 
-var OPHAN_PATH = 'https://dashboard.ophan.co.uk/summary?path=/';
+var OPHAN_PATH = 'https://dashboard.ophan.co.uk/summary?path=/',
+    LIVE_PATH = 'http://www.theguardian.com/';
 
 function wfContentItemParser(config, statusLabels, sections) {
     /*jshint validthis:true */
@@ -47,7 +48,7 @@ function wfContentItemParser(config, statusLabels, sections) {
                 this.preview = getViewerURL(item.path);
             }
             if (item.published && item.path) {
-                this.live = getViewerURL(item.path, true);
+                this.live = LIVE_PATH + item.path;
                 this.ophan = OPHAN_PATH + item.path;
             }
         }
