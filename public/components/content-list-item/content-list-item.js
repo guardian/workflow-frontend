@@ -1,8 +1,5 @@
 
-var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/',
-    PREVIEW_PATH = 'http://preview.gutools.co.uk/',
-    LIVE_PATH = 'http://www.theguardian.com/';
-
+var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/';
 
 function wfContentItemParser(config, statusLabels, sections) {
     /*jshint validthis:true */
@@ -15,6 +12,10 @@ function wfContentItemParser(config, statusLabels, sections) {
         };
 
         return offices[office];
+    }
+
+    function getViewerURL(path, isLive) {
+        return 'http://viewer.gutools.co.uk/' + (isLive ? 'live' : 'preview') + '/' + path;
     }
 
     function toTitleCase(str) {
@@ -43,10 +44,10 @@ function wfContentItemParser(config, statusLabels, sections) {
                 this.composer = config.composerViewContent + '/' + item.composerId;
             }
             if (item.path) {
-                this.preview = PREVIEW_PATH + item.path;
+                this.preview = getViewerURL(item.path);
             }
             if (item.published && item.path) {
-                this.live = LIVE_PATH + item.path;
+                this.live = getViewerURL(item.path, true);
                 this.ophan = OPHAN_PATH + item.path;
             }
         }
