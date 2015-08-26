@@ -1,5 +1,5 @@
 
-var OPHAN_PATH = 'http://dashboard.ophan.co.uk/summary?path=/';
+var OPHAN_PATH = 'https://dashboard.ophan.co.uk/summary?path=/';
 
 function wfContentItemParser(config, statusLabels, sections) {
     /*jshint validthis:true */
