@@ -17,6 +17,7 @@
   },
   "jspm": {
     "main": "app.js",
+    "registry": "jspm",
     "directories": {
       "baseURL": "public",
       "lib": "public"
