@@ -50,7 +50,7 @@ import 'ngInfiniteScroll/ng-infinite-scroll';
 //import 'angular-loading-bar@0.7.1/src/loading-bar.css!';
 
 // App-wide Styles
-import 'bootstrap@3.2.0/css/bootstrap.min.css!';
+import 'bootstrap/css/bootstrap.min.css!';
 import 'main.min.css!';
 
 angular.module('workflow',
