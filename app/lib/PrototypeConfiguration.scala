@@ -32,6 +32,7 @@ object PrototypeConfiguration {
         googleClientSecret <- Config.getConfigString("google.clientSecret").right
         host <- Config.getConfigString("host").right
         appSecret <- Config.getConfigString("application.secret").right
+        viewerUrl <- Config.getConfigString("viewer.url").right
         presenceUrl <- Config.getConfigString("presence.url").right
         presenceClientLib <- Config.getConfigString("presence.clientLib").right
         preferencesUrl <- Config.getConfigString("preferences.url").right

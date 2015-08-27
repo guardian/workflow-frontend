@@ -16,7 +16,7 @@ function wfContentItemParser(config, statusLabels, sections) {
     }
 
     function getViewerURL(path, isLive) {
-        return 'http://viewer.gutools.co.uk/' + (isLive ? 'live' : 'preview') + '/' + path;
+        return config.viewerUrl + '/' + (isLive ? 'live' : 'preview') + '/' + path;
     }
 
     function toTitleCase(str) {
