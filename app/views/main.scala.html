@@ -12,10 +12,10 @@
     <title>@title</title>
 
     @** TODO: Pull css in with SystemJS CSS plugin **@
-    <link href="@routes.Assets.at("jspm_packages/github/components/bootstrap@3.2.0/css/bootstrap.min.css")" rel="stylesheet">
+    <link href="@routes.Assets.versioned("jspm_packages/github/components/bootstrap@3.2.0/css/bootstrap.min.css")" rel="stylesheet">
 
     @** TODO: move jQuery calls into modules, so that this isn't needed: **@
-    <script src="@routes.Assets.at("jspm_packages/github/components/jquery@1.11.1/jquery.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("jspm_packages/github/components/jquery@1.11.1/jquery.min.js")" type="text/javascript"></script>
 
     <style>
         .admin {
