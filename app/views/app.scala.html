@@ -19,8 +19,13 @@
   <script src="@routes.Assets.versioned("jspm_packages/system.js")"></script>
   <script src="@routes.Assets.versioned("config.js")"></script>
   <script>
+    System.bundles["@routes.Assets.versioned("app.bundle.js")"] = System.bundles["app.bundle.js"];
+    delete System.bundles["app.bundle.js"];
+
     System.config({
-        "map": {"presence-client":_wfConfig.presenceClientLib}
+        "map": {
+            "presence-client": _wfConfig.presenceClientLib
+        }
     });
     System.import('app').catch(function(error) {
         setTimeout(function() { throw error; }, 0);
