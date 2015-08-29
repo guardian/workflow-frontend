@@ -390,7 +390,14 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         return wfContentService.getServerParams();
     });
 
-    poller.onPoll(this.render);
+    poller.onPoll((response) => {
+        // catch race condition between determining the contentItemTemplate, and rendering content
+        if ($rootScope.contentItemTemplate) {
+            this.render(response);
+        } else {
+            wfColumnService.getContentItemTemplate().then(this.render.bind(this, response));
+        }
+    });
     poller.onError(this.renderError);
 
     poller.startPolling().then(function(){
