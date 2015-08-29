@@ -5,6 +5,8 @@ angular.module('wfPreferencesService', [])
     .factory('wfPreferencesService', ['$rootScope', '$http', '$log', '$window',
         function($rootScope, $http, $log, $window) {
 
+            var TIMEOUT = 5000;
+
             class PreferencesService {
 
                 /**
@@ -45,6 +47,7 @@ angular.module('wfPreferencesService', [])
                  */
                 retrievePrefrences() {
                     return $http.get(this.url(this.user), {
+                        timeout: TIMEOUT,
                         withCredentials: true,
                         transformResponse: this.transformResponse // custom transform on data
                     });
