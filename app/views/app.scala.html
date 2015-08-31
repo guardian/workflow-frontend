@@ -19,8 +19,10 @@
   <script src="@routes.Assets.versioned("jspm_packages/system.js")"></script>
   <script src="@routes.Assets.versioned("config.js")"></script>
   <script>
-    System.bundles["@routes.Assets.versioned("app.bundle.js")"] = System.bundles["app.bundle.js"];
-    delete System.bundles["app.bundle.js"];
+    if ( System.bundles["app.bundle.js"] ) {
+      System.bundles["@routes.Assets.versioned("app.bundle.js")"] = System.bundles["app.bundle.js"];
+      delete System.bundles["app.bundle.js"];
+    }
 
     System.config({
         "map": {
