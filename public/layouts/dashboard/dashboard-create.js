@@ -2,6 +2,8 @@ import angular from 'angular';
 
 import 'lib/content-service';
 
+import './dashboard-create.html!ng-template';
+
 angular
     .module('wfDashboardCreate', ['wfContentService'])
     .controller('wfDashboardCreateController', ['$scope', 'wfContentService', function ($scope, contentService) {

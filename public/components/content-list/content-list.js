@@ -12,6 +12,9 @@ import 'lib/column-service';
 
 import 'components/editable-field/editable-field';
 
+// Content list template "ng-include"-ed from layouts/dashboard/dashboard.html
+import './content-list.html!ng-template';
+
 import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
 import { wfLoader } from 'components/loader/loader';

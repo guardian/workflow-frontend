@@ -6,6 +6,8 @@ import 'lib/prodoffice-service';
 import 'lib/presence';
 import { wfToolbarSectionsDropdown } from 'components/toolbar-sections-dropdown/toolbar-sections-dropdown';
 
+import './dashboard-toolbar.html!ng-template';
+
 angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPresenceService', 'wfProdOfficeService'])
     .directive('wfToolbarSectionsDropdown', ['wfFiltersService', '$rootScope', 'sectionsInDesks', wfToolbarSectionsDropdown])
     .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'desks', 'sections', 'sectionsInDesks', 'wfTitleService', function ($scope, wfFiltersService, wfDateParser, prodOfficeService,  desks, sections, sectionsInDesks, wfTitleService) {

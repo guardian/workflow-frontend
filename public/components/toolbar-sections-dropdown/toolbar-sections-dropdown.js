@@ -1,8 +1,10 @@
+import toolbarSectionsDropdown from './toolbar-sections-dropdown.html!ng-template';
+
 var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sectionsInDesks) { //  wf-toolbar-sections-dropdown
     return {
         restrict: 'A',
         require: '^ngModel',
-        templateUrl: '/assets/components/toolbar-sections-dropdown/toolbar-sections-dropdown.html',
+        templateUrl: toolbarSectionsDropdown.templateUrl,
         scope: {
             ngModel: '=',
             sections: '=',
