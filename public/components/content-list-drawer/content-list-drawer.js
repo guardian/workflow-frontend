@@ -1,3 +1,5 @@
+import contentListDrawerTemplate from './content-list-drawer.html!ng-template';
+
 /**
  * Directive for handling logic around the contentItemRow details drawer.
  *

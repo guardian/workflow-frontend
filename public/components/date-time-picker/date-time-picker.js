@@ -23,6 +23,8 @@ import 'angular-bootstrap-datetimepicker/src/css/datetimepicker.css!';
 // local dependencies
 import 'lib/date-service';
 
+import dateTimePickerTemplate from './date-time-picker.html!ng-template';
+
 angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateService'])
 
     // Add a listener to ui.bootstrap.datetimepicker to reset the picker to day view
@@ -71,7 +73,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 onUpdate: '&wfOnUpdate',
                 onSubmit: '&wfOnSubmit'
             },
-            templateUrl: '/assets/components/date-time-picker/date-time-picker.html',
+            templateUrl: dateTimePickerTemplate.templateUrl,
 
             controller: function ($scope, $element, $attrs) {
                 var idSuffix = pickerCount++;

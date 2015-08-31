@@ -8,6 +8,9 @@ System.config({
   },
   buildCSS: true,
   separateCSS: true,
+  ngTemplatePlugin: {
+    "serverRelative": true
+  },
 
   map: {
     "angular": "github:angular/bower-angular@1.3.8",
@@ -26,6 +29,7 @@ System.config({
     "mixpanel": "github:mixpanel/mixpanel-js@2.2.3",
     "moment": "github:moment/moment@2.8.3",
     "moment-timezone": "github:moment/moment-timezone@0.2.3",
+    "ng-template": "npm:plugin-ng-template@0.1.0",
     "ngInfiniteScroll": "github:sroze/ngInfiniteScroll@1.2.0",
     "node-uuid": "npm:uuid-v4.js@1.0.2",
     "raven-js": "github:getsentry/raven-js@1.1.16",

@@ -1,3 +1,5 @@
+import puntersTemplate from './punters.html!ng-template';
+
 /**
  * Created by cfinch on 09/01/2015.
  */
@@ -22,7 +24,7 @@ function punters ($rootScope, wfGoogleApiService) {
 
     return {
         restrict: 'E',
-        templateUrl: '/assets/components/punters/punters.html',
+        templateUrl: puntersTemplate.templateUrl,
         scope: {
             stub: '=',
             indrawer: '='
