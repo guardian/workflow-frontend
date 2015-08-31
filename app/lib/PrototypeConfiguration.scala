@@ -9,6 +9,7 @@ case class PrototypeConfiguration(
                                    googleClientId: String,
                                    googleClientSecret: String,
                                    host: String,
+                                   viewerUrl: String,
                                    presenceUrl: String,
                                    presenceClientLib: String,
                                    preferencesUrl: String,
@@ -32,6 +33,7 @@ object PrototypeConfiguration {
         googleClientSecret <- Config.getConfigString("google.clientSecret").right
         host <- Config.getConfigString("host").right
         appSecret <- Config.getConfigString("application.secret").right
+        viewerUrl <- Config.getConfigString("viewer.url").right
         presenceUrl <- Config.getConfigString("presence.url").right
         presenceClientLib <- Config.getConfigString("presence.clientLib").right
         preferencesUrl <- Config.getConfigString("preferences.url").right
@@ -39,7 +41,7 @@ object PrototypeConfiguration {
         logStashHost <- Config.getConfigString("logging.logstash.host").right
         logStashPort <- Config.getConfigInt("logging.logstash.port").right
         logStashEnabled <- Config.getConfigBoolean("logging.logstash.enabled").right
-      } yield PrototypeConfiguration(composerUrl, composerRestorerUrl, googleClientId, googleClientSecret, host, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl, LogStashConf(logStashHost, logStashPort, logStashEnabled)))
+      } yield PrototypeConfiguration(composerUrl, composerRestorerUrl, googleClientId, googleClientSecret, host, viewerUrl, presenceUrl, presenceClientLib, preferencesUrl, incopyExportUrl, LogStashConf(logStashHost, logStashPort, logStashEnabled)))
     configEit.fold(error => {
       Logger.error(s"could not instantiate Prototype Configuration ${error}")
       sys.error(error)
