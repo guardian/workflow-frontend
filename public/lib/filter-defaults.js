@@ -161,7 +161,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
             listIsOpen: false,
             multi: false,
             filterOptions: [
-                { caption: 'trashed', value: 'true'}
+                { caption: 'Trashed', value: 'true'}
             ]
         }
     ];
