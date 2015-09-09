@@ -4,6 +4,7 @@ import angular from 'angular';
 import 'lib/error-service';
 import 'lib/supported-browser-service';
 
+import userMessageTemplate from './user-message.html!ng-template';
 
 angular.module('wfUserMessage', ['wfSupportedBrowserService'])
     .config(['$provide', wfUserMessageConfig])
@@ -28,7 +29,7 @@ function wfUserMessageDirectiveFactory(wfSupportedBrowserService) {
     return {
         restrict: 'E',
         scope: true,
-        templateUrl: '/assets/components/user-message/user-message.html',
+        templateUrl: userMessageTemplate.templateUrl,
         controller: function($scope, $element, $attrs, $timeout) {
 
             this.showMessage = (msg) => {

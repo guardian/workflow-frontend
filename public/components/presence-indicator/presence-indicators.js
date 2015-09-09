@@ -1,9 +1,11 @@
+import presenceIndicatorsTemplate from './presence-indicators.html!ng-template';
+
 function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
                                         wfPresenceInitialData, $log) {
 
     return {
         restrict: 'E',
-        templateUrl: "/assets/components/presence-indicator/presence-indicators.html",
+        templateUrl: presenceIndicatorsTemplate.templateUrl,
         scope: {
             id: "=presenceId",
             inDrawer: "=inDrawer"
@@ -30,7 +32,7 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
             $scope.$watch(() => wfPresenceInitialData.getForId($scope.id), () => {
                 applyCurrentState(wfPresenceInitialData.getForId($scope.id));
             });
-        
+
             $scope.$on("presence.status", (ev, data) => {
                 if($scope.id === data.subscriptionId) {
                     applyCurrentState(data.currentState);

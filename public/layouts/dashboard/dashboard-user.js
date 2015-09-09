@@ -2,6 +2,8 @@ import angular from 'angular';
 
 import 'lib/user';
 
+import './dashboard-user.html!ng-template';
+
 angular
     .module('wfDashboardUser', ['wfUser'])
     .controller('wfDashboardUserController', ['$scope', '$window', 'wfUser', 'wfFiltersService', function ($scope, $window, user, wfFiltersService) {

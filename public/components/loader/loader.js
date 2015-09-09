@@ -1,7 +1,9 @@
+import loaderTemplate from './loader.html!ng-template';
+
 function wfLoader ($rootScope) {
     return {
         restrict: 'E',
-        templateUrl: '/assets/components/loader/loader.html',
+        templateUrl: loaderTemplate.templateUrl,
         scope: {
             event: '@event'
         },
