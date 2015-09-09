@@ -3,13 +3,17 @@ import angular from 'angular';
 import _ from 'lodash';
 import 'lib/filters-service';
 
+// load and cache html templates
+import sidebarFilterTemplate from './sidebar-filter.html!ng-template';
+import './custom-filter-templates/deadline-date-select.html!ng-template';
+
 angular.module('wfSidebarFilter', ['wfFiltersService'])
     .directive('wfSidebarFilter', ['wfFiltersService', '$injector', '$timeout', 'wfPreferencesService', function (wfFiltersService, $injector, $timeout, wfPreferencesService) {
 
     return {
         restrict: 'E',
         replace: true,
-        templateUrl: '/assets/components/sidebar-filter/sidebar-filter.html',
+        templateUrl: sidebarFilterTemplate.templateUrl,
         scope: {
             filter: '=wfFilter'
         },
