@@ -153,9 +153,13 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 $scope.awaitingDeleteConfirmation = false;
                 $scope.selectedItem = contentItem;
 
+
                 if (contentItem.status === 'Stub') {
                     $scope.$emit('stub:edit', contentItem.item);
                     return;
+                } else {
+                    // reset the date picker to month view (rather than view of previous date selected)
+                    $rootScope.$broadcast('resetPicker');
                 }
 
                 // TODO: move build incopy URL to decorator
