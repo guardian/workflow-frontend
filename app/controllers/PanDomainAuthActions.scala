@@ -1,6 +1,6 @@
 package controllers
 
-import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.auth.{AWSCredentialsProviderChain, BasicAWSCredentials}
 import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
 import play.api.Logger
@@ -34,8 +34,6 @@ trait PanDomainAuthActions extends AuthActions with Results {
 
   override lazy val domain: String = config.getString("pandomain.domain").get
   override lazy val system: String = "workflow"
+  
 
-  override lazy val awsCredentials =
-    for (key <- config.getString("pandomain.aws.keyId"); secret <- config.getString("pandomain.aws.secret"))
-      yield { new BasicAWSCredentials(key, secret) }
 }
