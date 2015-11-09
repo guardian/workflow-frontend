@@ -14,9 +14,6 @@ class PanDomainAuthService(pandaConfig: PandaConfig) extends PanDomainAuth {
   lazy val awsKey    = pandaConfig.awsKey
   lazy val awsSecret = pandaConfig.awsSecret
 
-  override lazy val awsCredentials: Option[AWSCredentials] =
-    Some(new BasicAWSCredentials(awsKey, awsSecret))
-
   val oneDaysMillis: Long = 1000 * 60 * 60 * 24
 
   def generateCookie(pandaUser: PandaUser): String = {
