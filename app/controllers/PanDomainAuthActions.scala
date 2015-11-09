@@ -1,12 +1,8 @@
 package controllers
 
-<<<<<<< HEAD
-import com.amazonaws.auth.BasicAWSCredentials
-=======
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.auth._
 import com.gu.pandomainauth.PanDomainAuth
->>>>>>> ld-rm-panda-keys-plus-upgrade
 import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
 import play.api.Logger
