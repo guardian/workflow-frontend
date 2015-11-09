@@ -1,7 +1,7 @@
 package controllers
 
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.auth.{InstanceProfileCredentialsProvider, EnvironmentVariableCredentialsProvider, BasicAWSCredentials, AWSCredentialsProviderChain}
+import com.amazonaws.auth._
 import com.gu.pandomainauth.PanDomainAuth
 import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
@@ -36,14 +36,8 @@ trait PanDomainAuthActions extends AuthActions with PanDomainAuth with Results {
 
   override lazy val domain: String = config.getString("pandomain.domain").get
   override lazy val system: String = "workflow"
-  lazy val key  = config.getString("pandomain.aws.keyId").getOrElse("")
-  lazy val secret  = config.getString("pandomain.aws.keyId").getOrElse("")
 
-  override def awsCredentialsProvider  = new AWSCredentialsProviderChain(
-   new EnvironmentVariableCredentialsProvider(),
-    new ProfileCredentialsProvider("workflow"),
-    new InstanceProfileCredentialsProvider()
-  )
+
 
 
 }
