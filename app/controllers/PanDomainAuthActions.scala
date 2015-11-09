@@ -38,6 +38,9 @@ trait PanDomainAuthActions extends AuthActions with PanDomainAuth with Results {
   override lazy val system: String = "workflow"
 
 
-
+  override def awsCredentialsProvider() = new AWSCredentialsProviderChain(
+    new ProfileCredentialsProvider("workflow"),
+    new InstanceProfileCredentialsProvider()
+  )
 
 }
