@@ -1,12 +1,18 @@
 package controllers
 
+<<<<<<< HEAD
 import com.amazonaws.auth.BasicAWSCredentials
+=======
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import com.amazonaws.auth._
+import com.gu.pandomainauth.PanDomainAuth
+>>>>>>> ld-rm-panda-keys-plus-upgrade
 import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
 import play.api.Logger
 import play.api.mvc._
 
-trait PanDomainAuthActions extends AuthActions with Results {
+trait PanDomainAuthActions extends AuthActions with PanDomainAuth with Results {
 
   import play.api.Play.current
   lazy val config = play.api.Play.configuration
@@ -35,7 +41,10 @@ trait PanDomainAuthActions extends AuthActions with Results {
   override lazy val domain: String = config.getString("pandomain.domain").get
   override lazy val system: String = "workflow"
 
-  override lazy val awsCredentials =
-    for (key <- config.getString("pandomain.aws.keyId"); secret <- config.getString("pandomain.aws.secret"))
-      yield { new BasicAWSCredentials(key, secret) }
+
+  override def awsCredentialsProvider() = new AWSCredentialsProviderChain(
+    new ProfileCredentialsProvider("workflow"),
+    new InstanceProfileCredentialsProvider(),
+    new EnvironmentVariableCredentialsProvider()
+  )
 }
