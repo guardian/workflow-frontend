@@ -6,7 +6,6 @@ import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
 import test.WorkflowIntegrationSuite
 import models.ContentItem._
-import models.ContentItem
 
 class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
