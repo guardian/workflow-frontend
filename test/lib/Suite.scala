@@ -1,6 +1,7 @@
 package test
 
 import com.gu.workflow.test.CommonDBIntegrationSuite
+import com.gu.workflow.test.CommonDBIntegrationSuite
 import com.gu.workflow.test.Config
 import models.ContentItem
 import play.api.test._
