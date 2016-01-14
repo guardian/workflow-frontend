@@ -171,14 +171,14 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
     Response(for {
       jsValue <- readJsonFromRequest(request.body).right
       newFieldValue <- extractFromJson(fieldName, jsValue.data).right
-      itemId <- queryDataToResponse(DayNoteDB.update(id, fieldName, newFieldValue.data), "Could not update day note").right
+      itemId <- queryDataToResponse(DayNoteDB.updateDayNote(id, fieldName, newFieldValue.data), "Could not update day note").right
     } yield {
         itemId
       })
   }
 
   def deleteDayNote() = APIAuthAction { implicit request =>
-    Response(requestToResponse[DayNote, Long](request,DayNoteDB.deleteDayNote, "Could not delete day note"))
+    Response(requestToResponse[DayNote, Long](request,DayNoteDB.deleteById, "Could not delete day note"))
   }
 
 }
