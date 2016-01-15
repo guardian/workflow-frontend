@@ -54,8 +54,13 @@ class DayNoteDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matcher
       val newsList = generateNewsList()
       val dayNoteFromDB = createDayNote(dayNote, newsList)
       val now = DateTime.now()
-      DayNoteDB.updateDayNote(dayNoteFromDB.id, "day", now)
+      DayNoteDB.updateDayNote(dayNoteFromDB.id, "day", now) should equal (Some(dayNoteFromDB.id))
       DayNoteDB.getDayNoteById(dayNoteFromDB.id).map(_.day) should equal (Some(now))
+    }
+
+    "update a day note that doesn't exist" in {
+      val dayNote = generateDayNote()
+      DayNoteDB.updateDayNote(dayNote.id, "note", "dsfdf") should equal (None)
     }
   }
 
