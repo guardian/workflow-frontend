@@ -31,11 +31,12 @@ class DayNoteDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matcher
       val dayNote = generateDayNote()
       val newsList = generateNewsList()
       val dayNoteFromDB = createDayNote(dayNote, newsList)
-      DayNoteDB.deleteById(dayNoteFromDB.id) should equal (Some(dayNoteFromDB.id))
+      DayNoteDB.deleteDayNote(dayNoteFromDB) should equal (Some(dayNoteFromDB.id))
     }
 
     "return none if item doesn't exist" in {
-      DayNoteDB.deleteById(3L) should equal (None)
+      val dayNote = generateDayNote()
+      DayNoteDB.deleteDayNote(dayNote) should equal (None)
     }
   }
 
