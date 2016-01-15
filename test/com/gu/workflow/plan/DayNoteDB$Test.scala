@@ -4,7 +4,7 @@ import com.gu.workflow.db.{DayNoteQuery, DayNoteDB}
 import com.gu.workflow.query.WfQuery
 import com.gu.workflow.test.CommonDBIntegrationSuite
 import com.gu.workflow.test.lib.TestData._
-import models.ContentItem
+import models.{DayNote, ContentItem}
 import org.joda.time.DateTime
 import org.scalatest.{FreeSpec, Matchers}
 
@@ -12,8 +12,6 @@ import org.scalatest.{FreeSpec, Matchers}
 class DayNoteDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matchers {
 
   val dayNote = generateDayNote()
-
-  val dayNotes = generateDayNotes()
 
   "Should retrieve a day note inserted" - {
     "get day note by id" in {
@@ -67,8 +65,35 @@ class DayNoteDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matcher
   }
 
   "Should be able to query with filters" - {
-    "no filters set" in withDayNoteTestData(dayNotes) { dataInserted =>
+
+    val newsListId = 4L
+    val startDate = DateTime.now().minusHours(50)
+    val endDate = DateTime.now().minusHours(30)
+
+    val newsListFilter = (dn: DayNote) => dn.newsList == newsListId
+    val startDateFilter = (dn: DayNote) => dn.day isAfter startDate
+    val endDateFilter = (dn: DayNote) => dn.day isBefore endDate
+
+
+    "no filters set" in withDayNoteTestData(generateDayNotes()) { dataInserted =>
       DayNoteDB.getDayNotesByQuery(DayNoteQuery(None, None, None)) should equal (Some(dataInserted))
     }
+
+    "newsList filter set" in withDayNoteTestData(generateDayNotes()) { dataInserted =>
+      DayNoteDB.getDayNotesByQuery(DayNoteQuery(Some(newsListId), None, None)) should equal (Some(dataInserted.filter(newsListFilter)))
+    }
+
+    "startDate filter set" in withDayNoteTestData(generateDayNotes()) { dataInserted =>
+      DayNoteDB.getDayNotesByQuery(DayNoteQuery(None, Some(startDate), None)) should equal (Some(dataInserted.filter(startDateFilter)))
+    }
+
+    "endDate filter set" in withDayNoteTestData(generateDayNotes()) { dataInserted =>
+      DayNoteDB.getDayNotesByQuery(DayNoteQuery(None, None, Some(endDate))) should equal (Some(dataInserted.filter(endDateFilter)))
+    }
+
+    "combination of filters set" in withDayNoteTestData(generateDayNotes()) { dataInserted =>
+      DayNoteDB.getDayNotesByQuery(DayNoteQuery(Some(newsListId), Some(startDate), Some(endDate))) should equal (Some(dataInserted.filter(dn => newsListFilter(dn) && startDateFilter(dn) && endDateFilter(dn))))
+    }
+
   }
 }

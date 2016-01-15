@@ -85,10 +85,7 @@ class OneValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with Mat
         val oneFilter = FilterTest(c => storyBundleId(c).isEmpty, dataInserted)
         query should selectSameResultsAs(oneFilter)
       }
-
-
     }
-
   }
 
 }
