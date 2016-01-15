@@ -178,7 +178,7 @@ object PlanApi extends Controller with PanDomainAuthActions with WorkflowApi {
   }
 
   def deleteDayNote() = APIAuthAction { implicit request =>
-    Response(requestToResponse[DayNote, Long](request,DayNoteDB.deleteById, "Could not delete day note"))
+    Response(requestToResponse[DayNote, Long](request,DayNoteDB.deleteDayNote, "Could not delete day note"))
   }
 
 }
