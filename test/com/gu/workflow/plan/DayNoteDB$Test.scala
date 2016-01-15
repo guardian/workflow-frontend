@@ -1,6 +1,6 @@
 package com.gu.workflow.plan
 
-import com.gu.workflow.db.DayNoteDB
+import com.gu.workflow.db.{DayNoteQuery, DayNoteDB}
 import com.gu.workflow.query.WfQuery
 import com.gu.workflow.test.CommonDBIntegrationSuite
 import com.gu.workflow.test.lib.TestData._
@@ -12,6 +12,8 @@ import org.scalatest.{FreeSpec, Matchers}
 class DayNoteDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matchers {
 
   val dayNote = generateDayNote()
+
+  val dayNotes = generateDayNotes()
 
   "Should retrieve a day note inserted" - {
     "get day note by id" in {
@@ -64,4 +66,9 @@ class DayNoteDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matcher
     }
   }
 
+  "Should be able to query with filters" - {
+    "no filters set" in withDayNoteTestData(dayNotes) { dataInserted =>
+      DayNoteDB.getDayNotesByQuery(DayNoteQuery(None, None, None)) should equal (Some(dataInserted))
+    }
+  }
 }
