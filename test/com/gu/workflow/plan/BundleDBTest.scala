@@ -4,10 +4,9 @@ import com.gu.workflow.db.{BundleDB, DayNoteDB}
 import com.gu.workflow.test.CommonDBIntegrationSuite
 import com.gu.workflow.test.lib.TestData._
 import models.Bundle
-import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
 
-class BundleDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matchers {
+class BundleDBTest extends FreeSpec with CommonDBIntegrationSuite with Matchers {
 
   val bundleInsertedBySchema = Bundle("No bundle", 0)
 
