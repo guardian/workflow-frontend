@@ -29,7 +29,7 @@ class DeskDBTest extends  FreeSpec with CommonDBIntegrationSuite with Matchers {
     val desk = generateDesk()
     val deskFromDB = createDesk(desk)
     DeskDB.remove(desk) should equal (1)
-    DeskDB.getById(deskFromDB.id) should equal(None)
+    DeskDB.getByName(deskFromDB.name) should equal(None)
   }
 
 }
