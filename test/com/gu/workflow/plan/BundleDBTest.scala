@@ -9,8 +9,10 @@ import org.scalatest.{Matchers, FreeSpec}
 
 class BundleDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matchers {
 
+  val bundleInsertedBySchema = Bundle("No bundle", 0)
+
   "Should query on bundles" in withBundleTestData(generateBundles()) { dataInserted =>
-    BundleDB.getBundles() should equal (Some(dataInserted.sortBy(b => b.id)))
+    BundleDB.getBundles() should equal (Some((bundleInsertedBySchema :: dataInserted).sortBy(b => b.id)))
   }
 
   "Should retrieve a bundle inserted" - {
