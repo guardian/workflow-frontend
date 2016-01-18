@@ -16,7 +16,13 @@ class DeskDBTest extends  FreeSpec with CommonDBIntegrationSuite with Matchers {
     DeskDB.upsert(desk) should equal(1)
     val deskFromDB = DeskDB.getByName(desk.name)
     deskFromDB.isDefined should equal (true)
+  }
+
+  "Should do nothing if the upsert is called on a desk with the same name" in {
+    val desk = generateDesk()
+    DeskDB.upsert(desk) should equal(1)
     DeskDB.upsert(desk) should equal(0)
+
   }
 
   "Should remove a desk" in {
