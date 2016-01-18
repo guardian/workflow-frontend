@@ -1,10 +1,9 @@
 package com.gu.workflow.plan
 
 import com.gu.workflow.db.{DayNoteQuery, DayNoteDB}
-import com.gu.workflow.query.WfQuery
 import com.gu.workflow.test.CommonDBIntegrationSuite
 import com.gu.workflow.test.lib.TestData._
-import models.{DayNote, ContentItem}
+import models.DayNote
 import org.joda.time.DateTime
 import org.scalatest.{FreeSpec, Matchers}
 
