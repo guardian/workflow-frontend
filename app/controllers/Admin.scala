@@ -47,11 +47,11 @@ object Admin extends Controller with PanDomainAuthActions {
       }
     }.getOrElse(deskList)
 
-    val sectionsFromDB = SectionDB.sectionList
+    val sectionListFromDB = SectionDB.sectionList
 
     val sectionList = selectedDeskOption.map { selectedDesk =>
-      SectionDeskMappingDB.getSectionsWithRelation(selectedDesk, sectionsFromDB)
-    }.getOrElse(sectionsFromDB)
+      SectionDeskMappingDB.getSectionsWithRelation(selectedDesk, sectionListFromDB)
+    }.getOrElse(sectionListFromDB)
 
     Ok(
       views.html.admin.desksAndSections(
