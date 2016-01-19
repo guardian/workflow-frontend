@@ -32,7 +32,6 @@ class BundleDBTest extends FreeSpec with CommonDBIntegrationSuite with Matchers 
       val bundleFromDB = createBundle(bundle)
       BundleDB.deleteBundle(bundleFromDB) should equal (Some(bundleFromDB.id))
       BundleDB.getBundleById(bundleFromDB.id) should equal (None)
-
     }
 
     "return none if item doesn't exist" in {
