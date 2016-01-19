@@ -1,5 +1,6 @@
 package controllers
 
+import com.gu.workflow.db.Schema._
 import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
 import com.gu.workflow.query.WfQuery
@@ -46,6 +47,22 @@ object Admin extends Controller with PanDomainAuthActions {
       }
     }.getOrElse(deskList)
 
+    val listOfSectionIdsInDesk = selectedDeskOption.map { selectedDesk =>
+      SectionDeskMappingDB.getSectionsWithRelation(selectedDesk)
+    }
+
+//    sections.list.map({
+//
+//      case (pk, name) if listOfSectionIdsInDesk.exists({
+//
+//        case (`pk`, _) => true
+//        case _ => false
+//
+//      }) => Section(name, selected = true, pk)
+//
+//      case (pk, name) => Section(name, selected = false, pk)
+//
+//    })
     val sectionList = selectedDeskOption.map { selectedDesk =>
       SectionDeskMappingDB.getSectionsWithRelation(selectedDesk)
     }.getOrElse(SectionDB.sectionList)
