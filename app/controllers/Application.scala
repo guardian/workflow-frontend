@@ -90,7 +90,7 @@ object Application extends Controller with PanDomainAuthActions {
         "statuses" -> statuses,
         "desks"    -> desks,
         "sections" -> sections,
-//        "sectionsInDesks" -> sectionsInDesks, // TODO: Combine desks & sectionsInDesks
+        "sectionsInDesks" -> sectionsInDesks, // TODO: Combine desks & sectionsInDesks
         "viewerUrl" -> PrototypeConfiguration.cached.viewerUrl,
         "presenceUrl" -> PrototypeConfiguration.cached.presenceUrl,
         "presenceClientLib" -> PrototypeConfiguration.cached.presenceClientLib,
