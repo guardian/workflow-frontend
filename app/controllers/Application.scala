@@ -22,7 +22,7 @@ object Application extends Controller with PanDomainAuthActions {
       statuses <- StatusDatabase.statuses
       sections = SectionDB.sectionList.sortBy(_.name)
       desks = DeskDB.deskList.sortBy(_.name)
-      sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
+      sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks(sections)
       newsLists = NewsListDB.newsListList.sortBy(_.title)
       newsListBuckets = NewsListBucketDB.newsListBucketsList.groupBy(_.newsList).map({
         case (newsList, buckets) => (newsList, Json.toJson(buckets))
@@ -76,7 +76,7 @@ object Application extends Controller with PanDomainAuthActions {
       statuses <- StatusDatabase.statuses
       sections = SectionDB.sectionList.sortBy(_.name)
       desks = DeskDB.deskList.sortBy(_.name)
-//      sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
+      sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks(sections)
     }
     yield {
       val user = request.user
