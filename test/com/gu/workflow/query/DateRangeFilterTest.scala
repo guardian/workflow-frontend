@@ -18,7 +18,7 @@ class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Ma
 
   "Should query on date selected times" - {
     "field is due" in {
-      val dataInserted = testData.map(createContent(_)).flatten
+      val dataInserted = testData.map(createContent(_))
       val wfQueryTime = WfQueryTime(Some(oneDayAgo),Some(now))
       val query = WfQuery(dueTimes=Seq(wfQueryTime))
       val dueTimeFilter = FilterTest(c => due(c).exists(d => withinRange(todayRange,d)), dataInserted)
@@ -27,7 +27,7 @@ class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Ma
     }
 
     "field is createdAt" in {
-      val dataInserted = testData.map(createContent(_)).flatten
+      val dataInserted = testData.map(createContent(_))
       val wfQueryTime = WfQueryTime(Some(oneDayAgo),Some(now))
       val query = WfQuery(creationTimes=Seq(wfQueryTime))
       val dueTimeFilter = FilterTest(c => withinRange(todayRange,createdAt(c)), dataInserted)
@@ -39,7 +39,7 @@ class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Ma
 
   "Should return no results if date range is wrong way round" - {
     "field is due" in {
-      val dataInserted = testData.map(createContent(_)).flatten
+      val dataInserted = testData.map(createContent(_))
 
       val wfQueryTime = WfQueryTime(Some(now), Some(oneDayAgo))
       val query = WfQuery(dueTimes=Seq(wfQueryTime))
@@ -48,7 +48,7 @@ class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Ma
     }
 
     "field is createdAt" in {
-      val dataInserted = testData.map(createContent(_)).flatten
+      val dataInserted = testData.map(createContent(_))
 
       val wfQueryTime = WfQueryTime(Some(now),Some(oneDayAgo))
       val query = WfQuery(creationTimes=Seq(wfQueryTime))
