@@ -242,37 +242,52 @@ object PostgresDB {
   }
 
   def updateStubWorkingTitle(id: Long, workingTitle: String): Response[Long] = {
+    val updatedRow = updateWorkingTitleDB(id, workingTitle)
+    if(updatedRow==0) Left(ApiErrors.updateError(id))
+    else Right(ApiSuccess(id))
+  }
+//todo - come up with generic api serialisation
+  def updateStubPriority(id: Long, priority: Int): Response[Long] = {
     DB.withTransaction { implicit session =>
-      val updatedRow = stubs
-        .filter(_.pk === id)
-        .map(s => s.workingTitle)
-        .update(workingTitle)
+      val updatedRow = updateStubPriorityDB(id, priority)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
       else Right(ApiSuccess(id))
     }
   }
 
-  def updateStubPriority(id: Long, priority: Int): Response[Long] = {
+  def updateStubPriorityDB(id: Long, priority: Int): Int = {
     DB.withTransaction { implicit session =>
-      val updatedRow = stubs
+      stubs
         .filter(_.pk === id)
         .map(s => s.priority)
         .update(priority)
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
     }
   }
 
   def updateStubTrashed(id: Long, trashed: Option[Boolean]): Response[Long] = {
     DB.withTransaction { implicit session =>
-      val updatedRow = stubs
-        .filter(_.pk === id)
-        .map(s => s.trashed)
-        .update(trashed)
+      val updatedRow = updateStubDB(id, trashed)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
       else Right(ApiSuccess(id))
     }
+  }
 
+  def updateWorkingTitleDB(id: Long, workingTitle: String): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.workingTitle)
+        .update(workingTitle)
+    }
+  }
+
+  def updateStubDB(id: Long, trashed: Option[Boolean]): Int = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s => s.trashed)
+        .update(trashed)
+    }
   }
 
   def updateStubLegalStatus(id: Long, status: Flag): Response[Long] = {
@@ -286,12 +301,6 @@ object PostgresDB {
     }
   }
 
-  def stubLinkedToComposer(id: Long): Boolean = {
-    DB.withTransaction { implicit session =>
-      val q = stubs.filter(stub => stub.pk === id && stub.composerId.isDefined)
-      q.length.run > 0
-    }
-  }
   //todo - rename to delete contentitem
   def deleteStub(id: Long): Response[Long] = {
     DB.withTransaction { implicit session =>
