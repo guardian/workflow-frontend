@@ -23,9 +23,7 @@ object PostgresDB {
 
   import play.api.Play.current
   import play.api.db.slick.DB
-
-
-
+  
   def contentItemLookup(composerId: String): List[DashboardRow] =
     DB.withTransaction { implicit session =>
       WfQuery.contentLookup(composerId)
@@ -105,6 +103,7 @@ object PostgresDB {
     }
   }
 
+
   def getContentByCompserId(composerId: String): Option[ContentItem] = {
     DB.withTransaction { implicit session =>
       (for {
@@ -183,59 +182,49 @@ object PostgresDB {
     }
   }
 
-  def updateStubWithAssigneeEmail(id: Long, assigneeEmail: Option[String]): Response[Long] = {
+  def updateStubWithAssigneeEmail(id: Long, assigneeEmail: Option[String]): Int = {
     DB.withTransaction { implicit session =>
-      val updatedRow = stubs
+      stubs
         .filter(_.pk === id)
         .map(s => s.assigneeEmail)
         .update(assigneeEmail)
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
     }
   }
 
-  def updateStubDueDate(id: Long, dueDate: Option[DateTime]): Response[Long] = {
+  def updateStubDueDate(id: Long, dueDate: Option[DateTime]): Int = {
     DB.withTransaction { implicit session =>
-      val updatedRow = stubs
+      stubs
         .filter(_.pk === id)
         .map(s => s.due)
         .update(dueDate)
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
     }
   }
 
-  def updateStubNote(id: Long, input: String): Response[Long] = {
+  def updateStubNote(id: Long, input: String): Int = {
     val note: Option[String] = if(input.length > 0) Some(input) else None
     DB.withTransaction { implicit session =>
-      val updatedRow = stubs
+      stubs
         .filter(_.pk === id)
         .map(s => s.note)
         .update(note)
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
     }
   }
 
-  def updateStubProdOffice(id: Long, prodOffice: String): Response[Long] = {
+  def updateStubProdOffice(id: Long, prodOffice: String): Int = {
     DB.withTransaction { implicit session =>
-      val updatedRow = stubs
+      stubs
         .filter(_.pk === id)
         .map(s => s.prodOffice)
         .update(prodOffice)
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
     }
   }
 
-  def updateStubSection(id: Long, section: String): Response[Long] = {
+  def updateStubSection(id: Long, section: String): Int = {
     DB.withTransaction { implicit session =>
-      val updatedRow = stubs
+      stubs
         .filter(_.pk === id)
         .map(s => s.section)
         .update(section)
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
     }
   }
 
@@ -266,7 +255,7 @@ object PostgresDB {
     }
   }
 
-  def updateStubLegalStatusDB(id: Long, status: Flag): Int = {
+  def updateStubLegalStatus(id: Long, status: Flag): Int = {
     DB.withTransaction { implicit session =>
       stubs
         .filter(_.pk === id)
@@ -275,13 +264,6 @@ object PostgresDB {
     }
   }
 
-  def updateStubLegalStatus(id: Long, status: Flag): Response[Long] = {
-    DB.withTransaction { implicit session =>
-      val updatedRow = updateStubLegalStatusDB(id, status)
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
-    }
-  }
 
   //todo - rename to delete contentitem
   def deleteStub(id: Long): Response[Long] = {
@@ -300,17 +282,14 @@ object PostgresDB {
     }
   }
 
-  def updateContentStatus(status: String, composerId: String): Response[String] = {
+  def updateContentStatus(status: String, composerId: String): Int = {
     DB.withTransaction { implicit session =>
       val q = for {
         wc <- content if wc.composerId === composerId
       } yield wc.status
       val updatedRow = q.update(status)
-      if(updatedRow==0) Left(ApiErrors.composerIdNotFound(composerId))
-      else {
-        stubs.filter(_.composerId === composerId).map(_.lastModified).update(DateTime.now())
-        Right(ApiSuccess(composerId))
-      }
+      stubs.filter(_.composerId === composerId).map(_.lastModified).update(DateTime.now())
+      updatedRow
     }
   }
 }
