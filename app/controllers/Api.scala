@@ -124,6 +124,12 @@ object Api extends Controller with PanDomainAuthActions {
 
   val STUB_NOTE_MAXLEN = 500
 
+  def serialiseToApi(id: Option[Long]): Response[Long] = {
+    id match {
+      case Some(i) => Right(ApiSuccess(i))
+      case None => Left(ApiErrors.conflict)
+    }
+  }
 
   def createContent() =  CORSable(composerUrl) {
     APIAuthAction { implicit request =>
@@ -132,7 +138,7 @@ object Api extends Controller with PanDomainAuthActions {
         stub <- extractResponse[Stub](jsValue.data).right
         wcOpt <- (if(stub.data.composerId.isDefined) extractApiResponseOption[WorkflowContent](jsValue.data)
                   else extractResponse[Option[WorkflowContent]](jsValue.data)).right
-        stubId <- PostgresDB.createContent(ContentItem(stub.data, wcOpt.data)).right
+        stubId <- serialiseToApi(PostgresDB.createContent(ContentItem(stub.data, wcOpt.data))).right
       } yield {
         stubId
       })
@@ -364,4 +370,6 @@ object Api extends Controller with PanDomainAuthActions {
     if(updatedRow==0) Left(ApiErrors.composerIdNotFound(id))
     else Right(ApiSuccess(id))
   }
+
+
 }
