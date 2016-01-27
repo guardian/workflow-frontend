@@ -174,14 +174,12 @@ object PostgresDB {
     }
   }
 
-  def updateStubWithAssignee(id: Long, assignee: Option[String]): Response[Long] = {
+  def updateStubWithAssignee(id: Long, assignee: Option[String]): Int = {
     DB.withTransaction { implicit session =>
-      val updatedRow = stubs
+      stubs
         .filter(_.pk === id)
         .map(s => s.assignee)
         .update(assignee)
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
     }
   }
 
@@ -241,21 +239,7 @@ object PostgresDB {
     }
   }
 
-  def updateStubWorkingTitle(id: Long, workingTitle: String): Response[Long] = {
-    val updatedRow = updateWorkingTitleDB(id, workingTitle)
-    if(updatedRow==0) Left(ApiErrors.updateError(id))
-    else Right(ApiSuccess(id))
-  }
-//todo - come up with generic api serialisation
-  def updateStubPriority(id: Long, priority: Int): Response[Long] = {
-    DB.withTransaction { implicit session =>
-      val updatedRow = updateStubPriorityDB(id, priority)
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
-    }
-  }
-
-  def updateStubPriorityDB(id: Long, priority: Int): Int = {
+  def updateStubPriority(id: Long, priority: Int): Int = {
     DB.withTransaction { implicit session =>
       stubs
         .filter(_.pk === id)
@@ -264,15 +248,7 @@ object PostgresDB {
     }
   }
 
-  def updateStubTrashed(id: Long, trashed: Option[Boolean]): Response[Long] = {
-    DB.withTransaction { implicit session =>
-      val updatedRow = updateStubDB(id, trashed)
-      if(updatedRow==0) Left(ApiErrors.updateError(id))
-      else Right(ApiSuccess(id))
-    }
-  }
-
-  def updateWorkingTitleDB(id: Long, workingTitle: String): Int = {
+  def updateStubWorkingTitle(id: Long, workingTitle: String): Int = {
     DB.withTransaction { implicit session =>
       stubs
         .filter(_.pk === id)
@@ -281,7 +257,7 @@ object PostgresDB {
     }
   }
 
-  def updateStubDB(id: Long, trashed: Option[Boolean]): Int = {
+  def updateStubTrashed(id: Long, trashed: Option[Boolean]): Int = {
     DB.withTransaction { implicit session =>
       stubs
         .filter(_.pk === id)
@@ -290,12 +266,18 @@ object PostgresDB {
     }
   }
 
-  def updateStubLegalStatus(id: Long, status: Flag): Response[Long] = {
+  def updateStubLegalStatusDB(id: Long, status: Flag): Int = {
     DB.withTransaction { implicit session =>
-      val updatedRow = stubs
+      stubs
         .filter(_.pk === id)
         .map(s => s.needsLegal)
         .update(status)
+    }
+  }
+
+  def updateStubLegalStatus(id: Long, status: Flag): Response[Long] = {
+    DB.withTransaction { implicit session =>
+      val updatedRow = updateStubLegalStatusDB(id, status)
       if(updatedRow==0) Left(ApiErrors.updateError(id))
       else Right(ApiSuccess(id))
     }
