@@ -23,7 +23,7 @@ object PostgresDB {
 
   import play.api.Play.current
   import play.api.db.slick.DB
-  
+
   def contentItemLookup(composerId: String): List[DashboardRow] =
     DB.withTransaction { implicit session =>
       WfQuery.contentLookup(composerId)
@@ -75,22 +75,23 @@ object PostgresDB {
 
   /* TODO :- Return Option of Long with another function for the API response */
 
-  def createContent(contentItem: ContentItem): Response[Long] = {
+  def createContent(contentItem: ContentItem): Option[Long] = {
     DB.withTransaction { implicit session =>
 
       val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
 
       existing match {
-        case Some(stubId) => Left(ApiErrors.conflict)
+        case Some(stubId) => None
         case None => {
           val stubId = ((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
           contentItem.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
-
-          Right(ApiSuccess(stubId))
+          Some(stubId)
         }
       }
     }
   }
+
+
 
   def getContentById(id: Long): Option[ContentItem] = {
     DB.withTransaction { implicit session =>

@@ -1,6 +1,6 @@
 package com.gu.workflow.query
 
-import models.Flag
+import models.{ContentItem, Flag}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
 import test.WorkflowIntegrationSuite
@@ -9,9 +9,11 @@ import lib.PostgresDB
 
 class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matchers{
 
-  val contentItem = randomContentItem(0.0)
+  val stubAndWorkflowContent = randomContentItem(0.0)
 
-  "updateStubTrashed" in withContentItem(contentItem) { ci =>
+  val stubOnly = randomContentItem(1.0)
+
+  "updateStubTrashed" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id => {
       PostgresDB.updateStubTrashed(id, Some(true)) should equal (1)
       val updatedStub = PostgresDB.getContentById(id)
@@ -21,7 +23,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     })
   }
 
-  "updateStubWorkingTitle" in withContentItem(contentItem) { ci =>
+  "updateStubWorkingTitle" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id => {
       PostgresDB.updateStubWorkingTitle(id, "an updated working title") should equal (1)
       val updatedStub = PostgresDB.getContentById(id)
@@ -31,7 +33,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     })
   }
 
-  "updatePriority" in withContentItem(contentItem) { ci =>
+  "updatePriority" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id => {
       PostgresDB.updateStubPriority(id, 2) should equal (1)
       val updatedStub = PostgresDB.getContentById(id)
@@ -41,7 +43,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     })
   }
 
-  "updateStubWithAssignee" in withContentItem(contentItem) { ci =>
+  "updateStubWithAssignee" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id => {
       PostgresDB.updateStubWithAssignee(id, Some("assignee")) should equal (1)
       val updatedStub = PostgresDB.getContentById(id)
@@ -51,7 +53,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     })
   }
 
-  "updateStubWithAssigneeEmail" in withContentItem(contentItem) { ci =>
+  "updateStubWithAssigneeEmail" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id =>{
       PostgresDB.updateStubWithAssigneeEmail(id, Some("assignee-email")) should equal (1)
       val updatedStub = PostgresDB.getContentById(id)
@@ -61,7 +63,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     })
   }
 
-  "putStubDueDate" in withContentItem(contentItem) { ci =>
+  "putStubDueDate" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id =>{
       val now = DateTime.now()
       PostgresDB.updateStubDueDate(id, Some(now)) should equal (1)
@@ -73,7 +75,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
   }
 
   "updateStubNote"  - {
-    "field can be unset" in withContentItem(contentItem) { ci =>
+    "field can be unset" in withContentItem(stubAndWorkflowContent) { ci =>
       ci.stub.id.fold(fail("should have an id defined"))(id =>{
         PostgresDB.updateStubNote(id, "") should equal (1)
         val updatedStub = PostgresDB.getContentById(id)
@@ -83,7 +85,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       })
     }
 
-    "field can be set" in withContentItem(contentItem) { ci =>
+    "field can be set" in withContentItem(stubAndWorkflowContent) { ci =>
       ci.stub.id.fold(fail("should have an id defined"))(id =>{
         PostgresDB.updateStubNote(id, "a note") should equal (1)
         val updatedStub = PostgresDB.getContentById(id)
@@ -94,7 +96,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     }
   }
 
-  "updateStubSection" in withContentItem(contentItem) { ci =>
+  "updateStubSection" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id =>{
       PostgresDB.updateStubSection(id, "section") should equal (1)
       val updatedStub = PostgresDB.getContentById(id)
@@ -104,7 +106,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     })
   }
 
-  "updateStubLegalStatus" in withContentItem(contentItem) { ci =>
+  "updateStubLegalStatus" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id =>{
       PostgresDB.updateStubLegalStatus(id, Flag.Required) should equal (1)
       val updatedStub = PostgresDB.getContentById(id)
@@ -114,7 +116,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     })
   }
 
-  "updateContentStatus" in withContentItem(contentItem) { ci =>
+  "updateContentStatus" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.composerId.fold(fail("should have an id defined"))(cId => {
       PostgresDB.updateContentStatus("New Status", cId) should equal (1)
       val updatedContent = PostgresDB.getContentByCompserId(cId)
@@ -123,5 +125,16 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       })
     })
   }
+
+  "createContent" in {
+    val idOpt = PostgresDB.createContent(stubOnly)
+    idOpt.fold(fail("id should be inserted into the data store"))(stubId => {
+      PostgresDB.getContentById(stubId) should equal (Some((ContentItem(stubOnly.stub.copy(id = Some(stubId)), None))))
+    })
+  }
+
+//  "updateContent" in withContentItem(stubAndWorkflowContent) { ci =>
+//
+//  }
 
 }

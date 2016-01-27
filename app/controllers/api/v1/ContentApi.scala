@@ -105,7 +105,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
       Response(for {
         jsValue <- readJsonFromRequest(request.body).right
         contentItem <- extract[ContentItem](jsValue.data).right
-        stubId <- PostgresDB.createContent(contentItem.data).right
+        stubId <- Api.serialiseToApi(PostgresDB.createContent(contentItem.data)).right
       } yield {
         stubId
       })
