@@ -9,9 +9,9 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
 
   val contentItem = randomContentItem()
 
-  "be able to set trashed to true" in withContentItem(contentItem) { ci =>
+  "updateStubTrashed" in withContentItem(contentItem) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id => {
-      PostgresDB.updateStubDB(id, Some(true)) should equal (1)
+      PostgresDB.updateStubTrashed(id, Some(true)) should equal (1)
       val updatedStub = PostgresDB.getContentById(id)
       updatedStub.map(_.stub).fold(fail("should be able to retrieve by id"))(s => {
         s.trashed should equal (true)
@@ -19,9 +19,9 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     })
   }
 
-  "be able to update working title" in withContentItem(contentItem) { ci =>
+  "updateStubWorkingTitle" in withContentItem(contentItem) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id => {
-      PostgresDB.updateWorkingTitleDB(id, "an updated working title") should equal (1)
+      PostgresDB.updateStubWorkingTitle(id, "an updated working title") should equal (1)
       val updatedStub = PostgresDB.getContentById(id)
       updatedStub.map(_.stub).fold(fail("should be able to retrieve by id"))(s => {
         s.title should equal ("an updated working title")
@@ -29,12 +29,22 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     })
   }
 
-  "be able to update priority" in withContentItem(contentItem) { ci =>
+  "updatePriority" in withContentItem(contentItem) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id => {
-      PostgresDB.updateStubPriorityDB(id, 2) should equal (1)
+      PostgresDB.updateStubPriority(id, 2) should equal (1)
       val updatedStub = PostgresDB.getContentById(id)
       updatedStub.map(_.stub).fold(fail("should be able to retrieve by id"))(s => {
         s.priority should equal (2)
+      })
+    })
+  }
+
+  "updateStubWithAssignee" in withContentItem(contentItem) { ci =>
+    ci.stub.id.fold(fail("should have an id defined"))(id => {
+      PostgresDB.updateStubWithAssignee(id, Some("assignee")) should equal (1)
+      val updatedStub = PostgresDB.getContentById(id)
+      updatedStub.map(_.stub).fold(fail("should be able to retrieve by id"))(s => {
+        s.assignee should equal (Some("assignee"))
       })
     })
 

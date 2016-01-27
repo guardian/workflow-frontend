@@ -157,7 +157,7 @@ object Api extends Controller with PanDomainAuthActions {
     Response(for {
       jsValue <- readJsonFromRequestResponse(request.body).right
       assignee <- extractResponse[String](jsValue.data \ "data").right
-      id <- PostgresDB.updateStubWithAssignee(stubId, Some(assignee.data).filter(_.nonEmpty)).right
+      id <- dbToApiRes(stubId, PostgresDB.updateStubWithAssignee(stubId, Some(assignee.data).filter(_.nonEmpty))).right
     } yield {
       id
     })
@@ -236,7 +236,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         workingTitle <- extractResponse[String](jsValue.data \ "data")(Stub.workingTitleReads).right
-        id <- PostgresDB.updateStubWorkingTitle(stubId, workingTitle.data).right
+        id <- dbToApiRes(stubId, PostgresDB.updateStubWorkingTitle(stubId, workingTitle.data)).right
       } yield {
         id
       })
@@ -248,7 +248,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         priority <- extractResponse[Int](jsValue.data \ "data").right
-        id <- PostgresDB.updateStubPriority(stubId, priority.data).right
+        id <- dbToApiRes(stubId, PostgresDB.updateStubPriority(stubId, priority.data)).right
       } yield {
         id
       })
@@ -272,7 +272,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         trashed <- extractResponse[Boolean](jsValue.data \ "data").right
-        id <- PostgresDB.updateStubTrashed(stubId, Some(trashed.data)).right
+        id <- dbToApiRes(stubId, PostgresDB.updateStubTrashed(stubId, Some(trashed.data))).right
       } yield {
         id
       })
@@ -355,4 +355,8 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
+  def dbToApiRes[A](id: Long, updatedRow: Int): Response[Long] = {
+    if(updatedRow==0) Left(ApiErrors.updateError(id))
+    else Right(ApiSuccess(id))
+  }
 }
