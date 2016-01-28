@@ -126,15 +126,35 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     })
   }
 
-  "createContent" in {
-    val idOpt = PostgresDB.createContent(stubOnly)
-    idOpt.fold(fail("id should be inserted into the data store"))(stubId => {
-      PostgresDB.getContentById(stubId) should equal (Some((ContentItem(stubOnly.stub.copy(id = Some(stubId)), None))))
-    })
+  "createContent" - {
+    "should be able to create a stub" in {
+      val idOpt = PostgresDB.createContent(stubOnly)
+      idOpt.fold(fail("id should be inserted into the data store"))(stubId => {
+        PostgresDB.getContentById(stubId) should equal (Some((ContentItem(stubOnly.stub.copy(id = Some(stubId)), None))))
+      })
+    }
+
+    "the same stub data can be inserted and new ids will be created" in {
+      val idOpt = PostgresDB.createContent(stubOnly)
+      idOpt.fold(fail("id should be inserted into the data store"))(stubId => {
+        PostgresDB.getContentById(stubId) should equal (Some((ContentItem(stubOnly.stub.copy(id = Some(stubId)), None))))
+      })
+    }
+
+    "should be able to create a stub and workflow content together" in {
+      val idOpt = PostgresDB.createContent(stubAndWorkflowContent)
+      idOpt.fold(fail("id should be inserted into the data store"))(stubId => {
+        PostgresDB.getContentById(stubId) should equal (Some((ContentItem(stubAndWorkflowContent.stub.copy(id = Some(stubId)), stubAndWorkflowContent.wcOpt))))
+        stubAndWorkflowContent.wcOpt.map(_.composerId).fold(fail("composerId should be defined"))(cId =>{
+          PostgresDB.existingItem(cId) should equal (Some(stubId))
+        })
+      })
+    }
+
+    "inserting an item twice should result in a None the second time" in {
+      val firstOperation = PostgresDB.createContent(stubAndWorkflowContent)
+      val secondOperation = PostgresDB.createContent(stubAndWorkflowContent)
+      secondOperation should equal (None)
+    }
   }
-
-//  "updateContent" in withContentItem(stubAndWorkflowContent) { ci =>
-//
-//  }
-
 }
