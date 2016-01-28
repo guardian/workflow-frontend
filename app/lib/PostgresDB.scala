@@ -89,10 +89,8 @@ object PostgresDB {
     }
   }
 
-  def existingItem(composerId: String): Option[Long] = {
-    DB.withTransaction { implicit session =>
-      (for (s <- stubs if s.composerId === composerId) yield s.pk).firstOption
-    }
+  def existingItem(composerId: String)(implicit session: Session): Option[Long] = {
+    (for (s <- stubs if s.composerId === composerId) yield s.pk).firstOption
   }
 
 
@@ -142,13 +140,22 @@ object PostgresDB {
     }
   }
 
-  def existing(id: Long): Option[(Long, Option[String])] = {
-    DB.withTransaction { implicit session =>
-      (for {
-        (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
-        if (s.pk === id)
-      } yield (s.pk, c.composerId.?)).firstOption
-    }
+  def existing(id: Long)(implicit session: Session): Option[(Long, Option[String])] = {
+    (for {
+      (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
+      if (s.pk === id)
+    } yield (s.pk, c.composerId.?)).firstOption
+  }
+
+  def updateStubRows(id: Long, stub: Stub)(implicit session: Session): Int = {
+    stubs
+      .filter(_.pk === id)
+      .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
+      .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
+  }
+
+  def insertWorkflowContet(wc: WorkflowContent)(implicit session: Session) = {
+    content += WorkflowContent.newContentRow(wc, None)
   }
 
   def updateContentItem(id: Long, c: ContentItem): Response[Long] = {
@@ -160,13 +167,10 @@ object PostgresDB {
           case (sId, None) => {
             val stub = c.stub
             try {
-              val updatedRow = stubs
-                .filter(_.pk === id)
-                .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
-                .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
+              val updatedRow = updateStubRows(id, stub)
               if (updatedRow == 0) Left(ApiErrors.updateError(id))
               else {
-                c.wcOpt.foreach(wc => content += WorkflowContent.newContentRow(wc, None))
+                c.wcOpt.foreach(insertWorkflowContet(_))
                 Right(ApiSuccess(id))
               }
             }

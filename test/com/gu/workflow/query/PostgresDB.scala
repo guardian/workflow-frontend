@@ -3,6 +3,7 @@ package com.gu.workflow.query
 import models.{Stub, ContentItem, Flag}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
+import play.api.db.DB
 import test.WorkflowIntegrationSuite
 import com.gu.workflow.test.lib.TestData._
 import lib.{ApiErrors, PostgresDB}
@@ -149,9 +150,6 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       val idOpt = PostgresDB.createContent(stubAndWorkflowContent)
       idOpt.fold(fail("id should be inserted into the data store"))(stubId => {
         PostgresDB.getContentById(stubId) should equal(Some(contentItemWithId(stubAndWorkflowContent, stubId)))
-        stubAndWorkflowContent.wcOpt.map(_.composerId).fold(fail("composerId should be defined"))(cId => {
-          PostgresDB.existingItem(cId) should equal(Some(stubId))
-        })
       })
     }
 
@@ -183,9 +181,6 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
           ci.stub.needsLegal should equal(updatedStub.needsLegal)
           ci.stub.note should equal(updatedStub.note)
         })
-
-        PostgresDB.existing(stubId) should equal (Some(stubId, None))
-
       })
     }
 
@@ -197,9 +192,6 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
         updatedStubDB.fold(fail("should retrieve content item"))({ ci =>
           ci.stub.title should equal (updatedContentItem.stub.title)
           ci.wcOpt should equal (updatedContentItem.wcOpt)
-
-          PostgresDB.existing(stubId) should equal (Some(stubId, ci.wcOpt.map(_.composerId)))
-
         })
       })
     }
@@ -207,22 +199,17 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     "should error if item with the same id attempts to be inserted twice" in withContentItem(stubOnly) { ci =>
       val updatedContentItem = randomContentItem(0.0)
       ci.stub.id.fold(fail("id should be inserted"))({ stubId =>
-        PostgresDB.existing(stubId) should equal (Some(stubId, None))
-        PostgresDB.updateContentItem(stubId, updatedContentItem)
-
-        PostgresDB.existing(stubId) should equal (Some(stubId, updatedContentItem.wcOpt.map(_.composerId)))
-        PostgresDB.updateContentItem(stubId, updatedContentItem) should equal(Left(ApiErrors.composerItemLinked(stubId, updatedContentItem.stub.composerId.get)))
+          PostgresDB.updateContentItem(stubId, updatedContentItem)
+          PostgresDB.updateContentItem(stubId, updatedContentItem) should equal(Left(ApiErrors.composerItemLinked(stubId, updatedContentItem.stub.composerId.get)))
       })
     }
 
     "should give an error if the stub doesn't exist" in {
       val nonExistentId = 1000L
-
-      PostgresDB.existing(nonExistentId) should equal (None)
       PostgresDB.updateContentItem(nonExistentId, stubOnly) should equal (Left(ApiErrors.updateError(nonExistentId)))
     }
 
-    
+
 
   }
 }
