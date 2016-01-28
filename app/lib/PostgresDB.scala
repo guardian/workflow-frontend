@@ -142,13 +142,18 @@ object PostgresDB {
     }
   }
 
-  def updateContentItem(id: Long, c: ContentItem): Response[Long] = {
+  def existing(id: Long): Option[(Long, Option[String])] = {
     DB.withTransaction { implicit session =>
-      val existingContentItem: Option[(Long, Option[String])] = (for {
+      (for {
         (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
         if (s.pk === id)
       } yield (s.pk, c.composerId.?)).firstOption
+    }
+  }
 
+  def updateContentItem(id: Long, c: ContentItem): Response[Long] = {
+    DB.withTransaction { implicit session =>
+      val existingContentItem  = existing(id)
       existingContentItem.map(cItem => {
         cItem match {
           case (sId, Some(composerId)) => Left(ApiErrors.composerItemLinked(sId, composerId))
