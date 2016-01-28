@@ -78,7 +78,7 @@ object PostgresDB {
   def createContent(contentItem: ContentItem): Option[Long] = {
     DB.withTransaction { implicit session =>
 
-      val existing = contentItem.wcOpt.flatMap(wc => (for (s <- stubs if s.composerId === wc.composerId) yield s.pk).firstOption)
+      val existing = contentItem.wcOpt.flatMap(wc => existingItem(wc.composerId))
 
       existing match {
         case Some(stubId) => None
@@ -91,6 +91,11 @@ object PostgresDB {
     }
   }
 
+  def existingItem(composerId: String): Option[Long] = {
+    DB.withTransaction { implicit session =>
+      (for (s <- stubs if s.composerId === composerId) yield s.pk).firstOption
+    }
+  }
 
 
   def getContentById(id: Long): Option[ContentItem] = {
