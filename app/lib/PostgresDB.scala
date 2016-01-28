@@ -69,11 +69,10 @@ object PostgresDB {
    *
    * @param stub
    * @param contentItem
-   * @return Either: Left(Long) if item exists already with composerId.
-   *         Right(Long) of newly created item.
+   * @return Option[Long]: None if item exists already with composerId.
+   *         Some(Long) of newly created item.
    */
 
-  /* TODO :- Return Option of Long with another function for the API response */
 
   def createContent(contentItem: ContentItem): Option[Long] = {
     DB.withTransaction { implicit session =>

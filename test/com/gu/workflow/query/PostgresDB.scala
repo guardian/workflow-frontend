@@ -157,4 +157,6 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       secondOperation should equal (None)
     }
   }
+
+  
 }
