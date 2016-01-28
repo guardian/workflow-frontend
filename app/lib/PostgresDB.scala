@@ -43,7 +43,6 @@ object PostgresDB {
     content
   }
 
-  //this wont work its current form.
   def getContentItemsDBRes(scFilters: (DBStub, DBContent) => Column[Option[Boolean]], collFilters: Option[(DBStub, DBCollaborator) => Column[Option[Boolean]]]) = {
     DB.withTransaction { implicit session =>
       val stubsAndContentQ = for {

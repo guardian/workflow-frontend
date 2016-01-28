@@ -1,6 +1,6 @@
 package com.gu.workflow.query
 
-import models.{ContentItem, Flag}
+import models.{Stub, ContentItem, Flag}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
 import test.WorkflowIntegrationSuite
@@ -12,6 +12,10 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
   val stubAndWorkflowContent = randomContentItem(0.0)
 
   val stubOnly = randomContentItem(1.0)
+
+  def contentItemWithId(c: ContentItem, stubId: Long) = {
+    ContentItem(c.stub.copy(id = Some(stubId)), c.wcOpt)
+  }
 
   "updateStubTrashed" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.id.fold(fail("should have an id defined"))(id => {
@@ -130,21 +134,21 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     "should be able to create a stub" in {
       val idOpt = PostgresDB.createContent(stubOnly)
       idOpt.fold(fail("id should be inserted into the data store"))(stubId => {
-        PostgresDB.getContentById(stubId) should equal (Some((ContentItem(stubOnly.stub.copy(id = Some(stubId)), None))))
+        PostgresDB.getContentById(stubId) should equal (Some(contentItemWithId(stubOnly, stubId)))
       })
     }
 
     "the same stub data can be inserted and new ids will be created" in {
       val idOpt = PostgresDB.createContent(stubOnly)
       idOpt.fold(fail("id should be inserted into the data store"))(stubId => {
-        PostgresDB.getContentById(stubId) should equal (Some((ContentItem(stubOnly.stub.copy(id = Some(stubId)), None))))
+        PostgresDB.getContentById(stubId) should equal (Some(contentItemWithId(stubOnly, stubId)))
       })
     }
 
     "should be able to create a stub and workflow content together" in {
       val idOpt = PostgresDB.createContent(stubAndWorkflowContent)
       idOpt.fold(fail("id should be inserted into the data store"))(stubId => {
-        PostgresDB.getContentById(stubId) should equal (Some((ContentItem(stubAndWorkflowContent.stub.copy(id = Some(stubId)), stubAndWorkflowContent.wcOpt))))
+        PostgresDB.getContentById(stubId) should equal (Some(contentItemWithId(stubAndWorkflowContent, stubId)))
         stubAndWorkflowContent.wcOpt.map(_.composerId).fold(fail("composerId should be defined"))(cId =>{
           PostgresDB.existingItem(cId) should equal (Some(stubId))
         })
@@ -152,11 +156,44 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     }
 
     "inserting an item twice should result in a None the second time" in {
-      val firstOperation = PostgresDB.createContent(stubAndWorkflowContent)
+      PostgresDB.createContent(stubAndWorkflowContent)
       val secondOperation = PostgresDB.createContent(stubAndWorkflowContent)
       secondOperation should equal (None)
     }
   }
 
-  
+  "updateContentItem" -  {
+    "should update specific fields of the stub"  in withContentItem(stubOnly) { ci =>
+      val updatedContentItem = randomContentItem(1.0)
+
+      ci.stub.id.fold(fail("id should be inserted"))(stubId => {
+        val updatedStub = updatedContentItem.stub
+        PostgresDB.updateContentItem(stubId, updatedContentItem)
+        val updatedStubDB = PostgresDB.getContentById(stubId)
+        updatedStubDB.fold(fail("should retrieve content item"))({ ci =>
+          ci.stub.title should equal (updatedStub.title)
+          ci.stub.section should equal (updatedStub.section)
+          ci.stub.due should equal (updatedStub.due)
+          ci.stub.assignee should equal (updatedStub.assignee)
+          ci.stub.assigneeEmail should equal (updatedStub.assigneeEmail)
+          ci.stub.composerId should equal (updatedStub.composerId)
+          ci.stub.contentType should equal (updatedStub.contentType)
+          ci.stub.priority should equal (updatedStub.priority)
+          ci.stub.prodOffice should equal (updatedStub.prodOffice)
+          ci.stub.needsLegal should equal (updatedStub.needsLegal)
+          ci.stub.note should equal (updatedStub.note)
+        })
+      })
+    }
+
+    //create stub with composerId - check default fields
+    "should create a default content item if composerId supplied" in {
+    }
+
+    //create stub with composerId TWICE
+
+    //
+  }
+
+
 }
