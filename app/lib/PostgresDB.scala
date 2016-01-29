@@ -10,7 +10,7 @@ import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.libs.json.{JsObject, Writes}
+import play.api.libs.json.{Json, JsObject, Writes}
 import scala.slick.collection.heterogenous._
 import syntax._
 import scala.slick.driver.PostgresDriver.simple._
@@ -73,7 +73,7 @@ object PostgresDB {
    */
 
 
-  def createContent(contentItem: ContentItem): Option[Long] = {
+  def createContent(contentItem: ContentItem): Option[ContentUpdate] = {
     DB.withTransaction { implicit session =>
 
       val existing = contentItem.wcOpt.flatMap(wc => existingItem(wc.composerId))
@@ -82,8 +82,8 @@ object PostgresDB {
         case Some(stubId) => None
         case None => {
           val stubId = ((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
-          contentItem.wcOpt.foreach(content += WorkflowContent.newContentRow(_, None))
-          Some(stubId)
+          val composerId = contentItem.wcOpt.map(content returning content.map(_.composerId) += WorkflowContent.newContentRow(_, None))
+          Some(ContentUpdate(stubId, composerId))
         }
       }
     }
@@ -140,11 +140,21 @@ object PostgresDB {
     }
   }
 
-  def existing(id: Long)(implicit session: Session): Option[(Long, Option[String])] = {
+  def existingWorkflowItem(id: Long)(implicit session: Session): Option[String] = {
     (for {
       (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
       if (s.pk === id)
-    } yield (s.pk, c.composerId.?)).firstOption
+    } yield c.composerId.?).firstOption.flatten
+  }
+
+  def getWorkflowItem(composerId: String): Option[String] = {
+    DB.withTransaction { implicit session =>
+      (for {
+        c <- content
+        if(c.composerId === composerId)
+      } yield c.composerId).firstOption
+    }
+
   }
 
   def updateStubRows(id: Long, stub: Stub)(implicit session: Session): Int = {
@@ -154,35 +164,34 @@ object PostgresDB {
       .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
   }
 
-  def insertWorkflowContet(wc: WorkflowContent)(implicit session: Session) = {
-    content += WorkflowContent.newContentRow(wc, None)
+  def insertWorkflowContet(wc: WorkflowContent)(implicit session: Session): String = {
+    content returning content.map(_.composerId) += WorkflowContent.newContentRow(wc, None)
   }
 
-  def updateContentItem(id: Long, c: ContentItem): Response[Long] = {
+
+
+  def updateContentItem(id: Long, c: ContentItem): Response[ContentUpdate] = {
     DB.withTransaction { implicit session =>
-      val existingContentItem  = existing(id)
-      existingContentItem.map(cItem => {
-        cItem match {
-          case (sId, Some(composerId)) => Left(ApiErrors.composerItemLinked(sId, composerId))
-          case (sId, None) => {
-            val stub = c.stub
-            try {
-              val updatedRow = updateStubRows(id, stub)
-              if (updatedRow == 0) Left(ApiErrors.updateError(id))
-              else {
-                c.wcOpt.foreach(insertWorkflowContet(_))
-                Right(ApiSuccess(id))
-              }
-            }
-            catch {
-              case sqle: SQLException=> {
-                Logger.error(s"Error updating stub with id ${id}, ${sqle.getMessage()}")
-                Left(ApiErrors.databaseError(sqle.getMessage()))
-              }
+      val existingContentItem  = existingWorkflowItem(id)
+      existingContentItem.fold({
+          val stub = c.stub
+          try {
+            val updatedRow = updateStubRows(id, stub)
+            if (updatedRow == 0) Left(ApiErrors.updateError(id))
+            else {
+              val insertedId = c.wcOpt.map(insertWorkflowContet(_))
+              Right(ApiSuccess(ContentUpdate(id, insertedId)))
             }
           }
-        }
-      }).getOrElse(Left(ApiErrors.updateError(id)))
+          catch {
+            case sqle: SQLException=> {
+              Logger.error(s"Error updating stub with id ${id}, ${sqle.getMessage()}")
+              Left(ApiErrors.databaseError(sqle.getMessage()))
+            }
+          }
+      })({ cId =>
+        Left(ApiErrors.composerItemLinked(id, cId))
+      })
     }
   }
 
