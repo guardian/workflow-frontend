@@ -220,4 +220,18 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       })
     }
   }
+  "deleteContent should remove from stub and content table" in withContentItem(stubAndWorkflowContent) { ci =>
+    ci.stub.id.fold(fail("id should be inserted"))({ stubId =>
+      PostgresDB.deleteStub(stubId)
+
+      PostgresDB.getContentById(stubId) should equal (None)
+      ci.wcOpt.map(_.composerId).fold(())({ cId =>
+        PostgresDB.getWorkflowItem(cId) should equal (None)
+      })
+
+    })
+
+  }
+
+
 }
