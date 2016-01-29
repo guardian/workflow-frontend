@@ -1,6 +1,14 @@
 package lib
 
 import lib.Response._
+import play.api.libs.json.Json
+
+case class ContentUpdate(stubId: Long, composerId: Option[String])
+
+object ContentUpdate {
+  implicit val jsonFormats = Json.format[ContentUpdate]
+
+}
 
 object DBToAPIResponse {
 
@@ -14,7 +22,7 @@ object DBToAPIResponse {
     else Right(ApiSuccess(id))
   }
 
-  def createContentResponse(id: Option[Long]): Response[Long] = {
+  def createContentResponse(id: Option[ContentUpdate]): Response[ContentUpdate] = {
     id match {
       case Some(i) => Right(ApiSuccess(i))
       case None => Left(ApiErrors.conflict)
