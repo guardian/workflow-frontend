@@ -57,4 +57,14 @@ class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite wi
 
     SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should equal (sectionsTwoIds)
   }
+
+  "Should return all section and desk mappings" in {
+    val desks = generateDesks().map(createDesk(_))
+    val sections = generateSections().map(createSection(_)).toList
+
+    desks.map(desk => SectionDeskMappingDB.assignSectionsToDesk(desk.id, sections.map(_.id)))
+
+    SectionDeskMappingDB.getSectionsInDesks(sections) should equal (desks.map(d => SectionsInDeskMapping(d.id,sections.map(_.id))))
+  }
+
 }
