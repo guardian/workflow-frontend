@@ -1,6 +1,6 @@
 package com.gu.workflow.admin
 
-import com.gu.workflow.db.{DeskAndSection, SectionDeskMappingDB}
+import com.gu.workflow.db.{SectionsInDeskMapping, DeskAndSection, SectionDeskMappingDB}
 import com.gu.workflow.test.CommonDBIntegrationSuite
 import org.scalatest.{Matchers, FreeSpec}
 import com.gu.workflow.test.lib.TestData._
