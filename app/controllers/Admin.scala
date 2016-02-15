@@ -67,56 +67,6 @@ object Admin extends Controller with PanDomainAuthActions {
     Ok(views.html.admin.newsLists(NewsListDB.newsListList.sortBy(newsList => newsList.title), addNewsListForm, SectionDB.sectionList))
   }
 
-  def syncComposer = (AuthAction andThen WhiteListAuthFilter) {
-    val q = WfQuery()
-    val visibleContent = PostgresDB.getContentItems(q)
-    Ok(views.html.syncComposer(visibleContent.size))
-  }
-
-
-  def syncComposerPost = (AuthAction andThen WhiteListAuthFilter) { req =>
-    val q = WfQuery()
-    val visibleContent = PostgresDB.getContentItems(q)
-    val contentIds = visibleContent.flatMap(_.wcOpt.map(_.composerId))
-    val composerDomain = PrototypeConfiguration.cached.composerUrl
-    val composerUrl = composerDomain + "/api/content/"
-    val cookie = req.headers.get("Cookie").getOrElse("")
-
-    import play.api.Play.current
-    Logger.info(s"updating ${contentIds.size}")
-    def recursiveCallComposer(contentIds: List[String]): Unit = contentIds match {
-      case contentId :: tail => {
-        Logger.info(s"updating $contentId")
-
-        WS.url(composerUrl + contentId + "?includePreview=true").withHeaders(("Cookie", cookie)).get() onComplete {
-          case Success(res) if (res.status == 200) => {
-            CommonDB.getContentForComposerId(contentId).map { wfContent =>
-              ContentUpdateEvent.readFromApi(res.json, wfContent) match {
-                case JsSuccess(contentEvent, _) =>  {
-                  Logger.info(s"published: ${contentEvent.published} @ ${contentEvent.publicationDate} (revision: ${contentEvent.revision})")
-                  CommonDB.updateContentFromUpdateEvent(contentEvent)
-                }
-                case JsError(error) => Logger.error(s"error parsing composer api ${error} with contentId ${contentId}")
-              }
-              recursiveCallComposer(tail)
-            }
-
-          }
-          case Success(res) => {
-            Logger.error(s"received status ${res.status} from composer for content item ${contentId}")
-            recursiveCallComposer(tail)
-          }
-          case Failure(error) => {
-            Logger.error(s"error calling composer api ${error} with contentId ${contentId}")
-            recursiveCallComposer(tail)
-          }
-        }
-      }
-      case Nil => ()
-    }
-    recursiveCallComposer(contentIds)
-    Redirect("/admin/syncComposer")
-  }
 
 
   val addSectionForm = Form(
