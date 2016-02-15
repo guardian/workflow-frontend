@@ -2,6 +2,7 @@ package com.gu.workflow.admin
 
 import com.gu.workflow.db.{SectionsInDeskMapping, DeskAndSection, SectionDeskMappingDB}
 import com.gu.workflow.test.CommonDBIntegrationSuite
+import models.Section
 import org.scalatest.{Matchers, FreeSpec}
 import com.gu.workflow.test.lib.TestData._
 
@@ -26,7 +27,7 @@ class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite wi
     ))
   }
 
-  "Should return a list of desk and sections relations when searched by desk id" in {
+  "getMappingByDeskId should return a list of desk and sections relations when searched by desk id" in {
     val desk = createDesk(generateDesk())
     val sections = generateSections().map(createSection(_)).toList
     val sectionsWithMapping = sections.take(2)
@@ -37,11 +38,16 @@ class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite wi
 
     SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should equal (sectionsWithMapping.map(_.id))
 
-    val selectedSections = SectionDeskMappingDB.showSelectedDesks(sectionsWithMapping.map(_.id), sections)
-    val (selected, notSelected) = selectedSections.partition(s => sectionsWithMapping.map(_.id).contains(s.id))
-    selected.map(_.selected) should equal (List(true, true))
-    notSelected.map(_.selected) should equal (List(false, false, false))
+  }
 
+  "showSelectedDesks should set the selected variable in section to true id if present in desks and section" in {
+    val sectionOne = Section("section1", false, 1L)
+    val sectionTwo = Section("section2", false, 2L)
+    val sectionTwoWithMapping = Section("section2", true, 2L)
+    
+    val sections = List(sectionOne, sectionTwo)
+
+    SectionDeskMappingDB.showSelectedDesks(List(2L), sections) should equal (List(sectionOne, sectionTwoWithMapping))
   }
 
   "assignSectionsToDesk a list of sections to a desk should result in desk and sections being mapped" in {
