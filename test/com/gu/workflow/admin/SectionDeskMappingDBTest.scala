@@ -7,7 +7,7 @@ import com.gu.workflow.test.lib.TestData._
 
 class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite with Matchers {
 
-  "Should be able to add a mapping from desk to section and retrieve by id" in {
+  "Should be able to insert a desk and section mapping" in {
     val desk = createDesk(generateDesk())
     val section = createSection(generateSection())
     SectionDeskMappingDB.insertSectionAndDeskMapping(desk.id, section.id) should equal (1)
@@ -26,7 +26,7 @@ class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite wi
     ))
   }
 
-  "Should return a list of sections with selected set for true where a mapping exists" in {
+  "Should return a list of desk and sections relations when searched by desk id" in {
     val desk = createDesk(generateDesk())
     val sections = generateSections().map(createSection(_)).toList
     val sectionsWithMapping = sections.take(2)
@@ -44,7 +44,7 @@ class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite wi
 
   }
 
-  "Should update desk and section mapping" in {
+  "assignSectionsToDesk a list of sections to a desk should result in desk and sections being mapped" in {
     val desk = createDesk(generateDesk())
     val sectionsOneIds = generateSections().map(createSection(_)).map(_.id).toList
     val sectionsTwoIds = generateSections().map(createSection(_)).map(_.id).toList
@@ -58,7 +58,22 @@ class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite wi
     SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should equal (sectionsTwoIds)
   }
 
-  "Should return all section and desk mappings" in {
+  "assignSectionsToDesk a list of sections to a desk should unmap existing mappings and create new mappings" in {
+    val desk = createDesk(generateDesk())
+    val sectionsOneIds = generateSections().map(createSection(_)).map(_.id).toList
+    val sectionsTwoIds = generateSections().map(createSection(_)).map(_.id).toList
+
+    SectionDeskMappingDB.assignSectionsToDesk(desk.id, sectionsOneIds)
+
+    SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should equal (sectionsOneIds)
+
+    SectionDeskMappingDB.assignSectionsToDesk(desk.id, sectionsTwoIds)
+
+    SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should equal (sectionsTwoIds)
+  }
+
+
+  "getAllSectionDeskMapping should return a list of desks and sections" in {
     val desks = generateDesks().map(createDesk(_))
     val sections = generateSections().map(createSection(_)).toList
 
@@ -67,6 +82,23 @@ class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite wi
     desks.map(desk => SectionDeskMappingDB.assignSectionsToDesk(desk.id, sections.map(_.id)))
 
     SectionDeskMappingDB.getAllSectionDeskMapping should contain theSameElementsAs (desksAndSections)
+  }
+
+  "getSectionsInDesks should serialise desks and sections into sections in sections in desk mappings" in {
+    val deskIdOne = 1L
+    val deskIdTwo = 2L
+    val sectionIdOne = 1L
+    val sectionIdTwo = 2L
+    val sectionIdThree = 3L
+
+    val desksAndSections = List(DeskAndSection(sectionIdOne, deskIdOne),
+                                DeskAndSection(sectionIdTwo, deskIdOne),
+                                DeskAndSection(sectionIdThree, deskIdTwo))
+
+    val sectionAndDesksMapping = List(SectionsInDeskMapping(deskIdOne, List(sectionIdOne, sectionIdTwo)),
+                                      SectionsInDeskMapping(deskIdTwo, List(sectionIdThree)))
+
+    SectionDeskMappingDB.deskAndSectionsToMapping(desksAndSections) should contain theSameElementsAs (sectionAndDesksMapping)
   }
 
 
