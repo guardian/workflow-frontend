@@ -44,7 +44,7 @@ class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite wi
     val sectionOne = Section("section1", false, 1L)
     val sectionTwo = Section("section2", false, 2L)
     val sectionTwoWithMapping = Section("section2", true, 2L)
-    
+
     val sections = List(sectionOne, sectionTwo)
 
     SectionDeskMappingDB.showSelectedDesks(List(2L), sections) should equal (List(sectionOne, sectionTwoWithMapping))
@@ -53,29 +53,27 @@ class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite wi
   "assignSectionsToDesk a list of sections to a desk should result in desk and sections being mapped" in {
     val desk = createDesk(generateDesk())
     val sectionsOneIds = generateSections().map(createSection(_)).map(_.id).toList
-    val sectionsTwoIds = generateSections().map(createSection(_)).map(_.id).toList
 
     SectionDeskMappingDB.assignSectionsToDesk(desk.id, sectionsOneIds)
 
-    SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should equal (sectionsOneIds)
+    SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should contain theSameElementsAs (sectionsOneIds)
 
-    SectionDeskMappingDB.assignSectionsToDesk(desk.id, sectionsTwoIds)
-
-    SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should equal (sectionsTwoIds)
   }
 
-  "assignSectionsToDesk a list of sections to a desk should unmap existing mappings and create new mappings" in {
+  "re assignSectionsToDesk a list of sections to a desk should unmap existing mappings and create new mappings" in {
     val desk = createDesk(generateDesk())
-    val sectionsOneIds = generateSections().map(createSection(_)).map(_.id).toList
-    val sectionsTwoIds = generateSections().map(createSection(_)).map(_.id).toList
 
-    SectionDeskMappingDB.assignSectionsToDesk(desk.id, sectionsOneIds)
+    val sectionOne = createSection(generateSection()).id
+    val sectionTwo = createSection(generateSection()).id
+    val sectionThree = createSection(generateSection()).id
 
-    SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should equal (sectionsOneIds)
+    SectionDeskMappingDB.assignSectionsToDesk(desk.id, List(sectionOne, sectionTwo))
 
-    SectionDeskMappingDB.assignSectionsToDesk(desk.id, sectionsTwoIds)
+    SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should equal (List(sectionOne, sectionTwo))
 
-    SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should equal (sectionsTwoIds)
+    SectionDeskMappingDB.assignSectionsToDesk(desk.id, List(sectionTwo, sectionThree))
+
+    SectionDeskMappingDB.getMappingByDeskId(desk.id).map(_.sectionId) should contain theSameElementsAs (List(sectionTwo, sectionThree))
   }
 
 
