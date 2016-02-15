@@ -6,9 +6,9 @@ import com.gu.workflow.test.lib.TestData._
 import org.scalatest.{Matchers, FreeSpec}
 
 class SectionDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matchers {
-
+  val sectionsInsertedBySchema = List("Cities", "Technology", "Dev")
   "Should retrieve sections" in withSectionsTestData(generateSections()) { dataInserted =>
-    SectionDB.sectionList.map(_.name) should equal("Cities" :: "Technology" :: "Dev" :: dataInserted.map(_.name))
+    SectionDB.sectionList.map(_.name).filter(s => !sectionsInsertedBySchema.contains(s)) should equal  (dataInserted.map(_.name))
   }
 
   "Should insert a section with a unique name" in {
