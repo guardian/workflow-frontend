@@ -92,8 +92,6 @@ GET            /api/v1/docs/archive                        controllers.ApiHelpCo
 # Admin
 GET            /admin                                      controllers.Admin.index
 GET            /admin/desks-and-sections                   controllers.Admin.desksAndSections(selectedDesk: Option[Long])
-GET            /admin/syncComposer                         controllers.Admin.syncComposer
-POST           /admin/syncComposer                         controllers.Admin.syncComposerPost
 
 POST           /admin/sections                             controllers.Admin.addSection
 DELETE         /admin/sections                             controllers.Admin.removeSection
