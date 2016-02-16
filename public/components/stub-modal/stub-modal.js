@@ -220,12 +220,17 @@ wfStubModal.run([
     'wfFiltersService',
     'wfProdOfficeService',
     'wfPreferencesService',
+    'wfLocationService',
     'sections',
     'config',
-    function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, wfPreferencesService, sections, config) {
+    function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, wfPreferencesService, wfLocationService, sections, config) {
 
         function currentFilteredOffice() {
             return wfFiltersService.get('prodOffice');
+        }
+
+        function guessCurrentOffice() {
+            return wfProdOfficeService.timezoneToOffice(wfLocationService.getCurrentLocation().id);
         }
 
         /**
@@ -245,7 +250,7 @@ wfStubModal.run([
                     section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
                     priority: 0,
                     needsLegal: 'NA',
-                    prodOffice: currentFilteredOffice() ||  'UK'
+                    prodOffice: currentFilteredOffice() ||  guessCurrentOffice()
                 };
             }
 
