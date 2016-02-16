@@ -1,9 +1,0 @@
-@(contentItems: Int)
-@layout("SyncComposer") {
-<div class="login-page">
-    <p>This will call composer api and sync up @contentItems content items</p>
-    <form action="@routes.Admin.syncComposer" method="POST">
-        <button class="login-page__login-button" type="submit">Sync Composer</button>
-    </form>
-</div>
-}
