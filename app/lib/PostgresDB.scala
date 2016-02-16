@@ -291,7 +291,7 @@ object PostgresDB {
   def deleteStub(id: Long): Response[Long] = {
     DB.withTransaction { implicit session =>
 
-      archiveContentQuery((s, c) => s.pk === id)
+      composerIdsForQuery((s, c) => s.pk === id)
 
       val queryCurrentStub = stubs.filter(_.pk === id)
 
