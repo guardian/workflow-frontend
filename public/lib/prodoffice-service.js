@@ -15,12 +15,12 @@ define(['angular'], function (angular) {
                 "default": "UK"
             }
 
-            function officeToTimezone(office) {
+            function timezoneToOffice(office) {
                 if (office && tz_office[office]) return tz_office[office]
                 else return tz_office["default"];
             }
 
-            var curDefaultOffice = officeToTimezone(wfLocationService.getLocationKey());
+            var curDefaultOffice = timezoneToOffice(wfLocationService.getLocationKey());
 
             function getDefaultOffice() {
                 return curDefaultOffice;
@@ -35,12 +35,13 @@ define(['angular'], function (angular) {
             };
 
             var prodOffices = {
+                timezoneToOffice: timezoneToOffice,
                 getProdOffices: getProdOffices,
                 getDefaultOffice: getDefaultOffice
             };
 
             $rootScope.$on('location:change', function (ev, newValue, oldValue) {
-                curDefaultOffice = officeToTimezone(newValue);
+                curDefaultOffice = timezoneToOffice(newValue);
             })
 
             return prodOffices;
