@@ -290,9 +290,6 @@ object PostgresDB {
   //todo - rename to delete contentitem
   def deleteStub(id: Long): Response[Long] = {
     DB.withTransaction { implicit session =>
-
-      composerIdsForQuery((s, c) => s.pk === id)
-
       val queryCurrentStub = stubs.filter(_.pk === id)
 
       // Delete from Content table
