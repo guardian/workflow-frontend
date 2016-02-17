@@ -10,6 +10,7 @@ define(['angular'], function (angular) {
              * office */
             var tz_office = {
                 "NYC": "US",
+                "SFO": "US",
                 "SYD": "AU",
                 "LON": "UK",
                 "default": "UK"
