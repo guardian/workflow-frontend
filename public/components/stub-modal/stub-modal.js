@@ -229,7 +229,7 @@ wfStubModal.run([
             return wfFiltersService.get('prodOffice');
         }
 
-        function guessCurrentOffice() {
+        function guessCurrentOfficeFromTimezone() {
             return wfProdOfficeService.timezoneToOffice(wfLocationService.getCurrentLocation().id);
         }
 
@@ -250,7 +250,7 @@ wfStubModal.run([
                     section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
                     priority: 0,
                     needsLegal: 'NA',
-                    prodOffice: currentFilteredOffice() ||  guessCurrentOffice()
+                    prodOffice: currentFilteredOffice() ||  guessCurrentOfficeFromTimezone()
                 };
             }
 
