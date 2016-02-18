@@ -5,6 +5,13 @@ import play.api.libs.json.Json
 
 case class ContentUpdate(stubId: Long, composerId: Option[String], updatedRows: Int)
 
+sealed trait ContentUpdateError
+
+case class DatabaseError(message: String) extends ContentUpdateError
+case object ContentItemExists extends ContentUpdateError
+case class StubNotFound(id: Long) extends ContentUpdateError
+  case class ComposerIdsConflict(stubComposerId: Option[String], wcComposerId: Option[String]) extends ContentUpdateError
+
 object ContentUpdate {
   implicit val jsonFormats = Json.format[ContentUpdate]
 
@@ -29,10 +36,13 @@ object DBToAPIResponse {
     }
   }
 
-  def updateContentResponse(cuOpt: Option[ContentUpdate]): Response[ContentUpdate] = {
-    cuOpt match {
-      case Some(cu) => if(cu.updatedRows==0) Left(ApiErrors.updateError(cu.stubId)) else Right(ApiSuccess(cu))
-      case None => Left(ApiErrors.conflict)
+  def updateContentResponse(cuEit: Either[ContentUpdateError, ContentUpdate]): Response[ContentUpdate] = {
+    cuEit match {
+      case Left(db: DatabaseError) => Left(ApiErrors.databaseError(db.message))
+      case Left(ContentItemExists) => Left(ApiErrors.conflict)
+      case Left(s: StubNotFound) => Left(ApiErrors.updateError(s.id))
+      case Left(c: ComposerIdsConflict) => Left(ApiErrors.conflict)
+      case Right(cu) => Right(ApiSuccess(cu))
     }
 
   }

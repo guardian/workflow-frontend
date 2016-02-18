@@ -164,8 +164,13 @@ object PostgresDB {
         .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
   }
 
-  def insertWorkflowContet(wc: WorkflowContent)(implicit session: Session): String = {
-    content returning content.map(_.composerId) += WorkflowContent.newContentRow(wc, None)
+  def insertWorkflowContet(wc: WorkflowContent)(implicit session: Session): Either[DatabaseError, String] = {
+    try {
+      Right(content returning content.map(_.composerId) += WorkflowContent.newContentRow(wc, None))
+    }
+    catch {
+      case sqle: SQLException => Left(DatabaseError(sqle.getMessage()))
+    }
   }
 
   def validateContentItemForUpsert(contentItem: ContentItem) = {
@@ -173,35 +178,38 @@ object PostgresDB {
   }
 
 
-  def updateContentItem(id: Long, c: ContentItem): Option[ContentUpdate] = {
-    if(validateContentItemForUpsert(c)) {
-      Logger.error(s"composerId on stub ${c.stub.composerId} does not equal on wc ${c.wcOpt.map(_.composerId)}")
-      None
-    }
+  def updateContentItem(id: Long, c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
+    if(validateContentItemForUpsert(c)) Left(ComposerIdsConflict(c.stub.composerId, c.wcOpt.map(_.composerId)))
     else {
-      DB.withTransaction { implicit session =>
-        c match {
-          case ContentItem(stub, None) => {
-            val updatedRows = updateStubRows(id, stub)
-            Some(ContentUpdate(id, None, updatedRows))
-          }
-          case ContentItem(stub, Some(wc)) => {
-            updateStubAndInsertWc(id, stub, wc)
-          }
-        }
-      }
+      updateContentItemDB(id, c)
     }
   }
 
-  def updateStubAndInsertWc(id: Long, stub: Stub, wc: WorkflowContent)(implicit session: Session): Option[ContentUpdate] = {
+
+  private def updateContentItemDB(id: Long, c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
+    DB.withTransaction { implicit session =>
+      c match {
+        case ContentItem(stub, None) => {
+          val updatedRows = updateStubRows(id, stub)
+          if(updatedRows==0) Left(StubNotFound(id))
+          else Right(ContentUpdate(id, None, updatedRows))
+        }
+        case ContentItem(stub, Some(wc)) => {
+          updateStubAndInsertWc(id, stub, wc)
+        }
+      }
+    }
+
+  }
+
+  private def updateStubAndInsertWc(id: Long, stub: Stub, wc: WorkflowContent)(implicit session: Session): Either[ContentUpdateError, ContentUpdate] = {
     val existingContentItem = existingWorkflowItem(id)
-    if(existingContentItem.isDefined) None
+    if(existingContentItem.isDefined) Left(ContentItemExists)
     else {
       val i = updateStubRows(id, stub)
-      if(i==0) Some(ContentUpdate(id, None, 0))
+      if(i==0) Left(StubNotFound(id))
       else {
-        val insertedId = insertWorkflowContet(wc)
-        Some(ContentUpdate(id, Some(insertedId), i))
+        insertWorkflowContet(wc).right.map(insertedId => ContentUpdate(id, Some(insertedId), i))
       }
     }
   }
