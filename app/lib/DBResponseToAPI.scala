@@ -3,7 +3,7 @@ package lib
 import lib.Response._
 import play.api.libs.json.Json
 
-case class ContentUpdate(stubId: Long, composerId: Option[String], updatedRows: Int)
+case class ContentUpdate(stubId: Long, composerId: Option[String])
 
 sealed trait ContentUpdateError
 
@@ -29,14 +29,7 @@ object DBToAPIResponse {
     else Right(ApiSuccess(id))
   }
 
-  def createContentResponse(id: Option[ContentUpdate]): Response[ContentUpdate] = {
-    id match {
-      case Some(i) => Right(ApiSuccess(i))
-      case None => Left(ApiErrors.conflict)
-    }
-  }
-
-  def updateContentResponse(cuEit: Either[ContentUpdateError, ContentUpdate]): Response[ContentUpdate] = {
+  def upsertContentResponse(cuEit: Either[ContentUpdateError, ContentUpdate]): Response[ContentUpdate] = {
     cuEit match {
       case Left(db: DatabaseError) => Left(ApiErrors.databaseError(db.message))
       case Left(ContentItemExists) => Left(ApiErrors.conflict)
