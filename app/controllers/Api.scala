@@ -281,7 +281,7 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def deleteContent(composerId: String) = APIAuthAction {
-    CommonDB.removeFromUI(composerId)
+    CommonDB.deleteContent(Seq(composerId))
     NoContent
   }
 
