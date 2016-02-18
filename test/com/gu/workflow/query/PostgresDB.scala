@@ -10,9 +10,9 @@ import lib._
 
 class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
-  val stubAndWorkflowContent = randomContentItem(0.0)
+  val stubAndWorkflowContent = randomStubAndWC
 
-  val stubOnly = randomContentItem(1.0)
+  val stubOnly = randomStub
 
   def contentItemWithId(c: ContentItem, stubId: Long) = {
     ContentItem(c.stub.copy(id = Some(stubId)), c.wcOpt)
@@ -203,11 +203,11 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
     }
 
     "should return none if item with the same id attempts to be inserted twice" in withContentItem(stubOnly) { ci =>
-      val updatedContentItem = randomContentItem(0.0)
-      val composerId = updatedContentItem.wcOpt.map(_.composerId)
+      val contentItemToUpdate = randomStubAndWC
+      val composerId = contentItemToUpdate.wcOpt.map(_.composerId)
       ci.stub.id.fold(fail("id should be inserted"))({ stubId =>
-          PostgresDB.updateContentItem(stubId, updatedContentItem) should equal (Some(ContentUpdate(stubId,composerId, 1)))
-          PostgresDB.updateContentItem(stubId, updatedContentItem) should equal (None)
+          PostgresDB.updateContentItem(stubId, contentItemToUpdate) should equal (Some(ContentUpdate(stubId,composerId, 1)))
+          PostgresDB.updateContentItem(stubId, contentItemToUpdate) should equal (None)
       })
     }
 
@@ -225,7 +225,29 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       })
     }
 
-    
+    "updating a content item with different composerIds should return a None" in withContentItem(stubOnly) { ci =>
+      val toUpdate = randomStubAndWC
+      val diffIds = ContentItem(toUpdate.stub.copy(composerId = Some("sdfhhsdkjfhs")), toUpdate.wcOpt)
+      ci.stub.id.fold(fail("id should be inserted"))({ stubId =>
+        PostgresDB.updateContentItem(stubId, diffIds) should equal (None)
+      })
+    }
+
+    "updating a stub with composerId defined and no wc" in withContentItem(stubOnly) { ci =>
+      val toUpdate = randomStub
+      val stubWithComposerId = ContentItem(toUpdate.stub.copy(composerId = Some("sdfhhsdkjfhs")), None)
+      ci.stub.id.fold(fail("id should be inserted"))({ stubId =>
+        PostgresDB.updateContentItem(stubId, stubWithComposerId) should equal (None)
+      })
+    }
+
+    "updating a stub without composerId and wc is defined" in withContentItem(stubOnly) { ci =>
+      val toUpdate = randomStubAndWC
+      val noComposerId = ContentItem(toUpdate.stub.copy(composerId = None), toUpdate.wcOpt)
+      ci.stub.id.fold(fail("id should be inserted"))({ stubId =>
+        PostgresDB.updateContentItem(stubId, noComposerId) should equal (None)
+      })
+    }
   }
 
 

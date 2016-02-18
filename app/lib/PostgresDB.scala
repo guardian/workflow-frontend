@@ -157,28 +157,37 @@ object PostgresDB {
 
   }
 
-  def updateStubRows(id: Long, stub: Stub)(implicit session: Session): Int = {
-    stubs
-      .filter(_.pk === id)
-      .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
-      .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
+  def updateStubRows(id: Long, stub: Stub)(implicit session: Session):  Int = {
+      stubs
+        .filter(_.pk === id)
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
   }
 
   def insertWorkflowContet(wc: WorkflowContent)(implicit session: Session): String = {
     content returning content.map(_.composerId) += WorkflowContent.newContentRow(wc, None)
   }
 
+  def validateContentItemForUpsert(contentItem: ContentItem) = {
+    contentItem.stub.composerId != contentItem.wcOpt.map(_.composerId)
+  }
 
 
   def updateContentItem(id: Long, c: ContentItem): Option[ContentUpdate] = {
-    DB.withTransaction { implicit session =>
-      c match {
-        case ContentItem(stub, None) => {
-          val updatedRows = updateStubRows(id, stub)
-          Some(ContentUpdate(id, None, updatedRows))
-        }
-        case ContentItem(stub, Some(wc)) => {
-          updateStubAndInsertWc(id, stub, wc)
+    if(validateContentItemForUpsert(c)) {
+      Logger.error(s"composerId on stub ${c.stub.composerId} does not equal on wc ${c.wcOpt.map(_.composerId)}")
+      None
+    }
+    else {
+      DB.withTransaction { implicit session =>
+        c match {
+          case ContentItem(stub, None) => {
+            val updatedRows = updateStubRows(id, stub)
+            Some(ContentUpdate(id, None, updatedRows))
+          }
+          case ContentItem(stub, Some(wc)) => {
+            updateStubAndInsertWc(id, stub, wc)
+          }
         }
       }
     }
