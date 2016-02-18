@@ -3,7 +3,7 @@ package lib
 import lib.Response._
 import play.api.libs.json.Json
 
-case class ContentUpdate(stubId: Long, composerId: Option[String])
+case class ContentUpdate(stubId: Long, composerId: Option[String], updatedRows: Int)
 
 object ContentUpdate {
   implicit val jsonFormats = Json.format[ContentUpdate]
@@ -27,6 +27,14 @@ object DBToAPIResponse {
       case Some(i) => Right(ApiSuccess(i))
       case None => Left(ApiErrors.conflict)
     }
+  }
+
+  def updateContentResponse(cuOpt: Option[ContentUpdate]): Response[ContentUpdate] = {
+    cuOpt match {
+      case Some(cu) => if(cu.updatedRows==0) Left(ApiErrors.updateError(cu.stubId)) else Right(ApiSuccess(cu))
+      case None => Left(ApiErrors.conflict)
+    }
+
   }
 
 }

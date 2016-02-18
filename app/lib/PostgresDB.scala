@@ -83,7 +83,7 @@ object PostgresDB {
         case None => {
           val stubId = ((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
           val composerId = contentItem.wcOpt.map(content returning content.map(_.composerId) += WorkflowContent.newContentRow(_, None))
-          Some(ContentUpdate(stubId, composerId))
+          Some(ContentUpdate(stubId, composerId, updatedRows=0))
         }
       }
     }
@@ -170,28 +170,30 @@ object PostgresDB {
 
 
 
-  def updateContentItem(id: Long, c: ContentItem): Response[ContentUpdate] = {
+  def updateContentItem(id: Long, c: ContentItem): Option[ContentUpdate] = {
     DB.withTransaction { implicit session =>
-      val existingContentItem  = existingWorkflowItem(id)
-      existingContentItem.fold({
-          val stub = c.stub
-          try {
-            val updatedRow = updateStubRows(id, stub)
-            if (updatedRow == 0) Left(ApiErrors.updateError(id))
-            else {
-              val insertedId = c.wcOpt.map(insertWorkflowContet(_))
-              Right(ApiSuccess(ContentUpdate(id, insertedId)))
-            }
-          }
-          catch {
-            case sqle: SQLException=> {
-              Logger.error(s"Error updating stub with id ${id}, ${sqle.getMessage()}")
-              Left(ApiErrors.databaseError(sqle.getMessage()))
-            }
-          }
-      })({ cId =>
-        Left(ApiErrors.composerItemLinked(id, cId))
-      })
+      c match {
+        case ContentItem(stub, None) => {
+          val updatedRows = updateStubRows(id, stub)
+          Some(ContentUpdate(id, None, updatedRows))
+        }
+        case ContentItem(stub, Some(wc)) => {
+          updateStubAndInsertWc(id, stub, wc)
+        }
+      }
+    }
+  }
+
+  def updateStubAndInsertWc(id: Long, stub: Stub, wc: WorkflowContent)(implicit session: Session): Option[ContentUpdate] = {
+    val existingContentItem = existingWorkflowItem(id)
+    if(existingContentItem.isDefined) None
+    else {
+      val i = updateStubRows(id, stub)
+      if(i==0) Some(ContentUpdate(id, None, 0))
+      else {
+        val insertedId = insertWorkflowContet(wc)
+        Some(ContentUpdate(id, Some(insertedId), i))
+      }
     }
   }
 
