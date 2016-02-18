@@ -17,20 +17,6 @@ trait WorkflowApi {
   val composerUrl = PrototypeConfiguration.apply.composerUrl
   val apiBaseUrl  = "/api/v1/"
 
-  def contentMovedToArchive(c: ArchiveContent) =
-    ApiError("ContentMovedToArchive", "Content has been moved to archive", 404, "archived",
-      Some(
-        JsObject(
-          "archive" -> JsObject(
-            "uri" -> JsString(s"${apiBaseUrl}archive/${c.stubId}") ::
-            "data" -> Json.toJson(c) ::
-            Nil
-          ) ::
-          Nil
-        )
-      )
-    )
-
   def allowCORSAccess(methods: String, args: Any*) = CORSable(composerUrl) {
     Action { implicit req =>
       val requestedHeaders = req.headers("Access-Control-Request-Headers")
@@ -58,7 +44,7 @@ trait WorkflowApi {
     }
   }
 
-  /* JsError's may contain a number of different errors for differnt
+  /* JsError's may contain a number of different errors for different
    * paths. This will aggregate them into a single string */
   def errorMsgs(error: JsError) =
     (for ((path, msgs) <- error.errors; msg <- msgs)
