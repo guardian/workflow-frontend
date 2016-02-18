@@ -63,29 +63,28 @@ object PostgresDB {
     }
   }
 
-  /**
-   * Creates a new content item in Workflow.
-   *
-   * @param stub
-   * @param contentItem
-   * @return Option[Long]: None if item exists already with composerId.
-   *         Some(Long) of newly created item.
-   */
+  def createContent(c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
+    if(notValidForUpsert(c)) Left(ComposerIdsConflict(c.stub.composerId, c.wcOpt.map(_.composerId)))
+    else {
+      createContentDB(c)
+    }
+  }
 
-
-  def createContent(contentItem: ContentItem): Option[ContentUpdate] = {
+  def createContentDB(c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
     DB.withTransaction { implicit session =>
-
-      val existing = contentItem.wcOpt.flatMap(wc => existingItem(wc.composerId))
-
-      existing match {
-        case Some(stubId) => None
-        case None => {
-          val stubId = ((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
-          val composerId = contentItem.wcOpt.map(content returning content.map(_.composerId) += WorkflowContent.newContentRow(_, None))
-          Some(ContentUpdate(stubId, composerId, updatedRows=0))
-        }
+      c match {
+        case ContentItem(stub, None) => Right(ContentUpdate(insertStub(stub), None))
+        case ContentItem(stub, Some(wc)) => createStubAndWCContent(stub, wc)
       }
+    }
+  }
+
+  def createStubAndWCContent(s: Stub, wc: WorkflowContent)(implicit session: Session): Either[ContentUpdateError, ContentUpdate] = {
+    val existing = existingItem(wc.composerId)
+    if(existing.isDefined) Left(ContentItemExists)
+    else {
+      val stubId = insertStub(s)
+      insertWorkflowContet(wc).right.map(insertedId => ContentUpdate(stubId, Some(insertedId)))
     }
   }
 
@@ -93,6 +92,7 @@ object PostgresDB {
     (for (s <- stubs if s.composerId === composerId) yield s.pk).firstOption
   }
 
+  private def insertStub(s: Stub)(implicit session: Session): Long = (stubs returning stubs.map(_.pk) += Stub.newStubRow(s))
 
   def getContentById(id: Long): Option[ContentItem] = {
     DB.withTransaction { implicit session =>
@@ -173,13 +173,13 @@ object PostgresDB {
     }
   }
 
-  def validateContentItemForUpsert(contentItem: ContentItem) = {
+  def notValidForUpsert(contentItem: ContentItem) = {
     contentItem.stub.composerId != contentItem.wcOpt.map(_.composerId)
   }
 
 
   def updateContentItem(id: Long, c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
-    if(validateContentItemForUpsert(c)) Left(ComposerIdsConflict(c.stub.composerId, c.wcOpt.map(_.composerId)))
+    if(notValidForUpsert(c)) Left(ComposerIdsConflict(c.stub.composerId, c.wcOpt.map(_.composerId)))
     else {
       updateContentItemDB(id, c)
     }
@@ -192,7 +192,7 @@ object PostgresDB {
         case ContentItem(stub, None) => {
           val updatedRows = updateStubRows(id, stub)
           if(updatedRows==0) Left(StubNotFound(id))
-          else Right(ContentUpdate(id, None, updatedRows))
+          else Right(ContentUpdate(id, None))
         }
         case ContentItem(stub, Some(wc)) => {
           updateStubAndInsertWc(id, stub, wc)
@@ -209,7 +209,7 @@ object PostgresDB {
       val i = updateStubRows(id, stub)
       if(i==0) Left(StubNotFound(id))
       else {
-        insertWorkflowContet(wc).right.map(insertedId => ContentUpdate(id, Some(insertedId), i))
+        insertWorkflowContet(wc).right.map(insertedId => ContentUpdate(id, Some(insertedId)))
       }
     }
   }
