@@ -5,6 +5,7 @@ import LoggingContext.{withContext, withMDCExecutionContext}
 import play.api.Logger
 import play.api.mvc._
 import scala.concurrent.Future
+import config.Config
 
 object LoggingFilter extends Filter {
   def apply(nextFilter: (RequestHeader) => Future[Result])
@@ -15,7 +16,7 @@ object LoggingFilter extends Filter {
       .fold(Map.empty[String, String])(_ ++ _)
 
     LoggingContext.withContext(headers) {
-      LoggingContext.withMDCExecutionContext(PrototypeConfiguration.defaultExecutionContext) { implicit ec =>
+      LoggingContext.withMDCExecutionContext(Config.defaultExecutionContext) { implicit ec =>
         // use an new implicit execution context that will stash the
         // current MDC, and then apply to all threads that are
         // associated with this request
