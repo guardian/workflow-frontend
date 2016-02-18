@@ -6,7 +6,7 @@ import org.scalatest.{Matchers, FreeSpec}
 import play.api.db.DB
 import test.WorkflowIntegrationSuite
 import com.gu.workflow.test.lib.TestData._
-import lib.{ContentUpdate, ApiSuccess, ApiErrors, PostgresDB}
+import lib._
 
 class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
@@ -168,8 +168,10 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
 
       ci.stub.id.fold(fail("id should be inserted"))(stubId => {
         val updatedStub = updatedContentItem.stub
-        PostgresDB.updateContentItem(stubId, updatedContentItem) should equal (Right(ApiSuccess(ContentUpdate(stubId, None))))
+        PostgresDB.updateContentItem(stubId, updatedContentItem) should equal (Some(ContentUpdate(stubId, None, 1)))
+
         val updatedStubDB = PostgresDB.getContentById(stubId)
+
         updatedStubDB.fold(fail("should retrieve content item"))({ ci =>
           ci.stub.title should equal(updatedStub.title)
           ci.stub.section should equal(updatedStub.section)
@@ -183,13 +185,15 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
           ci.stub.needsLegal should equal(updatedStub.needsLegal)
           ci.stub.note should equal(updatedStub.note)
         })
+
       })
     }
 
     "should update stub and insert content item" in withContentItem(stubOnly) { ci =>
       val updatedContentItem = randomContentItem(0.0)
+      val composerId = updatedContentItem.wcOpt.map(_.composerId)
       ci.stub.id.fold(fail("id should be inserted"))({ stubId =>
-        PostgresDB.updateContentItem(stubId, updatedContentItem) should equal(Right(ApiSuccess(ContentUpdate(stubId, updatedContentItem.stub.composerId))))
+        PostgresDB.updateContentItem(stubId, updatedContentItem) should equal(Some(ContentUpdate(stubId,composerId, 1)))
         val updatedStubDB = PostgresDB.getContentById(stubId)
         updatedStubDB.fold(fail("should retrieve content item"))({ ci =>
           ci.stub.title should equal (updatedContentItem.stub.title)
@@ -198,28 +202,33 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       })
     }
 
-    "should error if item with the same id attempts to be inserted twice" in withContentItem(stubOnly) { ci =>
+    "should return none if item with the same id attempts to be inserted twice" in withContentItem(stubOnly) { ci =>
       val updatedContentItem = randomContentItem(0.0)
+      val composerId = updatedContentItem.wcOpt.map(_.composerId)
       ci.stub.id.fold(fail("id should be inserted"))({ stubId =>
-          PostgresDB.updateContentItem(stubId, updatedContentItem) should equal(Right(ApiSuccess(ContentUpdate(stubId, updatedContentItem.stub.composerId))))
-          PostgresDB.updateContentItem(stubId, updatedContentItem) should equal(Left(ApiErrors.composerItemLinked(stubId, updatedContentItem.stub.composerId.get)))
+          PostgresDB.updateContentItem(stubId, updatedContentItem) should equal (Some(ContentUpdate(stubId,composerId, 1)))
+          PostgresDB.updateContentItem(stubId, updatedContentItem) should equal (None)
       })
     }
 
-    "should give an error if the stub doesn't exist" in {
+    "should return a rows field of 0 if id doesnt exist" in {
       val nonExistentId = 1000L
-      PostgresDB.updateContentItem(nonExistentId, stubOnly) should equal (Left(ApiErrors.updateError(nonExistentId)))
+      PostgresDB.updateContentItem(nonExistentId, stubOnly) should equal (Some(ContentUpdate(nonExistentId, None, 0)))
     }
 
     "should not insert content row if stub doesn't exist" in {
       val nonExistentId = 1000L
-      PostgresDB.updateContentItem(nonExistentId, stubAndWorkflowContent) should equal (Left(ApiErrors.updateError(nonExistentId)))
       val cId = stubAndWorkflowContent.wcOpt.map(_.composerId)
+      PostgresDB.updateContentItem(nonExistentId, stubAndWorkflowContent) should equal (Some(ContentUpdate(nonExistentId, None, 0)))
       cId.fold(fail("composerId should exist"))({ cId =>
         PostgresDB.getWorkflowItem(cId) should equal (None)
       })
     }
+
+    
   }
+
+
   "deleteContent should remove from stub and content table" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.id.fold(fail("id should be inserted"))({ stubId =>
       PostgresDB.deleteStub(stubId)

@@ -147,7 +147,7 @@ object Api extends Controller with PanDomainAuthActions {
         stub <- extractResponse[Stub](jsValue.data).right
         wcOpt <- (if(stub.data.composerId.isDefined) extractApiResponseOption[WorkflowContent](jsValue.data)
                   else extractResponse[Option[WorkflowContent]](jsValue.data)).right
-        id <- PostgresDB.updateContentItem(stubId, ContentItem(stub.data, wcOpt.data)).right
+        id <- updateContentResponse(PostgresDB.updateContentItem(stubId, ContentItem(stub.data, wcOpt.data))).right
       } yield {
         id
       })
