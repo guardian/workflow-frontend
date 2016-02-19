@@ -238,8 +238,8 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
       val contentItemToUpdate = randomStubAndWC
       val composerId = contentItemToUpdate.wcOpt.map(_.composerId)
       ci.stub.id.fold(fail("id should be inserted"))({ stubId =>
-          PostgresDB.updateContentItem(stubId, contentItemToUpdate) should equal (Right(ContentUpdate(stubId,composerId)))
-          PostgresDB.updateContentItem(stubId, contentItemToUpdate) should equal (Left(ContentItemExists))
+        PostgresDB.updateContentItem(stubId, contentItemToUpdate)
+        PostgresDB.updateContentItem(stubId, contentItemToUpdate) should equal (Left(ContentItemExists))
       })
     }
 
