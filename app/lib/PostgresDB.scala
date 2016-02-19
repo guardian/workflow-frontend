@@ -83,7 +83,7 @@ object PostgresDB {
 
   private def createStubAndWCContent(s: Stub, wc: WorkflowContent)(implicit session: Session): Either[ContentUpdateError, ContentUpdate] = {
     val existing = contentByComposerId(wc.composerId)
-    if(existing.flatMap(_.wcOpt.map(_.composerId)).isDefined) Left(ContentItemExists)
+    if(existing.isDefined) Left(ContentItemExists)
     else {
       val stubId = insertStub(s)
       insertWorkflowContet(wc).right.map(insertedId => ContentUpdate(stubId, Some(insertedId)))
