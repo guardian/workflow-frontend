@@ -25,13 +25,8 @@ object ContentUpdate {
 
 object DBToAPIResponse {
 
-  def updateStubRes(id: Long, updatedRow: Int): Response[Long] = {
+  def updateRes[A](id: A, updatedRow: Int): Response[A] = {
     if(updatedRow==0) Left(ApiErrors.updateError(id))
-    else Right(ApiSuccess(id))
-  }
-
-  def updateWorkflowRes(id: String, updatedRow: Int): Response[String] = {
-    if(updatedRow==0) Left(ApiErrors.composerIdNotFound(id))
     else Right(ApiSuccess(id))
   }
 
