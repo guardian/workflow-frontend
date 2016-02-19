@@ -4,6 +4,12 @@ import lib.Response._
 import play.api.libs.json.Json
 
 case class ContentUpdate(stubId: Long, composerId: Option[String])
+case class DeleteOp(stubId: Long, composerRows: Int)
+
+object DeleteOp {
+  implicit val jsonFormats = Json.format[DeleteOp]
+
+}
 
 sealed trait ContentUpdateError
 
@@ -36,6 +42,13 @@ object DBToAPIResponse {
       case Left(s: StubNotFound) => Left(ApiErrors.updateError(s.id))
       case Left(c: ComposerIdsConflict) => Left(ApiErrors.conflict)
       case Right(cu) => Right(ApiSuccess(cu))
+    }
+  }
+
+  def deleteResponse(id: Long, dOpt: Option[DeleteOp]): Response[DeleteOp] = {
+    dOpt match {
+      case Some(d) => Right(ApiSuccess(d))
+      case None => Left(ApiErrors.updateError(id))
     }
 
   }
