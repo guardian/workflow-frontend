@@ -286,7 +286,7 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def deleteStub(stubId: Long) = APIAuthAction {
-    PostgresDB.deleteStub(stubId)
+    PostgresDB.deleteContentByStubId(stubId)
     NoContent
   }
 
