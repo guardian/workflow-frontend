@@ -181,7 +181,7 @@ object PostgresDB {
         DashboardRow(stub, content)
       }
       dashboardRowOpt match {
-        case None => Left(ApiErrors.composerIdNotFound(composerId))
+        case None => Left(ApiErrors.updateError(composerId))
         case Some(d) => Right(ApiSuccess(d))
       }
     }
