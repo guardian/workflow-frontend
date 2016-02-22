@@ -10,12 +10,7 @@ class BundleDBTest extends FreeSpec with CommonDBIntegrationSuite with Matchers 
 
   val bundleInsertedBySchema = Bundle("No bundle", 0)
 
-//todo - come back to this test - not working consistently between envs
-//  "Should query on bundles" in withBundleTestData(generateBundles()) { dataInserted =>
-//    BundleDB.getBundles() should equal (Some(dataInserted.sortBy(b => b.id)))
-//  }
-
-  "Should retrieve a bundle inserted" - {
+  "Should retrieve a bundle inserted" ignore {
     "get bundle by id" in {
       val bundle = generateBundle()
       val bundleFromDB = createBundle(bundle)
@@ -27,7 +22,7 @@ class BundleDBTest extends FreeSpec with CommonDBIntegrationSuite with Matchers 
     }
   }
 
-  "Should delete a bundle" - {
+  "Should delete a bundle" ignore {
     "delete bundle that exists" in {
       val bundle = generateBundle()
       val bundleFromDB = createBundle(bundle)
@@ -41,7 +36,7 @@ class BundleDBTest extends FreeSpec with CommonDBIntegrationSuite with Matchers 
     }
   }
 
-  "Should update a field" - {
+  "Should update a field" ignore {
     "update a title" in {
       val bundle = generateBundle()
       val bundleFromDB = createBundle(bundle)
