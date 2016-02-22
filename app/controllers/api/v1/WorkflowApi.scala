@@ -1,5 +1,7 @@
 package controllers
 
+import config.Config
+
 import javax.ws.rs.PathParam
 import lib._
 import Response.Response
@@ -13,8 +15,10 @@ import play.api.mvc._
 
 import scala.util.Either
 
+
+
 trait WorkflowApi {
-  val composerUrl = PrototypeConfiguration.apply.composerUrl
+  val composerUrl = Config.composerUrl
   val apiBaseUrl  = "/api/v1/"
 
   def allowCORSAccess(methods: String, args: Any*) = CORSable(composerUrl) {

@@ -1,12 +1,12 @@
 package lib
 
 import play.api.libs.json.{JsString, JsValue}
-
+import config.Config
 
 object Composer {
 
   //default to localhost for now
-  lazy val baseUrl = PrototypeConfiguration.apply.composerUrl
+  lazy val baseUrl = Config.composerUrl
   lazy val newContentUrl = baseUrl + "/api/content"
   lazy val adminUrl = baseUrl + "/content"
   lazy val contentDetails = baseUrl + "/api/content/"
