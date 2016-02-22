@@ -23,7 +23,7 @@ trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with Matcher
     additionalConfiguration = Config.appConfig.updated("db.default.url", Config.dbFullUrl + suiteName),
     withGlobal = Some(new GlobalSettings() {
       override def configuration: Configuration = {
-        val testConfig = ConfigFactory.load("applicaion.ci.conf")
+        val testConfig = ConfigFactory.load("application.ci.conf")
         Configuration(testConfig)
       }}))
 
