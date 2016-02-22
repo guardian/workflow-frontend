@@ -7,18 +7,18 @@ import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
 import play.api.Logger
 import play.api.mvc._
-import config.Config
 
 trait PanDomainAuthActions extends AuthActions with PanDomainAuth with Results {
 
   import play.api.Play.current
+  lazy val config = play.api.Play.configuration
 
   override def validateUser(authedUser: AuthenticatedUser): Boolean = {
     (authedUser.user.emailDomain == "guardian.co.uk") &&
-    (authedUser.multiFactor || (Config.no2faUser.length > 0 && Config.no2faUser == authedUser.user.email))
+      (authedUser.multiFactor || (config.getString("no2faUser").map(user => user.length > 0 && user == authedUser.user.email).getOrElse(false)))
   }
 
-  override def authCallbackUrl: String = Config.host + "/oauthCallback"
+  override def authCallbackUrl: String = config.getString("host").get + "/oauthCallback"
 
   override def showUnauthedMessage(message: String)(implicit request: RequestHeader): Result = {
     Logger.info(message)
@@ -34,7 +34,7 @@ trait PanDomainAuthActions extends AuthActions with PanDomainAuth with Results {
     }
   }
 
-  override lazy val domain: String = Config.domain
+  override lazy val domain: String = config.getString("pandomain.domain").get
   override lazy val system: String = "workflow"
 
 

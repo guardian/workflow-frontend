@@ -3,9 +3,7 @@ package controllers
 import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
 
-import config.Config
-import config.Config.defaultExecutionContext
-
+import lib.PrototypeConfiguration.defaultExecutionContext
 
 import lib._
 import lib.Composer._
@@ -44,11 +42,11 @@ object Application extends Controller with PanDomainAuthActions {
         "desks"    -> desks,
         "sections" -> sections,
         "sectionsInDesks" -> sectionsInDesks, // TODO: Combine desks & sectionsInDesks
-        "presenceUrl" -> Config.presenceUrl,
-        "presenceClientLib" -> Config.presenceClientLib,
-        "preferencesUrl" -> Config.preferencesUrl,
+        "presenceUrl" -> PrototypeConfiguration.cached.presenceUrl,
+        "presenceClientLib" -> PrototypeConfiguration.cached.presenceClientLib,
+        "preferencesUrl" -> PrototypeConfiguration.cached.preferencesUrl,
         "user" -> Json.parse(user.toJson),
-        "incopyExportUrl" -> Config.incopyExportUrl,
+        "incopyExportUrl" -> PrototypeConfiguration.cached.incopyExportUrl,
         "newsLists" -> newsLists,
         "newsListBuckets" -> JsObject(newsListBuckets),
         "bundleList" -> bundleList
@@ -93,13 +91,13 @@ object Application extends Controller with PanDomainAuthActions {
         "desks"    -> desks,
         "sections" -> sections,
         "sectionsInDesks" -> sectionsInDesks, // TODO: Combine desks & sectionsInDesks
-        "viewerUrl" -> Config.viewerUrl,
-        "presenceUrl" -> Config.presenceUrl,
-        "presenceClientLib" -> Config.presenceClientLib,
-        "preferencesUrl" -> Config.preferencesUrl,
+        "viewerUrl" -> PrototypeConfiguration.cached.viewerUrl,
+        "presenceUrl" -> PrototypeConfiguration.cached.presenceUrl,
+        "presenceClientLib" -> PrototypeConfiguration.cached.presenceClientLib,
+        "preferencesUrl" -> PrototypeConfiguration.cached.preferencesUrl,
         "user" -> Json.parse(user.toJson),
-        "incopyExportUrl" -> Config.incopyExportUrl,
-        "composerRestorerUrl" -> Config.composerRestorerUrl
+        "incopyExportUrl" -> PrototypeConfiguration.cached.incopyExportUrl,
+        "composerRestorerUrl" -> PrototypeConfiguration.cached.composerRestorerUrl
       )
 
       Ok(views.html.app(title, Some(user), config))

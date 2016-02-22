@@ -23,7 +23,7 @@ import org.joda.time.DateTime
 import com.gu.workflow.db.{DeskDB, SectionDeskMappingDB, SectionDB, CommonDB}
 import com.gu.workflow.query._
 
-
+import lib.PrototypeConfiguration.defaultExecutionContext
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
@@ -31,8 +31,6 @@ import scala.concurrent.duration._
 
 import akka.actor.Props
 
-import config.Config
-import config.Config.defaultExecutionContext
 
 case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
 
@@ -53,7 +51,7 @@ case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
 
 object Api extends Controller with PanDomainAuthActions {
 
-  val composerUrl = Config.composerUrl
+  val composerUrl = PrototypeConfiguration.apply.composerUrl
 
   def allowCORSAccess(methods: String, args: Any*) = CORSable(composerUrl) {
 
@@ -102,7 +100,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def content = APIAuthAction(getContentBlock)
 
-  def getContentbyId(composerId: String) = CORSable(Config.composerUrl) {
+  def getContentbyId(composerId: String) = CORSable(PrototypeConfiguration.apply.composerUrl) {
       APIAuthAction { implicit request =>
         contentById(composerId)
       }
