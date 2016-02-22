@@ -12,7 +12,7 @@ class DayNoteDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matcher
 
   val dayNote = generateDayNote()
 
-  "Should retrieve a day note inserted" - {
+  "Should retrieve a day note inserted" ignore {
     "get day note by id" in {
       val dayNote = generateDayNote()
       val newsList = generateNewsList()
@@ -25,7 +25,7 @@ class DayNoteDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matcher
     }
   }
 
-  "Should delete a day note" - {
+  "Should delete a day note" ignore {
     "delete day not that exists" in {
       val dayNote = generateDayNote()
       val newsList = generateNewsList()
@@ -39,7 +39,7 @@ class DayNoteDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matcher
     }
   }
 
-  "Should update a field" - {
+  "Should update a field" ignore {
     "update a note" in {
       val dayNote = generateDayNote()
       val newsList = generateNewsList()
@@ -63,7 +63,7 @@ class DayNoteDBTest extends FreeSpec with CommonDBIntegrationSuite  with Matcher
     }
   }
 
-  "Should be able to query with filters" - {
+  "Should be able to query with filters" ignore {
 
     val newsListId = 4L
     val startDate = DateTime.now().minusHours(50)
