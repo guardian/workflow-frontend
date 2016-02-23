@@ -27,7 +27,6 @@ object PostgresDB {
   def contentItemLookup(composerId: String): List[DashboardRow] =
     DB.withTransaction { implicit session =>
       WfQuery.contentLookup(composerId)
-        .filter( {case (s,c) => ContentItem.notPublishedOrHoldOrTouchedIn24hours(s, c) })
         .list.map { case (stubData, contentData) =>
         val stub    = Stub.fromStubRow(stubData)
         val content = WorkflowContent.fromContentRow(contentData)
