@@ -39,7 +39,7 @@ object Config extends AwsInstanceTags {
   // logstash conf
   private lazy val logStashHost: String = "ingest.logs.gutools.co.uk"
   private lazy val logStashPort: Int = 6379
-  private lazy val logStashEnabled: Boolean = true
+  private lazy val logStashEnabled: Boolean = config.getConfigBooleanOrElse("logging.logstash.enabled", true)
   lazy val logStashConf = LogStashConf(logStashHost, logStashPort, logStashEnabled)
 
   implicit val defaultExecutionContext =
