@@ -12,11 +12,9 @@ object Config extends AwsInstanceTags {
   }
   Logger.info(s"running in stage: ${stage}")
 
-  lazy val domain: String = stage match {
-    case "PROD" => "gutools.co.uk"
-    case "DEV" => "local.dev-gutools.co.uk"
-    case x => x.toLowerCase() + ".dev-gutools.co.uk"
-  }
+  lazy val domain: String = determineDomain(stage, testMode)
+
+  Logger.info(s"Domain is: ${stage}")
 
   lazy val host: String = s"https://workflow.${domain}"
 
@@ -44,5 +42,15 @@ object Config extends AwsInstanceTags {
 
   implicit val defaultExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global
+
+  lazy val testMode: Boolean = config.getConfigBooleanOrElse("testMode", false)
+
+  def determineDomain(stage: String, testMode: Boolean) = {
+    if (testMode) "localhost" else stage match {
+      case "PROD" => "gutools.co.uk"
+      case "DEV" => "local.dev-gutools.co.uk"
+      case x => x.toLowerCase() + ".dev-gutools.co.uk"
+    }
+  }
 
 }
