@@ -41,9 +41,7 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
     }
   }
 
-  def createContentItemJson(c: ContentItem, section: Section): JsValue = {
-    Json.toJson(c).as[JsObject] ++ Json.obj("section" -> Json.toJson(section).as[JsObject])
-  }
+
 
   s"$host/api/stubs" - {
     "create a stub" in {
