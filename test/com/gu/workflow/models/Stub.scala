@@ -4,6 +4,7 @@ import lib.ResourcesHelper
 import models._
 import org.scalatest.{Matchers, FreeSpec}
 import play.api.libs.json.{Json, JsSuccess}
+import com.gu.workflow.test.lib.TestData._
 
 class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
   "ContentReads" - {
@@ -47,7 +48,6 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
       })
     }
 
-
     "should read maximum set fields which can be defined on a creation" in {
       val resource = slurp("content-item-max-fields.json").getOrElse(
         throw new RuntimeException("could not find test resource"))
@@ -69,11 +69,31 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
         ci.wcOpt.flatMap(_.headline) should equal (Some("headline"))
         ci.wcOpt.flatMap(_.lastModifiedBy) should equal (Some("test-bunny"))
         ci.wcOpt.map(_.statusFlags) should equal (Some(WorkflowContentStatusFlags(commentable = true, optimisedForWeb = false, optimisedForWebChanged = false)))
-
       })
+    }
+  }
 
+  "ContentWrites" - {
+    "should write a stub to json" in {
+      val ci = randomStub
+      //stub reads requires a section object in the json
+      val jsValue = createContentItemJson(ci, Section(ci.stub.section))
+      jsValue.validate[Stub].fold(_ => fail("should be validate stub json"), stub => {
+        stub should equal (ci.stub)
+      })
     }
 
+    "should write a content item to json" in {
+      val ci = randomStubAndWC
+      //stub reads requires a section object in the json
+      val jsValue = createContentItemJson(ci, Section(ci.stub.section))
+      jsValue.validate[ContentItem].fold(_ => fail("should be validate content item json"), contentItem => {
+        val stubWithDateFields = contentItem.stub.copy(createdAt = ci.stub.createdAt, lastModified = ci.stub.lastModified)
+        stubWithDateFields should equal (ci.stub)
+        contentItem.wcOpt should equal (ci.wcOpt)
+        contentItem.wcOpt.isDefined should equal (true)
+      })
+    }
   }
 
 }
