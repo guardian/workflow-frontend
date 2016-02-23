@@ -4,7 +4,7 @@ import javax.ws.rs.PathParam
 import com.gu.workflow.lib._
 import lib._
 import Response.Response
-import com.gu.workflow.db.{CommonDB, Archive}
+import com.gu.workflow.db.{CommonDB}
 import com.gu.workflow.query.WfQuery
 import controllers.Api._
 import lib.OrderingImplicits._
@@ -60,12 +60,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
 
     Response(contentOpt match {
       case Some(contentItem) => Right(ApiSuccess(contentItem))
-      case None => {
-        Archive.getArchiveContentForStubId(id) match {
-          case Some(c: ArchiveContent) => Left(contentMovedToArchive(c))
-          case None => Left(ApiErrors.notFound)
-        }
-      }
+      case None => Left(ApiErrors.notFound)
     })
   }
 
@@ -73,17 +68,9 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
     val contentOpt: Option[ContentItem] = PostgresDB.getContentByCompserId(id)
 
     val contentEither = contentOpt match {
-      case Some(contentItem) => {
-        contentItem.stub.id.map { id =>
-          Right(ApiSuccess(contentItem))
-        }.getOrElse(Left(ApiErrors.notFound))
-      }
-      case None => {
-        Archive.getArchiveContentForComposerId(id) match {
-          case Some(c: ArchiveContent) => Left(contentMovedToArchive(c))
-          case None => Left(ApiErrors.notFound)
-        }
-      }
+      case Some(contentItem) =>
+        contentItem.stub.id.map { id => Right(ApiSuccess(contentItem))}.getOrElse(Left(ApiErrors.notFound))
+      case None => Left(ApiErrors.notFound)
     }
 		Response(contentEither)
   }
