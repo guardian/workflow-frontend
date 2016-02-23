@@ -175,9 +175,7 @@ object PostgresDB {
 
       val dashboardRowOpt = query.firstOption map {case (stubData, contentData) =>
         val stub    = Stub.fromStubRow(stubData)
-        val content = WorkflowContent.fromContentRow(contentData).copy(
-          section = Some(Section(stub.section))
-        )
+        val content = WorkflowContent.fromContentRow(contentData)
         DashboardRow(stub, content)
       }
       dashboardRowOpt match {
