@@ -48,11 +48,12 @@ class DBToAPIResponseTest  extends FreeSpec with Matchers {
     }
 
     "should return a 200 if content is successful upserted" in {
-      DBToAPIResponse.upsertContentResponse(Left(StubNotFound(3L))).fold(apiError => {
+      DBToAPIResponse.upsertContentResponse(Right(ContentUpdate(3L, Some("composerId")))).fold(apiError => {
         fail(s"expected right got left ${apiError}")
       }, r => {
         r.statusCode should equal (200)
         r.data.stubId should equal (3L)
+        r.data.composerId should equal (Some("composerId"))
       })
 
     }
