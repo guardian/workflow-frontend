@@ -58,7 +58,7 @@ class WorkflowSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside 
       val contentJson = createContentItemJson(ci, generateSection)
       val res = postJS(s"api/stubs", contentJson)
       val id = (res \ "data" \ "stubId").validate[Long]
-      val composerId = (res \ "data" \ "composerId").validate[String]
+      val composerId = (res \ "data" \ "composerId").validate[Option[String]]
       id.isSuccess should be (true)
       composerId.fold(_ => fail("composerId should be defined"), cId =>
         cId should equal (ci.wcOpt.map(_.composerId))
