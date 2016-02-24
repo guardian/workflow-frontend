@@ -71,24 +71,10 @@ object Api extends Controller with PanDomainAuthActions {
 
     val contentItems = PostgresDB.getContentItems(queryData)
 
-    //contentItems are serialised to stubs and dashboardRows as JSON response handles these different.
-    //todo-write a method which accepts contentItems and serialises to correct JSON response.
-    val stubs = contentItems.collect({case ContentItem(s: Stub, None) => s})
-    val dashboardRows = contentItems.collect({case ContentItem(s: Stub, Some(wc: WorkflowContent)) => DashboardRow(s, wc)})
-
-    val contentGroupedByStatus: Map[String, List[DashboardRow]] = dashboardRows.groupBy(_.wc.status).map({case(s,cs) => (s.name, cs.toList)})
-
-    var countTotal = 0
-
-    val counts: Map[String, Int] = contentGroupedByStatus.map({
-      case (status, content) => {
-        countTotal += content.length
-        (status.toString, content.length)
-      }
-    }) ++ Map("Stub" -> stubs.length) ++ Map("total" -> (countTotal+stubs.length))
+    val contentResponse = ContentResponse.fromContentItems(contentItems)
 
     Ok(
-      Json.toJson(ContentResponse(stubs.toList, contentGroupedByStatus, counts))
+      Json.toJson(contentResponse)
     )
   }
 
