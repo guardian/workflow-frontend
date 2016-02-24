@@ -12,11 +12,15 @@ object Config extends AwsInstanceTags {
   }
   Logger.info(s"running in stage: ${stage}")
 
-  lazy val domain: String = determineDomain(stage, testMode)
+  lazy val domain: String = stage match {
+      case "PROD" => "gutools.co.uk"
+      case "DEV" => "local.dev-gutools.co.uk"
+      case x => x.toLowerCase() + ".dev-gutools.co.uk"
+    }
 
   Logger.info(s"Domain is: ${domain}")
 
-  lazy val host: String = s"https://workflow.${domain}"
+  lazy val host: String = determineHost(stage, testMode)
 
   lazy val composerUrl: String = s"https://composer.${domain}"
   lazy val composerRestorerUrl: String = s"https://composer-restorer.${domain}/content"
@@ -45,12 +49,8 @@ object Config extends AwsInstanceTags {
 
   lazy val testMode: Boolean = config.getConfigBooleanOrElse("testMode", false)
 
-  def determineDomain(stage: String, testMode: Boolean) = {
-    if (testMode) "localhost" else stage match {
-      case "PROD" => "gutools.co.uk"
-      case "DEV" => "local.dev-gutools.co.uk"
-      case x => x.toLowerCase() + ".dev-gutools.co.uk"
-    }
+  def determineHost(stage: String, testMode: Boolean) = {
+    if (testMode) "localhost" else s"https://workflow.${domain}"
   }
 
 }
