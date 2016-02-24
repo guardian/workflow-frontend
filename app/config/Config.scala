@@ -21,6 +21,7 @@ object Config extends AwsInstanceTags {
   Logger.info(s"Domain is: ${domain}")
 
   lazy val host: String = determineHost(stage, testMode)
+  Logger.info(s"Host is: ${host}")
 
   lazy val composerUrl: String = s"https://composer.${domain}"
   lazy val composerRestorerUrl: String = s"https://composer-restorer.${domain}/content"
