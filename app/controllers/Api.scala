@@ -76,29 +76,24 @@ object Api extends Controller with PanDomainAuthActions {
     val stubs = contentItems.collect({case ContentItem(s: Stub, None) => s})
     val dashboardRows = contentItems.collect({case ContentItem(s: Stub, Some(wc: WorkflowContent)) => DashboardRow(s, wc)})
 
-    val contentGroupedByStatus = dashboardRows.groupBy(_.wc.status)
-
-    val jsContentGroupedByStatus = contentGroupedByStatus.map({
-      case (status, content) => (status.toString, Json.toJson(content))
-    }).toSeq
+    val contentGroupedByStatus: Map[String, List[DashboardRow]] = dashboardRows.groupBy(_.wc.status).map({case(s,cs) => (s.name, cs.toList)})
 
     var countTotal = 0
 
-    val counts = contentGroupedByStatus.map({
+    val counts: Map[String, Int] = contentGroupedByStatus.map({
       case (status, content) => {
         countTotal += content.length
-        (status.toString, Json.toJson(content.length))
+        (status.toString, content.length)
       }
-    }).toSeq ++ Map("Stub" -> Json.toJson(stubs.length)).toSeq ++ Map("total" -> Json.toJson(countTotal+stubs.length)).toSeq
+    }) ++ Map("Stub" -> stubs.length) ++ Map("total" -> (countTotal+stubs.length))
 
     Ok(
-      Json.obj(
-        "content" -> JsObject(jsContentGroupedByStatus),
-        "stubs" -> stubs,
-        "count" -> JsObject(counts)
-      )
+      Json.toJson(ContentResponse(stubs.toList, contentGroupedByStatus, counts))
     )
   }
+
+
+
 
   def content = APIAuthAction(getContentBlock)
 
