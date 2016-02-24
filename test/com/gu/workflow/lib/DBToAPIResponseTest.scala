@@ -8,7 +8,7 @@ class DBToAPIResponseTest  extends FreeSpec with Matchers {
   "updateRes" - {
     "should return not found error if returned row is 0" in {
       DBToAPIResponse.updateRes(3L, 0).fold(apiError =>
-        apiError.message should equal ("NotFound"),
+        apiError.message should equal ("UpdateError"),
         r => fail(s"expected left got ${r}")
       )
     }
