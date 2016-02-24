@@ -20,7 +20,7 @@ object Config extends AwsInstanceTags {
 
   Logger.info(s"Domain is: ${domain}")
 
-  lazy val host: String = determineHost(stage, testMode)
+  lazy val host: String = s"https://workflow.${domain}"
   Logger.info(s"Host is: ${host}")
 
   lazy val composerUrl: String = s"https://composer.${domain}"
@@ -49,9 +49,5 @@ object Config extends AwsInstanceTags {
     scala.concurrent.ExecutionContext.Implicits.global
 
   lazy val testMode: Boolean = config.getConfigBooleanOrElse("testMode", false)
-
-  def determineHost(stage: String, testMode: Boolean) = {
-    if (testMode || domain == "local.dev-gutools.co.uk") "localhost" else s"https://workflow.${domain}"
-  }
 
 }
