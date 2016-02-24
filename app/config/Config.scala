@@ -50,7 +50,7 @@ object Config extends AwsInstanceTags {
   lazy val testMode: Boolean = config.getConfigBooleanOrElse("testMode", false)
 
   def determineHost(stage: String, testMode: Boolean) = {
-    if (testMode) "localhost" else s"https://workflow.${domain}"
+    if (testMode || domain == "local.dev-gutools.co.uk") "localhost" else s"https://workflow.${domain}"
   }
 
 }
