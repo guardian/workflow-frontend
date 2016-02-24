@@ -20,7 +20,7 @@ import com.gu.workflow.test.CommonDBIntegrationSuite
 
 trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with Matchers with ShouldMatchers with Http with WorkflowHelpers with CommonDBIntegrationSuite {
   implicit override lazy val app: FakeApplication = FakeApplication(
-    additionalConfiguration = Config.appConfig.updated("db.default.url", Config.dbFullUrl + suiteName),
+    additionalConfiguration = Config.appConfig.updated("db.default.url", Config.dbFullUrl + suiteName).updated("pandomain.domain", "localhost"),
     withGlobal = Some(new GlobalSettings() {
       override def configuration: Configuration = {
         val testConfig = ConfigFactory.load("application.ci.conf")
