@@ -135,7 +135,7 @@ object Api extends Controller with PanDomainAuthActions {
         stub <- extractResponse[Stub](jsValue.data).right
         wcOpt <- (if(stub.data.composerId.isDefined) extractApiResponseOption[WorkflowContent](jsValue.data)
                   else extractResponse[Option[WorkflowContent]](jsValue.data)).right
-        stubId <- createContentResponse(PostgresDB.createContent(ContentItem(stub.data, wcOpt.data))).right
+        stubId <- upsertContentResponse(PostgresDB.createContent(ContentItem(stub.data, wcOpt.data))).right
       } yield {
         stubId
       })
@@ -149,7 +149,7 @@ object Api extends Controller with PanDomainAuthActions {
         stub <- extractResponse[Stub](jsValue.data).right
         wcOpt <- (if(stub.data.composerId.isDefined) extractApiResponseOption[WorkflowContent](jsValue.data)
                   else extractResponse[Option[WorkflowContent]](jsValue.data)).right
-        id <- PostgresDB.updateContentItem(stubId, ContentItem(stub.data, wcOpt.data)).right
+        id <- upsertContentResponse(PostgresDB.updateContentItem(stubId, ContentItem(stub.data, wcOpt.data))).right
       } yield {
         id
       })
@@ -160,7 +160,7 @@ object Api extends Controller with PanDomainAuthActions {
     Response(for {
       jsValue <- readJsonFromRequestResponse(request.body).right
       assignee <- extractResponse[String](jsValue.data \ "data").right
-      id <- updateStubRes(stubId, PostgresDB.updateStubWithAssignee(stubId, Some(assignee.data).filter(_.nonEmpty))).right
+      id <- updateRes(stubId, PostgresDB.updateStubWithAssignee(stubId, Some(assignee.data).filter(_.nonEmpty))).right
     } yield {
       id
     })
@@ -170,7 +170,7 @@ object Api extends Controller with PanDomainAuthActions {
     Response(for {
       jsValue <- readJsonFromRequestResponse(request.body).right
       assigneeEmail <- extractResponse[String](jsValue.data \ "data").right
-      id <- updateStubRes(stubId, PostgresDB.updateStubWithAssigneeEmail(stubId, Some(assigneeEmail.data).filter(_.nonEmpty))).right
+      id <- updateRes(stubId, PostgresDB.updateStubWithAssigneeEmail(stubId, Some(assigneeEmail.data).filter(_.nonEmpty))).right
     } yield {
       id
     })
@@ -180,7 +180,7 @@ object Api extends Controller with PanDomainAuthActions {
     Response(for {
       jsValue <- readJsonFromRequestResponse(request.body).right
       dueDateOpt <- extractResponse[Option[String]](jsValue.data \ "data").right
-      id <- updateStubRes(stubId, PostgresDB.updateStubDueDate(stubId, dueDateOpt.data.filter(_.length!=0).map(new DateTime(_)))).right
+      id <- updateRes(stubId, PostgresDB.updateStubDueDate(stubId, dueDateOpt.data.filter(_.length!=0).map(new DateTime(_)))).right
     } yield {
       id
     })
@@ -191,7 +191,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         note <- extractResponse[String](jsValue.data \ "data")(Stub.noteReads).right
-        id <- updateStubRes(stubId, PostgresDB.updateStubNote(stubId, note.data)).right
+        id <- updateRes(stubId, PostgresDB.updateStubNote(stubId, note.data)).right
       } yield {
         id
       })
@@ -203,7 +203,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         prodOffice <- extractResponse[String](jsValue.data \ "data")(Stub.prodOfficeReads).right
-        id <- updateStubRes(stubId, PostgresDB.updateStubProdOffice(stubId, prodOffice.data)).right
+        id <- updateRes(stubId, PostgresDB.updateStubProdOffice(stubId, prodOffice.data)).right
       } yield {
         id
       })
@@ -215,7 +215,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         status <- extractResponse[String](jsValue.data \ "data").right
-        id <- updateWorkflowRes(composerId, PostgresDB.updateContentStatus(status.data, composerId)).right
+        id <- updateRes(composerId, PostgresDB.updateContentStatus(status.data, composerId)).right
       } yield {
         id
       })
@@ -227,7 +227,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         section <- extractResponse[String](jsValue.data \ "data" \ "name")(Stub.sectionReads).right
-        id <- updateStubRes(stubId, PostgresDB.updateStubSection(stubId, section.data)).right
+        id <- updateRes(stubId, PostgresDB.updateStubSection(stubId, section.data)).right
       } yield {
         id
       })
@@ -239,7 +239,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         workingTitle <- extractResponse[String](jsValue.data \ "data")(Stub.workingTitleReads).right
-        id <- updateStubRes(stubId, PostgresDB.updateStubWorkingTitle(stubId, workingTitle.data)).right
+        id <- updateRes(stubId, PostgresDB.updateStubWorkingTitle(stubId, workingTitle.data)).right
       } yield {
         id
       })
@@ -251,7 +251,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         priority <- extractResponse[Int](jsValue.data \ "data").right
-        id <- updateStubRes(stubId, PostgresDB.updateStubPriority(stubId, priority.data)).right
+        id <- updateRes(stubId, PostgresDB.updateStubPriority(stubId, priority.data)).right
       } yield {
         id
       })
@@ -263,7 +263,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         status <- extractResponse[Flag](jsValue.data \ "data").right
-        id <- updateStubRes(stubId, PostgresDB.updateStubLegalStatus(stubId, status.data)).right
+        id <- updateRes(stubId, PostgresDB.updateStubLegalStatus(stubId, status.data)).right
       } yield {
         id
       })
@@ -275,7 +275,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         trashed <- extractResponse[Boolean](jsValue.data \ "data").right
-        id <- updateStubRes(stubId, PostgresDB.updateStubTrashed(stubId, Some(trashed.data))).right
+        id <- updateRes(stubId, PostgresDB.updateStubTrashed(stubId, Some(trashed.data))).right
       } yield {
         id
       })
@@ -288,7 +288,7 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def deleteStub(stubId: Long) = APIAuthAction {
-    PostgresDB.deleteStub(stubId)
+    PostgresDB.deleteContentByStubId(stubId)
     NoContent
   }
 
