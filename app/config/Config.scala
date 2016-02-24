@@ -14,7 +14,7 @@ object Config extends AwsInstanceTags {
 
   lazy val domain: String = determineDomain(stage, testMode)
 
-  Logger.info(s"Domain is: ${stage}")
+  Logger.info(s"Domain is: ${domain}")
 
   lazy val host: String = s"https://workflow.${domain}"
 
