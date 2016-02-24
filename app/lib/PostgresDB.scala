@@ -27,7 +27,6 @@ object PostgresDB {
   def contentItemLookup(composerId: String): List[DashboardRow] =
     DB.withTransaction { implicit session =>
       WfQuery.contentLookup(composerId)
-        .filter( {case (s,c) => ContentItem.visibleOnUi(s, c) })
         .list.map { case (stubData, contentData) =>
         val stub    = Stub.fromStubRow(stubData)
         val content = WorkflowContent.fromContentRow(contentData)
@@ -63,58 +62,105 @@ object PostgresDB {
     }
   }
 
-  /**
-   * Creates a new content item in Workflow.
-   *
-   * @param stub
-   * @param contentItem
-   * @return Option[Long]: None if item exists already with composerId.
-   *         Some(Long) of newly created item.
-   */
+  def notValidForUpsert(contentItem: ContentItem) = {
+    contentItem.stub.composerId != contentItem.wcOpt.map(_.composerId)
+  }
 
+  def createContent(c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
+    if(notValidForUpsert(c)) Left(ComposerIdsConflict(c.stub.composerId, c.wcOpt.map(_.composerId)))
+    else createContentDB(c)
 
-  def createContent(contentItem: ContentItem): Option[ContentUpdate] = {
+  }
+  private def createContentDB(c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
     DB.withTransaction { implicit session =>
+      c match {
+        case ContentItem(stub, None) => Right(ContentUpdate(insertStub(stub), None))
+        case ContentItem(stub, Some(wc)) => createStubAndWCContent(stub, wc)
+      }
+    }
+  }
 
-      val existing = contentItem.wcOpt.flatMap(wc => existingItem(wc.composerId))
+  private def createStubAndWCContent(s: Stub, wc: WorkflowContent)(implicit session: Session): Either[ContentUpdateError, ContentUpdate] = {
+    val existing = contentByComposerId(wc.composerId)
+    if(existing.isDefined) Left(ContentItemExists)
+    else {
+      val stubId = insertStub(s)
+      insertWorkflowContet(wc).right.map(insertedId => ContentUpdate(stubId, Some(insertedId)))
+    }
+  }
 
-      existing match {
-        case Some(stubId) => None
-        case None => {
-          val stubId = ((stubs returning stubs.map(_.pk)) += Stub.newStubRow(contentItem.stub))
-          val composerId = contentItem.wcOpt.map(content returning content.map(_.composerId) += WorkflowContent.newContentRow(_, None))
-          Some(ContentUpdate(stubId, composerId))
+  def updateContentItem(id: Long, c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
+    if(notValidForUpsert(c)) Left(ComposerIdsConflict(c.stub.composerId, c.wcOpt.map(_.composerId)))
+    else updateContentItemDB(id, c)
+  }
+
+  private def updateContentItemDB(id: Long, c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
+    DB.withTransaction { implicit session =>
+      c match {
+        case ContentItem(stub, None) => {
+          val updatedRows = updateStubRows(id, stub)
+          if(updatedRows==0) Left(StubNotFound(id))
+          else Right(ContentUpdate(id, None))
+        }
+        case ContentItem(stub, Some(wc)) => {
+          updateStubAndInsertWc(id, stub, wc)
         }
       }
     }
   }
 
-  def existingItem(composerId: String)(implicit session: Session): Option[Long] = {
-    (for (s <- stubs if s.composerId === composerId) yield s.pk).firstOption
+  private def updateStubAndInsertWc(id: Long, stub: Stub, wc: WorkflowContent)(implicit session: Session): Either[ContentUpdateError, ContentUpdate] = {
+    val existing = contentByComposerId(wc.composerId)
+    if(existing.isDefined) Left(ContentItemExists)
+    else {
+      val i = updateStubRows(id, stub)
+      if(i==0) Left(StubNotFound(id))
+      else {
+        insertWorkflowContet(wc).right.map(insertedId => ContentUpdate(id, Some(insertedId)))
+      }
+    }
   }
 
+  private def insertStub(s: Stub)(implicit session: Session): Long = (stubs returning stubs.map(_.pk) += Stub.newStubRow(s))
+
+  private def insertWorkflowContet(wc: WorkflowContent)(implicit session: Session): Either[DatabaseError, String] = {
+    try {
+      Right(content returning content.map(_.composerId) += WorkflowContent.newContentRow(wc, None))
+    }
+    catch {
+      case sqle: SQLException => Left(DatabaseError(sqle.getMessage()))
+    }
+  }
 
   def getContentById(id: Long): Option[ContentItem] = {
     DB.withTransaction { implicit session =>
-      (for {
-        (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
-        if s.pk === id
-      } yield (s,  c.?)).firstOption.map { case (s, c) => {
-        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
-      }}
+      contentByStubId(id)
     }
   }
 
+  def contentByStubId(id: Long)(implicit session: Session) = {
+    (for {
+      (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
+      if s.pk === id
+    } yield (s,  c.?)).firstOption.map { case (s, c) => {
+      ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
+    }}
+  }
 
   def getContentByCompserId(composerId: String): Option[ContentItem] = {
     DB.withTransaction { implicit session =>
-      (for {
-        (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
-        if s.composerId === composerId
-      } yield (s,  c.?)).firstOption.map { case (s, c) => {
-        ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
-      }}
+      contentByComposerId(composerId)
     }
+  }
+
+  def contentByComposerId(composerId: String)(implicit session: Session) = {
+    (for {
+      (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
+      if s.composerId === composerId
+    } yield (s,  c.?)).firstOption.map { case (s, c) => {
+      ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
+    }}
+
   }
 
   def getDashboardRowByComposerId(composerId: String): Response[DashboardRow] = {
@@ -128,24 +174,16 @@ object PostgresDB {
 
       val dashboardRowOpt = query.firstOption map {case (stubData, contentData) =>
         val stub    = Stub.fromStubRow(stubData)
-        val content = WorkflowContent.fromContentRow(contentData).copy(
-          section = Some(Section(stub.section))
-        )
+        val content = WorkflowContent.fromContentRow(contentData)
         DashboardRow(stub, content)
       }
       dashboardRowOpt match {
-        case None => Left(ApiErrors.composerIdNotFound(composerId))
+        case None => Left(ApiErrors.updateError(composerId))
         case Some(d) => Right(ApiSuccess(d))
       }
     }
   }
 
-  def existingWorkflowItem(id: Long)(implicit session: Session): Option[String] = {
-    (for {
-      (s, c) <- (stubs leftJoin content on (_.composerId === _.composerId))
-      if (s.pk === id)
-    } yield c.composerId.?).firstOption.flatten
-  }
 
   def getWorkflowItem(composerId: String): Option[String] = {
     DB.withTransaction { implicit session =>
@@ -157,42 +195,11 @@ object PostgresDB {
 
   }
 
-  def updateStubRows(id: Long, stub: Stub)(implicit session: Session): Int = {
-    stubs
-      .filter(_.pk === id)
-      .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
-      .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
-  }
-
-  def insertWorkflowContet(wc: WorkflowContent)(implicit session: Session): String = {
-    content returning content.map(_.composerId) += WorkflowContent.newContentRow(wc, None)
-  }
-
-
-
-  def updateContentItem(id: Long, c: ContentItem): Response[ContentUpdate] = {
-    DB.withTransaction { implicit session =>
-      val existingContentItem  = existingWorkflowItem(id)
-      existingContentItem.fold({
-          val stub = c.stub
-          try {
-            val updatedRow = updateStubRows(id, stub)
-            if (updatedRow == 0) Left(ApiErrors.updateError(id))
-            else {
-              val insertedId = c.wcOpt.map(insertWorkflowContet(_))
-              Right(ApiSuccess(ContentUpdate(id, insertedId)))
-            }
-          }
-          catch {
-            case sqle: SQLException=> {
-              Logger.error(s"Error updating stub with id ${id}, ${sqle.getMessage()}")
-              Left(ApiErrors.databaseError(sqle.getMessage()))
-            }
-          }
-      })({ cId =>
-        Left(ApiErrors.composerItemLinked(id, cId))
-      })
-    }
+  def updateStubRows(id: Long, stub: Stub)(implicit session: Session):  Int = {
+      stubs
+        .filter(_.pk === id)
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
   }
 
   def updateStubWithAssignee(id: Long, assignee: Option[String]): Int = {
@@ -286,18 +293,20 @@ object PostgresDB {
     }
   }
 
-
-  //todo - rename to delete contentitem
-  def deleteStub(id: Long): Response[Long] = {
+  def deleteContentByStubId(id: Long): Option[DeleteOp] = {
     DB.withTransaction { implicit session =>
       val queryCurrentStub = stubs.filter(_.pk === id)
 
       // Delete from Content table
-      content.filter(c => c.composerId in queryCurrentStub.map(_.composerId)).delete
+      val composerRows = content.filter(c => c.composerId in queryCurrentStub.map(_.composerId)).delete
 
       // Delete from Stub table
-      val deleted = queryCurrentStub.delete
-      if(deleted == 0) Right(ApiSuccess(id)) else Left(ApiErrors.notFound)
+      val deletedRows = queryCurrentStub.delete
+
+      if(deletedRows==0) None
+
+      else Some(DeleteOp(id, composerRows))
+
     }
   }
 

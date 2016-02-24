@@ -34,5 +34,12 @@ trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with Matcher
     Json.parse(connection.body)
   }
 
+  def postJS(path: String, body: JsValue, expectedCode: Int = 200): JsValue = {
+    val connection = POST(s"$host/$path", body)
+    connection.responseCode should be (expectedCode)
+    Json.parse(connection.body)
+
+  }
+
   val host = Config.appConfig("host")
 }
