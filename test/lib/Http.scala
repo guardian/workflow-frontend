@@ -13,7 +13,7 @@ trait Http {
 
     val authed = AuthenticatedUser(User("jim", "bob", "jim@guardian.co.uk", None), "workflow", Set("workflow"),new Date().getTime + 86400 * 1000, true)
     //this test will break if localhost secret is changed in s3
-    val cookieValue = LegacyCookie.generateCookieData(authed, "devsecret")
+    val cookieValue = LegacyCookie.generateCookieData(authed, "localdevsecret")
 
     val cookie = PandaCookie("gutoolsAuth", cookieValue)
     val apiHeader = ("Cookie", s"${cookie.key}=${cookie.value}")
