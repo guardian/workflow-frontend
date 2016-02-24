@@ -116,7 +116,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
   def deleteContent(@ApiParam(value = "ID of the content item to delete") @PathParam("id") id: Long) = {
     APIAuthAction { implicit request =>
       Response(for {
-        stubId <- PostgresDB.deleteStub(id).right
+        stubId <- deleteResponse(id, PostgresDB.deleteContentByStubId(id)).right
       }yield stubId)
     }
   }
