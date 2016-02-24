@@ -88,6 +88,25 @@ case class ContentResponse(stubs: List[Stub], content: Map[String, List[Dashboar
 
 object ContentResponse {
 
+  def statusCountsMap(cis: List[ContentItem]): Map[String, Int] = {
+    val statusToCount = cis.groupBy(ci => ci.wcOpt.map(_.status)).collect({case (Some(s), cis) => (s.name, cis.length)})
+    val stubCount = cis.collect({case ContentItem(s: Stub, None) => s}).length
+    val totalCount = cis.length
+    statusToCount ++ Map("Stub" -> stubCount) ++ Map("total" -> totalCount)
+  }
+
+  def fromContentItems(cis: List[ContentItem]): ContentResponse = {
+    //contentItems are serialised to stubs and dashboardRows as JSON response handles these different.
+    //todo-write a method which accepts contentItems and serialises to correct JSON response.
+    val stubs = cis.collect({case ContentItem(s: Stub, None) => s})
+    val dashboardRows = cis.collect({case ContentItem(s: Stub, Some(wc: WorkflowContent)) => DashboardRow(s, wc)})
+
+    val contentGroupedByStatus: Map[String, List[DashboardRow]] = dashboardRows.groupBy(_.wc.status).map({case(s,cs) => (s.name, cs.toList)})
+
+    ContentResponse(stubs, contentGroupedByStatus, statusCountsMap(cis))
+
+  }
+
   implicit def mapWrites[A: Writes]: Writes[Map[Int, A]] = new Writes[Map[Int, A]] {
     def writes(map: Map[Int, A]): JsValue =
       Json.obj(map.map{case (s, o) =>
