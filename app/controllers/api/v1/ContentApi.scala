@@ -11,19 +11,6 @@ import scala.util.Try
 
 object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
-  // can be hidden behind multiple auth endpoints
-  val getContentBlock = { implicit req: Request[AnyContent] =>
-
-    val queryData = RequestParameters.fromRequest(req)
-
-    //Note content items are not UI ordered yet
-    NotImplemented
-  }
-
-  def content = APIAuthAction { request =>
-    NotImplemented
-  }
-
   def contentById(id: String) =  CORSable(composerUrl) {
     APIAuthAction { request =>
       Try(id.toLong).toOption match {
@@ -54,27 +41,5 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
   }
 
 
-  def createContent() = CORSable(composerUrl) {
-    APIAuthAction { implicit request =>
-      Response(for {
-        jsValue <- readJsonFromRequest(request.body).right
-        contentItem <- extract[ContentItem](jsValue.data).right
-        stubId <- upsertContentResponse(PostgresDB.createContent(contentItem.data)).right
-      } yield {
-        stubId
-      })
-    }
-  }
 
-  def modifyContent(id: Long) = Action {
-    NotImplemented
-  }
-
-  def deleteContent(id: Long) = {
-    APIAuthAction { implicit request =>
-      Response(for {
-        stubId <- deleteResponse(id, PostgresDB.deleteContentByStubId(id)).right
-      }yield stubId)
-    }
-  }
 }
