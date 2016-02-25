@@ -84,7 +84,7 @@ object PublishedData {
   }
 }
 
-case class ContentResponse(stubs: List[Stub], content: Map[String, List[DashboardRow]], count: Map[String, Int])
+case class ContentResponse(content: Map[String, List[DashboardRow]], stubs: List[Stub], count: Map[String, Int])
 
 object ContentResponse {
 
@@ -103,7 +103,7 @@ object ContentResponse {
   def fromContentItems(cis: List[ContentItem]): ContentResponse = {
     //contentItems are serialised to stubs and dashboardRows as JSON response handles these different.
     val stubs = cis.collect({case ContentItem(s: Stub, None) => s})
-    ContentResponse(stubs, contentGroupedByStatus(cis), statusCountsMap(cis))
+    ContentResponse(contentGroupedByStatus(cis), stubs, statusCountsMap(cis))
 
   }
 
