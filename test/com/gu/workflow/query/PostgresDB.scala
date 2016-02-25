@@ -1,5 +1,6 @@
 package com.gu.workflow.query
 
+import com.gu.workflow.db.CommonDB
 import models.{Stub, ContentItem, Flag}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
@@ -124,7 +125,7 @@ class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
   "updateContentStatus" in withContentItem(stubAndWorkflowContent) { ci =>
     ci.stub.composerId.fold(fail("should have an id defined"))(cId => {
       PostgresDB.updateContentStatus("New Status", cId) should equal(1)
-      val updatedContent = PostgresDB.getContentByCompserId(cId)
+      val updatedContent = CommonDB.getContentByCompserId(cId)
       updatedContent.flatMap(_.wcOpt.map(_.status)).fold(fail("should be able to retrieve by id"))(s => {
         s.name should equal("New Status")
       })
