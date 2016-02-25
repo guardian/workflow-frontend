@@ -187,103 +187,12 @@ object PostgresDB {
         .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
   }
 
-  def updateStubWithAssignee(id: Long, assignee: Option[String]): Int = {
-    DB.withTransaction { implicit session =>
-      stubs
-        .filter(_.pk === id)
-        .map(s => s.assignee)
-        .update(assignee)
-    }
-  }
-
-  def updateStubWithAssigneeEmail(id: Long, assigneeEmail: Option[String]): Int = {
-    DB.withTransaction { implicit session =>
-      stubs
-        .filter(_.pk === id)
-        .map(s => s.assigneeEmail)
-        .update(assigneeEmail)
-    }
-  }
-
   def updateField[A](id: Long, field: A, s: Schema.DBStub => Column[A]) = {
     DB.withTransaction { implicit session =>
       stubs
         .filter(_.pk === id)
         .map(s)
         .update(field)
-    }
-  }
-
-  def updateStubDueDate(id: Long, dueDate: Option[DateTime]): Int = {
-    DB.withTransaction { implicit session =>
-      stubs
-        .filter(_.pk === id)
-        .map(s => s.due)
-        .update(dueDate)
-    }
-  }
-
-  def updateStubNote(id: Long, input: String): Int = {
-    val note: Option[String] = if(input.length > 0) Some(input) else None
-    DB.withTransaction { implicit session =>
-      stubs
-        .filter(_.pk === id)
-        .map(s => s.note)
-        .update(note)
-    }
-  }
-
-  def updateStubProdOffice(id: Long, prodOffice: String): Int = {
-    DB.withTransaction { implicit session =>
-      stubs
-        .filter(_.pk === id)
-        .map(s => s.prodOffice)
-        .update(prodOffice)
-    }
-  }
-
-  def updateStubSection(id: Long, section: String): Int = {
-    DB.withTransaction { implicit session =>
-      stubs
-        .filter(_.pk === id)
-        .map(s => s.section)
-        .update(section)
-    }
-  }
-
-  def updateStubPriority(id: Long, priority: Int): Int = {
-    DB.withTransaction { implicit session =>
-      stubs
-        .filter(_.pk === id)
-        .map(s => s.priority)
-        .update(priority)
-    }
-  }
-
-  def updateStubWorkingTitle(id: Long, workingTitle: String): Int = {
-    DB.withTransaction { implicit session =>
-      stubs
-        .filter(_.pk === id)
-        .map(s => s.workingTitle)
-        .update(workingTitle)
-    }
-  }
-
-  def updateStubTrashed(id: Long, trashed: Option[Boolean]): Int = {
-    DB.withTransaction { implicit session =>
-      stubs
-        .filter(_.pk === id)
-        .map(s => s.trashed)
-        .update(trashed)
-    }
-  }
-
-  def updateStubLegalStatus(id: Long, status: Flag): Int = {
-    DB.withTransaction { implicit session =>
-      stubs
-        .filter(_.pk === id)
-        .map(s => s.needsLegal)
-        .update(status)
     }
   }
 
