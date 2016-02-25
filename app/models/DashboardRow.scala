@@ -107,10 +107,10 @@ object ContentResponse {
 
   }
 
-  implicit def mapWrites[A: Writes]: Writes[Map[Int, A]] = new Writes[Map[Int, A]] {
-    def writes(map: Map[Int, A]): JsValue =
+  implicit def mapWrites[A: Writes]: Writes[Map[String, A]] = new Writes[Map[String, A]] {
+    def writes(map: Map[String, A]): JsValue =
       Json.obj(map.map{case (s, o) =>
-        val ret: (String, JsValueWrapper) = s.toString -> Json.toJson(o)
+        val ret: (String, JsValueWrapper) = s -> Json.toJson(o)
         ret
       }.toSeq:_*)
   }
