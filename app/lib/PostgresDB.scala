@@ -2,6 +2,7 @@ package lib
 
 import java.sql.SQLException
 
+import com.gu.workflow.db.Schema
 import com.wordnik.swagger.annotations.ApiResponses
 import lib.OrderingImplicits._
 import Response.Response
@@ -201,6 +202,15 @@ object PostgresDB {
         .filter(_.pk === id)
         .map(s => s.assigneeEmail)
         .update(assigneeEmail)
+    }
+  }
+
+  def updateField[A](id: Long, field: A, s: Schema.DBStub => Column[A]) = {
+    DB.withTransaction { implicit session =>
+      stubs
+        .filter(_.pk === id)
+        .map(s)
+        .update(field)
     }
   }
 
