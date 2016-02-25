@@ -147,22 +147,6 @@ object PostgresDB {
     }}
   }
 
-  def getContentByCompserId(composerId: String): Option[ContentItem] = {
-    DB.withTransaction { implicit session =>
-      contentByComposerId(composerId)
-    }
-  }
-
-  def contentByComposerId(composerId: String)(implicit session: Session) = {
-    (for {
-      (s, c)<- stubs leftJoin content on (_.composerId === _.composerId)
-      if s.composerId === composerId
-    } yield (s,  c.?)).firstOption.map { case (s, c) => {
-      ContentItem(Stub.fromStubRow(s), WorkflowContent.fromOptionalContentRow(c))
-    }}
-
-  }
-
   def getDashboardRowByComposerId(composerId: String): Response[DashboardRow] = {
     DB.withTransaction { implicit session =>
 
