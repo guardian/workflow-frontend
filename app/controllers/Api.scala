@@ -20,7 +20,7 @@ import lib.DBToAPIResponse._
 
 import org.joda.time.DateTime
 
-import com.gu.workflow.db.{DeskDB, SectionDeskMappingDB, SectionDB, CommonDB}
+import com.gu.workflow.db._
 import com.gu.workflow.query._
 
 
@@ -184,7 +184,7 @@ object Api extends Controller with PanDomainAuthActions {
       Response(for {
         jsValue <- readJsonFromRequestResponse(request.body).right
         prodOffice <- extractResponse[String](jsValue.data \ "data")(Stub.prodOfficeReads).right
-        id <- updateRes(stubId, PostgresDB.updateStubProdOffice(stubId, prodOffice.data)).right
+        id <- updateRes(stubId, PostgresDB.updateField(stubId, prodOffice.data, (s: Schema.DBStub) => s.prodOffice)).right
       } yield {
         id
       })
