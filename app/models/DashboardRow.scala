@@ -95,15 +95,15 @@ object ContentResponse {
     statusToCount ++ Map("Stub" -> stubCount) ++ Map("total" -> totalCount)
   }
 
+  def contentGroupedByStatus(cis: List[ContentItem]): Map[String, List[DashboardRow]] = {
+    val dashboardRows = cis.collect({case ContentItem(s: Stub, Some(wc: WorkflowContent)) => DashboardRow(s, wc)})
+    dashboardRows.groupBy(_.wc.status).map({case(s,cs) => (s.name, cs.toList)})
+  }
+
   def fromContentItems(cis: List[ContentItem]): ContentResponse = {
     //contentItems are serialised to stubs and dashboardRows as JSON response handles these different.
-    //todo-write a method which accepts contentItems and serialises to correct JSON response.
     val stubs = cis.collect({case ContentItem(s: Stub, None) => s})
-    val dashboardRows = cis.collect({case ContentItem(s: Stub, Some(wc: WorkflowContent)) => DashboardRow(s, wc)})
-
-    val contentGroupedByStatus: Map[String, List[DashboardRow]] = dashboardRows.groupBy(_.wc.status).map({case(s,cs) => (s.name, cs.toList)})
-
-    ContentResponse(stubs, contentGroupedByStatus, statusCountsMap(cis))
+    ContentResponse(stubs, contentGroupedByStatus(cis), statusCountsMap(cis))
 
   }
 
