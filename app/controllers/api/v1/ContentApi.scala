@@ -65,7 +65,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
   }
 
   def contentByComposerId(id: String) =  {
-    val contentOpt: Option[ContentItem] = PostgresDB.getContentByCompserId(id)
+    val contentOpt: Option[ContentItem] = CommonDB.getContentByCompserId(id)
 
     val contentEither = contentOpt match {
       case Some(contentItem) =>
