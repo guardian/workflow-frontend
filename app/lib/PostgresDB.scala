@@ -2,15 +2,12 @@ package lib
 
 import java.sql.SQLException
 
-import com.wordnik.swagger.annotations.ApiResponses
-import lib.OrderingImplicits._
 import Response.Response
 import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.libs.json.{Json, JsObject, Writes}
 import scala.slick.collection.heterogenous._
 import syntax._
 import scala.slick.driver.PostgresDriver.simple._
