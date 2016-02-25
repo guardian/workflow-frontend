@@ -69,7 +69,7 @@ class ContentResponseTest extends FreeSpec with Matchers {
       val statusCountsMap = ContentResponse.statusCountsMap(testData)
       val contentGroupedByStatus = ContentResponse.contentGroupedByStatus(testData)
 
-      ContentResponse.fromContentItems(testData) should equal(ContentResponse(stubOnly.map(_.stub), contentGroupedByStatus, statusCountsMap))
+      ContentResponse.fromContentItems(testData) should equal(ContentResponse(contentGroupedByStatus, stubOnly.map(_.stub), statusCountsMap))
     }
   }
 
