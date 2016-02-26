@@ -21,6 +21,7 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
         stub.prodOffice should equal ("UK")
         stub.trashed should equal (false)
         stub.assignee should equal (None)
+        stub.contentType should equal ("article")
       })
     }
 
@@ -35,7 +36,7 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
         ci.stub.title should equal ("working")
         ci.stub.prodOffice should equal ("UK")
         ci.stub.section should equal ("100 Voices (Project)")
-        ci.stub.contentType should equal (Some("article"))
+        ci.stub.contentType should equal ("article")
         ci.wcOpt.map(_.composerId) should equal (Some("56cc74bfa7c8a951d739c3f4"))
         ci.wcOpt.map(_.contentType) should equal (Some("article"))
         ci.wcOpt.map(_.status) should equal (Some(Status("Writers")))
@@ -59,7 +60,7 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
         ci.stub.title should equal ("headline")
         ci.stub.prodOffice should equal ("UK")
         ci.stub.section should equal ("AU News")
-        ci.stub.contentType should equal (Some("article"))
+        ci.stub.contentType should equal ("article")
 
         ci.wcOpt.map(_.composerId) should equal (Some("56cc7694a7c8a951d739c3f9"))
         ci.wcOpt.map(_.contentType) should equal (Some("article"))
