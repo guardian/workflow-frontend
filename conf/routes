@@ -74,15 +74,7 @@ DELETE         /api/v1/plan/day-note                       controllers.PlanApi.d
 PATCH          /api/v1/plan/day-note/:id/:fieldName        controllers.PlanApi.patchDayNote(id: Long, fieldName: String)
 
 # Content
-GET            /api/v1/content                             controllers.ContentApi.content
 GET            /api/v1/content/:id                         controllers.ContentApi.contentById(id: String)
-POST           /api/v1/content                             controllers.ContentApi.createContent
-PUT            /api/v1/content/:id                         controllers.ContentApi.modifyContent(id: Long)
-DELETE         /api/v1/content/:id                         controllers.ContentApi.deleteContent(id: Long)
-
-#Swagger
-GET            /api/v1/docs                                controllers.ApiHelpController.getResources
-GET            /api/v1/docs/content                        controllers.ApiHelpController.getResource(path = "/content")
 
 # Admin
 GET            /admin                                      controllers.Admin.index

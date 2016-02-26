@@ -2,19 +2,10 @@ package controllers
 
 import config.Config
 
-import javax.ws.rs.PathParam
 import lib._
-import Response.Response
-import com.gu.workflow.db.CommonDB
-import com.gu.workflow.query.WfQuery
 import controllers.Api._
-import lib.OrderingImplicits._
-import models._
 import play.api.libs.json._
 import play.api.mvc._
-
-import scala.util.Either
-
 
 
 trait WorkflowApi {
