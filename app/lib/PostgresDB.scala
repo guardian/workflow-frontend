@@ -3,6 +3,7 @@ package lib
 import java.sql.SQLException
 
 import Response.Response
+import com.gu.workflow.db.Schema
 import models.Flag.Flag
 import models._
 import com.github.tototoshi.slick.PostgresJodaSupport._
