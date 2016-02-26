@@ -84,7 +84,7 @@ object PublishedData {
   }
 }
 
-case class ContentResponse(content: Map[String, List[DashboardRow]], stubs: List[Stub], count: Map[String, Int])
+case class ContentResponse(content: Map[String, List[ContentItem]], stubs: List[Stub], count: Map[String, Int])
 
 object ContentResponse {
 
@@ -95,9 +95,8 @@ object ContentResponse {
     statusToCount ++ Map("Stub" -> stubCount) ++ Map("total" -> totalCount)
   }
 
-  def contentGroupedByStatus(cis: List[ContentItem]): Map[String, List[DashboardRow]] = {
-    val dashboardRows = cis.collect({case ContentItem(s: Stub, Some(wc: WorkflowContent)) => DashboardRow(s, wc)})
-    dashboardRows.groupBy(_.wc.status).map({case(s,cs) => (s.name, cs.toList)})
+  def contentGroupedByStatus(cis: List[ContentItem]): Map[String, List[ContentItem]] = {
+    cis.groupBy(ci => ci.wcOpt.map(_.status)).collect({case (Some(s), cis) => (s.name, cis)})
   }
 
   def fromContentItems(cis: List[ContentItem]): ContentResponse = {

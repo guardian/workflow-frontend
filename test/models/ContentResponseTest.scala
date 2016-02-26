@@ -8,12 +8,6 @@ class ContentResponseTest extends FreeSpec with Matchers {
 
   def withStatus(st: String): ContentItem => ContentItem = c => ContentItem(c.stub, c.wcOpt.map(wc => wc.copy(status=Status(st))))
 
-  def toDashboardRow(ci: ContentItem): DashboardRow = {
-    ci match {
-      case ContentItem(s: Stub, Some(wc: WorkflowContent)) => DashboardRow(s, wc)
-    }
-  }
-
   "statusCountsMap" -    {
     "should give a map of status to count" in {
       val stubOnly = generateTestData(2, 1.0)
@@ -47,10 +41,10 @@ class ContentResponseTest extends FreeSpec with Matchers {
 
       val content = ContentResponse.contentGroupedByStatus(testData)
 
-      content.get("Writers") should equal (Some(writers.map(toDashboardRow(_))))
-      content.get("Subs") should equal (Some(subs.map(toDashboardRow(_))))
-      content.get("Hold") should equal (Some(hold.map(toDashboardRow(_))))
-      content.get("Revise") should equal (Some(revise.map(toDashboardRow(_))))
+      content.get("Writers") should equal (Some(writers))
+      content.get("Subs") should equal (Some(subs))
+      content.get("Hold") should equal (Some(hold))
+      content.get("Revise") should equal (Some(revise))
     }
 
   }
