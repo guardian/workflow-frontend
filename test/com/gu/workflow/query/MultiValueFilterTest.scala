@@ -40,7 +40,7 @@ class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with M
 
     "field is contentType" in withTestData(testData) { dataInserted =>
       val query = WfQuery(contentType=Seq("article"))
-      val oneFilter = FilterTest(c => (contentTypeS(c) == "article") && contentTypeWC(c).exists(_ == "article"), dataInserted)
+      val oneFilter = FilterTest(c => (contentTypeS(c) == "article"), dataInserted)
       query should selectSameResultsAs (oneFilter)
     }
 
@@ -82,7 +82,7 @@ class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with M
 
     "field is contentType" in withTestData(testData) { dataInserted =>
       val query = WfQuery(contentType=Seq("article","gallery"))
-      val multiFilter = FilterTest(c =>  contentTypeS(c).exists(_ == "article") && contentTypeWC(c).exists(_ == "article") ||  contentTypeS(c).exists(_ == "gallery") && contentTypeWC(c).exists(_ == "gallery"), dataInserted)
+      val multiFilter = FilterTest(c =>  (contentTypeS(c) == "article") ||  (contentTypeS(c) == "gallery"), dataInserted)
       query should selectSameResultsAs (multiFilter)
     }
 
