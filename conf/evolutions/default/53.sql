@@ -6,4 +6,3 @@ ALTER TABLE stub alter column content_type SET NOT NULL default 'article';
 
 ALTER TABLE stub alter column content_type drop not null;
 
-
