@@ -1,8 +1,8 @@
 # --- !Ups
 
-ALTER TABLE stub set content_type NOT NULL default 'article';
+ALTER TABLE stub alter column content_type SET NOT NULL default 'article';
 
 # --- !Downs
 
-ALTER TABLE stub set content_type drop not null;
+ALTER TABLE stub alter column content_type drop not null;
 
