@@ -42,7 +42,8 @@ class TextSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matcher
 
   def doTest(f: FieldTest, query: WfQuery,
              data: List[ContentItem] = testData): Unit =
-    withTestData(data) { dataInserted =>
+  {
+     val dataInserted = createContent(testData)
       query should selectSameResultsAs (FilterTest(f, dataInserted))
     }
 
