@@ -30,7 +30,8 @@ class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matche
   val withCollaborators = testData.map(c => ContentItemWithCollaborators(c, generateRandomSizeCollaborators()))
 
   "YourContent query" - {
-    "should correctly find assigned content" in withTestData(testData) { insertedData =>
+    "should correctly find assigned content" in {
+      val insertedData = createContent(testData)
       (WfQuery(assignedToEmail = List(testEmail))
          should selectSameResultsAs (FilterTest(assignedToTest(testEmail), insertedData)))
     }
