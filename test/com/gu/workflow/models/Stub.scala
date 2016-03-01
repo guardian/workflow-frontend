@@ -38,6 +38,7 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
         ci.stub.section should equal ("100 Voices (Project)")
         ci.stub.contentType should equal ("article")
         ci.wcOpt.map(_.composerId) should equal (Some("56cc74bfa7c8a951d739c3f4"))
+        ci.wcOpt.map(_.contentType) should equal (Some("article"))
         ci.wcOpt.map(_.status) should equal (Some(Status("Writers")))
         ci.wcOpt.map(_.activeInInCopy) should equal (Some(false))
         ci.wcOpt.map(_.takenDown) should equal (Some(false))
@@ -62,6 +63,7 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
         ci.stub.contentType should equal ("article")
 
         ci.wcOpt.map(_.composerId) should equal (Some("56cc7694a7c8a951d739c3f9"))
+        ci.wcOpt.map(_.contentType) should equal (Some("article"))
         ci.wcOpt.map(_.status) should equal (Some(Status("Desk")))
         ci.wcOpt.map(_.activeInInCopy) should equal (Some(true))
         ci.wcOpt.map(_.takenDown) should equal (Some(false))
