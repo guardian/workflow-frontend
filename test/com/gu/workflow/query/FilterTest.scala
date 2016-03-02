@@ -3,7 +3,7 @@ package com.gu.workflow.query
 import com.gu.workflow.db.CommonDB
 import com.gu.workflow.db.Schema.{DBContent, DBStub}
 import lib.PostgresDB
-import models.{Status, ContentItem, DashboardRow}
+import models.{Status, ContentItem}
 import org.joda.time.DateTime
 import org.scalatest.Matchers
 import org.scalatest.matchers.{Matcher, MatchResult}
