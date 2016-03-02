@@ -90,11 +90,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
 
   def contentById(composerId: String) = {
-    Response(for{
-      data <- PostgresDB.getDashboardRowByComposerId(composerId).right
-    }yield {
-      data
-    })
+    ContentApi.contentByComposerId(composerId)
   }
 
   def sharedAuthGetContentById(composerId: String) = SharedSecretAuthAction(contentById(composerId))
