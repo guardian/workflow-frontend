@@ -8,6 +8,7 @@ import org.scalactic.Equality
 import play.api.libs.json._
 import org.scalatest._
 import com.gu.workflow.test.lib.TestData._
+import com.gu.workflow.test.WorkflowIntegrationSuite
 
 class ApiResponseSpec extends FreeSpec  with  WorkflowIntegrationSuite with Inside {
 
