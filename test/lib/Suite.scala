@@ -17,6 +17,8 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.WebDriver
 
 import com.gu.workflow.test.CommonDBIntegrationSuite
+import com.gu.workflow.test.Http
+
 
 trait WorkflowIntegrationSuite extends Suite with OneServerPerSuite with Matchers with ShouldMatchers with Http with WorkflowHelpers with CommonDBIntegrationSuite {
   implicit override lazy val app: FakeApplication = FakeApplication(
