@@ -5,9 +5,9 @@ import models.{Stub, ContentItem, Flag}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
 import play.api.db.DB
-import test.WorkflowIntegrationSuite
 import com.gu.workflow.test.lib.TestData._
 import lib._
+import com.gu.workflow.test.WorkflowIntegrationSuite
 
 class PostgresDBTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
 
