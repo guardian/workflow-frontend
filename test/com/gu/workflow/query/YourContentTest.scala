@@ -6,7 +6,7 @@ import com.gu.workflow.test.lib.TestData._
 import models.{ContentItem, User}
 import FilterTestOps._
 import test._
-
+import com.gu.workflow.test.WorkflowIntegrationSuite
 import org.scalatest.{Matchers, FreeSpec}
 
 class YourContentTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
