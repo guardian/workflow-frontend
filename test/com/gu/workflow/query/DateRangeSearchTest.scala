@@ -5,9 +5,8 @@ import models.ContentItem._
 import models.{ContentItem, Status}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
-import test.WorkflowIntegrationSuite
 import com.gu.workflow.test.lib.TestData._
-
+import com.gu.workflow.test.WorkflowIntegrationSuite
 
 
 class DateRangeSearchTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {

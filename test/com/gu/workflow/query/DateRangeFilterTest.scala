@@ -4,7 +4,7 @@ import com.gu.workflow.query.FilterTestOps._
 import com.gu.workflow.test.lib.TestData._
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
-import test.WorkflowIntegrationSuite
+import com.gu.workflow.test.WorkflowIntegrationSuite
 import models.ContentItem._
 
 class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Matchers {
@@ -57,4 +57,3 @@ class DateRangeFilterTest extends FreeSpec with WorkflowIntegrationSuite with Ma
     }
   }
 }
-

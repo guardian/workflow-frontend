@@ -5,7 +5,7 @@ import com.gu.workflow.test.lib.TestData._
 import models.{Flag, ContentItem, Section, Status}
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FreeSpec}
-import test.WorkflowIntegrationSuite
+import com.gu.workflow.test.WorkflowIntegrationSuite
 import models.ContentItem._
 
 class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with Matchers{
@@ -161,4 +161,3 @@ class MultiValueFilterTest extends FreeSpec with WorkflowIntegrationSuite with M
     }
   }
 }
-
