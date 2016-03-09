@@ -22,16 +22,6 @@ object PostgresDB {
   import play.api.Play.current
   import play.api.db.slick.DB
 
-  def contentItemLookup(composerId: String): List[DashboardRow] =
-    DB.withTransaction { implicit session =>
-      WfQuery.contentLookup(composerId)
-        .list.map { case (stubData, contentData) =>
-        val stub    = Stub.fromStubRow(stubData)
-        val content = WorkflowContent.fromContentRow(contentData)
-        DashboardRow(stub, content)
-      }
-    }
-
   def getContentItems(query: WfQuery): List[ContentItem] = {
     val dbRes = getContentItemsDBRes(WfQuery.stubAndContentFilters(query), WfQuery.stubAndCollaboratorPredOpt(query))
     val content: List[ContentItem] = dbRes.map { case (s, c) => {
@@ -145,28 +135,6 @@ object PostgresDB {
     }}
   }
 
-  def getDashboardRowByComposerId(composerId: String): Response[DashboardRow] = {
-    DB.withTransaction { implicit session =>
-
-      val query = for {
-        s <- stubs.filter(_.composerId === composerId)
-        c <- content
-        if s.composerId === c.composerId
-      } yield (s, c)
-
-      val dashboardRowOpt = query.firstOption map {case (stubData, contentData) =>
-        val stub    = Stub.fromStubRow(stubData)
-        val content = WorkflowContent.fromContentRow(contentData)
-        DashboardRow(stub, content)
-      }
-      dashboardRowOpt match {
-        case None => Left(ApiErrors.updateError(composerId))
-        case Some(d) => Right(ApiSuccess(d))
-      }
-    }
-  }
-
-
   def getWorkflowItem(composerId: String): Option[String] = {
     DB.withTransaction { implicit session =>
       (for {
@@ -174,7 +142,6 @@ object PostgresDB {
         if(c.composerId === composerId)
       } yield c.composerId).firstOption
     }
-
   }
 
   def updateStubRows(id: Long, stub: Stub)(implicit session: Session):  Int = {
