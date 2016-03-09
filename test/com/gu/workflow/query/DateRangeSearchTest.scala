@@ -40,17 +40,20 @@ class DateRangeSearchTest extends FreeSpec with WorkflowIntegrationSuite with Ma
       dateRangeOpt(scheduledLaunchDate, dt)
   }
 
-  "No date range set"  in withTestData(testData) { dataInserted =>
+  "No date range set"  in {
+    val dataInserted = createContent(testData)
     val query = WfQuery()
     query should selectSameResultsAs (FilterTest(noFilter, dataInserted))
   }
 
-  "Date range set for today" in withTestData(testData) { dataInserted =>
+  "Date range set for today" in {
+    val dataInserted = createContent(testData)
     val query = WfQuery(viewTimes = Some(todayRange))
     query should selectSameResultsAs (FilterTest(dateFields(todayRange), dataInserted))
   }
 
-  "Date range set for yesterday"  in withTestData(testData) { dataInserted =>
+  "Date range set for yesterday"  in {
+    val dataInserted = createContent(testData)
     val query = WfQuery(viewTimes = Some(yesterdayRange))
     query should selectSameResultsAs (FilterTest(dateFields(yesterdayRange), dataInserted))
   }
