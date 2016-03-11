@@ -8,32 +8,28 @@ import com.gu.workflow.test.lib.TestData._
 
 class DeskDBTest extends FreeSpec with CommonDBIntegrationSuite with Matchers {
 
-  "Should retrieve desks" in withDesksTestData(generateDesks()) { dataInserted =>
+  "deskList should retrieve desks" in withDesksTestData(generateDesks()) { dataInserted =>
     DeskDB.deskList should equal(dataInserted)
   }
 
-  "Should insert a desk with a unique name and take no action if desk already exists" in {
+  "upsert should insert a desk if not already present in the table" in {
     val desk = generateDesk()
     DeskDB.upsert(desk) should equal(1)
     val deskFromDB = DeskDB.getByName(desk.name)
     deskFromDB.isDefined should equal (true)
   }
 
-  "Should do nothing if the upsert is called on a desk with the same name" in {
+  "upsert should return 0 if the desk is already present in table" in {
     val desk = generateDesk()
     DeskDB.upsert(desk) should equal(1)
     DeskDB.upsert(desk) should equal(0)
-
   }
 
-  "Should remove a desk" in {
+  "remove should delete a desk from a table" in {
     val desk = generateDesk()
     val deskFromDB = createDesk(desk)
     DeskDB.remove(desk) should equal (1)
     DeskDB.getByName(deskFromDB.name) should equal(None)
   }
-
-
-
 
 }
