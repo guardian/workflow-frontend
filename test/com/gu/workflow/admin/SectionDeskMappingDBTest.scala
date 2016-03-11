@@ -8,13 +8,13 @@ import com.gu.workflow.test.lib.TestData._
 
 class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite with Matchers {
 
-  "Should be able to insert a desk and section mapping" in {
+  "insertSectionAndDeskMapping should add desk and section mapping" in {
     val desk = createDesk(generateDesk())
     val section = createSection(generateSection())
     SectionDeskMappingDB.insertSectionAndDeskMapping(desk.id, section.id) should equal (1)
   }
 
-  "Should be able to retrieve desk and sections mappings by desk id" in {
+  "getMappingByDeskId should retrieve desk and sections mappings by desk id" in {
     val desk = createDesk(generateDesk())
     val sectionOne = createSection(generateSection())
     val sectionTwo = createSection(generateSection())
@@ -27,7 +27,7 @@ class SectionDeskMappingDBTest extends FreeSpec with CommonDBIntegrationSuite wi
     ))
   }
 
-  "getMappingByDeskId should return a list of desk and sections relations when searched by desk id" in {
+  "getMappingByDeskId should return a list of desk and sections relations when searched by desk id and not other items in db store" in {
     val desk = createDesk(generateDesk())
     val sections = generateSections().map(createSection(_)).toList
     val sectionsWithMapping = sections.take(2)
