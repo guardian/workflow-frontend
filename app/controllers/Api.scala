@@ -1,10 +1,12 @@
 package controllers
 
+import com.gu.workflow.api.{ ApiUtils, PrototypeAPI }
 import com.gu.workflow.lib._
 import lib._
 import Response.Response
 import models.Flag.Flag
 import models._
+import models.api.ApiResponseFt
 import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
 
 import play.api.libs.ws.WS
@@ -106,13 +108,10 @@ object Api extends Controller with PanDomainAuthActions {
 
 
   def createContent() =  CORSable(composerUrl) {
-    APIAuthAction { implicit request =>
-      Response(for {
-        jsValue <- readJsonFromRequestResponse(request.body).right
-        stub <- extractResponse[Stub](jsValue.data).right
-        wcOpt <- (if(stub.data.composerId.isDefined) extractApiResponseOption[WorkflowContent](jsValue.data)
-                  else extractResponse[Option[WorkflowContent]](jsValue.data)).right
-        stubId <- upsertContentResponse(PostgresDB.createContent(ContentItem(stub.data, wcOpt.data))).right
+    APIAuthAction.async { request =>
+      ApiResponseFt[models.api.ContentUpdate](for {
+        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
+        stubId <- PrototypeAPI.createContent(jsValue)
       } yield {
         stubId
       })
