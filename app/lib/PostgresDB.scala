@@ -54,6 +54,20 @@ object PostgresDB {
     contentItem.stub.composerId != contentItem.wcOpt.map(_.composerId)
   }
 
+  def createContent(c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
+    if(notValidForUpsert(c)) Left(ComposerIdsConflict(c.stub.composerId, c.wcOpt.map(_.composerId)))
+    else createContentDB(c)
+
+  }
+  private def createContentDB(c: ContentItem): Either[ContentUpdateError, ContentUpdate] = {
+    DB.withTransaction { implicit session =>
+      c match {
+        case ContentItem(stub, None) => Right(ContentUpdate(insertStub(stub), None))
+        case ContentItem(stub, Some(wc)) => createStubAndWCContent(stub, wc)
+      }
+    }
+  }
+
   private def createStubAndWCContent(s: Stub, wc: WorkflowContent)(implicit session: Session): Either[ContentUpdateError, ContentUpdate] = {
     val existing = contentByComposerId(wc.composerId)
     if(existing.isDefined) Left(ContentItemExists)
