@@ -74,9 +74,11 @@ object Admin extends Controller with PanDomainAuthActions {
     }
   }
 
-  def newsLists = (AuthAction andThen WhiteListAuthFilter) {
-    Ok(views.html.admin.newsLists(NewsListDB.newsListList.sortBy(newsList => newsList.title), addNewsListForm, SectionDB.sectionList))
-  }
+  def newsLists = (AuthAction andThen WhiteListAuthFilter).async {
+    getSortedSections.map { sectionListFromDB =>
+
+      Ok(views.html.admin.newsLists(NewsListDB.newsListList.sortBy(newsList => newsList.title), addNewsListForm, sectionListFromDB))
+    }}
 
 
 
@@ -119,12 +121,17 @@ object Admin extends Controller with PanDomainAuthActions {
     SECTION routes
    */
 
-  def addSection = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
+  def addSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
     addSectionForm.bindFromRequest.fold(
-      formWithErrors => BadRequest("failed to add section"),
+      formWithErrors => Future(BadRequest("failed to add section")),
       section => {
-        SectionDB.upsert(section)
-        Redirect(routes.Admin.desksAndSections(None))
+        CommonAPI.upsertSection(section).asFuture.map { res =>
+          res match {
+            case Right(_) => Redirect(routes.Admin.desksAndSections(None))
+            case Left(err) => Logger.error(s"error upserting section: $err")
+              InternalServerError
+          }
+        }
       }
     )
   }
