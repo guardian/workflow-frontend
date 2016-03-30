@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.api.PrototypeAPI
+import com.gu.workflow.api.{ CommonAPI, PrototypeAPI }
 import com.gu.workflow.db.{CommonDB}
 import models.ContentItem
 import models.api._
@@ -31,7 +31,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
   }
 
   def contentByComposerId(id: String) =  {
-    val item = PrototypeAPI.getContentByComposerId(id).asFuture
+    val item = CommonAPI.getContentByComposerId(id).asFuture
     item.map(prepareResponse(_))
   }
 
