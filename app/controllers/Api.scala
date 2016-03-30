@@ -122,7 +122,9 @@ object Api extends Controller with PanDomainAuthActions {
     APIAuthAction { implicit request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        putRes <- PrototypeAPI.putStub()
+        putRes <- PrototypeAPI.putStub(stubId, request.body)
+      } yield {
+        putRes
       })
     }
   }
