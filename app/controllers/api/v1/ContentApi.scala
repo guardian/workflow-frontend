@@ -37,10 +37,10 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
 
   def prepareResponse(res: Either[ApiError, Option[ContentItem]]) = {
     res match {
-      case Left(err) => Ok(Json.toJson(err))
+      case Left(err) => Status(500)(Json.toJson(err))
       case Right(item) => item match {
         case Some(i) => Ok(Json.toJson(i))
-        case None => Ok(Json.toJson(ApiErrors.notFound))
+        case None => Status(404)(Json.toJson(ApiErrors.notFound))
       }
     }
   }
