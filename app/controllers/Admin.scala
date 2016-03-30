@@ -136,13 +136,18 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeSection = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
+  def removeSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
     addSectionForm.bindFromRequest.fold(
-      formWithErrors => BadRequest("failed to remove section"),
+      formWithErrors => Future(BadRequest("failed to remove section")),
       section => {
         SectionDeskMappingDB.removeSectionMappings(section)
-        SectionDB.remove(section)
-        NoContent
+        CommonAPI.removeSection(section).asFuture.map { res =>
+          res match {
+            case Right(_) => NoContent
+            case Left(err) => Logger.error(s"error removing section: $err")
+              InternalServerError
+          }
+        }
       }
     )
   }
