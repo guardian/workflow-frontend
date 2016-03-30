@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.api.CommonAPI
+import com.gu.workflow.api.SectionsAPI
 import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
 
@@ -20,7 +20,7 @@ import scala.concurrent.Future
 object Application extends Controller with PanDomainAuthActions {
 
   def getSortedSections(): Future[List[Section]] = {
-    CommonAPI.getSections().asFuture.map { x =>
+    SectionsAPI.getSections().asFuture.map { x =>
       x match {
         case Left(err) => Logger.error(s"error fetching sections: $err"); List()
         case Right(sections) => sections.sortBy(_.name)

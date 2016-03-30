@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.api.CommonAPI
+import com.gu.workflow.api.SectionsAPI
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
@@ -23,7 +23,7 @@ object Admin extends Controller with PanDomainAuthActions {
   import play.api.data.Forms._
 
   def getSortedSections(): Future[List[Section]] = {
-    CommonAPI.getSections().asFuture.map { x =>
+    SectionsAPI.getSections().asFuture.map { x =>
       x match {
         case Left(err) => Logger.error(s"error fetching sections: $err"); List()
         case Right(sections) => sections.sortBy(_.name)
@@ -125,7 +125,7 @@ object Admin extends Controller with PanDomainAuthActions {
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to add section")),
       section => {
-        CommonAPI.upsertSection(section).asFuture.map { res =>
+        SectionsAPI.upsertSection(section).asFuture.map { res =>
           res match {
             case Right(_) => Redirect(routes.Admin.desksAndSections(None))
             case Left(err) => Logger.error(s"error upserting section: $err")
@@ -141,7 +141,7 @@ object Admin extends Controller with PanDomainAuthActions {
       formWithErrors => Future(BadRequest("failed to remove section")),
       section => {
         SectionDeskMappingDB.removeSectionMappings(section)
-        CommonAPI.removeSection(section).asFuture.map { res =>
+        SectionsAPI.removeSection(section).asFuture.map { res =>
           res match {
             case Right(_) => NoContent
             case Left(err) => Logger.error(s"error removing section: $err")

@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.api.{ ApiUtils, CommonAPI, PrototypeAPI }
+import com.gu.workflow.api.{ ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI }
 import com.gu.workflow.lib._
 import lib._
 import Response.Response
@@ -285,7 +285,7 @@ object Api extends Controller with PanDomainAuthActions {
   def sections = CORSable(composerUrl) {
     AuthAction.async  {request =>
       ApiResponseFt[List[Section]](for {
-        sections <- CommonAPI.getSections()
+        sections <- SectionsAPI.getSections()
       } yield {
         sections
       })
