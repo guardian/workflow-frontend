@@ -1,5 +1,6 @@
 package controllers
 
+import com.gu.workflow.api.CommonAPI
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
@@ -8,7 +9,6 @@ import lib._
 import Response._
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.libs.json._
 import play.api.libs.ws.WS
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -22,12 +22,22 @@ object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
 
+  def getSortedSections(): Future[List[Section]] = {
+    CommonAPI.getSections().asFuture.map { x =>
+      x match {
+        case Left(err) => Logger.error(s"error fetching sections: $err"); List()
+        case Right(sections) => sections.sortBy(_.name)
+      }
+    }
+  }
+
+
   def index() = (AuthAction andThen WhiteListAuthFilter) {
 
     Redirect("/admin/desks-and-sections")
   }
 
-  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter) {
+  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async {
 
     val deskList = DeskDB.deskList
 
@@ -47,20 +57,21 @@ object Admin extends Controller with PanDomainAuthActions {
       }
     }.getOrElse(deskList)
 
-    val sectionListFromDB = SectionDB.sectionList
 
-    val sectionList = selectedDeskOption.map { selectedDesk =>
-      SectionDeskMappingDB.getSectionsWithRelation(selectedDesk, sectionListFromDB)
-    }.getOrElse(sectionListFromDB)
+    getSortedSections.map { sectionListFromDB =>
+      val sectionList = selectedDeskOption.map { selectedDesk =>
+        SectionDeskMappingDB.getSectionsWithRelation(selectedDesk, sectionListFromDB)
+      }.getOrElse(sectionListFromDB)
 
-    Ok(
-      views.html.admin.desksAndSections(
-        sectionList.sortBy(_.name),
-        addSectionForm,
-        desks.sortBy(_.name),
-        addDeskForm,
-        selectedDeskOption)
-    )
+      Ok(
+        views.html.admin.desksAndSections(
+          sectionList.sortBy(_.name),
+          addSectionForm,
+          desks.sortBy(_.name),
+          addDeskForm,
+          selectedDeskOption)
+      )
+    }
   }
 
   def newsLists = (AuthAction andThen WhiteListAuthFilter) {
