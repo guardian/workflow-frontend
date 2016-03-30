@@ -119,10 +119,10 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def putStub(stubId: Long) =  CORSable(composerUrl) {
-    APIAuthAction { implicit request =>
+    APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        putRes <- PrototypeAPI.putStub(stubId, request.body)
+        putRes <- PrototypeAPI.putStub(stubId, jsValue)
       } yield {
         putRes
       })
