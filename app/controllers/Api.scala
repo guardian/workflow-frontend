@@ -86,8 +86,12 @@ object Api extends Controller with PanDomainAuthActions {
   def content = APIAuthAction(getContentBlock)
 
   def getContentbyId(composerId: String) = CORSable(Config.composerUrl) {
-      APIAuthAction { implicit request =>
-        contentById(composerId)
+      APIAuthAction.async { implicit request =>
+        ApiResponseFt[Option[ContentItem]](for {
+          item <- contentById(composerId)
+        } yield {
+          item
+        })
       }
     }
 
@@ -95,7 +99,14 @@ object Api extends Controller with PanDomainAuthActions {
     ContentApi.contentByComposerId(composerId)
   }
 
-  def sharedAuthGetContentById(composerId: String) = SharedSecretAuthAction(contentById(composerId))
+  def sharedAuthGetContentById(composerId: String) =
+    SharedSecretAuthAction.async {
+      ApiResponseFt[Option[ContentItem]](for {
+        item <- contentById(composerId)
+      } yield {
+        item
+      })
+    }
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   val iso8601DateTimeNoMillis = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")

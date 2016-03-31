@@ -1,10 +1,14 @@
 package controllers
 
-import lib._
+import com.gu.workflow.api.{ CommonAPI, PrototypeAPI }
 import com.gu.workflow.db.{CommonDB}
-import models._
+import models.ContentItem
+import models.api._
+import play.api.Logger
+import models.api.ApiResponseFt
+import play.api.libs.json.Json
 import play.api.mvc._
-import lib.DBToAPIResponse._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.util.Try
 
@@ -12,34 +16,35 @@ import scala.util.Try
 object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
   def contentById(id: String) =  CORSable(composerUrl) {
-    APIAuthAction { request =>
-      Try(id.toLong).toOption match {
-        case Some(l) => contentByStubId(l)
-        case None => contentByComposerId(id)
-      }
+    APIAuthAction.async {
+      ApiResponseFt[Option[ContentItem]](for {
+        item <- Try(id.toLong).toOption match {
+          case Some(l) => contentByStubId(l)
+          case None => contentByComposerId(id)
+        }
+      } yield {
+        item
+      })
     }
   }
 
-  def contentByStubId(id: Long): Result =  {
-    val contentOpt: Option[ContentItem] = PostgresDB.getContentById(id)
-
-    Response(contentOpt match {
-      case Some(contentItem) => Right(ApiSuccess(contentItem))
-      case None => Left(ApiErrors.notFound)
-    })
+  def contentByStubId(id: Long) =  {
+    val item = PrototypeAPI.getContentByStubId(id)
+    prepareResponse(item)
   }
 
   def contentByComposerId(id: String) =  {
-    val contentOpt: Option[ContentItem] = CommonDB.getContentByCompserId(id)
-
-    val contentEither = contentOpt match {
-      case Some(contentItem) =>
-        contentItem.stub.id.map { id => Right(ApiSuccess(contentItem))}.getOrElse(Left(ApiErrors.notFound))
-      case None => Left(ApiErrors.notFound)
-    }
-		Response(contentEither)
+    val item = CommonAPI.getContentByComposerId(id)
+    prepareResponse(item)
   }
 
-
-
+  def prepareResponse(res: ApiResponseFt[Option[ContentItem]]):
+      ApiResponseFt[Option[ContentItem]] = {
+    res.flatMap { contentOpt =>
+      contentOpt match {
+        case Some(item) => ApiResponseFt.Right(Some(item))
+        case None => ApiResponseFt.Left(ApiErrors.notFound)
+      }
+    }
+  }
 }
