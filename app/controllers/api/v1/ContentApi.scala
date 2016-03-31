@@ -17,30 +17,33 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
 
   def contentById(id: String) =  CORSable(composerUrl) {
     APIAuthAction.async {
-      val item = Try(id.toLong).toOption match {
-        case Some(l) => contentByStubId(l)
-        case None => contentByComposerId(id)
-      }
-      item
+      ApiResponseFt[Option[ContentItem]](for {
+        item <- Try(id.toLong).toOption match {
+          case Some(l) => contentByStubId(l)
+          case None => contentByComposerId(id)
+        }
+      } yield {
+        item
+      })
     }
   }
 
   def contentByStubId(id: Long) =  {
-    val item = PrototypeAPI.getContentByStubId(id).asFuture
-    item.map(prepareResponse(_))
+    val item = PrototypeAPI.getContentByStubId(id)
+    prepareResponse(item)
   }
 
   def contentByComposerId(id: String) =  {
-    val item = CommonAPI.getContentByComposerId(id).asFuture
-    item.map(prepareResponse(_))
+    val item = CommonAPI.getContentByComposerId(id)
+    prepareResponse(item)
   }
 
-  def prepareResponse(res: Either[ApiError, Option[ContentItem]]) = {
-    res match {
-      case Left(err) => Status(500)(Json.toJson(err))
-      case Right(item) => item match {
-        case Some(i) => Ok(Json.toJson(i))
-        case None => Status(404)(Json.toJson(ApiErrors.notFound))
+  def prepareResponse(res: ApiResponseFt[Option[ContentItem]]):
+      ApiResponseFt[Option[ContentItem]] = {
+    res.flatMap { contentOpt =>
+      contentOpt match {
+        case Some(item) => ApiResponseFt.Right(Some(item))
+        case None => ApiResponseFt.Left(ApiErrors.notFound)
       }
     }
   }
