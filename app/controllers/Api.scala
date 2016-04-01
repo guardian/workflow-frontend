@@ -140,10 +140,10 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubAssignee(stubId: Long) = APIAuthAction { implicit request =>
-    ApiResponseFt[Int](for {
+  def putStubAssignee(stubId: Long) = APIAuthAction.async { request =>
+    ApiResponseFt[Long](for {
       jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-      assignee <- ApiUtils.extractDataResponse[Option[String]]
+      assignee <- ApiUtils.extractDataResponse[Option[String]](jsValue)
       id <- PrototypeAPI.putStubAssignee(stubId, assignee)
     } yield {
       id
@@ -151,6 +151,9 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def putStubAssigneeEmail(stubId: Long) = APIAuthAction { implicit request =>
+    ApiResponseFt[Long](for {
+      jsValue <- ApiUtils
+    })
     Response(for {
       jsValue <- readJsonFromRequestResponse(request.body).right
       assigneeEmail <- extractResponse[String](jsValue.data \ "data").right
