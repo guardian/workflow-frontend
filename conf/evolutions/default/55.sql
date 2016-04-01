@@ -1,6 +1,6 @@
 # --- !Ups
 
-ALTER TABLE stub add column commissioning_desks character varying(300);
+ALTER TABLE stub add column commissioning_desks text;
 
 # --- !Downs
 
