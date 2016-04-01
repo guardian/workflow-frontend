@@ -147,8 +147,8 @@ object PostgresDB {
   def updateStubRows(id: Long, stub: Stub)(implicit session: Session):  Int = {
       stubs
         .filter(_.pk === id)
-        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note))
-        .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note))
+        .map(s => (s.workingTitle, s.section, s.due, s.assignee, s.assigneeEmail, s.composerId, s.contentType, s.priority, s.prodOffice, s.needsLegal, s.note, s.commissioningDesks))
+        .update((stub.title, stub.section, stub.due, stub.assignee, stub.assigneeEmail, stub.composerId, stub.contentType, stub.priority, stub.prodOffice, stub.needsLegal, stub.note, stub.commissioningDesks  ))
   }
 
   def updateField[A](id: Long, field: A, s: Schema.DBStub => Column[A]) = {
