@@ -1,7 +1,8 @@
 package controllers
 
 import com.gu.workflow.db._
-import com.gu.workflow.lib.StatusDatabase
+import com.gu.workflow.lib.{TagService, StatusDatabase}
+import com.gu.workflow.lib.Tag
 
 import config.Config
 import config.Config.defaultExecutionContext
@@ -79,6 +80,7 @@ object Application extends Controller with PanDomainAuthActions {
       sections = SectionDB.sectionList.sortBy(_.name)
       desks = DeskDB.deskList.sortBy(_.name)
       sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
+      commissioningDesks <- TagService.getTags(Config.tagManagerUrl+ "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path").map(_.getOrElse(List[Tag]()))
     }
     yield {
       val user = request.user
@@ -99,7 +101,8 @@ object Application extends Controller with PanDomainAuthActions {
         "preferencesUrl" -> Config.preferencesUrl,
         "user" -> Json.parse(user.toJson),
         "incopyExportUrl" -> Config.incopyExportUrl,
-        "composerRestorerUrl" -> Config.composerRestorerUrl
+        "composerRestorerUrl" -> Config.composerRestorerUrl,
+        "commissioningDesks" -> commissioningDesks
       )
 
       Ok(views.html.app(title, Some(user), config))
