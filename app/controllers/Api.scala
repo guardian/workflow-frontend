@@ -144,18 +144,10 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def putStubAssignee(stubId: Long) = APIAuthAction { implicit request =>
-    // ApiResponseFt[Int](for {
-    //   jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-    //   assignee <- extractDataResponse[Option[String]]
-    //   id <- PrototypeAPI.putStubAssignee(stubId, assignee)
-    // } yield {
-    //   id
-    // })
-    Response(for {
-      jsValue <- readJsonFromRequestResponse(request.body).right
-      assignee <- extractResponse[String](jsValue.data \ "data").right
-      assigneeData <- Right(Some(assignee.data).filter(_.nonEmpty)).right
-      id <- updateRes(stubId, PostgresDB.updateField(stubId, assigneeData, (s: Schema.DBStub) => s.assignee)).right
+    ApiResponseFt[Int](for {
+      jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
+      assignee <- ApiUtils.extractDataResponse[Option[String]]
+      id <- PrototypeAPI.putStubAssignee(stubId, assignee)
     } yield {
       id
     })
