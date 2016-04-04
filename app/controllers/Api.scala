@@ -140,23 +140,21 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubAssignee(stubId: Long) = APIAuthAction { implicit request =>
-    Response(for {
-      jsValue <- readJsonFromRequestResponse(request.body).right
-      assignee <- extractResponse[String](jsValue.data \ "data").right
-      assigneeData <- Right(Some(assignee.data).filter(_.nonEmpty)).right
-      id <- updateRes(stubId, PostgresDB.updateField(stubId, assigneeData, (s: Schema.DBStub) => s.assignee)).right
+  def putStubAssignee(stubId: Long) = APIAuthAction.async { request =>
+    ApiResponseFt[Long](for {
+      jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
+      assignee <- ApiUtils.extractDataResponse[Option[String]](jsValue)
+      id <- PrototypeAPI.putStubAssignee(stubId, assignee)
     } yield {
       id
     })
   }
 
-  def putStubAssigneeEmail(stubId: Long) = APIAuthAction { implicit request =>
-    Response(for {
-      jsValue <- readJsonFromRequestResponse(request.body).right
-      assigneeEmail <- extractResponse[String](jsValue.data \ "data").right
-      assignessEmailData <- Right(Some(assigneeEmail.data).filter(_.nonEmpty)).right
-      id <- updateRes(stubId, PostgresDB.updateField(stubId, assignessEmailData,(s: Schema.DBStub) => s.assigneeEmail)).right
+  def putStubAssigneeEmail(stubId: Long) = APIAuthAction.async { request =>
+    ApiResponseFt[Long](for {
+      jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
+      assignee <- ApiUtils.extractDataResponse[Option[String]](jsValue)
+      id <- PrototypeAPI.putStubAssignee(stubId, assignee)
     } yield {
       id
     })
