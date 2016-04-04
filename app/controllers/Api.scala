@@ -186,11 +186,11 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def putStubProdOffice(stubId: Long) = CORSable(composerUrl) {
-    APIAuthAction { implicit request =>
-      Response(for {
-        jsValue <- readJsonFromRequestResponse(request.body).right
-        prodOffice <- extractResponse[String](jsValue.data \ "data")(Stub.prodOfficeReads).right
-        id <- updateRes(stubId, PostgresDB.updateField(stubId, prodOffice.data, (s: Schema.DBStub) => s.prodOffice)).right
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
+        prodOffice <- ApiUtils.extractDataResponse[String](jsValue)(Stub.prodOfficeReads)
+        id <- PrototypeAPI.putStubProdOffice(stubId, prodOffice)
       } yield {
         id
       })
