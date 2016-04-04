@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.api.{ ApiUtils, PrototypeAPI }
+import com.gu.workflow.api.{ ApiUtils, CommonAPI, PrototypeAPI }
 import com.gu.workflow.lib._
 import lib._
 import Response.Response
@@ -8,6 +8,7 @@ import models.Flag.Flag
 import models._
 import models.api.ApiResponseFt
 import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
+import play.api.Logger
 
 import play.api.libs.ws.WS
 import play.api.data.Form
@@ -270,12 +271,14 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def deleteContent(composerId: String) = APIAuthAction {
-    CommonDB.deleteContent(Seq(composerId))
+    CommonAPI.deleteContent(Seq(composerId)).fold(err =>
+      Logger.error(s"failed to delete content with composer id: $composerId"), identity)
     NoContent
   }
 
   def deleteStub(stubId: Long) = APIAuthAction {
-    PostgresDB.deleteContentByStubId(stubId)
+    PrototypeAPI.deleteContentByStubId(stubId).fold(err =>
+    Logger.error(s"failed to delete content with stub id: $stubId"), identity)
     NoContent
   }
 
