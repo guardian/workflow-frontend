@@ -210,7 +210,7 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def putStubSection(stubId: Long) =  CORSable(composerUrl) {
-    APIAuthAction { implicit request =>
+    APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
         section <- ApiUtils.extractResponse[String](jsValue \ "data" \ "name")
