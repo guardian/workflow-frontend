@@ -160,7 +160,7 @@ object Api extends Controller with PanDomainAuthActions {
     })
   }
 
-  def putStubDueDate(stubId: Long) = APIAuthAction.async { implicit request =>
+  def putStubDueDate(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
       jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
       dueDateOpt <- ApiUtils.extractDataResponse[Option[String]](jsValue)
@@ -173,12 +173,12 @@ object Api extends Controller with PanDomainAuthActions {
 
   def putStubNote(stubId: Long) = CORSable(composerUrl) {
     def getNoteOpt(input: String): Option[String] = if(input.length > 0) Some(input) else None
-    APIAuthAction { implicit request =>
-      Response(for {
-        jsValue <- readJsonFromRequestResponse(request.body).right
-        note <- extractResponse[String](jsValue.data \ "data")(Stub.noteReads).right
-        noteOpt <- Right(getNoteOpt(note.data)).right
-        id <- updateRes(stubId, PostgresDB.updateField(stubId, noteOpt,(s: Schema.DBStub) => s.note)).right
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
+        note <- ApiUtils.extractDataResponse[String](jsValue)(Stub.noteReads)
+        noteOpt = getNoteOpt(note)
+        id <- PrototypeAPI.putStubNote(stubId, noteOpt)
       } yield {
         id
       })
