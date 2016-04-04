@@ -143,8 +143,9 @@ object Api extends Controller with PanDomainAuthActions {
   def putStubAssignee(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
       jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-      assignee <- ApiUtils.extractDataResponse[Option[String]](jsValue)
-      id <- PrototypeAPI.putStubAssignee(stubId, assignee)
+      assignee <- ApiUtils.extractDataResponse[String](jsValue)
+      assigneeData = Some(assignee).filter(_.nonEmpty)
+      id <- PrototypeAPI.putStubAssignee(stubId, assigneeData)
     } yield {
       id
     })
@@ -153,8 +154,9 @@ object Api extends Controller with PanDomainAuthActions {
   def putStubAssigneeEmail(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
       jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-      assignee <- ApiUtils.extractDataResponse[Option[String]](jsValue)
-      id <- PrototypeAPI.putStubAssignee(stubId, assignee)
+      assignee <- ApiUtils.extractDataResponse[String](jsValue)
+      assigneeEmailData = Some(assignee).filter(_.nonEmpty)
+      id <- PrototypeAPI.putStubAssignee(stubId, assigneeEmailData)
     } yield {
       id
     })
