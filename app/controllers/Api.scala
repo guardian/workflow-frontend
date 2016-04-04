@@ -162,12 +162,12 @@ object Api extends Controller with PanDomainAuthActions {
     })
   }
 
-  def putStubDueDate(stubId: Long) = APIAuthAction { implicit request =>
-    Response(for {
-      jsValue <- readJsonFromRequestResponse(request.body).right
-      dueDateOpt <- extractResponse[Option[String]](jsValue.data \ "data").right
-      dueDataData <- Right(dueDateOpt.data.filter(_.length!=0).map(new DateTime(_))).right
-      id <- updateRes(stubId, PostgresDB.updateField(stubId, dueDataData,(s: Schema.DBStub) => s.due)).right
+  def putStubDueDate(stubId: Long) = APIAuthAction.async { implicit request =>
+    ApiResponseFt[Long](for {
+      jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
+      dueDateOpt <- ApiUtils.extractDataResponse[Option[String]](jsValue)
+      dueDateData = dueDateOpt.map(new DateTime(_))
+      id <- PrototypeAPI.putStubDue(stubId, dueDateData)
     } yield {
       id
     })
