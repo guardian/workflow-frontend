@@ -254,6 +254,7 @@ object Api extends Controller with PanDomainAuthActions {
       } yield {
         id
       })
+    }
   }
 
   def putStubTrashed(stubId: Long) = CORSable(composerUrl) {
