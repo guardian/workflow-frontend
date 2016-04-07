@@ -37,6 +37,17 @@ function wfContentItemParser(config, statusLabels, sections) {
         return typeof(text) === 'string' ? text.replace(/<[^>]+>/gm, '') : '';
     }
 
+    function getCommissioningDeskNames(commissioningDeskIdString) {
+        if (commissioningDeskIdString && !(/[a-z]/i.test(commissioningDeskIdString))) {
+            var commissioningDeskIds = commissioningDeskIdString.split(",");
+            return commissioningDeskIds.map((id) => {
+                return _wfConfig.commissioningDesks.filter(desk => desk.id === id.toNumber())[0];
+            });
+        } else {
+            return [];
+        }
+    }
+
     var contentStatusValues = statusLabels.filter((status) => status.value !== 'Stub');
 
     class ContentItemLinks {
@@ -108,6 +119,8 @@ function wfContentItemParser(config, statusLabels, sections) {
             this.section = item.section;
             this.needsLegal = item.needsLegal;
             this.note = item.note;
+
+            this.commissioningDesks = getCommissioningDeskNames(item.commissioningDesks);
 
             // TODO: Decide if this is due or deadline
             this.deadline = item.due;

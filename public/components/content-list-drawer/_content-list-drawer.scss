@@ -178,6 +178,11 @@ $drawer-breakpoint-small: 1400px;
     }
 }
 
+.drawer__section-data-row--warning {
+    @extend .drawer__section-data-row;
+    color: $c-red;
+}
+
 .drawer__section-control {
     width: 100%;
 }
