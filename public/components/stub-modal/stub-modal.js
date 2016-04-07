@@ -29,6 +29,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
     $scope.statuses = statusLabels;
+    $scope.cdesks = _wfConfig.commissioningDesks
 
     if(mode==='import') {
        $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});
