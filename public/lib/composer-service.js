@@ -79,11 +79,11 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
     this.parseComposerData = parseComposerData;
 
 
-    this.create = function createInComposer(type) {
+    this.create = function createInComposer(type, commissioningDesks) {
         return request({
             method: 'POST',
             url: config.composerNewContent,
-            params: { 'type': type },
+            params: { 'type': type, 'tags': commissioningDesks },
             withCredentials: true
         });
     };

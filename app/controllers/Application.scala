@@ -2,11 +2,11 @@ package controllers
 
 import com.gu.workflow.api.SectionsAPI
 import com.gu.workflow.db._
-import com.gu.workflow.lib.StatusDatabase
+import com.gu.workflow.lib.{TagService, StatusDatabase}
 
 import config.Config
 import config.Config.defaultExecutionContext
-
+import models.Tag
 
 import lib._
 import lib.Composer._
@@ -86,6 +86,10 @@ object Application extends Controller with PanDomainAuthActions {
     Ok(views.html.troubleshooting())
   }
 
+  // limited tag fields we want output into the DOM
+  case class LimitedTag(id: Long, externalName: String)
+  object LimitedTag { implicit val jsonFormats = Json.format[LimitedTag]}
+
   def app(title: String) = AuthAction.async { request =>
 
     for {
@@ -93,6 +97,7 @@ object Application extends Controller with PanDomainAuthActions {
       sections <-  getSortedSections
       desks = DeskDB.deskList.sortBy(_.name)
       sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
+      commissioningDesks <- TagService.getTags(Config.tagManagerUrl+ "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path").map(_.getOrElse(List[Tag]()))
     }
     yield {
       val user = request.user
@@ -113,7 +118,8 @@ object Application extends Controller with PanDomainAuthActions {
         "preferencesUrl" -> Config.preferencesUrl,
         "user" -> Json.parse(user.toJson),
         "incopyExportUrl" -> Config.incopyExportUrl,
-        "composerRestorerUrl" -> Config.composerRestorerUrl
+        "composerRestorerUrl" -> Config.composerRestorerUrl,
+        "commissioningDesks" -> commissioningDesks.map(t => LimitedTag(t.id, t.externalName))
       )
 
       Ok(views.html.app(title, Some(user), config))
