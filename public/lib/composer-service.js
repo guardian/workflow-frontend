@@ -83,7 +83,7 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
         return request({
             method: 'POST',
             url: config.composerNewContent,
-            params: { 'type': type, 'commissioningDesks': commissioningDesks },
+            params: { 'type': type, 'tags': commissioningDesks },
             withCredentials: true
         });
     };
