@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.api.{ ApiUtils, PrototypeAPI }
+import com.gu.workflow.api.{ ApiUtils, CommonAPI, PrototypeAPI }
 import com.gu.workflow.lib._
 import lib._
 import Response.Response
@@ -69,21 +69,18 @@ object Api extends Controller with PanDomainAuthActions {
 
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
-    val queryData = RequestParameters.fromRequest(req)
-
-    val contentItems = PostgresDB.getContentItems(queryData)
-
-    val contentResponse = ContentResponse.fromContentItems(contentItems)
-
-    Ok(
-      Json.toJson(contentResponse)
-    )
+    CommonAPI.getContent(req.queryString).asFuture.map { res =>
+      res match {
+        case Left(err) => InternalServerError
+        case Right(contentResponse) => Ok(Json.toJson(contentResponse))
+      }
+    }
   }
 
 
 
 
-  def content = APIAuthAction(getContentBlock)
+  def content = APIAuthAction.async(getContentBlock)
 
   def getContentbyId(composerId: String) = CORSable(Config.composerUrl) {
       APIAuthAction.async { implicit request =>
@@ -295,7 +292,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def sharedAuthGetContent = SharedSecretAuthAction(getContentBlock)
+  def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
 
   private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
     requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
