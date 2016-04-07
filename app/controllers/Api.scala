@@ -200,11 +200,11 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def putContentStatus(composerId: String) = CORSable(composerUrl) {
-    APIAuthAction { implicit request =>
-      Response(for {
-        jsValue <- readJsonFromRequestResponse(request.body).right
-        status <- extractResponse[String](jsValue.data \ "data").right
-        id <- updateRes(composerId, PostgresDB.updateContentStatus(status.data, composerId)).right
+    APIAuthAction.async { request =>
+      ApiResponseFt[String](for {
+        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
+        status <- ApiUtils.extractDataResponse[String](jsValue)
+        id <- PrototypeAPI.updateContentStatus(composerId, status)
       } yield {
         id
       })
