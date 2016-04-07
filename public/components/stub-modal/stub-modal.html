@@ -31,7 +31,7 @@
             <div class="form-group pull-left col-xs-8">
                 <label for="stub_cdesk">Commissioning Info</label>
                 <div>
-                    <select id="stub_cdesk" name="cdesk" ng-model="stub.commissioningDesks" ng-options="cdesk for cdesk in cdesks"></select>
+                    <select id="stub_cdesk" name="cdesk" ng-model="stub.commissioningDesks" ng-options="cdesk.id.toString() as cdesk.externalName for cdesk in cdesks"></select>
                 </div>
                 <!--<p class="help-block" ng-class="{ 'help-block&#45;&#45;invisible': mode === 'import' || stub.status === 'Stub' }">To save as a Stub, change status to News List</p>-->
             </div>
