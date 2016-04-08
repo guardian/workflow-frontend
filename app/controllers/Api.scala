@@ -19,7 +19,6 @@ import play.api.libs.concurrent.Akka
 
 import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
 import lib.Responses._
-import lib.DBToAPIResponse._
 
 import org.joda.time.DateTime
 
@@ -300,58 +299,4 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
-
-  private def readJsonFromRequest(requestBody: AnyContent): Either[Result, JsValue] = {
-    requestBody.asJson.toRight(BadRequest("could not read json from the request body"))
-  }
-
-  //duplicated from the method above to give a standard API response. should move all api methods onto to this
-  private def readJsonFromRequestResponse(requestBody: AnyContent): Response[JsValue] = {
-    requestBody.asJson match {
-      case Some(jsValue) => Right(ApiSuccess(jsValue))
-      case None => Left((ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")))
-    }
-  }
-
-  /* JsError's may contain a number of different errors for differnt
-   * paths. This will aggregate them into a single string */
-  private def errorMsgs(error: JsError) =
-    (for ((path, msgs) <- error.errors; msg <- msgs)
-    yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
-
-  /* the lone colon in the type paramater makes this a 'context'
-   * variance type parameter, which causes the compiler to implicitly
-   * add a second implict argument set which provides takes a
-   * Reads[A] */
-  private def extract[A: Reads](jsValue: JsValue): Either[Result, A] = {
-    jsValue.validate[A] match {
-      case JsSuccess(a, _) => Right(a)
-      case error@JsError(_) =>
-        val errMsg = errorMsgs(error)
-        Left(BadRequest(s"failed to parse the json. Error(s): ${errMsg}"))
-    }
-  }
-
-  //duplicated from the method above to give a standard API response. should move all api methods onto to this
-  private def extractResponse[A: Reads](jsValue: JsValue): Response[A] = {
-    jsValue.validate[A] match {
-      case JsSuccess(a, _) => Right(ApiSuccess(a))
-      case error@JsError(_) =>
-        val errMsg = errorMsgs(error)
-        Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
-    }
-  }
-
-  private def extractApiResponseOption[A: Reads](jsValue: JsValue): Response[Option[A]] = {
-    jsValue.validate[A] match {
-      case JsSuccess(a, _) => Right(ApiSuccess(Some(a)))
-      case error@JsError(_) =>
-        val errMsg = errorMsgs(error)
-        Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
-    }
-  }
-
-
-
-
 }
