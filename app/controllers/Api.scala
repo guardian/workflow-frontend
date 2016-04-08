@@ -19,7 +19,6 @@ import play.api.libs.concurrent.Akka
 
 import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
 import lib.Responses._
-import lib.DBToAPIResponse._
 
 import org.joda.time.DateTime
 
