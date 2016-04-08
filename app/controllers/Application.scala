@@ -1,5 +1,6 @@
 package controllers
 
+import com.gu.workflow.api.SectionsAPI
 import com.gu.workflow.db._
 import com.gu.workflow.lib.{TagService, StatusDatabase}
 
@@ -9,11 +10,24 @@ import models.Tag
 
 import lib._
 import lib.Composer._
+import models.Section
+import play.api.Logger
 
 import play.api.mvc._
 import play.api.libs.json.{JsObject, Json}
+import scala.concurrent.Future
 
 object Application extends Controller with PanDomainAuthActions {
+
+  def getSortedSections(): Future[List[Section]] = {
+    SectionsAPI.getSections().asFuture.map { x =>
+      x match {
+        case Left(err) => Logger.error(s"error fetching sections: $err"); List()
+        case Right(sections) => sections.sortBy(_.name)
+      }
+    }
+  }
+
 
   def index = AuthAction { request =>
     Redirect(routes.Application.dashboard)
@@ -22,7 +36,7 @@ object Application extends Controller with PanDomainAuthActions {
   def plan = AuthAction.async { request =>
     for {
       statuses <- StatusDatabase.statuses
-      sections = SectionDB.sectionList.sortBy(_.name)
+      sections <- getSortedSections
       desks = DeskDB.deskList.sortBy(_.name)
       sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
       newsLists = NewsListDB.newsListList.sortBy(_.title)
@@ -80,7 +94,7 @@ object Application extends Controller with PanDomainAuthActions {
 
     for {
       statuses <- StatusDatabase.statuses
-      sections = SectionDB.sectionList.sortBy(_.name)
+      sections <-  getSortedSections
       desks = DeskDB.deskList.sortBy(_.name)
       sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
       commissioningDesks <- TagService.getTags(Config.tagManagerUrl+ "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path").map(_.getOrElse(List[Tag]()))
