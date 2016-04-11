@@ -1,6 +1,5 @@
 package controllers
 
-import com.gu.workflow.api.SectionsAPI
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
@@ -9,6 +8,7 @@ import lib._
 import Response._
 import org.joda.time.DateTime
 import play.api.Logger
+import play.api.libs.json._
 import play.api.libs.ws.WS
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -22,22 +22,12 @@ object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
 
-  def getSortedSections(): Future[List[Section]] = {
-    SectionsAPI.getSections().asFuture.map { x =>
-      x match {
-        case Left(err) => Logger.error(s"error fetching sections: $err"); List()
-        case Right(sections) => sections.sortBy(_.name)
-      }
-    }
-  }
-
-
   def index() = (AuthAction andThen WhiteListAuthFilter) {
 
     Redirect("/admin/desks-and-sections")
   }
 
-  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async {
+  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter) {
 
     val deskList = DeskDB.deskList
 
@@ -57,28 +47,25 @@ object Admin extends Controller with PanDomainAuthActions {
       }
     }.getOrElse(deskList)
 
+    val sectionListFromDB = SectionDB.sectionList
 
-    getSortedSections.map { sectionListFromDB =>
-      val sectionList = selectedDeskOption.map { selectedDesk =>
-        SectionDeskMappingDB.getSectionsWithRelation(selectedDesk, sectionListFromDB)
-      }.getOrElse(sectionListFromDB)
+    val sectionList = selectedDeskOption.map { selectedDesk =>
+      SectionDeskMappingDB.getSectionsWithRelation(selectedDesk, sectionListFromDB)
+    }.getOrElse(sectionListFromDB)
 
-      Ok(
-        views.html.admin.desksAndSections(
-          sectionList.sortBy(_.name),
-          addSectionForm,
-          desks.sortBy(_.name),
-          addDeskForm,
-          selectedDeskOption)
-      )
-    }
+    Ok(
+      views.html.admin.desksAndSections(
+        sectionList.sortBy(_.name),
+        addSectionForm,
+        desks.sortBy(_.name),
+        addDeskForm,
+        selectedDeskOption)
+    )
   }
 
-  def newsLists = (AuthAction andThen WhiteListAuthFilter).async {
-    getSortedSections.map { sectionListFromDB =>
-
-      Ok(views.html.admin.newsLists(NewsListDB.newsListList.sortBy(newsList => newsList.title), addNewsListForm, sectionListFromDB))
-    }}
+  def newsLists = (AuthAction andThen WhiteListAuthFilter) {
+    Ok(views.html.admin.newsLists(NewsListDB.newsListList.sortBy(newsList => newsList.title), addNewsListForm, SectionDB.sectionList))
+  }
 
 
 
@@ -121,33 +108,23 @@ object Admin extends Controller with PanDomainAuthActions {
     SECTION routes
    */
 
-  def addSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def addSection = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addSectionForm.bindFromRequest.fold(
-      formWithErrors => Future(BadRequest("failed to add section")),
+      formWithErrors => BadRequest("failed to add section"),
       section => {
-        SectionsAPI.upsertSection(section).asFuture.map { res =>
-          res match {
-            case Right(_) => Redirect(routes.Admin.desksAndSections(None))
-            case Left(err) => Logger.error(s"error upserting section: $err")
-              InternalServerError
-          }
-        }
+        SectionDB.upsert(section)
+        Redirect(routes.Admin.desksAndSections(None))
       }
     )
   }
 
-  def removeSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def removeSection = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
     addSectionForm.bindFromRequest.fold(
-      formWithErrors => Future(BadRequest("failed to remove section")),
+      formWithErrors => BadRequest("failed to remove section"),
       section => {
         SectionDeskMappingDB.removeSectionMappings(section)
-        SectionsAPI.removeSection(section).asFuture.map { res =>
-          res match {
-            case Right(_) => NoContent
-            case Left(err) => Logger.error(s"error removing section: $err")
-              InternalServerError
-          }
-        }
+        SectionDB.remove(section)
+        NoContent
       }
     )
   }
