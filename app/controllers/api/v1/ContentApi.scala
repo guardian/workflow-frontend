@@ -1,7 +1,6 @@
 package controllers
 
 import com.gu.workflow.api.{ CommonAPI, PrototypeAPI }
-import com.gu.workflow.db.{CommonDB}
 import models.ContentItem
 import models.api._
 import play.api.Logger
