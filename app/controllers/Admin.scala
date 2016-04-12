@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.api.{SectionsAPI, DesksAPI}
+import com.gu.workflow.api.{SectionsAPI, DesksAPI, SectionDeskMappingsAPI }
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
@@ -117,12 +117,19 @@ object Admin extends Controller with PanDomainAuthActions {
     )(assignSectionToDeskFormData.apply)(assignSectionToDeskFormData.unapply)
   )
 
-  def assignSectionToDesk = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
+  def assignSectionToDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
     assignSectionToDeskForm.bindFromRequest.fold(
-      formWithErrors => BadRequest("failed to update section assignments"),
+      formWithErrors => Future(BadRequest("failed to update section assignments")),
       sectionAssignment => {
-        SectionDeskMappingDB.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
-        Redirect(routes.Admin.desksAndSections(Some(sectionAssignment.desk)))
+        SectionDeskMappingsAPI.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
+          .asFuture
+          .map { res =>
+          res match {
+            case Right(_) => Redirect(routes.Admin.desksAndSections(Some(sectionAssignment.desk)))
+            case Left(err) => Logger.error(s"error upserting section desk mapping: $err")
+              InternalServerError
+          }
+        }
       }
     )
   }
@@ -150,13 +157,11 @@ object Admin extends Controller with PanDomainAuthActions {
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to remove section")),
       section => {
-        SectionDeskMappingDB.removeSectionMappings(section)
-        SectionsAPI.removeSection(section).asFuture.map { res =>
-          res match {
-            case Right(_) => NoContent
-            case Left(err) => Logger.error(s"error removing section: $err")
-              InternalServerError
-          }
+        for {
+        _ <- SectionDeskMappingsAPI.removeSectionMapping(section.id).asFuture
+        _ <- SectionsAPI.removeSection(section).asFuture
+        } yield {
+          NoContent
         }
       }
     )
@@ -185,13 +190,11 @@ object Admin extends Controller with PanDomainAuthActions {
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to remove desk")),
       desk => {
-        SectionDeskMappingDB.removeDeskMappings(desk)
-        DesksAPI.removeDesk(desk).asFuture.map { res =>
-          res match {
-            case Right(_) => NoContent
-            case Left(err) => Logger.error(s"error removing desk: $err")
-              InternalServerError
-          }
+        for {
+          _ <- SectionDeskMappingsAPI.removeDeskMapping(desk.id).asFuture
+          _ <- DesksAPI.removeDesk(desk).asFuture
+        } yield {
+          NoContent
         }
       }
     )
