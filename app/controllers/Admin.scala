@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.api.SectionsAPI
+import com.gu.workflow.api.{SectionsAPI, DesksAPI}
 import com.gu.workflow.db.Schema._
 import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
@@ -31,6 +31,14 @@ object Admin extends Controller with PanDomainAuthActions {
     }
   }
 
+  def getDesks(): Future[List[Desk]] = {
+    DesksAPI.getDesks().asFuture.map { x =>
+      x match {
+        case Right(desks) => desks
+        case Left(err) => Logger.error(s"error fetching desks: $err"); List()
+      }
+    }
+  }
 
   def index() = (AuthAction andThen WhiteListAuthFilter) {
 
@@ -39,26 +47,28 @@ object Admin extends Controller with PanDomainAuthActions {
 
   def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async {
 
-    val deskList = DeskDB.deskList
 
-    val selectedDeskOption = for {
-      selectedDeskId <- selectedDeskIdOption
-      selectedDesk <- deskList.find((desk) => selectedDeskId == desk.id)
+    for {
+      deskList <- getDesks()
+      sectionListFromDB <- getSortedSections()
     } yield {
-      selectedDesk
-    }
 
-    val desks = selectedDeskOption.map { selectedDesk =>
-      deskList.map { desk =>
-        if (desk.id == selectedDesk.id)
-          desk.copy(name = desk.name, selected = true)
-        else
-          desk
+      val selectedDeskOption = for {
+        selectedDeskId <- selectedDeskIdOption
+        selectedDesk <- deskList.find((desk) => selectedDeskId == desk.id)
+      } yield {
+        selectedDesk
       }
-    }.getOrElse(deskList)
 
+      val desks = selectedDeskOption.map { selectedDesk =>
+        deskList.map { desk =>
+          if (desk.id == selectedDesk.id)
+            desk.copy(name = desk.name, selected = true)
+          else
+            desk
+        }
+      }.getOrElse(deskList)
 
-    getSortedSections.map { sectionListFromDB =>
       val sectionList = selectedDeskOption.map { selectedDesk =>
         SectionDeskMappingDB.getSectionsWithRelation(selectedDesk, sectionListFromDB)
       }.getOrElse(sectionListFromDB)
@@ -118,7 +128,7 @@ object Admin extends Controller with PanDomainAuthActions {
   }
 
   /*
-    SECTION routes
+   SECTION routes
    */
 
   def addSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
@@ -153,33 +163,43 @@ object Admin extends Controller with PanDomainAuthActions {
   }
 
   /*
-    DESK routes
+   DESK routes
    */
 
-  def addDesk = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
+  def addDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
     addDeskForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(s"failed to add desk ${formWithErrors.errors}"),
+      formWithErrors => Future(BadRequest(s"failed to add desk ${formWithErrors.errors}")),
       desk => {
-        DeskDB.upsert(desk)
-        Redirect(routes.Admin.desksAndSections(None))
+        DesksAPI.upsertDesk(desk).asFuture.map { res =>
+          res match {
+            case Right(_) => Redirect(routes.Admin.desksAndSections(None))
+            case Left(err) => Logger.error(s"error creating desk: $err")
+              InternalServerError
+          }
+        }
       }
     )
   }
 
-  def removeDesk = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
+  def removeDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
     addDeskForm.bindFromRequest.fold(
-      formWithErrors => BadRequest("failed to remove desk"),
+      formWithErrors => Future(BadRequest("failed to remove desk")),
       desk => {
         SectionDeskMappingDB.removeDeskMappings(desk)
-        DeskDB.remove(desk)
-        NoContent
+        DesksAPI.removeDesk(desk).asFuture.map { res =>
+          res match {
+            case Right(_) => NoContent
+            case Left(err) => Logger.error(s"error removing desk: $err")
+              InternalServerError
+          }
+        }
       }
     )
   }
 
   /*
-  NEWSLIST routes
- */
+   NEWSLIST routes
+   */
 
   val addNewsListForm = Form(
     mapping(
