@@ -1,6 +1,6 @@
 package controllers
 
-import com.gu.workflow.api.{ DesksAPI, SectionsAPI }
+import com.gu.workflow.api.{ DesksAPI, SectionsAPI, SectionDeskMappingsAPI }
 import com.gu.workflow.db._
 import com.gu.workflow.lib.{TagService, StatusDatabase}
 
@@ -37,6 +37,16 @@ object Application extends Controller with PanDomainAuthActions {
     }
   }
 
+  def getSectionsInDesks(): Future[List[models.api.SectionsInDeskMapping]] = {
+    SectionDeskMappingsAPI.getSectionsInDesks().asFuture.map { x =>
+      println(s"sections in desks: $x")
+      x match {
+        case Right(mappings) => mappings
+        case Left(err) => Logger.error(s"error fetching section desk mappings: $err"); List()
+      }
+    }
+  }
+
 
   def index = AuthAction { request =>
     Redirect(routes.Application.dashboard)
@@ -47,7 +57,7 @@ object Application extends Controller with PanDomainAuthActions {
       statuses <- StatusDatabase.statuses
       sections <- getSortedSections
       desks <- getSortedDesks
-      sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
+      sectionsInDesks <- getSectionsInDesks
       newsLists = NewsListDB.newsListList.sortBy(_.title)
       newsListBuckets = NewsListBucketDB.newsListBucketsList.groupBy(_.newsList).map({
         case (newsList, buckets) => (newsList, Json.toJson(buckets))
@@ -105,7 +115,7 @@ object Application extends Controller with PanDomainAuthActions {
       statuses <- StatusDatabase.statuses
       sections <-  getSortedSections
       desks <- getSortedDesks
-      sectionsInDesks = SectionDeskMappingDB.getSectionsInDesks
+      sectionsInDesks <- getSectionsInDesks
       commissioningDesks <- TagService.getTags(Config.tagManagerUrl+ "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path").map(_.getOrElse(List[Tag]()))
     }
     yield {
