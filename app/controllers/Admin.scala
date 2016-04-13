@@ -40,6 +40,32 @@ object Admin extends Controller with PanDomainAuthActions {
     }
   }
 
+  def getSectionMappings(
+    selectedDeskIdOption: Option[Long],
+    sectionListFromDB: List[Section],
+    deskList: List[Desk]):
+      Future[List[Section]] = {
+    val selectedDeskOption = for {
+      selectedDeskId <- selectedDeskIdOption
+      selectedDesk <- deskList.find((desk) => selectedDeskId == desk.id)
+    } yield {
+      selectedDesk
+    }
+
+    selectedDeskOption.map { selectedDesk =>
+      SectionDeskMappingsAPI
+        .getSectionsWithRelation(selectedDesk, sectionListFromDB)
+        .asFuture
+        .map { res =>
+        res match {
+          case Right(relations) => relations
+          case Left(err) => Logger.error(s"unable to fetch the sections in the relation: $err")
+            List()
+        }
+      }
+    }.getOrElse(Future(sectionListFromDB))
+  }
+
   def index() = (AuthAction andThen WhiteListAuthFilter) {
 
     Redirect("/admin/desks-and-sections")
@@ -51,6 +77,7 @@ object Admin extends Controller with PanDomainAuthActions {
     for {
       deskList <- getDesks()
       sectionListFromDB <- getSortedSections()
+      sectionList <- getSectionMappings(selectedDeskIdOption, sectionListFromDB, deskList)
     } yield {
 
       val selectedDeskOption = for {
@@ -68,10 +95,6 @@ object Admin extends Controller with PanDomainAuthActions {
             desk
         }
       }.getOrElse(deskList)
-
-      val sectionList = selectedDeskOption.map { selectedDesk =>
-        SectionDeskMappingDB.getSectionsWithRelation(selectedDesk, sectionListFromDB)
-      }.getOrElse(sectionListFromDB)
 
       Ok(
         views.html.admin.desksAndSections(
