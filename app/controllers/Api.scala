@@ -153,7 +153,7 @@ object Api extends Controller with PanDomainAuthActions {
       jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
       assignee <- ApiUtils.extractDataResponse[String](jsValue)
       assigneeEmailData = Some(assignee).filter(_.nonEmpty)
-      id <- PrototypeAPI.putStubAssignee(stubId, assigneeEmailData)
+      id <- PrototypeAPI.putStubAssigneeEmail(stubId, assigneeEmailData)
     } yield {
       id
     })
