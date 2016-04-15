@@ -107,13 +107,6 @@ object Admin extends Controller with PanDomainAuthActions {
     }
   }
 
-  def newsLists = (AuthAction andThen WhiteListAuthFilter).async {
-    getSortedSections.map { sectionListFromDB =>
-
-      Ok(views.html.admin.newsLists(NewsListDB.newsListList.sortBy(newsList => newsList.title), addNewsListForm, sectionListFromDB))
-    }}
-
-
 
   val addSectionForm = Form(
     mapping(
@@ -223,46 +216,5 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  /*
-   NEWSLIST routes
-   */
-
-  val addNewsListForm = Form(
-    mapping(
-      "title" -> text,
-      "id" -> longNumber,
-      "default_section" -> optional(longNumber)
-    )(NewsList.apply)(NewsList.unapply)
-  )
-
-  def addNewsList = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
-    addNewsListForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(s"failed to add news list ${formWithErrors.errors}"),
-      newsList => {
-        NewsListDB.upsert(newsList)
-        Redirect(routes.Admin.newsLists())
-      }
-    )
-  }
-
-  def updateNewsList = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
-    addNewsListForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(s"failed to update news list ${formWithErrors.errors}"),
-      newsList => {
-        NewsListDB.update(newsList)
-        Redirect(routes.Admin.newsLists())
-      }
-    )
-  }
-
-  def removeNewsList = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
-    addNewsListForm.bindFromRequest.fold(
-      formWithErrors => BadRequest("failed to remove news list"),
-      newsList => {
-        NewsListDB.remove(newsList)
-        NoContent
-      }
-    )
-  }
 
 }

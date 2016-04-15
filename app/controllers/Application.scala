@@ -52,45 +52,6 @@ object Application extends Controller with PanDomainAuthActions {
     Redirect(routes.Application.dashboard)
   }
 
-  def plan = AuthAction.async { request =>
-    for {
-      statuses <- StatusDatabase.statuses
-      sections <- getSortedSections
-      desks <- getSortedDesks
-      sectionsInDesks <- getSectionsInDesks
-      newsLists = NewsListDB.newsListList.sortBy(_.title)
-      newsListBuckets = NewsListBucketDB.newsListBucketsList.groupBy(_.newsList).map({
-        case (newsList, buckets) => (newsList, Json.toJson(buckets))
-      }).toSeq
-      bundleList = BundleDB.getBundles
-    }
-    yield {
-      val user = request.user
-
-      val config = Json.obj(
-        "composer" -> Json.obj(
-          "create" -> newContentUrl,
-          "view" -> adminUrl,
-          "details" -> contentDetails
-        ),
-        "statuses" -> statuses,
-        "desks"    -> desks,
-        "sections" -> sections,
-        "sectionsInDesks" -> sectionsInDesks, // TODO: Combine desks & sectionsInDesks
-        "presenceUrl" -> Config.presenceUrl,
-        "presenceClientLib" -> Config.presenceClientLib,
-        "preferencesUrl" -> Config.preferencesUrl,
-        "user" -> Json.parse(user.toJson),
-        "incopyExportUrl" -> Config.incopyExportUrl,
-        "newsLists" -> newsLists,
-        "newsListBuckets" -> JsObject(newsListBuckets),
-        "bundleList" -> bundleList
-      )
-
-      Ok(views.html.app("Newslister", Some(user), config))
-    }
-  }
-
   def dashboard = app("Workflow")
 
   def training = AuthAction { request =>

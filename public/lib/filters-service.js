@@ -139,25 +139,6 @@ angular.module('wfFiltersService', ['wfDateService'])
                     $rootScope.$broadcast('getContent');
                 });
 
-                $rootScope.$on('plan-view__filters-changed.news-list', function(event, data) {
-                    if (data === 'all') {
-                        self.update('news-list', null);
-                    } else {
-                        self.update('news-list', data);
-                    }
-                    $rootScope.$broadcast('plan-view__filters-changed');
-                });
-
-                $rootScope.$on('plan-view__filters-changed.plan-start-date', function(event, data) {
-                    self.update('plan-start-date', data);
-                    $rootScope.$broadcast('plan-view__filters-changed');
-                });
-
-                $rootScope.$on('plan-view__filters-changed.plan-end-date', function(event, data) {
-                    self.update('plan-end-date', data);
-                    $rootScope.$broadcast('plan-view__filters-changed');
-                });
-
             }
 
             init() {
