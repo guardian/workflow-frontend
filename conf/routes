@@ -9,8 +9,6 @@ OPTIONS        /api/*url                                   controllers.Api.allow
 
 GET            /dashboard                                  controllers.Application.dashboard
 
-GET            /plan                                       controllers.Application.plan
-
 #static user pages
 GET            /about                                      controllers.Assets.at(path="/public", file="/static/about.html")
 GET            /faqs                                       controllers.Application.faqs
@@ -49,29 +47,6 @@ GET            /api/sections                               controllers.Api.secti
 
 # API V1
 
-# Plan
-# PlanItems
-GET            /api/v1/plan                                controllers.PlanApi.plan(newsList: Option[Long], startDate: Option[String], endDate: Option[String])
-#GET            /api/v1/plan/unscheduled                    controllers.PlanApi.getUnscheduledPlanItems
-GET            /api/v1/plan/item                           controllers.PlanApi.getPlannedItem
-POST           /api/v1/plan/item                           controllers.PlanApi.addPlannedItem
-#POST           /api/v1/plan/item/:id/start-work        controllers.PlanApi.startWorkOnPlannedItem(id: Option[Long])
-DELETE         /api/v1/plan/item                           controllers.PlanApi.deletePlannedItem
-PATCH          /api/v1/plan/item/:id/:fieldName            controllers.PlanApi.patchPlannedItem(id: Long, fieldName: String)
-
-# Bundles
-GET            /api/v1/plan/bundle/:id                     controllers.PlanApi.getBundleById(id: Long)
-GET            /api/v1/plan/bundles                        controllers.PlanApi.getBundles
-POST           /api/v1/plan/bundle                         controllers.PlanApi.addBundle
-DELETE         /api/v1/plan/bundle                         controllers.PlanApi.deleteBundle
-PATCH          /api/v1/plan/bundle/:id/:fieldName          controllers.PlanApi.patchBundle(id: Long, fieldName: String)
-
-# Day Notes
-GET            /api/v1/plan/day-note/:id                   controllers.PlanApi.getDayNoteById(id: Long)
-GET            /api/v1/plan/day-note                       controllers.PlanApi.getDayNotes(newsList: Option[Long], startDate: Option[String], endDate: Option[String])
-POST           /api/v1/plan/day-note                       controllers.PlanApi.addDayNote
-DELETE         /api/v1/plan/day-note                       controllers.PlanApi.deleteDayNote
-PATCH          /api/v1/plan/day-note/:id/:fieldName        controllers.PlanApi.patchDayNote(id: Long, fieldName: String)
 
 # Content
 GET            /api/v1/content/:id                         controllers.ContentApi.contentById(id: String)
@@ -86,10 +61,6 @@ DELETE         /admin/sections                             controllers.Admin.rem
 POST           /admin/desks                                controllers.Admin.addDesk
 DELETE         /admin/desks                                controllers.Admin.removeDesk
 
-GET            /admin/newslists                            controllers.Admin.newsLists
-POST           /admin/newslists                            controllers.Admin.addNewsList
-POST           /admin/newslists/update                     controllers.Admin.updateNewsList
-DELETE         /admin/newslists                            controllers.Admin.removeNewsList
 
 POST           /admin/assign                               controllers.Admin.assignSectionToDesk
 

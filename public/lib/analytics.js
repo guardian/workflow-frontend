@@ -161,64 +161,6 @@ angular.module('wfAnalytics', ['wfUser'])
             }
         };
 
-        // PLAN VIEW TRACKING ==================================================== //
-
-        $rootScope.$on('plan-view__ui-loaded', (event, data) => { // TODO: what date range are they looking at on load?
-            track('Plan view | Plan view loaded', {});
-        });
-
-        $rootScope.$on('plan-view__bundle-tab-chosen', (event, data) => {
-            track('Plan view | Bundle tab selected', data);
-        });
-
-        $rootScope.$on('plan-view__filters-changed.plan-start-date', ignoreFirstCall((event, data) => {
-            track('Plan view | Start date edited', data);
-        }));
-
-        $rootScope.$on('plan-view__filters-changed.plan-end-date', ignoreFirstCall((event, data) => {
-            track('Plan view | End date edited', data);
-        }));
-
-        $rootScope.$on('plan-view__quick-add-submit', (event, data) => {
-            track('Plan view | Quick add submitted', data);
-        });
-
-        $rootScope.$on('plan-view__date-selected', ignoreFirstCall((event, data) => {
-            track('Plan view | Date selected', data);
-        }));
-
-        $rootScope.$on('plan-view__plan-item-deleted', (event, data) => {
-            track('Plan view | Item deleted', data);
-        });
-
-        $rootScope.$on('plan-view__bundle-created-via-dnd', (event, data) => {
-            track('Plan view | Bundle created via drag and drop', data);
-        });
-
-        $rootScope.$on('plan-view__item-added-to-bundle-via-dnd', (event, data) => {
-            track('Plan view | Item added to bundle via drag and drop', data);
-        });
-
-        $rootScope.$on('plan-view__item-added-to-bundle-via-inline-add', (event, data) => {
-            track('Plan view | Item create in BUNDLE via inline', data);
-        });
-
-        $rootScope.$on('plan-view__day-note-added', (event, data) => {
-            track('Plan view | Day note created', data);
-        });
-
-        $rootScope.$on('plan-view__item-created-from-day-note', (event, data) => {
-            track('Plan view | Item created from day note', data);
-        });
-
-        $rootScope.$on('plan-view__item-added-to-bucket-via-inline-add', (event, data) => {
-            track('Plan view | Item create in BUCKET via inline', data);
-        });
-
-        $rootScope.$on('plan-view__item-dropped-on-bucket', (event, data) => {
-            track('Plan view | Item dropped on BUCKET', data);
-        });
-
         // TODO Things to track:
         //  View in Composer
         //  Content list filtered
