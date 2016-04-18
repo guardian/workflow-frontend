@@ -12,16 +12,12 @@ import 'components/user-message/user-message';
 import 'components/content-list/content-list';
 import 'components/icons/icons';
 
-import 'components/plan-view/quick-add/quick-add';
 
 import 'layouts/dashboard/dashboard';
 import 'layouts/dashboard/dashboard-user';
 import 'layouts/dashboard/dashboard-create';
 import 'layouts/dashboard/dashboard-toolbar';
 import 'layouts/dashboard/dashboard-sidebar';
-
-import 'layouts/plan/plan';
-import 'layouts/plan/plan-toolbar';
 
 import 'lib/date-service';
 import 'lib/filters-service';
@@ -33,12 +29,6 @@ import 'lib/google-api';
 import 'lib/polling-service';
 import 'lib/title-service';
 import 'lib/logger';
-
-// Plan view specific
-import 'lib/plan-service';
-import 'lib/bundle-service';
-import 'lib/planned-item-service';
-import 'lib/day-note-service';
 
 // 3rd party libs
 import 'angular-ui-router';
@@ -80,15 +70,6 @@ angular.module('workflow',
         // New
 
         //'angular-loading-bar',
-
-        // Plan view specific
-
-        'wfPlan',
-        'wfPlanToolbar',
-        'wfQuickAdd',
-        'wfBundleService',
-        'wfPlannedItemService',
-        'wfDayNoteService'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', '$animateProvider', "$provide", function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider, $animateProvider, $provide) {
         // TODO: remember user's state and redirect there on default '' route
@@ -147,19 +128,6 @@ angular.module('workflow',
                 }
             }
         })
-        .state('plan', {
-                url: '/plan',
-                views: {
-                    '': {
-                        templateUrl: '/assets/layouts/plan/plan.html',
-                        controller: 'wfPlanController'
-                    },
-                    'view-toolbar': {
-                        templateUrl: '/assets/layouts/plan/plan-toolbar.html',
-                        controller: 'wfPlanToolbarController'
-                    }
-                }
-            });
 
         $locationProvider.html5Mode({
             enabled: true,
@@ -182,8 +150,7 @@ angular.module('workflow',
             'presenceUrl': _wfConfig.presenceUrl,
             'incopyExportUrl': _wfConfig.incopyExportUrl,
             'composerRestorerUrl': _wfConfig.composerRestorerUrl,
-            'maxNoteLength': 500,
-            'pvPlanItemMaxNoteLength': 1000
+            'maxNoteLength': 500
         }
     )
     .constant({ 'statuses': _wfConfig.statuses })
