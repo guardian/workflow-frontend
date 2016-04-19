@@ -1,3 +1,0 @@
-
-# --- !Ups
-ALTER TABLE STUB ALTER COLUMN created_at SET NOT NULL;
