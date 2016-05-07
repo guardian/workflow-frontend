@@ -60,12 +60,12 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
      * @returns Filtered list of sections
      */
     function getSectionsList (sections) {
-        var deskId = wfFiltersService.get('desk');
-
-        if (deskId) {
-            var sectionsIdsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
-            sections = sections.filter((el) => sectionsIdsInThisDesk[0].sectionIds.indexOf(el.id) != -1)
-        }
+        //var deskId = wfFiltersService.get('desk');
+        //
+        //if (deskId) {
+        //    var sectionsIdsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
+        //    sections = sections.filter((el) => sectionsIdsInThisDesk[0].sectionIds.indexOf(el.id) != -1)
+        //}
 
         return sections
     }
