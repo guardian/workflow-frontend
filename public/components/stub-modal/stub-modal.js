@@ -54,16 +54,20 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
     $scope.stub.status = 'Writers';
 
     /**
-     * If the user currently has some sections selected then only
-     * show those sections in the dropdown
+     * If the user currently has a desk selected then only
+     * show the sections that are part of that desk in the dropdown
      * @param sections
-     * @returns Filtered list of section names
+     * @returns Filtered list of sections
      */
     function getSectionsList (sections) {
+        var deskId = wfFiltersService.get('desk');
 
-        var filterSections = wfFiltersService.get('section');
-        filterSections = filterSections ? filterSections.split(",").sort() : sections.map((s) => s.name);
-        return filterSections;
+        if (deskId) {
+            var sectionsIdsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
+            sections = sections.filter((el) => sectionsIdsInThisDesk[0].sectionIds.indexOf(el.id) != -1)
+        }
+
+        return sections
     }
 
     $scope.legalStates = legalStatesService.getLegalStates();
