@@ -43,10 +43,10 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
          * only set the section if a preference was found
          */
         $scope.stub.section = (function findSelectedSectionInAvailableSections (sect) {
-            var filteredSections = $scope.sections.filter((el) => el.name === sect.name);
-            if (filteredSections.length > 0) {
-                return filteredSections[0];
-            }
+            //var filteredSections = $scope.sections.filter((el) => el.name === sect.name);
+            //if (filteredSections.length > 0) {
+            //    return filteredSections[0];
+            //}
             return sect;
         })($scope.stub.section);
     }
