@@ -43,10 +43,10 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
          * only set the section if a preference was found
          */
         $scope.stub.section = (function findSelectedSectionInAvailableSections (sect) {
-            //var filteredSections = $scope.sections.filter((el) => el.name === sect.name);
-            //if (filteredSections.length > 0) {
-            //    return filteredSections[0];
-            //}
+            var filteredSections = $scope.sections ? $scope.sections.filter((el) => (el ? el.name === sect.name : false)) : [];
+            if (filteredSections.length > 0) {
+                return filteredSections[0];
+            }
             return sect;
         })($scope.stub.section);
     }
@@ -60,12 +60,14 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
      * @returns Filtered list of sections
      */
     function getSectionsList (sections) {
-        //var deskId = wfFiltersService.get('desk');
-        //
-        //if (deskId) {
-        //    var sectionsIdsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
-        //    sections = sections.filter((el) => sectionsIdsInThisDesk[0].sectionIds.indexOf(el.id) != -1)
-        //}
+        var deskId = wfFiltersService.get('desk');
+
+        if (deskId) {
+            var sectionsIdsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
+            if (sectionsIdsInThisDesk.length > 0) {
+                sections = sections.filter((el) => sectionsIdsInThisDesk[0].sectionIds.indexOf(el.id) != -1)
+            }
+        }
 
         return sections
     }
