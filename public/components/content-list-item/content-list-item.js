@@ -38,7 +38,7 @@ function wfContentItemParser(config, statusLabels, sections) {
     }
 
     function getCommissioningDeskNames(commissioningDeskIdString) {
-        if (commissioningDeskIdString && !(/[a-z]/i.test(commissioningDeskIdString))) {
+        if (typeof commissioningDeskIdString === 'string' && !(/[a-z]/i.test(commissioningDeskIdString))) {
             var commissioningDeskIds = commissioningDeskIdString.split(",");
             return commissioningDeskIds.map((id) => {
                 return _wfConfig.commissioningDesks.filter(desk => desk.id === id.toNumber())[0];
