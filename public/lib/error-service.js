@@ -8,6 +8,7 @@ function wfErrorExceptionHandlerDecorator($delegate, $injector) {
         var messageData = ex && errorData[ex.name] || errorData.Error;
         var $rootScope = $injector.get('$rootScope');
         $rootScope.$broadcast('userMessage.show', messageData);
+        console.error(ex);
         $delegate(ex, cause);
     };
 }
