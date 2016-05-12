@@ -65,11 +65,11 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
         if (deskId) {
             var sectionsIdsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
             if (sectionsIdsInThisDesk.length > 0) {
-                sections = sections.filter((el) => sectionsIdsInThisDesk[0].sectionIds.indexOf(el.id) != -1)
+                var setSectionsIdsInThisDesk = new Set(sectionsIdsInThisDesk[0].sectionIds);
+                sections = sections.filter((el) => setSectionsIdsInThisDesk.has(el.id))
             }
         }
-
-        return sections
+        return sections;
     }
 
     $scope.legalStates = legalStatesService.getLegalStates();
