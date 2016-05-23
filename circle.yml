@@ -1,0 +1,28 @@
+machine:
+  java:
+    version: oraclejdk8
+checkout:
+  post:
+    - ./configure-build.sh
+general:
+  artifacts:
+    - "~/workflow/target/riffraff/artifacts.zip"
+dependencies:
+  cache_directories:
+    - "node_modules"
+    - "target/resolution-cache"
+    - "target/steams"
+    - "project/project/target/resolution-cache"
+    - "project/project/target/streams"
+    - "project/target/resolution-cache"
+    - "project/target/streams"
+  pre:
+    - ./setup.sh
+test:
+  override:
+    - sbt test
+deployment:
+  riffraff_upload:
+    branch: /.*/
+    commands:
+      - sbt riffRaffUpload
