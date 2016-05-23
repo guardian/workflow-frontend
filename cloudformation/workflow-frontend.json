@@ -50,7 +50,6 @@
             "Type": "String",
             "AllowedValues": [
                 "CODE",
-                "RELEASE",
                 "PROD"
             ],
             "Default": "PROD"
