@@ -1,8 +1,6 @@
 package controllers
 
 import com.gu.workflow.api.{SectionsAPI, DesksAPI, SectionDeskMappingsAPI }
-import com.gu.workflow.db.Schema._
-import com.gu.workflow.db._
 import com.gu.workflow.lib.StatusDatabase
 import com.gu.workflow.query.WfQuery
 import lib._
