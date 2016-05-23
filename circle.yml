@@ -18,6 +18,8 @@ dependencies:
     - "project/target/streams"
   pre:
     - ./setup.sh
+  override:
+    - sbt test:compile
 test:
   override:
     - sbt test
