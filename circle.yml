@@ -1,9 +1,6 @@
 machine:
   java:
     version: oraclejdk8
-checkout:
-  post:
-    - ./configure-build.sh
 general:
   artifacts:
     - "~/workflow/target/riffraff/artifacts.zip"
