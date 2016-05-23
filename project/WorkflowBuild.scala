@@ -67,7 +67,7 @@ object WorkflowBuild extends Build {
     riffRaffManifestBranch := Option(System.getenv("CIRCLE_BRANCH")).getOrElse("dev")
   )
 
-  lazy val root = playProject("prototype")
+  lazy val root = playProject("workflow-frontend")
                           .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
                                       ++ testDependencies)
                             .settings(libraryDependencies += filters)
@@ -75,7 +75,7 @@ object WorkflowBuild extends Build {
                             .settings(playDefaultPort := 9090)
                             .settings(playArtifactDistSettings ++ playArtifactSettings: _*)
                             .enablePlugins(RiffRaffArtifact)
-                            .settings(appDistSettings("prototype"): _*)
+                            .settings(appDistSettings("workflow-frontend"): _*)
 
 
   def project(path: String): Project =
