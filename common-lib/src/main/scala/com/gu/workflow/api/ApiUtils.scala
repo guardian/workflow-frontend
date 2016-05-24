@@ -2,12 +2,12 @@ package com.gu.workflow.api
 
 import com.gu.workflow.lib.Config
 import play.api.libs.ws.{WS, WSRequestHolder, WSResponse}
-import play.api.libs.json._
 import play.api.mvc.AnyContent
 import play.api.Play.current
+
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import models.api._
+import play.api.libs.json._
 
 object ApiUtils {
   lazy val apiRoot: String = Config.getConfigStringOrFail("api.url")

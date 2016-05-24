@@ -4,6 +4,8 @@ import PlayKeys._
 
 object Dependencies {
 
+  val playDependencies = Seq(ws, "com.typesafe.play" %% "play-json" % "2.3.4")
+
   val awsDependencies = Seq("com.amazonaws" % "aws-java-sdk" % "1.9.32")
 
   val akkaDependencies = Seq("com.typesafe.akka" %% "akka-agent" % "2.3.4")
