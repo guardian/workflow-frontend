@@ -7,9 +7,7 @@ object Dependencies {
   val databaseDependencies = Seq(
     jdbc,
     ws,
-    "com.typesafe.play" %% "play-slick" % "0.8.1",
-    "com.github.tototoshi" %% "slick-joda-mapper" % "1.2.0",
-    "org.postgresql" % "postgresql" % "9.3-1100-jdbc4"
+    "com.typesafe.play" %% "play-slick" % "0.8.1"
   )
 
   val awsDependencies = Seq("com.amazonaws" % "aws-java-sdk" % "1.9.32")

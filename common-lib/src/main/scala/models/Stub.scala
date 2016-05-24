@@ -1,6 +1,5 @@
 package models
 
-import com.gu.workflow.db.Schema
 import models.Flag.Flag
 import org.joda.time.DateTime
 import play.api.libs.json._
@@ -54,21 +53,6 @@ object Stub {
 
 
   implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
-
-  def fromStubRow(row: Schema.StubRow): Stub = row match {
-    case (pk, title, section, due, assignee, assigneeEmail, composerId, contentType, priority,
-          needsLegal, note, prodOffice, createdAt, lastModified, trashedOpt, commissioningDesks) =>
-      Stub(Some(pk), title, section, due, assignee, assigneeEmail, composerId, contentType, priority,
-           needsLegal, note, prodOffice, createdAt, lastModified, trashedOpt.getOrElse(false), commissioningDesks)
-  }
-
-  /* provide a tuple suitable for insertion into the database */
-  def newStubRow(s: Stub) = s match {
-    case Stub(_, title, section, due, assignee, assigneeEmail, composerId, contentType, priority,
-              needsLegal, note, prodOffice, createdAt, lastModified, trashed, commissioningDesks) =>
-      (0L, title, section, due, assignee, assigneeEmail, composerId, contentType, priority,
-       needsLegal, note, prodOffice, createdAt, lastModified, Some(trashed), commissioningDesks)
-  }
 }
 
 object Flag extends Enumeration {
