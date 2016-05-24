@@ -1,20 +1,13 @@
 package controllers
 
 import com.gu.workflow.api.{SectionsAPI, DesksAPI, SectionDeskMappingsAPI }
-import com.gu.workflow.lib.StatusDatabase
-import com.gu.workflow.query.WfQuery
 import lib._
-import Response._
-import org.joda.time.DateTime
 import play.api.Logger
-import play.api.libs.ws.WS
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import play.api.mvc._
 import play.api.data.Form
-import lib._
 import models.{Status => WorkflowStatus, _}
-import scala.util.{Failure, Success}
 
 object Admin extends Controller with PanDomainAuthActions {
 

@@ -1,20 +1,18 @@
 package controllers
 
 import com.gu.workflow.api.{ DesksAPI, SectionsAPI, SectionDeskMappingsAPI }
-import com.gu.workflow.db._
 import com.gu.workflow.lib.{TagService, StatusDatabase}
 
 import config.Config
 import config.Config.defaultExecutionContext
 import models.{ Desk, Tag }
 
-import lib._
 import lib.Composer._
 import models.Section
 import play.api.Logger
 
 import play.api.mvc._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json
 import scala.concurrent.Future
 
 object Application extends Controller with PanDomainAuthActions {

@@ -2,36 +2,21 @@ package controllers
 
 import com.gu.workflow.api.{ ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI }
 import com.gu.workflow.lib._
-import lib._
-import Response.Response
 import models.Flag.Flag
 import models._
 import models.api.ApiResponseFt
-import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
 import play.api.Logger
 
-import play.api.libs.ws.WS
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._
 import play.api.libs.json._
-import play.api.libs.concurrent.Akka
 
-import lib.OrderingImplicits.{publishedOrdering, unpublishedOrdering, jodaDateTimeOrdering}
 import lib.Responses._
 
 import org.joda.time.DateTime
 
-import com.gu.workflow.db._
-import com.gu.workflow.query._
-
-
-
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
-import scala.concurrent.duration._
-
-import akka.actor.Props
 
 import config.Config
 import config.Config.defaultExecutionContext
