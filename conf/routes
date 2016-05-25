@@ -5,7 +5,7 @@
 # Application
 GET            /                                           controllers.Application.index
 
-OPTIONS        /api/*url                                   controllers.Api.allowCORSAccess(methods = "PUT, POST", url: String)
+OPTIONS        /api/*url                                   controllers.Api.allowCORSAccess(methods = "PUT, POST, DELETE", url: String)
 
 GET            /dashboard                                  controllers.Application.dashboard
 
