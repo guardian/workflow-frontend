@@ -37,7 +37,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
 
     $scope.stub = stub;
 
-    if ($scope.stub.section !== null) {
+    if ($scope.stub.section) {
         /**
          * To ensure that a modal loaded without a preference for section does not validate,
          * only set the section if a preference was found
