@@ -29,13 +29,15 @@
                 "MinSize": 1,
                 "MaxSize": 2,
                 "DesiredCapacity": 1,
-                "InstanceType": "m3.medium"
+                "InstanceType": "m3.medium",
+                "CloudfrontAliases": ["workflow.code.dev-gutools.co.uk"]
             },
             "PROD": {
                 "MinSize": 3,
                 "MaxSize": 6,
                 "DesiredCapacity": 3,
-                "InstanceType": "c3.large"
+                "InstanceType": "c3.large",
+                "CloudfrontAliases": ["workflow.gutools.co.uk"]
             }
         }
     },
@@ -58,6 +60,10 @@
             "Description": "ARN of the SSL certificate for workflow.gutools.co.uk",
             "Type": "String",
             "Default": "arn:aws:iam::753338109777:server-certificate/star.gutools.co.uk-exp2018-11-17"
+        },
+        "CloudFrontSSLCertificateId": {
+            "Description": "The ServerCertificateId (not ARN) of the certificate for the CloudFront distribution (with /cloudfront/ path prefix)",
+            "Type": "String"
         },
         "AMI": {
             "Description": "AMI for Workflow instances",
@@ -570,6 +576,83 @@
                     "Ref": "WorkflowFrontendUser"
                 }
             }
+        },
+        "WorkflowFrontendCloudfront": {
+            "Type": "AWS::CloudFront::Distribution",
+            "Properties": {
+                "DistributionConfig": {
+                    "Aliases": {
+                        "Fn::FindInMap": [
+                            "WorkflowFrontendConfig",
+                            {
+                                "Ref": "Stage"
+                            },
+                            "CloudfrontAliases"
+                        ]
+                    },
+                    "Origins": [
+                        {
+                            "CustomOriginConfig": {
+                                "HTTPSPort": "443",
+                                "OriginProtocolPolicy": "https-only"
+                            },
+                            "DomainName": {
+                                "Fn::GetAtt": [
+                                    "WorkflowFrontendLoadBalancer",
+                                    "DNSName"
+                                ]
+                            },
+                            "Id": "workflow-frontend"
+                        }
+                    ],
+                    "DefaultCacheBehavior": {
+                        "AllowedMethods": [
+                            "DELETE",
+                            "GET",
+                            "HEAD",
+                            "OPTIONS",
+                            "PATCH",
+                            "POST",
+                            "PUT"
+                        ],
+                        "Compress": true,
+                        "ForwardedValues": {
+                            "Headers": [
+                                "*"
+                            ],
+                            "QueryString": true,
+                            "Cookies": {
+                                "Forward": "all"
+                            }
+                        },
+                        "TargetOriginId": "workflow-frontend",
+                        "ViewerProtocolPolicy": "redirect-to-https"
+                    },
+                    "CacheBehaviors": [
+                        {
+                            "PathPattern": "assets/*",
+                            "Compress": true,
+                            "ForwardedValues": {
+                                "QueryString": false,
+                                "Headers": [
+                                    "Host"
+                                ]
+                            },
+                            "TargetOriginId": "workflow-frontend",
+                            "ViewerProtocolPolicy": "redirect-to-https"
+                        }
+                    ],
+                    "PriceClass": "PriceClass_All",
+                    "Enabled": "true",
+                    "ViewerCertificate": {
+                        "IamCertificateId": {
+                            "Ref": "CloudFrontSSLCertificateId"
+                        },
+                        "MinimumProtocolVersion": "TLSv1",
+                        "SslSupportMethod": "sni-only"
+                    }
+                }
+            }
         }
     },
     "Outputs": {
@@ -579,6 +662,15 @@
                 "Fn::GetAtt": [
                     "WorkflowFrontendLoadBalancer",
                     "DNSName"
+                ]
+            }
+        },
+        "WorkflowFrontendCloudfrontDNS": {
+            "Description": "Cloudfront DNS",
+            "Value": {
+                "Fn::GetAtt": [
+                    "WorkflowFrontendCloudfront",
+                    "DomainName"
                 ]
             }
         }
