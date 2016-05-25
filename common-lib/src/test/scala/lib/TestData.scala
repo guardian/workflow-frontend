@@ -1,11 +1,10 @@
 package com.gu.workflow.test.lib
 
-import com.gu.workflow.query._
+import com.gu.workflow.query.{ContentState, PublishedState, TakenDownState, ScheduledState, EmbargoedState, DraftState}
 import models._
 import models.api.ContentUpdateSerialisedEvent
 import org.joda.time.DateTime
 import com.gu.workflow.test.Config
-import play.api.libs.json.{JsObject, Json, JsValue}
 
 object TestData {
 

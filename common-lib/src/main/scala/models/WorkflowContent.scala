@@ -2,17 +2,11 @@ package models
 
 import com.gu.workflow.lib.Util
 import models.Status._
-import com.gu.workflow.db.Schema
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import scala.slick.driver.PostgresDriver.simple._
-import com.github.tototoshi.slick.PostgresJodaSupport._
-import org.joda.time._
 
-import scala.slick.collection.heterogenous._
-import syntax._
 
 case class Asset(assetType: String, mimeType:String, url:String, fields: Map[String, String])
 object Asset {
@@ -170,174 +164,6 @@ object WorkflowContent {
     } yield urlOption
   }
 
-  def fromContentRow(row: Schema.ContentRow): WorkflowContent = row match {
-    case (composerId          ::
-        path                  ::
-        lastMod               ::
-        lastModBy             ::
-        status                ::
-        contentType           ::
-        commentable           ::
-        optimisedForWeb       ::
-        optimisedForWebChanged ::
-        headline              ::
-        standfirst            ::
-        trailtext             ::
-        mainMedia             ::
-        mainMediaUrl          ::
-        mainMediaCaption      ::
-        mainMediaAltText      ::
-        trailImageUrl         ::
-        published             ::
-        timePublished         ::
-        _                     ::
-        storyBundleId         ::
-        activeInInCopy        ::
-        takenDown             ::
-        timeTakenDown         ::
-        wordCount             ::
-        embargoedUntil        ::
-        embargoedIndefinitely ::
-        scheduledLaunchDate   ::
-        HNil) => {
-
-      val media = WorkflowContentMainMedia(
-        mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
-
-      val statusFlags = WorkflowContentStatusFlags(
-        commentable, optimisedForWeb, optimisedForWebChanged
-      )
-
-      val launchScheduleDetails = LaunchScheduleDetails(
-        scheduledLaunchDate,
-        embargoedUntil,
-        embargoedIndefinitely
-      )
-
-      WorkflowContent(
-        composerId,
-        path,
-        headline,
-        standfirst,
-        trailtext,
-        Some(media),
-        trailImageUrl,
-        contentType,
-        Status(status),
-        lastMod,
-        lastModBy,
-        published,
-        timePublished,
-        storyBundleId,
-        activeInInCopy,
-        takenDown,
-        timeTakenDown,
-        wordCount,
-        launchScheduleDetails,
-        statusFlags
-      )
-    }
-  }
-//todo - add a unit test on the serialisation from dbrepresentation to workflow content
-  //better if the optional row, and required row serialisation could be shared
-  def fromOptionalContentRow(row: Schema.OptionContentRow): Option[WorkflowContent] = row match {
-    case (Some(composerId)            ::
-          path                        ::
-          Some(lastMod)               ::
-          lastModBy                   ::
-          Some(status)                ::
-          Some(contentType)           ::
-          Some(commentable)           ::
-          Some(optimisedForWeb)       ::
-          Some(optimisedForWebChanged)::
-          headline                    ::
-          standfirst                  ::
-          trailtext                   ::
-          mainMedia                   ::
-          mainMediaUrl                ::
-          mainMediaCaption            ::
-          mainMediaAltText            ::
-          trailImageUrl               ::
-          Some(published)             ::
-          timePublished               ::
-          revision                    ::
-          storyBundleId               ::
-          Some(activeInInCopy)        ::
-          Some(takenDown)             ::
-          timeTakenDown               ::
-          Some(wordCount)             ::
-          embargoedUntil              ::
-          Some(embargoedIndefinitely) ::
-          scheduledLaunchDate         ::
-          HNil) => {
-      val launchScheduleDetails = LaunchScheduleDetails(
-        scheduledLaunchDate,
-        embargoedUntil,
-        embargoedIndefinitely
-      )
-
-      val media = WorkflowContentMainMedia(
-        mainMedia, mainMediaUrl, mainMediaCaption, mainMediaAltText)
-
-      val statusFlags = WorkflowContentStatusFlags(
-        commentable, optimisedForWeb, optimisedForWebChanged
-      )
-
-      Some(WorkflowContent(
-        composerId, path, headline,
-        standfirst, trailtext, Some(media),
-        trailImageUrl, contentType,
-        Status(status), lastMod, lastModBy, published, timePublished, storyBundleId, activeInInCopy,
-        takenDown, timeTakenDown, wordCount, launchScheduleDetails, statusFlags
-        ))
-    }
-    case _ => {
-      None
-    }
-
-  }
-
-  def newContentRow(wc: WorkflowContent, revision: Option[Long]=None) = {
-
-    val mainMedia = wc.mainMedia.getOrElse(
-      WorkflowContentMainMedia(None, None, None, None)
-    )
-
-    val launchScheduleDetails = wc.launchScheduleDetails
-
-    val statusFlags = wc.statusFlags
-
-    wc.composerId            ::
-    wc.path                  ::
-    wc.lastModified          ::
-    wc.lastModifiedBy        ::
-    wc.status.name           ::
-    wc.contentType           ::
-    statusFlags.commentable  ::
-    statusFlags.optimisedForWeb      ::
-    statusFlags.optimisedForWebChanged ::
-    wc.headline              ::
-    wc.standfirst            ::
-    wc.trailtext             ::
-    mainMedia.mediaType      ::
-    mainMedia.url            ::
-    mainMedia.caption        ::
-    mainMedia.altText        ::
-    wc.trailImageUrl         ::
-    wc.published             ::
-    wc.timePublished         ::
-    revision                 ::
-    wc.storyBundleId         ::
-    wc.activeInInCopy        ::
-    wc.takenDown             ::
-    wc.timeTakenDown         ::
-    wc.wordCount             ::
-    launchScheduleDetails.embargoedUntil        ::
-    launchScheduleDetails.embargoedIndefinitely ::
-    launchScheduleDetails.scheduledLaunchDate   ::
-    HNil
-  }
-
   implicit val workFlowContentWrites: Writes[WorkflowContent] =
     Json.writes[WorkflowContent]
 
@@ -366,6 +192,8 @@ object WorkflowContent {
       (__ \ "statusFlags").read[WorkflowContentStatusFlags]
      )(WorkflowContent.apply _)
 }
+
+
 
 case class ContentItem(stub: Stub, wcOpt: Option[WorkflowContent])
 case object ContentItem {
