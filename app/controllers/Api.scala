@@ -253,10 +253,12 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def deleteContent(composerId: String) = APIAuthAction {
-    CommonAPI.deleteContent(Seq(composerId)).fold(err =>
-      Logger.error(s"failed to delete content with composer id: $composerId"), identity)
-    NoContent
+  def deleteContent(composerId: String) = CORSable(composerUrl) {
+    APIAuthAction {
+      CommonAPI.deleteContent(Seq(composerId)).fold(err =>
+        Logger.error(s"failed to delete content with composer id: $composerId"), identity)
+      NoContent
+    }
   }
 
   def deleteStub(stubId: Long) = APIAuthAction {
