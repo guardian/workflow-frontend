@@ -1,9 +1,7 @@
 package models
 
-import com.gu.workflow.lib.Util
 import models.Status._
 import org.joda.time.DateTime
-import play.api.Logger
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
@@ -42,8 +40,9 @@ object User { implicit val jsonFormats = Json.format[User]}
 case class WorkflowContentStatusFlags(
   commentable: Boolean     = false,
   optimisedForWeb: Boolean = false,
-  optimisedForWebChanged: Boolean = false
-
+  optimisedForWebChanged: Boolean = false,
+  sensitive: Option[Boolean] = None,
+  legallySensitive: Option[Boolean] = None
 )
 
 object WorkflowContentStatusFlags {
@@ -54,10 +53,12 @@ object WorkflowContentStatusFlags {
     Json.reads[WorkflowContentStatusFlags]
 
   val workflowContentStatusFlagsSqsNotificationReads: Reads[WorkflowContentStatusFlags] =
-    ((__ \  "settings" \ "commentable").readNullable[String].map(s => s.exists(_=="true")) ~
-      (__ \ "toolSettings" \ "seoOptimised").readNullable[String].map(s => s.exists(_=="true")) ~
-      (__ \ "toolSettings" \ "seoChanged").readNullable[String].map(s => s.exists(_=="true"))
-    )(WorkflowContentStatusFlags.apply _)
+    ((__ \  "settings" \ "commentable").readNullable[String].map(s => s.contains("true")) ~
+      (__ \ "toolSettings" \ "seoOptimised").readNullable[String].map(s => s.contains("true")) ~
+      (__ \ "toolSettings" \ "seoChanged").readNullable[String].map(s => s.contains("true")) ~
+      (__ \  "settings" \ "sensitive").readNullable[String].map(_.map(_ == "true")) ~
+      (__ \  "settings" \ "legallySensitive").readNullable[String].map(_.map(_ == "true"))
+      )(WorkflowContentStatusFlags.apply _)
 }
 
 case class WorkflowContentMainMedia(
