@@ -11,6 +11,8 @@
     "statusFlags": {
         "commentable": false,
         "optimisedForWeb": false,
-        "optimisedForWebChanged": false
+        "optimisedForWebChanged": false,
+        "sensitive": false,
+        "legallySensitive": false
     }
 }

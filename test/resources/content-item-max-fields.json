@@ -21,7 +21,9 @@
     "statusFlags": {
         "commentable": true,
         "optimisedForWeb": false,
-        "optimisedForWebChanged": false
+        "optimisedForWebChanged": false,
+        "sensitive": false,
+        "legallySensitive": false
     },
     "revision": 20,
     "lastModified": "2016-02-23T15:11:49.784Z",
