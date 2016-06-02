@@ -34,6 +34,79 @@ $drawer-breakpoint-small: 1400px;
     border: 3px solid $c-grey-200;
 }
 
+.content-list-drawer__container-innerv2 {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    &__area1 {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+        &__furniture {
+            flex: 2.5 0 0;
+            margin: 0px;
+            padding: 12px;
+            border: 3px solid $c-grey-200;
+            display: flex;
+            flex-direction: column;
+            &__header {
+                font-weight: bold;
+                padding-bottom:10px;
+                border-bottom:4px solid $c-grey-200;
+            }
+            &__body {
+                display: flex;
+                flex-direction: row;
+                height: 100%;
+                &__column {
+                    flex: 1 0 0;
+                }
+                &__column-wide {
+                    flex: 2 0 0;
+                }
+            }
+        }
+        &__management {
+            flex: 1 0 0;
+            margin: 0px;
+            padding: 12px;
+            border: 3px solid $c-grey-200;
+            display: flex;
+            flex-direction: column;
+            &__header {
+                font-weight: bold;
+                padding-bottom:10px;
+                border-bottom:4px solid $c-grey-200;
+            }
+            &__body {
+                display: flex;
+                flex-direction: row;
+                height: 100%;
+                &__column {
+                    flex: 1 0 0;
+                }
+            }
+        }
+    }
+    &__area2 {
+        display: flex;
+        flex-direction: row;
+        padding: 12px;
+        background-color: $c-grey-200;
+        &__element1 {
+            flex: 10 0 0;
+            border-right:2px solid $c-grey-300;
+        }
+        &__element2 {
+            flex: 1 0 0;
+            border-right:2px solid $c-grey-300;
+        }
+        &__element3 {
+            flex: 1 0 0;
+        }
+    }
+}
+
 .drawer__column {
     flex: 1 0 0;
     margin: 0;
