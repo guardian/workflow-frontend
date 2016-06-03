@@ -3,15 +3,15 @@
 
         <div class="content-list-drawer__container"><!-- div for animation -->
 
-            <div class="content-list-drawer__container-innerv2"><!-- div for padding/spacing -->
-                <div class="content-list-drawer__container-innerv2__info-panel">
-                    <div class="content-list-drawer__container-innerv2__info-panel__furniture">
-                        <div class="content-list-drawer__container-innerv2__info-panel__furniture__header">
+            <div class="content-list-drawer__container-inner"><!-- div for padding/spacing -->
+                <div class="content-list-drawer__container-inner__info-panel">
+                    <div class="content-list-drawer__container-inner__info-panel__furniture">
+                        <div class="content-list-drawer__container-inner__info-panel__furniture__header">
                             <i class="drawer__icon--content-type" wf-icon="furniture"/>
                             Furniture
                         </div>
-                        <div class="content-list-drawer__container-innerv2__info-panel__furniture__body">
-                            <div class="content-list-drawer__container-innerv2__info-panel__furniture__body__column-wide">
+                        <div class="content-list-drawer__container-inner__info-panel__furniture__body">
+                            <div class="content-list-drawer__container-inner__info-panel__furniture__body__column-wide">
                                 <ul class="drawer__column--wide">
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Working title</span>
@@ -48,7 +48,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="content-list-drawer__container-innerv2__info-panel__furniture__body__column">
+                            <div class="content-list-drawer__container-inner__info-panel__furniture__body__column">
                                 <ul class="drawer__column--media">
                                     <li class="drawer__section drawer__section-mainmedia"
                                         ng-class="{'drawer__section-mainmedia--nopreview': contentItem.mainMediaNoPreview}">
@@ -80,7 +80,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="content-list-drawer__container-innerv2__info-panel__furniture__body__column">
+                            <div class="content-list-drawer__container-inner__info-panel__furniture__body__column">
                                 <ul class="drawer__column--media">
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Trail picture</span>
@@ -100,7 +100,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="content-list-drawer__container-innerv2__info-panel__furniture__body__column">
+                            <div class="content-list-drawer__container-inner__info-panel__furniture__body__column">
                                 <ul class="drawer__column--wide">
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Comments</span>
@@ -130,13 +130,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="content-list-drawer__container-innerv2__info-panel__management">
-                        <div class="content-list-drawer__container-innerv2__info-panel__management__header">
+                    <div class="content-list-drawer__container-inner__info-panel__management">
+                        <div class="content-list-drawer__container-inner__info-panel__management__header">
                             <i class="drawer__icon--content-type" wf-icon="management"/>
                             Management
                         </div>
-                        <div class="content-list-drawer__container-innerv2__info-panel__management__body">
-                            <div class="content-list-drawer__container-innerv2__info-panel__management__body__column">
+                        <div class="content-list-drawer__container-inner__info-panel__management__body">
+                            <div class="content-list-drawer__container-inner__info-panel__management__body__column">
                                 <ul class="drawer__column--wide">
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Priority</span>
@@ -178,7 +178,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="content-list-drawer__container-innerv2__info-panel__management__body__column">
+                            <div class="content-list-drawer__container-inner__info-panel__management__body__column">
                                 <ul class="drawer__column--wide">
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Office</span>
@@ -218,22 +218,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="content-list-drawer__container-innerv2__toolbar">
+                <div class="content-list-drawer__container-inner__toolbar">
 
-                    <span class="content-list-drawer__container-innerv2__toolbar__trash" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}" ng-click="deleteContentItem(!contentItem.item.trashed)" title="{{ contentItem.item.trashed ? 'Restore' : 'Trash' }}" ng-class="{'drawer__control-item--restore': contentItem.item.trashed}">
+                    <span class="content-list-drawer__container-inner__toolbar__trash" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}" ng-click="deleteContentItem(!contentItem.item.trashed)" title="{{ contentItem.item.trashed ? 'Restore' : 'Trash' }}" ng-class="{'drawer__control-item--restore': contentItem.item.trashed}">
                         <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
                         {{ contentItem.item.trashed ? 'Restore' : 'Trash' }}
                     </span>
-                    <div class="content-list-drawer__container-innerv2__toolbar__emptyspace">
+                    <div class="content-list-drawer__container-inner__toolbar__emptyspace">
                         &nbsp;
                     </div>
-                    <span class="content-list-drawer__container-innerv2__toolbar__versions">
+                    <span class="content-list-drawer__container-inner__toolbar__versions">
                         <a href="{{ composerRestorerUrl }}" target="_blank" class="drawer__section-data-row drawer__control-item drawer__control-item--restorer" title="View versions">
                             <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="view-versions"></i>
                             View versions
                         </a>
                     </span>
-                    <span class="content-list-drawer__container-innerv2__toolbar__close" ng-click="contentListDrawerController.hide()" title="Close details">
+                    <span class="content-list-drawer__container-inner__toolbar__close" ng-click="contentListDrawerController.hide()" title="Close details">
                         <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="cross"></i>
                         Close details
                     </span>
