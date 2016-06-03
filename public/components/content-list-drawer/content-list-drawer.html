@@ -220,7 +220,7 @@
                 </div>
                 <div class="content-list-drawer__container-innerv2__toolbar">
 
-                    <span class="content-list-drawer__container-innerv2__toolbar__element1" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}" ng-click="deleteContentItem(!contentItem.item.trashed)" title="{{ contentItem.item.trashed ? 'Restore' : 'Trash' }}" ng-class="{'drawer__control-item--restore': contentItem.item.trashed}">
+                    <span class="content-list-drawer__container-innerv2__toolbar__trash" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}" ng-click="deleteContentItem(!contentItem.item.trashed)" title="{{ contentItem.item.trashed ? 'Restore' : 'Trash' }}" ng-class="{'drawer__control-item--restore': contentItem.item.trashed}">
                         <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
                         {{ contentItem.item.trashed ? 'Restore' : 'Trash' }}
                     </span>

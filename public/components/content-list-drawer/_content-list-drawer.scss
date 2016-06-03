@@ -93,7 +93,7 @@ $drawer-breakpoint-small: 1400px;
         flex-direction: row;
         height: 100%;
         background-color: $c-grey-200;
-        &__element1 {
+        &__trash {
             flex: 1 0 0;
             height: 100%;
             padding:12px;
@@ -101,7 +101,7 @@ $drawer-breakpoint-small: 1400px;
             cursor: pointer;
             cursor: hand;
         }
-        &__element1:hover {
+        &__trash:hover {
           height: 100%;
           background-color: $c-grey-300;
         }
