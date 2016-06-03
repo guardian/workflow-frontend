@@ -111,7 +111,7 @@ $drawer-breakpoint-small: 1400px;
           padding:12px;
           border-right:2px solid $c-grey-300;
         }
-        &__element3 {
+        &__versions {
             flex: 1 0 0;
             height: 100%;
             padding:12px;
@@ -119,7 +119,7 @@ $drawer-breakpoint-small: 1400px;
             cursor: pointer;
             cursor: hand;
         }
-        &__element3:hover {
+        &__versions:hover {
             height: 100%;
             background-color: $c-grey-300;
         }
