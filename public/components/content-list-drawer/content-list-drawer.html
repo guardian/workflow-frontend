@@ -218,22 +218,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="content-list-drawer__container-innerv2__area2">
+                <div class="content-list-drawer__container-innerv2__toolbar">
 
-                    <span class="content-list-drawer__container-innerv2__area2__element1" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}" ng-click="deleteContentItem(!contentItem.item.trashed)" title="{{ contentItem.item.trashed ? 'Restore' : 'Trash' }}" ng-class="{'drawer__control-item--restore': contentItem.item.trashed}">
+                    <span class="content-list-drawer__container-innerv2__toolbar__element1" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}" ng-click="deleteContentItem(!contentItem.item.trashed)" title="{{ contentItem.item.trashed ? 'Restore' : 'Trash' }}" ng-class="{'drawer__control-item--restore': contentItem.item.trashed}">
                         <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
                         {{ contentItem.item.trashed ? 'Restore' : 'Trash' }}
                     </span>
-                    <div class="content-list-drawer__container-innerv2__area2__element2">
+                    <div class="content-list-drawer__container-innerv2__toolbar__element2">
                         &nbsp;
                     </div>
-                    <span class="content-list-drawer__container-innerv2__area2__element3">
+                    <span class="content-list-drawer__container-innerv2__toolbar__element3">
                         <a href="{{ composerRestorerUrl }}" target="_blank" class="drawer__section-data-row drawer__control-item drawer__control-item--restorer" title="View versions">
                             <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="view-versions"></i>
                             View versions
                         </a>
                     </span>
-                    <span class="content-list-drawer__container-innerv2__area2__element4" ng-click="contentListDrawerController.hide()" title="Close details">
+                    <span class="content-list-drawer__container-innerv2__toolbar__element4" ng-click="contentListDrawerController.hide()" title="Close details">
                         <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="cross"></i>
                         Close details
                     </span>
