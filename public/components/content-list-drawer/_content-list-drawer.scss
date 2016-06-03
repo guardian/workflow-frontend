@@ -38,8 +38,8 @@ $drawer-breakpoint-small: 1400px;
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: $c-grey-200;
     &__area1 {
+        background-color: $c-grey-150;
         display: flex;
         flex-direction: row;
         height: 100%;
@@ -47,7 +47,6 @@ $drawer-breakpoint-small: 1400px;
             flex: 2.5 0 0;
             margin: 0px;
             padding: 12px;
-            border: 3px solid $c-grey-300;
             display: flex;
             flex-direction: column;
             &__header {
@@ -71,7 +70,7 @@ $drawer-breakpoint-small: 1400px;
             flex: 1 0 0;
             margin: 0px;
             padding: 12px;
-            border: 3px solid $c-grey-300;
+            border-left: 3px solid white;
             display: flex;
             flex-direction: column;
             &__header {
@@ -93,7 +92,6 @@ $drawer-breakpoint-small: 1400px;
         display: flex;
         flex-direction: row;
         height: 100%;
-        margin:2px;
         background-color: $c-grey-200;
         &__element1 {
             flex: 1 0 0;
@@ -104,10 +102,11 @@ $drawer-breakpoint-small: 1400px;
             cursor: hand;
         }
         &__element1:hover {
+          height: 100%;
           background-color: $c-grey-300;
         }
         &__element2 {
-          flex: 10 0 0;
+          flex: 4 0 0;
           height: 100%;
           padding:12px;
           border-right:2px solid $c-grey-300;
@@ -121,6 +120,7 @@ $drawer-breakpoint-small: 1400px;
             cursor: hand;
         }
         &__element3:hover {
+            height: 100%;
             background-color: $c-grey-300;
         }
         &__element4 {
@@ -131,6 +131,7 @@ $drawer-breakpoint-small: 1400px;
             cursor: hand;
         }
         &__element4:hover {
+            height: 100%;
             background-color: $c-grey-300;
         }
     }
