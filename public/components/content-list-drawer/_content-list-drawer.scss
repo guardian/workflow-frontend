@@ -27,13 +27,6 @@ $drawer-breakpoint-small: 1400px;
     }
 }
 
-
-.content-list-drawer__container-inner {
-    display: flex;
-    height: 100%;
-    border: 3px solid $c-grey-200;
-}
-
 .content-list-drawer__container-innerv2 {
     display: flex;
     flex-direction: column;
