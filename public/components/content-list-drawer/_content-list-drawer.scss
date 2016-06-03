@@ -123,14 +123,14 @@ $drawer-breakpoint-small: 1400px;
             height: 100%;
             background-color: $c-grey-300;
         }
-        &__element4 {
+        &__close {
             height: 100%;
             padding:12px;
             flex: 1 0 0;
             cursor: pointer;
             cursor: hand;
         }
-        &__element4:hover {
+        &__close:hover {
             height: 100%;
             background-color: $c-grey-300;
         }
