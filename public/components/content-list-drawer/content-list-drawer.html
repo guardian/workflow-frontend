@@ -233,15 +233,15 @@
                             View versions
                         </a>
                     </span>
-                    <span class="content-list-drawer__container-inner__toolbar__close" ng-click="contentListDrawerController.hide()" title="Close details">
-                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="cross"></i>
-                        Close details
-                    </span>
                     <span class="content-list-drawer__container-inner__toolbar__incopy">
                        <a href="{{ incopyExportUrl }}" class="drawer__section-data-row drawer__control-item drawer__control-item--incopy" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InCopy">
                             <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="incopy"></i>
                             {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
                        </a>
+                    </span>
+                    <span class="content-list-drawer__container-inner__toolbar__close" ng-click="contentListDrawerController.hide()" title="Close details">
+                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="cross"></i>
+                        Close details
                     </span>
                 </div>
             </div>

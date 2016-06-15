@@ -151,6 +151,16 @@ $drawer-breakpoint-small: 1400px;
     text-decoration: none;
 }
 
+.drawer__control-item--restorer, .drawer__control-item--incopy {
+    color: $c-grey-700;
+}
+
+.drawer__control-item--restorer:hover, .drawer__control-item--incopy:hover {
+    color: $c-grey-700;
+}
+
+
+
 .drawer__column {
     flex: 1 0 0;
     margin: 0;
