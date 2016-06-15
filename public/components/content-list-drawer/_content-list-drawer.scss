@@ -90,7 +90,7 @@ $drawer-breakpoint-small: 1400px;
             flex: 1 0 0;
             height: 100%;
             padding:12px;
-            border-right:2px solid $c-grey-300;
+            border-right:1px solid $c-grey-300;
             cursor: pointer;
             cursor: hand;
             text-align:center;
@@ -103,13 +103,13 @@ $drawer-breakpoint-small: 1400px;
           flex: 4 0 0;
           height: 100%;
           padding:12px;
-          border-right:2px solid $c-grey-300;
+          border-right:1px solid $c-grey-300;
         }
         &__versions {
             flex: 1 0 0;
             height: 100%;
             padding:12px;
-            border-right:2px solid $c-grey-300;
+            border-right:1px solid $c-grey-300;
             cursor: pointer;
             cursor: hand;
             text-align:center;
