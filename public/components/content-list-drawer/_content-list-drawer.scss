@@ -133,6 +133,10 @@ $drawer-breakpoint-small: 1400px;
     }
 }
 
+.drawer__control-item--restorer:hover {
+    text-decoration: none;
+}
+
 .drawer__column {
     flex: 1 0 0;
     margin: 0;
