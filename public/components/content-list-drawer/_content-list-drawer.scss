@@ -119,9 +119,10 @@ $drawer-breakpoint-small: 1400px;
             background-color: $c-grey-300;
         }
         &__close {
+            flex: 1 0 0;
             height: 100%;
             padding:12px;
-            flex: 1 0 0;
+            border-right:1px solid $c-grey-300;
             cursor: pointer;
             cursor: hand;
             text-align:center;
@@ -130,10 +131,23 @@ $drawer-breakpoint-small: 1400px;
             height: 100%;
             background-color: $c-grey-300;
         }
+        &__incopy {
+            flex: 1 0 0;
+            height: 100%;
+            padding:12px;
+            border-right:1px solid $c-grey-300;
+            cursor: pointer;
+            cursor: hand;
+            text-align:center;
+        }
+        &__incopy:hover {
+            height: 100%;
+            background-color: $c-grey-300;
+        }
     }
 }
 
-.drawer__control-item--restorer:hover {
+.drawer__control-item--restorer:hover, .drawer__control-item--incopy:hover {
     text-decoration: none;
 }
 
