@@ -1318,11 +1318,6 @@
   .content-list-drawer--hidden .content-list-drawer__container {
     display: none; }
 
-.content-list-drawer__container-inner {
-  display: flex;
-  height: 100%;
-  border: 3px solid #ededed; }
-
 .drawer__column, .drawer__column--wide, .drawer__column--media, .drawer__column--control {
   flex: 1 0 0;
   margin: 0;
