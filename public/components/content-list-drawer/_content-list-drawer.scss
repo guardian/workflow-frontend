@@ -85,12 +85,12 @@ $drawer-breakpoint-small: 1400px;
         display: flex;
         flex-direction: row;
         height: 100%;
-        background-color: $c-grey-200;
+        background-color: #dcdcdc;
         &__trash {
             flex: 1 0 0;
             height: 100%;
             padding:12px;
-            border-right:1px solid $c-grey-300;
+            border-right: 1px solid #ededed;
             cursor: pointer;
             cursor: hand;
             text-align:center;
