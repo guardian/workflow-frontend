@@ -37,7 +37,7 @@ object Config extends AwsInstanceTags {
 
   lazy val incopyExportUrl: String = "gnm://composer/export/${composerId}"
 
-  lazy val viewerUrl: String = s"http://viewer.${domain}"
+  lazy val viewerUrl: String = s"https://viewer.${domain}"
 
   lazy val appSecret: String = config.getConfigStringOrFail("application.secret")
 
