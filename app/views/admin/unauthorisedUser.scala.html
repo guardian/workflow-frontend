@@ -1,6 +1,8 @@
+@(config:play.api.libs.json.JsObject)
+
 @import helper._
 
-@admin.adminLayout("unauthorised") {
+@admin.adminLayout("unauthorised",config) {
 
 <div class="main">
     <h1>Unauthorised</h1>

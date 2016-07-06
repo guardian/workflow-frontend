@@ -5,6 +5,7 @@ import scala.concurrent.Future
 import play.api.mvc._
 import com.gu.workflow.lib.Config
 import com.gu.pandomainauth.action.UserRequest
+import play.api.libs.json.Json
 
 object WhiteListAuthFilter extends ActionFilter[UserRequest] {
 
@@ -15,7 +16,7 @@ object WhiteListAuthFilter extends ActionFilter[UserRequest] {
     if(whitelist.contains(user.email)) {
       None
     } else {
-      Some(Results.Forbidden(views.html.admin.unauthorisedUser()))
+      Some(Results.Forbidden(views.html.admin.unauthorisedUser(Json.obj())))
     }
   }
 
