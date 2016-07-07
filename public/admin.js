@@ -17,7 +17,7 @@ SectionToTagApp.controller('tagsPickerAppCtrl', function($scope,$http) {
                 this.push(item.id);
             }, $scope.tag_search_results);
         }, function(response) {
-            console.log(response.statusText)
+            console.error(response.statusText)
         });
     }
     $scope.addSectionTagPairing = function(sectionId,tag){
@@ -33,7 +33,7 @@ SectionToTagApp.controller('tagsPickerAppCtrl', function($scope,$http) {
                 location.reload();
             },1000);
         }, function(response) {
-            console.log(response.statusText)
+            console.error(response.statusText)
         });
     }
     $scope.removeSectionTagPairing = function(sectionId,tag){
@@ -49,7 +49,7 @@ SectionToTagApp.controller('tagsPickerAppCtrl', function($scope,$http) {
                 location.reload();
             },1000);
         }, function(response) {
-            console.log(response.statusText)
+            console.error(response.statusText)
         });
     }
 });
