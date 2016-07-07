@@ -11,12 +11,12 @@ SectionToTagApp.controller('tagsPickerAppCtrl', function($scope,$http) {
         $http({
             method : "GET",
             url : "https://content.guardianapis.com/tags?api-key="+CONFIG.CAPI_API_KEY+"&q="+encodeURIComponent($scope.searchfragment)
-        }).then(function mySuccess(response) {
+        }).then(function(response) {
             $scope.tag_search_results = [];
             angular.forEach(response.data.response.results, function(item, key) {
                 this.push(item.id);
             }, $scope.tag_search_results);
-        }, function myError(response) {
+        }, function(response) {
             console.log(response.statusText)
         });
     }
@@ -28,11 +28,11 @@ SectionToTagApp.controller('tagsPickerAppCtrl', function($scope,$http) {
                 "section_id": sectionId,
                 "tag_id"    : tag
             }
-        }).then(function mySuccess(response) {
+        }).then(function(response) {
             setTimeout(function(){
                 location.reload();
             },1000);
-        }, function myError(response) {
+        }, function(response) {
             console.log(response.statusText)
         });
     }
@@ -44,11 +44,11 @@ SectionToTagApp.controller('tagsPickerAppCtrl', function($scope,$http) {
                 "section_id": sectionId,
                 "tag_id"    : tag
             }
-        }).then(function mySuccess(response) {
+        }).then(function(response) {
             setTimeout(function(){
                 location.reload();
             },1000);
-        }, function myError(response) {
+        }, function(response) {
             console.log(response.statusText)
         });
     }
