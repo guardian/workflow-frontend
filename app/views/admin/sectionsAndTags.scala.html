@@ -1,4 +1,9 @@
-@(config: play.api.libs.json.JsObject, sections: List[Section], selectedSectionIdOption: Option[Long], selectedSectionOption:Option[Section], existingSectionTagsOption: Option[List[String]], addSectionTagForm: Form[assignTagToSectionFormData])
+@(config: play.api.libs.json.JsObject,
+  sections: List[Section],
+  selectedSectionIdOption: Option[Long],
+  selectedSectionOption:Option[Section],
+  sectionTags: List[String],
+  addSectionTagForm: Form[assignTagToSectionFormData])
 
 @import helper._
 
@@ -33,32 +38,23 @@
 
         <div ng-app="SectionToTag" ng-controller="tagsPickerAppCtrl">
 
-        @existingSectionTagsOption match {
-            case Some(existingSectionTags) => {
-
-                @selectedSectionIdOption match {
-                    case Some(selectedSectionId) => {
-                        <h3>Existing Tags</h3>
-                        <ul class="list-unstyled list-group">
-                        @for((tagId, index) <- existingSectionTags.zipWithIndex) {
-                            <li class="list-group-item">
-                                 <b>@{tagId}</b> <div style="float:right;"><a ng-click="removeSectionTagPairing(@{selectedSectionId},'@{tagId}')" href="#">remove</a></div>
-                            </li>
-                        }
-                        </ul>
-
+        @selectedSectionIdOption match {
+            case Some(selectedSectionId) => {
+                @if(sectionTags.length>0) {
+                    <h3>Existing Tags</h3>
+                    <ul class="list-unstyled list-group">
+                    @for((tagId, index) <- sectionTags.zipWithIndex) {
+                        <li class="list-group-item">
+                            <b>@{tagId}</b> <div style="float:right;"><a ng-click="removeSectionTagPairing(@{selectedSectionId},'@{tagId}')" href="#">remove</a></div>
+                        </li>
                     }
-                    case None => {}
+                    </ul>
+                    <hr />
                 }
-
             }
-            case None => {
-
-            }
+            case None => {}
         }
-
-        <hr />
-
+            
         @selectedSectionOption match {
             case Some(selectedSection) => {
 

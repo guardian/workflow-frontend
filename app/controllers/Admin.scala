@@ -242,17 +242,17 @@ object Admin extends Controller with PanDomainAuthActions {
       }
       case None => Future(None)
     }
-    val tagIdsOptionFuture: Future[Option[List[String]]] = selectedSectionIdOption match {
+    val tagIdsFuture: Future[List[String]] = selectedSectionIdOption match {
       case Some(selectedSectionId) => {
         val tagIdsFt: Future[Either[ApiError, List[String]]] = SectionsAPI.getTagsForSectionFt(selectedSectionId).asFuture
-        tagIdsFt.map(_.right.toOption)
+        tagIdsFt.map(_.right.get)
       }
-      case None => Future.successful(None)
+      case None => Future.successful(List())
     }
     for {
       deskList <- getDesks()
       sectionListFromDB <- getSortedSections()
-      tagIdsOption <- tagIdsOptionFuture
+      tagIds <- tagIdsFuture
       selectedSectionOption <- selectedSectionOptionFt
     } yield {
       val config = Json.obj(
@@ -264,7 +264,7 @@ object Admin extends Controller with PanDomainAuthActions {
           sectionListFromDB,
           selectedSectionIdOption,
           selectedSectionOption,
-          tagIdsOption,
+          tagIds,
           addSectionTagForm
         )
       )
