@@ -13,6 +13,7 @@ object ApiUtils {
   lazy val apiRoot: String = Config.getConfigStringOrFail("api.url")
 
   def buildRequest(path: String): WSRequestHolder = WS.url(s"${apiRoot}/${path}")
+
   def deleteRequest(path: String): Future[WSResponse] =
     buildRequest(path).delete()
 

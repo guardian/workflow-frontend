@@ -37,7 +37,6 @@ case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
   lazy val parser = action.parser
 }
 
-
 object Api extends Controller with PanDomainAuthActions {
 
   val composerUrl = Config.composerUrl
@@ -50,8 +49,6 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-
-
   // can be hidden behind multiple auth endpoints
   val getContentBlock = { implicit req: Request[AnyContent] =>
     CommonAPI.getContent(req.queryString).asFuture.map { res =>
@@ -61,9 +58,6 @@ object Api extends Controller with PanDomainAuthActions {
       }
     }
   }
-
-
-
 
   def content = APIAuthAction.async(getContentBlock)
 
@@ -97,8 +91,6 @@ object Api extends Controller with PanDomainAuthActions {
     Form(tuple("due.from" -> optional(iso8601DateTimeNoMillis), "due.until" -> optional(iso8601DateTimeNoMillis)))
 
   val STUB_NOTE_MAXLEN = 500
-
-
 
   def createContent() =  CORSable(composerUrl) {
     APIAuthAction.async { request =>

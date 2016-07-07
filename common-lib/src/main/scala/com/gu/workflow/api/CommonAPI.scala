@@ -9,6 +9,7 @@ import scala.util.Either
 import models.api._
 import models.{WorkflowContent, ContentUpdateEvent, ContentItem, ContentItemIds}
 import com.gu.workflow.api.ApiUtils._
+import play.api.Logger
 
 object CommonAPI {
 
@@ -56,7 +57,6 @@ object CommonAPI {
       listRes
     }
   }
-
 
   def getContentToDelete(): ApiResponseFt[List[ContentItemIds]] = {
     for {

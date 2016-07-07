@@ -1,0 +1,97 @@
+@(config: play.api.libs.json.JsObject,
+  sections: List[Section],
+  selectedSectionIdOption: Option[Long],
+  selectedSectionOption:Option[Section],
+  sectionTags: List[String],
+  addSectionTagForm: Form[assignTagToSectionFormData])
+
+@import helper._
+
+@admin.adminLayout("sectionsAndTags",config) {
+
+<div class="row">
+
+    <div class="col-md-6">
+
+        <h3>Available Sections</h3>
+
+        <ul class="list-unstyled list-group">
+        @for((section, index) <- sections.zipWithIndex) {
+            <li class="list-group-item @if( (!selectedSectionIdOption.isEmpty) && (section.id==selectedSectionIdOption.get) ){list-group-item-info}">
+                <a href="@{routes.Admin.sectionsAndTags(Some(section.id))}">@{section.name}</a>
+            </li>
+        }
+        </ul>
+
+    </div>
+
+    <div class="col-md-6">
+
+        @selectedSectionOption match {
+            case Some(selectedSection) => {
+                <h3>Section: @{selectedSection.name}</h3>
+            }
+            case None => {}
+        }
+
+        <hr />
+
+        <div ng-app="SectionToTag" ng-controller="tagsPickerAppCtrl">
+
+        @selectedSectionIdOption match {
+            case Some(selectedSectionId) => {
+                @if(sectionTags.length>0) {
+                    <h3>Existing Tags</h3>
+                    <ul class="list-unstyled list-group">
+                    @for((tagId, index) <- sectionTags.zipWithIndex) {
+                        <li class="list-group-item">
+                            <b>@{tagId}</b> <div style="float:right;"><a ng-click="removeSectionTagPairing(@{selectedSectionId},'@{tagId}')" href="#">remove</a></div>
+                        </li>
+                    }
+                    </ul>
+                    <hr />
+                }
+            }
+            case None => {}
+        }
+            
+        @selectedSectionOption match {
+            case Some(selectedSection) => {
+
+                <!-- tags picker begins -->
+                    <fieldset>
+                        <div class="margin-bottom-small cf">
+                            <label class="align-left">Tags search</label>
+                        </div>
+                        <div class="row" style="padding:0px 20px 0px 20px;">
+                            <input type="text"
+                            style="width:100%;"
+                            placeholder="Search internal tags"
+                            name="tag-picker"
+                            autocomplete="off"
+                            ng-model="searchfragment"
+                            ng-change="newSearchFragment()">
+                        </div>
+                        <!--
+                        <div ng-show="searchfragment.length>0">Searching for: {{searchfragment}}</div>
+                        -->
+                    </fieldset>
+                    <div id="search-results">
+                        <li ng-repeat="x in tag_search_results">
+                            Click to add: <a href="#" ng-click="addSectionTagPairing(@{selectedSection.id},x)">{{x}}</a>
+                        </li>
+                    </div>
+                <!-- tags picker ends -->
+
+            }
+            case None => {}
+        }
+
+        </div>
+
+    </div>
+
+</div>
+
+}
+

@@ -26,3 +26,8 @@ object Section {
 
 case class SerialisedSection(name: String, selected: Boolean = false, id: Long = 0)
 object SerialisedSection { implicit val jsonFormats = Json.format[SerialisedSection] }
+
+
+case class SectionTagMapping(sectionId: Long, tagId: Long)
+object SectionTagMapping { implicit val jsonFormats = Json.format[SectionTagMapping] }
+
