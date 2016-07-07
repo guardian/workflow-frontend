@@ -255,14 +255,9 @@ object Admin extends Controller with PanDomainAuthActions {
       tagIdsOption <- tagIdsOptionFuture
       selectedSectionOption <- selectedSectionOptionFt
     } yield {
-      Logger.info(s"selectedSectionIdOption ${selectedSectionIdOption}")
-      Logger.info(s"selectedSectionOption ${selectedSectionOption}")
-      Logger.info(s"tagIdsOption ${tagIdsOption}")
-
       val config = Json.obj(
         "CAPI_API_KEY" -> LocalConfig.getConfigString("capi.key").right.get
       )
-
       Ok(
         views.html.admin.sectionsAndTags(
           config,
@@ -282,10 +277,6 @@ object Admin extends Controller with PanDomainAuthActions {
         BadRequest("failed to execute controllers.admin.addSectionTag()")
       },
       data => {
-        // data.sectionId
-        // data.tagId
-        Logger.info(s"controller: addSectionTag: data.sectionId ${data.sectionId}")
-        Logger.info(s"controller: addSectionTag: data.tagId ${data.tagId}")
         SectionsAPI.insertSectionTag(data.sectionId,data.tagId)
         NoContent
       }
@@ -298,10 +289,6 @@ object Admin extends Controller with PanDomainAuthActions {
         BadRequest("failed to execute controllers.admin.removeSectionTag()")
       },
       data => {
-        // data.sectionId
-        // data.tagId
-        Logger.info(s"controller: removeSectionTag: data.sectionId ${data.sectionId}")
-        Logger.info(s"controller: removeSectionTag: data.tagId ${data.tagId}")
         SectionsAPI.removeSectionTag(data.sectionId,data.tagId)
         NoContent
       }

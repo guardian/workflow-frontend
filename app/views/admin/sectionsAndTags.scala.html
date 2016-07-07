@@ -42,7 +42,7 @@
                         <ul class="list-unstyled list-group">
                         @for((tagId, index) <- existingSectionTags.zipWithIndex) {
                             <li class="list-group-item">
-                                 <b>@{tagId}</b> <div style="float:right;"><a ng-click="remove_section_tag_pairing(@{selectedSectionId},'@{tagId}')" href="#">remove</a></div>
+                                 <b>@{tagId}</b> <div style="float:right;"><a ng-click="removeSectionTagPairing(@{selectedSectionId},'@{tagId}')" href="#">remove</a></div>
                             </li>
                         }
                         </ul>
@@ -82,7 +82,7 @@
                     </fieldset>
                     <div id="search-results">
                         <li ng-repeat="x in tag_search_results">
-                            Click to add: <a href="#" ng-click="add_section_tag_pairing(@{selectedSection.id},x)">{{x}}</a>
+                            Click to add: <a href="#" ng-click="addSectionTagPairing(@{selectedSection.id},x)">{{x}}</a>
                         </li>
                     </div>
                 <!-- tags picker ends -->
@@ -92,31 +92,6 @@
         }
 
         </div>
-
-        <hr />
-
-        <!--
-
-        @existingSectionTagsOption match {
-            case Some(existingSectionTags) => {
-                <div class="form">
-                    <h3>Add a new tag</h3>
-                    @form(action=routes.Admin.addSectionTag){
-                        @inputText(addSectionTagForm("tag_id"))
-                        <input type="hidden" name="section_id" value="@selectedSectionIdOption match {
-                            case Some(selectedSectionId)=>{@{selectedSectionId}}
-                            case None=>{}
-                        }">
-                        <input type="submit" value="Add">
-                    }
-                </div>
-            }
-            case None => {
-
-            }
-        }
-
-        -->
 
     </div>
 

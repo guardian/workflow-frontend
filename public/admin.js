@@ -4,12 +4,10 @@
 
 console.log("Hello to the admin")
 
-var app1 = angular.module('SectionToTag', []);
-app1.controller('tagsPickerAppCtrl', function($scope,$http) {
+var SectionToTagApp = angular.module('SectionToTag', []);
+SectionToTagApp.controller('tagsPickerAppCtrl', function($scope,$http) {
     $scope.tag_search_results = []
     $scope.newSearchFragment = function(){
-        console.log( $scope.searchfragment )
-        // https://content.guardianapis.com/tags?api-key=67ec2e48-12cb-456a-a2ae-d292603e1372&q=apple
         $http({
             method : "GET",
             url : "https://content.guardianapis.com/tags?api-key="+CONFIG.CAPI_API_KEY+"&q="+encodeURIComponent($scope.searchfragment)
@@ -22,8 +20,7 @@ app1.controller('tagsPickerAppCtrl', function($scope,$http) {
             console.log(response.statusText)
         });
     }
-    $scope.add_section_tag_pairing = function(sectionId,tag){
-        console.log("Adding: ( "+sectionId+", "+tag+" )")
+    $scope.addSectionTagPairing = function(sectionId,tag){
         $http({
             method : "POST",
             url : "/admin/sectiontag",
@@ -39,8 +36,7 @@ app1.controller('tagsPickerAppCtrl', function($scope,$http) {
             console.log(response.statusText)
         });
     }
-    $scope.remove_section_tag_pairing = function(sectionId,tag){
-        console.log("Removing: ( "+sectionId+", "+tag+" )")
+    $scope.removeSectionTagPairing = function(sectionId,tag){
         $http({
             method : "POST",
             url : "/admin/sectiontag/delete",

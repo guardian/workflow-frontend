@@ -49,8 +49,6 @@ object SectionsAPI {
   // Sections Tags Mapping
 
   def insertSectionTag(sectionId: Long, tagId: String): Unit = {
-    Logger.info(s"insertSectionTag: data.sectionId ${sectionId}")
-    Logger.info(s"insertSectionTag: data.tagId ${tagId}")
     for {
       res <- ApiResponseFt.Async.Right(buildRequest(s"sectionTagMapping/${sectionId}/${URLEncoder.encode(tagId, "UTF-8")}").put(""))
       insertRes <- extractDataResponse[Int](res.json)
@@ -60,8 +58,6 @@ object SectionsAPI {
   }
 
   def removeSectionTag(sectionId: Long, tagId: String): Unit = {
-    Logger.info(s"removeSectionTag: data.sectionId ${sectionId}")
-    Logger.info(s"removeSectionTag: data.tagId ${tagId}")
     for {
       res <- ApiResponseFt.Async.Right(deleteRequest(s"sectionTagMapping/${sectionId}/${URLEncoder.encode(tagId, "UTF-8")}"))
       removeRes <- extractDataResponse[Int](res.json)
