@@ -230,7 +230,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )(unAssignTagToSectionFormData.apply)(unAssignTagToSectionFormData.unapply)
   )
 
-  def sectionsAndTags(selectedSectionIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async {
+  def sectionsAndTags(selectedSectionIdOption: Option[Long]) = AuthAction.async {
 
     val selectedSectionOptionFt:Future[Option[Section]] = selectedSectionIdOption match {
       case Some(selectedSectionId) => {
@@ -271,7 +271,7 @@ object Admin extends Controller with PanDomainAuthActions {
     }
   }
 
-  def addSectionTag() = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
+  def addSectionTag() = AuthAction { implicit request =>
     addSectionTagForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest("failed to execute controllers.admin.addSectionTag()")
@@ -283,7 +283,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeSectionTag() = (AuthAction andThen WhiteListAuthFilter) { implicit request =>
+  def removeSectionTag() = AuthAction { implicit request =>
     removeSectionTagForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest("failed to execute controllers.admin.removeSectionTag()")
