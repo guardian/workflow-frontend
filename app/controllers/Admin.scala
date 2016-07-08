@@ -230,7 +230,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )(unAssignTagToSectionFormData.apply)(unAssignTagToSectionFormData.unapply)
   )
 
-  def sectionsAndTags(selectedSectionIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async {
+  def sectionsAndTags(selectedSectionIdOption: Option[Long]) = AuthAction.async {
 
     val selectedSectionOptionFt:Future[Option[Section]] = selectedSectionIdOption match {
       case Some(selectedSectionId) => {
