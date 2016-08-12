@@ -33,7 +33,7 @@ object PrototypeAPI {
   def getContentByStubId(id: Long): ApiResponseFt[Option[ContentItem]] = {
     for {
       req <- ApiResponseFt.Async.Right(getRequest(s"stubs/${id}"))
-      item <- extractDataResponse[Option[ContentItem]](req.json)
+      item <- extractDataResponseOpt[ContentItem](req.json)
     } yield {
       item
     }
@@ -141,7 +141,7 @@ object PrototypeAPI {
   def deleteContentByStubId(id: Long): ApiResponseFt[Option[DeleteOp]] = {
     for {
       req <- ApiResponseFt.Async.Right(deleteRequest(s"stubs/$id"))
-      res <- extractDataResponse[Option[DeleteOp]](req.json)
+      res <- extractDataResponseOpt[DeleteOp](req.json)
     } yield {
       res
     }

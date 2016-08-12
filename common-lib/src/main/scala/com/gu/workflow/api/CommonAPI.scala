@@ -79,7 +79,7 @@ object CommonAPI {
   def getContentByComposerId(id: String): ApiResponseFt[Option[ContentItem]] = {
     for {
       res <- ApiResponseFt.Async.Right(getRequest(s"getContentByComposerId/$id"))
-      itemRes <- extractDataResponse[Option[ContentItem]](res.json)
+      itemRes <- extractDataResponseOpt[ContentItem](res.json)
     } yield {
       itemRes
     }

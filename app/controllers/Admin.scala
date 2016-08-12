@@ -17,6 +17,9 @@ import play.api.libs.json.Json
 import scala.util.{Failure, Success}
 import com.gu.workflow.lib.{Config => LocalConfig, _}
 
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+
 object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
