@@ -18,26 +18,26 @@ object Config extends AwsInstanceTags {
       case x => x.toLowerCase() + ".dev-gutools.co.uk"
     }
 
-  Logger.info(s"Domain is: ${domain}")
+  Logger.info(s"Domain is: $domain")
 
-  lazy val host: String = s"https://workflow.${domain}"
+  lazy val host: String = s"https://workflow.$domain"
   Logger.info(s"Host is: ${host}")
 
-  lazy val composerUrl: String = s"https://composer.${domain}"
-  lazy val composerRestorerUrl: String = s"https://composer-restorer.${domain}/content"
+  lazy val composerUrl: String = s"https://composer.$domain"
+  lazy val composerRestorerUrl: String = s"https://restorer.$domain/content"
 
-  lazy val presenceUrl: String = s"wss://presence.${domain}/socket"
-  lazy val presenceClientLib: String = s"https://presence.${domain}/assets/presence-client/1.1/lib"
+  lazy val presenceUrl: String = s"wss://presence.$domain/socket"
+  lazy val presenceClientLib: String = s"https://presence.$domain/assets/presence-client/1.1/lib"
 
-  lazy val preferencesUrl: String = s"https://preferences.${domain}/preferences"
+  lazy val preferencesUrl: String = s"https://preferences.$domain/preferences"
   lazy val tagManagerUrl: String = stage match {
-    case "PROD" => s"https://tagmanager.${domain}"
+    case "PROD" => s"https://tagmanager.$domain"
     case _ => "https://tagmanager.code.dev-gutools.co.uk"
   }
 
   lazy val incopyExportUrl: String = "gnm://composer/export/${composerId}"
 
-  lazy val viewerUrl: String = s"https://viewer.${domain}"
+  lazy val viewerUrl: String = s"https://viewer.$domain"
 
   lazy val appSecret: String = config.getConfigStringOrFail("application.secret")
 
