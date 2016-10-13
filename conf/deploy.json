@@ -8,6 +8,20 @@
                 "bucket": "workflow-dist",
                 "publicReadAcl": false
             }
+        },
+        "workflow-frontend-ami-update": {
+            "type": "ami-cloudformation-parameter",
+            "data": {
+                "amiTags" : {
+                    "ImageName": "ubuntu-trusty-java8",
+                    "BuildName": "tools-machine-images",
+                    "Branch": "master"
+                },
+                "amiParameter": "AMI",
+                "cloudFormationStackName": "Workflow-Frontend",
+                "prependStackToCloudFormationStackName" : false,
+                "appendStageToCloudFormationStackName" : true
+            }
         }
     },
     "recipes": {
@@ -19,6 +33,16 @@
         },
         "uploadArtifacts": {
             "actionsBeforeApp": ["workflow-frontend.uploadArtifacts"]
+        },
+        "ami-cloudformation-parameter-update": {
+            "actions": ["workflow-frontend-ami-update.update"]
+        },
+        "ami-update": {
+            "actions": [
+                "workflow-frontend-ami-update.update",
+                "workflow-frontend.uploadArtifacts",
+                "workflow-frontend.deploy"
+            ]
         }
     }
 }
