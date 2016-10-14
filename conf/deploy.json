@@ -34,13 +34,12 @@
         "uploadArtifacts": {
             "actionsBeforeApp": ["workflow-frontend.uploadArtifacts"]
         },
-        "ami-cloudformation-parameter-update": {
+        "ami-update": {
             "actions": ["workflow-frontend-ami-update.update"]
         },
-        "ami-update": {
+        "ami-update-and-deploy": {
             "actions": [
                 "workflow-frontend-ami-update.update",
-                "workflow-frontend.uploadArtifacts",
                 "workflow-frontend.deploy"
             ]
         }
