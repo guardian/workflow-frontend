@@ -20,7 +20,7 @@ object Dependencies {
     "org.seleniumhq.selenium" % "selenium-java" % "2.35.0" % "test",
     "org.scalatestplus" %% "play" % "1.2.0" % "test",
     "org.apache.httpcomponents" % "httpclient" % "4.5.2",
-    "com.gu" %% "pan-domain-auth-play_2-4-0" % "0.4.0",
+    "com.gu" %% "pan-domain-auth-play_2-4-0" % "0.3.0",
     specs2 % Test
   )
 
