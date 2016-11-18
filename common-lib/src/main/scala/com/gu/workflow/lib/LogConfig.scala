@@ -55,8 +55,7 @@ object LogConfig {
     a.setContext(context)
     a.setEncoder(makeEncoder(context))
     a.setKeepAliveDuration(Duration.buildBySeconds(30.0))
-    a.setRemoteHost(host)
-    a.setPort(port)
+    a.addDestination(s"$host:$port")
     a.start()
     a
   }

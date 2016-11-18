@@ -139,7 +139,7 @@ object Api extends Controller with PanDomainAuthActions {
   def putStubDueDate(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
       jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-      dueDateOpt <- ApiUtils.extractDataResponse[Option[String]](jsValue)
+      dueDateOpt <- ApiUtils.extractDataResponseOpt[String](jsValue)
       dueDateData = dueDateOpt.map(new DateTime(_))
       id <- PrototypeAPI.putStubDue(stubId, dueDateData)
     } yield {
