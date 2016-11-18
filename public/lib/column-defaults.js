@@ -115,7 +115,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'sensitive.html',
     template: sensitiveTemplate,
-    active: true,
+    active: false,
     isNew: true
 },{
     name: 'legallySensitive',
@@ -125,7 +125,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'legallySensitive.html',
     template: legallySensitiveTemplate,
-    active: true,
+    active: false,
     isNew: true
 },{
     name: 'presence',

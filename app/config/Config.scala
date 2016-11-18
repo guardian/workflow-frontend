@@ -10,7 +10,7 @@ object Config extends AwsInstanceTags {
     case Some(value) => value
     case None => "DEV" // default to dev stage
   }
-  Logger.info(s"running in stage: ${stage}")
+  Logger.info(s"running in stage: $stage")
 
   lazy val domain: String = stage match {
       case "PROD" => "gutools.co.uk"
@@ -21,7 +21,7 @@ object Config extends AwsInstanceTags {
   Logger.info(s"Domain is: $domain")
 
   lazy val host: String = s"https://workflow.$domain"
-  Logger.info(s"Host is: ${host}")
+  Logger.info(s"Host is: $host")
 
   lazy val composerUrl: String = s"https://composer.$domain"
   lazy val composerRestorerUrl: String = s"https://restorer.$domain/content"
