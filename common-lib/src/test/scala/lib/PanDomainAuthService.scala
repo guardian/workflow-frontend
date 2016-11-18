@@ -25,7 +25,7 @@ class PanDomainAuthService(pandaConfig: PandaConfig) extends PanDomainAuth {
       multiFactor = true
     )
 
-    CookieUtils.generateCookieData(authedUser, settings.secret)
+    CookieUtils.generateCookieData(authedUser, settings.privateKey)
   }
 }
 

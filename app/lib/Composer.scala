@@ -12,10 +12,6 @@ object Composer {
   lazy val contentDetails = baseUrl + "/api/content/"
 
   def parseId(json: JsValue): Option[String] = {
-    (json \ "data" \ "id") match {
-       case JsString(id) => Some(id)
-       case  _ => None
-     }
-
+    (json \ "data" \ "id").asOpt[String]
   }
 }

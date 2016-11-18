@@ -31,12 +31,15 @@ object WorkflowBuild extends Build {
 
   val commonSettings =
     Seq(
-      scalaVersion := "2.11.1",
-      scalaVersion in ThisBuild := "2.11.1",
+      scalaVersion := "2.11.8",
+      scalaVersion in ThisBuild := "2.11.8",
       organization := "com.gu",
       version      := "0.1",
       fork in Test := false,
-      resolvers ++= Seq("Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"),
+      resolvers ++= Seq(
+        "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+        "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+      ),
       scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings"),
       doc in Compile <<= target.map(_ / "none"),
       incOptions := incOptions.value.withNameHashing(nameHashing = true)

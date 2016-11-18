@@ -79,8 +79,8 @@ object ContentUpdateEvent {
   def readUser = new Reads[Option[String]] {
     def reads(json: JsValue): JsResult[Option[String]] =
       for {
-        firstOpt <- (json \ "content" \ "contentChangeDetails" \ "lastModified" \ "user" \ "firstName").validate[Option[String]]
-        lastOpt  <- (json \ "content" \ "contentChangeDetails" \ "lastModified" \ "user" \ "lastName").validate[Option[String]]
+        firstOpt <- (json \ "content" \ "contentChangeDetails" \ "lastModified" \ "user" \ "firstName").validateOpt[String]
+        lastOpt  <- (json \ "content" \ "contentChangeDetails" \ "lastModified" \ "user" \ "lastName").validateOpt[String]
       }
       yield firstOpt.flatMap(f => lastOpt.map(l => f + " " + l))
   }

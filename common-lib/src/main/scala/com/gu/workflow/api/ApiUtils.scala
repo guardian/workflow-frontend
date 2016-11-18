@@ -1,7 +1,7 @@
 package com.gu.workflow.api
 
 import com.gu.workflow.lib.Config
-import play.api.libs.ws.{WS, WSRequestHolder, WSResponse}
+import play.api.libs.ws.{WS, WSRequest, WSResponse}
 import play.api.mvc.AnyContent
 import play.api.Play.current
 
@@ -12,7 +12,8 @@ import play.api.libs.json._
 object ApiUtils {
   lazy val apiRoot: String = Config.getConfigStringOrFail("api.url")
 
-  def buildRequest(path: String): WSRequestHolder = WS.url(s"${apiRoot}/${path}")
+  def buildRequest(path: String): WSRequest = WS.url(s"${apiRoot}/${path}")
+
   def deleteRequest(path: String): Future[WSResponse] =
     buildRequest(path).delete()
 
@@ -36,11 +37,16 @@ object ApiUtils {
   }
 
   def extractDataResponse[A: Reads](jsValue: JsValue): ApiResponseFt[A] = {
-    val data = (jsValue \ "data")
+    val data = jsValue \ "data"
     extractResponse[A](data)
   }
 
-  def extractResponse[A: Reads](jsValue: JsValue): ApiResponseFt[A] = {
+  def extractDataResponseOpt[A: Reads](jsValue: JsValue): ApiResponseFt[Option[A]] = {
+    val data = (jsValue \ "data").toOption
+    ApiResponseFt.Right(data.flatMap(_.asOpt[A]))
+  }
+
+  def extractResponse[A: Reads](jsValue: JsLookupResult): ApiResponseFt[A] = {
     jsValue.validate[A] match {
       case JsSuccess(a, _) => ApiResponseFt.Right(a)
       case error@JsError(_) =>

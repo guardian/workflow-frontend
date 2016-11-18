@@ -1,8 +1,8 @@
-@(sections: List[Section], addSectionForm: Form[Section], desks: List[Desk], addDeskForm: Form[Desk], selectedDeskOption: Option[Desk])
+@(config:play.api.libs.json.JsObject ,sections: List[Section], addSectionForm: Form[Section], desks: List[Desk], addDeskForm: Form[Desk], selectedDeskOption: Option[Desk])(implicit messages: Messages)
 
 @import helper._
 
-@admin.adminLayout("desksAndSections") {
+@admin.adminLayout("desksAndSections",config) {
 
 <div class="row">
 
@@ -64,8 +64,6 @@
                 </ul>
             }
         }
-
-
 
         <div class="form">
             <h3>Add a new section</h3>

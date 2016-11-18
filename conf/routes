@@ -61,8 +61,12 @@ DELETE         /admin/sections                             controllers.Admin.rem
 POST           /admin/desks                                controllers.Admin.addDesk
 DELETE         /admin/desks                                controllers.Admin.removeDesk
 
-
 POST           /admin/assign                               controllers.Admin.assignSectionToDesk
+
+# Admin (section,tag) mappings
+GET            /admin/sections-and-tags                    controllers.Admin.sectionsAndTags(selectedSection: Option[Long])
+POST           /admin/sectiontag                           controllers.Admin.addSectionTag
+POST           /admin/sectiontag/delete                    controllers.Admin.removeSectionTag
 
 # feature-switching based enpoinds
 GET            /feature/:featureName                       controllers.Feature.featureSwitchToggle(featureName)

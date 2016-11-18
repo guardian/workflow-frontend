@@ -203,7 +203,7 @@ case object ContentItem {
     def reads(json: JsValue) = {
       for {
         stub <- json.validate[Stub]
-        wcOpt <- json.validate[Option[WorkflowContent]]
+        wcOpt <- json.validateOpt[WorkflowContent]
       } yield ContentItem(stub, wcOpt)
     }
   }

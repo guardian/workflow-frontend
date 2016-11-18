@@ -9,6 +9,7 @@ import scala.util.Either
 import models.api._
 import models.{WorkflowContent, ContentUpdateEvent, ContentItem, ContentItemIds}
 import com.gu.workflow.api.ApiUtils._
+import play.api.Logger
 
 object CommonAPI {
 
@@ -57,7 +58,6 @@ object CommonAPI {
     }
   }
 
-
   def getContentToDelete(): ApiResponseFt[List[ContentItemIds]] = {
     for {
       res <- ApiResponseFt.Async.Right(getRequest("oldTrashed"))
@@ -79,7 +79,7 @@ object CommonAPI {
   def getContentByComposerId(id: String): ApiResponseFt[Option[ContentItem]] = {
     for {
       res <- ApiResponseFt.Async.Right(getRequest(s"getContentByComposerId/$id"))
-      itemRes <- extractDataResponse[Option[ContentItem]](res.json)
+      itemRes <- extractDataResponseOpt[ContentItem](res.json)
     } yield {
       itemRes
     }

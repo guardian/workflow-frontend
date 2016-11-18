@@ -1,13 +1,24 @@
 package controllers
 
-import com.gu.workflow.api.{SectionsAPI, DesksAPI, SectionDeskMappingsAPI }
+import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
+import config.Config
+import controllers.Application.LimitedTag
 import lib._
+import models.api.{ApiError, ApiResponseFt}
 import play.api.Logger
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import play.api.mvc._
 import play.api.data.Form
 import models.{Status => WorkflowStatus, _}
+import play.api.libs.json.Json
+
+import scala.util.{Failure, Success}
+import com.gu.workflow.lib.{Config => LocalConfig, _}
+
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 
 object Admin extends Controller with PanDomainAuthActions {
 
@@ -58,13 +69,10 @@ object Admin extends Controller with PanDomainAuthActions {
   }
 
   def index() = (AuthAction andThen WhiteListAuthFilter) {
-
     Redirect("/admin/desks-and-sections")
   }
 
   def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async {
-
-
     for {
       deskList <- getDesks()
       sectionListFromDB <- getSortedSections()
@@ -89,6 +97,7 @@ object Admin extends Controller with PanDomainAuthActions {
 
       Ok(
         views.html.admin.desksAndSections(
+          Json.obj(),
           sectionList.sortBy(_.name),
           addSectionForm,
           desks.sortBy(_.name),
@@ -97,7 +106,6 @@ object Admin extends Controller with PanDomainAuthActions {
       )
     }
   }
-
 
   val addSectionForm = Form(
     mapping(
@@ -207,5 +215,87 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
+  /*
+    Section Tag association
+   */
+
+  val addSectionTagForm = Form(
+    mapping(
+      "section_id" -> longNumber,
+      "tag_id" -> nonEmptyText
+    )(assignTagToSectionFormData.apply)(assignTagToSectionFormData.unapply)
+  )
+
+  val removeSectionTagForm = Form(
+    mapping(
+      "section_id" -> longNumber,
+      "tag_id" -> nonEmptyText
+    )(unAssignTagToSectionFormData.apply)(unAssignTagToSectionFormData.unapply)
+  )
+
+  def sectionsAndTags(selectedSectionIdOption: Option[Long]) = AuthAction.async {
+
+    val selectedSectionOptionFt:Future[Option[Section]] = selectedSectionIdOption match {
+      case Some(selectedSectionId) => {
+        for {
+          sections <- getSortedSections()
+        }yield{
+          Some(sections.filter( x => x.id == selectedSectionId ).head)
+        }
+      }
+      case None => Future(None)
+    }
+    val tagIdsFuture: Future[List[String]] = selectedSectionIdOption match {
+      case Some(selectedSectionId) => {
+        val tagIdsFt: Future[Either[ApiError, List[String]]] = SectionsAPI.getTagsForSectionFt(selectedSectionId).asFuture
+        tagIdsFt.map(_.right.get)
+      }
+      case None => Future.successful(List())
+    }
+    for {
+      deskList <- getDesks()
+      sectionListFromDB <- getSortedSections()
+      tagIds <- tagIdsFuture
+      selectedSectionOption <- selectedSectionOptionFt
+    } yield {
+      val config = Json.obj(
+        "CAPI_API_KEY" -> LocalConfig.getConfigString("capi.key").right.get
+      )
+      Ok(
+        views.html.admin.sectionsAndTags(
+          config,
+          sectionListFromDB,
+          selectedSectionIdOption,
+          selectedSectionOption,
+          tagIds,
+          addSectionTagForm
+        )
+      )
+    }
+  }
+
+  def addSectionTag() = AuthAction { implicit request =>
+    addSectionTagForm.bindFromRequest.fold(
+      formWithErrors => {
+        BadRequest("failed to execute controllers.admin.addSectionTag()")
+      },
+      data => {
+        SectionsAPI.insertSectionTag(data.sectionId,data.tagId)
+        NoContent
+      }
+    )
+  }
+
+  def removeSectionTag() = AuthAction { implicit request =>
+    removeSectionTagForm.bindFromRequest.fold(
+      formWithErrors => {
+        BadRequest("failed to execute controllers.admin.removeSectionTag()")
+      },
+      data => {
+        SectionsAPI.removeSectionTag(data.sectionId,data.tagId)
+        NoContent
+      }
+    )
+  }
 
 }

@@ -8,7 +8,8 @@ import models.api.{ApiResponseFt}
 import com.gu.workflow.api.ApiUtils._
 
 object DesksAPI {
-    def getDesks(): ApiResponseFt[List[Desk]] = {
+
+  def getDesks(): ApiResponseFt[List[Desk]] = {
     for {
       res <- ApiResponseFt.Async.Right(getRequest(s"desks/list"))
       serialisedDesks <- extractDataResponse[List[SerialisedDesk]](res.json)
