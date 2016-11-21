@@ -5,6 +5,8 @@ import commentsTemplate         from "components/content-list-item/templates/com
 import mainImageTemplate        from "components/content-list-item/templates/main-image.html!text";
 import incopyTemplate           from "components/content-list-item/templates/incopy.html!text";
 import optimisedForWebTemplate  from "components/content-list-item/templates/optimisedForWeb.html!text";
+import sensitiveTemplate        from "components/content-list-item/templates/sensitive.html!text";
+import legallySensitiveTemplate from "components/content-list-item/templates/legallySensitive.html!text";
 import presenceTemplate         from "components/content-list-item/templates/presence.html!text";
 import assigneeTemplate         from "components/content-list-item/templates/assignee.html!text";
 import officeTemplate           from "components/content-list-item/templates/office.html!text";
@@ -105,6 +107,26 @@ var columnDefaults = [{
     template: optimisedForWebTemplate,
     active: true,
     isNew: false
+},{
+    name: 'sensitive',
+    prettyName: 'Sensitive',
+    labelHTML: '',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'sensitive.html',
+    template: sensitiveTemplate,
+    active: false,
+    isNew: true
+},{
+    name: 'legallySensitive',
+    prettyName: 'Legally sensitive',
+    labelHTML: '',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'legallySensitive.html',
+    template: legallySensitiveTemplate,
+    active: false,
+    isNew: true
 },{
     name: 'presence',
     prettyName: 'Presence',

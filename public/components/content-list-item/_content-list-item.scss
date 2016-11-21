@@ -67,7 +67,9 @@
         &--live,
         &--ophan,
         &--incopy,
-        &--optimisedForWeb {
+        &--optimisedForWeb,
+        &--sensitive,
+        &--legally-sensitive {
             display: inline-block;
             width: $content-list-icon-size;
             height: $content-list-icon-size;
@@ -162,7 +164,9 @@
         &--incopy,
         &--wordcount,
         &--needsLegal,
-        &--optimisedForWeb {
+        &--optimisedForWeb,
+        &--sensitive,
+        &--legally-sensitive {
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
@@ -183,7 +187,9 @@
         &--live,
         &--ophan,
         &--incopy,
-        &--optimisedForWeb {
+        &--optimisedForWeb,
+        &--sensitive,
+        &--legally-sensitive {
             padding: 10px 5px;
             width: $content-list-icon-size;
         }
@@ -430,6 +436,8 @@
         &--incopy,
         &--optimisedForWeb,
         &--published-state,
+        &--sensitive,
+        &--legally-sensitive,
         &--wordcount {
             @extend %fs-data-2;
         }

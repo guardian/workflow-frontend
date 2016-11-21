@@ -160,12 +160,16 @@ function wfContentItemParser(config, statusLabels, sections) {
 
             this.optimisedForWeb = !!(item.statusFlags && item.statusFlags.optimisedForWeb);
             this.optimisedForWebChanged = !!(item.statusFlags && item.statusFlags.optimisedForWebChanged);
+            this.sensitive = !!(item.statusFlags && item.statusFlags.sensitive);
+            this.legallySensitive = !!(item.statusFlags && item.statusFlags.legallySensitive);
 
             if (this.optimisedForWebChanged) {
                 this.optimisedForWebTitle = 'Content has been modified since being optimised'
             } else {
                 this.optimisedForWebTitle = this.optimisedForWeb ? 'Optimised for web' : 'Not optimised for web';
             }
+            this.sensitiveTitle = 'This content features children, vulnerable people, or is on a topic that is likely to attract online abuse.';
+            this.legallySensitiveTitle = 'This content involves active criminal proceedings.';
 
             this.item = item;
         }

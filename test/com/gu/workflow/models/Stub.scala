@@ -43,7 +43,7 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
         ci.wcOpt.map(_.activeInInCopy) should equal (Some(false))
         ci.wcOpt.map(_.takenDown) should equal (Some(false))
         ci.wcOpt.map(_.published) should equal (Some(false))
-        ci.wcOpt.map(_.statusFlags) should equal (Some(WorkflowContentStatusFlags(commentable = false, optimisedForWeb = false, optimisedForWebChanged = false)))
+        ci.wcOpt.map(_.statusFlags) should equal (Some(WorkflowContentStatusFlags(commentable = false, optimisedForWeb = false, optimisedForWebChanged = false, sensitive=Some(false), legallySensitive=Some(false))))
         ci.wcOpt.map(_.launchScheduleDetails) should equal (Some(LaunchScheduleDetails(None, None, false)))
         ci.wcOpt.map(_.wordCount) should equal (Some(0))
       })
@@ -69,7 +69,7 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
         ci.wcOpt.map(_.takenDown) should equal (Some(false))
         ci.wcOpt.flatMap(_.headline) should equal (Some("headline"))
         ci.wcOpt.flatMap(_.lastModifiedBy) should equal (Some("test-bunny"))
-        ci.wcOpt.map(_.statusFlags) should equal (Some(WorkflowContentStatusFlags(commentable = true, optimisedForWeb = false, optimisedForWebChanged = false)))
+        ci.wcOpt.map(_.statusFlags) should equal (Some(WorkflowContentStatusFlags(commentable = true, optimisedForWeb = false, optimisedForWebChanged = false, sensitive=Some(false), legallySensitive=Some(false))))
       })
     }
   }
