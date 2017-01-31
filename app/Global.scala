@@ -8,7 +8,7 @@ import config.Config
 object Global extends WithFilters(RedirectToHTTPSFilter, new GzipFilter, LoggingFilter) with GlobalSettings {
   override def beforeStart(app: Application) {
 
-    LogConfig.init(Config.logStashConf)
+    LogConfig.init()
 
     /* It's horrible, but this is absolutely necessary for correct interpretation
      * of datetime columns in prog almost certainly what no sane person ever wants to do.

@@ -1,11 +1,11 @@
-package aws
+package com.gu.workflow.util
 
 import com.amazonaws.regions.{Region, Regions}
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClient
 import com.amazonaws.services.ec2.AmazonEC2Client
-import com.amazonaws.services.ec2.model.DescribeTagsRequest
-import com.amazonaws.services.ec2.model.Filter
+import com.amazonaws.services.ec2.model.{DescribeTagsRequest, Filter}
 import com.amazonaws.util.EC2MetadataUtils
+
 import scala.collection.JavaConverters._
 
 
