@@ -1,7 +1,7 @@
 package config
 
-import _root_.aws.AwsInstanceTags
 import com.gu.workflow.lib.{Config => config}
+import com.gu.workflow.util.AwsInstanceTags
 import lib.LogStashConf
 import play.Logger
 
