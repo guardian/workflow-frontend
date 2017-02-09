@@ -1,5 +1,6 @@
 package controllers
 
+import com.gu.pandomainauth.action.UserRequest
 import com.gu.workflow.api.{ ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI }
 import com.gu.workflow.lib._
 import models.Flag.Flag
@@ -50,12 +51,14 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   // can be hidden behind multiple auth endpoints
-  val getContentBlock = { implicit req: Request[AnyContent] =>
-    CommonAPI.getContent(req.queryString).asFuture.map { res =>
-      res match {
-        case Left(err) => InternalServerError
-        case Right(contentResponse) => Ok(Json.toJson(contentResponse))
-      }
+  def getContentBlock[R] = { implicit req: R =>
+    val qs = req match {
+      case r: UserRequest[_] => r.queryString + ("email" -> Seq(r.user.email))
+      case r: Request[_] => r.queryString
+    }
+    CommonAPI.getContent(qs).asFuture.map {
+      case Left(err) => InternalServerError
+      case Right(contentResponse) => Ok(Json.toJson(contentResponse))
     }
   }
 
