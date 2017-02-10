@@ -38,6 +38,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                         var currentSelection = wfFiltersService.get(filterOption.namespace);
 
                         if (currentSelection) {
+                            currentSelection = currentSelection === 'me' ? _wfConfig.user.email : currentSelection;
                             $scope.selectedFilters.push(filterOption.namespace + ':' + currentSelection);
                         }
                     });
@@ -193,7 +194,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
 
                 wfPreferencesService
                     .getPreference('filters')
-                    .then(function reslove (data) {
+                    .then(function resolve (data) {
 
                         $scope.filterPrefs = data;
                         var thisFilterPref = data.filter((filter) => filter && filter.namespace === $scope.filter.namespace);
