@@ -38,6 +38,7 @@ object Application extends Controller with PanDomainAuthActions {
   def getSectionsInDesks(): Future[List[models.api.SectionsInDeskMapping]] = {
     SectionDeskMappingsAPI.getSectionsInDesks().asFuture.map { x =>
       println(s"sections in desks: $x")
+
       x match {
         case Right(mappings) => mappings
         case Left(err) => Logger.error(s"error fetching section desk mappings: $err"); List()
@@ -75,7 +76,14 @@ object Application extends Controller with PanDomainAuthActions {
       sections <-  getSortedSections
       desks <- getSortedDesks
       sectionsInDesks <- getSectionsInDesks
-      commissioningDesks <- TagService.getTags(Config.tagManagerUrl+ "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path").map(_.getOrElse(List[Tag]()))
+      commissioningDesks <- TagService.getTags(Config.tagManagerUrl+
+        "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path")
+        .map(_.getOrElse(List[Tag]())) recoverWith {
+          case e: Exception => {
+            Logger.error(s"error in fetching tags: $e")
+            Future(List())
+          }
+        }
     }
     yield {
       val user = request.user
