@@ -296,6 +296,16 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 $scope.editingAssignee = !$scope.editingAssignee;
             };
 
+            $scope.tagsUnavailable = function() {
+              if (!$scope.contentItem) {
+                return false
+              }
+              return $scope.contentItem.commissioningDesks.length !== 0 &&
+                $scope.contentItem.commissioningDesks.some(function(desk) {
+                  return !desk;
+                });
+            };
+
             $rootScope.$on('punters.punterSelected', () => {
 
                 if ($scope && $scope.contentItem) {

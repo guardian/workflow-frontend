@@ -125,6 +125,7 @@
                                         <span class="drawer__section-title">Commissioning info</span>
                                         <span class="drawer__section-data-row" ng-repeat="desk in contentItem.commissioningDesks" ng-show="contentItem.commissioningDesks.length">{{ desk.externalName }}</span>
                                         <span class="drawer__section-data-row--warning" ng-show="!contentItem.commissioningDesks.length">None</span>
+                                        <span class="drawer__section-data-row--warning" ng-show="tagsUnavailable()">Comissioning info is temporarily unavailable</span>
                                     </li>
                                 </ul>
                             </div>
