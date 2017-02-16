@@ -77,15 +77,8 @@ object Application extends Controller with PanDomainAuthActions {
       sectionsInDesks <- getSectionsInDesks
       commissioningDesks <- TagService.getTags(Config.tagManagerUrl+
         "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path")
-        .map(_.getOrElse(List[Tag]())) recoverWith {
-          case e: Exception => {
-            Logger.error(s"error in fetching tags: ${e.getMessage}", e)
-            Future(List())
-          }
-        }
     }
     yield {
-      println("comissioningDesks ", commissioningDesks)
       val user = request.user
 
       val config = Json.obj(
@@ -107,7 +100,6 @@ object Application extends Controller with PanDomainAuthActions {
         "composerRestorerUrl" -> Config.composerRestorerUrl,
         "commissioningDesks" -> commissioningDesks.map(t => LimitedTag(t.id, t.externalName))
       )
-      println("got config ", config)
 
       Ok(views.html.app(title, Some(user), config))
     }
