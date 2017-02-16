@@ -25,7 +25,7 @@ object TagService {
   def getTags(queryUrl: String): Future[Option[List[Tag]]] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     for {
-      response <- WS.url(queryUrl).get()
+      response <- WS.url(queryUrl).withRequestTimeout(2000).get()
     } yield {
       (response.json \ "data").validate[List[TagArrayItem]] match {
         case JsSuccess(tais: List[TagArrayItem], _) => Some(tais.map(_.data))
