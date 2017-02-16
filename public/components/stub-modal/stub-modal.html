@@ -30,8 +30,12 @@
             </div>
             <div class="form-group pull-left col-xs-8" ng-if="mode !== 'import'">
                 <label for="stub_cdesk">Commissioning info</label>
-                <div>
+
+                <div ng-if="cdesks.length > 0">
                     <select id="stub_cdesk" name="cdesk" ng-model="stub.commissioningDesks" ng-options="cdesk.id.toString() as cdesk.externalName for cdesk in cdesks"></select>
+                </div>
+                <div ng-if="cdesks.length === 0">
+                    <p class="help-block">Selecting commissioning info is temporarily unavailable</p>
                 </div>
                 <!--<p class="help-block" ng-class="{ 'help-block&#45;&#45;invisible': mode === 'import' || stub.status === 'Stub' }">To save as a Stub, change status to News List</p>-->
             </div>

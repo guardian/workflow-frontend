@@ -75,7 +75,8 @@ object Application extends Controller with PanDomainAuthActions {
       sections <-  getSortedSections
       desks <- getSortedDesks
       sectionsInDesks <- getSectionsInDesks
-      commissioningDesks <- TagService.getTags(Config.tagManagerUrl+ "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path").map(_.getOrElse(List[Tag]()))
+      commissioningDesks <- TagService.getTags(Config.tagManagerUrl+
+        "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path")
     }
     yield {
       val user = request.user
