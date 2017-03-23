@@ -5,17 +5,72 @@ angular.module('wfCapiService', [])
 
 function wfCapiService($http, $q, config, wfHttpSessionService) {
 
-    function parseCapiData(response, target) {
-        target = target || {};
+    function getSize(asset) {
+        if (asset.typeData) {
+            const w = parseInt(asset.typeData.width);
+            const h = parseInt(asset.typeData.height);
+            return h && w ? h * w : null;
+        } else null;
+    }
 
-        var data = response.data;
-        console.log(data);
-        var usefulFields = {
-            headline: data.response.content.fields.headline,
-            standfirst: data.response.content.fields.standfirst
+
+    function getSmallestAsset(assets) {
+        return assets.reduceRight(function(l,r) {
+            return getSize(l) < getSize(r) ? l : r;
+        });
+    }
+
+    function getMainMedia(elements) {
+        const mainElement = elements.filter((e) => e.relation === "main")[0];
+        const smallest = getSmallestAsset(mainElement.assets);
+
+        return {
+            url: smallest.file,
+            caption: smallest.typeData.caption,
+            altText: smallest.typeData.altText
+        };
+
+    }
+
+    function getTagTitles(tags) {
+        return tags.map((t) => t.webTitle);
+    }
+
+    function parseCapiData(response) {
+
+        if (response.data) {
+            const resp = response.data.response;
+            if (resp) {
+                const content = resp.content;
+                if (content) {
+                    const fields = content.fields;
+                    const elements = content.elements;
+                    const tags = content.tags;
+
+                    const mainMedia = elements ? getMainMedia(elements): null;
+
+                    console.log(fields)
+
+
+                    return {
+                        headline: fields ? fields.headline : "",
+                        standfirst: fields ? fields.standfirst : "",
+                        mainMediaUrl: mainMedia ? mainMedia.url : "",
+                        mainMediaCaption: mainMedia ? mainMedia.caption : "",
+                        mainMediaAltText: mainMedia ? mainMedia.altText : "",
+                        trailImageUrl: fields ? fields.thumbnail : "",
+                        trailText : fields ? fields.trailText : "",
+                        commentsTitle: fields ? fields.commentable ? "on" : "off" : "on",
+                        wordCount: fields ? fields.wordCount ? fields.wordCount : "" : "",
+                        commissioningDesks: tags ? getTagTitles(tags) : "",
+                        firstPublishedDate: fields.firstPublicationDate ? fields.firstPublicationDate : ""
+                    }
+                }
+            }
+        } else {
+            // need to fail gracefully when capi unavailable
+            return {};
         }
-
-        return usefulFields;
     }
 
 
@@ -23,7 +78,11 @@ function wfCapiService($http, $q, config, wfHttpSessionService) {
         return $http({
             method: 'GET',
             url: "/capi/"+path,
-            params: {'show-fields': 'headline,standfirst'},
+            params: {
+                'show-fields': 'headline,standfirst,thumbnail,trailText,firstPublicationDate',
+                'show-elements': 'all',
+                'show-tags': 'tracking'
+            },
             withCredentials: true
         });
     }
