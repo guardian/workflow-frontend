@@ -9,6 +9,7 @@
                             <i class="drawer__icon--content-type" wf-icon="furniture"/>
                             Furniture
                         </div>
+                        <span class ="drawer-warning" ng-if="capiData.capiError">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
                         <div class="content-list-drawer__container-inner__info-panel__furniture__body">
                             <div class="content-list-drawer__container-inner__info-panel__furniture__body__column-wide">
                                 <ul class="drawer__column--wide">
@@ -118,7 +119,7 @@
                                     </li>
                                     <li class="drawer__section" ng-show="contentItem.contentType == 'article'">
                                         <span class="drawer__section-title">Word count</span>
-                                        <span class="drawer__section-control">{{ contentItem.wordCount }} </span>
+                                        <span class="drawer__section-control">{{ capiData.wordCount }} </span>
                                     </li>
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Commissioning info</span>

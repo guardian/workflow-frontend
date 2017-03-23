@@ -174,6 +174,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 .then((resp) => {
                 const parsed = wfCapiService.parseCapiData(resp);
                 contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+            }, (err) => {
+                contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiService.emptyCapiObject());
             });
 
 

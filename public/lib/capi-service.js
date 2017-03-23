@@ -1,16 +1,16 @@
 import angular from 'angular';
 
 angular.module('wfCapiService', [])
-    .service('wfCapiService', ['$http', '$q', 'config', 'wfHttpSessionService', wfCapiService]);
+    .service('wfCapiService', ['$http', '$q', wfCapiService]);
 
-function wfCapiService($http, $q, config, wfHttpSessionService) {
+function wfCapiService($http, $q) {
 
     function getSize(asset) {
         if (asset.typeData) {
             const w = parseInt(asset.typeData.width);
             const h = parseInt(asset.typeData.height);
             return h && w ? h * w : null;
-        } else null;
+        } else return null;
     }
 
 
@@ -36,6 +36,23 @@ function wfCapiService($http, $q, config, wfHttpSessionService) {
         return tags.map((t) => t.webTitle);
     }
 
+    function emptyCapiObject() {
+        return {
+            headline: "unknown",
+            standfirst: "unknown",
+            mainMediaUrl: "",
+            mainMediaCaption: "unknown",
+            mainMediaAltText: "unknown",
+            trailImageUrl: "",
+            trailText : "unknown",
+            commentsTitle: "unknown",
+            wordCount: "unknown",
+            commissioningDesks: "",
+            firstPublishedDate: "",
+            capiError: true
+        }
+    }
+
     function parseCapiData(response) {
 
         if (response.data) {
@@ -48,9 +65,6 @@ function wfCapiService($http, $q, config, wfHttpSessionService) {
                     const tags = content.tags;
 
                     const mainMedia = elements ? getMainMedia(elements): null;
-
-                    console.log(fields)
-
 
                     return {
                         headline: fields ? fields.headline : "",
@@ -68,8 +82,7 @@ function wfCapiService($http, $q, config, wfHttpSessionService) {
                 }
             }
         } else {
-            // need to fail gracefully when capi unavailable
-            return {};
+            return emptyCapiObject();
         }
     }
 
@@ -83,14 +96,15 @@ function wfCapiService($http, $q, config, wfHttpSessionService) {
                 'show-elements': 'all',
                 'show-tags': 'tracking'
             },
-            withCredentials: true
+            withCredentials: true,
+            timeout: 1000
         });
     }
 
 
     this.getCapiContent = getCapiContent;
-
     this.parseCapiData = parseCapiData;
+    this.emptyCapiObject = emptyCapiObject;
 
 
 }
