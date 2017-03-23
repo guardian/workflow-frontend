@@ -21,15 +21,19 @@ function wfCapiService($http, $q) {
     }
 
     function getMainMedia(elements) {
-        const mainElement = elements.filter((e) => e.relation === "main")[0];
-        const smallest = getSmallestAsset(mainElement.assets);
+        const mainElements = elements.filter((e) => e.relation === "main");
 
-        return {
-            url: smallest.file,
-            caption: smallest.typeData.caption,
-            altText: smallest.typeData.altText
-        };
-
+        if (mainElements.length && mainElements[0] && mainElements[0].assets) {
+            const smallest = getSmallestAsset(mainElements[0].assets);
+            if (smallest) {
+                return {
+                    url: smallest.file,
+                    caption: smallest.typeData.caption,
+                    altText: smallest.typeData.altText
+                };
+            }
+        }
+        return null;
     }
 
     function getTagTitles(tags) {
@@ -59,7 +63,7 @@ function wfCapiService($http, $q) {
             const resp = response.data.response;
             if (resp) {
                 const content = resp.content;
-                if (content) {
+                if (content && content.fields) {
                     const fields = content.fields;
                     const elements = content.elements;
                     const tags = content.tags;
@@ -67,23 +71,22 @@ function wfCapiService($http, $q) {
                     const mainMedia = elements ? getMainMedia(elements): null;
 
                     return {
-                        headline: fields ? fields.headline : "",
-                        standfirst: fields ? fields.standfirst : "",
+                        headline: fields.headline ? fields.headline : "",
+                        standfirst: fields.standfirst ? fields.standfirst : "",
                         mainMediaUrl: mainMedia ? mainMedia.url : "",
                         mainMediaCaption: mainMedia ? mainMedia.caption : "",
                         mainMediaAltText: mainMedia ? mainMedia.altText : "",
-                        trailImageUrl: fields ? fields.thumbnail : "",
-                        trailText : fields ? fields.trailText : "",
-                        commentsTitle: fields ? fields.commentable ? "on" : "off" : "on",
-                        wordCount: fields ? fields.wordCount ? fields.wordCount : "" : "",
+                        trailImageUrl: fields.thumbnail ? fields.thumbnail : "",
+                        trailText : fields.trailText ? fields.trailText : "",
+                        commentsTitle: fields.commentable ? fields.commentable ? "on" : "off" : "on",
+                        wordCount: fields.wordCount ? fields.wordCount : "",
                         commissioningDesks: tags ? getTagTitles(tags) : "",
                         firstPublishedDate: fields.firstPublicationDate ? fields.firstPublicationDate : ""
                     }
                 }
             }
-        } else {
-            return emptyCapiObject();
         }
+        return emptyCapiObject();
     }
 
 

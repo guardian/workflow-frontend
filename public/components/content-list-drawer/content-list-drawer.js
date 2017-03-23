@@ -114,7 +114,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              */
             this.toggleContent = (contentItem, $contentListItemElement, capiData) => {
 
-                console.log("toggle got capi data!", capiData)
                 var selectedItem = $scope.contentList.selectedItem;
 
                 if (selectedItem && selectedItem.id !== contentItem.id) {
