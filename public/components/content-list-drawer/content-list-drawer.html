@@ -1,6 +1,5 @@
 <tr class="content-list-drawer content-list-drawer--hidden" ng-class="{'content-list-drawer--trashed': contentItem.item.trashed}">
     <td colspan="100" class="content-list-drawer__full-width">
-
         <div class="content-list-drawer__container"><!-- div for animation -->
 
             <div class="content-list-drawer__container-inner"><!-- div for padding/spacing -->
@@ -10,6 +9,7 @@
                             <i class="drawer__icon--content-type" wf-icon="furniture"/>
                             Furniture
                         </div>
+                        <span class ="drawer-warning" ng-if="capiData.capiError">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
                         <div class="content-list-drawer__container-inner__info-panel__furniture__body">
                             <div class="content-list-drawer__container-inner__info-panel__furniture__body__column-wide">
                                 <ul class="drawer__column--wide">
@@ -27,12 +27,12 @@
                                     </li>
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Headline</span>
-                                        <span class="drawer__section-data-row">{{ contentItem.headline || '-' }}</span>
+                                        <span class="drawer__section-data-row">{{ capiData.headline || '-' }}</span>
                                     </li>
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Standfirst</span>
-                                        <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !contentItem.standfirst}">
-                                            {{ contentItem.standfirst || "None" }}
+                                        <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !capiData.standfirst}">
+                                            {{ capiData.standfirst || "None" }}
                                         </span>
                                     </li>
                                     <li class="drawer__section">
@@ -56,7 +56,7 @@
                                         <span class="drawer__section-title">Main media</span>
 
                                         <div ng-if="contentItem.mainMediaType == 'image'" class="drawer__section-image-container">
-                                            <img ng-src="{{ contentItem.mainMediaUrl}}" alt=""/>
+                                            <img ng-src="{{ capiData.mainMediaUrl}}" alt=""/>
                                         </div>
                                         <div ng-if="contentItem.mainMediaNoPreview" class="drawer__section-image-container">
                                             {{contentItem.mainMediaType}}
@@ -68,14 +68,14 @@
                                     </li>
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Caption</span>
-                                        <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !contentItem.mainMediaCaption}">
-                                            {{ contentItem.mainMediaCaption || "None" }}
+                                        <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !capiData.mainMediaCaption}">
+                                            {{ capiData.mainMediaCaption || "None" }}
                                     </span>
                                     </li>
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Alt text</span>
-                                    <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !contentItem.mainMediaAltText}">
-                                        {{ contentItem.mainMediaAltText || "None" }}
+                                    <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !capiData.mainMediaAltText}">
+                                        {{ capiData.mainMediaAltText || "None" }}
                                     </span>
                                     </li>
                                 </ul>
@@ -85,17 +85,17 @@
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Trail picture</span>
 
-                                        <div ng-if="contentItem.trailImageUrl" class="drawer__section-image-container">
-                                            <img ng-src="{{ contentItem.trailImageUrl }}" alt=""/>
+                                        <div ng-if="capiData.trailImageUrl" class="drawer__section-image-container">
+                                            <img ng-src="{{ capiData.trailImageUrl }}" alt=""/>
                                         </div>
-                                        <div ng-if="!contentItem.trailImageUrl" class="drawer__section-data-row drawer__section-data-row--empty">
+                                        <div ng-if="!capiData.trailImageUrl" class="drawer__section-data-row drawer__section-data-row--empty">
                                             None
                                         </div>
                                     </li>
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Trail text</span>
-                                    <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !contentItem.trailtext}">
-                                        {{ contentItem.trailtext || "None" }}
+                                    <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !capiData.trailText}">
+                                        {{ capiData.trailText || "None" }}
                                     </span>
                                     </li>
                                 </ul>
@@ -104,7 +104,7 @@
                                 <ul class="drawer__column--wide">
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Comments</span>
-                                        <span class="drawer__section-data-row">{{ contentItem.commentsTitle }}</span>
+                                        <span class="drawer__section-data-row">{{ capiData.commentsTitle }}</span>
                                     </li>
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Optimised for web</span>
@@ -119,13 +119,13 @@
                                     </li>
                                     <li class="drawer__section" ng-show="contentItem.contentType == 'article'">
                                         <span class="drawer__section-title">Word count</span>
-                                        <span class="drawer__section-control">{{ contentItem.wordCount }} </span>
+                                        <span class="drawer__section-control">{{ capiData.wordCount }} </span>
                                     </li>
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Commissioning info</span>
-                                        <span class="drawer__section-data-row" ng-repeat="desk in contentItem.commissioningDesks" ng-show="contentItem.commissioningDesks.length">{{ desk.externalName }}</span>
-                                        <span class="drawer__section-data-row--warning" ng-show="!contentItem.commissioningDesks.length">None</span>
-                                        <span class="drawer__section-data-row--warning" ng-show="tagsUnavailable()">Comissioning info is temporarily unavailable</span>
+                                        <span class="drawer__section-data-row" ng-repeat="desk in capiData.commissioningDesks" ng-show="capiData.commissioningDesks.length">{{ desk }}</span>
+                                        <span class="drawer__section-data-row--warning" ng-show="!capiData.commissioningDesks.length">None</span>
+                                        <span class="drawer__section-data-row--warning" ng-show="tagsUnavailable()">Commissioning info is temporarily unavailable</span>
                                     </li>
                                 </ul>
                             </div>
@@ -154,7 +154,7 @@
                                     </li>
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">First published</span>
-                                        <span class="drawer__section-data-row">{{ (contentItem.firstPublished | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
+                                        <span class="drawer__section-data-row">{{ (capiData.firstPublishedDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
                                     </li>
                                     <li class="drawer__section">
                                         <span class="drawer__section-title">Scheduled</span>

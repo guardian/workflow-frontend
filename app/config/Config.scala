@@ -35,6 +35,14 @@ object Config extends AwsInstanceTags {
     case _ => "https://tagmanager.code.dev-gutools.co.uk"
   }
 
+  lazy val contentApiUrl: String = stage match {
+    case "PROD" => s"https://preview.content.guardianapis.com"
+    case _ => "https://preview.content.code.dev-guardianapis.com"
+  }
+
+  lazy val capiPreviewUsername = config.getConfigStringOrFail("capi.preview.username")
+  lazy val capiPreviewPassword = config.getConfigStringOrFail("capi.preview.password")
+
   lazy val incopyExportUrl: String = "gnm://composer/export/${composerId}"
 
   lazy val viewerUrl: String = s"https://viewer.$domain"

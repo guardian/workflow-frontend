@@ -13,7 +13,7 @@ import contentListDrawerTemplate from './content-list-drawer.html!ng-template';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -79,7 +79,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             /**
              * Shows a new contentItem moving the drawer to the row beneath its element.
              */
-            this.showContent = (contentItem, $contentListItemElement) => {
+            this.showContent = (contentItem, $contentListItemElement, capiData) => {
 
                 var self = this;
 
@@ -91,6 +91,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                         $scope.contentItem = contentItem;
                         $scope.contentList.selectedItem = contentItem;
+                        $scope.capiData = capiData;
 
                         $scope.currentDatePickerValue = $scope.contentItem.item.due ? $scope.contentItem.item.due : undefined;
 
@@ -111,14 +112,15 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              * Toggles drawer display and can display a different contentItem
              * if one is already being displayed.
              */
-            this.toggleContent = (contentItem, $contentListItemElement) => {
+            this.toggleContent = (contentItem, $contentListItemElement, capiData) => {
+
                 var selectedItem = $scope.contentList.selectedItem;
 
                 if (selectedItem && selectedItem.id !== contentItem.id) {
-                    return this.hide().then(() => this.showContent(contentItem, $contentListItemElement));
+                    return this.hide().then(() => this.showContent(contentItem, $contentListItemElement, capiData));
                 }
 
-                return this.isHidden() ? this.showContent(contentItem, $contentListItemElement) : this.hide();
+                return this.isHidden() ? this.showContent(contentItem, $contentListItemElement, capiData) : this.hide();
             };
 
             this.updateAssigneeUserImage = function () {
@@ -167,7 +169,16 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                 $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
 
-                contentListDrawerController.toggleContent(contentItem, contentListItemElement);
+            wfCapiService.getCapiContent(contentItem.path)
+                .then((resp) => {
+                const parsed = wfCapiService.parseCapiData(resp);
+                contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+            }, (err) => {
+                contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiService.emptyCapiObject());
+            });
+
+
+                // contentListDrawerController.toggleContent(contentItem, contentListItemElement);
 
             });
 

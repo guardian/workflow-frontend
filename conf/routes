@@ -45,7 +45,9 @@ DELETE         /api/stubs/:stubId                          controllers.Api.delet
 GET            /api/statuses                               controllers.Api.statusus
 GET            /api/sections                               controllers.Api.sections
 
-# API V1
+# CAPI
+
+GET            /capi/*path                                 controllers.CAPIService.previewCapiProxy(path)
 
 
 # Content
