@@ -79,7 +79,7 @@ function wfCapiService($http, $q) {
                         trailImageUrl: fields.thumbnail ? fields.thumbnail : "",
                         trailText : fields.trailText ? fields.trailText : "",
                         commentsTitle: fields.commentable ? fields.commentable ? "on" : "off" : "on",
-                        wordCount: fields.wordCount ? fields.wordCount : "",
+                        wordCount: fields.wordcount ? fields.wordcount : "",
                         commissioningDesks: tags ? getTagTitles(tags) : "",
                         firstPublishedDate: fields.firstPublicationDate ? fields.firstPublicationDate : ""
                     }
