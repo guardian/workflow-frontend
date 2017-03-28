@@ -95,7 +95,7 @@ function wfCapiService($http, $q) {
             method: 'GET',
             url: "/capi/"+path,
             params: {
-                'show-fields': 'headline,standfirst,thumbnail,trailText,firstPublicationDate',
+                'show-fields': 'headline,standfirst,thumbnail,trailText,firstPublicationDate,wordcount',
                 'show-elements': 'all',
                 'show-tags': 'tracking'
             },
