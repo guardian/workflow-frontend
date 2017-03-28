@@ -63,8 +63,8 @@ function wfCapiService($http, $q) {
             const resp = response.data.response;
             if (resp) {
                 const content = resp.content;
-                if (content && content.fields) {
-                    const fields = content.fields;
+                if (content) {
+                    const fields = content.fields ? content.fields : {};
                     const elements = content.elements;
                     const tags = content.tags;
 
