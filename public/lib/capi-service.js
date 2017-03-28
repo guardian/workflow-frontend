@@ -78,7 +78,7 @@ function wfCapiService($http, $q) {
                         mainMediaAltText: mainMedia ? mainMedia.altText : "",
                         trailImageUrl: fields.thumbnail ? fields.thumbnail : "",
                         trailText : fields.trailText ? fields.trailText : "",
-                        commentsTitle: fields.commentable ? (fields.commentable ? "on" : "off") : "off",
+                        commentsTitle: fields.commentable ? (fields.commentable === "true" ? "on" : "off") : "off",
                         wordCount: fields.wordcount ? fields.wordcount : "",
                         commissioningDesks: tags ? getTagTitles(tags) : "",
                         firstPublishedDate: fields.firstPublicationDate ? fields.firstPublicationDate : ""
