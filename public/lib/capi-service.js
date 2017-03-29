@@ -78,8 +78,8 @@ function wfCapiService($http, $q) {
                         mainMediaAltText: mainMedia ? mainMedia.altText : "",
                         trailImageUrl: fields.thumbnail ? fields.thumbnail : "",
                         trailText : fields.trailText ? fields.trailText : "",
-                        commentsTitle: fields.commentable ? fields.commentable ? "on" : "off" : "on",
-                        wordCount: fields.wordCount ? fields.wordCount : "",
+                        commentsTitle: fields.commentable ? (fields.commentable === "true" ? "on" : "off") : "off",
+                        wordCount: fields.wordcount ? fields.wordcount : "",
                         commissioningDesks: tags ? getTagTitles(tags) : "",
                         firstPublishedDate: fields.firstPublicationDate ? fields.firstPublicationDate : ""
                     }
@@ -95,7 +95,7 @@ function wfCapiService($http, $q) {
             method: 'GET',
             url: "/capi/"+path,
             params: {
-                'show-fields': 'headline,standfirst,thumbnail,trailText,firstPublicationDate',
+                'show-fields': 'headline,standfirst,thumbnail,trailText,firstPublicationDate,wordcount,commentable',
                 'show-elements': 'all',
                 'show-tags': 'tracking'
             },
