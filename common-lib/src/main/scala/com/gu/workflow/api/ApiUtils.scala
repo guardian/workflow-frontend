@@ -7,6 +7,7 @@ import play.api.Play.current
 
 import scala.concurrent.Future
 import models.api._
+import play.api.Logger
 import play.api.libs.json._
 
 object ApiUtils {
@@ -51,6 +52,7 @@ object ApiUtils {
       case JsSuccess(a, _) => ApiResponseFt.Right(a)
       case error@JsError(_) =>
         val errMsg = errorMsgs(error)
+        Logger.error(s"JsonParseError failed to parse the json. Error(s): ${errMsg} 400 badrequest")
         ApiResponseFt.Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
     }
   }

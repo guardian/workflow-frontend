@@ -1,7 +1,7 @@
 package controllers
 
 import com.gu.workflow.api.{ CommonAPI, PrototypeAPI }
-import models.ContentItem
+import models.Stub
 import models.api._
 import play.api.Logger
 import models.api.ApiResponseFt
@@ -16,7 +16,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
 
   def contentById(id: String) =  CORSable(composerUrl) {
     APIAuthAction.async {
-      ApiResponseFt[Option[ContentItem]](for {
+      ApiResponseFt[Option[Stub]](for {
         item <- Try(id.toLong).toOption match {
           case Some(l) => contentByStubId(l)
           case None => contentByComposerId(id)
@@ -37,8 +37,8 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
     prepareResponse(item)
   }
 
-  def prepareResponse(res: ApiResponseFt[Option[ContentItem]]):
-      ApiResponseFt[Option[ContentItem]] = {
+  def prepareResponse(res: ApiResponseFt[Option[Stub]]):
+      ApiResponseFt[Option[Stub]] = {
     res.flatMap { contentOpt =>
       contentOpt match {
         case Some(item) => ApiResponseFt.Right(Some(item))

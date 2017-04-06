@@ -66,7 +66,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def getContentbyId(composerId: String) = CORSable(Config.composerUrl) {
       APIAuthAction.async { implicit request =>
-        ApiResponseFt[Option[ContentItem]](for {
+        ApiResponseFt[Option[Stub]](for {
           item <- contentById(composerId)
         } yield {
           item
@@ -80,7 +80,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def sharedAuthGetContentById(composerId: String) =
     SharedSecretAuthAction.async {
-      ApiResponseFt[Option[ContentItem]](for {
+      ApiResponseFt[Option[Stub]](for {
         item <- contentById(composerId)
       } yield {
         item

@@ -3,7 +3,7 @@ package com.gu.workflow.lib
 import models.api._
 import play.api.libs.json.Json
 
-case class ContentUpdateChanges(contentRowsUpdated: Int, collaboratorsInserted: List[String], stubRowsUpdated: Int)
+case class ContentUpdateChanges(collaboratorsInserted: List[String], stubRowsUpdated: Int)
 object ContentUpdateChanges { implicit val jsonFormats = Json.format[ContentUpdateChanges]}
 
 object DBToAPIResponse {

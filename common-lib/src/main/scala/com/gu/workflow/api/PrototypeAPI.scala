@@ -1,12 +1,13 @@
 package com.gu.workflow.api
 
 import com.gu.workflow.api.ApiUtils._
-import models.{ ContentItem }
+import models.Stub
 import models.Flag.Flag
 import models.api._
 import org.joda.time.DateTime
 import play.api.Play.current
 import play.api.libs.json._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
 
@@ -23,17 +24,17 @@ object PrototypeAPI {
 
   def putStub(stubId: Long, body: JsValue): ApiResponseFt[ContentUpdate] = {
     for {
-      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/${stubId}", body))
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId", body))
       putRes <- extractDataResponse[ContentUpdate](res.json)
     } yield {
       putRes
     }
   }
 
-  def getContentByStubId(id: Long): ApiResponseFt[Option[ContentItem]] = {
+  def getContentByStubId(id: Long): ApiResponseFt[Option[Stub]] = {
     for {
-      req <- ApiResponseFt.Async.Right(getRequest(s"stubs/${id}"))
-      item <- extractDataResponseOpt[ContentItem](req.json)
+      req <- ApiResponseFt.Async.Right(getRequest(s"stubs/$id"))
+      item <- extractDataResponseOpt[Stub](req.json)
     } yield {
       item
     }
