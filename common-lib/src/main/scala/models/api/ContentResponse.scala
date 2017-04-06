@@ -8,9 +8,12 @@ case class ContentResponse(content: Map[String, List[Stub]], stubs: List[Stub], 
 
 object ContentResponse {
 
+  private def isStub(s: Stub): Boolean = s.externalData.get.status.isEmpty || s.externalData.get.status.contains(Status.Stub)
+
+
   def statusCountsMap(stubs: List[Stub]): Map[String, Int] = {
     val statusToCount: Map[String, Int] = stubs.groupBy(stub => stub.externalData.get.status.orElse(None)).collect({case (Some(s), sList) => (s.name, sList.length)})
-    val stubCount: Int = stubs.count(s => s.externalData.get.status.isEmpty)
+    val stubCount: Int = stubs.count(isStub)
     val totalCount: Int = stubs.length
     statusToCount ++ Map("Stub" -> stubCount) ++ Map("total" -> totalCount)
   }
@@ -20,7 +23,7 @@ object ContentResponse {
   }
 
   def fromStubItems(stubs: List[Stub]): ContentResponse =
-    ContentResponse(contentGroupedByStatus(stubs), stubs, statusCountsMap(stubs))
+    ContentResponse(contentGroupedByStatus(stubs), stubs.filter(isStub), statusCountsMap(stubs))
 
   implicit def mapWrites[A: Writes]: Writes[Map[String, A]] = new Writes[Map[String, A]] {
     def writes(map: Map[String, A]): JsValue =
