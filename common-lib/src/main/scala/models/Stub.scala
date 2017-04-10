@@ -42,7 +42,10 @@ case class ExternalData(path: Option[String] = None,
   optimisedForWeb: Option[Boolean] = None,
   optimisedForWebChanged: Option[Boolean] = None,
   sensitive: Option[Boolean] = None,
-  legallySensitive: Option[Boolean] = None)
+  legallySensitive: Option[Boolean] = None,
+  headline: Option[String] = None,
+  hasMainMedia: Option[Boolean] = None,
+  commentable: Option[Boolean] = None)
 
 object ExternalData {
 
@@ -66,7 +69,10 @@ object ExternalData {
       (__ \ "optimisedForWeb").readNullable[Boolean] and
       (__ \ "optimisedForWebChanged").readNullable[Boolean] and
       (__ \ "sensitive").readNullable[Boolean] and
-      (__ \ "legallySensitive").readNullable[Boolean]
+      (__ \ "legallySensitive").readNullable[Boolean] and
+      (__ \ "headline").readNullable[String] and
+      (__ \ "hasMainMedia").readNullable[Boolean] and
+      (__ \ "commentable").readNullable[Boolean]
     )(ExternalData.apply _)
 
   implicit val jsonWrites: Writes[ExternalData] = Json.writes[ExternalData]
@@ -91,8 +97,8 @@ object Stub {
                             (__ \ "contentType").read[String] and
                             (__ \ "priority").readNullable[Int].map(_.getOrElse(0)) and
                             (__ \ "needsLegal").readNullable[Flag].map(f  => f.getOrElse(Flag.NotRequired)) and
-                            (__ \"note").readNullable[String](noteReads) and
-                            (__ \"prodOffice").read[String](prodOfficeReads) and
+                            (__ \ "note").readNullable[String](noteReads) and
+                            (__ \ "prodOffice").read[String](prodOfficeReads) and
                             (__ \ "createdAt").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
                             (__ \ "lastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
                             (__ \ "trashed").readNullable[Boolean].map(t=> t.getOrElse(false)) and
