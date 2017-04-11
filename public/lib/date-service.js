@@ -227,7 +227,7 @@ angular.module('wfDateService', ['wfLocationService'])
                         choices = [ moment(today.toDate()) ];
 
                     for (var i = 1; i < 7; i++) {
-                        choices.push(moment(today.clone().add('days', i).toDate()));
+                        choices.push(moment(today.clone().add(i, 'days').toDate()));
                     }
 
                     return choices;
