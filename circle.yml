@@ -14,7 +14,11 @@ dependencies:
     - "project/target/resolution-cache"
     - "project/target/streams"
   pre:
-    - ./setup.sh
+    - cd $(dirname "$0");
+    - rm -rf node_modules/ public/jspm_packages/
+    - npm install -g jspm
+    - jspm config registries.github.auth $JSPM_GITHUB_AUTH_TOKEN
+    - jspm install -y
   override:
     - sbt test:compile
 test:
