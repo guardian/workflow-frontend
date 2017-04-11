@@ -25,7 +25,7 @@ System.config({
     "jquery": "github:components/jquery@1.11.1",
     "jquery-ui": "npm:jquery-ui@1.10.5",
     "json": "github:systemjs/plugin-json@0.1.0",
-    "lodash": "npm:lodash@2.4.1",
+    "lodash": "npm:lodash@4.17.4",
     "mixpanel": "github:mixpanel/mixpanel-js@2.2.3",
     "moment": "github:moment/moment@2.8.3",
     "moment-timezone": "github:moment/moment-timezone@0.2.3",
@@ -136,7 +136,7 @@ System.config({
     "npm:jquery-ui@1.10.5": {
       "fs": "github:jspm/nodelibs-fs@0.1.2"
     },
-    "npm:lodash@2.4.1": {
+    "npm:lodash@4.17.4": {
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
     "npm:os-browserify@0.1.2": {
