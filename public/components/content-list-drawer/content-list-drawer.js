@@ -13,7 +13,7 @@ import contentListDrawerTemplate from './content-list-drawer.html!ng-template';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -175,13 +175,21 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                     atomType: 'media'
                 };
 
-                wfCapiContentService.getCapiContent(contentItem.path)
-                    .then((resp) => {
-                    const parsed = wfCapiContentService.parseCapiContentData(resp);
-                    contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
-                }, (err) => {
-                    contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
-                });
+
+            wfCapiAtomService.getCapiAtom(atomMock.path)
+                .then((resp) => {
+                    console.log(resp);
+                    const parsed = wfCapiAtomService.parseCapiAtomData(resp, atomMock.atomType);
+                    console.log(parsed);
+            });
+
+            wfCapiContentService.getCapiContent(contentItem.path)
+                .then((resp) => {
+                const parsed = wfCapiContentService.parseCapiContentData(resp, atomMock.atomType);
+                contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+            }, (err) => {
+                contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
+            });
 
 
                 // contentListDrawerController.toggleContent(contentItem, contentListItemElement);
