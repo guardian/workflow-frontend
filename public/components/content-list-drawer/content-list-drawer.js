@@ -13,7 +13,7 @@ import contentListDrawerTemplate from './content-list-drawer.html!ng-template';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -169,13 +169,19 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                 $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
 
-            wfCapiService.getCapiContent(contentItem.path)
-                .then((resp) => {
-                const parsed = wfCapiService.parseCapiData(resp);
-                contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
-            }, (err) => {
-                contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiService.emptyCapiObject());
-            });
+                const atomMock = {
+                    path: 'atom/media/66df164d-53e6-4a39-b6a8-3ae783382d12',
+                    contentType: 'atom',
+                    atomType: 'media'
+                };
+
+                wfCapiContentService.getCapiContent(contentItem.path)
+                    .then((resp) => {
+                    const parsed = wfCapiContentService.parseCapiContentData(resp);
+                    contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+                }, (err) => {
+                    contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
+                });
 
 
                 // contentListDrawerController.toggleContent(contentItem, contentListItemElement);

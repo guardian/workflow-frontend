@@ -1,9 +1,10 @@
 import angular from 'angular';
 
-angular.module('wfCapiService', [])
-    .service('wfCapiService', ['$http', '$q', wfCapiService]);
+angular.module('wfCapiContentService', [])
+.service('wfCapiContentService', ['$http', '$q', wfCapiContentService]);
 
-function wfCapiService($http, $q) {
+function wfCapiContentService($http, $q) {
+    
 
     function getSize(asset) {
         if (asset.typeData) {
@@ -11,18 +12,18 @@ function wfCapiService($http, $q) {
             const h = parseInt(asset.typeData.height);
             return h && w ? h * w : null;
         } else return null;
-    }
-
-
+    };
+    
+    
     function getSmallestAsset(assets) {
         return assets.reduceRight(function(l,r) {
             return getSize(l) < getSize(r) ? l : r;
         });
-    }
-
+    };
+    
     function getMainMedia(elements) {
         const mainElements = elements.filter((e) => e.relation === "main");
-
+        
         if (mainElements.length && mainElements[0] && mainElements[0].assets) {
             const smallest = getSmallestAsset(mainElements[0].assets);
             if (smallest) {
@@ -34,13 +35,13 @@ function wfCapiService($http, $q) {
             }
         }
         return null;
-    }
-
+    };
+    
     function getTagTitles(tags) {
         return tags.map((t) => t.webTitle);
-    }
-
-    function emptyCapiObject() {
+    };
+    
+    function emptyCapiContentObject() {
         return {
             headline: "unknown",
             standfirst: "unknown",
@@ -56,9 +57,9 @@ function wfCapiService($http, $q) {
             capiError: true
         }
     }
-
-    function parseCapiData(response) {
-
+    
+    function parseCapiContentData(response) {
+        
         if (response.data) {
             const resp = response.data.response;
             if (resp) {
@@ -67,9 +68,9 @@ function wfCapiService($http, $q) {
                     const fields = content.fields ? content.fields : {};
                     const elements = content.elements;
                     const tags = content.tags;
-
+                    
                     const mainMedia = elements ? getMainMedia(elements): null;
-
+                    
                     return {
                         headline: fields.headline ? fields.headline : "",
                         standfirst: fields.standfirst ? fields.standfirst : "",
@@ -86,10 +87,9 @@ function wfCapiService($http, $q) {
                 }
             }
         }
-        return emptyCapiObject();
-    }
-
-
+        return emptyCapiContentObject();
+    }   
+    
     function getCapiContent(path) {
         return $http({
             method: 'GET',
@@ -105,10 +105,12 @@ function wfCapiService($http, $q) {
     }
 
 
+    
+    
     this.getCapiContent = getCapiContent;
-    this.parseCapiData = parseCapiData;
-    this.emptyCapiObject = emptyCapiObject;
-
-
+    this.parseCapiContentData = parseCapiContentData;
+    this.emptyCapiContentObject = emptyCapiContentObject;
+    
+    
 }
 
