@@ -1,4 +1,4 @@
-import contentListDrawerTemplate from './content-list-atom-drawer.html!ng-template';
+import contentListAtomDrawerTemplate from './content-list-atom-drawer.html!ng-template';
 
 /**
  * Directive for handling logic around the contentItemRow details drawer.
@@ -20,7 +20,7 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
     return {
         restrict: 'A',
         replace: true,
-        templateUrl: '/assets/components/content-list-drawer/content-list-atom-drawer.html',
+        templateUrl: '/assets/components/content-list-atom-drawer/content-list-atom-drawer.html',
         priority: 1001,
         scope: {
             contentList: '=',
@@ -133,10 +133,6 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
             $scope.maxNoteLength = config.maxNoteLength;
 
             $scope.prodOffices = prodOfficeService.getProdOffices();
-            $scope.incopyExportEnabled = false;
-            featureSwitches.withSwitch("incopy-export",
-                                       val => $scope.incopyExportEnabled = val);
-
             /**
              * Listen for event triggered by click in external contentItemRow directive to show or hide drawer
              */
@@ -153,11 +149,6 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
                     $rootScope.$broadcast('resetPicker');
                 }
 
-                // TODO: move build incopy URL to decorator
-                $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
-
-                $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
-
                 const atomMock = {
                     path: 'atom/media/66df164d-53e6-4a39-b6a8-3ae783382d12',
                     contentType: 'atom',
@@ -165,7 +156,7 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
                 };
 
 
-            wfCapiAtomService.getCapiContent(atomMock.path)
+            wfCapiAtomService.getCapiAtom(atomMock.path)
                 .then((resp) => {
                 const parsed = wfCapiAtomService.parseCapiAtomData(resp, atomMock.atomType);
                 contentListAtomDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
@@ -180,7 +171,7 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
              */
             $rootScope.$on('contentItem.update', ($event, eventData) => {
                 if (eventData.contentItem === $scope.contentItem && eventData.data.hasOwnProperty('status')) {
-                    contentListDrawerController.hide();
+                    contentListAtomDrawerController.hide();
                 }
             });
 
@@ -200,7 +191,7 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
                 // selectedItem no longer in table
                 if (!$scope.selectedItem) {
                     // TODO: move to generic "hide drawer" method
-                    contentListDrawerController.hide();
+                    contentListAtomDrawerController.hide();
 
                     // Update selectedItem from new polled data - updates changed data
                 } else if (
@@ -218,7 +209,7 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
                     } else if ($scope.contentItem.status !== $scope.selectedItem.status) {
                         // Item has moved status, hide drawer and select nothing
 
-                        contentListDrawerController.hide();
+                        contentListAtomDrawerController.hide();
 
                     } else {
                         $scope.contentItem = $scope.selectedItem;
@@ -326,7 +317,7 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
 
                     $scope.$emit('contentItem.update', msg);
 
-                    contentListDrawerController.updateAssigneeUserImage();
+                    contentListAtomDrawerController.updateAssigneeUserImage();
                 }
             });
         }
