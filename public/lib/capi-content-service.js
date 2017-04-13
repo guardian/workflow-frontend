@@ -1,4 +1,5 @@
 import angular from 'angular';
+import _ from 'lodash';
 
 angular.module('wfCapiContentService', [])
 .service('wfCapiContentService', ['$http', '$q', wfCapiContentService]);
@@ -60,14 +61,14 @@ function wfCapiContentService($http, $q) {
     
     function parseCapiContentData(response) {
         
-        if (response.data) {
+        if (_.get(response.data, 'content')) {
             const resp = response.data.response;
             if (resp) {
                 const content = resp.content;
                 if (content) {
-                    const fields = content.fields ? content.fields : {};
-                    const elements = content.elements;
-                    const tags = content.tags;
+                    const fields = _.get(response.data.content, 'fields', {});
+                    const elements = _.get(response.data.content, 'elements');
+                    const tags = _.get(response.data.content, 'tags');
                     
                     const mainMedia = elements ? getMainMedia(elements): null;
                     

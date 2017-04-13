@@ -1,4 +1,5 @@
 import angular from 'angular';
+import _ from 'lodash';
 
 angular.module('wfCapiAtomService', [])
 .service('wfCapiAtomService', ['$http', '$q', wfCapiAtomService]);
@@ -20,6 +21,16 @@ function wfCapiAtomService($http, $q) {
         });
     }
 
+    // Specific atom parsers
+    function parseCta(atom) {
+        return {
+            url: atom.url,
+            backgroundImage: atom.backgroundImage,
+            btnText: atom.btnText,
+            label: atom.label
+        }
+    }
+
     function parseCapiAtomData(response, atomType) {
 
         const allAtomTypes = [
@@ -32,18 +43,12 @@ function wfCapiAtomService($http, $q) {
         ];
             
         if(allAtomTypes.indexOf(atomType) !== -1) {
-            // Improvement - include lodash _.get from 4.17.4
-            if (response.data) {
-                const resp = response.data.response;
-                if (resp) {
-                    const atom = resp[atomType].data[atomType];
-                    if (atom) {
-                        console.log(atom);
-                        return {
-                            title: atom.title
-                        }
-                    }
-                }
+            const atomData = {
+                title: _.get(response.data.response[atomType], 'title')
+            }
+            const atom = _.get(response.data.response[atomType].data, atomType);
+            if(atom) {
+                return Object.assign({}, atomData, parseCta(atom));
             }
         }
         return emptyCapiAtomObject();

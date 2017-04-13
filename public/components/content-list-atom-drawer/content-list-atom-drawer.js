@@ -150,9 +150,9 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
                 }
 
                 const atomMock = {
-                    path: 'atom/media/66df164d-53e6-4a39-b6a8-3ae783382d12',
+                    path: '/atom/cta/4c0946f0-0610-43e6-b489-05ab26b495d7',
                     contentType: 'atom',
-                    atomType: 'media'
+                    atomType: 'cta'
                 };
 
 
