@@ -1,8 +1,23 @@
 .atomtest- {
     &drawer {
-        background-color: $c-grey-150;
-        padding: 12px;
+        display: flex;
+        width: 100%;
 
+        &__section {
+            background-color: $c-grey-150;
+            padding: 12px;
+            flex: 2 0 0;
+
+            &:not(:last-child) {
+                margin-right: 3px;
+            }
+
+            &--management {
+                flex: 1 0 0;
+            }
+        }
+
+        
         &__header {
             font-weight: bold;
             padding-bottom:10px;
