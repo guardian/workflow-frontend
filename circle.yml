@@ -1,9 +1,8 @@
 machine:
+  post:
+    - nvm use && nvm alias default $(nvm current)
   java:
     version: oraclejdk8
-  machine:
-    post:
-      - nvm use && nvm alias default $(nvm current)
 general:
   artifacts:
     - "~/workflow/target/riffraff/artifacts.zip"
