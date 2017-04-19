@@ -148,11 +148,11 @@ object PrototypeAPI {
     }
   }
 
-  def updateContentStatus(composerId: String, status: String): ApiResponseFt[String] = {
+  def updateContentStatus(stubId: Long, status: String): ApiResponseFt[Long] = {
     for {
-      req <- ApiResponseFt.Async.Right(putRequest(s"content/$composerId/status",
+      req <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/status",
         Json.toJson(status)))
-      item <- extractDataResponse[String](req.json)
+      item <- extractDataResponse[Long](req.json)
     } yield {
       item
     }

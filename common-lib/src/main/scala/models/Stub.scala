@@ -106,8 +106,44 @@ object Stub {
                             (__ \ "externalData").readNullable[ExternalData](externalDataJsonReads)
                         )(Stub.apply _)
 
+  val flatJsonReads: Reads[Stub] =( (__ \ "id").readNullable[Long] and
+    (__ \ "title").read[String] and
+    (__ \ "section" \ "name").read[String].orElse((__ \ "section").read[String]) and
+    (__ \ "due").readNullable[DateTime] and
+    (__ \ "assignee").readNullable[String] and
+    (__ \ "assigneeEmail").readNullable[String] and
+    (__ \ "composerId").readNullable[String] and
+    (__ \ "contentType").read[String] and
+    (__ \ "priority").readNullable[Int].map(_.getOrElse(0)) and
+    (__ \ "needsLegal").readNullable[Flag].map(f  => f.getOrElse(Flag.NotRequired)) and
+    (__ \ "note").readNullable[String](noteReads) and
+    (__ \ "prodOffice").read[String](prodOfficeReads) and
+    (__ \ "createdAt").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
+    (__ \ "lastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
+    (__ \ "trashed").readNullable[Boolean].map(t=> t.getOrElse(false)) and
+    (__ \ "commissioningDesks").readNullable[String] and
+    (__).readNullable[ExternalData](externalDataJsonReads)
+    )(Stub.apply _)
 
-  implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
+  implicit val stubWrites: Writes[Stub] = (
+    (JsPath \ "id").writeNullable[Long] and
+    (JsPath \ "title").write[String] and
+      (JsPath \ "section").write[String] and
+      (JsPath \ "due").writeNullable[DateTime] and
+      (JsPath \ "assignee").writeNullable[String] and
+      (JsPath \ "assigneeEmail").writeNullable[String] and
+      (JsPath \ "composerId").writeNullable[String] and
+      (JsPath \ "contentType").write[String] and
+      (JsPath \ "priority").write[Int] and
+      (JsPath \ "needsLegal").write[Flag] and
+      (JsPath \ "note").writeNullable[String] and
+      (JsPath \ "prodOffice").write[String] and
+      (JsPath \ "createdAt").write[DateTime] and
+      (JsPath \ "lastModified").write[DateTime] and
+      (JsPath \ "trashed").write[Boolean] and
+      (JsPath \ "commissioningDesks").writeNullable[String] and
+      (JsPath).writeNullable[ExternalData]
+    )(unlift(Stub.unapply))
 }
 
 object Flag extends Enumeration {

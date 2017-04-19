@@ -109,34 +109,12 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 updateField(contentItem, field, data) {
 
-                    if (field === 'status') {
-                        return this.updateStatus(contentItem, data);
-                    }
-
                     var contentId = contentItem.id || contentItem.stubId;
 
                     // TODO: create a generic PATCH / PUT API
                     return httpRequest({
                         method: 'PUT',
                         url: '/api/stubs/' + contentId + '/' + field,
-                        data: { 'data': data }
-                    });
-                }
-
-
-                /**
-                 * Updates the status of a Content Item or a Stub. If contentItem
-                 * is a Stub, a draft will be created moving it to "Writers" status.
-                 */
-                updateStatus(contentItem, data) {
-
-                    if (!contentItem.composerId) { // its a stub
-                        return this.createInComposer(contentItem, data);
-                    }
-
-                    return httpRequest({
-                        method: 'PUT',
-                        url: '/api/content/' + contentItem.composerId + '/status',
                         data: { 'data': data }
                     });
                 }

@@ -25,7 +25,7 @@ GET            /logout                                     controllers.Login.log
 GET            /api/content                                controllers.Api.content
 POST           /api/content                                controllers.Api.createContent
 GET            /api/content/:composerId                    controllers.Api.getContentbyId(composerId: String)
-PUT            /api/content/:composerId/status             controllers.Api.putContentStatus(composerId: String)
+#PUT            /api/content/:composerId/status             controllers.Api.putContentStatus(composerId: String)
 DELETE         /api/content/:composerId                    controllers.Api.deleteContent(composerId: String)
 
 POST           /api/stubs                                  controllers.Api.createContent
@@ -41,6 +41,7 @@ PUT            /api/stubs/:stubId/workingTitle             controllers.Api.putSt
 PUT            /api/stubs/:stubId/priority                 controllers.Api.putStubPriority(stubId: Long)
 PUT            /api/stubs/:stubId/trashed                  controllers.Api.putStubTrashed(stubId: Long)
 DELETE         /api/stubs/:stubId                          controllers.Api.deleteStub(stubId: Long)
+PUT            /api/stubs/:stubId/status                   controllers.Api.putStubStatus(stubId: Long)
 
 GET            /api/statuses                               controllers.Api.statusus
 GET            /api/sections                               controllers.Api.sections
