@@ -70,9 +70,8 @@ object SassTask {
       sourceFiles flatMap { src =>
         val dest = src.getParentFile / (src.base + ".min.css")
         log.info("Compiling Sass source: " + src.toString)
-
-        // sourcemap arg has to go at end
-        Seq(sassCmd.toString, "--include-path", destDir.toString, "--output-style", sassOutputStyle.value, src.toString, dest.toString, "--source-map").!!(log)
+        
+        Seq(sassCmd.toString, "--include-path", destDir.toString, "--source-map", "true", "--output-style", sassOutputStyle.value, src.toString, dest.toString).!!(log)
 
         // return sequence of files generated
         Seq(dest, file(dest + ".map"))
