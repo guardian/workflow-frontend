@@ -70,7 +70,8 @@ object SassTask {
       sourceFiles flatMap { src =>
         val dest = src.getParentFile / (src.base + ".min.css")
         log.info("Compiling Sass source: " + src.toString)
-        
+
+        // Run node-sass command with source maps
         Seq(sassCmd.toString, "--include-path", destDir.toString, "--source-map", "true", "--output-style", sassOutputStyle.value, src.toString, dest.toString).!!(log)
 
         // return sequence of files generated
