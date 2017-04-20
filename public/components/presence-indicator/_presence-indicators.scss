@@ -8,7 +8,7 @@ $topIconOffset: 8px !default;
 $rightIconOffset: 14px !default;
 $topIconOffsetCompact: 3px;
 $rightIconOffsetCompact: 8px;
-$iconsToStack: $textualIconSize / 4;
+$iconsToStack: $textualIconSize / 4px; // Return a number (must divide values with units with values with units)
 $iconExpandIntervalDistance: 24;
 $iconExpandIntervalDistanceCompact: 18;
 $stackColorLightenIncrement: 14%;
