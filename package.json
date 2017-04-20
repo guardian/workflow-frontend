@@ -12,7 +12,7 @@
     "karma-mocha": "^0.1.6",
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-sinon": "^1.0.3",
-    "node-sass": "0.9.3",
+    "node-sass": "^4.5.2",
     "sinon": "^1.10.3"
   },
   "jspm": {
