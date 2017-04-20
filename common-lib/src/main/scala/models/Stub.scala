@@ -119,30 +119,53 @@ object Stub {
     (__ \ "note").readNullable[String](noteReads) and
     (__ \ "prodOffice").read[String](prodOfficeReads) and
     (__ \ "createdAt").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
-    (__ \ "lastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
+    (__ \ "wfLastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
     (__ \ "trashed").readNullable[Boolean].map(t=> t.getOrElse(false)) and
     (__ \ "commissioningDesks").readNullable[String] and
-    (__).readNullable[ExternalData](externalDataJsonReads)
+    // having to write this out in full sucks, but we can't just do (__).readNullable[ExternalData](externalDataJsonReads)
+    // because of this bug, the fix is supposed to be released soon https://github.com/playframework/play-json/issues/11
+       ((__ \ "path").readNullable[String] and
+       (__ \ "lastModified").readNullable[DateTime] and
+       (__ \ "status").readNullable[String].map(s => s.map(Status(_))) and
+       (__ \ "published").readNullable[Boolean] and
+       (__ \ "timePublished").readNullable[DateTime] and
+       (__ \ "revision").readNullable[Long] and
+       (__ \ "storyBundleId").readNullable[String] and
+       (__ \ "activeInInCopy").readNullable[Boolean] and
+       (__ \ "takenDown").readNullable[Boolean] and
+       (__ \ "timeTakenDown").readNullable[DateTime] and
+       (__ \ "wordCount").readNullable[Int] and
+       (__ \ "embargoedUntil").readNullable[DateTime] and
+       (__ \ "embargoedIndefinitely").readNullable[Boolean] and
+       (__ \ "scheduledLaunchDate").readNullable[DateTime] and
+       (__ \ "optimisedForWeb").readNullable[Boolean] and
+       (__ \ "optimisedForWebChanged").readNullable[Boolean] and
+       (__ \ "sensitive").readNullable[Boolean] and
+       (__ \ "legallySensitive").readNullable[Boolean] and
+       (__ \ "headline").readNullable[String] and
+       (__ \ "hasMainMedia").readNullable[Boolean] and
+       (__ \ "commentable").readNullable[Boolean]
+    )(ExternalData.apply _).map(Some(_))
     )(Stub.apply _)
 
-  implicit val stubWrites: Writes[Stub] = (
+  implicit val flatStubWrites: Writes[Stub] = (
     (JsPath \ "id").writeNullable[Long] and
     (JsPath \ "title").write[String] and
-      (JsPath \ "section").write[String] and
-      (JsPath \ "due").writeNullable[DateTime] and
-      (JsPath \ "assignee").writeNullable[String] and
-      (JsPath \ "assigneeEmail").writeNullable[String] and
-      (JsPath \ "composerId").writeNullable[String] and
-      (JsPath \ "contentType").write[String] and
-      (JsPath \ "priority").write[Int] and
-      (JsPath \ "needsLegal").write[Flag] and
-      (JsPath \ "note").writeNullable[String] and
-      (JsPath \ "prodOffice").write[String] and
-      (JsPath \ "createdAt").write[DateTime] and
-      (JsPath \ "lastModified").write[DateTime] and
-      (JsPath \ "trashed").write[Boolean] and
-      (JsPath \ "commissioningDesks").writeNullable[String] and
-      (JsPath).writeNullable[ExternalData]
+    (JsPath \ "section").write[String] and
+    (JsPath \ "due").writeNullable[DateTime] and
+    (JsPath \ "assignee").writeNullable[String] and
+    (JsPath \ "assigneeEmail").writeNullable[String] and
+    (JsPath \ "composerId").writeNullable[String] and
+    (JsPath \ "contentType").write[String] and
+    (JsPath \ "priority").write[Int] and
+    (JsPath \ "needsLegal").write[Flag] and
+    (JsPath \ "note").writeNullable[String] and
+    (JsPath \ "prodOffice").write[String] and
+    (JsPath \ "createdAt").write[DateTime] and
+    (JsPath \ "wfLastModified").write[DateTime] and
+    (JsPath \ "trashed").write[Boolean] and
+    (JsPath \ "commissioningDesks").writeNullable[String] and
+    (JsPath).writeNullable[ExternalData]
     )(unlift(Stub.unapply))
 }
 

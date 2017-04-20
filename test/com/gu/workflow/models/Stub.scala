@@ -91,8 +91,8 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
     "should write a content item to json" in {
       val stub = randomStub
       val jsValue = Json.toJson(stub)
-      jsValue.validate[Stub].fold(_ => fail("should be validate content item json"), contentItem => {
-        val stubWithDateFields = contentItem.copy(createdAt = stub.createdAt, lastModified = stub.lastModified)
+      jsValue.validate[Stub](Stub.flatJsonReads).fold(e => fail("should be valid stub json" + e.toString), vStub => {
+        val stubWithDateFields = vStub.copy(createdAt = stub.createdAt, lastModified = stub.lastModified)
         stubWithDateFields should equal (stub)
       })
     }
