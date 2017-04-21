@@ -1,6 +1,8 @@
 package com.gu.workflow.api
 
 import com.gu.workflow.lib.Config
+import models.Stub
+import models.Stub.{flatJsonReads, stubWrites}
 import play.api.libs.ws.{WS, WSRequest, WSResponse}
 import play.api.mvc.AnyContent
 import play.api.Play.current
@@ -35,6 +37,13 @@ object ApiUtils {
       case Some(jsValue) => ApiResponseFt.Right(jsValue)
       case None => ApiResponseFt.Left(ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest"))
     }
+  }
+
+  // this function is needed to convert the json into a format that datastore understands.
+  def flatStubJsonToStubJson(jsValue: JsValue): ApiResponseFt[JsValue] = {
+    jsValue.validate[Stub](flatJsonReads).fold(e => {
+      ApiResponseFt.Left(ApiError("Json conversion failed", s"Failed to convert flat stub into stub with externalData level for datastore with error: $e", 400, "badrequest"))
+    }, s => ApiResponseFt.Right(Json.toJson(s)(stubWrites)))
   }
 
   def extractDataResponse[A: Reads](jsValue: JsValue): ApiResponseFt[A] = {

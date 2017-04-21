@@ -33,6 +33,7 @@ object ContentResponse {
       }.toSeq:_*)
   }
 
+  implicit val flatStubWrites = Stub.flatStubWrites
   implicit val contentResponseFormat = Json.writes[ContentResponse]
   implicit val contentResponseReads = Json.reads[ContentResponse]
 }

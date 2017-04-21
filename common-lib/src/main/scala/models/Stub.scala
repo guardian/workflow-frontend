@@ -148,7 +148,7 @@ object Stub {
     )(ExternalData.apply _).map(Some(_))
     )(Stub.apply _)
 
-  implicit val flatStubWrites: Writes[Stub] = (
+  val flatStubWrites: Writes[Stub] = (
     (JsPath \ "id").writeNullable[Long] and
     (JsPath \ "title").write[String] and
     (JsPath \ "section").write[String] and
@@ -167,6 +167,9 @@ object Stub {
     (JsPath \ "commissioningDesks").writeNullable[String] and
     (JsPath).writeNullable[ExternalData]
     )(unlift(Stub.unapply))
+
+  val stubWrites: Writes[Stub] = Json.writes[Stub]
+
 }
 
 object Flag extends Enumeration {

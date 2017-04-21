@@ -81,11 +81,7 @@ object CommonAPI {
     for {
       res <- ApiResponseFt.Async.Right(getRequest(s"content", Some(queryString
         .toList.flatMap(x => x._2 map ( y => x._1 -> y)))))
-      contentRes <- {
-        println(res.json)
-        val cr = extractDataResponse[ContentResponse](res.json)
-        cr
-      }
+      contentRes <- extractDataResponse[ContentResponse](res.json)
     } yield {
       contentRes
     }

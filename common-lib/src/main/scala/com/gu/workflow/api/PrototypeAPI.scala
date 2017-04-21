@@ -15,7 +15,8 @@ object PrototypeAPI {
 
   def createContent(body: JsValue): ApiResponseFt[ContentUpdate] = {
     for {
-      res <- ApiResponseFt.Async.Right(postRequest("stubs", body))
+      convertedJson <- flatStubJsonToStubJson(body)
+      res <- ApiResponseFt.Async.Right(postRequest("stubs", convertedJson))
       createRes <- extractDataResponse[ContentUpdate](res.json)
     } yield {
       createRes
@@ -24,7 +25,8 @@ object PrototypeAPI {
 
   def putStub(stubId: Long, body: JsValue): ApiResponseFt[ContentUpdate] = {
     for {
-      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId", body))
+      convertedJson <- flatStubJsonToStubJson(body)
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId", convertedJson))
       putRes <- extractDataResponse[ContentUpdate](res.json)
     } yield {
       putRes
