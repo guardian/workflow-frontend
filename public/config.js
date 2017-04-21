@@ -13,12 +13,12 @@ System.config({
   },
 
   map: {
-    "angular": "github:angular/bower-angular@1.3.8",
-    "angular-animate": "github:angular/bower-angular-animate@1.3.8",
+    "angular": "npm:angular@1.4.14",
+    "angular-animate": "npm:angular-animate@1.4.14",
     "angular-bootstrap": "npm:angular-bootstrap-temporary@0.11.0",
     "angular-bootstrap-datetimepicker": "github:dalelotts/angular-bootstrap-datetimepicker@0.2.4",
-    "angular-mocks": "github:angular/bower-angular-mocks@1.3.8",
-    "angular-ui-router": "github:angular-ui/ui-router@0.2.11",
+    "angular-mocks": "npm:angular-mocks@1.4.14",
+    "angular-ui-router": "npm:angular-ui-router@0.4.2",
     "bootstrap": "github:components/bootstrap@3.2.0",
     "clean-css": "npm:clean-css@3.4.1",
     "css": "github:systemjs/plugin-css@0.1.15",
@@ -29,8 +29,8 @@ System.config({
     "mixpanel": "github:mixpanel/mixpanel-js@2.2.3",
     "moment": "github:moment/moment@2.8.3",
     "moment-timezone": "github:moment/moment-timezone@0.2.3",
-    "ng-template": "npm:plugin-ng-template@0.1.0",
-    "ngInfiniteScroll": "github:sroze/ngInfiniteScroll@1.2.0",
+    "ng-template": "npm:plugin-ng-template@0.1.1",
+    "ngInfiniteScroll": "npm:ng-infinite-scroll@1.3.0",
     "node-uuid": "npm:uuid-v4.js@1.0.2",
     "raven-js": "github:getsentry/raven-js@1.1.16",
     "sugar": "npm:sugar@1.4.1",
@@ -39,12 +39,6 @@ System.config({
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.91",
     "ua-parser": "github:faisalman/ua-parser-js@0.7.1",
     "underscore": "github:jashkenas/underscore@1.7.0",
-    "github:angular/bower-angular-animate@1.3.8": {
-      "angular": "github:angular/bower-angular@1.3.8"
-    },
-    "github:angular/bower-angular-mocks@1.3.8": {
-      "angular": "github:angular/bower-angular@1.3.8"
-    },
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
     },
@@ -83,13 +77,17 @@ System.config({
     "github:jspm/nodelibs-util@0.1.0": {
       "util": "npm:util@0.10.3"
     },
-    "github:sroze/ngInfiniteScroll@1.2.0": {
-      "angular": "github:angular/bower-angular@1.3.8"
-    },
     "npm:amdefine@1.0.0": {
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "module": "github:jspm/nodelibs-module@0.1.0",
       "path": "github:jspm/nodelibs-path@0.1.0",
+      "process": "github:jspm/nodelibs-process@0.1.1"
+    },
+    "npm:angular-ui-router@0.4.2": {
+      "angular": "npm:angular@1.4.14",
+      "process": "github:jspm/nodelibs-process@0.1.1"
+    },
+    "npm:angular@1.4.14": {
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
     "npm:assert@1.3.0": {
