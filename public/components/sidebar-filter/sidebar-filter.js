@@ -73,9 +73,9 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 if ($scope.selectedFilters.length < 1) {
                     return filter.value === $scope.defaultFilter.value
                 } else if ($scope.filter.individualNamespaces) {
-                    return (filter != null && _.contains($scope.selectedFilters, individualNamespacesFilterName(filter)));
+                    return (filter != null && _.includes($scope.selectedFilters, individualNamespacesFilterName(filter)));
                 } else {
-                    return (filter != null && _.contains($scope.selectedFilters, filter.value));
+                    return (filter != null && _.includes($scope.selectedFilters, filter.value));
                 }
             };
 
