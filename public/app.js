@@ -34,7 +34,7 @@ import 'lib/logger';
 import 'angular-ui-router';
 import 'angular-bootstrap';
 import 'angular-animate/angular-animate.min';
-import 'ngInfiniteScroll/ng-infinite-scroll';
+import 'ng-infinite-scroll';
 
 //import 'angular-loading-bar';
 //import 'angular-loading-bar@0.7.1/src/loading-bar.css!';
