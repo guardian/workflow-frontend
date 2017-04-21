@@ -186,6 +186,18 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
+  def putStubStatusByComposerId(composerId: String) = CORSable(composerUrl) {
+    APIAuthAction.async { request =>
+      ApiResponseFt[String](for {
+        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
+        status <- ApiUtils.extractDataResponse[String](jsValue)
+        id <- PrototypeAPI.updateContentStatusByComposerId(composerId, status)
+      } yield {
+        id
+      })
+    }
+  }
+
   def putStubSection(stubId: Long) =  CORSable(composerUrl) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {

@@ -159,4 +159,14 @@ object PrototypeAPI {
       item
     }
   }
+
+  def updateContentStatusByComposerId(composerid: String, status: String): ApiResponseFt[String] = {
+    for {
+      req <- ApiResponseFt.Async.Right(putRequest(s"content/$composerid/status",
+        Json.toJson(status)))
+      item <- extractDataResponse[String](req.json)
+    } yield {
+      item
+    }
+  }
 }
