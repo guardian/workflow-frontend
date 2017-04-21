@@ -109,6 +109,10 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 updateField(contentItem, field, data) {
 
+                    if (field === 'status' && !contentItem.composerId) {
+                        return this.createInComposer(contentItem, data)
+                    }
+
                     var contentId = contentItem.id || contentItem.stubId;
 
                     // TODO: create a generic PATCH / PUT API
