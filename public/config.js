@@ -38,7 +38,6 @@ System.config({
     "traceur": "github:jmcriffey/bower-traceur@0.0.91",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.91",
     "ua-parser": "github:faisalman/ua-parser-js@0.7.1",
-    "underscore": "github:jashkenas/underscore@1.7.0",
     "github:angular/bower-angular-animate@1.3.8": {
       "angular": "github:angular/bower-angular@1.3.8"
     },
