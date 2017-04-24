@@ -2,7 +2,6 @@ package com.gu.workflow.test.lib
 
 import com.gu.workflow.query.{ContentState, PublishedState, TakenDownState, ScheduledState, EmbargoedState, DraftState}
 import models._
-import models.api.ContentUpdateSerialisedEvent
 import org.joda.time.DateTime
 import com.gu.workflow.test.Config
 
@@ -23,6 +22,8 @@ object TestData {
   val state: List[ContentState] = List(PublishedState, TakenDownState, ScheduledState, EmbargoedState, DraftState)
   val users: List[User] = List(User("testcake@testcake.com", "test", "cake"), User("google@google.com", "goo", "gle"), User("facebook@facebook.com", "face", "book"))
   val commissioningDesks: List[String] = List("Hogwarts,The Burrow", "Privet Drive,London", "Hogsmeade")
+  val path: List[String] = List("path_1", "path_2", "path_3")
+  val status: List[Status] = List(Status("status_1"), Status("status_2"), Status("status_3"))
 
   //select a date anywhere between now and the last 50 days
   def chooseDate: DateTime = DateTime.now().minusHours(random.nextInt(24*50))
@@ -41,48 +42,42 @@ object TestData {
 
   def chooseLong: Long = random.nextLong
 
-  def randomContentItem(stubProbability: Double = 0.2): ContentItem = {
-    val stub = generateRandomStub()
-    val content =
-      if(random.nextDouble() < stubProbability) None else Some(generateRandomWC())
-    contentItem(stub, content)
-  }
-
-  def randomStub = randomContentItem(stubProbability = 1.0)
-  def randomStubAndWC = randomContentItem(stubProbability = 0.0)
+  def randomStub = generateRandomStub()
 
   //todo - genericise these methods over types
   def generateTestData(size: Int = 50,
-                       stubProbability: Double = 0.2,
-                       acc: List[ContentItem]=Nil): List[ContentItem] = {
+    acc: List[Stub]=Nil): List[Stub] = {
     if(size == 0) acc
-    else generateTestData(size-1,stubProbability,randomContentItem(stubProbability)::acc)
+    else generateTestData(size-1, randomStub::acc)
   }
 
-  def composerIdsFromContentItems(contentItems: List[ContentItem]) : List[String] = contentItems.flatMap(_.wcOpt.map(_.composerId))
+  def composerIdsFromStubs(stubList: List[Stub]) : List[String] = stubList.map(_.composerId.getOrElse(""))
 
-  def contentItemWithSetDateTrashedAndStatus(newLastModified: DateTime, newStatus: String = "Writers",
-    stubProbability: Int = 0, newEmbargoedIndefinitely: Boolean = false, newTrashed: Boolean = false): ContentItem = {
-    val rci = randomContentItem(stubProbability)
-    val lsd = rci.wcOpt.map(_.launchScheduleDetails)
-    rci.copy(stub=rci.stub.copy(lastModified = newLastModified, trashed=newTrashed),
-      wcOpt=rci.wcOpt.map(wc => wc.copy(
-        status=Status(newStatus),
-        lastModified=newLastModified,
-        launchScheduleDetails = lsd.get.copy(embargoedIndefinitely=newEmbargoedIndefinitely))
+  def stubWithSetDateTrashedAndStatus(newLastModified: DateTime, newStatus: String = "Writers",
+    stubProbability: Int = 0, newEmbargoedIndefinitely: Boolean = false, newTrashed: Boolean = false): Stub = {
+    val rs: Stub = randomStub
+    val lsd: Option[DateTime] = rs.externalData.get.scheduledLaunchDate.orElse(None)
+
+    rs.copy(
+      lastModified = newLastModified,
+      trashed = newTrashed,
+      externalData = Some(rs.externalData.fold(ExternalData())(ed => ed.copy(
+        status = Some(Status(newStatus)),
+        lastModified = Some(newLastModified),
+        scheduledLaunchDate = lsd,
+        embargoedIndefinitely= Some(newEmbargoedIndefinitely)))
       )
     )
   }
 
-  def contentItemWithSetDateAndPublished(newLastModified: DateTime, newPublished: Boolean, newStatus: String = "Writers"): ContentItem = {
-    val rci = randomContentItem(0)
-    rci.copy(stub=rci.stub.copy(lastModified = newLastModified),
-      wcOpt=rci.wcOpt.map(wc => wc.copy(
-        published=newPublished,
-        lastModified=newLastModified,
-        status = Status(newStatus))
-      )
-    )
+  def stubWithSetDateAndPublished(newLastModified: DateTime, newPublished: Boolean, newStatus: String = "Writers"): Stub = {
+    val s: Stub = randomStub
+    s.copy(
+      lastModified = newLastModified,
+      externalData = Some(s.externalData.fold(ExternalData())(_.copy(
+        published = Some(newPublished),
+        lastModified = Some(newLastModified),
+        status = Some(Status(newStatus))))))
   }
 
   def generateRandomSizeCollaborators(): List[User] = {
@@ -107,88 +102,35 @@ object TestData {
   }
 
   def generateRandomStub(): Stub = {
-    Stub(title = chooseItem(text),
+    val td: Boolean = chooseBool
+    val pub = if (td) Some(false) else opt(chooseBool)
+    Stub(
+      title = chooseItem(text),
       section = chooseItem(sections),
       due = opt(chooseDate),
       assignee = opt(chooseItem(email)),
       assigneeEmail = opt(chooseItem(email)),
+      composerId = Some(random.nextDouble.toString),
+      contentType = chooseItem(contentTypes),
       priority = chooseItem(priority),
       needsLegal = chooseItem(needsLegal),
       note = opt(chooseItem(text)),
       prodOffice = chooseItem(prodOffices),
       createdAt = chooseDate,
-      contentType = chooseItem(contentTypes),
       lastModified = chooseDate,
       trashed = chooseBool,
-      commissioningDesks = opt(chooseItem(commissioningDesks))
-    )
-  }
-
-  def generateRandomWC(): WorkflowContent = {
-    val composerIdRng = random.nextDouble.toString
-    WorkflowContent(
-      composerId =composerIdRng,
-      path = opt(chooseItem(text)),
-      headline = opt(chooseItem(text)),
-      standfirst = opt(chooseItem(text)),
-      trailtext = opt(chooseItem(text)),
-      mainMedia = Some(WorkflowContentMainMedia()),
-      trailImageUrl = opt(chooseItem(text)),
-      contentType = chooseItem(contentTypes),
-      status = chooseItem(statuses),
-      lastModified = chooseDate,
-      lastModifiedBy = opt(chooseItem(email)),
-      published = chooseBool,
-      timePublished = opt(chooseDate),
-      storyBundleId = opt(chooseId),
-      activeInInCopy = chooseBool,
-      takenDown = chooseBool,
-      timeTakenDown = opt(chooseDate),
-      wordCount = chooseInt,
-      launchScheduleDetails = LaunchScheduleDetails(opt(chooseDate), opt(chooseDate), chooseBool),
-      statusFlags = WorkflowContentStatusFlags(
-        commentable = chooseBool,
-        optimisedForWeb = chooseBool,
-        optimisedForWebChanged = chooseBool
-      )
+      commissioningDesks = opt(chooseItem(commissioningDesks)),
+      externalData = Some(ExternalData(
+        path = opt(chooseItem(path)),
+        status = opt(chooseItem(status)),
+        published = pub,
+        takenDown = opt(td)
+      ))
     )
   }
 
   def mainMediaGenerator: WorkflowContentMainMedia= {
     WorkflowContentMainMedia(opt(chooseItem(text)),opt(chooseItem(text)),opt(chooseItem(text)),opt(chooseItem(text)))
-  }
-
-  def generateContentUpdateEvent(composerIdOpt: Option[String] = None, revision: Long = 1L): ContentUpdateEvent = {
-    ContentUpdateEvent(
-      composerId = composerIdOpt.getOrElse(chooseId),
-      path = opt(chooseItem(text)),
-      headline = opt(chooseItem(text)),
-      standfirst = opt(chooseItem(text)),
-      trailText = opt(chooseItem(text)),
-      mainMedia = mainMediaGenerator,
-      whatChanged = chooseItem(text),
-      published = chooseBool,
-      user = opt(chooseItem(email)),
-      lastModified = chooseDate,
-      tags = None,
-      lastMajorRevisionDate = opt(chooseDate),
-      publicationDate = opt(chooseDate),
-      thumbnail = opt(chooseItem(text)),
-      storyBundleId = opt(chooseId),
-      revision = revision,
-      wordCount = chooseInt,
-      launchScheduleDetails = LaunchScheduleDetails(
-        scheduledLaunchDate = opt(chooseDate),
-        embargoedUntil = opt(chooseDate),
-        embargoedIndefinitely = chooseBool
-      ),
-      collaborators = chooseList(users),
-      statusFlags = WorkflowContentStatusFlags(commentable = chooseBool, optimisedForWeb = chooseBool, optimisedForWebChanged = chooseBool)
-    )
-  }
-
-  def generateContentUpdateSerialisedEvent(composerIdOpt: Option[String] = None, revision: Long = 1L) = {
-    ContentUpdateSerialisedEvent.extract(generateContentUpdateEvent(composerIdOpt, revision))
   }
 
   def generateDesk(): Desk = {
@@ -215,27 +157,20 @@ object TestData {
     )
   }
 
-  //default stub, default workflow item?
-  def contentItem(stub: Stub, wcOpt: Option[WorkflowContent]=None): ContentItem = {
-    ContentItem(
-      stub.copy(composerId = wcOpt.map(wc => wc.composerId)),
-      wcOpt.map(wc => wc.copy(contentType=stub.contentType))
-    )
-  }
-
-
-//todo - deprecate default stub/wc
+  //todo - deprecate default stub/wc
   def defaultStub(title: String = "Title",
-                  prodOffice: String = "UK",
-                  priority: Int = 1,
-                  section: String = "Section",
-                  needsLegal:  Flag.Flag = Flag.NotRequired,
-                  due: Option[DateTime] = None,
-                  contentType: String = "article",
-                  createdAt: DateTime = DateTime.now(),
-                  lastModified: DateTime = DateTime.now(),
-                  commissioningDesks: Option[String] = None) = {
+    composerId: Option[String] = None,
+    prodOffice: String = "UK",
+    priority: Int = 1,
+    section: String = "Section",
+    needsLegal:  Flag.Flag = Flag.NotRequired,
+    due: Option[DateTime] = None,
+    contentType: String = "article",
+    createdAt: DateTime = DateTime.now(),
+    lastModified: DateTime = DateTime.now(),
+    commissioningDesks: Option[String] = None) = {
     Stub(title = title,
+      composerId = composerId,
       prodOffice = prodOffice,
       priority = priority,
       section = section,
@@ -244,7 +179,8 @@ object TestData {
       createdAt = createdAt,
       lastModified = lastModified,
       contentType = contentType,
-      commissioningDesks = commissioningDesks
+      commissioningDesks = commissioningDesks,
+      externalData = Some(ExternalData())
     )
   }
 

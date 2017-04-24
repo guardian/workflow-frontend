@@ -42,6 +42,8 @@ object Api extends Controller with PanDomainAuthActions {
 
   val composerUrl = Config.composerUrl
 
+  implicit val flatStubWrites = Stub.flatStubWrites
+
   def allowCORSAccess(methods: String, args: Any*) = CORSable(composerUrl) {
 
     Action { implicit req =>
@@ -66,25 +68,21 @@ object Api extends Controller with PanDomainAuthActions {
 
   def getContentbyId(composerId: String) = CORSable(Config.composerUrl) {
       APIAuthAction.async { implicit request =>
-        ApiResponseFt[Option[ContentItem]](for {
-          item <- contentById(composerId)
+        ApiResponseFt[Option[Stub]](for {
+          item <- ContentApi.contentByComposerId(composerId)
         } yield {
           item
-        })
+        })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
       }
     }
 
-  def contentById(composerId: String) = {
-    ContentApi.contentByComposerId(composerId)
-  }
-
   def sharedAuthGetContentById(composerId: String) =
     SharedSecretAuthAction.async {
-      ApiResponseFt[Option[ContentItem]](for {
-        item <- contentById(composerId)
+      ApiResponseFt[Option[Stub]](for {
+        item <- ContentApi.contentByComposerId(composerId)
       } yield {
         item
-      })
+      })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
     }
 
   val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
@@ -176,12 +174,24 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putContentStatus(composerId: String) = CORSable(composerUrl) {
+  def putStubStatus(stubId: Long) = CORSable(composerUrl) {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
+        status <- ApiUtils.extractDataResponse[String](jsValue)
+        id <- PrototypeAPI.updateContentStatus(stubId, status)
+      } yield {
+        id
+      })
+    }
+  }
+
+  def putStubStatusByComposerId(composerId: String) = CORSable(composerUrl) {
     APIAuthAction.async { request =>
       ApiResponseFt[String](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
         status <- ApiUtils.extractDataResponse[String](jsValue)
-        id <- PrototypeAPI.updateContentStatus(composerId, status)
+        id <- PrototypeAPI.updateContentStatusByComposerId(composerId, status)
       } yield {
         id
       })

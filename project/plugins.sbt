@@ -7,7 +7,7 @@ resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/release
 addSbtPlugin("com.gu" % "sbt-riffraff-artifact" % "0.9.7")
 
 // Use the Play sbt plugin for Play projects
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.4.8")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.4.11")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.2.2")
 
