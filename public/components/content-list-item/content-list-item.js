@@ -83,19 +83,10 @@ function wfContentItemParser(config, statusLabels, sections) {
 
             this.priority = item.priority;
 
-            this.hasComments = !!(item.statusFlags && item.statusFlags.commentable);
+            this.hasComments = !!(item.commentable);
             this.commentsTitle = this.hasComments ? 'on' : 'off';
 
-            this.hasMainMedia = Boolean(item.mainMedia) && Boolean(item.mainMedia.mediaType);
-            if(this.hasMainMedia) {
-                this.mainMediaType    = item.mainMedia.mediaType;
-                this.mainMediaTitle   = 'Main media (' + (item.mainMedia.mediaType || 'none')  + ')';
-                this.mainMediaUrl     = item.mainMedia.url;
-                this.mainMediaCaption = stripHtml(item.mainMedia.caption);
-                this.mainMediaAltText = stripHtml(item.mainMedia.altText);
-            } else {
-                this.mainMediaTitle   = 'No main media has been set';
-            }
+            this.hasMainMedia = !!(item.hasMainMedia)
 
             // Currently we don't pull in any preview information about non-image main media
             this.mainMediaNoPreview = this.mainMediaType && this.mainMediaType != 'image';
@@ -129,16 +120,14 @@ function wfContentItemParser(config, statusLabels, sections) {
             this.lastModifiedBy = item.lastModifiedBy;
             this.firstPublished = item.timePublished;
 
-            this.launchScheduleDetails = item.launchScheduleDetails || {};
-
             this.hasEmbargoedDate =
-                    this.launchScheduleDetails.embargoedUntil &&
-                    this.launchScheduleDetails.embargoedUntil > (new Date()).getTime();
+                    item.embargoedUntil &&
+                    new Date(item.embargoedUntil).getTime() > (new Date()).getTime();
 
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
-            this.isEmbargoed = this.hasEmbargoedDate || this.launchScheduleDetails.embargoedIndefinitely;
-            this.isScheduled = Boolean(this.launchScheduleDetails.scheduledLaunchDate);
+            this.isEmbargoed = this.hasEmbargoedDate || item.embargoedIndefinitely;
+            this.isScheduled = Boolean(item.scheduledLaunchDate);
 
             var lifecycleState      = this.lifecycleState(item);
             this.lifecycleState     = lifecycleState.display;
@@ -158,10 +147,10 @@ function wfContentItemParser(config, statusLabels, sections) {
                 'Linked with InCopy Story Bundle ' + this.storyBundleId :
                 'Not linked with InCopy';
 
-            this.optimisedForWeb = !!(item.statusFlags && item.statusFlags.optimisedForWeb);
-            this.optimisedForWebChanged = !!(item.statusFlags && item.statusFlags.optimisedForWebChanged);
-            this.sensitive = !!(item.statusFlags && item.statusFlags.sensitive);
-            this.legallySensitive = !!(item.statusFlags && item.statusFlags.legallySensitive);
+            this.optimisedForWeb = !!(item.optimisedForWeb);
+            this.optimisedForWebChanged = !!(item.optimisedForWebChanged);
+            this.sensitive = !!(item.sensitive);
+            this.legallySensitive = !!(item.legallySensitive);
 
             if (this.optimisedForWebChanged) {
                 this.optimisedForWebTitle = 'Content has been modified since being optimised'
@@ -183,10 +172,10 @@ function wfContentItemParser(config, statusLabels, sections) {
                     "display": "Embargoed",
                     "key": "embargoed",
                     "active": this.isEmbargoed,
-                    "supl": this.launchScheduleDetails.embargoedIndefinitely ? "Indefinitely" : undefined,
-                    "suplDate": this.hasEmbargoedDate ? this.launchScheduleDetails.embargoedUntil : undefined
+                    "supl": item.embargoedIndefinitely ? "Indefinitely" : undefined,
+                    "suplDate": this.hasEmbargoedDate ? item.embargoedUntil : undefined
                 },
-                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "suplDate": this.launchScheduleDetails.scheduledLaunchDate },
+                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "suplDate": item.scheduledLaunchDate },
                 { "display": "Taken down", "key": "takendown", "active": item.takenDown, "suplDate": item.timeTakenDown },
                 { "display": "", "key": "draft", "active": true } // Base state
             ];

@@ -194,58 +194,6 @@ object WorkflowContent {
      )(WorkflowContent.apply _)
 }
 
-
-
-case class ContentItem(stub: Stub, wcOpt: Option[WorkflowContent])
-case object ContentItem {
-
-  implicit val contentItemReads = new Reads[ContentItem] {
-    def reads(json: JsValue) = {
-      for {
-        stub <- json.validate[Stub]
-        wcOpt <- json.validateOpt[WorkflowContent]
-      } yield ContentItem(stub, wcOpt)
-    }
-  }
-  implicit val contentItemWrites = new Writes[ContentItem] {
-    /*
-      Dashboard row translates an id to stubId, and title to workingTitle
-      Not sure if this is strictly necessary, so haven't included here yet
-     */
-    def writes(c: ContentItem) = c match {
-      case ContentItem(s, Some(wc)) => {
-        /*
-          Note contentType exists in both objects, the behavior of ++ will take wc as source of truth
-        */
-        Json.toJson(s).as[JsObject] ++ Json.toJson(wc).as[JsObject]
-      }
-      case ContentItem(s, None) => Json.toJson(s)
-    }
-  }
-
-  val title: ContentItem => String = c => c.stub.title
-  val noteField: ContentItem => Option[String] = c => c.stub.note
-  val headline: ContentItem => Option[String] = c => c.wcOpt.flatMap(_.headline)
-  val status: ContentItem => Option[Status] = c => c.wcOpt.map(_.status)
-  val contentTypeWC: ContentItem => Option[String] = c => c.wcOpt.map(_.contentType)
-  val contentTypeS: ContentItem => String = c => c.stub.contentType
-  val inInCopy: ContentItem => Option[Boolean] = c => c.wcOpt.map(_.activeInInCopy)
-  val section: ContentItem => String = c => c.stub.section
-  val published: ContentItem => Option[Boolean] = c => c.wcOpt.map(_.published)
-  val due: ContentItem => Option[DateTime] = c => c.stub.due
-  val stubLastMod: ContentItem => DateTime = c => c.stub.lastModified
-  val createdAt: ContentItem => DateTime = c => c.stub.createdAt
-  val wcLastMod: ContentItem => Option[DateTime] = c => c.wcOpt.map(_.lastModified)
-  val timePublished: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.timePublished)
-  val takenDown: ContentItem => Option[Boolean] = c => c.wcOpt.map(_.takenDown)
-  val timeTakenDown: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.timeTakenDown)
-  val embargoedUntil: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.launchScheduleDetails.embargoedUntil)
-  val embargoedIndefinitely: ContentItem => Option[Boolean] = c => c.wcOpt.map(_.launchScheduleDetails.embargoedIndefinitely)
-  val scheduledLaunchDate: ContentItem => Option[DateTime] = c => c.wcOpt.flatMap(_.launchScheduleDetails.scheduledLaunchDate)
-  val storyBundleId: ContentItem => Option[String] = c => c.wcOpt.flatMap(_.storyBundleId)
-
-}
-
 case class ContentItemIds(stubId: Long, composerId: Option[String])
 object ContentItemIds {
   implicit val jsonFormat = Json.format[ContentItemIds]

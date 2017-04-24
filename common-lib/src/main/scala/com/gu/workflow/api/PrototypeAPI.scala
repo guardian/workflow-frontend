@@ -1,12 +1,13 @@
 package com.gu.workflow.api
 
 import com.gu.workflow.api.ApiUtils._
-import models.{ ContentItem }
+import models.Stub
 import models.Flag.Flag
 import models.api._
 import org.joda.time.DateTime
 import play.api.Play.current
 import play.api.libs.json._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
 
@@ -14,7 +15,8 @@ object PrototypeAPI {
 
   def createContent(body: JsValue): ApiResponseFt[ContentUpdate] = {
     for {
-      res <- ApiResponseFt.Async.Right(postRequest("stubs", body))
+      convertedJson <- flatStubJsonToStubJson(body)
+      res <- ApiResponseFt.Async.Right(postRequest("stubs", convertedJson))
       createRes <- extractDataResponse[ContentUpdate](res.json)
     } yield {
       createRes
@@ -23,17 +25,18 @@ object PrototypeAPI {
 
   def putStub(stubId: Long, body: JsValue): ApiResponseFt[ContentUpdate] = {
     for {
-      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/${stubId}", body))
+      convertedJson <- flatStubJsonToStubJson(body)
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId", convertedJson))
       putRes <- extractDataResponse[ContentUpdate](res.json)
     } yield {
       putRes
     }
   }
 
-  def getContentByStubId(id: Long): ApiResponseFt[Option[ContentItem]] = {
+  def getContentByStubId(id: Long): ApiResponseFt[Option[Stub]] = {
     for {
-      req <- ApiResponseFt.Async.Right(getRequest(s"stubs/${id}"))
-      item <- extractDataResponseOpt[ContentItem](req.json)
+      req <- ApiResponseFt.Async.Right(getRequest(s"stubs/$id"))
+      item <- extractDataResponseOpt[Stub](req.json)
     } yield {
       item
     }
@@ -147,9 +150,19 @@ object PrototypeAPI {
     }
   }
 
-  def updateContentStatus(composerId: String, status: String): ApiResponseFt[String] = {
+  def updateContentStatus(stubId: Long, status: String): ApiResponseFt[Long] = {
     for {
-      req <- ApiResponseFt.Async.Right(putRequest(s"content/$composerId/status",
+      req <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/status",
+        Json.toJson(status)))
+      item <- extractDataResponse[Long](req.json)
+    } yield {
+      item
+    }
+  }
+
+  def updateContentStatusByComposerId(composerid: String, status: String): ApiResponseFt[String] = {
+    for {
+      req <- ApiResponseFt.Async.Right(putRequest(s"content/$composerid/status",
         Json.toJson(status)))
       item <- extractDataResponse[String](req.json)
     } yield {

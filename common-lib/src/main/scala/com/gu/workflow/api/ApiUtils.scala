@@ -1,12 +1,15 @@
 package com.gu.workflow.api
 
 import com.gu.workflow.lib.Config
+import models.Stub
+import models.Stub.{flatJsonReads, stubWrites}
 import play.api.libs.ws.{WS, WSRequest, WSResponse}
 import play.api.mvc.AnyContent
 import play.api.Play.current
 
 import scala.concurrent.Future
 import models.api._
+import play.api.Logger
 import play.api.libs.json._
 
 object ApiUtils {
@@ -36,6 +39,13 @@ object ApiUtils {
     }
   }
 
+  // this function is needed to convert the json into a format that datastore understands.
+  def flatStubJsonToStubJson(jsValue: JsValue): ApiResponseFt[JsValue] = {
+    jsValue.validate[Stub](flatJsonReads).fold(e => {
+      ApiResponseFt.Left(ApiError("Json conversion failed", s"Failed to convert flat stub into stub with externalData level for datastore with error: $e", 400, "badrequest"))
+    }, s => ApiResponseFt.Right(Json.toJson(s)(stubWrites)))
+  }
+
   def extractDataResponse[A: Reads](jsValue: JsValue): ApiResponseFt[A] = {
     val data = jsValue \ "data"
     extractResponse[A](data)
@@ -51,6 +61,7 @@ object ApiUtils {
       case JsSuccess(a, _) => ApiResponseFt.Right(a)
       case error@JsError(_) =>
         val errMsg = errorMsgs(error)
+        Logger.error(s"JsonParseError failed to parse the json. Error(s): ${errMsg} 400 badrequest")
         ApiResponseFt.Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
     }
   }

@@ -325,7 +325,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
               if (!$scope.contentItem) {
                 return false
               }
-              return $scope.contentItem.commissioningDesks.length !== 0 &&
+              return $scope.contentItem.commissioningDesks && $scope.contentItem.commissioningDesks.length !== 0 &&
                 $scope.contentItem.commissioningDesks.some(function(desk) {
                   return !desk;
                 });
