@@ -14,5 +14,16 @@
         "optimisedForWebChanged": false,
         "sensitive": false,
         "legallySensitive": false
+    },
+    "externalData": {
+        "status": "Writers",
+        "activeInInCopy": false,
+        "takenDown": false,
+        "published": false,
+        "optimisedForWebChanged": false,
+        "sensitive": false,
+        "legallySensitive": false,
+        "embargoedIndefinitely": false,
+        "wordCount": 0
     }
 }

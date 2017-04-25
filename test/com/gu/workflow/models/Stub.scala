@@ -29,23 +29,27 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
       val resource = slurp("content-item-min-fields.json").getOrElse(
         throw new RuntimeException("could not find test resource"))
 
-      val jsonRes = Json.parse(resource).validate[ContentItem]
+      val jsonRes = Json.parse(resource).validate[Stub]
 
-      jsonRes.fold(_ => fail("should parse the content field"), ci => {
-        ci.stub.composerId should equal (Some("56cc74bfa7c8a951d739c3f4"))
-        ci.stub.title should equal ("working")
-        ci.stub.prodOffice should equal ("UK")
-        ci.stub.section should equal ("100 Voices (Project)")
-        ci.stub.contentType should equal ("article")
-        ci.wcOpt.map(_.composerId) should equal (Some("56cc74bfa7c8a951d739c3f4"))
-        ci.wcOpt.map(_.contentType) should equal (Some("article"))
-        ci.wcOpt.map(_.status) should equal (Some(Status("Writers")))
-        ci.wcOpt.map(_.activeInInCopy) should equal (Some(false))
-        ci.wcOpt.map(_.takenDown) should equal (Some(false))
-        ci.wcOpt.map(_.published) should equal (Some(false))
-        ci.wcOpt.map(_.statusFlags) should equal (Some(WorkflowContentStatusFlags(commentable = false, optimisedForWeb = false, optimisedForWebChanged = false, sensitive=Some(false), legallySensitive=Some(false))))
-        ci.wcOpt.map(_.launchScheduleDetails) should equal (Some(LaunchScheduleDetails(None, None, false)))
-        ci.wcOpt.map(_.wordCount) should equal (Some(0))
+      jsonRes.fold(_ => fail("should parse the content field"), stub => {
+        stub.composerId should equal (Some("56cc74bfa7c8a951d739c3f4"))
+        stub.title should equal ("working")
+        stub.prodOffice should equal ("UK")
+        stub.section should equal ("100 Voices (Project)")
+        stub.contentType should equal ("article")
+        stub.composerId should equal (Some("56cc74bfa7c8a951d739c3f4"))
+        stub.externalData.flatMap(_.status) should equal (Some(Status("Writers")))
+        stub.externalData.flatMap(_.activeInInCopy) should equal (Some(false))
+        stub.externalData.flatMap(_.takenDown) should equal (Some(false))
+        stub.externalData.flatMap(_.published) should equal (Some(false))
+        stub.externalData.flatMap(_.optimisedForWebChanged) should equal (Some(false))
+        stub.externalData.flatMap(_.sensitive) should equal (Some(false))
+        stub.externalData.flatMap(_.legallySensitive) should equal (Some(false))
+
+        stub.externalData.flatMap(_.scheduledLaunchDate) should equal (None)
+        stub.externalData.flatMap(_.embargoedUntil) should equal (None)
+        stub.externalData.flatMap(_.embargoedIndefinitely) should equal (Some(false))
+        stub.externalData.flatMap(_.wordCount) should equal (Some(0))
       })
     }
 
@@ -53,44 +57,43 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
       val resource = slurp("content-item-max-fields.json").getOrElse(
         throw new RuntimeException("could not find test resource"))
 
-      val jsonRes = Json.parse(resource).validate[ContentItem]
+      val jsonRes = Json.parse(resource).validate[Stub]
 
-      jsonRes.fold(_ => fail("should parse the content field"), ci => {
-        ci.stub.composerId should equal (Some("56cc7694a7c8a951d739c3f9"))
-        ci.stub.title should equal ("headline")
-        ci.stub.prodOffice should equal ("UK")
-        ci.stub.section should equal ("AU News")
-        ci.stub.contentType should equal ("article")
+      jsonRes.fold(_ => fail("should parse the content field"), stub => {
+        stub.composerId should equal (Some("56cc7694a7c8a951d739c3f9"))
+        stub.title should equal ("headline")
+        stub.prodOffice should equal ("UK")
+        stub.section should equal ("AU News")
+        stub.contentType should equal ("article")
 
-        ci.wcOpt.map(_.composerId) should equal (Some("56cc7694a7c8a951d739c3f9"))
-        ci.wcOpt.map(_.contentType) should equal (Some("article"))
-        ci.wcOpt.map(_.status) should equal (Some(Status("Desk")))
-        ci.wcOpt.map(_.activeInInCopy) should equal (Some(true))
-        ci.wcOpt.map(_.takenDown) should equal (Some(false))
-        ci.wcOpt.flatMap(_.headline) should equal (Some("headline"))
-        ci.wcOpt.flatMap(_.lastModifiedBy) should equal (Some("test-bunny"))
-        ci.wcOpt.map(_.statusFlags) should equal (Some(WorkflowContentStatusFlags(commentable = true, optimisedForWeb = false, optimisedForWebChanged = false, sensitive=Some(false), legallySensitive=Some(false))))
+        stub.composerId should equal (Some("56cc7694a7c8a951d739c3f9"))
+        stub.contentType should equal ("article")
+        stub.externalData.flatMap(_.status) should equal (Some(Status("Desk")))
+        stub.externalData.flatMap(_.activeInInCopy) should equal (Some(true))
+        stub.externalData.flatMap(_.takenDown) should equal (Some(false))
+        stub.externalData.flatMap(_.optimisedForWebChanged) should equal (Some(false))
+        stub.externalData.flatMap(_.optimisedForWebChanged) should equal (Some(false))
+        stub.externalData.flatMap(_.sensitive) should equal (Some(false))
+        stub.externalData.flatMap(_.legallySensitive) should equal (Some(false))
       })
     }
   }
 
   "ContentWrites" - {
     "should write a stub to json" in {
-      val ci = randomStub
-      val jsValue = Json.toJson(ci)
+      val stub = randomStub
+      val jsValue = Json.toJson(stub)(Stub.stubWrites)
       jsValue.validate[Stub].fold(_ => fail("should be validate stub json"), stub => {
-        stub should equal (ci.stub)
+        stub should equal (stub)
       })
     }
 
     "should write a content item to json" in {
-      val ci = randomStubAndWC
-      val jsValue = Json.toJson(ci)
-      jsValue.validate[ContentItem].fold(_ => fail("should be validate content item json"), contentItem => {
-        val stubWithDateFields = contentItem.stub.copy(createdAt = ci.stub.createdAt, lastModified = ci.stub.lastModified)
-        stubWithDateFields should equal (ci.stub)
-        contentItem.wcOpt should equal (ci.wcOpt)
-        contentItem.wcOpt.isDefined should equal (true)
+      val stub = randomStub
+      val jsValue = Json.toJson(stub)(Stub.flatStubWrites)
+      jsValue.validate[Stub](Stub.flatJsonReads).fold(e => fail("should be valid stub json" + e.toString), vStub => {
+        val stubWithDateFields = vStub.copy(createdAt = stub.createdAt, lastModified = stub.lastModified)
+        stubWithDateFields should equal (stub)
       })
     }
   }

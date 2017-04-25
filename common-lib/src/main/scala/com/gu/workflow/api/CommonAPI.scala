@@ -1,15 +1,16 @@
 package com.gu.workflow.api
 
-import com.gu.workflow.lib.ContentUpdateChanges
-import models.api.ContentResponse
 import play.api.libs.json._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Play.current
+
 import scala.util.Either
 import models.api._
-import models.{WorkflowContent, ContentUpdateEvent, ContentItem, ContentItemIds}
+import models._
 import com.gu.workflow.api.ApiUtils._
 import play.api.Logger
+import play.api.libs.ws.WSResponse
 
 object CommonAPI {
 
@@ -28,15 +29,6 @@ object CommonAPI {
       takeDownRes <- extractDataResponse[Int](res.json)
     } yield {
       takeDownRes
-    }
-  }
-
-  def updateContentFromUpdateEvent(updateContentRequest: UpdateContentRequest): ApiResponseFt[ContentUpdateChanges] = {
-    for {
-      res <- ApiResponseFt.Async.Right(postRequest("updateContentFromUpdateEvent", Json.toJson(updateContentRequest)))
-      updateRes <- extractDataResponse[ContentUpdateChanges](res.json)
-    } yield {
-      updateRes
     }
   }
 
@@ -76,10 +68,10 @@ object CommonAPI {
     }
   }
 
-  def getContentByComposerId(id: String): ApiResponseFt[Option[ContentItem]] = {
+  def getContentByComposerId(id: String): ApiResponseFt[Option[Stub]] = {
     for {
       res <- ApiResponseFt.Async.Right(getRequest(s"getContentByComposerId/$id"))
-      itemRes <- extractDataResponseOpt[ContentItem](res.json)
+      itemRes <- extractDataResponseOpt[Stub](res.json)
     } yield {
       itemRes
     }
@@ -88,7 +80,7 @@ object CommonAPI {
   def getContent(queryString: Map[String, Seq[String]]): ApiResponseFt[ContentResponse] = {
     for {
       res <- ApiResponseFt.Async.Right(getRequest(s"content", Some(queryString
-        .toList.flatMap(x => x._2 map ( y => (x._1 -> y))))))
+        .toList.flatMap(x => x._2 map ( y => x._1 -> y)))))
       contentRes <- extractDataResponse[ContentResponse](res.json)
     } yield {
       contentRes

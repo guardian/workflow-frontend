@@ -1,12 +1,11 @@
 package models.api
-import models.ContentItem
 import play.api.libs.json._
 
 
-case class ContentUpdate(stubId: Long, composerId: Option[String])
-case class DeleteOp(stubId: Long, composerRows: Int)
+case class ContentUpdate(stubId: Long)
+case class DeleteOp(stubId: Long)
 object ContentUpdate { implicit val jsonFormats = Json.format[ContentUpdate] }
-object DeleteOp {  implicit val jsonFormats = Json.format[DeleteOp] }
+object DeleteOp { implicit val jsonFormats = Json.format[DeleteOp] }
 
 sealed trait ContentUpdateError
 
