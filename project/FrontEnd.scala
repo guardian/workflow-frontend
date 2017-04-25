@@ -20,9 +20,9 @@ object FrontEnd {
 
     val gzipSettings = Seq(includeFilter in gzip := "*.html" || "*.css" || "*.js")
 
-    val assetPipelineSettings = Seq(pipelineStages := Seq(JSPM.bundle, digest, gzip))
+    val assetPipelineSettings = Seq(pipelineStages := Seq(digest, gzip))
 
-    val settings = SassTask.sassSettings ++ JSPM.settings ++ gzipSettings ++ assetPipelineSettings
+    val settings = SassTask.sassSettings ++ gzipSettings ++ assetPipelineSettings
 
   }
 
@@ -83,34 +83,4 @@ object SassTask {
 
   val sassSettings = inConfig(Assets)(baseSassSettings)
 
-}
-
-/**
- * JSPM Tasks
- * - bundle: creates a js bundle of all modules
- */
-object JSPM {
-  val bundle = taskKey[Pipeline.Stage]("JSPM bundle")
-
-  val settings = Seq {
-    bundle := { mappings: Seq[PathMapping] =>
-      val log = streams.value.log
-      log.info("Running JSPM bundle")
-
-      val sourceDir = (resourceDirectory in Assets).value
-      val targetDir = webTarget.value / "jspm-bundle"
-      val publicTargetDir = targetDir / "public"
-      val targetBundleFile = "app.bundle.js"
-
-      IO.copyFile(baseDirectory.value / "package.json", targetDir / "package.json")
-      IO.copy(mappings.map { case (file, path) => file -> publicTargetDir / path }, overwrite = true)
-
-      val cmd = Process(baseDirectory.value + s"/node_modules/.bin/jspm bundle app ./public/$targetBundleFile --minify --no-mangle --inject", targetDir) !< log
-      if (cmd != 0) sys.error(s"Non-zero error code for `jspm bundle`: $cmd")
-
-      val generated = (publicTargetDir * "app.bundle.*") +++ (publicTargetDir / "config.js")
-      val out = generated pair relativeTo(publicTargetDir)
-      mappings.filter(_._2 != "config.js") ++ out
-    }
-  }
 }

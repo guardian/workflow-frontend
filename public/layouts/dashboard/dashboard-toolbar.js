@@ -1,12 +1,12 @@
 import angular from 'angular';
 
-import 'lib/date-service';
-import 'lib/filters-service';
-import 'lib/prodoffice-service';
-import 'lib/presence';
-import { wfToolbarSectionsDropdown } from 'components/toolbar-sections-dropdown/toolbar-sections-dropdown';
+import '../../lib/date-service';
+import '../../lib/filters-service';
+import '../../lib/prodoffice-service';
+import '../../lib/presence';
+import { wfToolbarSectionsDropdown } from '../../components/toolbar-sections-dropdown/toolbar-sections-dropdown';
 
-import './dashboard-toolbar.html!ng-template';
+import './dashboard-toolbar.html';
 
 angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPresenceService', 'wfProdOfficeService'])
     .directive('wfToolbarSectionsDropdown', ['wfFiltersService', '$rootScope', 'sectionsInDesks', wfToolbarSectionsDropdown])

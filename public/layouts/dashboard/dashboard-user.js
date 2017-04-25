@@ -1,8 +1,8 @@
 import angular from 'angular';
 
-import 'lib/user';
+import '../..//lib/user';
 
-import './dashboard-user.html!ng-template';
+import './dashboard-user.html';
 
 angular
     .module('wfDashboardUser', ['wfUser'])

@@ -3,7 +3,7 @@
 cd $(dirname "$0");
 
 # Remove local packages to ensure latest versions are downloaded
-rm -rf node_modules/ public/jspm_packages/ 
+rm -rf node_modules/
 
 echo "Installing nodejs packages"
 
@@ -14,14 +14,11 @@ if [ $NPM_EXIT != "0" ]; then
     exit 1
 fi
 
+echo "Bundling with webpack"
 
-echo "Installing jspm client-side packages"
-./node_modules/.bin/jspm install -y
+npm run build-dev
+NPM_EXIT=$?
 
-JSPM_EXIT=$?
-
-
-if [ $JSPM_EXIT != "0" ]; then
-    echo "Failed jspm install"
+if [ $NPM_EXIT != "0" ]; then
     exit 1
 fi

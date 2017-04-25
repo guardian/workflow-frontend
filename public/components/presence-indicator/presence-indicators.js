@@ -1,4 +1,4 @@
-import presenceIndicatorsTemplate from './presence-indicators.html!ng-template';
+import presenceIndicatorsTemplate from './presence-indicators.html';
 
 function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
                                         wfPresenceInitialData, $log) {

@@ -2,7 +2,7 @@
  * Decorates Angular's exception handler. Broadcasts an event that can be
  * intercepted by the wfUserMessage directive for display.
  */
-function wfErrorExceptionHandlerDecorator($delegate, $injector) {
+export function wfErrorExceptionHandlerDecorator($delegate, $injector) {
 
     return function wfErrorExceptionHandler(ex, cause) {
         var messageData = ex && errorData[ex.name] || errorData.Error;

@@ -4,44 +4,44 @@
 
 import angular from 'angular';
 
-import { getEnvironment } from 'environment';
+import { getEnvironment } from './environment';
 
-import 'components/sentry/sentry';
-import 'components/user-message/user-message';
+import './components/sentry/sentry';
+import './components/user-message/user-message';
 
-import 'components/content-list/content-list';
-import 'components/icons/icons';
+import './components/content-list/content-list';
+import './components/icons/icons';
 
 
-import 'layouts/dashboard/dashboard';
-import 'layouts/dashboard/dashboard-user';
-import 'layouts/dashboard/dashboard-create';
-import 'layouts/dashboard/dashboard-toolbar';
-import 'layouts/dashboard/dashboard-sidebar';
+import './layouts/dashboard/dashboard';
+import './layouts/dashboard/dashboard-user';
+import './layouts/dashboard/dashboard-create';
+import './layouts/dashboard/dashboard-toolbar';
+import './layouts/dashboard/dashboard-sidebar';
 
-import 'lib/date-service';
-import 'lib/filters-service';
-import 'lib/column-service';
-import 'lib/preferences-service';
-import 'lib/analytics';
-import 'lib/feature-switches';
-import 'lib/google-api';
-import 'lib/polling-service';
-import 'lib/title-service';
-import 'lib/logger';
+import './lib/date-service';
+import './lib/filters-service';
+import './lib/column-service';
+import './lib/preferences-service';
+import './lib/analytics';
+import './lib/feature-switches';
+import './lib/google-api';
+import './lib/polling-service';
+import './lib/title-service';
+import './lib/logger';
 
 // 3rd party libs
 import 'angular-ui-router';
-import 'angular-bootstrap';
-import 'angular-animate/angular-animate.min';
-import 'ngInfiniteScroll/ng-infinite-scroll';
+import 'angular-bootstrap-temporary';
+import 'angular-animate';
+import 'ng-infinite-scroll';
 
 //import 'angular-loading-bar';
 //import 'angular-loading-bar@0.7.1/src/loading-bar.css!';
 
 // App-wide Styles
-import 'bootstrap/css/bootstrap.min.css!';
-import 'main.min.css!';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './main.scss';
 
 angular.module('workflow',
     [

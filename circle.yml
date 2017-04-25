@@ -17,10 +17,9 @@ dependencies:
     - "project/target/streams"
   pre:
     - cd $(dirname "$0");
-    - rm -rf node_modules/ public/jspm_packages/
+    - rm -rf node_modules/
     - npm install
-    - ./node_modules/.bin/jspm config registries.github.auth $JSPM_GITHUB_AUTH_TOKEN
-    - ./node_modules/.bin/jspm install -y
+    - npm run build
   override:
     - sbt test:compile
 test:

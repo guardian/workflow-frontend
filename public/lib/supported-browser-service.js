@@ -1,5 +1,5 @@
 import angular from 'angular';
-import UAParser from 'ua-parser/ua-parser.min';
+import UAParser from 'ua-parser-js';
 
 
 angular.module('wfSupportedBrowserService', [])

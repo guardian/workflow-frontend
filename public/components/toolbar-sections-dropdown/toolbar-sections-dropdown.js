@@ -1,4 +1,4 @@
-import toolbarSectionsDropdown from './toolbar-sections-dropdown.html!ng-template';
+import toolbarSectionsDropdown from './toolbar-sections-dropdown.html';
 
 var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sectionsInDesks) { //  wf-toolbar-sections-dropdown
     return {

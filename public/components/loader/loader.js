@@ -1,4 +1,4 @@
-import loaderTemplate from './loader.html!ng-template';
+import loaderTemplate from './loader.html';
 
 function wfLoader ($rootScope) {
     return {

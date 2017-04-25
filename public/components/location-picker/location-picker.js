@@ -6,12 +6,12 @@
 
 import angular from 'angular';
 
-import 'lib/date-service';
-import 'lib/location-service';
+import '../../lib/date-service';
+import '../../lib/location-service';
 
-import 'components/icons/icons';
+import '../icons/icons';
 
-import locationPickerTemplate from './location-picker.html!ng-template';
+import locationPickerTemplate from './location-picker.html';
 
 var CLASS_LOCATION_PICKER = 'location-picker',
     CLASS_LOCATION_PICKER_OPEN = 'location-picker--open';

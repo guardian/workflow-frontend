@@ -1,10 +1,10 @@
 
 import angular from 'angular';
 
-import 'lib/error-service';
-import 'lib/supported-browser-service';
+import {wfErrorExceptionHandlerDecorator} from '../../lib/error-service';
+import '../../lib/supported-browser-service';
 
-import userMessageTemplate from './user-message.html!ng-template';
+import userMessageTemplate from './user-message.html';
 
 angular.module('wfUserMessage', ['wfSupportedBrowserService'])
     .config(['$provide', wfUserMessageConfig])

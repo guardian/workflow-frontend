@@ -1,6 +1,6 @@
 import _ from "underscore"
-import { wfPresenceIndicatorsDirective } from 'components/presence-indicator/presence-indicators';
-import { wfPresenceCurrentState } from 'components/presence-indicator/presence-status';
+import { wfPresenceIndicatorsDirective } from '../components/presence-indicator/presence-indicators';
+import { wfPresenceCurrentState } from '../components/presence-indicator/presence-status';
 
 var module = angular.module('wfPresenceService', []);
 
@@ -72,7 +72,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 
         self.whenEnabled.then(
             // 1. Is presence enabled?
-            ()=>System.import('presence-client'),
+            ()=>window.presenceClient,
             ()=>promisePresenceError("presence is disabled")
         ).then(
             // 2. Have we loaded the client library?

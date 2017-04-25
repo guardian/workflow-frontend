@@ -4,21 +4,20 @@
 import angular from 'angular';
 import _ from 'lodash';
 
-import 'lib/content-service';
-import 'lib/date-service';
-import 'lib/presence';
-import 'lib/prodoffice-service';
-import 'lib/column-service';
-import 'lib/capi-service';
+import '../../lib/content-service';
+import '../../lib/date-service';
+import '../../lib/presence';
+import '../../lib/prodoffice-service';
+import '../../lib/column-service';
+import '../../lib/capi-service';
 
-import 'components/editable-field/editable-field';
+import '../editable-field/editable-field';
 
-// Content list template "ng-include"-ed from layouts/dashboard/dashboard.html
-import './content-list.html!ng-template';
+import './content-list.html';
 
-import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from 'components/content-list-item/content-list-item';
-import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
-import { wfLoader } from 'components/loader/loader';
+import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from '../content-list-item/content-list-item';
+import { wfContentListDrawer } from '../content-list-drawer/content-list-drawer';
+import { wfLoader } from '../loader/loader';
 
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiService'])

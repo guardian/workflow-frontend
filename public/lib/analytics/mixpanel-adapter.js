@@ -69,4 +69,4 @@ if (!window.mixpanel) {
 
 module.exports = window.mixpanel;
 
-require('mixpanel/mixpanel.min');
+require('mixpanel-browser');
