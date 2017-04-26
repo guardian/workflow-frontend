@@ -42,6 +42,7 @@ import 'ng-infinite-scroll';
 // App-wide Styles
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './main.scss';
+import 'layouts/global/core.scss';
 
 angular.module('workflow',
     [
