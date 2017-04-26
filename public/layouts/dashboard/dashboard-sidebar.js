@@ -1,11 +1,11 @@
 import angular from 'angular';
 
-import '../../lib/date-service';
-import '../../lib/filters-service';
-import '../../lib/prodoffice-service';
-import '../../components/location-picker/location-picker';
-import '../../components/sidebar-filter/sidebar-filter';
-import { filterDefaults } from '../../lib/filter-defaults';
+import 'lib/date-service';
+import 'lib/filters-service';
+import 'lib/prodoffice-service';
+import 'components/location-picker/location-picker';
+import 'components/sidebar-filter/sidebar-filter';
+import { filterDefaults } from 'lib/filter-defaults';
 
 import './dashboard-sidebar.html';
 

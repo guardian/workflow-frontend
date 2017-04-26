@@ -21,7 +21,7 @@ import 'angular-bootstrap-datetimepicker';
 import 'angular-bootstrap-datetimepicker/src/css/datetimepicker.css';
 
 // local dependencies
-import '../../lib/date-service';
+import 'lib/date-service';
 
 import dateTimePickerTemplate from './date-time-picker.html';
 

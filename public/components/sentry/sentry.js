@@ -13,7 +13,7 @@ import angular from 'angular';
 
 import 'raven-js/plugins/angular';
 
-import '../../lib/user';
+import 'lib/user';
 
 angular.module('wfSentry', ['ngRaven', 'wfUser'])
 

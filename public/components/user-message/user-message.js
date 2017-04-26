@@ -1,8 +1,8 @@
 
 import angular from 'angular';
 
-import {wfErrorExceptionHandlerDecorator} from '../../lib/error-service';
-import '../../lib/supported-browser-service';
+import {wfErrorExceptionHandlerDecorator} from 'lib/error-service';
+import 'lib/supported-browser-service';
 
 import userMessageTemplate from './user-message.html';
 

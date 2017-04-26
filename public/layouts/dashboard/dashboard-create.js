@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-import '../../lib/content-service';
+import 'lib/content-service';
 
 import './dashboard-create.html';
 

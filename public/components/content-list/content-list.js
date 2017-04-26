@@ -4,12 +4,12 @@
 import angular from 'angular';
 import _ from 'lodash';
 
-import '../../lib/content-service';
-import '../../lib/date-service';
-import '../../lib/presence';
-import '../../lib/prodoffice-service';
-import '../../lib/column-service';
-import '../../lib/capi-service';
+import 'lib/content-service';
+import 'lib/date-service';
+import 'lib/presence';
+import 'lib/prodoffice-service';
+import 'lib/column-service';
+import 'lib/capi-service';
 
 import '../editable-field/editable-field';
 

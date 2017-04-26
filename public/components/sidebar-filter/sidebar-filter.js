@@ -1,7 +1,7 @@
 import angular from 'angular';
 
 import _ from 'lodash';
-import '../../lib/filters-service';
+import 'lib/filters-service';
 
 // load and cache html templates
 import sidebarFilterTemplate from './sidebar-filter.html';
