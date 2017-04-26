@@ -1,7 +1,7 @@
 
 import angular from 'angular';
 
-import '../../components/stub-modal/stub-modal';
+import 'components/stub-modal/stub-modal';
 
 import './dashboard.html';
 

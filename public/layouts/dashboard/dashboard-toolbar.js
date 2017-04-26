@@ -1,10 +1,10 @@
 import angular from 'angular';
 
-import '../../lib/date-service';
-import '../../lib/filters-service';
-import '../../lib/prodoffice-service';
-import '../../lib/presence';
-import { wfToolbarSectionsDropdown } from '../../components/toolbar-sections-dropdown/toolbar-sections-dropdown';
+import 'lib/date-service';
+import 'lib/filters-service';
+import 'lib/prodoffice-service';
+import 'lib/presence';
+import { wfToolbarSectionsDropdown } from 'components/toolbar-sections-dropdown/toolbar-sections-dropdown';
 
 import './dashboard-toolbar.html';
 

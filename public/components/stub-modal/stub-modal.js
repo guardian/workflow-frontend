@@ -2,14 +2,14 @@ import angular from 'angular';
 
 import 'angular-bootstrap-temporary';
 
-import '../date-time-picker/date-time-picker';
+import 'components/date-time-picker/date-time-picker';
 
-import '../../lib/composer-service';
-import '../../lib/content-service';
-import '../../lib/legal-states-service';
-import '../../lib/filters-service';
-import '../../lib/prodoffice-service';
-import { punters } from '../punters/punters';
+import 'lib/composer-service';
+import 'lib/content-service';
+import 'lib/legal-states-service';
+import 'lib/filters-service';
+import 'lib/prodoffice-service';
+import { punters } from 'components/punters/punters';
 
 
 var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])

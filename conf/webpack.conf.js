@@ -49,7 +49,12 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.js', '.jsx', '.json', '.scss']
+        extensions: ['.js', '.jsx', '.json', '.scss'],
+        alias: {
+            lib: path.join(__dirname, '..', 'public', 'lib'),
+            components: path.join(__dirname, '..', 'public', 'components'),
+            layouts: path.join(__dirname, '..', 'public', 'layouts'),
+        }
     },
 
     plugins: [
