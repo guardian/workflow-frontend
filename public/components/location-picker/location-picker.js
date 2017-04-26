@@ -9,7 +9,7 @@ import angular from 'angular';
 import 'lib/date-service';
 import 'lib/location-service';
 
-import '../icons/icons';
+import 'components/icons/icons';
 
 import locationPickerTemplate from './location-picker.html';
 

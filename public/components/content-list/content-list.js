@@ -11,13 +11,13 @@ import 'lib/prodoffice-service';
 import 'lib/column-service';
 import 'lib/capi-service';
 
-import '../editable-field/editable-field';
+import 'components/editable-field/editable-field';
 
 import './content-list.html';
 
-import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from '../content-list-item/content-list-item';
-import { wfContentListDrawer } from '../content-list-drawer/content-list-drawer';
-import { wfLoader } from '../loader/loader';
+import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from 'components/content-list-item/content-list-item';
+import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
+import { wfLoader } from 'components/loader/loader';
 
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiService'])
