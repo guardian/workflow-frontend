@@ -4,7 +4,7 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
     return {
         restrict: 'A',
         require: '^ngModel',
-        templateUrl: toolbarSectionsDropdown.templateUrl,
+        template: toolbarSectionsDropdown,
         scope: {
             ngModel: '=',
             sections: '=',
@@ -12,7 +12,6 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
             selectedDesk: '='
         },
         link: function ($scope, $element, attrs, ngModel) {
-
             var sectionListElem = $element[0].querySelector('.dropdown-toolbar__list'),
                 button = $element.find('button'),
                 buttonTitle = $element[0].querySelector('.dashboard-toolbar__dropdown-select-text'),

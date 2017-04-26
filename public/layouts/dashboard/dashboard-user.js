@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-import '../..//lib/user';
+import '../../lib/user';
 
 import './dashboard-user.html';
 

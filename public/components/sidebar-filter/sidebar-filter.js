@@ -13,7 +13,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
     return {
         restrict: 'E',
         replace: true,
-        templateUrl: sidebarFilterTemplate.templateUrl,
+        template: sidebarFilterTemplate,
         scope: {
             filter: '=wfFilter'
         },

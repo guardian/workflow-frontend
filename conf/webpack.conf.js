@@ -14,7 +14,7 @@ module.exports = {
                 loaders: ['babel-loader']
             },
             {
-              test: /\.html$/,
+              test: /\.(html|svg)$/,
               exclude: '/app/',
               loader: 'html-loader'
             },
@@ -42,7 +42,7 @@ module.exports = {
                 loader: "url-loader?mimetype=application/font-woff&limit=10000"
             },
             {
-                test: /\.(ttf|eot|svg|gif|png)(\?v=[0-9].[0-9].[0-9])?$/,
+                test: /\.(ttf|eot|gif|png)(\?v=[0-9].[0-9].[0-9])?$/,
                 loader: "file-loader?name=[name].[ext]"
             }
         ]
