@@ -4,6 +4,9 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+var ExtractCSS = new ExtractTextPlugin("main.css")
+var ExtractCoreCSS = new ExtractTextPlugin("core.css")
+
 module.exports = {
     devtool: 'cheap-module-source-map',
     module: {
@@ -25,7 +28,15 @@ module.exports = {
             },
             {
                 test: /\.scss$/,
-                loader: ExtractTextPlugin.extract({
+                exclude: /core\.scss$/,
+                loader: ExtractCSS.extract({
+                    fallback: 'style-loader',
+                    use: 'css-loader?sourceMap!sass-loader?sourceMap'
+                })
+            },
+            {
+                test: /core\.scss$/,
+                loader: ExtractCoreCSS.extract({
                     fallback: 'style-loader',
                     use: 'css-loader?sourceMap!sass-loader?sourceMap'
                 })
@@ -58,6 +69,7 @@ module.exports = {
     },
 
     plugins: [
-        new ExtractTextPlugin('main.css')
+        ExtractCSS,
+        ExtractCoreCSS
     ]
 };
