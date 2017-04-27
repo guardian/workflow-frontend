@@ -74,7 +74,6 @@ object WorkflowBuild extends Build {
                           .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
                                       ++ testDependencies)
                             .settings(libraryDependencies += filters)
-                            .settings(FrontEnd.PrototypeProject.settings: _*)
                             .settings(playDefaultPort := 9090)
                             .settings(playArtifactDistSettings ++ playArtifactSettings: _*)
                             .enablePlugins(RiffRaffArtifact)
