@@ -6,7 +6,7 @@ The Angular frontend and associated Scala API for Workflow.
 In order to run, workflow-frontend needs to talk to the CODE workflow datastore. It does this via an SSH tunnel to a 
 workflow-frontend CODE instance.
 
-- Make sure that you are running the right version of nodejs, (tested and working with v6.3.0). 
+- Make sure that you are running the right version of nodejs, (tested and working with v6.1.0). 
 - Run the install script `./scripts/setup.sh`
 - In the `conf` folder copy `workflow-frontend-application.local-example.conf` into `workflow-frontend-application.local.conf` and edit it to replace *example.email@guardian.co.uk* by your Guardian email address.
 - Run the script `./scripts/setup-ssh-tunnel.sh` to set up an ssh tunnel to a CODE datastore instance. You will need [marauder]()
