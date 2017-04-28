@@ -10,27 +10,16 @@ Assets organised as follows:
 
 
 ## Package management
-Uses [jspm](http://jspm.io) for client-side external dependencies.
+Uses [webpack](https://webpack.github.io/) for client-side external dependencies. This is configured in conf/webpack.conf.js.
 
-The `../setup.sh` script will install jspm locally via `npm` and then use
-jspm to install all client-side dependencies in the `jspm_packages` directory.
+The `../scripts/setup.sh` script will install all node modules (including webpack) locally, then use webpack to bundle dependencies.
 
-[System.js](https://github.com/systemjs/systemjs) is used for client-side
-module loading. Its a universal module loader, enabling loading of ES6 modules,
-AMD, CommonJS and global scripts.
-
-[`config.js`](config.js) configures System.js by mapping package names to the
-packages installed with `jspm`.
-
-The [jspm-cli](https://github.com/jspm/jspm-cli) tool can be used for
-including new dependencies, or upgrading packages.
+[yarn](https://yarnpkg.com/en/) is used for declarative package management.
 
 ## Stylesheets
 Workflow uses [Sass](http://sass-lang.com) for CSS pre-processing.
 
-Stylesheets within `prototype/public/**/*.scss` will be automatically compiled
-in SBT as part of the build process when building in TeamCity or when running
-locally in development mode. Source maps are generated also.
+Any .scss or .css file will be bundled using webpack.
 
 Classes should be specified in [Block Element Modifier (BEM)](http://bem.info/).
 
@@ -43,10 +32,6 @@ General style guidelines:
   and elements are fine.
 - Styles common to multiple elements should extend from a placeholder, or mixin.
 - Avoid nesting classes for specifity.
-
-Running Sass build manually:
-
-    sbt "project prototype" web-assets:sass
 
 ## SVG Icons
 Icons in Workflow are SVG files. At the moment, they are combined into a single concatenated SVG manually (`components/icons/icons.svg`). Each icon is declared in the `<defs>` element and given its own group (`<g>`) with a unique identifier. This identifier is used by the icon directive defined in `components/icons/icons.js`, which re-uses each icon using the `<use>` element, referencing the icon's unique ID.
@@ -87,8 +72,8 @@ Appends SVG:
 To run tests:
 
     cd /home/workflow/prototype
-    npm install
-    npm test
+    yarn install
+    yarn test
 
 > Note: Currently having issues when running with phantomjs, but works well in Chrome.
 > When the runner has started, visit http://localhost:9876/ in a browser to attach it as a test runner.
