@@ -43,8 +43,10 @@
     "angular-mocks": "1.5.11",
     "angular-ui-router": "0.2.11",
     "bootstrap": "3.2.0",
+    "es6-module-loader": "^0.17.11",
     "jquery": "1.11.1",
     "jquery-ui": "1.10.5",
+    "karma-systemjs": "^0.16.0",
     "lodash": "4.17.4",
     "mixpanel-browser": "2.11.1",
     "moment": "2.18.1",
@@ -53,6 +55,7 @@
     "raven-js": "1.1.22",
     "sugar": "1.4.1",
     "systemjs": "^0.20.12",
+    "traceur": "^0.0.111",
     "ua-parser-js": "0.7.1",
     "underscore": "1.7.0",
     "uuid-v4.js": "1.0.2"

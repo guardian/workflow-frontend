@@ -9,8 +9,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai', 'sinon'],
-
+    frameworks: ['systemjs', 'mocha', 'chai', 'sinon'],
 
     // list of files / patterns to load in the browser
     files: [
@@ -37,6 +36,24 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+    },
+
+    systemjs: {
+        // Path to your SystemJS configuration file 
+        configFile: 'system.conf.js',
+    
+        // Patterns for files that you want Karma to make available, but not loaded until a module requests them. eg. Third-party libraries. 
+        serveFiles: [
+            '*.js'
+        ],
+    
+        // SystemJS configuration specifically for tests, added after your config file. 
+        // Good for adding test libraries and mock modules 
+        config: {
+            paths: {
+                'angular-mocks': 'bower_components/angular-mocks/angular-mocks.js'
+            }
+        }
     },
 
 
