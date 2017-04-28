@@ -10,7 +10,7 @@ Assets organised as follows:
 
 
 ## Package management
-Uses [webpack](https://webpack.github.io/) for client-side external dependencies. This is configured in conf/webpack.conf.js.
+Uses [webpack](https://webpack.github.io/) for client-side external dependencies. This is configured in `conf/webpack.conf.js`.
 
 The `../scripts/setup.sh` script will install all node modules (including webpack) locally, then use webpack to bundle dependencies.
 
@@ -19,7 +19,7 @@ The `../scripts/setup.sh` script will install all node modules (including webpac
 ## Stylesheets
 Workflow uses [Sass](http://sass-lang.com) for CSS pre-processing.
 
-Any .scss or .css file will be bundled using webpack.
+Any `.scss` or `.css` file will be bundled using webpack.
 
 Classes should be specified in [Block Element Modifier (BEM)](http://bem.info/).
 
@@ -70,10 +70,10 @@ Appends SVG:
 - Test runner using [Karma](http://karma-runner.github.io/)
 
 To run tests:
-
+```
     cd /home/workflow/prototype
     yarn install
     yarn test
-
+```
 > Note: Currently having issues when running with phantomjs, but works well in Chrome.
 > When the runner has started, visit http://localhost:9876/ in a browser to attach it as a test runner.

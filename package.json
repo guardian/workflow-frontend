@@ -3,8 +3,8 @@
   "description": "workflow-frontend",
   "author": "Guardian Digital CMS team",
   "scripts": {
-    "build-dev": "webpack ./public/app.js ./public/target/web/public/main/app.js --config ./conf/webpack.conf.js --watch",
-    "build": "webpack -p ./public/app.js ./public/target/web/public/main/app.js --config ./conf/webpack.conf.js",
+    "build-dev": "webpack ./public/app.js ./public/build/app.js --config ./conf/webpack.conf.js --watch",
+    "build": "webpack -p ./public/app.js ./public/build/app.js --config ./conf/webpack.conf.js",
     "test": "karma start"
   },
   "devDependencies": {
@@ -45,7 +45,6 @@
     "bootstrap": "3.2.0",
     "jquery": "1.11.1",
     "jquery-ui": "1.10.5",
-    "karma-webpack": "^2.0.3",
     "lodash": "4.17.4",
     "mixpanel-browser": "2.11.1",
     "moment": "2.18.1",
@@ -53,6 +52,7 @@
     "ng-infinite-scroll": "1.2.0",
     "raven-js": "1.1.22",
     "sugar": "1.4.1",
+    "systemjs": "^0.20.12",
     "ua-parser-js": "0.7.1",
     "underscore": "1.7.0",
     "uuid-v4.js": "1.0.2"

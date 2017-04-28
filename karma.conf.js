@@ -11,19 +11,11 @@ module.exports = function(config) {
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['mocha', 'chai', 'sinon'],
 
-    plugins: [
-      require("karma-webpack"),
-      require("karma-mocha"),
-      require("karma-chai"),
-      require("karma-sinon"),
-      require("karma-phantomjs-launcher"),
-    ],
-    
 
     // list of files / patterns to load in the browser
     files: [
-      '../node_modules/angular/angular.js',
-      '../node_modules/angular-mocks/angular-mocks.js',
+      'node_modules/dist/system.js',
+      'config.js',
       'karma.bootstrap.js',
       '**/*.spec.js',
       { pattern: 'components/**/*.js', watched: true, included: false, served: true },
@@ -37,14 +29,14 @@ module.exports = function(config) {
 
 
     // list of files to exclude
-    exclude: [],
+    exclude: [
+      'jspm_packages/**/*.spec.js'
+    ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      // add webpack as preprocessor
-      '**/*.spec.js': ['webpack']
     },
 
 
