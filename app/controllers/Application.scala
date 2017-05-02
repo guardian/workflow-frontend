@@ -64,6 +64,10 @@ object Application extends Controller with PanDomainAuthActions {
     Ok(views.html.troubleshooting())
   }
 
+  def status = Action { request =>
+    Ok(views.html.status())
+  }
+
   // limited tag fields we want output into the DOM
   case class LimitedTag(id: Long, externalName: String)
   object LimitedTag { implicit val jsonFormats = Json.format[LimitedTag]}
