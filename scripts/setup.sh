@@ -1,4 +1,8 @@
 #!/bin/bash
+cd $(dirname "$0");
+
+# Remove local packages to ensure latest versions are downloaded
+rm -rf node_modules/ 
 
 red='\x1B[0;31m'
 
