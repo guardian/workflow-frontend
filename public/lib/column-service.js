@@ -1,5 +1,4 @@
 import angular              from 'angular';
-import moment               from 'moment';
 import { columnDefaults }   from 'lib/column-defaults'
 import startTemplate        from "components/content-list-item/content-list-item-start.html!text";
 import endTemplate          from "components/content-list-item/content-list-item-end.html!text";
