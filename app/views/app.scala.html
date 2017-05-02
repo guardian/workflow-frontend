@@ -1,4 +1,4 @@
-@(title: String, user: Option[com.gu.pandomainauth.model.User], config: play.api.libs.json.JsObject)
+@(title: String, user: Option[com.gu.pandomainauth.model.User], config: play.api.libs.json.JsObject, presenceClientLib: String)
 
 @layout(title, user, config) {
   <div class="main" ui-view>
@@ -15,7 +15,9 @@
   </div>
 
   <script src="@routes.Assets.versioned("build/app.js")"></script>
+  <script src="@presenceClientLib"></script>
   <script async src="https://apis.google.com/js/client.js?onload=init"></script>
+
 
   <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("build/main.css")"/>
 }

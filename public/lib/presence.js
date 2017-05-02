@@ -72,7 +72,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
 
         self.whenEnabled.then(
             // 1. Is presence enabled?
-            ()=>window.presenceClient,
+            ()=>window.presence,
             ()=>promisePresenceError("presence is disabled")
         ).then(
             // 2. Have we loaded the client library?
