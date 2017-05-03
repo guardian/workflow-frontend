@@ -1,4 +1,5 @@
 import contentListDrawerTemplate from './content-list-drawer.html!ng-template';
+import _ from 'lodash';
 
 /**
  * Directive for handling logic around the contentItemRow details drawer.
