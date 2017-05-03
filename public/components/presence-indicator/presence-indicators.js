@@ -1,4 +1,5 @@
 import presenceIndicatorsTemplate from './presence-indicators.html';
+import _ from 'lodash';
 
 function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
                                         wfPresenceInitialData, $log) {
