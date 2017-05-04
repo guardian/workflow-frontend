@@ -4,7 +4,7 @@
   "author": "Guardian Digital CMS team",
   "scripts": {
     "build-dev": "webpack ./public/app.js ./public/build/app.js --config ./conf/webpack.conf.js --watch",
-    "build": "webpack -p ./public/app.js ./public/build/app.js --config ./conf/webpack.conf.js",
+    "build": "webpack ./public/app.js ./public/build/app.js --config ./conf/webpack.prod.conf.js",
     "test": "karma start"
   },
   "devDependencies": {
@@ -56,7 +56,8 @@
     "sinon": "^2.1.0",
     "sugar": "1.4.1",
     "ua-parser-js": "0.7.1",
-    "uuid-v4.js": "1.0.2"
+    "uuid-v4.js": "1.0.2",
+    "webpack-merge": "^4.1.0"
   },
   "repository": {
     "type": "git",

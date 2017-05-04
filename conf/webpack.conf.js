@@ -4,11 +4,10 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-var ExtractCSS = new ExtractTextPlugin("main.css")
-var ExtractCoreCSS = new ExtractTextPlugin("core.css")
+var ExtractCSS = new ExtractTextPlugin("main.css");
+var ExtractCoreCSS = new ExtractTextPlugin("core.css");
 
 module.exports = {
-    devtool: 'cheap-module-source-map',
     module: {
         loaders: [
             {
