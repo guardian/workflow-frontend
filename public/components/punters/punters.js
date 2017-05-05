@@ -24,7 +24,7 @@ function punters ($rootScope, wfGoogleApiService) {
 
     return {
         restrict: 'E',
-        templateUrl: puntersTemplate.templateUrl,
+        template: puntersTemplate,
         scope: {
             stub: '=',
             indrawer: '='

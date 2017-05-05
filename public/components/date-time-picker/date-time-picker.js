@@ -29,8 +29,8 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
     // Add a listener to ui.bootstrap.datetimepicker to reset the picker to day view
     // Written using the second example from here http://angular-tips.com/blog/2013/09/experiment-decorating-directives/
-    .config(['$provide', function($provide) {
-        $provide.decorator('datetimepickerDirective', ['$delegate', function($delegate) {
+    .config(function($provide) {
+        $provide.decorator('datetimepickerDirective', function($delegate) {
             var directive = $delegate[0];
 
             var link = directive.link;
@@ -51,8 +51,8 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 }
             };
             return $delegate
-        }]);
-    }])
+        });
+    })
 
     .directive('wfDateTimePicker', ['$log', '$timeout', 'wfDateParser', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', function ($log, $timeout, wfDateParser, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
 
@@ -73,7 +73,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 onUpdate: '&wfOnUpdate',
                 onSubmit: '&wfOnSubmit'
             },
-            templateUrl: dateTimePickerTemplate.templateUrl,
+            template: dateTimePickerTemplate,
 
             controller: function ($scope, $element, $attrs) {
                 var idSuffix = pickerCount++;

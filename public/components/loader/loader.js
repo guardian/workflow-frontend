@@ -3,7 +3,7 @@ import loaderTemplate from './loader.html';
 function wfLoader ($rootScope) {
     return {
         restrict: 'E',
-        templateUrl: loaderTemplate.templateUrl,
+        template: loaderTemplate,
         scope: {
             event: '@event'
         },

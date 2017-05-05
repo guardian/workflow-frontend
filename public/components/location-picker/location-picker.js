@@ -24,7 +24,7 @@ function wfLocationPickerDirectiveFactory() {
     return {
         restrict: 'E',
         scope: true,
-        templateUrl: locationPickerTemplate.templateUrl,
+        template: locationPickerTemplate,
         controller: ['$scope', '$rootScope', '$timeout', 'wfLocationService', wfLocationPickerController],
         controllerAs: 'ctrl',
         link: function($scope, $elem, $attrs) {

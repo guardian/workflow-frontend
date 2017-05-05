@@ -29,7 +29,7 @@ function wfUserMessageDirectiveFactory(wfSupportedBrowserService) {
     return {
         restrict: 'E',
         scope: true,
-        templateUrl: userMessageTemplate.templateUrl,
+        template: userMessageTemplate,
         controller: function($scope, $element, $attrs, $timeout) {
 
             this.showMessage = (msg) => {

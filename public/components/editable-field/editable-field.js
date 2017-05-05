@@ -31,7 +31,7 @@ function wfEditableDirectiveFactory($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: editableFieldTemplate.templateUrl,
+        template: editableFieldTemplate,
         scope: {
             modelValue: '=ngModel',
             onEditableUpdate: '&wfEditableOnUpdate',

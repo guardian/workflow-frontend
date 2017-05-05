@@ -6,7 +6,7 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
 
     return {
         restrict: 'E',
-        templateUrl: presenceIndicatorsTemplate.templateUrl,
+        template: presenceIndicatorsTemplate,
         scope: {
             id: "=presenceId",
             inDrawer: "=inDrawer"
