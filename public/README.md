@@ -12,7 +12,7 @@ Assets organised as follows:
 ## Package management
 Uses [jspm](http://jspm.io) for client-side external dependencies.
 
-The `../setup.sh` script will install jspm locally via `npm` and then use
+The `../scripts/setup.sh` script will install jspm locally via `npm` and then use
 jspm to install all client-side dependencies in the `jspm_packages` directory.
 
 [System.js](https://github.com/systemjs/systemjs) is used for client-side
