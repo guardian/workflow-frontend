@@ -3,7 +3,7 @@
 cd $(dirname "$0");
 
 # Remove local packages to ensure latest versions are downloaded
-rm -rf node_modules/ public/jspm_packages/ 
+rm -rf ../node_modules/ ../public/jspm_packages/ 
 
 echo "Installing nodejs packages"
 
@@ -16,7 +16,7 @@ fi
 
 
 echo "Installing jspm client-side packages"
-./node_modules/.bin/jspm install -y
+../node_modules/.bin/jspm install -y
 
 JSPM_EXIT=$?
 
