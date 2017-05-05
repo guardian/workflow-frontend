@@ -8,6 +8,7 @@ workflow-frontend CODE instance.
 
 - Make sure that you are running the right version of nodejs, (tested and working with v6.1.0). 
 - Run the install script `./scripts/setup.sh`
+
 - In the `conf` folder copy `workflow-frontend-application.local-example.conf` into `workflow-frontend-application.local.conf` and edit it to replace *example.email@guardian.co.uk* by your Guardian email address.
 - Run the script `./scripts/setup-ssh-tunnel.sh` to set up an ssh tunnel to a CODE datastore instance. You will need [marauder]()
     installed for this script to work. If the script fails, you could also run the command `ssh -f ubuntu@<WORKFLOW-FRONTEND-CODE-INSTANCE> -L 5002:$<DATASTORE-ELB>:80 -N`
