@@ -67,13 +67,13 @@ angular-bootstrap-datetimepicker@1.1.4:
     angular "^1.6.3"
     moment "^2.18.1"
 
-angular-bootstrap-temporary@0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/angular-bootstrap-temporary/-/angular-bootstrap-temporary-0.11.0.tgz#1bd9a3eb513810c589b1f838162a494d3a7ac693"
-
 angular-mocks@1.5.11:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.5.11.tgz#a0e1dd0ea55fd77ee7a757d75536c5e964c86f81"
+
+angular-ui-bootstrap:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-2.5.0.tgz#2facefb915386655dc5f44150258032517236d01"
 
 angular-ui-router@0.2.11:
   version "0.2.11"

@@ -32,7 +32,7 @@ import 'lib/logger';
 
 // 3rd party libs
 import 'angular-ui-router';
-import 'angular-bootstrap-temporary';
+import 'angular-ui-bootstrap';
 import 'angular-animate';
 import 'ng-infinite-scroll';
 

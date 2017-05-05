@@ -29,10 +29,9 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
     // Add a listener to ui.bootstrap.datetimepicker to reset the picker to day view
     // Written using the second example from here http://angular-tips.com/blog/2013/09/experiment-decorating-directives/
-    .config(function($provide) {
+    .config(function dateTimePickerMonkeyPatch($provide) {
         $provide.decorator('datetimepickerDirective', function($delegate) {
             var directive = $delegate[0];
-
             var link = directive.link;
 
             function getUTCTimeNow() {

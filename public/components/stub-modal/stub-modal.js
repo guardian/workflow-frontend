@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-import 'angular-bootstrap-temporary';
+import 'angular-ui-bootstrap';
 
 import 'components/date-time-picker/date-time-picker';
 
@@ -217,7 +217,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
 wfStubModal.run([
     '$window',
     '$rootScope',
-    '$modal',
+    '$uibModal',
     '$log',
     'wfContentService',
     'wfFiltersService',
@@ -226,7 +226,7 @@ wfStubModal.run([
     'wfLocationService',
     'sections',
     'config',
-    function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, wfPreferencesService, wfLocationService, sections, config) {
+    function ($window, $rootScope, $uibModal, $log, wfContentService, wfFiltersService, wfProdOfficeService, wfPreferencesService, wfLocationService, sections, config) {
 
         function currentFilteredOffice() {
             return wfFiltersService.get('prodOffice');
@@ -284,7 +284,7 @@ wfStubModal.run([
         });
 
         function open(stub, mode) {
-            var modalInstance = $modal.open({
+            var modalInstance = $uibModal.open({
                 templateUrl: '/assets/components/stub-modal/stub-modal.html',
                 controller: StubModalInstanceCtrl,
                 windowClass: 'stubModal',
