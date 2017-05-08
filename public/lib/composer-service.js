@@ -35,17 +35,10 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
         takenDown: (d) => false, // TODO: takenDown from composer feed
         activeInInCopy: (d) => deepSearch(d, ['toolSettings', 'activeInInCopy', 'data']) === 'true',
         composerProdOffice: (d) => deepSearch(d, ['preview', 'data', 'settings', 'productionOffice', 'data']) || undefined,
-
-        statusFlags:(d) => {
-            return {
-                commentable: deepSearch(d, ['preview', 'data', 'settings', 'commentable', 'data']) === 'true',
-                optimisedForWeb: deepSearch(d, ['toolSettings', 'seoOptimised', 'data']) === 'true',
-                optimisedForWebChanged: deepSearch(d, ['toolSettings', 'seoChanged', 'data']) === 'true'
-            };
-        },
-
+        commentable: (d) => deepSearch(d, ['preview', 'data', 'settings', 'commentable', 'data']) === 'true',
+        optimisedForWeb: (d) => deepSearch(d, ['toolSettings', 'seoOptimised', 'data']) === 'true',
+        optimisedForWebChanged: (d) => deepSearch(d, ['toolSettings', 'seoChanged', 'data']) === 'true',
         revision: (d) => deepSearch(d, ['contentChangeDetails', 'data', 'revision']),
-
         lastModified: (d) => new Date(deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'date']) || undefined),
         lastModifiedBy: (d) => deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'user', 'firstName']) + ' ' + deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'user', 'lastName'])
     };

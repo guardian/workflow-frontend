@@ -1,32 +1,29 @@
 package models.api
 
-import models.{ ContentItem, Stub }
-import org.joda.time.DateTime
-import play.api.Logger
+import models.{Status, Stub}
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json._
 
-case class ContentResponse(content: Map[String, List[ContentItem]], stubs: List[Stub], count: Map[String, Int])
+case class ContentResponse(content: Map[String, List[Stub]], stubs: List[Stub], count: Map[String, Int])
 
 object ContentResponse {
 
-  def statusCountsMap(cis: List[ContentItem]): Map[String, Int] = {
-    val statusToCount = cis.groupBy(ci => ci.wcOpt.map(_.status)).collect({case (Some(s), cis) => (s.name, cis.length)})
-    val stubCount = cis.collect({case ContentItem(s: Stub, None) => s}).length
-    val totalCount = cis.length
+  private def isStub(s: Stub): Boolean = s.externalData.get.status.isEmpty || s.externalData.get.status.contains(Status.Stub)
+
+
+  def statusCountsMap(stubs: List[Stub]): Map[String, Int] = {
+    val statusToCount: Map[String, Int] = stubs.groupBy(stub => stub.externalData.get.status.orElse(None)).collect({case (Some(s), sList) => (s.name, sList.length)})
+    val stubCount: Int = stubs.count(isStub)
+    val totalCount: Int = stubs.length
     statusToCount ++ Map("Stub" -> stubCount) ++ Map("total" -> totalCount)
   }
 
-  def contentGroupedByStatus(cis: List[ContentItem]): Map[String, List[ContentItem]] = {
-    cis.groupBy(ci => ci.wcOpt.map(_.status)).collect({case (Some(s), cis) => (s.name, cis)})
+  def contentGroupedByStatus(stubs: List[Stub]): Map[String, List[Stub]] = {
+    stubs.groupBy(stub => stub.externalData.get.status.orElse(None)).collect({case (Some(status), stubList) => (status.name, stubList)})
   }
 
-  def fromContentItems(cis: List[ContentItem]): ContentResponse = {
-    //contentItems are serialised to stubs and dashboardRows as JSON response handles these different.
-    val stubs = cis.collect({case ContentItem(s: Stub, None) => s})
-    ContentResponse(contentGroupedByStatus(cis), stubs, statusCountsMap(cis))
-
-  }
+  def fromStubItems(stubs: List[Stub]): ContentResponse =
+    ContentResponse(contentGroupedByStatus(stubs), stubs.filter(isStub), statusCountsMap(stubs))
 
   implicit def mapWrites[A: Writes]: Writes[Map[String, A]] = new Writes[Map[String, A]] {
     def writes(map: Map[String, A]): JsValue =
@@ -36,6 +33,7 @@ object ContentResponse {
       }.toSeq:_*)
   }
 
+  implicit val flatStubWrites = Stub.flatStubWrites
   implicit val contentResponseFormat = Json.writes[ContentResponse]
   implicit val contentResponseReads = Json.reads[ContentResponse]
 }

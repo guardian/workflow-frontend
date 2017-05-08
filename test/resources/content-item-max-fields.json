@@ -7,26 +7,24 @@
     },
     "priority": 0,
     "needsLegal": "NA",
-    "prodOffice": "UK",
     "status": "Desk",
     "composerId": "56cc7694a7c8a951d739c3f9",
-    "headline": "headline",
-    "published": false,
-    "timePublished": null,
-    "path": "media/2016/feb/25/headline",
-    "commentable": true,
-    "takenDown": false,
-    "activeInInCopy": true,
-    "composerProdOffice": "UK",
-    "statusFlags": {
-        "commentable": true,
-        "optimisedForWeb": false,
-        "optimisedForWebChanged": false,
-        "sensitive": false,
-        "legallySensitive": false
-    },
+    "prodOffice": "UK",
     "revision": 20,
     "lastModified": "2016-02-23T15:11:49.784Z",
-    "lastModifiedBy": "test-bunny",
-    "title": "headline"
+    "title": "headline",
+    "externalData": {
+        "path": "media/2016/feb/25/headline",
+        "status": "Desk",
+        "activeInInCopy": true,
+        "takenDown": false,
+        "published": false,
+        "optimisedForWebChanged": false,
+        "sensitive": false,
+        "legallySensitive": false,
+        "embargoedIndefinitely": false,
+        "wordCount": 0,
+        "headline": "headline",
+        "commentable": true
+    }
 }

@@ -1,4 +1,4 @@
-import _ from "underscore"
+import _ from "lodash"
 import { wfPresenceIndicatorsDirective } from 'components/presence-indicator/presence-indicators';
 import { wfPresenceCurrentState } from 'components/presence-indicator/presence-status';
 

@@ -1,4 +1,5 @@
 import contentListDrawerTemplate from './content-list-drawer.html!ng-template';
+import _ from 'lodash';
 
 /**
  * Directive for handling logic around the contentItemRow details drawer.
@@ -311,7 +312,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
               if (!$scope.contentItem) {
                 return false
               }
-              return $scope.contentItem.commissioningDesks.length !== 0 &&
+              return $scope.contentItem.commissioningDesks && $scope.contentItem.commissioningDesks.length !== 0 &&
                 $scope.contentItem.commissioningDesks.some(function(desk) {
                   return !desk;
                 });
