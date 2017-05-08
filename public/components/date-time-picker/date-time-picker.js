@@ -41,9 +41,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
             directive.compile = function() {
                 return function(scope, element, attrs) {
-                    // get old link functionality
-                    link ? link.apply(this, arguments) : false;
-                    // add extra listener to link
+                    // add extra listener to directive
                     scope.$on('resetPicker', function () {
                         scope.changeView('day', getUTCTimeNow());
                     })
