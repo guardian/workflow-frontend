@@ -55,7 +55,7 @@
     "raven-js": "1.1.22",
     "sinon": "^2.1.0",
     "sugar": "1.4.1",
-    "ua-parser-js": "0.7.1",
+    "ua-parser-js": "0.7.12",
     "uuid-v4.js": "1.0.2",
     "webpack-merge": "^4.1.0"
   },
