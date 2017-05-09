@@ -4,9 +4,6 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-var ExtractCSS = new ExtractTextPlugin("main.css");
-var ExtractCoreCSS = new ExtractTextPlugin("core.css");
-
 module.exports = {
     module: {
         loaders: [
@@ -27,15 +24,7 @@ module.exports = {
             },
             {
                 test: /\.scss$/,
-                exclude: /core\.scss$/,
-                loader: ExtractCSS.extract({
-                    fallback: 'style-loader',
-                    use: 'css-loader?sourceMap!sass-loader?sourceMap'
-                })
-            },
-            {
-                test: /core\.scss$/,
-                loader: ExtractCoreCSS.extract({
+                loader: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: 'css-loader?sourceMap!sass-loader?sourceMap'
                 })
@@ -52,14 +41,14 @@ module.exports = {
                 loader: "url-loader?mimetype=application/font-woff&limit=10000"
             },
             {
-                test: /\.(ttf|eot|gif|png)(\?v=[0-9].[0-9].[0-9])?$/,
+                test: /\.(ttf|eot|gif|png|svg)(\?v=[0-9].[0-9].[0-9])?$/,
                 loader: "file-loader?name=[name].[ext]"
             }
         ]
     },
 
     resolve: {
-        extensions: ['.js', '.jsx', '.json', '.scss'],
+        extensions: ['.js', '.jsx', '.json', '.scss', '.css'],
         alias: {
             lib: path.join(__dirname, '..', 'public', 'lib'),
             components: path.join(__dirname, '..', 'public', 'components'),
@@ -68,7 +57,7 @@ module.exports = {
     },
 
     plugins: [
-        ExtractCSS,
-        ExtractCoreCSS
+        new ExtractTextPlugin('main.css')
     ]
 };
+

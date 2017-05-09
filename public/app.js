@@ -32,17 +32,12 @@ import 'lib/logger';
 
 // 3rd party libs
 import 'angular-ui-router';
-import 'angular-ui-bootstrap';
+import 'angular-bootstrap-temporary';
 import 'angular-animate';
 import 'ng-infinite-scroll';
 
-//import 'angular-loading-bar';
-//import 'angular-loading-bar@0.7.1/src/loading-bar.css!';
-
 // App-wide Styles
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './main.scss';
-import 'layouts/global/core.scss';
 
 angular.module('workflow',
     [
