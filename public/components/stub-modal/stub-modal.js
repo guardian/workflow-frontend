@@ -284,7 +284,7 @@ wfStubModal.run([
         });
 
         function open(stub, mode) {
-            var modalInstance = $uibModal.open({
+            var modalInstance = $modal.open({
                 templateUrl: '/assets/components/stub-modal/stub-modal.html',
                 controller: StubModalInstanceCtrl,
                 windowClass: 'stubModal',
