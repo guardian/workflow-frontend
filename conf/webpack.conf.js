@@ -42,6 +42,7 @@ module.exports = {
             },
             {
                 test: /\.(ttf|eot|gif|png|svg)(\?v=[0-9].[0-9].[0-9])?$/,
+                exclude: /icons\.svg$/,
                 loader: "file-loader?name=[name].[ext]"
             }
         ]
