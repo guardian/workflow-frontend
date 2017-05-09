@@ -32,7 +32,6 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
     .config(function dateTimePickerMonkeyPatch($provide) {
         $provide.decorator('datetimepickerDirective', function($delegate) {
             var directive = $delegate[0];
-            var link = directive.link;
 
             function getUTCTimeNow() {
                 var timeNow = new Date();
@@ -41,7 +40,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
             directive.compile = function() {
                 return function(scope, element, attrs) {
-                    // add extra listener to directive
+                    // add extra listener to link
                     scope.$on('resetPicker', function () {
                         scope.changeView('day', getUTCTimeNow());
                     })
@@ -91,6 +90,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
 
                 this.onDatePicked = function (newValue) {
+                    console.log(newValue);
                     $scope.dateValue = wfDateParser.parseDate(newValue);
 
 

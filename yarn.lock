@@ -67,13 +67,13 @@ angular-bootstrap-datetimepicker@1.1.4:
     angular "^1.6.3"
     moment "^2.18.1"
 
+angular-bootstrap-temporary@0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/angular-bootstrap-temporary/-/angular-bootstrap-temporary-0.11.0.tgz#1bd9a3eb513810c589b1f838162a494d3a7ac693"
+
 angular-mocks@1.5.11:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.5.11.tgz#a0e1dd0ea55fd77ee7a757d75536c5e964c86f81"
-
-angular-ui-bootstrap:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-2.5.0.tgz#2facefb915386655dc5f44150258032517236d01"
 
 angular-ui-router@0.2.11:
   version "0.2.11"
@@ -2350,13 +2350,13 @@ jodid25519@^1.0.0:
   dependencies:
     jsbn "~0.1.0"
 
-jquery-ui@1.10.5:
-  version "1.10.5"
-  resolved "https://registry.yarnpkg.com/jquery-ui/-/jquery-ui-1.10.5.tgz#826aed3dd1f88d32ae75d74df48643dc431a5815"
+jquery-ui@1.12.1:
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/jquery-ui/-/jquery-ui-1.12.1.tgz#bcb4045c8dd0539c134bc1488cdd3e768a7a9e51"
 
-jquery@1.11.1:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-1.11.1.tgz#b6ec928590112ebed69e1e49cbfd0025ccd60ddb"
+jquery@3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
 
 js-base64@^2.1.9:
   version "2.1.9"
@@ -2831,15 +2831,19 @@ mocha@^3.3.0:
     mkdirp "0.5.1"
     supports-color "3.1.2"
 
-moment-timezone@0.5.13:
-  version "0.5.13"
-  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.13.tgz#99ce5c7d827262eb0f1f702044177f60745d7b90"
+moment-timezone@0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.2.3.tgz#fcbcfde20f7baf68c275c84cafff77932e5fdec4"
   dependencies:
-    moment ">= 2.9.0"
+    moment ">= 2.6.0"
 
-moment@^2.18.1, "moment@>= 2.9.0", moment@2.18.1:
+moment@^2.18.1, "moment@>= 2.6.0":
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
+
+moment@2.8.3:
+  version "2.8.3"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.8.3.tgz#a01427bf8910f014fc4baa1b8d96f17f7e3f29a2"
 
 ms@0.7.1:
   version "0.7.1"
