@@ -18,7 +18,7 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
                     $scope.presences = [{ status: "free", indicatorText: ""}];
                 } else {
                     $scope.presences = _.map(
-                        _.uniq(currentState, false, (s) => { return s.clientId.person.email; }),
+                        _.uniqBy(currentState, (s) => { return s.clientId.person.email; }),
                         (pr) => {
                             var person = pr.clientId.person;
                             return { indicatorText:
