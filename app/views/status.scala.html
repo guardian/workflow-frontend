@@ -41,8 +41,8 @@
       <script src="@routes.Assets.versioned("jspm_packages/github/jmcriffey/bower-traceur-runtime@0.0.91/traceur-runtime.min.js")"></script>
       <script src="@routes.Assets.versioned("jspm_packages/system.js")"></script>
       <script src="@routes.Assets.versioned("config.js")"></script>
-      <script src="@routes.Assets.versioned("status.js")"></script>
-    <!-- <script>
+
+    <script>
         if ( System.bundles["app.bundle.js"] ) {
           System.bundles["@routes.Assets.versioned("app.bundle.js")"] = System.bundles["app.bundle.js"];
           delete System.bundles["app.bundle.js"];
@@ -56,7 +56,8 @@
         System.import('app').catch(function(error) {
             setTimeout(function() { throw error; }, 0);
         });
-    </script> -->
+    </script>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("layouts/infopages/info.min.css")"/>
+
 }
 
