@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "file": "",
-  "sources": ["target/web/resources-managed/main/sass/layouts/infopages/info.scss"],
-  "names": [],
-  "mappings": "AAAA,OACC,QAAQ,MAGT,EAAE,QACA,gBAAiB,KACjB,QAAS,GAGX,QAAQ,MACP,YAAa,IACV,UAAW,KACX,YAAa,QAGjB,MAAM,UACL,YAAa,KAGd,OACC,MAAO"
-}
