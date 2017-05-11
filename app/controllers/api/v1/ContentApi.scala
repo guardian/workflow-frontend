@@ -30,7 +30,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
     prepareResponse(item)
   }
 
-  private def contentByComposerId(id: String): ApiResponseFt[Option[Stub]] =  {
+  def contentByComposerId(id: String): ApiResponseFt[Option[Stub]] =  {
     val item = CommonAPI.getStubsByComposerId(id)
     prepareResponse(item)
   }

@@ -48,7 +48,7 @@ object CommonAPI {
   def getStubsByComposerId(composerId: String): ApiResponseFt[Option[Stub]] =
     for {
       res <- ApiResponseFt.Async.Right(getRequest(s"content/$composerId"))
-      itemRes <- extractDataResponse[Option[Stub]](res.json)
+      itemRes <- extractDataResponseOpt[Stub](res.json)
     } yield itemRes
 
   def getStubs(queryString: Map[String, Seq[String]]): ApiResponseFt[ContentResponse] =
