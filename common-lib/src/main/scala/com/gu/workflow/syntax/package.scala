@@ -4,7 +4,6 @@ package object syntax
   extends TraverseSyntax
   with RequestSyntax {
 
-
   // TODO move these syntax bits to their own files
 
   implicit class OptionSyntax[A](self: Option[A]) {

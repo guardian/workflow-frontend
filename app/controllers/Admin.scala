@@ -25,7 +25,7 @@ object Admin extends Controller with PanDomainAuthActions {
   import play.api.data.Forms._
 
   def getSortedSections(): Future[List[Section]] = {
-    SectionsAPI.getSections().asFuture.map { x =>
+    SectionsAPI.getSections.asFuture.map { x =>
       x match {
         case Left(err) => Logger.error(s"error fetching sections: $err"); List()
         case Right(sections) => sections.sortBy(_.name)
@@ -34,7 +34,7 @@ object Admin extends Controller with PanDomainAuthActions {
   }
 
   def getDesks(): Future[List[Desk]] = {
-    DesksAPI.getDesks().asFuture.map { x =>
+    DesksAPI.getDesks.asFuture.map { x =>
       x match {
         case Right(desks) => desks
         case Left(err) => Logger.error(s"error fetching desks: $err"); List()

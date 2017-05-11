@@ -3,19 +3,19 @@ package com.gu.workflow.api
 import com.gu.workflow.lib.Config
 import models.Stub
 import models.Stub.{flatJsonReads, stubWrites}
-import play.api.libs.ws.{WS, WSRequest, WSResponse}
-import play.api.mvc.AnyContent
-import play.api.Play.current
-
-import scala.concurrent.Future
 import models.api._
 import play.api.Logger
+import play.api.Play.current
 import play.api.libs.json._
+import play.api.libs.ws.{WS, WSRequest, WSResponse}
+import play.api.mvc.AnyContent
+
+import scala.concurrent.Future
 
 object ApiUtils {
   lazy val apiRoot: String = Config.getConfigStringOrFail("api.url")
 
-  def buildRequest(path: String): WSRequest = WS.url(s"${apiRoot}/${path}")
+  def buildRequest(path: String): WSRequest = WS.url(s"$apiRoot/$path")
 
   def deleteRequest(path: String): Future[WSResponse] =
     buildRequest(path).delete()
@@ -61,12 +61,12 @@ object ApiUtils {
       case JsSuccess(a, _) => ApiResponseFt.Right(a)
       case error@JsError(_) =>
         val errMsg = errorMsgs(error)
-        Logger.error(s"JsonParseError failed to parse the json. Error(s): ${errMsg} 400 badrequest")
-        ApiResponseFt.Left((ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")))
+        Logger.error(s"JsonParseError failed to parse the json. Error(s): $errMsg 400 badrequest")
+        ApiResponseFt.Left(ApiError("JsonParseError", s"failed to parse the json. Error(s): $errMsg", 400, "badrequest"))
     }
   }
 
-  def errorMsgs(error: JsError) =
+  def errorMsgs(error: JsError): String =
     (for ((path, msgs) <- error.errors; msg <- msgs)
     yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
 
