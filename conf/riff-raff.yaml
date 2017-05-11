@@ -13,6 +13,6 @@ deployments:
         BuildName: tools-machine-images
         Branch: master
       cloudFormationStackName: Workflow-Frontend
-        prependStackToCloudFormationStackName: false
-        appendStageToCloudFormationStackName: true
-        cloudFormationStackByTags: false
+      prependStackToCloudFormationStackName: false
+      appendStageToCloudFormationStackName: true
+      cloudFormationStackByTags: false
