@@ -1,0 +1,18 @@
+stacks: [workflow]
+regions: [eu-west-1]
+deployments:
+  workflow-frontend:
+    type: autoscaling
+    parameters:
+      bucket: workflow-frontend
+  workflow-frontend-ami-update:
+    type: ami-cloudformation-parameter
+    parameters:
+      amiTags:
+        ImageName: ubuntu-trusty-java8
+        BuildName: tools-machine-images
+        Branch: master
+      cloudFormationStackName: Workflow-Frontend
+        prependStackToCloudFormationStackName: false
+        appendStageToCloudFormationStackName: true
+        cloudFormationStackByTags: false
