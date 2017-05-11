@@ -8,20 +8,18 @@ import com.amazonaws.util.EC2MetadataUtils
 
 import scala.collection.JavaConverters._
 
-
 object AWS {
 
-  lazy val region = Region getRegion Regions.EU_WEST_1
+  lazy val region: Region = Region getRegion Regions.EU_WEST_1
 
-  lazy val EC2Client = region.createClient(classOf[AmazonEC2Client], null, null)
-  lazy val CloudWatch = region.createClient(classOf[AmazonCloudWatchAsyncClient], null, null)
-
+  lazy val EC2Client: AmazonEC2Client = region.createClient(classOf[AmazonEC2Client], null, null)
+  lazy val CloudWatch: AmazonCloudWatchAsyncClient = region.createClient(classOf[AmazonCloudWatchAsyncClient], null, null)
 }
 
 trait AwsInstanceTags {
   lazy val instanceId = Option(EC2MetadataUtils.getInstanceId)
 
-  def readTag(tagName: String) = {
+  def readTag(tagName: String): Option[String] = {
     instanceId.flatMap { id =>
       val tagsResult = AWS.EC2Client.describeTags(
         new DescribeTagsRequest().withFilters(

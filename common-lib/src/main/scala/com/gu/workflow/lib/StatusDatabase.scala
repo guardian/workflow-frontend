@@ -3,9 +3,8 @@ package com.gu.workflow.lib
 import akka.agent.Agent
 import models.Status
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-
+import scala.concurrent.Future
 
 object StatusDatabase {
 
@@ -20,8 +19,8 @@ object StatusDatabase {
     Status("Hold")
   ))
 
-  def statuses = store.future()
+  def statuses: Future[List[Status]] = store.future()
 
-  def find(name: String) = store.get().find(_.name.toUpperCase == name.toUpperCase)
+  def find(name: String): Option[Status] = store.get().find(_.name.toUpperCase == name.toUpperCase)
 
 }

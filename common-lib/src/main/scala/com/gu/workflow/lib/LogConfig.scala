@@ -9,16 +9,16 @@ import com.gu.logback.appender.kinesis.KinesisAppender
 import com.gu.workflow.util.{AWS, AwsInstanceTags}
 import net.logstash.logback.layout.LogstashLayout
 import org.slf4j.{LoggerFactory, Logger => SLFLogger}
-import play.api.{Logger => PlayLogger}
+import play.api.{Configuration, Logger => PlayLogger}
 
 case class LogStashConf(host: String, port: Int, enabled: Boolean)
 
 object LogConfig extends AwsInstanceTags {
-
-  val rootLogger = LoggerFactory.getLogger(SLFLogger.ROOT_LOGGER_NAME).asInstanceOf[LogbackLogger]
-
   import play.api.Play.current
-  val config = play.api.Play.configuration
+
+  val rootLogger: LogbackLogger = LoggerFactory.getLogger(SLFLogger.ROOT_LOGGER_NAME).asInstanceOf[LogbackLogger]
+
+  val config: Configuration = play.api.Play.configuration
   val loggingPrefix = "aws.kinesis.logging"
 
   def init() = {

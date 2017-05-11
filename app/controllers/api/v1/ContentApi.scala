@@ -2,18 +2,14 @@ package controllers
 
 import com.gu.workflow.api.{CommonAPI, PrototypeAPI}
 import models.Stub
-import models.api._
-import play.api.Logger
-import models.api.ApiResponseFt
-import play.api.libs.json.{Json, Writes}
+import models.api.{ApiResponseFt, _}
+import play.api.libs.json.Writes
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
 
-
 object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi {
-
 
   def contentById(id: String) =  CORSable(composerUrl) {
     implicit val flatStubWrites = Stub.flatStubWrites
@@ -29,22 +25,20 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
     }
   }
 
-  def contentByStubId(id: Long) =  {
-    val item = PrototypeAPI.getContentByStubId(id)
+  private def contentByStubId(id: Long): ApiResponseFt[Option[Stub]] =  {
+    val item = PrototypeAPI.getStub(id)
     prepareResponse(item)
   }
 
-  def contentByComposerId(id: String) =  {
-    val item = CommonAPI.getContentByComposerId(id)
+  private def contentByComposerId(id: String): ApiResponseFt[Option[Stub]] =  {
+    val item = CommonAPI.getStubsByComposerId(id)
     prepareResponse(item)
   }
 
-  def prepareResponse(res: ApiResponseFt[Option[Stub]]): ApiResponseFt[Option[Stub]] = {
-    res.flatMap { contentOpt =>
-      contentOpt match {
-        case Some(item) => ApiResponseFt.Right(Some(item))
-        case None => ApiResponseFt.Left(ApiErrors.notFound)
-      }
+  private def prepareResponse(res: ApiResponseFt[Option[Stub]]): ApiResponseFt[Option[Stub]] = {
+    res.flatMap {
+      case Some(item) => ApiResponseFt.Right(Some(item))
+      case None => ApiResponseFt.Left(ApiErrors.notFound)
     }
   }
 }

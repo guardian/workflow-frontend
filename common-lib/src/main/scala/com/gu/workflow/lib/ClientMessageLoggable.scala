@@ -1,10 +1,10 @@
 package com.gu.workflow.lib
 
-import play.api.Logger
-import play.api.libs.json.Json
-import scala.collection.JavaConverters._
 import net.logstash.logback.marker.Markers._
+import play.api.Logger
+import play.api.libs.json.{Json, Reads}
 
+import scala.collection.JavaConverters._
 
 case class ClientLog( message: String,
                       level: String,
@@ -12,7 +12,7 @@ case class ClientLog( message: String,
                       fields: Option[Map[String, String]]
                       )
 object ClientLog {
-  implicit val jsonReads = Json.reads[ClientLog]
+  implicit val jsonReads: Reads[ClientLog] = Json.reads[ClientLog]
 
 }
 object ClientMessageLoggable {
