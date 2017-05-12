@@ -5,4 +5,13 @@ deployments:
     type: autoscaling
     parameters:
       bucket: workflow-dist
-
+  workflow-frontend-ami-update:
+    type: ami-cloudformation-parameter
+    parameters:
+      amiTags:
+        ImageName: ubuntu-trusty-java8
+        BuildName: tools-machine-images
+        Branch: master
+      cloudFormationStackName: Workflow-Frontend
+      prependStackToCloudFormationStackName: false
+      cloudFormationStackByTags: false
