@@ -5,6 +5,7 @@ deployments:
     type: autoscaling
     parameters:
       bucket: workflow-dist
+    dependencies: [workflow-frontend-ami-update]
   workflow-frontend-ami-update:
     type: ami-cloudformation-parameter
     parameters:
