@@ -61,8 +61,8 @@ object WorkflowBuild extends Build {
     riffRaffPackageName := s"editorial-tools:workflow:$application",
     riffRaffManifestProjectName := riffRaffPackageName.value,
     riffRaffArtifactResources := Seq(
-      riffRaffPackageType.value -> s"packages/$application/$application.tgz",
-      baseDirectory.value / "conf" / "deploy.json" -> "deploy.json"
+      riffRaffPackageType.value -> s"$application/$application.tgz",
+      baseDirectory.value / "conf" / "riff-raff.yaml" -> "riff-raff.yaml"
     ),
     artifactName in Universal := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
       artifact.name + "." + artifact.extension
