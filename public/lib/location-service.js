@@ -84,7 +84,7 @@ function wfLocationServiceFactory($rootScope, wfSettingsService) {
          */
         setCurrentLocation() {
             if (!wfSettingsService.get(SETTING_LOCATION_KEY)) {
-                this.setLocation(this.guessLocation());
+                this.setLocation('LON');
             }
             return this;
         }
