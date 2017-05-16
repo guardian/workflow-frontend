@@ -1,4 +1,4 @@
-import contentListDrawerTemplate from './content-list-drawer.html!ng-template';
+import contentListDrawerTemplate from './content-list-drawer.html';
 import _ from 'lodash';
 
 /**

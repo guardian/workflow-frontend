@@ -7,8 +7,8 @@
 import angular from 'angular';
 
 // moment-timezone should require moment as dependency
-import moment from 'moment-timezone/builds/moment-timezone.min';
-import timezoneData from './date-service/timezone-data.json!';
+import moment from 'moment-timezone';
+import timezoneData from './date-service/timezone-data.json';
 
 import 'sugar';
 

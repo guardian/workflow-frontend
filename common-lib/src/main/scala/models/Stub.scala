@@ -2,10 +2,9 @@ package models
 
 import models.Flag.Flag
 import org.joda.time.DateTime
-import play.api.libs.json._
-import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
-import play.api.libs.json.util._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
 
 case class Stub(id: Option[Long] = None,
                title: String,
@@ -82,10 +81,10 @@ object Stub {
 
   import ExternalData._
 
-  implicit val prodOfficeReads = maxLength[String](20)
-  implicit val noteReads =  maxLength[String](500)
-  implicit val sectionReads = maxLength[String](50)
-  implicit val workingTitleReads = maxLength[String](128)
+  implicit val prodOfficeReads: Reads[String] = maxLength[String](20)
+  implicit val noteReads: Reads[String] =  maxLength[String](500)
+  implicit val sectionReads: Reads[String] = maxLength[String](50)
+  implicit val workingTitleReads: Reads[String] = maxLength[String](128)
 
   implicit val jsonReads: Reads[Stub] =( (__ \ "id").readNullable[Long] and
                             (__ \ "title").read[String] and
@@ -165,7 +164,7 @@ object Stub {
     (JsPath \ "wfLastModified").write[DateTime] and
     (JsPath \ "trashed").write[Boolean] and
     (JsPath \ "commissioningDesks").writeNullable[String] and
-    (JsPath).writeNullable[ExternalData]
+    JsPath.writeNullable[ExternalData]
     )(unlift(Stub.unapply))
 
   val stubWrites: Writes[Stub] = Json.writes[Stub]

@@ -33,3 +33,13 @@ $fonts-base-path: "/assets/components/fonts/";
 
 // GuardianTitlepieceWeb
 @include gu-font-face("GuardianTitlepieceWeb", "GuardianTitlepieceWeb-Regular");
+
+// @TODO: Remove this when we get rid of bootstrap
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url("/assets/components/fonts/glyphicons-halflings-regular.eot");
+  src: url("/assets/components/fonts/glyphicons-halflings-regular.eot?#iefix") format('embedded-opentype'),
+  url("/assets/components/fonts/68ed1dac06bf0409c18ae7bc62889170.woff") format('woff'),
+  url("/assets/components/fonts/glyphicons-halflings-regular.ttf") format('truetype'),
+  url("/assets/components/fonts/glyphicons-halflings-regular.svg") format('svg');
+}
