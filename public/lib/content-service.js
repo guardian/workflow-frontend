@@ -90,7 +90,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     return httpRequest({
                         method: 'PUT',
                         url: '/api/stubs/' + stub.id,
-                        data: stub
+                        data: { 'stub': stub, 'collaborators': null }
                     });
                 }
 
