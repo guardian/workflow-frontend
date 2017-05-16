@@ -1,4 +1,4 @@
-@(title: String, user: Option[com.gu.pandomainauth.model.User], config: play.api.libs.json.JsObject)
+@(title: String, user: Option[com.gu.pandomainauth.model.User], config: play.api.libs.json.JsObject, presenceClientLib: String)
 
 @layout(title, user, config) {
   <div class="main" ui-view>
@@ -14,27 +14,7 @@
 
   </div>
 
-
-  @*** SystemJS package manager setup ***@
-  <script src="@routes.Assets.versioned("jspm_packages/github/jmcriffey/bower-traceur-runtime@0.0.91/traceur-runtime.min.js")"></script>
-  <script src="@routes.Assets.versioned("jspm_packages/system.js")"></script>
-  <script src="@routes.Assets.versioned("config.js")"></script>
-  <script>
-    if ( System.bundles["app.bundle.js"] ) {
-      System.bundles["@routes.Assets.versioned("app.bundle.js")"] = System.bundles["app.bundle.js"];
-      delete System.bundles["app.bundle.js"];
-    }
-
-    System.config({
-        "map": {
-            "presence-client": _wfConfig.presenceClientLib
-        }
-    });
-    System.import('app').catch(function(error) {
-        setTimeout(function() { throw error; }, 0);
-    });
-  </script>
+  <script src="@routes.Assets.versioned("build/app.bundle.js")"></script>
+  <script src="@presenceClientLib"></script>
   <script async src="https://apis.google.com/js/client.js?onload=init"></script>
-
-  <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("app.bundle.css")"/>
 }

@@ -3,7 +3,7 @@ import angular from 'angular';
 
 import 'components/stub-modal/stub-modal';
 
-import './dashboard.html!ng-template';
+import './dashboard.html';
 
 angular.module('wfDashboard', ['wfStubModal'])
     .controller('wfDashboardController', [wfDashboardController]);

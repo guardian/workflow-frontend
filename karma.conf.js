@@ -1,5 +1,5 @@
-// Karma configuration
-// Generated on Wed Aug 06 2014 15:34:15 GMT+0000 (UTC)
+var webpackConfig = require('./conf/webpack.conf.js');
+webpackConfig.entry = './public/app.js';
 
 module.exports = function(config) {
   config.set({
@@ -9,18 +9,11 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai', 'sinon'],
-
+    frameworks: ['angular', 'mocha', 'chai', 'sinon'],
 
     // list of files / patterns to load in the browser
     files: [
-      'jspm_packages/system@0.6.js',
-      'config.js',
-      'karma.bootstrap.js',
-      '**/*.spec.js',
-      { pattern: 'components/**/*.js', watched: true, included: false, served: true },
-      { pattern: 'lib/**/*.js', watched: true, included: false, served: true },
-      { pattern: '**/*.*', watched: false, included: false, served: true }
+      '**/*.spec.js'
     ],
 
     proxies: {
@@ -37,8 +30,12 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      // add webpack as preprocessor
+      './public/app.js': ['webpack'],
+      '**/*.spec.js': ['webpack', 'babel']
     },
 
+    webpack: webpackConfig,
 
     // test results reporter to use
     // possible values: 'dots', 'progress'

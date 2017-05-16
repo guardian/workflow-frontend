@@ -4,8 +4,8 @@ import _ from 'lodash';
 import 'lib/filters-service';
 
 // load and cache html templates
-import sidebarFilterTemplate from './sidebar-filter.html!ng-template';
-import './custom-filter-templates/deadline-date-select.html!ng-template';
+import sidebarFilterTemplate from './sidebar-filter.html';
+import './custom-filter-templates/deadline-date-select.html';
 
 angular.module('wfSidebarFilter', ['wfFiltersService'])
     .directive('wfSidebarFilter', ['wfFiltersService', '$injector', '$timeout', 'wfPreferencesService', function (wfFiltersService, $injector, $timeout, wfPreferencesService) {
@@ -13,7 +13,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
     return {
         restrict: 'E',
         replace: true,
-        templateUrl: sidebarFilterTemplate.templateUrl,
+        template: sidebarFilterTemplate,
         scope: {
             filter: '=wfFilter'
         },

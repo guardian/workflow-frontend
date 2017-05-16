@@ -1,7 +1,7 @@
 
 import angular from 'angular';
 
-import 'lib/user';
+import './user';
 
 angular.module('wfHttpSessionService', [])
     .service('wfHttpSessionService', ['$http', '$q', '$log', 'wfUserSession', wfHttpSessionService]);

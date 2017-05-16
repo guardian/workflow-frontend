@@ -93,7 +93,6 @@ object Application extends Controller with PanDomainAuthActions {
         "sectionsInDesks" -> sectionsInDesks, // TODO: Combine desks & sectionsInDesks
         "viewerUrl" -> Config.viewerUrl,
         "presenceUrl" -> Config.presenceUrl,
-        "presenceClientLib" -> Config.presenceClientLib,
         "preferencesUrl" -> Config.preferencesUrl,
         "user" -> Json.parse(user.toJson),
         "incopyExportUrl" -> Config.incopyExportUrl,
@@ -101,7 +100,7 @@ object Application extends Controller with PanDomainAuthActions {
         "commissioningDesks" -> commissioningDesks.map(t => LimitedTag(t.id, t.externalName))
       )
 
-      Ok(views.html.app(title, Some(user), config))
+      Ok(views.html.app(title, Some(user), config, Config.presenceClientLib))
     }
   }
 }

@@ -1,15 +1,6 @@
+import './date-service';
+
 describe('lib/date-service', function () {
-
-    before(function (done) {
-
-        System.import('lib/date-service')
-            .then(function () {
-                done();
-            })
-            .catch(done);
-
-    });
-
 
     beforeEach(function () {
         angular.mock.module('wfDateService');
@@ -23,7 +14,6 @@ describe('lib/date-service', function () {
 
                 // 6am on 14 August 2014 in London local time (BST +0100)
                 var parsed = wfDateParser.parseDate('14-08-2014 6:00', 'LON');
-
                 expect(parsed).to.be.an.instanceof(Date);
                 expect(parsed.toISOString()).to.eql('2014-08-14T05:00:00.000Z');
             });

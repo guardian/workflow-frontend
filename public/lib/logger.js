@@ -16,7 +16,7 @@ function(angular, moment) {
         function send(message, level, fields) {
             var $http = $injector.get('$http');
 
-            var package = {
+            var data = {
                 timestamp: moment().format("YYYY-MM-DDTHH:mm:ss.SSSZZ"),
                 message: message,
                 level: level || "INFO",
@@ -25,7 +25,7 @@ function(angular, moment) {
 
             return $http({method: 'POST',
                    url: LOG_URL,
-                   data: package
+                   data: data
                   });
         }
 

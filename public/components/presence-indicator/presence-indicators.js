@@ -1,4 +1,4 @@
-import presenceIndicatorsTemplate from './presence-indicators.html!ng-template';
+import presenceIndicatorsTemplate from './presence-indicators.html';
 import _ from 'lodash';
 
 function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
@@ -6,7 +6,7 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
 
     return {
         restrict: 'E',
-        templateUrl: presenceIndicatorsTemplate.templateUrl,
+        template: presenceIndicatorsTemplate,
         scope: {
             id: "=presenceId",
             inDrawer: "=inDrawer"
