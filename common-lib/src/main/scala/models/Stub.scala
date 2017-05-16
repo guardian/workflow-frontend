@@ -22,7 +22,7 @@ case class Stub(id: Option[Long] = None,
                lastModified: DateTime = DateTime.now(),
                trashed: Boolean = false,
                commissioningDesks: Option[String] = None,
-               editor_id: Option[String] = None,
+               editorId: Option[String] = None,
                externalData: Option[ExternalData])
 
 case class ExternalData(path: Option[String] = None,
