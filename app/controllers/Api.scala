@@ -192,7 +192,7 @@ object Api extends Controller with PanDomainAuthActions {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        section <- ApiUtils.extractDataResponse[String](jsValue)
+        section <- ApiUtils.extractResponse[String](jsValue \ "data" \ "name")
         id <- PrototypeAPI.putStubSection(stubId, section)
       } yield {
         id
