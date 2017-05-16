@@ -12,6 +12,7 @@ object DBToAPIResponse {
       case Left(db: DatabaseError) => ApiResponseFt.Left(ApiErrors.databaseError(db.message))
       case Left(ContentItemExists) => ApiResponseFt.Left(ApiErrors.conflict)
       case Left(s: StubNotFound) => ApiResponseFt.Left(ApiErrors.updateError(s.id))
+      case Left(s: UpdateRevisionTooLow) => ApiResponseFt.Left(ApiErrors.updateErrorRevisionTooLow(s))
       case Left(c: ComposerIdsConflict) => ApiResponseFt.Left(ApiErrors.conflict)
       case Right(cu) => ApiResponseFt.Right(cu)
     }

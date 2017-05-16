@@ -124,7 +124,8 @@ object TestData {
         path = opt(chooseItem(path)),
         status = opt(chooseItem(status)),
         published = pub,
-        takenDown = opt(td)
+        takenDown = opt(td),
+        revision = Some(10)
       ))
     )
   }

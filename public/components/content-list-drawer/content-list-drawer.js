@@ -32,7 +32,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
     return {
         restrict: 'A',
         replace: true,
-        templateUrl: '/assets/components/content-list-drawer/content-list-drawer.html',
+        template: contentListDrawerTemplate,
         priority: 1001,
         scope: {
             contentList: '=',
