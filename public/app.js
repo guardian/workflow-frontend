@@ -23,7 +23,6 @@ import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/column-service';
 import 'lib/preferences-service';
-import 'lib/analytics';
 import 'lib/feature-switches';
 import 'lib/google-api';
 import 'lib/polling-service';
@@ -53,7 +52,6 @@ angular.module('workflow',
         'wfIcons',
         'wfContentList',
         'wfDateService',
-        'wfAnalytics',
         'wfFiltersService',
         'wfColumnService',
         'wfPreferencesService',
