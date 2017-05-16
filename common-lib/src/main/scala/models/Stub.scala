@@ -171,7 +171,7 @@ object Stub {
     JsPath.writeNullable[ExternalData]
     )(unlift(Stub.unapply))
 
-  val stubWrites: Writes[Stub] = Json.writes[Stub]
+  implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
 
 }
 
