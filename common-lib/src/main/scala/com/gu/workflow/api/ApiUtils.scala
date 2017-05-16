@@ -46,6 +46,14 @@ object ApiUtils {
     }, s => ApiResponseFt.Right(Json.toJson(s)(stubWrites)))
   }
 
+  def flatStubJsonToStubWithCollaboratorsJson(jsValue: JsValue): ApiResponseFt[JsValue] = {
+    (jsValue \ "stub").validate[Stub](flatJsonReads).fold(e => {
+      ApiResponseFt.Left(ApiError("Json conversion failed", s"Failed to convert flat stub from StubWithCollaborators into stub with externalData level for datastore with error: $e", 400, "badrequest"))
+    }, s => ApiResponseFt.Right(
+      Json.toJson(s"{ 'stub': ${Json.toJson(s)(stubWrites)}, 'collaborators': ${jsValue \ "collaborators"} ")
+    ))
+  }
+
   def extractDataResponse[A: Reads](jsValue: JsValue): ApiResponseFt[A] = {
     val data = jsValue \ "data"
     extractResponse[A](data)

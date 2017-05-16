@@ -20,7 +20,7 @@ object PrototypeAPI {
 
   def putStub(stubId: Long, body: JsValue): ApiResponseFt[ContentUpdate] =
     for {
-      convertedJson <- flatStubJsonToStubJson(body)
+      convertedJson <- flatStubJsonToStubWithCollaboratorsJson(body)
       res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId", convertedJson))
       putRes <- extractDataResponse[ContentUpdate](res.json)
     } yield putRes
