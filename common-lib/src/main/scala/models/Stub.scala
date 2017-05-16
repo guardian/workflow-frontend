@@ -22,6 +22,7 @@ case class Stub(id: Option[Long] = None,
                lastModified: DateTime = DateTime.now(),
                trashed: Boolean = false,
                commissioningDesks: Option[String] = None,
+               editor_id: Option[String] = None,
                externalData: Option[ExternalData])
 
 case class ExternalData(path: Option[String] = None,
@@ -102,6 +103,7 @@ object Stub {
                             (__ \ "lastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
                             (__ \ "trashed").readNullable[Boolean].map(t=> t.getOrElse(false)) and
                             (__ \ "commissioningDesks").readNullable[String] and
+                            (__ \ "editorId").readNullable[String] and
                             (__ \ "externalData").readNullable[ExternalData](externalDataJsonReads)
                         )(Stub.apply _)
 
@@ -121,6 +123,7 @@ object Stub {
     (__ \ "wfLastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
     (__ \ "trashed").readNullable[Boolean].map(t=> t.getOrElse(false)) and
     (__ \ "commissioningDesks").readNullable[String] and
+    (__ \ "editorId").readNullable[String] and
     // having to write this out in full sucks, but we can't just do (__).readNullable[ExternalData](externalDataJsonReads)
     // because of this bug, the fix is supposed to be released soon https://github.com/playframework/play-json/issues/11
        ((__ \ "path").readNullable[String] and
@@ -164,6 +167,7 @@ object Stub {
     (JsPath \ "wfLastModified").write[DateTime] and
     (JsPath \ "trashed").write[Boolean] and
     (JsPath \ "commissioningDesks").writeNullable[String] and
+    (JsPath \ "editorId").writeNullable[String] and
     JsPath.writeNullable[ExternalData]
     )(unlift(Stub.unapply))
 
