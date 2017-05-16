@@ -188,11 +188,11 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubSection(stubId: Long) =  CORSable(composerUrl) {
+  def putStubSection(stubId: Long) = CORSable(composerUrl) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        section <- ApiUtils.extractResponse[String](jsValue \ "data" \ "name")
+        section <- ApiUtils.extractDataResponse[String](jsValue)
         id <- PrototypeAPI.putStubSection(stubId, section)
       } yield {
         id
@@ -200,7 +200,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubWorkingTitle(stubId: Long) =  CORSable(composerUrl) {
+  def putStubWorkingTitle(stubId: Long) = CORSable(composerUrl) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
