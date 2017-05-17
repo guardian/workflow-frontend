@@ -14,10 +14,10 @@ import { punters } from 'components/punters/punters';
 const wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
-function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
+function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
     const contentName = wfContentService.getTypes()[stub.contentType] || "News item";
 
-    $scope.contentType = contentName;
+    $scope.generalContentType = contentName;
 
     $scope.mode = mode;
     $scope.modalTitle = ({
@@ -31,6 +31,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
     $scope.sections = getSectionsList(sections);
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
+    $scope.atomTypes = ['Media', 'Story questions'];
 
     if(mode==='import') {
        $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});
@@ -53,8 +54,6 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
     }
 
     $scope.stub.status = 'Writers';
-
-    $scope.atomTypes = ['Media', 'Story questions'];
 
     /**
      * If the user currently has a desk selected then only
@@ -143,6 +142,10 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
 
         if (!addToComposer && !($scope.mode === "import")) {
             delete stub.status;
+        }
+
+        if (stub.contentType === 'Atom') {
+            stub['contentType'] = $scope.stub.contentType.toLowerCase();
         }
 
         if (addToComposer) {
