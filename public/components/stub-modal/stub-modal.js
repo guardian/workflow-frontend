@@ -11,12 +11,13 @@ import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
 
-
-var wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])
+const wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
 function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
-    var contentName = wfContentService.getTypes()[stub.contentType] || "News item";
+    const contentName = wfContentService.getTypes()[stub.contentType] || "News item";
+
+    $scope.contentType = contentName;
 
     $scope.mode = mode;
     $scope.modalTitle = ({
@@ -29,7 +30,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
     $scope.statuses = statusLabels;
-    $scope.cdesks = _wfConfig.commissioningDesks
+    $scope.cdesks = _wfConfig.commissioningDesks;
 
     if(mode==='import') {
        $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});
@@ -43,7 +44,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
          * only set the section if a preference was found
          */
         $scope.stub.section = (function findSelectedSectionInAvailableSections (sect) {
-            var filteredSections = $scope.sections ? $scope.sections.filter((el) => (el ? el.name === sect.name : false)) : [];
+            const filteredSections = $scope.sections ? $scope.sections.filter((el) => (el ? el.name === sect.name : false)) : [];
             if (filteredSections.length > 0) {
                 return filteredSections[0];
             }
@@ -53,6 +54,8 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
 
     $scope.stub.status = 'Writers';
 
+    $scope.atomTypes = ['Media', 'Story questions'];
+
     /**
      * If the user currently has a desk selected then only
      * show the sections that are part of that desk in the dropdown
@@ -60,12 +63,12 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
      * @returns Filtered list of sections
      */
     function getSectionsList (sections) {
-        var deskId = wfFiltersService.get('desk');
+        const deskId = wfFiltersService.get('desk');
 
         if (deskId) {
-            var sectionsIdsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
+            const sectionsIdsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
             if (sectionsIdsInThisDesk.length > 0) {
-                var setSectionsIdsInThisDesk = new Set(sectionsIdsInThisDesk[0].sectionIds);
+                const setSectionsIdsInThisDesk = new Set(sectionsIdsInThisDesk[0].sectionIds);
                 sections = sections.filter((el) => setSectionsIdsInThisDesk.has(el.id))
             }
         }
@@ -99,8 +102,8 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
                 //check validity
                 if (composerContent) {
 
-                    var contentItem = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
-                    var composerId = contentItem.composerId;
+                    const contentItem = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
+                    const composerId = contentItem.composerId;
 
                     if(composerId) {
                         $scope.composerUrl = config.composerViewContent + '/' + composerId;
@@ -135,8 +138,8 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
     };
 
     $scope.ok = function (addToComposer) {
-        var stub = $scope.stub;
-        var promise;
+        const stub = $scope.stub;
+        let promise;
 
         if (!addToComposer && !($scope.mode === "import")) {
             delete stub.status;
@@ -153,7 +156,7 @@ function StubModalInstanceCtrl($rootScope,$scope, $modalInstance, $window, confi
         $scope.actionInProgress = true;
 
         promise.then((response) => {
-            var eventName = ({
+            const eventName = ({
                 'create': 'stub.created',
                 'edit': 'stub.edited',
                 'import': 'content.imported'
@@ -284,7 +287,7 @@ wfStubModal.run([
         });
 
         function open(stub, mode) {
-            var modalInstance = $modal.open({
+            const modalInstance = $modal.open({
                 templateUrl: '/assets/components/stub-modal/stub-modal.html',
                 controller: StubModalInstanceCtrl,
                 windowClass: 'stubModal',
