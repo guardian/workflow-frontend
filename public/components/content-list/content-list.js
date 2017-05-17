@@ -310,33 +310,36 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         data.content['Stub'] = data.stubs;
         var grouped = data.content;
 
-        $scope.$apply(() => {
-            $scope.totalContentItems = data.count['total'];
+        // fixes https://docs.angularjs.org/error/$rootScope/inprog http://www.pro-tekconsulting.com/blog/solution-to-error-digest-already-in-progress-in-angularjs-2/
+        if(!$scope.$$phase) {
+            $scope.$apply(() => {
+                $scope.totalContentItems = data.count['total'];
 
-            $scope.originalContent = statuses.map((status) => {
-                // TODO: status is currently stored as presentation text, eg: "Writers"
-                //       should be stored as an enum and transformed to presentation text
-                //       here in the front-end
+                $scope.originalContent = statuses.map((status) => {
+                    // TODO: status is currently stored as presentation text, eg: "Writers"
+                    //       should be stored as an enum and transformed to presentation text
+                    //       here in the front-end
 
-                return {
-                    name: status.toLowerCase(),
-                    title: status == 'Stub' ? 'News list' : status,
-                    count: data.count[status],
-                    items: grouped[status]
-                };
+                    return {
+                        name: status.toLowerCase(),
+                        title: status == 'Stub' ? 'News list' : status,
+                        count: data.count[status],
+                        items: grouped[status]
+                    };
+                });
+
+                doContentTrimAndSetContent();
+
+                (function setUpPresenceContentIds () {
+                    $scope.contentIds = parseContentForComposerIds($scope.content);
+                })();
+
+                $scope.$emit('content.render', {
+                    content: $scope.content
+                });
+
             });
-
-            doContentTrimAndSetContent();
-
-            (function setUpPresenceContentIds () {
-                $scope.contentIds = parseContentForComposerIds($scope.content);
-            })();
-
-            $scope.$emit('content.render', {
-                content: $scope.content
-            });
-
-        });
+        }
 
         $scope.$emit('content.rendered');
 
