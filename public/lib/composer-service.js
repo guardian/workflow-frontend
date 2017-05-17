@@ -35,7 +35,6 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
         takenDown: (d) => false, // TODO: takenDown from composer feed
         activeInInCopy: (d) => deepSearch(d, ['toolSettings', 'activeInInCopy', 'data']) === 'true',
         composerProdOffice: (d) => deepSearch(d, ['preview', 'data', 'settings', 'productionOffice', 'data']) || undefined,
-        commentable: (d) => deepSearch(d, ['preview', 'data', 'settings', 'commentable', 'data']) === 'true',
         optimisedForWeb: (d) => deepSearch(d, ['toolSettings', 'seoOptimised', 'data']) === 'true',
         optimisedForWebChanged: (d) => deepSearch(d, ['toolSettings', 'seoChanged', 'data']) === 'true',
         revision: (d) => deepSearch(d, ['contentChangeDetails', 'data', 'revision']),

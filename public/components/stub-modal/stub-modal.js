@@ -31,7 +31,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.sections = getSectionsList(sections);
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
-    $scope.atomTypes = ['Media', 'Story questions'];
+    $scope.atomTypes = ['Media'];
 
     if(mode==='import') {
        $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});
@@ -136,7 +136,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         );
     };
 
-    $scope.ok = function (addToComposer) {
+    $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
         let promise;
 
@@ -144,16 +144,23 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             delete stub.status;
         }
 
-        if (stub.contentType === 'Atom') {
+        if ($scope.generalContentType === 'Atom') {
             stub['contentType'] = $scope.stub.contentType.toLowerCase();
-        }
-
-        if (addToComposer) {
-            promise = wfContentService.createInComposer(stub);
-        } else if (stub.id) {
-            promise = wfContentService.updateStub(stub);
+            if (addToAtomEditor) {
+                promise = wfContentService.createInMediaAtomMaker(stub);
+            } else if (stub.id) {
+                promise = wfContentService.updateStub(stub);
+            } else {
+                promise = wfContentService.createStub(stub);
+            }
         } else {
-            promise = wfContentService.createStub(stub);
+            if (addToComposer) {
+                promise = wfContentService.createInComposer(stub);
+            } else if (stub.id) {
+                promise = wfContentService.updateStub(stub);
+            } else {
+                promise = wfContentService.createStub(stub);
+            }
         }
 
         $scope.actionInProgress = true;

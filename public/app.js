@@ -144,7 +144,8 @@ angular.module('workflow',
             'presenceUrl': _wfConfig.presenceUrl,
             'incopyExportUrl': _wfConfig.incopyExportUrl,
             'composerRestorerUrl': _wfConfig.composerRestorerUrl,
-            'maxNoteLength': 500
+            'maxNoteLength': 500,
+            'mediaAtomMakerNewAtom': _wfConfig.mediaAtomMaker.create
         }
     )
     .constant({ 'statuses': _wfConfig.statuses })

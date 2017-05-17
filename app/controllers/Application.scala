@@ -1,37 +1,30 @@
 package controllers
 
-import com.gu.workflow.api.{ DesksAPI, SectionsAPI, SectionDeskMappingsAPI }
-import com.gu.workflow.lib.{TagService, StatusDatabase}
-
+import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
+import com.gu.workflow.lib.{StatusDatabase, TagService}
 import config.Config
 import config.Config.defaultExecutionContext
-import models.{ Desk, Tag }
-
-import lib.Composer._
-import models.Section
+import lib.{Atom, Composer}
+import models.{Desk, Section}
 import play.api.Logger
-
+import play.api.libs.json.{Format, Json}
 import play.api.mvc._
-import play.api.libs.json.Json
+
 import scala.concurrent.Future
 
 object Application extends Controller with PanDomainAuthActions {
 
   def getSortedSections(): Future[List[Section]] = {
-    SectionsAPI.getSections.asFuture.map { x =>
-      x match {
-        case Left(err) => Logger.error(s"error fetching sections: $err"); List()
-        case Right(sections) => sections.sortBy(_.name)
-      }
+    SectionsAPI.getSections.asFuture.map {
+      case Left(err) => Logger.error(s"error fetching sections: $err"); List()
+      case Right(sections) => sections.sortBy(_.name)
     }
   }
 
   def getSortedDesks(): Future[List[Desk]] = {
-    DesksAPI.getDesks.asFuture.map { x =>
-      x match {
-        case Right(desks) => desks.sortBy(_.name)
-        case Left(err) => Logger.error(s"error fetching desks: $err"); List()
-      }
+    DesksAPI.getDesks.asFuture.map {
+      case Right(desks) => desks.sortBy(_.name)
+      case Left(err) => Logger.error(s"error fetching desks: $err"); List()
     }
   }
 
@@ -45,9 +38,8 @@ object Application extends Controller with PanDomainAuthActions {
     }
   }
 
-
   def index = AuthAction { request =>
-    Redirect(routes.Application.dashboard)
+    Redirect(routes.Application.dashboard())
   }
 
   def dashboard = app("Workflow")
@@ -66,15 +58,15 @@ object Application extends Controller with PanDomainAuthActions {
 
   // limited tag fields we want output into the DOM
   case class LimitedTag(id: Long, externalName: String)
-  object LimitedTag { implicit val jsonFormats = Json.format[LimitedTag]}
+  object LimitedTag { implicit val jsonFormats: Format[LimitedTag] = Json.format[LimitedTag]}
 
   def app(title: String) = AuthAction.async { request =>
 
     for {
       statuses <- StatusDatabase.statuses
-      sections <-  getSortedSections
-      desks <- getSortedDesks
-      sectionsInDesks <- getSectionsInDesks
+      sections <-  getSortedSections()
+      desks <- getSortedDesks()
+      sectionsInDesks <- getSectionsInDesks()
       commissioningDesks <- TagService.getTags(Config.tagManagerUrl+
         "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path")
     }
@@ -83,9 +75,12 @@ object Application extends Controller with PanDomainAuthActions {
 
       val config = Json.obj(
         "composer" -> Json.obj(
-          "create" -> newContentUrl,
-          "view" -> adminUrl,
-          "details" -> contentDetails
+          "create" -> Composer.newContentUrl,
+          "view" -> Composer.adminUrl,
+          "details" -> Composer.contentDetails
+        ),
+        "mediaAtomMaker" -> Json.obj(
+          "create" -> Atom.newContentUrl
         ),
         "statuses" -> statuses,
         "desks"    -> desks,

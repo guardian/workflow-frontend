@@ -1,13 +1,14 @@
 import angular from 'angular';
 
 import './composer-service';
+import './media-atom-maker-service'
 import './http-session-service';
 import './user';
 import './visibility-service';
 
-angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService',
-        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService) {
+angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService'])
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService) {
 
             var httpRequest = wfHttpSessionService.request;
 
@@ -68,6 +69,25 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     return wfComposerService.create(stub.contentType, stub.commissioningDesks).then( (response) => {
 
                         wfComposerService.parseComposerData(response.data, stub);
+
+                        if (statusOption) {
+                            stub['status'] = statusOption;
+                        }
+
+                        if (stub.id) {
+                            return this.updateStub(stub);
+
+                        } else {
+                            return this.createStub(stub);
+                        }
+                    });
+                }
+
+                createInMediaAtomMaker(stub, statusOption) {
+
+                    return wfMediaAtomMakerService.create(stub.title).then( (response) => {
+
+                        console.log("this is where we do all the saving", response);
 
                         if (statusOption) {
                             stub['status'] = statusOption;
