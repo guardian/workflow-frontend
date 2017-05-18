@@ -1,9 +1,9 @@
 import angular from 'angular';
 
-import 'lib/composer-service';
-import 'lib/http-session-service';
-import 'lib/user';
-import 'lib/visibility-service';
+import './composer-service';
+import './http-session-service';
+import './user';
+import './visibility-service';
 
 angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService'])
     .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService',
@@ -90,7 +90,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     return httpRequest({
                         method: 'PUT',
                         url: '/api/stubs/' + stub.id,
-                        data: stub
+                        data: { 'stub': stub, 'collaborators': null }
                     });
                 }
 

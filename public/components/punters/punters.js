@@ -1,4 +1,4 @@
-import puntersTemplate from './punters.html!ng-template';
+import puntersTemplate from './punters.html';
 
 /**
  * Created by cfinch on 09/01/2015.
@@ -24,7 +24,7 @@ function punters ($rootScope, wfGoogleApiService) {
 
     return {
         restrict: 'E',
-        templateUrl: puntersTemplate.templateUrl,
+        template: puntersTemplate,
         scope: {
             stub: '=',
             indrawer: '='

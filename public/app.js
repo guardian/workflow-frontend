@@ -4,7 +4,7 @@
 
 import angular from 'angular';
 
-import { getEnvironment } from 'environment';
+import { getEnvironment } from './environment';
 
 import 'components/sentry/sentry';
 import 'components/user-message/user-message';
@@ -23,7 +23,6 @@ import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/column-service';
 import 'lib/preferences-service';
-import 'lib/analytics';
 import 'lib/feature-switches';
 import 'lib/google-api';
 import 'lib/polling-service';
@@ -32,16 +31,12 @@ import 'lib/logger';
 
 // 3rd party libs
 import 'angular-ui-router';
-import 'angular-bootstrap';
-import 'angular-animate/angular-animate.min';
-import 'ngInfiniteScroll/ng-infinite-scroll';
-
-//import 'angular-loading-bar';
-//import 'angular-loading-bar@0.7.1/src/loading-bar.css!';
+import 'angular-bootstrap-temporary';
+import 'angular-animate';
+import 'ng-infinite-scroll';
 
 // App-wide Styles
-import 'bootstrap/css/bootstrap.min.css!';
-import 'main.min.css!';
+import './main.scss';
 
 angular.module('workflow',
     [
@@ -57,7 +52,6 @@ angular.module('workflow',
         'wfIcons',
         'wfContentList',
         'wfDateService',
-        'wfAnalytics',
         'wfFiltersService',
         'wfColumnService',
         'wfPreferencesService',

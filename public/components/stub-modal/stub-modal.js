@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-import 'angular-bootstrap';
+import 'angular-bootstrap-temporary';
 
 import 'components/date-time-picker/date-time-picker';
 

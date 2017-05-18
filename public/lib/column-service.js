@@ -1,8 +1,9 @@
 import angular              from 'angular';
+
 import moment               from 'moment';
-import { columnDefaults }   from 'lib/column-defaults'
-import startTemplate        from "components/content-list-item/content-list-item-start.html!text";
-import endTemplate          from "components/content-list-item/content-list-item-end.html!text";
+import { columnDefaults }   from './column-defaults'
+import startTemplate        from "components/content-list-item/content-list-item-start.html";
+import endTemplate          from "components/content-list-item/content-list-item-end.html";
 
 angular.module('wfColumnService', [])
     .factory('wfColumnService', ['wfPreferencesService',

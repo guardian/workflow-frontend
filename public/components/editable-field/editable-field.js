@@ -14,7 +14,7 @@
 
 import angular from 'angular';
 
-import editableFieldTemplate from './editable-field.html!ng-template';
+import editableFieldTemplate from './editable-field.html';
 
 angular.module('wfEditableField', [])
     .directive('wfEditable', ['$timeout', wfEditableDirectiveFactory])
@@ -31,7 +31,7 @@ function wfEditableDirectiveFactory($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: editableFieldTemplate.templateUrl,
+        template: editableFieldTemplate,
         scope: {
             modelValue: '=ngModel',
             onEditableUpdate: '&wfEditableOnUpdate',

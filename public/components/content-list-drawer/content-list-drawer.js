@@ -1,4 +1,5 @@
-import contentListDrawerTemplate from './content-list-drawer.html!ng-template';
+import contentListDrawerTemplate from './content-list-drawer.html';
+import _ from 'lodash';
 
 /**
  * Directive for handling logic around the contentItemRow details drawer.
@@ -31,7 +32,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
     return {
         restrict: 'A',
         replace: true,
-        templateUrl: '/assets/components/content-list-drawer/content-list-drawer.html',
+        template: contentListDrawerTemplate,
         priority: 1001,
         scope: {
             contentList: '=',

@@ -18,7 +18,7 @@ import scala.concurrent.Future
 object Application extends Controller with PanDomainAuthActions {
 
   def getSortedSections(): Future[List[Section]] = {
-    SectionsAPI.getSections().asFuture.map { x =>
+    SectionsAPI.getSections.asFuture.map { x =>
       x match {
         case Left(err) => Logger.error(s"error fetching sections: $err"); List()
         case Right(sections) => sections.sortBy(_.name)
@@ -27,7 +27,7 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def getSortedDesks(): Future[List[Desk]] = {
-    DesksAPI.getDesks().asFuture.map { x =>
+    DesksAPI.getDesks.asFuture.map { x =>
       x match {
         case Right(desks) => desks.sortBy(_.name)
         case Left(err) => Logger.error(s"error fetching desks: $err"); List()
@@ -36,7 +36,7 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def getSectionsInDesks(): Future[List[models.api.SectionsInDeskMapping]] = {
-    SectionDeskMappingsAPI.getSectionsInDesks().asFuture.map { x =>
+    SectionDeskMappingsAPI.getSectionsInDesks.asFuture.map { x =>
       println(s"sections in desks: $x")
       x match {
         case Right(mappings) => mappings
@@ -93,7 +93,6 @@ object Application extends Controller with PanDomainAuthActions {
         "sectionsInDesks" -> sectionsInDesks, // TODO: Combine desks & sectionsInDesks
         "viewerUrl" -> Config.viewerUrl,
         "presenceUrl" -> Config.presenceUrl,
-        "presenceClientLib" -> Config.presenceClientLib,
         "preferencesUrl" -> Config.preferencesUrl,
         "user" -> Json.parse(user.toJson),
         "incopyExportUrl" -> Config.incopyExportUrl,
@@ -101,7 +100,7 @@ object Application extends Controller with PanDomainAuthActions {
         "commissioningDesks" -> commissioningDesks.map(t => LimitedTag(t.id, t.externalName))
       )
 
-      Ok(views.html.app(title, Some(user), config))
+      Ok(views.html.app(title, Some(user), config, Config.presenceClientLib))
     }
   }
 }

@@ -2,9 +2,8 @@ package models
 
 import models.Status._
 import org.joda.time.DateTime
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
-
+import play.api.libs.json._
 
 case class Asset(assetType: String, mimeType:String, url:String, fields: Map[String, String])
 object Asset {
@@ -12,7 +11,7 @@ object Asset {
        for {
         width <- asset.fields.get("width")
         height <- asset.fields.get("height")
-      } yield (width.toLong) * (height.toLong)
+      } yield width.toLong * height.toLong
   }
 
   def getImageAssetUrl(assets: List[Asset]): Option[String] = {
@@ -28,14 +27,14 @@ object Asset {
 }
 
 case class Tag(id: Long, section: Section, `type`: String, externalName: String, path: Option[String] = None)
-object Tag { implicit val jsonFormats = Json.format[Tag]}
+object Tag { implicit val jsonFormats: Format[Tag] = Json.format[Tag]}
 case class TagUsage(tag: Tag, isLead: Boolean)
-object TagUsage { implicit val jsonFormats = Json.format[TagUsage]}
+object TagUsage { implicit val jsonFormats: Format[TagUsage] = Json.format[TagUsage]}
 case class Element(elementType: String, fields: Map[String, String], assets: List[Asset])
 case class Block(id: String, lastModified: DateTime, elements: List[Element])
 case class Thumbnail(fields: Map[String, String], assets: List[Asset])
 case class User(email: String, firstName: String, lastName: String)
-object User { implicit val jsonFormats = Json.format[User]}
+object User { implicit val jsonFormats: Format[User] = Json.format[User]}
 
 case class WorkflowContentStatusFlags(
   commentable: Boolean     = false,
@@ -84,7 +83,7 @@ object WorkflowContentMainMedia {
       )).getOrElse(WorkflowContentMainMedia())
   }
 
-  def getMainMediaType(block: Block) = {
+  def getMainMediaType(block: Block): Option[String] = {
     for {
       element <- block.elements.headOption
     } yield element.elementType
@@ -129,7 +128,7 @@ object LaunchScheduleDetails {
    val launchScheduleDetailsSQSReads: Reads[LaunchScheduleDetails] =
     ((__ \ "scheduledLaunchDate").readNullable[DateTime] ~
       (__ \ "settings" \ "embargoedUntil").readNullable[String].map(s => s.map(t => new DateTime(t)))  ~
-      (__ \ "settings" \ "embargoedIndefinitely").readNullable[String].map(s => s.exists(_=="true"))
+      (__ \ "settings" \ "embargoedIndefinitely").readNullable[String].map(s => s.contains("true"))
       )(LaunchScheduleDetails.apply _)
 }
 case class WorkflowContent(
@@ -196,5 +195,5 @@ object WorkflowContent {
 
 case class ContentItemIds(stubId: Long, composerId: Option[String])
 object ContentItemIds {
-  implicit val jsonFormat = Json.format[ContentItemIds]
+  implicit val jsonFormat: Format[ContentItemIds] = Json.format[ContentItemIds]
 }

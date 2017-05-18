@@ -1,5 +1,4 @@
 import angular from 'angular';
-import moment from 'moment';
 
 angular.module('wfPreferencesService', [])
     .factory('wfPreferencesService', ['$rootScope', '$http', '$log', '$window',

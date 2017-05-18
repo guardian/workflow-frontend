@@ -22,6 +22,7 @@ object ApiErrors {
   def jsonParseError(errMsg: String) = ApiError("JsonParseError", s"failed to parse the json. Error(s): $errMsg", 400, "badrequest")
   def updateError[A](id: A)          = ApiError("UpdateError", s"Item with ID, $id does not exist", 404, "notfound")
   def databaseError(exc: String)     = ApiError("DatabaseError", s"$exc", 500, "internalservererror")
+  def updateErrorRevisionTooLow(err: UpdateRevisionTooLow) = ApiError("UpdateError", s"The update to stub with id ${err.stubId} had a revision number ${err.updateRevision} which is lower than that in the database", 412, "preconditionfailed")
 
   def composerItemLinked(id: Long, composerId: String) = {
     ApiError("ComposerItemIsLinked", s"This stub is already linked to a composer article", 409, "conflict",

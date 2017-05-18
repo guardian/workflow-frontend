@@ -2,10 +2,9 @@ package models
 
 import models.Flag.Flag
 import org.joda.time.DateTime
-import play.api.libs.json._
-import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
-import play.api.libs.json.util._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
 
 case class Stub(id: Option[Long] = None,
                title: String,
@@ -23,6 +22,7 @@ case class Stub(id: Option[Long] = None,
                lastModified: DateTime = DateTime.now(),
                trashed: Boolean = false,
                commissioningDesks: Option[String] = None,
+               editorId: Option[String] = None,
                externalData: Option[ExternalData])
 
 case class ExternalData(path: Option[String] = None,
@@ -82,10 +82,10 @@ object Stub {
 
   import ExternalData._
 
-  implicit val prodOfficeReads = maxLength[String](20)
-  implicit val noteReads =  maxLength[String](500)
-  implicit val sectionReads = maxLength[String](50)
-  implicit val workingTitleReads = maxLength[String](128)
+  implicit val prodOfficeReads: Reads[String] = maxLength[String](20)
+  implicit val noteReads: Reads[String] =  maxLength[String](500)
+  implicit val sectionReads: Reads[String] = maxLength[String](50)
+  implicit val workingTitleReads: Reads[String] = maxLength[String](128)
 
   implicit val jsonReads: Reads[Stub] =( (__ \ "id").readNullable[Long] and
                             (__ \ "title").read[String] and
@@ -103,6 +103,7 @@ object Stub {
                             (__ \ "lastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
                             (__ \ "trashed").readNullable[Boolean].map(t=> t.getOrElse(false)) and
                             (__ \ "commissioningDesks").readNullable[String] and
+                            (__ \ "editorId").readNullable[String] and
                             (__ \ "externalData").readNullable[ExternalData](externalDataJsonReads)
                         )(Stub.apply _)
 
@@ -122,6 +123,7 @@ object Stub {
     (__ \ "wfLastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
     (__ \ "trashed").readNullable[Boolean].map(t=> t.getOrElse(false)) and
     (__ \ "commissioningDesks").readNullable[String] and
+    (__ \ "editorId").readNullable[String] and
     // having to write this out in full sucks, but we can't just do (__).readNullable[ExternalData](externalDataJsonReads)
     // because of this bug, the fix is supposed to be released soon https://github.com/playframework/play-json/issues/11
        ((__ \ "path").readNullable[String] and
@@ -165,10 +167,11 @@ object Stub {
     (JsPath \ "wfLastModified").write[DateTime] and
     (JsPath \ "trashed").write[Boolean] and
     (JsPath \ "commissioningDesks").writeNullable[String] and
-    (JsPath).writeNullable[ExternalData]
+    (JsPath \ "editorId").writeNullable[String] and
+    JsPath.writeNullable[ExternalData]
     )(unlift(Stub.unapply))
 
-  val stubWrites: Writes[Stub] = Json.writes[Stub]
+  implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
 
 }
 

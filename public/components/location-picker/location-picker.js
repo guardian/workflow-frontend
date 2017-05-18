@@ -11,7 +11,7 @@ import 'lib/location-service';
 
 import 'components/icons/icons';
 
-import locationPickerTemplate from './location-picker.html!ng-template';
+import locationPickerTemplate from './location-picker.html';
 
 var CLASS_LOCATION_PICKER = 'location-picker',
     CLASS_LOCATION_PICKER_OPEN = 'location-picker--open';
@@ -24,7 +24,7 @@ function wfLocationPickerDirectiveFactory() {
     return {
         restrict: 'E',
         scope: true,
-        templateUrl: locationPickerTemplate.templateUrl,
+        template: locationPickerTemplate,
         controller: ['$scope', '$rootScope', '$timeout', 'wfLocationService', wfLocationPickerController],
         controllerAs: 'ctrl',
         link: function($scope, $elem, $attrs) {

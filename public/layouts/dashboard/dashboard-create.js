@@ -2,7 +2,7 @@ import angular from 'angular';
 
 import 'lib/content-service';
 
-import './dashboard-create.html!ng-template';
+import './dashboard-create.html';
 
 angular
     .module('wfDashboardCreate', ['wfContentService'])

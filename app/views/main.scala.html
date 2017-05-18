@@ -11,11 +11,11 @@
     <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
     <title>@title</title>
 
-    @** TODO: Pull css in with SystemJS CSS plugin **@
-    <link href="@routes.Assets.versioned("jspm_packages/github/components/bootstrap@3.2.0/css/bootstrap.min.css")" rel="stylesheet">
+    @** TODO: Pull css in with Webpack **@
+    <link href="@routes.Assets.versioned("node_modules/bootstrap/dist/css/bootstrap.min.css")" rel="stylesheet">
 
-    @** TODO: move jQuery calls into modules, so that this isn't needed: **@
-    <script src="@routes.Assets.versioned("jspm_packages/github/components/jquery@1.11.1/jquery.min.js")" type="text/javascript"></script>
+    @** TODO: get rid of everything that needs jQuery: **@
+    <script src="@routes.Assets.versioned("node_modules/jquery/dist/jquery.min.js")" type="text/javascript"></script>
 
     <style>
         .admin {
