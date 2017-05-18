@@ -1,4 +1,4 @@
-import contentListAtomDrawerTemplate from './content-list-atom-drawer.html!ng-template';
+import contentListAtomDrawerTemplate from './content-list-atom-drawer.html';
 
 /**
  * Directive for handling logic around the contentItemRow details drawer.
@@ -20,7 +20,7 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
     return {
         restrict: 'A',
         replace: true,
-        templateUrl: '/assets/components/content-list-atom-drawer/content-list-atom-drawer.html',
+        template: contentListAtomDrawerTemplate,
         priority: 1001,
         scope: {
             contentList: '=',
