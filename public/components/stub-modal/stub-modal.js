@@ -175,13 +175,24 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $rootScope.$broadcast(eventName, { 'contentItem': stub });
             $rootScope.$broadcast('getContent');
 
-            if(stub.composerId && ($scope.mode != 'import')) {
-                $scope.composerUrl = config.composerViewContent + '/' + stub.composerId;
+            if ($scope.generalContentType === 'Atom') {
+                if (stub.editorId && ($scope.mode != 'import')) {
+                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId)[stub.contentType];
+                } else {
+                    $modalInstance.close({
+                        addToEditor: addToAtomEditor,
+                        stub: $scope.stub
+                    });
+                }
             } else {
-                $modalInstance.close({
-                    addToComposer: addToComposer,
-                    stub: $scope.stub
-                });
+                if(stub.composerId && ($scope.mode != 'import')) {
+                    $scope.composerUrl = config.composerViewContent + '/' + stub.composerId;
+                } else {
+                    $modalInstance.close({
+                        addToComposer: addToComposer,
+                        stub: $scope.stub
+                    });
+                }
             }
 
             $scope.actionSuccess = true;
@@ -195,11 +206,13 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                 if(err.data.composerId) {
                     $scope.composerUrl = config.composerViewContent + '/' + err.data.composerId;
                 }
+                if(err.data.editorId) {
+                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId)[stub.contentType];
+                }
                 if(err.data.stubId) {
                     $scope.stubId = err.data.stubId;
                 }
-            }
-            else {
+            } else {
                 $scope.errorMsg = err.friendlyMessage || err.message || err;
                 $scope.actionSuccess = false;
             }

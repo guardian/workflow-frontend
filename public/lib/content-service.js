@@ -7,8 +7,8 @@ import './user';
 import './visibility-service';
 
 angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService',
-        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService) {
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'config',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, config) {
 
             var httpRequest = wfHttpSessionService.request;
 
@@ -21,6 +21,12 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         "interactive": "Interactive",
                         "picture": "Picture",
                         "atom": "Atom"
+                    }
+                };
+
+                getEditorUrl(editorId) {
+                    return {
+                        "media": config.mediaAtomMakerViewAtom + editorId
                     }
                 };
 
@@ -87,11 +93,11 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                     return wfMediaAtomMakerService.create(stub.title).then( (response) => {
 
-                        console.log("this is where we do all the saving! We got a response: ", response);
+                        console.log("this is where we do all the saving! We got a response with id: ", response.data.id);
 
                         if (statusOption) {
                             stub['status'] = statusOption;
-                            stub['editorId'] = 'videos/' + response.id;
+                            stub['editorId'] = response.data.id;
                         }
 
                         if (stub.id) {

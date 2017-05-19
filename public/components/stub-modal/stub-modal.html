@@ -138,6 +138,11 @@
     <a ng-href="{{composerUrl}}" class="btn btn-primary pull-right" target="_blank" ng-click="cancel()" id="testing-view-in-composer">View in Composer</a>
 </div>
 
+<div class="modal-footer" ng-show="actionSuccess && editorUrl">
+    <button type="button" class="btn btn-default pull-left" ng-click="cancel()">Dismiss</button>
+    <a ng-href="{{editorUrl}}" class="btn btn-primary pull-right" target="_blank" ng-click="cancel()" id="testing-view-in-atom-editor">View in Editor</a>
+</div>
+
 <div class="modal-footer__alert">
     <div class="modal-footer alert alert-info" ng-show="wfComposerState ==='visible'">
         <p>This content is already tracked. <a href="#stub-{{stubId}}" ng-click="cancel()">View in Workflow.</a></p>
@@ -154,9 +159,11 @@
     </div>
 
     <div class="modal-footer alert alert-danger" ng-show="actionSuccess === false">
-        <p>Workflow's having difficulty communicating with Composer. Please try again. If the problem persists, please <a href="mailto:central.production@guardian.co.uk ">contact Central Production</a>.</p>
+        <p ng-show="generalContentType !== 'Atom'">Workflow's having difficulty communicating with Composer. Please try again. If the problem persists, please <a href="mailto:central.production@guardian.co.uk ">contact Central Production</a>.</p>
+        <p ng-show="generalContentType === 'Atom'">Workflow's having difficulty communicating with the editor. Please try again. If the problem persists, please <a href="mailto:central.production@guardian.co.uk ">contact Central Production</a>.</p>
         <p>
             <a ng-show="composerUrl" href="{{composerUrl}}" target="_blank" ng-click="cancel()">View in Composer.</a>
+            <a ng-show="editorUrl" href="{{editorUrl}}" target="_blank" ng-click="cancel()">View in Editor.</a>
             <a ng-show="stubId" href="#stub-{{stubId}}" ng-click="cancel()">View in Workflow.</a>
         </p>
     </div>

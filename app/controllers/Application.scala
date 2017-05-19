@@ -80,7 +80,8 @@ object Application extends Controller with PanDomainAuthActions {
           "details" -> Composer.contentDetails
         ),
         "mediaAtomMaker" -> Json.obj(
-          "create" -> Atom.newContentUrl
+          "create" -> Atom.newContentUrl,
+          "view" -> Atom.viewContentUrl
         ),
         "statuses" -> statuses,
         "desks"    -> desks,
