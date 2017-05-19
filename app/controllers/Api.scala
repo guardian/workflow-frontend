@@ -41,7 +41,6 @@ object Api extends Controller with PanDomainAuthActions {
   implicit val flatStubWrites: Writes[Stub] = Stub.flatStubWrites
 
   def allowCORSAccess(methods: String, args: Any*) = CORSable(composerUrl) {
-
     Action { implicit req =>
       val requestedHeaders = req.headers("Access-Control-Request-Headers")
       NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
@@ -62,7 +61,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def content = APIAuthAction.async(getContentBlock)
 
-  def getContentbyId(composerId: String) = CORSable(Config.composerUrl) {
+  def getContentbyId(composerId: String) = CORSable(composerUrl) {
       APIAuthAction.async { implicit request =>
         ApiResponseFt[Option[Stub]](for {
           item <- ContentApi.contentByComposerId(composerId)

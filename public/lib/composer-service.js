@@ -5,9 +5,9 @@ angular.module('wfComposerService', [])
 
 function wfComposerService($http, $q, config, wfHttpSessionService) {
 
-    var request = wfHttpSessionService.request;
+    const request = wfHttpSessionService.request;
 
-    var composerContentFetch = config.composerContentDetails;
+    const composerContentFetch = config.composerContentDetails;
 
     // budget composer url parser - just gets the portion after the last '/'
     function parseComposerId(url) {
@@ -17,14 +17,14 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
 
     function deepSearch(obj, path) {
         if (path.length === 0) return obj;
-        var next = path[0];
+        const next = path[0];
         if (obj[next]) return deepSearch(obj[next], path.slice(1));
         else return null;
     }
 
 
     // Mapping of workflow content fields to transform functions on composer response
-    var composerParseMap = {
+    const composerParseMap = {
         composerId: (d) => d.id,
         contentType: (d) => d.type,
         headline: (d) => deepSearch(d, ['preview', 'data', 'fields', 'headline', 'data']) || undefined,
@@ -46,7 +46,7 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
     function parseComposerData(response, target) {
         target = target || {};
 
-        var data = response.data;
+        const data = response.data;
 
         Object.keys(composerParseMap).forEach((key) => {
             target[key] = composerParseMap[key](data);

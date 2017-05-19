@@ -87,10 +87,11 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                     return wfMediaAtomMakerService.create(stub.title).then( (response) => {
 
-                        console.log("this is where we do all the saving", response);
+                        console.log("this is where we do all the saving! We got a response: ", response);
 
                         if (statusOption) {
                             stub['status'] = statusOption;
+                            stub['editorId'] = 'videos/' + response.id;
                         }
 
                         if (stub.id) {
