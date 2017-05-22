@@ -8,7 +8,7 @@ import './main.scss';
 
 console.log("Welcome to the admin")
 
-// Angular whiens that the 'workflow' module doesn't exist even though
+// Angular whines that the 'workflow' module doesn't exist even though
 // it isn't used. This fixes the error but it's otherwise useless.
 var workflow = angular.module('workflow', []);
 
