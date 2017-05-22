@@ -5,6 +5,14 @@ var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
+    entry: {
+        app: './public/app.js',
+        admin: './public/admin.js'
+    },
+    output: {
+        filename: '[name].bundle.js',
+        path: path.join(__dirname, '..', 'public', 'build'),
+    },
     module: {
         loaders: [
             {
