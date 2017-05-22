@@ -1,8 +1,16 @@
 /**
  * 
  */
+import angular from 'angular';
 
-console.log("Hello to the admin")
+// App-wide Styles
+import './main.scss';
+
+console.log("Welcome to the admin")
+
+// Angular whiens that the 'workflow' module doesn't exist even though
+// it isn't used. This fixes the error but it's otherwise useless.
+var workflow = angular.module('workflow', []);
 
 var SectionToTagApp = angular.module('SectionToTag', []);
 SectionToTagApp.controller('tagsPickerAppCtrl', function($scope,$http) {
