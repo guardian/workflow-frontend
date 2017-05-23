@@ -5,23 +5,30 @@ import './media-atom-maker-service'
 import './http-session-service';
 import './user';
 import './visibility-service';
+import './feature-switches';
 
 angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'config',
-        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, config) {
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'config', 'wfFeatureSwitches',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, config, wfFeatureSwitches) {
 
-            var httpRequest = wfHttpSessionService.request;
+            const httpRequest = wfHttpSessionService.request;
 
             class ContentService {
                 getTypes() {
-                    return {
-                        "article": "Article",
-                        "liveblog": "Live blog",
-                        "gallery": "Gallery",
-                        "interactive": "Interactive",
-                        "picture": "Picture",
-                        "atom": "Atom"
-                    }
+
+                    return wfFeatureSwitches.getSwitch("support-atoms").then( (isActive) => {
+                        var basicTypes = {
+                            "article": "Article",
+                            "liveblog": "Live blog",
+                            "gallery": "Gallery",
+                            "interactive": "Interactive",
+                            "picture": "Picture"
+                        };
+
+                        if (isActive) basicTypes['atom'] = 'Atom';
+
+                        return basicTypes;
+                    });
                 };
 
                 getEditorUrl(editorId) {
@@ -89,11 +96,13 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     });
                 }
 
+                /**
+                 * Creates an atom in the Media Atom Maker. Effectively setting
+                 * the editorId to what we get from the response.
+                 */
                 createInMediaAtomMaker(stub, statusOption) {
 
                     return wfMediaAtomMakerService.create(stub.title).then( (response) => {
-
-                        console.log("this is where we do all the saving! We got a response with id: ", response.data.id);
 
                         if (statusOption) {
                             stub['status'] = statusOption;

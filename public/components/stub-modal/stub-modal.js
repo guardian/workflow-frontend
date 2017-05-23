@@ -15,16 +15,18 @@ const wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesS
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
 function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
-    const contentName = wfContentService.getTypes()[stub.contentType] || "News item";
 
-    $scope.generalContentType = contentName;
+    wfContentService.getTypes().then( (types) => {
+        $scope.contentName = types[stub.contentType] || "News item";
+
+        $scope.modalTitle = ({
+            'create': `Create ${$scope.contentName}`,
+            'edit': `Edit ${$scope.contentName}`,
+            'import': 'Import from Composer'
+        })[mode];
+    });
 
     $scope.mode = mode;
-    $scope.modalTitle = ({
-        'create': `Create ${contentName}`,
-        'edit': `Edit ${contentName}`,
-        'import': 'Import from Composer'
-    })[mode];
 
     $scope.formData = {};
     $scope.disabled = !!stub.composerId;
@@ -144,7 +146,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             delete stub.status;
         }
 
-        if ($scope.generalContentType === 'Atom') {
+        if ($scope.contentName === 'Atom') {
             stub['contentType'] = $scope.stub.contentType.toLowerCase();
             if (addToAtomEditor) {
                 promise = wfContentService.createInMediaAtomMaker(stub);
@@ -175,7 +177,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $rootScope.$broadcast(eventName, { 'contentItem': stub });
             $rootScope.$broadcast('getContent');
 
-            if ($scope.generalContentType === 'Atom') {
+            if ($scope.contentName === 'Atom') {
                 if (stub.editorId && ($scope.mode != 'import')) {
                     $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId)[stub.contentType];
                 } else {
