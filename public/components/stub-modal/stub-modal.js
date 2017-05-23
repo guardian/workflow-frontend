@@ -142,12 +142,13 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         const stub = $scope.stub;
         let promise;
 
-        if (!addToComposer && !($scope.mode === "import")) {
+        if ((!addToComposer || !addToAtomEditor) && !($scope.mode === "import")) {
             delete stub.status;
         }
 
         if ($scope.contentName === 'Atom') {
             stub['contentType'] = $scope.stub.contentType.toLowerCase();
+            stub['status'] = stub.status === undefined ? 'Stub' : stub.status;
             if (addToAtomEditor) {
                 promise = wfContentService.createInMediaAtomMaker(stub);
             } else if (stub.id) {
