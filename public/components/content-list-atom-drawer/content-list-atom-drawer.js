@@ -71,7 +71,7 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
             this.showContent = (contentItem, $contentListItemElement, capiData) => {
 
                 var self = this;
-
+                console.log(contentItem);
                 return self.hide().then(() => {
 
                     $scope.$apply(() => {

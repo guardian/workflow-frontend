@@ -1,7 +1,12 @@
 .atomtest- {
+    
     &drawer {
         display: flex;
         width: 100%;
+
+        .content-list-drawer--hidden & {
+            display: none;
+        }
 
         &__section {
             background-color: $c-grey-150;

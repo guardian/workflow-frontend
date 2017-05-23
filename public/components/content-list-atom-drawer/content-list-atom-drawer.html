@@ -44,23 +44,116 @@
                 </div>
             </div>
 
-            <div class="atomtest-drawer__section atomtest-drawer__section--management">
-                <div class="atomtest-drawer__header">
-                    <i class="drawer__icon--content-type" wf-icon="management"/>
-                    Management
+            <div class="content-list-drawer__container-inner__info-panel__management">
+                        <div class="content-list-drawer__container-inner__info-panel__management__header">
+                            <i class="drawer__icon--content-type" wf-icon="management"/>
+                            Management
+                        </div>
+                        <div class="content-list-drawer__container-inner__info-panel__management__body">
+                            <div class="content-list-drawer__container-inner__info-panel__management__body__column">
+                                <ul class="drawer__column--wide">
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">Priority</span>
+                                        <select class="drawer__section-control" ng-model="contentItem.priority" ng-options="p.value as p.name for p in contentList.priorities" wf-content-item-update-action="priority"></select>
+                                    </li>
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">Production deadline</span>
+                                    <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.item.due, 'drawer__section-data-row--editable-empty': !contentItem.item.due }" title="{{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}">
+                                        {{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
+                                    </span>
+                                        <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
+                                            <div wf-date-time-picker wf-update-on="enter" ng-model="currentDatePickerValue" wf-on-cancel="dateTimeEdit = false; revertDeadline()" wf-cancel-on="blur" wf-on-submit="updateDeadline(); dateTimeEdit = false;" wf-small="true" help-text="true"></div>
+                                        </form>
+                                    </li>
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">Scheduled</span>
+                                    <span class="drawer__section-data-row">
+                                        {{ (contentItem.launchScheduleDetails.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
+                                    </span>
+                                    </li>
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">Embargoed</span>
+                                    <span class="drawer__section-data-row">
+                                        {{ contentItem.lifecycleStateSupl || (contentItem.lifecycleStateSuplDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd DD MMM HH:mm') || "-" }}
+                                    </span>
+                                    </li>
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">State</span>
+                                        <span class="drawer__section-data-row">{{ contentItem.state || '-' }}</span>
+                                    </li>
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">Status</span>
+                                        <select class="drawer__section-control" ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
+                                        </select>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="content-list-drawer__container-inner__info-panel__management__body__column">
+                                <ul class="drawer__column--wide">
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">Office</span>
+                                        <select class="drawer__section-control" ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices" wf-content-item-update-action="prodOffice"></select>
+                                    </li>
+                                    <li class="drawer__section" ng-switch="!!editingAssignee">
+                                        <div ng-switch-when="false">
+                                            <span class="drawer__section-title">Assigned to</span>
+                                            <img class="drawer__user-image" ng-if="assigneeImage.length > 1" ng-class="{ 'drawer__user-image--placeholder': !assigneeImage }" ng-src="{{ assigneeImage }}" height="38" width="38" alt="contentItem.item.assignee"/>
+                                            <span class="drawer__section-data-row--editable drawer__user-name" ng-click="toggleAssigneeEditing();" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.assignee || "None" }}</span>
+                                        </div>
+                                        <div ng-switch-when="true">
+                                            <punters stub="contentItem" indrawer="true"></punters>
+                                        </div>
+                                    </li>
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">In use by</span>
+                                        <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true">
+                                        </wf-presence-indicators>
+                                    </li>
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">Last modified</span>
+                                        <span class="drawer__section-data-row">{{ (contentItem.lastModified | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
+                                        <span class="drawer__section-data-row" ng-show="contentItem.lastModifiedBy">by {{ contentItem.lastModifiedBy }}</span>
+                                    </li>
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">InCopy</span>
+                                        <span class="drawer__section-data-row">{{ contentItem.incopyTitle }}</span>
+                                        <span class="drawer__section-data-row" ng-if="contentItem.isOwnedByInCopy"><i>Locked</i></span>
+                                    </li>
+                                    <li class="drawer__section">
+                                        <span class="drawer__section-title">Legal status</span>
+                                        <select class="drawer__section-control" ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div class="content-list-drawer__container-inner__toolbar">
 
-                <ul class="atomtest-drawer__column">
-                    <li class="atomtest-drawer__item">
-                        <p class="atomtest-drawer__item-header"></p>
-                    </li>
-                    <li class="atomtest-drawer__item"></li>
-                    <li class="atomtest-drawer__item"></li>
-                    <li class="atomtest-drawer__item"></li>
-                    <li class="atomtest-drawer__item"></li>
-                    <li class="atomtest-drawer__item"></li>
-                </ul>
-            </div>
+                    <span class="content-list-drawer__container-inner__toolbar__trash" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}" ng-click="deleteContentItem(!contentItem.item.trashed)" title="{{ contentItem.item.trashed ? 'Restore' : 'Trash' }}" ng-class="{'drawer__control-item--restore': contentItem.item.trashed}">
+                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
+                        {{ contentItem.item.trashed ? 'Restore' : 'Trash' }}
+                    </span>
+                    <div class="content-list-drawer__container-inner__toolbar__emptyspace">
+                        &nbsp;
+                    </div>
+                    <span class="content-list-drawer__container-inner__toolbar__versions">
+                        <a href="{{ composerRestorerUrl }}" target="_blank" class="drawer__section-data-row drawer__control-item drawer__control-item--restorer" title="View versions">
+                            <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="view-versions"></i>
+                            View versions
+                        </a>
+                    </span>
+                    <span class="content-list-drawer__container-inner__toolbar__incopy">
+                       <a href="{{ incopyExportUrl }}" class="drawer__section-data-row drawer__control-item drawer__control-item--incopy" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InCopy">
+                            <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="incopy"></i>
+                            {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
+                       </a>
+                    </span>
+                    <span class="content-list-drawer__container-inner__toolbar__close" ng-click="contentListDrawerController.hide()" title="Close details">
+                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="cross"></i>
+                        Close details
+                    </span>
+                </div>
 
         </div>
 
