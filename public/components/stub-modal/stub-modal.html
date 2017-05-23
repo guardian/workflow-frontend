@@ -49,8 +49,7 @@
             <div class="form-group pull-right col-xs-5">
                 <label for="stub_section">Section *</label>
                 <div>
-                    <select id="stub_section" name="section" ng-model="stub.section" ng-options="section.name for section in
-                 sections" required>
+                    <select id="stub_section" name="section" ng-model="stub.section" ng-options="section.name for section in sections" required>
                     </select>
                 </div>
             </div>
@@ -113,7 +112,7 @@
             <button type="button" class="btn btn-primary" id="testing-create-in-composer" ng-click="ok(addToComposer=true,addToAtomEditor=false)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status !== 'Stub' && contentName !== 'Atom'">
                 Create new
             </button>
-            <button type="button" class="btn btn-primary" id="testing-create-atom" ng-click="ok(addToComposer=false,addToAtomEditor=true)" ng-disabled="disabled || stubForm.$invalid " ng-show="contentName === 'Atom'">
+            <button type="button" class="btn btn-primary" id="testing-create-atom" ng-click="ok(addToComposer=false,addToAtomEditor=true)" ng-disabled="disabled || stubForm.$invalid " ng-show="contentName === 'Atom' && stub.status !== 'Stub'">
                 Create atom
             </button>
         </div>
