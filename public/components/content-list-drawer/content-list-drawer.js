@@ -170,13 +170,24 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                 $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
 
-            wfCapiContentService.getCapiContent(contentItem.path)
-                .then((resp) => {
-                const parsed = wfCapiContentService.parseCapiContentData(resp, atomMock.atomType);
-                contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
-            }, (err) => {
-                contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
-            });
+                if(contentItem.contentType === 'media') {
+
+                    wfCapiAtomService.getCapiAtom(contentItem.item.editorId, contentItem.item.contentType)
+                        .then((resp) => {
+                            const parsed = wfCapiAtomService.parseCapiAtomData(resp, contentItem.item.atomType);
+                            contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+                        }, (err) => {
+                            contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiAtomService.emptyCapiAtomObject());
+                    });
+                } else {   
+                    wfCapiContentService.getCapiContent(contentItem.path)
+                        .then((resp) => {
+                        const parsed = wfCapiContentService.parseCapiContentData(resp, atomMock.atomType);
+                        contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+                    }, (err) => {
+                        contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
+                    });
+                }
 
 
             });

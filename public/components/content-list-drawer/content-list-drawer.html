@@ -10,7 +10,7 @@
 
                 <span class ="drawer__warning" ng-if="capiData.capiError">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
 
-                <div class="drawer__inner">
+                <div class="drawer__inner" ng-if="contentItem.contentType !== 'media'">
 
                     <ul class="drawer__column">
                         <li class="drawer__item">
@@ -109,7 +109,9 @@
                         </li>
                         <li class="drawer__item">
                             <span class="drawer__item-title">Content type</span>
-                            <span class="drawer__item-content"><i class="drawer__icon--content-type" wf-icon="{{ contentItem.contentType }}"/> {{ contentItem.contentTypeTitle }}</span>
+                            <span class="drawer__item-content">
+                                <i class="drawer__icon" wf-icon="{{ contentItem.contentType }}"/> {{ contentItem.contentTypeTitle }}
+                            </span>
                         </li>
                         <li class="drawer__item" ng-show="contentItem.contentType == 'article'">
                             <span class="drawer__item-title">Word count</span>
@@ -123,6 +125,46 @@
                         </li>
                     </ul>
 
+                </div>
+
+                <div class="drawer__inner" ng-if="contentItem.contentType === 'media'">
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Working title</p>
+                            <wf-editable class="drawer__item-content" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
+                                {{ contentItem.workingTitle || '-' }}
+                            </wf-editable>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Note</p>
+                            <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">{{
+                                contentItem.note || 'Add note' }}
+                            </wf-editable>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">URL</span>
+                            <span class="drawer__item-content" ng-if="capiData.capiUrl">
+                                <a href="{{ capiData.capiUrl }}">{{
+                                capiData.capiUrl }}</a>
+                            </span>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Section</p>
+                            <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="section.name for section in contentList.sections" wf-content-item-update-action="section"></select>
+                        </li>
+                    </ul>
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Content type</p>
+                            <wf-editable class="drawer__item-content" ng-model="contentItem.contentTypeTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
+                                {{ contentItem.contentTypeTitle || '-' }}
+                            </wf-editable>
+                        </li>
+                    </ul>
+
+                    
                 </div>
 
             </div>
@@ -197,7 +239,7 @@
                             <span class="drawer__item-content">{{ (contentItem.lastModified | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
                             <span class="drawer__item-content" ng-show="contentItem.lastModifiedBy">by {{ contentItem.lastModifiedBy }}</span>
                         </li>
-                        <li class="drawer__item">
+                        <li class="drawer__item" ng-if="contentItem.contentType !== 'media'">
                             <span class="drawer__item-title">InCopy</span>
                             <span class="drawer__item-content">{{ contentItem.incopyTitle }}</span>
                             <span class="drawer__item-content" ng-if="contentItem.isOwnedByInCopy"><i>Locked</i></span>
@@ -220,7 +262,7 @@
                 <i class="drawer__icon drawer__toolbar-icon" wf-icon="delete"></i>
                 {{ contentItem.item.trashed ? 'Restore' : 'Trash' }}
             </span>
-            <div class="drawer__toolbar-item">
+            <div class="drawer__toolbar-item drawer__toolbar-item--spacer">
                 &nbsp;
             </div>
             <span class="drawer__toolbar-item">
