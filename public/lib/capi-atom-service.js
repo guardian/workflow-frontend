@@ -8,27 +8,33 @@ function wfCapiAtomService($http, $q) {
 
     function emptyCapiAtomObject() {
         return {
-            empty: true
+            id: "",
+            atomType: "",
+            labels: [],
+            contentChangeDetails: {
+                created: {
+                    date: ""
+                },
+                lastModified: {
+                    date: ""
+                }
+            },
+            revision: "",
+            capiError: true
         }
     }
+
+    function capiUrl(id, atomType) {
+        return `/capi/atom/${atomType}/${id}`;
+    }
     
-    function getCapiAtom(path) {
+    function getCapiAtom(id, atomType) {
         return $http({
             method: 'GET',
-            url: '/capi/'+path,
+            url: capiUrl(id, atomType),
             withCredentials: true,
             timeout: 1000
         });
-    }
-
-    // Specific atom parsers
-    function parseCta(atom) {
-        return {
-            url: atom.url,
-            backgroundImage: atom.backgroundImage,
-            btnText: atom.btnText,
-            label: atom.label
-        }
     }
 
     function parseCapiAtomData(response, atomType) {
@@ -43,12 +49,11 @@ function wfCapiAtomService($http, $q) {
         ];
             
         if(allAtomTypes.indexOf(atomType) !== -1) {
-            const atomData = {
-                title: _.get(response.data.response[atomType], 'title')
-            }
             const atom = _.get(response.data.response[atomType].data, atomType);
             if(atom) {
-                return Object.assign({}, atomData, parseCta(atom));
+                const capiUrl = capiUrl(id, atomType);
+                const atomWithUrl = Object.assign({}, atom, {capiUrl: capiUrl});
+                return atomWithUrl;
             }
         }
         return emptyCapiAtomObject();
@@ -56,6 +61,7 @@ function wfCapiAtomService($http, $q) {
 
     this.getCapiAtom = getCapiAtom;
     this.parseCapiAtomData = parseCapiAtomData;
+    this.emptyCapiAtomObject = emptyCapiAtomObject;
     
 }
 

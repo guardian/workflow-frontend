@@ -170,20 +170,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                 $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
 
-                const atomMock = {
-                    path: 'atom/media/66df164d-53e6-4a39-b6a8-3ae783382d12',
-                    contentType: 'atom',
-                    atomType: 'media'
-                };
-
-
-            wfCapiAtomService.getCapiAtom(atomMock.path)
-                .then((resp) => {
-                    console.log(resp);
-                    const parsed = wfCapiAtomService.parseCapiAtomData(resp, atomMock.atomType);
-                    console.log(parsed);
-            });
-
             wfCapiContentService.getCapiContent(contentItem.path)
                 .then((resp) => {
                 const parsed = wfCapiContentService.parseCapiContentData(resp, atomMock.atomType);
@@ -192,8 +178,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
             });
 
-
-                // contentListDrawerController.toggleContent(contentItem, contentListItemElement);
 
             });
 

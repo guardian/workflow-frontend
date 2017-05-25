@@ -149,16 +149,9 @@ export function wfContentListAtomDrawer($rootScope, config, $timeout, $window, c
                     $rootScope.$broadcast('resetPicker');
                 }
 
-                const atomMock = {
-                    path: '/atom/cta/4c0946f0-0610-43e6-b489-05ab26b495d7',
-                    contentType: 'atom',
-                    atomType: 'cta'
-                };
-
-
-            wfCapiAtomService.getCapiAtom(atomMock.path)
+            wfCapiAtomService.getCapiAtom(contentItem.item.editorId, contentItem.item.contentType)
                 .then((resp) => {
-                const parsed = wfCapiAtomService.parseCapiAtomData(resp, atomMock.atomType);
+                const parsed = wfCapiAtomService.parseCapiAtomData(resp, contentItem.item.atomType);
                 contentListAtomDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
             }, (err) => {
                 contentListAtomDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiAtomService.emptyCapiAtomObject());
