@@ -1,10 +1,11 @@
 package com.gu.workflow.util
 
 import org.slf4j.MDC
-import scala.collection.JavaConverters._
-import scala.util.control.NonFatal
 import play.Logger
+
+import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
+import scala.util.control.NonFatal
 
 /*
  * This is a lightweight wrapper around the MDC stuff. It provides
@@ -45,7 +46,7 @@ object LoggingContext {
     headerValue(context).map(LOGGING_CONTEXT_HEADER -> _).toMap
 
   def headerMap: Map[String, String] = {
-    val map = Option(MDC.getCopyOfContextMap.asInstanceOf[java.util.Map[String,String]]).
+    val map = Option(MDC.getCopyOfContextMap).
       map(_.asScala.toMap).
       getOrElse(Map.empty)
     headerMap(map)
@@ -61,7 +62,7 @@ object LoggingContext {
     }
 
   def withMDCExecutionContext[A](delegate: ExecutionContext)(f: (ExecutionContext) => A): A = {
-    val savedMDC = MDC.getCopyOfContextMap()
+    val savedMDC = MDC.getCopyOfContextMap
     val ec = new ExecutionContext {
       def runHook(r: Runnable)(before: () => Unit)(after: () => Unit = () => ()) = new Runnable {
         def run: Unit = { before(); r.run(); after(); }

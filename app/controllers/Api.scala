@@ -1,26 +1,22 @@
 package controllers
 
 import com.gu.pandomainauth.action.UserRequest
-import com.gu.workflow.api.{ ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI }
+import com.gu.workflow.api.{ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI}
 import com.gu.workflow.lib._
+import config.Config
+import config.Config.defaultExecutionContext
+import lib.Responses._
 import models.Flag.Flag
 import models._
 import models.api.ApiResponseFt
-import play.api.Logger
-
-import play.api.data.Form
-import play.api.data.Forms._
-import play.api.mvc._
-import play.api.libs.json._
-
-import lib.Responses._
-
 import org.joda.time.DateTime
+import play.api.Logger
+import play.api.data.Forms._
+import play.api.data.Mapping
+import play.api.libs.json._
+import play.api.mvc._
 
 import scala.concurrent.Future
-
-import config.Config
-import config.Config.defaultExecutionContext
 
 case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
 
@@ -35,14 +31,14 @@ case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
     action(request).map(_.withHeaders(headers.getOrElse(Nil) :_*))
   }
 
-  lazy val parser = action.parser
+  lazy val parser: BodyParser[A] = action.parser
 }
 
 object Api extends Controller with PanDomainAuthActions {
 
-  val composerUrl = Config.composerUrl
+  val composerUrl: String = Config.composerUrl
 
-  implicit val flatStubWrites = Stub.flatStubWrites
+  implicit val flatStubWrites: Writes[Stub] = Stub.flatStubWrites
 
   def allowCORSAccess(methods: String, args: Any*) = CORSable(composerUrl) {
 
@@ -53,12 +49,12 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   // can be hidden behind multiple auth endpoints
-  def getContentBlock[R] = { implicit req: R =>
+  private def getContentBlock[R] = { implicit req: R =>
     val qs = req match {
       case r: UserRequest[_] => r.queryString + ("email" -> Seq(r.user.email))
       case r: Request[_] => r.queryString
     }
-    CommonAPI.getContent(qs).asFuture.map {
+    CommonAPI.getStubs(qs).asFuture.map {
       case Left(err) => InternalServerError
       case Right(contentResponse) => Ok(Json.toJson(contentResponse))
     }
@@ -85,19 +81,13 @@ object Api extends Controller with PanDomainAuthActions {
       })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
     }
 
-  val iso8601DateTime = jodaDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-  val iso8601DateTimeNoMillis = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
-
-  val stubFilters: Form[(Option[DateTime], Option[DateTime])] =
-    Form(tuple("due.from" -> optional(iso8601DateTimeNoMillis), "due.until" -> optional(iso8601DateTimeNoMillis)))
-
-  val STUB_NOTE_MAXLEN = 500
+  private val iso8601DateTimeNoMillis: Mapping[DateTime] = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
 
   def createContent() =  CORSable(composerUrl) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        stubId <- PrototypeAPI.createContent(jsValue)
+        stubId <- PrototypeAPI.createStub(jsValue)
       } yield {
         stubId
       })
@@ -260,7 +250,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def deleteContent(composerId: String) = CORSable(composerUrl) {
     APIAuthAction {
-      CommonAPI.deleteContent(Seq(composerId)).fold(err =>
+      CommonAPI.deleteStubs(Seq(composerId)).fold(err =>
         Logger.error(s"failed to delete content with composer id: $composerId"), identity)
       NoContent
     }
@@ -283,7 +273,7 @@ object Api extends Controller with PanDomainAuthActions {
   def sections = CORSable(composerUrl) {
     AuthAction.async  {request =>
       ApiResponseFt[List[Section]](for {
-        sections <- SectionsAPI.getSections()
+        sections <- SectionsAPI.getSections
       } yield {
         sections
       })

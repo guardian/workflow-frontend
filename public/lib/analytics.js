@@ -5,7 +5,7 @@
 
 import angular from 'angular';
 import './analytics/mixpanel-adapter';
-import UAParser from 'ua-parser/ua-parser.min';
+import UAParser from 'ua-parser-js';
 
 import './user';
 

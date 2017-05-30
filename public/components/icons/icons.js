@@ -24,7 +24,7 @@
 import angular from 'angular';
 
 // Aggregation icons
-import icons from 'components/icons/icons.svg!text';
+import icons from './icons.svg';
 
 // SVG Namespace
 var SVG_NS = 'http://www.w3.org/2000/svg';

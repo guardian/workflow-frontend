@@ -4,7 +4,7 @@ import play.api.libs.json._
 import play.api.libs.json.JsString
 
 case class Status(name: String) {
-  override def toString = name
+  override def toString: String = name
 }
 
 object Status {
@@ -13,7 +13,7 @@ object Status {
   }
 
   implicit val statusReads = new Reads[Status] {
-    override def reads(json: JsValue) = {
+    override def reads(json: JsValue): JsResult[Status] = {
       (json \ "status").validate[String].map(Status(_))
     }
   }
@@ -25,5 +25,5 @@ object Status {
   def Final = Status("Final")
   def Hold = Status("Hold")
 
-  def All = Writers :: Subs :: ProductionEditor :: Revise :: Final :: Hold :: Nil
+  def All: List[Status] = Writers :: Subs :: ProductionEditor :: Revise :: Final :: Hold :: Nil
 }

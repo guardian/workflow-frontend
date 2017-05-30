@@ -359,7 +359,7 @@ $drawer-breakpoint-small: 1400px;
 }
 
 .content-list-drawer .date-time-picker__group .dropdown-menu {
-    left: 0;
+    left: -170px; //Half the set width
     right: auto;
     min-width: 200px;
 }

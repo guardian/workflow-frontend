@@ -1,11 +1,13 @@
 /**
  * Main workflow stylesheet.
  */
+@import "layouts/global/base";
+@import "components/fonts/webfonts";
 @import "components/fonts/typography";
 @import "components/user-message/user-message";
-@import "layouts/global/colours";
 @import "components/icons/icons";
 @import "layouts/dashboard/dashboard";
+@import '~bootstrap/dist/css/bootstrap.css';
 
 .main-container {
     // Flexbox prefixes - TODO: Autoprefixer

@@ -27,7 +27,7 @@ object Config extends AwsInstanceTags {
   lazy val composerRestorerUrl: String = s"https://restorer.$domain/content"
 
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
-  lazy val presenceClientLib: String = s"https://presence.$domain/assets/presence-client/1.1/lib"
+  lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
 
   lazy val preferencesUrl: String = s"https://preferences.$domain/preferences"
   lazy val tagManagerUrl: String = stage match {

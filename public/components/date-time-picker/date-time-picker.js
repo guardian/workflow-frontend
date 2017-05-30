@@ -18,12 +18,12 @@
 import angular from 'angular';
 import moment from 'moment';
 import 'angular-bootstrap-datetimepicker';
-import 'angular-bootstrap-datetimepicker/src/css/datetimepicker.css!';
+import 'angular-bootstrap-datetimepicker/src/css/datetimepicker.css';
 
 // local dependencies
 import 'lib/date-service';
 
-import dateTimePickerTemplate from './date-time-picker.html!ng-template';
+import dateTimePickerTemplate from './date-time-picker.html';
 
 angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateService'])
 
@@ -33,8 +33,6 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         $provide.decorator('datetimepickerDirective', function($delegate) {
             var directive = $delegate[0];
 
-            var link = directive.link;
-
             function getUTCTimeNow() {
                 var timeNow = new Date();
                 return timeNow.getTime() - (timeNow.getTimezoneOffset() * 60000);
@@ -42,8 +40,6 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
             directive.compile = function() {
                 return function(scope, element, attrs) {
-                    // get old link functionality
-                    link.apply(this, arguments);
                     // add extra listener to link
                     scope.$on('resetPicker', function () {
                         scope.changeView('day', getUTCTimeNow());
@@ -73,7 +69,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 onUpdate: '&wfOnUpdate',
                 onSubmit: '&wfOnSubmit'
             },
-            templateUrl: dateTimePickerTemplate.templateUrl,
+            template: dateTimePickerTemplate,
 
             controller: function ($scope, $element, $attrs) {
                 var idSuffix = pickerCount++;
@@ -94,6 +90,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
 
                 this.onDatePicked = function (newValue) {
+                    console.log(newValue);
                     $scope.dateValue = wfDateParser.parseDate(newValue);
 
 

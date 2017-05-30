@@ -1,22 +1,19 @@
 package com.gu.workflow.lib
 
-import play.api.data.validation.ValidationError
-import play.api.libs.{json, ws}
-import play.api.libs.ws._
-import scala.concurrent.Future
-import play.api.mvc._
-import play.api.libs.json._
+import models.Tag
 import play.api.Logger
 import play.api.Play.current
-import models.Tag
+import play.api.data.validation.ValidationError
+import play.api.libs.json._
+import play.api.libs.ws._
+
 import scala.concurrent.ExecutionContext.Implicits.global
-
-
+import scala.concurrent.Future
 
 case class TagArrayItem(data: Tag)
 
 object TagArrayItem {
-  implicit val jsonFormat = Json.format[TagArrayItem]
+  implicit val jsonFormat: Format[TagArrayItem] = Json.format[TagArrayItem]
 }
 
 case class TagService(tagApiUrl: String)
@@ -34,9 +31,8 @@ object TagService {
       }
     }
   } recoverWith {
-    case e: Exception => {
+    case e: Exception =>
       Logger.error(s"error in fetching tags: ${e.getMessage}", e)
       Future(List[Tag]())
-    }
   }
 }

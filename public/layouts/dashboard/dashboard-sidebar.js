@@ -7,7 +7,7 @@ import 'components/location-picker/location-picker';
 import 'components/sidebar-filter/sidebar-filter';
 import { filterDefaults } from 'lib/filter-defaults';
 
-import './dashboard-sidebar.html!ng-template';
+import './dashboard-sidebar.html';
 
 angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wfProdOfficeService', 'wfLocationPicker'])
     .controller('wfDashboardSidebarController', ['$scope', 'statuses', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'sections', function ($scope, statuses, wfFiltersService, prodOfficeService, sections) {

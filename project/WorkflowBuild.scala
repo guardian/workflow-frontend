@@ -61,8 +61,8 @@ object WorkflowBuild extends Build {
     riffRaffPackageName := s"editorial-tools:workflow:$application",
     riffRaffManifestProjectName := riffRaffPackageName.value,
     riffRaffArtifactResources := Seq(
-      riffRaffPackageType.value -> s"packages/$application/$application.tgz",
-      baseDirectory.value / "conf" / "deploy.json" -> "deploy.json"
+      riffRaffPackageType.value -> s"$application/$application.tgz",
+      baseDirectory.value / "conf" / "riff-raff.yaml" -> "riff-raff.yaml"
     ),
     artifactName in Universal := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
       artifact.name + "." + artifact.extension
@@ -74,7 +74,6 @@ object WorkflowBuild extends Build {
                           .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
                                       ++ testDependencies)
                             .settings(libraryDependencies += filters)
-                            .settings(FrontEnd.PrototypeProject.settings: _*)
                             .settings(playDefaultPort := 9090)
                             .settings(playArtifactDistSettings ++ playArtifactSettings: _*)
                             .enablePlugins(RiffRaffArtifact)
