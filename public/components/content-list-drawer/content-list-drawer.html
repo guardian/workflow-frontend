@@ -10,6 +10,7 @@
 
                 <span class ="drawer__warning" ng-if="capiData.capiError">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
 
+                <!--CONTENT DRAWER-->
                 <div class="drawer__inner" ng-if="contentItem.contentType !== 'media'">
 
                     <ul class="drawer__column">
@@ -127,6 +128,7 @@
 
                 </div>
 
+                <!--ATOM DRAWER-->
                 <div class="drawer__inner" ng-if="contentItem.contentType === 'media'">
 
                     <ul class="drawer__column">

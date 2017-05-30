@@ -24,14 +24,14 @@ function wfCapiAtomService($http, $q) {
         }
     }
 
-    function capiUrl(id, atomType) {
+    function getUrl(id, atomType) {
         return `/capi/atom/${atomType}/${id}`;
     }
     
     function getCapiAtom(id, atomType) {
         return $http({
             method: 'GET',
-            url: capiUrl(id, atomType),
+            url: getUrl(id, atomType),
             withCredentials: true,
             timeout: 1000
         });
@@ -47,11 +47,11 @@ function wfCapiAtomService($http, $q) {
             'storyQuestions',
             'quiz'
         ];
-            
         if(allAtomTypes.indexOf(atomType) !== -1) {
             const atom = _.get(response.data.response[atomType].data, atomType);
+            const atomId = _.get(response.data.response[atomType]);
             if(atom) {
-                const capiUrl = capiUrl(id, atomType);
+                const capiUrl = getUrl(atomId, atomType);
                 const atomWithUrl = Object.assign({}, atom, {capiUrl: capiUrl});
                 return atomWithUrl;
             }

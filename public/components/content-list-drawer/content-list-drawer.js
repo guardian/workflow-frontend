@@ -174,7 +174,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                     wfCapiAtomService.getCapiAtom(contentItem.item.editorId, contentItem.item.contentType)
                         .then((resp) => {
-                            const parsed = wfCapiAtomService.parseCapiAtomData(resp, contentItem.item.atomType);
+                            const parsed = wfCapiAtomService.parseCapiAtomData(resp, contentItem.item.contentType);
                             contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
                         }, (err) => {
                             contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiAtomService.emptyCapiAtomObject());
@@ -182,7 +182,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 } else {   
                     wfCapiContentService.getCapiContent(contentItem.path)
                         .then((resp) => {
-                        const parsed = wfCapiContentService.parseCapiContentData(resp, atomMock.atomType);
+                        const parsed = wfCapiContentService.parseCapiContentData(resp, contentItem.item.contentType);
                         contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
                     }, (err) => {
                         contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
