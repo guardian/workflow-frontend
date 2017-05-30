@@ -64,8 +64,8 @@ object Application extends Controller with PanDomainAuthActions {
     Ok(views.html.troubleshooting())
   }
 
-  def status = Action { request =>
-    Ok(views.html.status())
+  def support = Action { request =>
+    Ok(views.html.status(SupportTeamsController.getTeams()))
   }
 
   // limited tag fields we want output into the DOM

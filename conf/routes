@@ -11,7 +11,7 @@ GET            /dashboard                                  controllers.Applicati
 
 #static user pages
 GET            /about                                      controllers.Assets.at(path="/public", file="/static/about.html")
-GET            /status                                     controllers.Application.status
+GET            /support                                    controllers.Application.support
 GET            /faqs                                       controllers.Application.faqs
 GET            /troubleshooting                            controllers.Application.troubleshooting
 GET            /training                                   controllers.Application.training
@@ -46,6 +46,8 @@ PUT            /api/stubs/:stubId/status                   controllers.Api.putSt
 
 GET            /api/statuses                               controllers.Api.statusus
 GET            /api/sections                               controllers.Api.sections
+
+GET            /api/supportTeams                            controllers.Api.supportTeams
 
 # CAPI
 

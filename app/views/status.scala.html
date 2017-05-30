@@ -1,4 +1,4 @@
-@()
+@(teams: List[model.SupportTeam])
 
 @layout("Status") {
 <div class="admin">
@@ -10,26 +10,18 @@
             </p>
         </div>
 
-    
         <div>
-
             <div class="col-lg-3">
-            <h2>Audience team</h2>
-                <ul class="status">
-                    <li><input type="checkbox"><label>Peter Martin</label></li>
-                    <li><input type="text"><button class="btn btn-lrg btn-info">add</button></li>
-                </ul>
-            </div>
-                
-            </div>
-            <div class="col-lg-3">
-            <h2>Fronts team</h2>
-                <div class="row">
-                    
+                @for(team <- teams) {
+                    <h2>@team.name team</h2>
+                    @for(staff <- team.staff){
+                        <ul class="status">
+                            <li><input type="checkbox" @if(staff.active){checked} val><label>@staff.name</label></li>
+                        }
+                        <li><input type="text"><button class="btn btn-lrg btn-info">add</button></li>
+                        </ul>
                 </div>
-                <div class="row">
-                    <input type="text"><button class="btn btn-lrg btn-info" name="add" value="add" type="submit">add</button>
-                </div>    
+            }
             </div>
 
             <footer>

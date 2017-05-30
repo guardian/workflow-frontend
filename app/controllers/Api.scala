@@ -290,5 +290,9 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
+  def supportTeams = APIAuthAction {
+    Ok(Json.toJson(SupportTeamsController.getTeams()))
+  }
+
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
 }

@@ -2,6 +2,8 @@ package com.gu.workflow.util
 
 import com.amazonaws.regions.{Region, Regions}
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClient
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
+import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import com.amazonaws.services.ec2.AmazonEC2Client
 import com.amazonaws.services.ec2.model.{DescribeTagsRequest, Filter}
 import com.amazonaws.util.EC2MetadataUtils
@@ -15,7 +17,14 @@ object AWS {
 
   lazy val EC2Client = region.createClient(classOf[AmazonEC2Client], null, null)
   lazy val CloudWatch = region.createClient(classOf[AmazonCloudWatchAsyncClient], null, null)
+  lazy val DynamoDb = region.createClient(classOf[AmazonDynamoDBClient], null, null)
 
+}
+
+trait Dynamo {
+  lazy val dynamoDb = new DynamoDB(AWS.DynamoDb)
+
+  lazy val supportStaff = dynamoDb.getTable("support-staff") //TODO: Move to config
 }
 
 trait AwsInstanceTags {
