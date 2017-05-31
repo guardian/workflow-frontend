@@ -3,7 +3,7 @@ package model
 import com.amazonaws.services.dynamodbv2.document.Item
 import play.api.libs.json.Json
 
-case class Staff(name: String, active: Boolean, team: String) { def toItem = Item.fromJSON(Json.toJson(this).toString()) }
+case class Staff(id: String, name: String, active: Boolean, team: String) { def toItem = Item.fromJSON(Json.toJson(this).toString()) }
 
 object Staff {
   implicit val jf = Json.format[Staff]

@@ -48,7 +48,8 @@ GET            /api/statuses                               controllers.Api.statu
 GET            /api/sections                               controllers.Api.sections
 
 GET            /api/supportTeams                           controllers.Api.supportTeams
-PUT            /api/supportTeams/:team/:name               controllers.Api.addSupportStaff(name: String, team: String)
+PUT            /api/supportTeams                           controllers.Api.addSupportStaff(name, team)
+POST           /api/supportTeams/toggle                    controllers.Api.toggleSupportStaff(id, active)
 
 # CAPI
 

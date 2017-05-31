@@ -15,9 +15,9 @@
                 @for(team <- teams) {
                     <h2>@team.name team</h2>
                     @for(staff <- team.staff){
-                        <li><input type="checkbox" @if(staff.active){checked} val><label>@staff.name</label></li>
+                        <li><input type="checkbox" id="status-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val><label>@staff.name</label></li>
                     }
-                        <li><input type="text" id="name-entry-@team.name"><button class="btn btn-lrg btn-info" onclick="addNewStaff('@team.name')">add</button></li>
+                        <li><input type="text" id="name-entry-@team.name"><button class="btn btn-lrg btn-info" onclick="window.addNewStaff('@team.name')">add</button></li>
                 }
             </div>
         </div>
@@ -25,19 +25,6 @@
 
     <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("layouts/infopages/info.min.css")"/>
 
-    <script>
-            function addNewStaff(team) {
-                var xhr = new XMLHttpRequest();
-                var name = document.getElementById("name-entry-".concat(team)).value;
-                var endpoint = "/api/supportTeams/".concat(team).concat("/").concat(name)
-                xhr.open('PUT', endpoint, true);
-                xhr.send();
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        document.reload();
-                    }
-                }
-            }
-    </script>
+    <script src="@routes.Assets.versioned("build/supportteams.bundle.js")"></script>
 }
 
