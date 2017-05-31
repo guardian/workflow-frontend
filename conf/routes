@@ -47,7 +47,8 @@ DELETE         /api/stubs/:stubId                          controllers.Api.delet
 GET            /api/statuses                               controllers.Api.statusus
 GET            /api/sections                               controllers.Api.sections
 
-GET            /api/supportTeams                            controllers.Api.supportTeams
+GET            /api/supportTeams                           controllers.Api.supportTeams
+PUT            /api/supportTeams/:team/:name               controllers.Api.addSupportStaff(name: String, team: String)
 
 # CAPI
 

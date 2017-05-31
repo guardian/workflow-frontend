@@ -2,13 +2,14 @@ package controllers
 
 import com.gu.workflow.util.Dynamo
 import model.{Staff, SupportTeam}
-import play.api.mvc.Controller
+import play.api.mvc.{Controller}
+
 import scala.collection.JavaConversions._
 
 object SupportTeamsController extends Controller with PanDomainAuthActions with Dynamo {
 
-  def writeStaff(staff: Staff) = {
-    supportStaff.putItem(staff.toItem)
+  def createNewStaff(name: String, team: String) = {
+    supportStaff.putItem(Staff(name, false, team).toItem)
   }
 
   def getStaff(): List[Staff] = {

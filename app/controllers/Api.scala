@@ -284,5 +284,10 @@ object Api extends Controller with PanDomainAuthActions {
     Ok(Json.toJson(SupportTeamsController.getTeams()))
   }
 
+  def addSupportStaff(team: String, name: String) = APIAuthAction {
+    SupportTeamsController.createNewStaff(name, team)
+    Ok(s"$name added to $team")
+  }
+
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
 }
