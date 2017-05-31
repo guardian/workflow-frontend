@@ -3,8 +3,8 @@
   "description": "workflow-frontend",
   "author": "Guardian Digital CMS team",
   "scripts": {
-    "build-dev": "webpack ./public/app.js ./public/build/app.bundle.js --config ./conf/webpack.conf.js --watch",
-    "build": "webpack ./public/app.js ./public/build/app.bundle.js --config ./conf/webpack.prod.conf.js",
+    "build-dev": "webpack --config ./conf/webpack.conf.js --watch",
+    "build": "webpack --config ./conf/webpack.prod.conf.js",
     "test": "karma start"
   },
   "devDependencies": {
@@ -47,7 +47,6 @@
     "karma-sinon": "^1.0.5",
     "karma-webpack": "^2.0.3",
     "lodash": "4.17.4",
-    "mixpanel-browser": "2.11.1",
     "mocha": "^3.3.0",
     "moment": "2.8.3",
     "moment-timezone": "0.2.3",
