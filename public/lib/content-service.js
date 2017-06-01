@@ -31,6 +31,11 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     });
                 };
 
+                /* what types of stub should be treated as atoms? */
+                getAtomTypes() {
+                    return { "media": true };
+                }
+
                 getEditorUrl(editorId) {
                     return {
                         "media": config.mediaAtomMakerViewAtom + editorId

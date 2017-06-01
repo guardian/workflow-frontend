@@ -17,7 +17,9 @@ const wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesS
 function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
 
     wfContentService.getTypes().then( (types) => {
-        $scope.contentName = types[stub.contentType] || "News item";
+        $scope.contentName =
+            (wfContentService.getAtomTypes())[stub.contentType] ?
+            "Atom" : (types[stub.contentType] || "News item");
 
         $scope.modalTitle = ({
             'create': `Create ${$scope.contentName}`,
