@@ -142,31 +142,31 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
-        let promise;
-
-        if ($scope.contentName === 'Atom') {
-            stub['contentType'] = $scope.stub.contentType.toLowerCase();
-            stub['status'] = stub.status === undefined ? 'Stub' : stub.status;
-            if (addToAtomEditor) {
-                promise = wfContentService.createInMediaAtomMaker(stub);
-            } else if (stub.id) {
-                promise = wfContentService.updateStub(stub);
+        function createItemPromise() {
+            if ($scope.contentName === 'Atom') {
+                stub['contentType'] = $scope.stub.contentType.toLowerCase();
+                stub['status'] = stub.status === undefined ? 'Stub' : stub.status;
+                if (addToAtomEditor) {
+                    return wfContentService.createInMediaAtomMaker(stub);
+                } else if (stub.id) {
+                    return wfContentService.updateStub(stub);
+                } else {
+                    return wfContentService.createStub(stub);
+                }
             } else {
-                promise = wfContentService.createStub(stub);
-            }
-        } else {
-            if (addToComposer) {
-                promise = wfContentService.createInComposer(stub);
-            } else if (stub.id) {
-                promise = wfContentService.updateStub(stub);
-            } else {
-                promise = wfContentService.createStub(stub);
+                if (addToComposer) {
+                    return wfContentService.createInComposer(stub);
+                } else if (stub.id) {
+                    return wfContentService.updateStub(stub);
+                } else {
+                    return wfContentService.createStub(stub);
+                }
             }
         }
 
         $scope.actionInProgress = true;
 
-        promise.then((response) => {
+        createItemPromise().then((response) => {
             const eventName = ({
                 'create': 'stub.created',
                 'edit': 'stub.edited',

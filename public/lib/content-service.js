@@ -17,17 +17,16 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 getTypes() {
 
                     return wfFeatureSwitches.getSwitch("support-atoms").then( (isActive) => {
-                        var basicTypes = {
+                        const basicTypes = {
                             "article": "Article",
                             "liveblog": "Live blog",
                             "gallery": "Gallery",
                             "interactive": "Interactive",
                             "picture": "Picture"
                         };
-
-                        if (isActive) basicTypes['atom'] = 'Atom';
-
-                        return basicTypes;
+                        return isActive
+                            ? Object.assign({}, basicTypes, {'atom': 'Atom'})
+                        :  basicTypes;
                     });
                 };
 
