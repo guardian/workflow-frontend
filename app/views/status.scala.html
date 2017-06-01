@@ -15,9 +15,9 @@
                 @for(team <- teams) {
                     <h2>@team.name team</h2>
                     @for(staff <- team.staff){
-                        <li><input type="checkbox" id="status-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val><label>@staff.name</label></li>
+                        <ul style="list-style-type:none"><input type="checkbox" id="status-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val><label>@staff.name</label></ul>
                     }
-                        <li><input type="text" id="name-entry-@team.name"><button class="btn btn-lrg btn-info" onclick="window.addNewStaff('@team.name')">add</button></li>
+                    <ul style="list-style-type:none"><input type="text" id="name-entry-@team.name"><button class="btn btn-lrg btn-info" onclick="window.addNewStaff('@team.name')">add</button></ul>
                 }
             </div>
         </div>
