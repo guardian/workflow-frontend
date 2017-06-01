@@ -274,8 +274,6 @@ wfStubModal.run([
          */
         function setUpPreferedStub (contentType) {
 
-            console.log("[PMR 1458] setUpPreferedStub ", contentType)
-
             function createStubData (contentType, sectionName) {
 
                 return {
