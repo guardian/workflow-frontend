@@ -281,9 +281,7 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def supportTeams = APIAuthAction {
-    Ok(Json.toJson(
-      SupportTeamsController.getTeams()
-    ))
+    Ok(Json.toJson(SupportTeamsController.getTeams()))
   }
 
   def addSupportStaff(name: String, team: String) = APIAuthAction {

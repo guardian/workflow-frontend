@@ -64,7 +64,7 @@ object Application extends Controller with PanDomainAuthActions {
     Ok(views.html.troubleshooting())
   }
 
-  def support = Action { request =>
+  def support = AuthAction { request =>
     Ok(views.html.status(SupportTeamsController.getTeams()))
   }
 
