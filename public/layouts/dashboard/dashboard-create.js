@@ -7,7 +7,9 @@ import './dashboard-create.html';
 angular
     .module('wfDashboardCreate', ['wfContentService'])
     .controller('wfDashboardCreateController', ['$scope', 'wfContentService', function ($scope, contentService) {
-        $scope.options = contentService.getTypes();
+        contentService.getTypes().then( (types) => {
+            $scope.options = types;
+        });
 
         $scope.createContent = function(contentType) {
             $scope.$emit('stub:create', contentType);

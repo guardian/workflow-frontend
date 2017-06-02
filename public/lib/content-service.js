@@ -1,24 +1,43 @@
 import angular from 'angular';
 
 import './composer-service';
+import './media-atom-maker-service'
 import './http-session-service';
 import './user';
 import './visibility-service';
+import './feature-switches';
 
-angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService',
-        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService) {
+angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService'])
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'config', 'wfFeatureSwitches',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, config, wfFeatureSwitches) {
 
-            var httpRequest = wfHttpSessionService.request;
+            const httpRequest = wfHttpSessionService.request;
 
             class ContentService {
                 getTypes() {
+
+                    return wfFeatureSwitches.getSwitch("support-atoms").then( (isActive) => {
+                        const basicTypes = {
+                            "article": "Article",
+                            "liveblog": "Live blog",
+                            "gallery": "Gallery",
+                            "interactive": "Interactive",
+                            "picture": "Picture"
+                        };
+                        return isActive
+                            ? Object.assign({}, basicTypes, {'atom': 'Atom'})
+                        :  basicTypes;
+                    });
+                };
+
+                /* what types of stub should be treated as atoms? */
+                getAtomTypes() {
+                    return { "media": true };
+                }
+
+                getEditorUrl(editorId) {
                     return {
-                        "article": "Article",
-                        "liveblog": "Live blog",
-                        "gallery": "Gallery",
-                        "interactive": "Interactive",
-                        "picture": "Picture"
+                        "media": config.mediaAtomMakerViewAtom + editorId
                     }
                 };
 
@@ -75,6 +94,24 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         if (stub.id) {
                             return this.updateStub(stub);
 
+                        } else {
+                            return this.createStub(stub);
+                        }
+                    });
+                }
+
+                /**
+                 * Creates an atom in the Media Atom Maker. Effectively setting
+                 * the editorId to what we get from the response.
+                 */
+                createInMediaAtomMaker(stub) {
+
+                    return wfMediaAtomMakerService.create(stub.title).then( (response) => {
+
+                        stub['editorId'] = response.data.id;
+
+                        if (stub.id) {
+                            return this.updateStub(stub);
                         } else {
                             return this.createStub(stub);
                         }

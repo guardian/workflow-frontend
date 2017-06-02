@@ -1,6 +1,6 @@
 package lib
 
-import play.api.libs.json.{JsString, JsValue}
+import play.api.libs.json.JsValue
 import config.Config
 
 object Composer {
