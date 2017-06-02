@@ -255,7 +255,7 @@ wfStubModal.run([
     'config',
     function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, wfPreferencesService, wfLocationService, sections, config) {
 
-        var defaultAtomType = "media"
+        const defaultAtomType = "media"
 
         function currentFilteredOffice() {
             return wfFiltersService.get('prodOffice');
@@ -277,7 +277,7 @@ wfStubModal.run([
             function createStubData (contentType, sectionName) {
 
                 return {
-                    contentType: contentType == "atom" ? defaultAtomType : contentType,
+                    contentType: contentType === "atom" ? defaultAtomType : contentType,
                     // Only send through a section if one is found in the prefs
                     section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
                     priority: 0,
