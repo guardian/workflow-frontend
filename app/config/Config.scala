@@ -26,6 +26,8 @@ object Config extends AwsInstanceTags {
   lazy val composerUrl: String = s"https://composer.$domain"
   lazy val composerRestorerUrl: String = s"https://restorer.$domain/content"
 
+  lazy val mediaAtomMakerUrl: String = s"https://video.$domain"
+
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
 
