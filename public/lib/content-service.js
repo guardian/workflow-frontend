@@ -206,6 +206,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'state': modelParams['state'],
                         'section': modelParams['section'],
                         'content-type': modelParams["content-type"],
+                        'atom-type': modelParams["atom-type"],
                         'flags': modelParams['flags'],
                         'prodOffice': modelParams['prodOffice'],
                         'due.from': wfFormatDateTimeFilter(dateRange['from'], "ISO8601") || null,

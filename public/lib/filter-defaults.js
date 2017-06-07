@@ -61,7 +61,7 @@ var filterDefaults = function (statuses, wfFiltersService, wfFeatureSwitches) {
         },
         (wfFeatureSwitches.getCookie('support-atoms') === '1' ? {
                 title: 'Atom type',
-                namespace: 'content-type',
+                namespace: 'atom-type',
                 listIsOpen: false,
                 multi: true,
                 filterOptions: [
