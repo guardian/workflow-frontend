@@ -1,6 +1,5 @@
 package controllers
 
-import play.api.libs.json.{JsBoolean, JsObject}
 import play.api.mvc._
 
 object Feature extends Controller with PanDomainAuthActions {
