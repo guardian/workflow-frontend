@@ -60,6 +60,15 @@ var filterDefaults = function (statuses, wfFiltersService) {
             ]
         },
         {
+            title: 'Atom type',
+            namespace: 'content-type',
+            listIsOpen: false,
+            multi: true,
+            filterOptions: [
+                { caption: 'Media', value: 'media', icon: 'media' }
+            ]
+        },
+        {
             title: 'Created',
             namespace: 'created',
             listIsOpen: false,

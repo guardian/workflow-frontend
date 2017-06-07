@@ -21,7 +21,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
 
             function isMultiSelect() {
                 if(typeof $scope.filter["multi"] === "boolean")
-                    return $scope.filter["multi"]
+                    return $scope.filter["multi"];
                 else
                     return false
             }
@@ -35,7 +35,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                     $scope.selectedFilters = [];
 
                     $scope.filter.filterOptions.forEach((filterOption) => {
-                        var currentSelection = wfFiltersService.get(filterOption.namespace);
+                        let currentSelection = wfFiltersService.get(filterOption.namespace);
 
                         if (currentSelection) {
                             currentSelection = currentSelection === 'me' ? _wfConfig.user.email : currentSelection;
@@ -45,7 +45,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
 
 
                 } else {
-                    var currentSelection = wfFiltersService.get($scope.filter.namespace);
+                    const currentSelection = wfFiltersService.get($scope.filter.namespace);
 
                     if (!currentSelection) {
                         $scope.selectedFilters = [];
@@ -105,7 +105,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
 
                 if ($scope.filter.individualNamespaces) {
 
-                    var filterName = individualNamespacesFilterName(filter);
+                    const filterName = individualNamespacesFilterName(filter);
 
                     if($scope.filterIsSelected(filter)) {
                         $scope.selectedFilters =
@@ -168,7 +168,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
 
                 wfPreferencesService
                     .setPreference('filters', $scope.filterPrefs);
-            };
+            }
 
             /**
              * After rendering set up the filter list display.
@@ -197,7 +197,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                     .then(function resolve (data) {
 
                         $scope.filterPrefs = data;
-                        var thisFilterPref = data.filter((filter) => filter && filter.namespace === $scope.filter.namespace);
+                        const thisFilterPref = data.filter((filter) => filter && filter.namespace === $scope.filter.namespace);
 
                         if ($scope.selectedFilters.length > 0) { // If this filter has an option selected on load then display it open by default
 
@@ -236,11 +236,11 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         // how long to wait (ms) after seeing a change before
         // committing it? (e.g. we want to activate the change
         // once the user has finished typing).
-        var defaultDelay = 500;
+        const defaultDelay = 500;
 
         $scope.value = "";
-        var timeout = null;
-        var oldValue = null;
+        let timeout = null;
+        let oldValue = null;
 
         $scope.reset = function () {
             $scope.value = "";
@@ -258,7 +258,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
             }
 
             timeout = $timeout(() => {
-                var newValue = ($scope.value.length < 1) ? null :
+                const newValue = ($scope.value.length < 1) ? null :
                     $scope.value;
 
                 $rootScope.$broadcast(
