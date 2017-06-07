@@ -48,19 +48,16 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   // can be hidden behind multiple auth endpoints
-  private def getContentBlock[R] = { implicit req: R =>
+  private def getContentBlock[R <: Request[_]] = { implicit req: R =>
     val qs: Map[String, Seq[String]] = req match {
-      case r: UserRequest[_] =>
-        val query = r.queryString + ("email" -> Seq(r.user.email))
-
-        val supportAtoms = r.cookies.get("support-atoms").fold(false)(cookie => cookie.value == "1")
-        if(supportAtoms) query + ("supportAtoms" -> Seq(supportAtoms.toString)) else query
-
-      case r: Request[_] =>
-        val supportAtoms = r.cookies.get("support-atoms").fold(false)(cookie => cookie.value == "1")
-        if(supportAtoms) r.queryString + ("supportAtoms" -> Seq(supportAtoms.toString)) else r.queryString
+      case r: UserRequest[_] => r.queryString + ("email" -> Seq(r.user.email))
+      case r: Request[_] => r.queryString
     }
-    CommonAPI.getStubs(qs).asFuture.map {
+
+    val supportAtoms = req.cookies.get("support-atoms").fold(false)(cookie => cookie.value == "1")
+    val queryString = if(supportAtoms) qs + ("supportAtoms" -> Seq(supportAtoms.toString)) else qs
+
+    CommonAPI.getStubs(queryString).asFuture.map {
       case Left(err) => InternalServerError
       case Right(contentResponse) => Ok(Json.toJson(contentResponse))
     }
