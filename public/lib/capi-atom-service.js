@@ -37,6 +37,15 @@ function wfCapiAtomService($http, $q) {
         });
     }
 
+    function getCapiAtomUsages(id, atomType) {
+        return $http({
+            method: 'GET',
+            url: getUrl(id, atomType) + '/usage',
+            withCredentials: true,
+            timeout: 1000
+        });
+    }
+
     function parseCapiAtomData(response, atomType) {
 
         const allAtomTypes = [
@@ -59,7 +68,12 @@ function wfCapiAtomService($http, $q) {
         return emptyCapiAtomObject();
     }
 
+    function parseCapiUsages(response) {
+
+    }
+
     this.getCapiAtom = getCapiAtom;
+    this.getCapiAtomUsages = getCapiAtomUsages;
     this.parseCapiAtomData = parseCapiAtomData;
     this.emptyCapiAtomObject = emptyCapiAtomObject;
     
