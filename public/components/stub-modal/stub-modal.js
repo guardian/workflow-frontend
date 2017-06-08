@@ -2,6 +2,8 @@ import angular from 'angular';
 
 import 'angular-bootstrap-temporary';
 
+import _ from 'lodash';
+
 import 'components/date-time-picker/date-time-picker';
 
 import 'lib/composer-service';
@@ -24,7 +26,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         $scope.modalTitle = ({
             'create': `Create ${$scope.contentName}`,
             'edit': `Edit ${$scope.contentName}`,
-            'import': 'Import from Composer'
+            'import': 'Import Existing Content'
         })[mode];
     });
 
@@ -99,45 +101,70 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.validImport = false;
     $scope.wfComposerState;
 
-    $scope.composerUrlChanged = () => {
-        wfComposerService.getComposerContent($scope.formData.composerUrl).then(
-            (composerContent) => {
-                //check validity
-                if (composerContent) {
+    const importUrlHandlers = [
+        { name: "Media Atom Maker",
+          regex: "videos/[0-9a-f-]+$",
+          fn: (url) => {
+              console.log("[PMR 1438] Would look up", url);
+          }
+        },
+        { name: "Composer",
+          regex: "^.*$",
+          fn: (url) => {
+              wfComposerService.getComposerContent($scope.formData.importUrl).then(
+                  (composerContent) => {
+                      //check validity
+                      if (composerContent) {
 
-                    const contentItem = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
-                    const composerId = contentItem.composerId;
+                          const contentItem = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
+                          const composerId = contentItem.composerId;
 
-                    if(composerId) {
-                        $scope.composerUrl = config.composerViewContent + '/' + composerId;
-                        $scope.stub.title = contentItem.headline;
-                        // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
-                        $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
+                          if(composerId) {
+                              $scope.composerUrl = config.composerViewContent + '/' + composerId;
+                              $scope.stub.title = contentItem.headline;
+                              // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
+                              $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
 
-                        wfContentService.getById(composerId).then(
-                            function(res){
-                                if(res.data.data.visibleOnUi) {
-                                    $scope.wfComposerState = 'visible';
-                                    $scope.stubId = res.data.data.id;
-                                }
-                                else {
-                                    $scope.wfComposerState = 'invisible'
-                                }
-                            },
-                            function(err) {
-                                if(err.status === 404) {
-                                    $scope.validImport = true;
-                                    if(err.data.archive) { $scope.wfComposerState = 'archived'; }
-                                }
-                            });
-                    }
-                } else {
-                    $scope.stub.title = null;
-                    $scope.stub.composerId = null;
-                    $scope.stub.contentType = null;
-                }
-            }
-        );
+                              wfContentService.getById(composerId).then(
+                                  function(res){
+                                      if(res.data.data.visibleOnUi) {
+                                          $scope.wfComposerState = 'visible';
+                                          $scope.stubId = res.data.data.id;
+                                      }
+                                      else {
+                                          $scope.wfComposerState = 'invisible'
+                                      }
+                                  },
+                                  function(err) {
+                                      if(err.status === 404) {
+                                          $scope.validImport = true;
+                                          if(err.data.archive) { $scope.wfComposerState = 'archived'; }
+                                      }
+                                  });
+                          }
+                      } else {
+                          $scope.stub.title = null;
+                          $scope.stub.composerId = null;
+                          $scope.stub.contentType = null;
+                      }
+                  }
+              );
+          }
+        }
+    ];
+
+    $scope.importUrlChanged = () => {
+        const url = $scope.formData.importUrl;
+        const handler = _.find(importUrlHandlers, (handlerObj) => {
+            return url.search(handlerObj.regex) !== -1;
+        });
+
+        if(handler) {
+            $scope.importHandler = handler;
+            $scope.importHandler.fn(url);
+        } else {
+            console.log("[PMR 1219] no handler found");
+        }
     };
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
