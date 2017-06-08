@@ -174,10 +174,10 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                     wfCapiAtomService.getCapiAtom(contentItem.item.editorId, contentItem.item.contentType)
                         .then((resp) => {
-                            wfCapiAtomService.getCapiAtomUsages(contentItem.item.editorId, contentItem.item.contentType)
+                            wfCapiAtomService.getAtomUsages(contentItem.item.editorId, contentItem.item.contentType)
                                 .then((usagesResp) => {
                                     const parsed = wfCapiAtomService.parseCapiAtomData(resp, contentItem.item.contentType);
-                                    parsed['usages'] = usagesResp.data.response.results;
+                                    parsed['usages'] = usagesResp;
                                     contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
                                 });
                         }, (err) => {

@@ -168,7 +168,7 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Usages</p>
                             <span ng-repeat="usage in capiData.usages">
-                                {{ usage }}
+                                {{ usage.webTitle }} <a href="{{usage.webUrl}}">Guardian</a> <a href="{{usage.composerUrl}}">Composer</a> <a href="{{usage.viewerUrl}}">Viewer</a>
                             </span>
                         </li>
                     </ul>
