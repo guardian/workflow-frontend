@@ -13,10 +13,10 @@ import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
 
-const wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])
+const wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
-function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
+function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
 
     wfContentService.getTypes().then( (types) => {
         $scope.contentName =
@@ -101,55 +101,62 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.validImport = false;
     $scope.wfComposerState;
 
+    function importComposerContent(url) {
+        wfComposerService.getComposerContent($scope.formData.importUrl).then(
+            (composerContent) => {
+                //check validity
+                if (composerContent) {
+
+                    const contentItem = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
+                    const composerId = contentItem.composerId;
+
+                    if(composerId) {
+                        $scope.composerUrl = config.composerViewContent + '/' + composerId;
+                        $scope.stub.title = contentItem.headline;
+                        // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
+                        $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
+
+                        wfContentService.getById(composerId).then(
+                            function(res){
+                                if(res.data.data.visibleOnUi) {
+                                    $scope.wfComposerState = 'visible';
+                                    $scope.stubId = res.data.data.id;
+                                }
+                                else {
+                                    $scope.wfComposerState = 'invisible'
+                                }
+                            },
+                            function(err) {
+                                if(err.status === 404) {
+                                    $scope.validImport = true;
+                                    if(err.data.archive) { $scope.wfComposerState = 'archived'; }
+                                }
+                            });
+                    }
+                } else {
+                    $scope.stub.title = null;
+                    $scope.stub.composerId = null;
+                    $scope.stub.contentType = null;
+                }
+            }
+        );
+    }
+
+    function importContentAtom(id, atomType) {
+        console.log("[PMR 1615] -> here");
+        wfCapiAtomService.getCapiAtom(id, atomType).then((atom) => {
+            console.log("[PMR 1614] Got an atom:", atom);
+        });
+    }
+
     const importUrlHandlers = [
         { name: "Media Atom Maker",
-          regex: "videos/[0-9a-f-]+$",
-          fn: (url) => {
-              console.log("[PMR 1438] Would look up", url);
-          }
+          regex: "videos/([0-9a-f-]+)$",
+          fn: (url, matches) => importContentAtom(matches[1], "media")
         },
         { name: "Composer",
           regex: "^.*$",
-          fn: (url) => {
-              wfComposerService.getComposerContent($scope.formData.importUrl).then(
-                  (composerContent) => {
-                      //check validity
-                      if (composerContent) {
-
-                          const contentItem = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
-                          const composerId = contentItem.composerId;
-
-                          if(composerId) {
-                              $scope.composerUrl = config.composerViewContent + '/' + composerId;
-                              $scope.stub.title = contentItem.headline;
-                              // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
-                              $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
-
-                              wfContentService.getById(composerId).then(
-                                  function(res){
-                                      if(res.data.data.visibleOnUi) {
-                                          $scope.wfComposerState = 'visible';
-                                          $scope.stubId = res.data.data.id;
-                                      }
-                                      else {
-                                          $scope.wfComposerState = 'invisible'
-                                      }
-                                  },
-                                  function(err) {
-                                      if(err.status === 404) {
-                                          $scope.validImport = true;
-                                          if(err.data.archive) { $scope.wfComposerState = 'archived'; }
-                                      }
-                                  });
-                          }
-                      } else {
-                          $scope.stub.title = null;
-                          $scope.stub.composerId = null;
-                          $scope.stub.contentType = null;
-                      }
-                  }
-              );
-          }
+          fn: importComposerContent
         }
     ];
 
@@ -161,7 +168,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
         if(handler) {
             $scope.importHandler = handler;
-            $scope.importHandler.fn(url);
+            $scope.importHandler.fn(url, url.match(handler.regex));
         } else {
             console.log("[PMR 1219] no handler found");
         }
