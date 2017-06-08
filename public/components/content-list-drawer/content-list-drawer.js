@@ -14,7 +14,7 @@ import _ from 'lodash';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -170,16 +170,25 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                 $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
 
-            wfCapiService.getCapiContent(contentItem.path)
-                .then((resp) => {
-                const parsed = wfCapiService.parseCapiData(resp);
-                contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
-            }, (err) => {
-                contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiService.emptyCapiObject());
-            });
+                if(contentItem.contentType === 'media') {
 
+                    wfCapiAtomService.getCapiAtom(contentItem.item.editorId, contentItem.item.contentType)
+                        .then((resp) => {
+                            const parsed = wfCapiAtomService.parseCapiAtomData(resp, contentItem.item.contentType);
+                            contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+                        }, (err) => {
+                            contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiAtomService.emptyCapiAtomObject());
+                    });
+                } else {   
+                    wfCapiContentService.getCapiContent(contentItem.path)
+                        .then((resp) => {
+                        const parsed = wfCapiContentService.parseCapiContentData(resp, contentItem.item.contentType);
+                        contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+                    }, (err) => {
+                        contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
+                    });
+                }
 
-                // contentListDrawerController.toggleContent(contentItem, contentListItemElement);
 
             });
 
