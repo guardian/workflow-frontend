@@ -18,9 +18,8 @@ object ContentResponse {
     statusToCount ++ Map("Stub" -> stubCount) ++ Map("total" -> totalCount)
   }
 
-  def contentGroupedByStatus(stubs: List[Stub]): Map[String, List[Stub]] = {
-    stubs.groupBy(stub => stub.externalData.get.status).collect({case (s, stubList) => (s.name, stubList)})
-  }
+  def contentGroupedByStatus(stubs: List[Stub]): Map[String, List[Stub]] =
+    stubs.filter(!isStub(_)).groupBy(stub => stub.externalData.get.status).collect({case (s, stubList) => (s.name, stubList)})
 
   def fromStubItems(stubs: List[Stub]): ContentResponse =
     ContentResponse(contentGroupedByStatus(stubs), stubs.filter(isStub), statusCountsMap(stubs))

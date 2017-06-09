@@ -1,18 +1,16 @@
 package lib
 
+import config.Config
 import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{Result, Results}
-
-import scala.concurrent.{ExecutionContext, Future}
-import config.Config
 
 case class ApiError(message: String, friendlyMessage: String, statusCode: Int, statusString: String, data: Option[JsObject] = None)
 
 case class ApiSuccess[T](data: T, status: String = "Ok", statusCode: Int = 200, headers: List[(String,String)]= Nil)
 
 case object ApiError {
-  implicit val apiErrorFormat = Json.format[ApiError]
+  implicit val apiErrorFormat: Format[ApiError] = Json.format[ApiError]
 }
 
 object ApiErrors {
@@ -21,11 +19,11 @@ object ApiErrors {
   lazy val invalidContentSend        = ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")
   lazy val conflict                  = ApiError("WorkflowContentExists", s"This item is already tracked in Workflow", 409, "conflict")
 
-  def jsonParseError(errMsg: String) = ApiError("JsonParseError", s"failed to parse the json. Error(s): ${errMsg}", 400, "badrequest")
-  def updateError[A](id: A)          = ApiError("UpdateError", s"Item with ID, ${id} does not exist", 404, "notfound")
-  def databaseError(exc: String)     = ApiError("DatabaseError", s"${exc}", 500, "internalservererror")
+  def jsonParseError(errMsg: String, json: String) = ApiError("JsonParseError", s"failed to parse the json. Error(s): $errMsg. Json: $json", 400, "badrequest")
+  def updateError[A](id: A)          = ApiError("UpdateError", s"Item with ID, $id does not exist", 404, "notfound")
+  def databaseError(exc: String)     = ApiError("DatabaseError", s"$exc", 500, "internalservererror")
 
-  def composerItemLinked(id: Long, composerId: String) = {
+  def composerItemLinked(id: Long, composerId: String): ApiError = {
     ApiError("ComposerItemIsLinked", s"This stub is already linked to a composer article", 409, "conflict",
       Some(
         Json.obj(
