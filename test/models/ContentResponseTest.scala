@@ -6,7 +6,7 @@ import org.scalatest.{FreeSpec, Matchers}
 
 class ContentResponseTest extends FreeSpec with Matchers {
 
-  def withStatus(st: String): Stub => Stub = c => c.copy(externalData = c.externalData.map(_.copy(status = Some(Status(st)))))
+  def withStatus(st: String): Stub => Stub = c => c.copy(externalData = c.externalData.map(_.copy(status = Status(st))))
 
   "statusCountsMap" -    {
     "should give a map of status to count" in {
@@ -67,7 +67,6 @@ class ContentResponseTest extends FreeSpec with Matchers {
 
       cr.content should equal (contentGroupedByStatus)
       cr.stubs should equal (stubOnly)
-//      ContentResponse.fromStubItems(testData) should equal(ContentResponse(contentGroupedByStatus, stubOnly, statusCountsMap))
     }
   }
 

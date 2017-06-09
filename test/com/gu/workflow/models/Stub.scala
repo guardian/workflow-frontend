@@ -1,10 +1,10 @@
 package com.gu.workflow.models
 
+import com.gu.workflow.test.lib.TestData._
 import lib.ResourcesHelper
 import models._
-import org.scalatest.{Matchers, FreeSpec}
-import play.api.libs.json.{Json, JsSuccess}
-import com.gu.workflow.test.lib.TestData._
+import org.scalatest.{FreeSpec, Matchers}
+import play.api.libs.json.Json
 
 class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
   "ContentReads" - {
@@ -38,7 +38,7 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
         stub.section should equal ("100 Voices (Project)")
         stub.contentType should equal ("article")
         stub.composerId should equal (Some("56cc74bfa7c8a951d739c3f4"))
-        stub.externalData.flatMap(_.status) should equal (Some(Status("Writers")))
+        stub.externalData.map(_.status) should equal (Some(Status.Writers))
         stub.externalData.flatMap(_.activeInInCopy) should equal (Some(false))
         stub.externalData.flatMap(_.takenDown) should equal (Some(false))
         stub.externalData.flatMap(_.published) should equal (Some(false))
@@ -68,7 +68,7 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
 
         stub.composerId should equal (Some("56cc7694a7c8a951d739c3f9"))
         stub.contentType should equal ("article")
-        stub.externalData.flatMap(_.status) should equal (Some(Status("Desk")))
+        stub.externalData.map(_.status) should equal (Some(Status.Desk))
         stub.externalData.flatMap(_.activeInInCopy) should equal (Some(true))
         stub.externalData.flatMap(_.takenDown) should equal (Some(false))
         stub.externalData.flatMap(_.optimisedForWebChanged) should equal (Some(false))
