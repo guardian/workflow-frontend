@@ -11,8 +11,9 @@ import scala.util.Try
 
 object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi {
 
+  implicit val flatStubWrites = Writes.OptionWrites(Stub.flatStubWrites)
+
   def contentById(id: String) =  CORSable(composerUrl) {
-    implicit val flatStubWrites = Stub.flatStubWrites
     APIAuthAction.async {
       ApiResponseFt[Option[Stub]](for {
         item <- Try(id.toLong).toOption match {
@@ -21,7 +22,7 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
         }
       } yield {
         item
-      })(Writes.OptionWrites(Stub.flatStubWrites), global)
+      })
     }
   }
 
@@ -33,6 +34,11 @@ object ContentApi extends Controller with PanDomainAuthActions with WorkflowApi 
   def contentByComposerId(id: String): ApiResponseFt[Option[Stub]] =  {
     val item = CommonAPI.getStubsByComposerId(id)
     prepareResponse(item)
+  }
+
+  def contentByEditorId(id: String) = APIAuthAction.async {
+    val item = CommonAPI.getStubsByEditorId(id)
+    ApiResponseFt[Option[Stub]](prepareResponse(item))
   }
 
   private def prepareResponse(res: ApiResponseFt[Option[Stub]]): ApiResponseFt[Option[Stub]] = {

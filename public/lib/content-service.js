@@ -76,6 +76,13 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     });
                 }
 
+                getByEditorId(editorId) {
+                    return httpRequest({
+                        method: 'GET',
+                        url: '/api/v1/content/editor/' + editorId
+                    });
+                }
+
                 /**
                  * Creates a draft in Composer from a Stub. Effectively moving
                  * it to "Writers" status.

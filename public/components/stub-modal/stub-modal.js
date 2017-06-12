@@ -143,9 +143,14 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     }
 
     function importContentAtom(id, atomType) {
-        console.log("[PMR 1615] -> here");
-        wfCapiAtomService.getCapiAtom(id, atomType).then((atom) => {
-            console.log("[PMR 1614] Got an atom:", atom);
+        wfCapiAtomService.getCapiAtom(id, atomType).then((response) => {
+            if(response) {
+                const atom = wfCapiAtomService.parseCapiAtomData(response, atomType);
+                $scope.stub.title = atom.title;
+                wfContentService.getByEditorId(id).then(
+                    (content) => console.log("[PMR 1522] ", content)
+                )
+            }
         });
     }
 

@@ -53,7 +53,7 @@ GET            /capi/*path                                 controllers.CAPIServi
 
 # Content
 GET            /api/v1/content/:id                         controllers.ContentApi.contentById(id: String)
-
+GET            /api/v1/content/editor/:id                  controllers.ContentApi.contentByEditorId(id: String)
 # Admin
 GET            /admin                                      controllers.Admin.index
 GET            /admin/desks-and-sections                   controllers.Admin.desksAndSections(selectedDesk: Option[Long])
