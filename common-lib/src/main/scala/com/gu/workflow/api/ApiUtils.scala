@@ -42,7 +42,7 @@ object ApiUtils {
   // this function is needed to convert the json into a format that datastore understands.
   def flatStubJsonToStubJson(jsValue: JsValue): ApiResponseFt[JsValue] = {
     jsValue.validate[Stub](flatJsonReads).fold(e => {
-      ApiResponseFt.Left(ApiError("Json conversion failed", s"Failed to convert flat stub into stub with externalData level for datastore with error: $e. Json: $jsValue", 400, "badrequest"))
+      ApiResponseFt.Left(ApiError("Json conversion failed", s"Failed to convert flat stub into stub with externalData level for datastore with error: $e", 400, "badrequest"))
     }, s => ApiResponseFt.Right(Json.toJson(s)(stubWrites)))
   }
 
@@ -69,7 +69,7 @@ object ApiUtils {
       case error@JsError(_) =>
         val errMsg = errorMsgs(error)
         Logger.error(s"JsonParseError failed to parse the json. Error(s): $errMsg 400 badrequest. Json: $jsValue")
-        ApiResponseFt.Left(ApiError("JsonParseError", s"failed to parse the json. Error(s): $errMsg. Json: $jsValue", 400, "badrequest"))
+        ApiResponseFt.Left(ApiError("JsonParseError", s"failed to parse the json. Error(s): $errMsg", 400, "badrequest"))
     }
   }
 
