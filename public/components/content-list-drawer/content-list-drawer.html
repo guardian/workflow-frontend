@@ -53,8 +53,8 @@
                         <li cng-class="{'drawer__section-mainmedia--nopreview': contentItem.mainMediaNoPreview}">
                             <span class="drawer__item-title">Main media</span>
 
-                            <div ng-if="contentItem.mainMediaType == 'image'" class="drawer__section-image-container">
-                                <img ng-src="{{ capiData.mainMediaUrl}}" alt=""/>
+                            <div ng-if="contentItem.mainMediaType == 'image'" class="drawer__image-container">
+                                <img ng-src="{{ capiData.mainMediaUrl}}" class="drawer__image" alt=""/>
                             </div>
                             <div ng-if="contentItem.mainMediaNoPreview" class="drawer__section-image-container">
                                 {{contentItem.mainMediaType}}
@@ -81,8 +81,8 @@
                     <ul class="drawer__column">
                         <li class="drawer__item">
                             <span class="drawer__item-title">Trail picture</span>
-                            <div ng-if="capiData.trailImageUrl" class="drawer__section-image-container">
-                                <img ng-src="{{ capiData.trailImageUrl }}" alt=""/>
+                            <div ng-if="capiData.trailImageUrl" class="drawer__image-container">
+                                <img ng-src="{{ capiData.trailImageUrl }}" class="drawer__image" alt=""/>
                             </div>
                             <div ng-if="!capiData.trailImageUrl" class="drawer__item-content drawer__item-content--empty">
                                 None
