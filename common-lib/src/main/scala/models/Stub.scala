@@ -27,7 +27,7 @@ case class Stub(id: Option[Long] = None,
 
 case class ExternalData(path: Option[String] = None,
   lastModified: Option[DateTime] = None,
-  status: Option[Status] = None,
+  status: Status = Status.Writers,
   published: Option[Boolean] = None,
   timePublished: Option[DateTime] = None,
   revision: Option[Long] = None,
@@ -54,7 +54,7 @@ object ExternalData {
   implicit val externalDataJsonReads: Reads[ExternalData] = (
     (__ \ "path").readNullable[String] and
       (__ \ "lastModified").readNullable[DateTime] and
-      (__ \ "status").readNullable[String].map(s => s.map(Status(_))) and
+      (__ \ "status").read[String].map(Status(_)) and
       (__ \ "published").readNullable[Boolean] and
       (__ \ "timePublished").readNullable[DateTime] and
       (__ \ "revision").readNullable[Long] and
@@ -128,7 +128,7 @@ object Stub {
     // because of this bug, the fix is supposed to be released soon https://github.com/playframework/play-json/issues/11
        ((__ \ "path").readNullable[String] and
        (__ \ "lastModified").readNullable[DateTime] and
-       (__ \ "status").readNullable[String].map(s => s.map(Status(_))) and
+       (__ \ "status").read[String].map(Status(_)) and
        (__ \ "published").readNullable[Boolean] and
        (__ \ "timePublished").readNullable[DateTime] and
        (__ \ "revision").readNullable[Long] and

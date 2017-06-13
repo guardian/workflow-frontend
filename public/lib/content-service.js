@@ -93,7 +93,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                         if (stub.id) {
                             return this.updateStub(stub);
-
                         } else {
                             return this.createStub(stub);
                         }
@@ -146,7 +145,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 updateField(contentItem, field, data) {
 
-                    if (field === 'status' && !contentItem.composerId) {
+                    if (field === 'status' && contentItem.status === 'Stub') {
                         return this.createInComposer(contentItem, data)
                     }
 

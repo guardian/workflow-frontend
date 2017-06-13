@@ -10,13 +10,13 @@ object StatusDatabase {
 
   val store: Agent[List[Status]] = Agent(List(
     Status.Stub,
-    Status("Writers"),
-    Status("Desk"),
-    Status("Production Editor"),
-    Status("Subs"),
-    Status("Revise"),
-    Status("Final"),
-    Status("Hold")
+    Status.Writers,
+    Status.Desk,
+    Status.ProductionEditor,
+    Status.Subs,
+    Status.Revise,
+    Status.Final,
+    Status.Hold
   ))
 
   def statuses: Future[List[Status]] = store.future()

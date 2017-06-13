@@ -23,7 +23,6 @@ object TestData {
   val users: List[User] = List(User("testcake@testcake.com", "test", "cake"), User("google@google.com", "goo", "gle"), User("facebook@facebook.com", "face", "book"))
   val commissioningDesks: List[String] = List("Hogwarts,The Burrow", "Privet Drive,London", "Hogsmeade")
   val path: List[String] = List("path_1", "path_2", "path_3")
-  val status: List[Status] = List(Status("status_1"), Status("status_2"), Status("status_3"))
 
   //select a date anywhere between now and the last 50 days
   def chooseDate: DateTime = DateTime.now().minusHours(random.nextInt(24*50))
@@ -42,7 +41,7 @@ object TestData {
 
   def chooseLong: Long = random.nextLong
 
-  def randomStub = generateRandomStub()
+  def randomStub: Stub = generateRandomStub()
 
   //todo - genericise these methods over types
   def generateTestData(size: Int = 50,
@@ -62,7 +61,7 @@ object TestData {
       lastModified = newLastModified,
       trashed = newTrashed,
       externalData = Some(rs.externalData.fold(ExternalData())(ed => ed.copy(
-        status = Some(Status(newStatus)),
+        status = Status(newStatus),
         lastModified = Some(newLastModified),
         scheduledLaunchDate = lsd,
         embargoedIndefinitely= Some(newEmbargoedIndefinitely)))
@@ -77,7 +76,7 @@ object TestData {
       externalData = Some(s.externalData.fold(ExternalData())(_.copy(
         published = Some(newPublished),
         lastModified = Some(newLastModified),
-        status = Some(Status(newStatus))))))
+        status = Status(newStatus)))))
   }
 
   def generateRandomSizeCollaborators(): List[User] = {
@@ -122,7 +121,7 @@ object TestData {
       commissioningDesks = opt(chooseItem(commissioningDesks)),
       externalData = Some(ExternalData(
         path = opt(chooseItem(path)),
-        status = opt(chooseItem(status)),
+        status = chooseItem(statuses),
         published = pub,
         takenDown = opt(td),
         revision = Some(10)
