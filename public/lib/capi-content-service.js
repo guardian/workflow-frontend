@@ -60,15 +60,14 @@ function wfCapiContentService($http, $q) {
     }
     
     function parseCapiContentData(response) {
-        
-        if (_.get(response.data, 'content')) {
+        if (_.get(response.data, 'response.content')) {
             const resp = response.data.response;
             if (resp) {
                 const content = resp.content;
                 if (content) {
-                    const fields = _.get(response.data.content, 'fields', {});
-                    const elements = _.get(response.data.content, 'elements');
-                    const tags = _.get(response.data.content, 'tags');
+                    const fields = _.get(content, 'fields', {});
+                    const elements = _.get(content, 'elements');
+                    const tags = _.get(content, 'tags');
                     
                     const mainMedia = elements ? getMainMedia(elements): null;
                     
