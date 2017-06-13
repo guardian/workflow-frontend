@@ -20,7 +20,7 @@
  * }
  */
 
-var filterDefaults = function (statuses, wfFiltersService) {
+var filterDefaults = function (statuses, wfFiltersService, wfFeatureSwitches) {
 
     return [
         {
@@ -59,6 +59,15 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'Video', value: 'video', icon: 'video' }
             ]
         },
+        (wfFeatureSwitches.getCookie('support-atoms') === '1' ? {
+                title: 'Atom type',
+                namespace: 'atom-type',
+                listIsOpen: false,
+                multi: true,
+                filterOptions: [
+                    { caption: 'Media', value: 'media', icon: 'media' }
+                ]
+            } : {}),
         {
             title: 'Created',
             namespace: 'created',
@@ -164,7 +173,11 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'Trashed', value: 'true'}
             ]
         }
-    ];
+    ].filter(notEmpty);
 };
+
+function notEmpty(value) {
+    return Object.keys(value).length !== 0;
+}
 
 export { filterDefaults }

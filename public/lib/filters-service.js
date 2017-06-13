@@ -17,8 +17,14 @@ angular.module('wfFiltersService', ['wfDateService'])
                     self.update('prodOffice', data);
                     $rootScope.$broadcast('getContent');
                 });
+
                 $rootScope.$on('filtersChanged.content-type', function(event, data) {
                     self.update('content-type', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
+                $rootScope.$on('filtersChanged.atom-type', function(event, data) {
+                    self.update('atom-type', data);
                     $rootScope.$broadcast('getContent');
                 });
 
@@ -161,6 +167,7 @@ angular.module('wfFiltersService', ['wfDateService'])
                         'state'        : params['state'],
                         'section'      : params['section'],
                         'content-type' : params['content-type'],
+                        'atom-type'    : params['atom-type'],
                         'selectedDate' : wfDateParser.parseQueryString(selectedDate),
                         'flags'        : params['flags'],
                         'prodOffice'   : params['prodOffice'],
