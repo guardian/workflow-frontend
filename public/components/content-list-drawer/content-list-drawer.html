@@ -140,15 +140,15 @@
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Note</p>
-                            <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">{{
-                                contentItem.note || 'Add note' }}
+                            <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">
+                                {{ contentItem.note || 'Add note' }}
                             </wf-editable>
                         </li>
                         <li class="drawer__item">
                             <span class="drawer__item-title">URL</span>
                             <span class="drawer__item-content" ng-if="capiData.capiUrl">
-                                <a href="{{ capiData.capiUrl }}">{{
-                                capiData.capiUrl }}</a>
+                                <a href="{{ capiData.capiUrl }}">
+                                    {{ capiData.capiUrl }}</a>
                             </span>
                         </li>
                         <li class="drawer__item">
@@ -164,8 +164,19 @@
                                 {{ contentItem.contentTypeTitle || '-' }}
                             </wf-editable>
                         </li>
-                    </ul>
 
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Usages</p>
+                            <div class="drawer__item-content" ng-repeat="usage in capiData.usages">
+                                <div>
+                                    {{ usage.webTitle || '-' }}
+                                    <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"/></a>
+                                    <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="preview"/></a>
+                                    <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"/></a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                     
                 </div>
 
