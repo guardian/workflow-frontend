@@ -224,7 +224,7 @@
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Status</p>
-                            <select ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status"></select>
+                            <select ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices" wf-content-item-update-action="prodOffice"></select>
                         </li>
                     </ul>
 
