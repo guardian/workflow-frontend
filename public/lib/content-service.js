@@ -100,7 +100,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                         if (stub.id) {
                             return this.updateStub(stub);
-
                         } else {
                             return this.createStub(stub);
                         }
@@ -153,7 +152,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 updateField(contentItem, field, data) {
 
-                    if (field === 'status' && !contentItem.composerId) {
+                    if (field === 'status' && contentItem.status === 'Stub') {
                         return this.createInComposer(contentItem, data)
                     }
 
@@ -213,6 +212,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'state': modelParams['state'],
                         'section': modelParams['section'],
                         'content-type': modelParams["content-type"],
+                        'atom-type': modelParams["atom-type"],
                         'flags': modelParams['flags'],
                         'prodOffice': modelParams['prodOffice'],
                         'due.from': wfFormatDateTimeFilter(dateRange['from'], "ISO8601") || null,

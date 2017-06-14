@@ -8,19 +8,18 @@ case class ContentResponse(content: Map[String, List[Stub]], stubs: List[Stub], 
 
 object ContentResponse {
 
-  private def isStub(s: Stub): Boolean = s.externalData.get.status.isEmpty || s.externalData.get.status.contains(Status.Stub)
+  private def isStub(s: Stub): Boolean = s.externalData.get.status == Status.Stub
 
 
   def statusCountsMap(stubs: List[Stub]): Map[String, Int] = {
-    val statusToCount: Map[String, Int] = stubs.groupBy(stub => stub.externalData.get.status.orElse(None)).collect({case (Some(s), sList) => (s.name, sList.length)})
+    val statusToCount: Map[String, Int] = stubs.groupBy(stub => stub.externalData.get.status).collect({case (s, sList) => (s.name, sList.length)})
     val stubCount: Int = stubs.count(isStub)
     val totalCount: Int = stubs.length
     statusToCount ++ Map("Stub" -> stubCount) ++ Map("total" -> totalCount)
   }
 
-  def contentGroupedByStatus(stubs: List[Stub]): Map[String, List[Stub]] = {
-    stubs.groupBy(stub => stub.externalData.get.status.orElse(None)).collect({case (Some(status), stubList) => (status.name, stubList)})
-  }
+  def contentGroupedByStatus(stubs: List[Stub]): Map[String, List[Stub]] =
+    stubs.filter(!isStub(_)).groupBy(stub => stub.externalData.get.status).collect({case (s, stubList) => (s.name, stubList)})
 
   def fromStubItems(stubs: List[Stub]): ContentResponse =
     ContentResponse(contentGroupedByStatus(stubs), stubs.filter(isStub), statusCountsMap(stubs))
@@ -33,7 +32,7 @@ object ContentResponse {
       }.toSeq:_*)
   }
 
-  implicit val flatStubWrites = Stub.flatStubWrites
-  implicit val contentResponseFormat = Json.writes[ContentResponse]
-  implicit val contentResponseReads = Json.reads[ContentResponse]
+  implicit val flatStubWrites: Writes[Stub] = Stub.flatStubWrites
+  implicit val contentResponseFormat: Writes[ContentResponse] = Json.writes[ContentResponse]
+  implicit val contentResponseReads: Reads[ContentResponse] = Json.reads[ContentResponse]
 }

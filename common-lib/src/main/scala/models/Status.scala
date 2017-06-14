@@ -19,11 +19,12 @@ object Status {
   }
   def Stub = Status("Stub")
   def Writers = Status("Writers")
-  def Subs = Status("Subs")
+  def Desk = Status("Desk")
   def ProductionEditor = Status("Production Editor")
+  def Subs = Status("Subs")
   def Revise = Status("Revise")
   def Final = Status("Final")
   def Hold = Status("Hold")
 
-  def All: List[Status] = Writers :: Subs :: ProductionEditor :: Revise :: Final :: Hold :: Nil
+  def All = Stub :: Writers :: Desk :: ProductionEditor :: Subs :: Revise :: Final :: Hold :: Nil
 }

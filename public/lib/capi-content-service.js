@@ -13,14 +13,14 @@ function wfCapiContentService($http, $q) {
             const h = parseInt(asset.typeData.height);
             return h && w ? h * w : null;
         } else return null;
-    };
+    }
     
     
     function getSmallestAsset(assets) {
         return assets.reduceRight(function(l,r) {
             return getSize(l) < getSize(r) ? l : r;
         });
-    };
+    }
     
     function getMainMedia(elements) {
         const mainElements = elements.filter((e) => e.relation === "main");
@@ -36,12 +36,12 @@ function wfCapiContentService($http, $q) {
             }
         }
         return null;
-    };
+    }
     
     function getTagTitles(tags) {
         return tags.map((t) => t.webTitle);
-    };
-    
+    }
+
     function emptyCapiContentObject() {
         return {
             headline: "unknown",
@@ -60,15 +60,14 @@ function wfCapiContentService($http, $q) {
     }
     
     function parseCapiContentData(response) {
-        
-        if (_.get(response.data, 'content')) {
+        if (_.get(response.data, 'response.content')) {
             const resp = response.data.response;
             if (resp) {
                 const content = resp.content;
                 if (content) {
-                    const fields = _.get(response.data.content, 'fields', {});
-                    const elements = _.get(response.data.content, 'elements');
-                    const tags = _.get(response.data.content, 'tags');
+                    const fields = _.get(content, 'fields', {});
+                    const elements = _.get(content, 'elements');
+                    const tags = _.get(content, 'tags');
                     
                     const mainMedia = elements ? getMainMedia(elements): null;
                     
@@ -105,13 +104,8 @@ function wfCapiContentService($http, $q) {
         });
     }
 
-
-    
-    
     this.getCapiContent = getCapiContent;
     this.parseCapiContentData = parseCapiContentData;
     this.emptyCapiContentObject = emptyCapiContentObject;
-    
-    
 }
 

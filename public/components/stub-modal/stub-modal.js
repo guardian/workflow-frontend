@@ -182,9 +182,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
         function createItemPromise() {
+            stub['status'] = stub.status === undefined ? 'Stub' : stub.status;
             if ($scope.contentName === 'Atom') {
                 stub['contentType'] = $scope.stub.contentType.toLowerCase();
-                stub['status'] = stub.status === undefined ? 'Stub' : stub.status;
                 if (addToAtomEditor) {
                     return wfContentService.createInMediaAtomMaker(stub);
                 } else if (stub.id) {
