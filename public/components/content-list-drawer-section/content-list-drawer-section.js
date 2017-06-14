@@ -5,8 +5,14 @@ export function wfContentListDrawerSection ($rootScope) {
         restrict: 'A',
         transclude: true,
         template: sectionTemplate,
+        scope: {
+            sectionOpen: '@wfSectionOpen'
+        },
         link: ($scope, elem, attrs) => {
-          console.log($scope);
+            $scope.toggleSection = function() {
+                $scope.sectionOpen = !$scope.sectionOpen;
+                console.log($scope.sectionOpen);
+            }
         }
     }
 }

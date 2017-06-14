@@ -2,7 +2,7 @@
     <td colspan="100" class="content-list-drawer__full-width">
 
         <div class="drawer">
-            <div wf-content-list-drawer-section class="drawer__section drawer__section--wide">
+            <div wf-content-list-drawer-section wf-section-open="true" class="drawer__section drawer__section--wide" ng-class="{'drawer__section--closed': sectionOpen}">
                 <div class="drawer__header">
                     <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
@@ -182,7 +182,7 @@
 
             </div>
 
-            <div class="drawer__section">
+            <div wf-content-list-drawer-section wf-section-open="false" class="drawer__section">
                 <div class="drawer__header">
                     <i class="drawer__icon" wf-icon="management"/>
                     Management

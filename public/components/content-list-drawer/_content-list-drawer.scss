@@ -54,6 +54,10 @@
             margin-right: 3px;
         }
 
+        &--closed {
+            display: none;
+        }
+
         &--wide {
             flex: 2.5 0 0;
         }
