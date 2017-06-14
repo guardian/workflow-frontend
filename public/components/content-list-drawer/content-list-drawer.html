@@ -2,9 +2,9 @@
     <td colspan="100" class="content-list-drawer__full-width">
 
         <div class="drawer">
-            <div class="drawer__section drawer__section--wide">
+            <div wf-content-list-drawer-section class="drawer__section drawer__section--wide">
                 <div class="drawer__header">
-                    <i class="drawer__icon" wf-icon="furniture"/>
+                    <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
                 </div>
 
@@ -111,7 +111,7 @@
                         <li class="drawer__item">
                             <span class="drawer__item-title">Content type</span>
                             <span class="drawer__item-content">
-                                <i class="drawer__icon" wf-icon="{{ contentItem.contentType }}"/> {{ contentItem.contentTypeTitle }}
+                                <i class="drawer__icon" wf-icon="{{ contentItem.contentType }}"></i> {{ contentItem.contentTypeTitle }}
                             </span>
                         </li>
                         <li class="drawer__item" ng-show="contentItem.contentType == 'article'">
@@ -170,9 +170,9 @@
                             <div class="drawer__item-content" ng-repeat="usage in capiData.usages">
                                 <div>
                                     {{ usage.webTitle || '-' }}
-                                    <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"/></a>
-                                    <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="preview"/></a>
-                                    <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"/></a>
+                                    <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"></i></a>
+                                    <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="preview"></i></a>
+                                    <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"></i></a>
                                 </div>
                             </div>
                         </li>
