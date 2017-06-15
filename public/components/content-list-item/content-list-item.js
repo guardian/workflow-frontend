@@ -54,6 +54,11 @@ function wfContentItemParser(config, statusLabels, sections) {
         constructor(item) {
             if (item.composerId) {
                 this.composer = config.composerViewContent + '/' + item.composerId;
+                this.editor = this.composer;
+            }
+            if (item.contentType == "media" && item.editorId) {
+                this.mediaAtomMaker = config.mediaAtomMakerViewAtom + item.editorId;
+                this.editor = this.mediaAtomMaker;
             }
             if (item.path) {
                 this.preview = getViewerURL(item.path);
@@ -75,6 +80,7 @@ function wfContentItemParser(config, statusLabels, sections) {
             // TODO: Stubs have a different structure to content items
             this.id = item.id || item.stubId;
             this.composerId = item.composerId;
+            this.editorId = item.editorId;
             this.wordCount = item.wordCount;
 
             this.headline = item.headline;
