@@ -2,7 +2,7 @@
     <td colspan="100" class="content-list-drawer__full-width">
 
         <div class="drawer">
-            <div wf-content-list-drawer-section wf-section-open="true" class="drawer__section drawer__section--wide" ng-class="{'drawer__section--closed': sectionOpen}">
+            <div wf-content-list-drawer-section wf-section-open="true" class="drawer__section drawer__section--wide" ng-class="{'drawer__section--closed': !sectionOpen}">
                 <div class="drawer__header">
                     <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
@@ -226,7 +226,6 @@
                             <p class="drawer__item-title">Status</p>
                             <select ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status"></select>
                         </li>
-                        
                     </ul>
 
                     <ul class="drawer__column drawer__column--wide">
