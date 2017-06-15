@@ -152,6 +152,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     function importContentAtom(id, atomType) {
         wfCapiAtomService.getCapiAtom(id, atomType).then((response) => {
             if(response) {
+                $scope.editorUrl = config.mediaAtomMakerViewAtom + id;
                 const atom = wfCapiAtomService.parseCapiAtomData(response, atomType);
                 $scope.stub.title = atom.title;
                 wfContentService.getByEditorId(id).then(

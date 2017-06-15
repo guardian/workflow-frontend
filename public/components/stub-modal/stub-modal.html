@@ -150,7 +150,7 @@
 
     <div class="modal-footer alert alert-info" ng-show="wfComposerState ==='invisible'">
         <p>This content is already tracked and not visible in Workflow.
-            <a href="{{composerUrl}}" target="_blank" ng-click="cancel()">View in Composer.</a>
+            <a href="{{composerUrl || editorUrl}}" target="_blank" ng-click="cancel()">View in editor.</a>
         </p>
     </div>
 
