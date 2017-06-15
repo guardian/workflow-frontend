@@ -101,6 +101,21 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.validImport = false;
     $scope.wfComposerState;
 
+    /* when a request is made to import an item from another tool,
+     * e.g. composer or an atom editor, then we will check to see if
+     * it is already being tracked by Workflow. If, this function will
+     * be called with the workflow entry as it's argument.
+     */
+    function importHandleExisting(content) {
+        if(content.visibleOnUi) {
+            $scope.wfComposerState = 'visible';
+            $scope.stubId = res.data.data.id;
+        }
+        else {
+            $scope.wfComposerState = 'invisible'
+        }
+    }
+
     function importComposerContent(url) {
         wfComposerService.getComposerContent($scope.formData.importUrl).then(
             (composerContent) => {
@@ -117,16 +132,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                         $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
 
                         wfContentService.getById(composerId).then(
-                            function(res){
-                                if(res.data.data.visibleOnUi) {
-                                    $scope.wfComposerState = 'visible';
-                                    $scope.stubId = res.data.data.id;
-                                }
-                                else {
-                                    $scope.wfComposerState = 'invisible'
-                                }
-                            },
-                            function(err) {
+                            (res) => importHandleExisting(res.data.data),
+                            (err) => {
                                 if(err.status === 404) {
                                     $scope.validImport = true;
                                     if(err.data.archive) { $scope.wfComposerState = 'archived'; }
@@ -148,8 +155,14 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                 const atom = wfCapiAtomService.parseCapiAtomData(response, atomType);
                 $scope.stub.title = atom.title;
                 wfContentService.getByEditorId(id).then(
-                    (content) => console.log("[PMR 1522] ", content)
-                )
+                    (res) => importHandleExisting(res.data.data),
+                    (err) => {
+                        if(err.status === 404) {
+                            $scope.validImport = true;
+                            if(err.data.archive) { $scope.wfComposerState = 'archived'; }
+                        }
+                    }
+                );
             }
         });
     }
