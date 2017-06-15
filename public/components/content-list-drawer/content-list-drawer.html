@@ -231,7 +231,7 @@
                     <ul class="drawer__column drawer__column--wide">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Office</p>
-                            <select ng-model="contentItem.priority" ng-options="p.value as p.name for p in contentList.priorities" wf-content-item-update-action="priority"></select>
+                            <select ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices" wf-content-item-update-action="prodOffice"></select>
                         </li>
                         <li class="drawer__item" ng-switch="!!editingAssignee">
                             <div ng-switch-when="false">
