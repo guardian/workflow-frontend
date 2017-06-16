@@ -167,9 +167,23 @@
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Headline (YT title)</p>
-                            <wf-editable class="drawer__item-content" ng-model="contentItem.contentTypeTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
-                                {{ contentItem.contentTypeTitle || '-' }}
-                            </wf-editable>
+                            <span class="drawer__item-content">
+                                {{ capiData.metadata.title || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Standfirst</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.metadata.description || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Trail text</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.metadata.trailText || '-' }}
+                            </span>
                         </li>
 
                         <li class="drawer__item">
@@ -183,6 +197,61 @@
                                 </div>
                             </div>
                         </li>
+                    </ul>
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Video source</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.metadata.source || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Video category</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.metadata.category || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Expiry date</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.metadata.expiryDate || '-' }}
+                            </span>
+                        </li>
+
+                    </ul>
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">YT category</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.youtubeCategoryId || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">YT channel</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.channelId || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Privacy status</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.privacyStatus || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Keywords</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.tags || '-' }}
+                            </span>
+                        </li>
+
                     </ul>
                     
                 </div>
@@ -212,7 +281,7 @@
                             </form>
                         </li>
                         <li class="drawer__item">
-                            <span class="drawer__item-title">Scheduled</span>
+                            <p class="drawer__item-title">Scheduled</p>
                             <span class="drawer__item-content">
                                 {{ (contentItem.launchScheduleDetails.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
                             </span>

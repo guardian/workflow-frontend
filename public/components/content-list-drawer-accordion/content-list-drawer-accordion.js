@@ -8,10 +8,8 @@ export function wfContentListDrawerAccordion ($rootScope) {
             openSection: '=wfOpenSection',
         },
         link: (scope, element, attrs, ctrl, transclude) => {
-            console.log(scope, element, attrs);
             scope.toggleSection = (sectionName) => {
                 scope.openSection = sectionName
-                console.log(scope.openSection);
             }
             transclude(scope, function(clone, scope) {
                 

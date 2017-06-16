@@ -65,22 +65,11 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService) {
     }
 
     function parseCapiAtomData(response, atomType) {
-
-        const allAtomTypes = [
-            'explainer',
-            'media',
-            'cta',
-            'recipe',
-            'storyQuestions',
-            'quiz'
-        ];
-        if(allAtomTypes.indexOf(atomType) !== -1) {
-            const atom = _.get(response.data.response[atomType].data, atomType);
-            const atomId = _.get(response.data.response[atomType]);
-            if(atom) {
-                const capiUrl = getUrl(atomId, atomType);
-                return Object.assign({}, atom, {capiUrl: capiUrl});
-            }
+        const atom = _.get(response.data.response[atomType].data, atomType);
+        const atomId = _.get(response.data.response[atomType], 'id');
+        if(atom) {
+            const capiUrl = getUrl(atomId, atomType);
+            return Object.assign({}, atom, {capiUrl: capiUrl});
         }
         return emptyCapiAtomObject();
     }
