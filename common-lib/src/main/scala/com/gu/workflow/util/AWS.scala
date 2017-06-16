@@ -1,5 +1,7 @@
 package com.gu.workflow.util
 
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import com.amazonaws.auth.{AWSCredentialsProviderChain, DefaultAWSCredentialsProviderChain, EnvironmentVariableCredentialsProvider, InstanceProfileCredentialsProvider}
 import com.amazonaws.regions.{Region, Regions}
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClient
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
@@ -16,7 +18,15 @@ object AWS {
 
   lazy val EC2Client = region.createClient(classOf[AmazonEC2Client], null, null)
   lazy val CloudWatch = region.createClient(classOf[AmazonCloudWatchAsyncClient], null, null)
-  lazy val DynamoDb = region.createClient(classOf[AmazonDynamoDBClient], null, null)
+  lazy val DynamoDb = region.createClient(
+    classOf[AmazonDynamoDBClient],
+    new AWSCredentialsProviderChain(
+      new EnvironmentVariableCredentialsProvider(),
+      new InstanceProfileCredentialsProvider(),
+      new ProfileCredentialsProvider("workflow"),
+      new DefaultAWSCredentialsProviderChain
+    ),
+    null)
 
 }
 
