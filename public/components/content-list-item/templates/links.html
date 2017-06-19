@@ -1,4 +1,4 @@
-<td class="content-list-item__field--composer">
+<td class="content-list-item__field--composer" ng-if="contentItem.contentType !== 'media'">
     <a href="{{ contentItem.links.composer }}" title="View in Composer (opens in new window)" target="_blank" ng-if="contentItem.links.composer" ng-click="$event.stopPropagation()">
         <i class="content-list-item__icon--composer" wf-icon="composer"></i>
     </a>
