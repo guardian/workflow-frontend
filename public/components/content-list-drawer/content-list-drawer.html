@@ -225,14 +225,14 @@
 
                     <ul class="drawer__column">
                         <li class="drawer__item">
-                            <p class="drawer__item-title">YT category</p>
+                            <p class="drawer__item-title">Youtube category</p>
                             <span class="drawer__item-content">
                                 {{ capiData.youtubeCategoryId || '-' }}
                             </span>
                         </li>
 
                         <li class="drawer__item">
-                            <p class="drawer__item-title">YT channel</p>
+                            <p class="drawer__item-title">Youtube channel</p>
                             <span class="drawer__item-content">
                                 {{ capiData.channelId || '-' }}
                             </span>
@@ -252,6 +252,19 @@
                             </span>
                         </li>
 
+                    </ul>
+
+                    <ul class="drawer__column drawer__column--wide">
+                        <li class="drawer__item" ng-if="capiData.currentAsset">
+                            <p class="drawer__item-title">Video preview</p>
+                            <iframe
+                                type="text/html"
+                                className="drawer__item"
+                                src=`https://www.youtube.com/embed/${capiData.currentAsset.id}?showinfo=0`
+                                allowFullScreen
+                                frameBorder="0"
+                                />
+                        </li>
                     </ul>
                     
                 </div>

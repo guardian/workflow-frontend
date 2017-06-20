@@ -2,9 +2,9 @@ import angular from 'angular';
 import _ from 'lodash';
 
 angular.module('wfCapiAtomService', [])
-.service('wfCapiAtomService', ['$http', '$q', 'config', 'wfCapiContentService', wfCapiAtomService]);
+.service('wfCapiAtomService', ['$http', '$q', 'config', 'wfCapiContentService', 'wfAtomService', wfCapiAtomService]);
 
-function wfCapiAtomService($http, $q, config, wfCapiContentService) {
+function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomService) {
 
     function emptyCapiAtomObject() {
         return {
@@ -46,6 +46,15 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService) {
         });
     }
 
+    function parseAtom(atom, atomType) {
+        switch(atomType) {
+            case 'media':
+                return wfAtomService.parseMediaAtom(atom)
+            default:
+                return atom;
+        }
+    }
+
     function getAtomUsages(id, atomType) {
         return getCapiAtomUsages(id, atomType).then(res => {
             const usagePaths = res.data.response.results;
@@ -69,7 +78,9 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService) {
         const atomId = _.get(response.data.response[atomType], 'id');
         if(atom) {
             const capiUrl = getUrl(atomId, atomType);
-            return Object.assign({}, atom, {capiUrl: capiUrl});
+            const parsedAtom = parseAtom(atom, atomType);
+            console.log(parsedAtom);
+            return Object.assign({}, parsedAtom, {capiUrl: capiUrl});
         }
         return emptyCapiAtomObject();
     }

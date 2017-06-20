@@ -11,6 +11,7 @@ import 'lib/prodoffice-service';
 import 'lib/column-service';
 import 'lib/capi-content-service';
 import 'lib/capi-atom-service';
+import 'lib/atom-service';
 
 import 'components/editable-field/editable-field';
 
@@ -22,14 +23,14 @@ import { wfContentListDrawerAccordion } from 'components/content-list-drawer-acc
 import { wfLoader } from 'components/loader/loader';
 
 
-angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiContentService', 'wfCapiAtomService'])
+angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService'])
     .service('wfContentItemParser', ['config', 'statusLabels', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
     .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'legalValues', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', 'wfFiltersService', wfContentListController])
     .directive('wfContentListLoader', ['$rootScope', wfLoader])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'sections', wfContentListItem])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', wfContentListDrawer])
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', wfContentListDrawer])
     .directive('wfContentListDrawerAccordion', ['$rootScope', wfContentListDrawerAccordion])
     .directive("bindCompiledHtml", function($compile, $timeout) {
         return {
