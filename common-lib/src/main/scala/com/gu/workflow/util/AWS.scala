@@ -33,7 +33,7 @@ object AWS {
 trait Dynamo {
   lazy val dynamoDb = new DynamoDB(AWS.DynamoDb)
 
-  lazy val supportStaff = dynamoDb.getTable("support-staff") //TODO: Move to config
+  lazy val editorialSupportStaff = dynamoDb.getTable("support-staff") //TODO: Move to config
 }
 
 trait AwsInstanceTags {

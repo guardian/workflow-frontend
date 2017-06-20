@@ -280,18 +280,18 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def supportTeams = APIAuthAction {
-    Ok(Json.toJson(SupportTeamsController.getTeams()))
+  def editorialSupportTeams = APIAuthAction {
+    Ok(Json.toJson(EditorialSupportTeamsController.getTeams()))
   }
 
-  def addSupportStaff(name: String, team: String) = APIAuthAction {
-    SupportTeamsController.createNewStaff(name, team)
+  def addEditorialSupportStaff(name: String, team: String) = APIAuthAction {
+    EditorialSupportTeamsController.createNewStaff(name, team)
     Ok(s"$name added to $team")
   }
 
-  def toggleSupportStaff(id: String, status: String) = APIAuthAction {
+  def toggleEditorialSupportStaff(id: String, status: String) = APIAuthAction {
     val active = status.toBoolean
-    SupportTeamsController.toggleStaffStatus(id, active)
+    EditorialSupportTeamsController.toggleStaffStatus(id, active)
     Ok(s"Status swithced to ${ if (active) "inactive" else "active" }")
   }
 

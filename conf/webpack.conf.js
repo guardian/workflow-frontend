@@ -8,7 +8,7 @@ module.exports = {
     entry: {
         app: './public/app.js',
         admin: './public/admin.js',
-        supportteams: './public/supportteams.js'
+        supportteams: './public/editorialsupportteams.js'
     },
     output: {
         filename: '[name].bundle.js',
