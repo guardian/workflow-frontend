@@ -1,252 +1,299 @@
 <tr class="content-list-drawer content-list-drawer--hidden" ng-class="{'content-list-drawer--trashed': contentItem.item.trashed}">
     <td colspan="100" class="content-list-drawer__full-width">
-        <div class="content-list-drawer__container"><!-- div for animation -->
 
-            <div class="content-list-drawer__container-inner"><!-- div for padding/spacing -->
-                <div class="content-list-drawer__container-inner__info-panel">
-                    <div class="content-list-drawer__container-inner__info-panel__furniture">
-                        <div class="content-list-drawer__container-inner__info-panel__furniture__header">
-                            <i class="drawer__icon--content-type" wf-icon="furniture"/>
-                            Furniture
-                        </div>
-                        <span class ="drawer-warning" ng-if="capiData.capiError">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
-                        <div class="content-list-drawer__container-inner__info-panel__furniture__body">
-                            <div class="content-list-drawer__container-inner__info-panel__furniture__body__column-wide">
-                                <ul class="drawer__column--wide">
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Working title</span>
-                                        <wf-editable class="drawer__section-data-row" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
-                                            {{ contentItem.workingTitle || '-' }}
-                                        </wf-editable>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Note</span>
-                                        <wf-editable class="drawer__section-data-row" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength"><!-- Prevent extra line being inserted before/after
-                        -->{{ contentItem.note || 'Add note' }}<!--
-                        --></wf-editable>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Headline</span>
-                                        <span class="drawer__section-data-row">{{ capiData.headline || '-' }}</span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Standfirst</span>
-                                        <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !capiData.standfirst}">
-                                            {{ capiData.standfirst || "None" }}
-                                        </span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">URL</span>
-                                    <span class="drawer__section-data-row" ng-if="contentItem.path">
-                                        <a href="{{ contentItem.links.live || contentItem.links.preview || contentItem.links.composer }}">{{
-                                        contentItem.path }}</a>
-                                    </span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Section</span>
-                                        <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="section.name for section in contentList.sections" wf-content-item-update-action="section"></select>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="content-list-drawer__container-inner__info-panel__furniture__body__column">
-                                <ul class="drawer__column--media">
-                                    <li class="drawer__section drawer__section-mainmedia"
-                                        ng-class="{'drawer__section-mainmedia--nopreview': contentItem.mainMediaNoPreview}">
-
-                                        <span class="drawer__section-title">Main media</span>
-
-                                        <div ng-if="contentItem.mainMediaType == 'image'" class="drawer__section-image-container">
-                                            <img ng-src="{{ capiData.mainMediaUrl}}" alt=""/>
-                                        </div>
-                                        <div ng-if="contentItem.mainMediaNoPreview" class="drawer__section-image-container">
-                                            {{contentItem.mainMediaType}}
-                                        </div>
-                                        <div ng-if="!contentItem.mainMediaType" class="drawer__section-data-row drawer__section-data-row--empty">
-                                            None
-                                        </div>
-                                        </span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Caption</span>
-                                        <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !capiData.mainMediaCaption}">
-                                            {{ capiData.mainMediaCaption || "None" }}
-                                    </span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Alt text</span>
-                                    <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !capiData.mainMediaAltText}">
-                                        {{ capiData.mainMediaAltText || "None" }}
-                                    </span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="content-list-drawer__container-inner__info-panel__furniture__body__column">
-                                <ul class="drawer__column--media">
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Trail picture</span>
-
-                                        <div ng-if="capiData.trailImageUrl" class="drawer__section-image-container">
-                                            <img ng-src="{{ capiData.trailImageUrl }}" alt=""/>
-                                        </div>
-                                        <div ng-if="!capiData.trailImageUrl" class="drawer__section-data-row drawer__section-data-row--empty">
-                                            None
-                                        </div>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Trail text</span>
-                                    <span class="drawer__section-data-row" ng-class="{'drawer__section-data-row--empty': !capiData.trailText}">
-                                        {{ capiData.trailText || "None" }}
-                                    </span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="content-list-drawer__container-inner__info-panel__furniture__body__column">
-                                <ul class="drawer__column--wide">
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Comments</span>
-                                        <span class="drawer__section-data-row">{{ capiData.commentsTitle }}</span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Optimised for web</span>
-                                        <span class="drawer__section-data-row" ng-if="contentItem.optimisedForWeb">Optimised</span>
-                                        <span class="drawer__section-data-row" ng-if="!contentItem.optimisedForWeb && !contentItem.optimisedForWebChanged">Not optimised</span>
-                                        <span class="drawer__section-data-row" ng-if="contentItem.optimisedForWebChanged">Modified since being optimised</span>
-                                        <span class="drawer__section-data-row"><a target="_blank" href="https://docs.google.com/document/d/1dINs5J8QQTl9PGrntWx_j3bT9DQENMpM_t0FOOdHt_0/edit">Optimisation bible</a></span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Content type</span>
-                                        <span class="drawer__section-data-row"><i class="drawer__icon--content-type" wf-icon="{{ contentItem.contentType }}"/> {{ contentItem.contentTypeTitle }}</span>
-                                    </li>
-                                    <li class="drawer__section" ng-show="contentItem.contentType == 'article'">
-                                        <span class="drawer__section-title">Word count</span>
-                                        <span class="drawer__section-control">{{ capiData.wordCount }} </span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Commissioning info</span>
-                                        <span class="drawer__section-data-row" ng-repeat="desk in capiData.commissioningDesks" ng-show="capiData.commissioningDesks.length">{{ desk }}</span>
-                                        <span class="drawer__section-data-row--warning" ng-show="!capiData.commissioningDesks.length">None</span>
-                                        <span class="drawer__section-data-row--warning" ng-show="tagsUnavailable()">Commissioning info is temporarily unavailable</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="content-list-drawer__container-inner__info-panel__management">
-                        <div class="content-list-drawer__container-inner__info-panel__management__header">
-                            <i class="drawer__icon--content-type" wf-icon="management"/>
-                            Management
-                        </div>
-                        <div class="content-list-drawer__container-inner__info-panel__management__body">
-                            <div class="content-list-drawer__container-inner__info-panel__management__body__column">
-                                <ul class="drawer__column--wide">
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Priority</span>
-                                        <select class="drawer__section-control" ng-model="contentItem.priority" ng-options="p.value as p.name for p in contentList.priorities" wf-content-item-update-action="priority"></select>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Production deadline</span>
-                                    <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.item.due, 'drawer__section-data-row--editable-empty': !contentItem.item.due }" title="{{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}">
-                                        {{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
-                                    </span>
-                                        <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
-                                            <div wf-date-time-picker wf-update-on="enter" ng-model="currentDatePickerValue" wf-on-cancel="dateTimeEdit = false; revertDeadline()" wf-cancel-on="blur" wf-on-submit="updateDeadline(); dateTimeEdit = false;" wf-small="true" help-text="true"></div>
-                                        </form>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">First published</span>
-                                        <span class="drawer__section-data-row">{{ (capiData.firstPublishedDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Scheduled</span>
-                                    <span class="drawer__section-data-row">
-                                        {{ (contentItem.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
-                                    </span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Embargoed</span>
-                                    <span class="drawer__section-data-row">
-                                        {{ contentItem.lifecycleStateSupl || (contentItem.lifecycleStateSuplDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd DD MMM HH:mm') || "-" }}
-                                    </span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">State</span>
-                                        <span class="drawer__section-data-row">{{ contentItem.state || '-' }}</span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Status</span>
-                                        <select class="drawer__section-control" ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status">
-                                        </select>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="content-list-drawer__container-inner__info-panel__management__body__column">
-                                <ul class="drawer__column--wide">
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Office</span>
-                                        <select class="drawer__section-control" ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices" wf-content-item-update-action="prodOffice"></select>
-                                    </li>
-                                    <li class="drawer__section" ng-switch="!!editingAssignee">
-                                        <div ng-switch-when="false">
-                                            <span class="drawer__section-title">Assigned to</span>
-                                            <img class="drawer__user-image" ng-if="assigneeImage.length > 1" ng-class="{ 'drawer__user-image--placeholder': !assigneeImage }" ng-src="{{ assigneeImage }}" height="38" width="38" alt="contentItem.item.assignee"/>
-                                            <span class="drawer__section-data-row--editable drawer__user-name" ng-click="toggleAssigneeEditing();" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.assignee || "None" }}</span>
-                                        </div>
-                                        <div ng-switch-when="true">
-                                            <punters stub="contentItem" indrawer="true"></punters>
-                                        </div>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">In use by</span>
-                                        <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true">
-                                        </wf-presence-indicators>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Last modified</span>
-                                        <span class="drawer__section-data-row">{{ (contentItem.lastModified | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
-                                        <span class="drawer__section-data-row" ng-show="contentItem.lastModifiedBy">by {{ contentItem.lastModifiedBy }}</span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">InCopy</span>
-                                        <span class="drawer__section-data-row">{{ contentItem.incopyTitle }}</span>
-                                        <span class="drawer__section-data-row" ng-if="contentItem.isOwnedByInCopy"><i>Locked</i></span>
-                                    </li>
-                                    <li class="drawer__section">
-                                        <span class="drawer__section-title">Legal status</span>
-                                        <select class="drawer__section-control" ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+        <div class="drawer">
+            <div class="drawer__section drawer__section--wide">
+                <div class="drawer__header">
+                    <i class="drawer__icon" wf-icon="furniture"/>
+                    Furniture
                 </div>
-                <div class="content-list-drawer__container-inner__toolbar">
 
-                    <span class="content-list-drawer__container-inner__toolbar__trash" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}" ng-click="deleteContentItem(!contentItem.item.trashed)" title="{{ contentItem.item.trashed ? 'Restore' : 'Trash' }}" ng-class="{'drawer__control-item--restore': contentItem.item.trashed}">
-                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="delete"></i>
-                        {{ contentItem.item.trashed ? 'Restore' : 'Trash' }}
-                    </span>
-                    <div class="content-list-drawer__container-inner__toolbar__emptyspace">
-                        &nbsp;
-                    </div>
-                    <span class="content-list-drawer__container-inner__toolbar__versions">
-                        <a href="{{ composerRestorerUrl }}" target="_blank" class="drawer__section-data-row drawer__control-item drawer__control-item--restorer" title="View versions">
-                            <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="view-versions"></i>
-                            View versions
-                        </a>
-                    </span>
-                    <span class="content-list-drawer__container-inner__toolbar__incopy">
-                       <a href="{{ incopyExportUrl }}" class="drawer__section-data-row drawer__control-item drawer__control-item--incopy" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InCopy">
-                            <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="incopy"></i>
-                            {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
-                       </a>
-                    </span>
-                    <span class="content-list-drawer__container-inner__toolbar__close" ng-click="contentListDrawerController.hide()" title="Close details">
-                        <i class="content-list-item__icon--composer drawer__control-item-icon" wf-icon="cross"></i>
-                        Close details
-                    </span>
+                <span class ="drawer__warning" ng-if="capiData.capiError">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
+
+                <!--CONTENT DRAWER-->
+                <div class="drawer__inner" ng-if="contentItem.contentType !== 'media'">
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Working title</p>
+                            <wf-editable class="drawer__item-content" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
+                                {{ contentItem.workingTitle || '-' }}
+                            </wf-editable>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Note</p>
+                            <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">{{
+                                contentItem.note || 'Add note' }}
+                            </wf-editable>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Standfirst</span>
+                            <span class="drawer__item-content" ng-class="{'drawer__item-content--empty': !capiData.standfirst}">
+                                {{ capiData.standfirst || "None" }}
+                            </span>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Headline</p>
+                            <span class="drawer__item-content">{{ capiData.headline || '-' }}</span>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">URL</span>
+                            <span class="drawer__item-content" ng-if="contentItem.path">
+                                <a href="{{ contentItem.path }}">{{
+                                contentItem.path }}</a>
+                            </span>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Section</p>
+                            <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="section.name for section in contentList.sections" wf-content-item-update-action="section"></select>
+                        </li>
+                    </ul>
+
+                    <ul class="drawer__column">
+                        <li cng-class="{'drawer__section-mainmedia--nopreview': contentItem.mainMediaNoPreview}">
+                            <span class="drawer__item-title">Main media</span>
+
+                            <div ng-if="contentItem.mainMediaType == 'image'" class="drawer__image-container">
+                                <img ng-src="{{ capiData.mainMediaUrl}}" class="drawer__image" alt=""/>
+                            </div>
+                            <div ng-if="contentItem.mainMediaNoPreview" class="drawer__section-image-container">
+                                {{contentItem.mainMediaType}}
+                            </div>
+                            <div ng-if="!contentItem.mainMediaType" class="drawer__item-content drawer__item-content--empty">
+                                None
+                            </div>
+                            </span>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Caption</span>
+                            <span class="drawer__item-content" ng-class="{'drawer__item-content--empty': !capiData.mainMediaCaption}">
+                                {{ capiData.mainMediaCaption || "None" }}
+                            </span>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Alt text</span>
+                            <span class="drawer__item-content" ng-class="{'drawer__item-content--empty': !capiData.mainMediaAltText}">
+                                {{ capiData.mainMediaAltText || "None" }}
+                            </span>
+                        </li>
+                    </ul>
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Trail picture</span>
+                            <div ng-if="capiData.trailImageUrl" class="drawer__image-container">
+                                <img ng-src="{{ capiData.trailImageUrl }}" class="drawer__image" alt=""/>
+                            </div>
+                            <div ng-if="!capiData.trailImageUrl" class="drawer__item-content drawer__item-content--empty">
+                                None
+                            </div>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Trail text</span>
+                            <span class="drawer__item-content" ng-class="{'drawer__item-content--empty': !capiData.trailText}">
+                                {{ capiData.trailText || "None" }}
+                            </span>
+                        </li>
+                    </ul>
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Comments</span>
+                            <span class="drawer__item-content">{{ capiData.commentsTitle }}</span>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Optimised for web</span>
+                            <span class="drawer__item-content" ng-if="contentItem.optimisedForWeb">Optimised</span>
+                            <span class="drawer__item-content" ng-if="!contentItem.optimisedForWeb && !contentItem.optimisedForWebChanged">Not optimised</span>
+                            <span class="drawer__item-content" ng-if="contentItem.optimisedForWebChanged">Modified since being optimised</span>
+                            <span class="drawer__item-content"><a target="_blank" href="https://docs.google.com/document/d/1dINs5J8QQTl9PGrntWx_j3bT9DQENMpM_t0FOOdHt_0/edit">Optimisation bible</a></span>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Content type</span>
+                            <span class="drawer__item-content">
+                                <i class="drawer__icon" wf-icon="{{ contentItem.contentType }}"/> {{ contentItem.contentTypeTitle }}
+                            </span>
+                        </li>
+                        <li class="drawer__item" ng-show="contentItem.contentType == 'article'">
+                            <span class="drawer__item-title">Word count</span>
+                            <span class="drawer__item-content">{{ capiData.wordCount }} </span>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Commissioning info</span>
+                            <span class="drawer__item-content" ng-repeat="desk in capiData.commissioningDesks" ng-show="capiData.commissioningDesks.length">{{ desk }}</span>
+                            <span class="drawer__item-content--warning" ng-show="!capiData.commissioningDesks.length">None</span>
+                            <span class="drawer__item-content--warning" ng-show="tagsUnavailable()">Commissioning info is temporarily unavailable</span>
+                        </li>
+                    </ul>
+
                 </div>
+
+                <!--ATOM DRAWER-->
+                <div class="drawer__inner" ng-if="contentItem.contentType === 'media'">
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Working title</p>
+                            <wf-editable class="drawer__item-content" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
+                                {{ contentItem.workingTitle || '-' }}
+                            </wf-editable>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Note</p>
+                            <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">
+                                {{ contentItem.note || 'Add note' }}
+                            </wf-editable>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">URL</span>
+                            <span class="drawer__item-content" ng-if="capiData.capiUrl">
+                                <a href="{{ capiData.capiUrl }}">
+                                    {{ capiData.capiUrl }}</a>
+                            </span>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Section</p>
+                            <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="section.name for section in contentList.sections" wf-content-item-update-action="section"></select>
+                        </li>
+                    </ul>
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Content type</p>
+                            <wf-editable class="drawer__item-content" ng-model="contentItem.contentTypeTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
+                                {{ contentItem.contentTypeTitle || '-' }}
+                            </wf-editable>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Usages</p>
+                            <div class="drawer__item-content" ng-repeat="usage in capiData.usages">
+                                <div>
+                                    {{ usage.webTitle || '-' }}
+                                    <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"/></a>
+                                    <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="preview"/></a>
+                                    <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"/></a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                </div>
+
             </div>
 
+            <div class="drawer__section">
+                <div class="drawer__header">
+                    <i class="drawer__icon" wf-icon="management"/>
+                    Management
+                </div>
+
+                <div class="drawer__inner">
+
+                    <ul class="drawer__column drawer__column--wide">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Priority</p>
+                            <select ng-model="contentItem.priority" ng-options="p.value as p.name for p in contentList.priorities" wf-content-item-update-action="priority"></select>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Production deadline</p>
+                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.item.due, 'drawer__section-data-row--editable-empty': !contentItem.item.due }" title="{{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}">
+                                {{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
+                            </span>
+                            <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
+                                <div wf-date-time-picker wf-update-on="enter" ng-model="currentDatePickerValue" wf-on-cancel="dateTimeEdit = false; revertDeadline()" wf-cancel-on="blur" wf-on-submit="updateDeadline(); dateTimeEdit = false;" wf-small="true" help-text="true"></div>
+                            </form>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Scheduled</span>
+                            <span class="drawer__item-content">
+                                {{ (contentItem.launchScheduleDetails.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
+                            </span>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Embargoed</p>
+                            <span class="drawer__item-content">
+                                {{ contentItem.lifecycleStateSupl || (contentItem.lifecycleStateSuplDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd DD MMM HH:mm') || "-" }}
+                            </span>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">State</p>
+                            <span class="drawer__item-content">
+                                {{ contentItem.state || '-' }}
+                            </span>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Status</p>
+                            <select ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status"></select>
+                        </li>
+                    </ul>
+
+                    <ul class="drawer__column drawer__column--wide">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Office</p>
+                            <select ng-model="contentItem.office" ng-change="updateOffice(contentItem.office)" ng-options="office.value as office.name for office in prodOffices" wf-content-item-update-action="prodOffice"></select>
+                        </li>
+                        <li class="drawer__item" ng-switch="!!editingAssignee">
+                            <div ng-switch-when="false">
+                                <p class="drawer__item-title">Assigned to</p>
+                                <img class="drawer__user-image" ng-if="assigneeImage.length > 1" ng-class="{ 'drawer__user-image--placeholder': !assigneeImage }" ng-src="{{ assigneeImage }}" height="38" width="38" alt="contentItem.item.assignee"/>
+                                <span class="drawer__section-data-row--editable drawer__user-name" ng-click="toggleAssigneeEditing();" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.assignee || "None" }}</span>
+                            </div>
+                            <div ng-switch-when="true">
+                                <punters stub="contentItem" indrawer="true"></punters>
+                            </div>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">In use by</span>
+                            <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true"></wf-presence-indicators>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Last modified</p>
+                            <span class="drawer__item-content">{{ (contentItem.lastModified | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
+                            <span class="drawer__item-content" ng-show="contentItem.lastModifiedBy">by {{ contentItem.lastModifiedBy }}</span>
+                        </li>
+                        <li class="drawer__item" ng-if="contentItem.contentType !== 'media'">
+                            <span class="drawer__item-title">InCopy</span>
+                            <span class="drawer__item-content">{{ contentItem.incopyTitle }}</span>
+                            <span class="drawer__item-content" ng-if="contentItem.isOwnedByInCopy"><i>Locked</i></span>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Legal status</p>
+                            <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
+                        </li>
+                    </ul>
+                    
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="drawer__toolbar">
+
+            <span class="drawer__toolbar-item" ng-class="{'drawer__control--confirm': awaitingDeleteConfirmation}" ng-click="deleteContentItem(!contentItem.item.trashed)" title="{{ contentItem.item.trashed ? 'Restore' : 'Trash' }}" ng-class="{'drawer__control-item--restore': contentItem.item.trashed}">
+                <i class="drawer__icon drawer__toolbar-icon" wf-icon="delete"></i>
+                {{ contentItem.item.trashed ? 'Restore' : 'Trash' }}
+            </span>
+            <div class="drawer__toolbar-item drawer__toolbar-item--spacer">
+                &nbsp;
+            </div>
+            <span class="drawer__toolbar-item">
+                <a href="{{ composerRestorerUrl }}" target="_blank" class="drawer__item-content" title="View versions">
+                    <i class="drawer__icon drawer__toolbar-icon" wf-icon="view-versions"></i>
+                    View versions
+                </a>
+            </span>
+            <span class="drawer__toolbar-item">
+                <a href="{{ incopyExportUrl }}" class="drawer__item-content" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InCopy">
+                    <i class="drawer__icon drawer__toolbar-icon" wf-icon="incopy"></i>
+                    {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
+                </a>
+            </span>
+            <span class="drawer__toolbar-item" ng-click="contentListDrawerController.hide()" title="Close details">
+                <i class="drawer__icon drawer__toolbar-icon" wf-icon="cross"></i>
+                Close details
+            </span>
         </div>
 
     </td>

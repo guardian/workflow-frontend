@@ -6,7 +6,7 @@ import org.scalatest.{FreeSpec, Matchers}
 
 class ContentResponseTest extends FreeSpec with Matchers {
 
-  def withStatus(st: String): Stub => Stub = c => c.copy(externalData = c.externalData.map(_.copy(status = Some(Status(st)))))
+  def withStatus(st: String): Stub => Stub = s => s.copy(externalData = s.externalData.map(_.copy(status = Status(st))))
 
   "statusCountsMap" -    {
     "should give a map of status to count" in {
@@ -32,7 +32,7 @@ class ContentResponseTest extends FreeSpec with Matchers {
 
   "contentGroupedByStatus" - {
     "should give map of status to dashboard row" in {
-      val stubOnly = generateTestData(2)
+      val stubOnly = generateTestData(2).map(withStatus("Stub"))
       val writers = generateTestData(3).map(withStatus("Writers"))
       val subs = generateTestData(1).map(withStatus("Subs"))
       val hold = generateTestData(2).map(withStatus("Hold"))
@@ -67,7 +67,6 @@ class ContentResponseTest extends FreeSpec with Matchers {
 
       cr.content should equal (contentGroupedByStatus)
       cr.stubs should equal (stubOnly)
-//      ContentResponse.fromStubItems(testData) should equal(ContentResponse(contentGroupedByStatus, stubOnly, statusCountsMap))
     }
   }
 

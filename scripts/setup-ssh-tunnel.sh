@@ -11,7 +11,9 @@ function HELP {
 
     -u user       [optional] the user to install the SSH keys for. Defaults to ubuntu.
 
-    -s stage   [optional] the stage to set up an ssh tunnel for. Defaults to CODE.
+    -s stage      [optional] the stage to set up an ssh tunnel for. Defaults to CODE.
+
+    -d            Don't run in the background
 
     -h            Displays this help message. No further functions are
                   performed.
@@ -20,14 +22,19 @@ EOF
 exit 1
 }
 
+BACKGROUND="-f"
+
 # Process options
-while getopts u:s:t:h FLAG; do
+while getopts u:s:t:dh FLAG; do
   case $FLAG in
     u)
       SSH_USER=$OPTARG
       ;;
     s)
       STAGE=$OPTARG
+      ;;
+    d)
+      BACKGROUND=""
       ;;
     h)  #show help
       HELP
@@ -46,10 +53,16 @@ if [ -z "${SSH_USER}" ]; then
 fi
 
 DATASTORE_ELB=$(aws elb describe-load-balancers --load-balancer-names workflow-Datastor-2BM0DSD8PKK1 --profile workflow --region eu-west-1 | jq .LoadBalancerDescriptions[].DNSName -r)
-echo $DATASTORE_ELB
+
+if [[ -z "$DATASTORE_ELB" ]];
+then
+    echo "Couldn't find Datastore ELB (no auth creds?)"
+    exit 1
+fi
+
 WF_FRONTEND_HOST=$(marauder -s stage=${STAGE} app=workflow-frontend --short)
 echo $WF_FRONTEND_HOST
 
 echo "Runnning command: ssh -f ${SSH_USER}@${WF_FRONTEND_HOST} -L 5002:${DATASTORE_ELB}:80 -N"
 
-ssh -f ${SSH_USER}@${WF_FRONTEND_HOST} -L 5002:${DATASTORE_ELB}:80 -N
+ssh ${BACKGROUND} ${SSH_USER}@${WF_FRONTEND_HOST} -L 5002:${DATASTORE_ELB}:80 -N
