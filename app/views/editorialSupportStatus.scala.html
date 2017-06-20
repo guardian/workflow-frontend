@@ -13,7 +13,10 @@
                 @for(team <- teams) {
                     <h2>@team.name team</h2>
                     @for(staff <- team.staff){
-                        <ul style="list-style-type:none"><input type="checkbox" id="editorialSupportStatus-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val><label>@staff.name</label></ul>
+                        <ul style="list-style-type:none"><input type="checkbox" id="editorialSupportStatus-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val>
+                            <label>@staff.name</label>
+                            <input type="text" value="@staff.description" id="editorialSupportDescription-@staff.id" onChange="window.updateStatus('@staff.id','@staff.description')">
+                        </ul>
                     }
                     <ul style="list-style-type:none"><input type="text" id="name-entry-@team.name"><button class="btn btn-lrg btn-info" onclick="window.addNewStaff('@team.name')">add</button></ul>
                 }

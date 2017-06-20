@@ -24,9 +24,17 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
 
   def toggleStaffStatus(id: String, active: Boolean) = {
     editorialSupportStaff.updateItem(
-      new UpdateItemSpec().
-        withPrimaryKey("id", id)
+      new UpdateItemSpec()
+        .withPrimaryKey("id", id)
         .withAttributeUpdate(new AttributeUpdate("active").put(if (active) true else false))
+    )
+  }
+
+  def updateStaffDescription(id: String, description: String) = {
+    editorialSupportStaff.updateItem(
+      new UpdateItemSpec()
+        .withPrimaryKey("id", id)
+        .withAttributeUpdate(new AttributeUpdate("description").put(description))
     )
   }
 

@@ -298,5 +298,10 @@ object Api extends Controller with PanDomainAuthActions {
     Ok(s"Status swithced to ${ if (active) "inactive" else "active" }")
   }
 
+  def updateEditorialSupportStaffDescription(id: String, description: String) = APIAuthAction {
+    EditorialSupportTeamsController.updateStaffDescription(id, description)
+    Ok(s"Descripton updated to '$description'")
+  }
+
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
 }
