@@ -3,7 +3,7 @@ package controllers
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec
 import com.gu.workflow.util.Dynamo
-import model.{EditorialSupportStaff, EditorialSupportTeam}
+import models.{EditorialSupportStaff, EditorialSupportTeam}
 import play.api.mvc.Controller
 
 import scala.collection.JavaConversions._
