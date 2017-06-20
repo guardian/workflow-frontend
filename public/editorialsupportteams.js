@@ -2,7 +2,7 @@ import 'whatwg-fetch';
 
 function addNewStaff(team) {
     var name = document.getElementById("name-entry-"+team).value;
-    var endpoint = "/api/supportTeams?name="+name+"&team="+team;
+    var endpoint = "/api/editorialSupportTeams?name="+name+"&team="+team;
     fetch(endpoint, {
         method: 'PUT',
         credentials: 'same-origin'
@@ -26,10 +26,6 @@ function toggleStaff(id) {
 
 function updateStatus(id, startText) {
     var text = document.getElementById("editorialSupportDescription-"+id).value;
-    if (text == "") {
-        text = " "; //TODO: Fix empty string issue
-    }
-    console.log("Text = "+text)
     if (text != startText) {
         var endpoint = "/api/editorialSupportTeams/update?id="+id+"&description="+text;
         fetch(endpoint, {

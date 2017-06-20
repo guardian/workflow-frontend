@@ -31,11 +31,19 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
   }
 
   def updateStaffDescription(id: String, description: String) = {
-    editorialSupportStaff.updateItem(
-      new UpdateItemSpec()
-        .withPrimaryKey("id", id)
-        .withAttributeUpdate(new AttributeUpdate("description").put(description))
-    )
+    if (description.isEmpty) {
+      editorialSupportStaff.updateItem(
+        new UpdateItemSpec()
+          .withPrimaryKey("id", id)
+          .withAttributeUpdate(new AttributeUpdate("description").delete())
+      )
+    } else {
+      editorialSupportStaff.updateItem(
+        new UpdateItemSpec()
+          .withPrimaryKey("id", id)
+          .withAttributeUpdate(new AttributeUpdate("description").put(description))
+      )
+    }
   }
 
 }
