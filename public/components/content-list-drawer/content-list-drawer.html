@@ -254,13 +254,13 @@
 
                     </ul>
 
-                    <ul class="drawer__column drawer__column--wide">
-                        <li class="drawer__item" ng-if="capiData.currentAsset">
+                    <ul class="drawer__column drawer__column--wide" ng-if="capiData.youtubeUrl">
+                        <li class="drawer__item">
                             <p class="drawer__item-title">Video preview</p>
                             <iframe
                                 type="text/html"
                                 className="drawer__item"
-                                src=`https://www.youtube.com/embed/${capiData.currentAsset.id}?showinfo=0`
+                                ng-src="{{capiData.youtubeUrl | wfTrustedUrl}}"
                                 allowFullScreen
                                 frameBorder="0"
                                 />
