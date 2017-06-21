@@ -156,6 +156,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                 const atom = wfCapiAtomService.parseCapiAtomData(response, atomType);
                 $scope.stub.title = atom.title;
                 $scope.stub.contentType = atomType.toLowerCase();
+                $scope.stub.editorId = id;
                 wfContentService.getByEditorId(id).then(
                     (res) => importHandleExisting(res.data.data),
                     (err) => {
