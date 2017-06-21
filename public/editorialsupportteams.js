@@ -10,7 +10,7 @@ function addNewStaff(team) {
 }
 
 function reloadOnComplete(response) {
-    if (response.status == 200) {
+    if (response.status === 200) {
         location.reload();
     }
 }
@@ -26,7 +26,7 @@ function toggleStaff(id) {
 
 function updateStatus(id, startText) {
     var text = document.getElementById("editorialSupportDescription-"+id).value;
-    if (text != startText) {
+    if (text !== startText) {
         var endpoint = `/api/editorialSupportTeams/update?id=${id}&description=${text}`;
         fetch(endpoint, {
             method: 'POST',
