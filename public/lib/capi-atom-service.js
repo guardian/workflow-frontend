@@ -79,7 +79,6 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         if(atom) {
             const capiUrl = getUrl(atomId, atomType);
             const parsedAtom = parseAtom(atom, atomType);
-            console.log(parsedAtom);
             return Object.assign({}, parsedAtom, {capiUrl: capiUrl});
         }
         return emptyCapiAtomObject();

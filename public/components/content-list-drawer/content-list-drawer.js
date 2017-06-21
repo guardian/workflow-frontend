@@ -185,7 +185,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 if(isAtom(contentItem.contentType)) {
                     wfCapiAtomService.getCapiAtom(contentItem.item.editorId, contentItem.contentType)
                         .then((resp) => {
-                            console.log(resp);
                             wfCapiAtomService.getAtomUsages(contentItem.item.editorId, contentItem.contentType)
                                 .then((usagesResp) => {
                                     const parsed = wfCapiAtomService.parseCapiAtomData(resp, contentItem.contentType);
