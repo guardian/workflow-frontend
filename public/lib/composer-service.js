@@ -57,7 +57,6 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
 
 
     function getComposerContent(url) {
-        console.log("[PMR 1407] getComposerContent ", url, composerContentFetch + parseComposerId(url));
         return $http({
             method: 'GET',
             url: composerContentFetch + parseComposerId(url),

@@ -170,6 +170,12 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         });
     }
 
+    /* we can import from various different tools. Which one will be
+     * determined by the URL. This list matches URL regexes to
+     * functions which can handle the import. The first one that
+     * matches will be applied. The default fallback is Composer,
+     * which will match against everything and attempt to import. If
+     * that import fails the whole thing has failed. */
     const importUrlHandlers = [
         { name: "Media Atom Maker",
           regex: "videos/([0-9a-f-]+)$",
@@ -190,8 +196,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         if(handler) {
             $scope.importHandler = handler;
             $scope.importHandler.fn(url, url.match(handler.regex));
-        } else {
-            console.log("[PMR 1219] no handler found");
         }
     };
 
