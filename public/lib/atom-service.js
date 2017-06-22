@@ -7,7 +7,7 @@ function wfAtomService() {
   function parseMediaAtom(atom) {
     const currentAsset = getCurrentAsset();
     const mediaAtomFields = {
-      youtubeUrl: `https://www.youtube.com/embed/${getCurrentAsset().id}?showinfo=0`
+      youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}?showinfo=0`
     }
 
     return Object.assign({}, atom, mediaAtomFields);
