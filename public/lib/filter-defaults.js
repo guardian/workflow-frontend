@@ -56,7 +56,8 @@ var filterDefaults = function (statuses, wfFiltersService, wfFeatureSwitches) {
                 { caption: 'Interactive', value: 'interactive', icon: 'interactive' },
                 { caption: 'Liveblog', value: 'liveblog', icon: 'liveblog' },
                 { caption: 'Picture', value: 'picture', icon: 'picture' },
-                { caption: 'Video', value: 'video', icon: 'video' }
+                { caption: 'Video', value: 'video', icon: 'video' },
+                { caption: 'Media', value: 'media', icon: 'media' }
             ]
         },
         (wfFeatureSwitches.getCookie('support-atoms') === '1' ? {
