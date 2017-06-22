@@ -146,9 +146,9 @@
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">URL</p>
-                            <span class="drawer__item-content" ng-if="capiData.capiUrl">
-                                <a href="{{ capiData.capiUrl }}">
-                                    {{ capiData.capiUrl }}</a>
+                            <span class="drawer__item-content" ng-if="capiData.editorUrl">
+                                <a href="{{ capiData.editorUrl }}">
+                                    {{ capiData.editorUrl }}</a>
                             </span>
                         </li>
                         <li class="drawer__item">
@@ -168,21 +168,21 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Headline (YT title)</p>
                             <span class="drawer__item-content">
-                                {{ capiData.metadata.title || '-' }}
+                                {{ capiData.title || '-' }}
                             </span>
                         </li>
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Standfirst</p>
                             <span class="drawer__item-content">
-                                {{ capiData.metadata.description || '-' }}
+                                {{ capiData.description || '-' }}
                             </span>
                         </li>
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Trail text</p>
                             <span class="drawer__item-content">
-                                {{ capiData.metadata.trailText || '-' }}
+                                {{ capiData.trailText || '-' }}
                             </span>
                         </li>
 
@@ -203,21 +203,21 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Video source</p>
                             <span class="drawer__item-content">
-                                {{ capiData.metadata.source || '-' }}
+                                {{ capiData.source || '-' }}
                             </span>
                         </li>
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Video category</p>
                             <span class="drawer__item-content">
-                                {{ capiData.metadata.category || '-' }}
+                                {{ capiData.category || '-' }}
                             </span>
                         </li>
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Expiry date</p>
                             <span class="drawer__item-content">
-                                {{ capiData.metadata.expiryDate || '-' }}
+                                {{ capiData.friendlyExpiryDate || '-' }}
                             </span>
                         </li>
 
@@ -227,28 +227,21 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Youtube category</p>
                             <span class="drawer__item-content">
-                                {{ capiData.youtubeCategoryId || '-' }}
+                                {{ capiData.metadata.categoryId || '-' }}
                             </span>
                         </li>
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Youtube channel</p>
                             <span class="drawer__item-content">
-                                {{ capiData.channelId || '-' }}
-                            </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Privacy status</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.privacyStatus || '-' }}
+                                {{ capiData.metadata.channelId || '-' }}
                             </span>
                         </li>
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Keywords</p>
                             <span class="drawer__item-content">
-                                {{ capiData.tags || '-' }}
+                                {{ capiData.metadata.tags || '-' }}
                             </span>
                         </li>
 
@@ -334,7 +327,8 @@
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">In use by</p>
-                            <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true"></wf-presence-indicators>
+                            <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true" ng-if="contentItem.composerId"></wf-presence-indicators>
+                            <wf-presence-indicators presence-id="contentItem.item.editorId" in-drawer="true" ng-if="contentItem.contentType === 'media'"></wf-presence-indicators>
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Last modified</p>
