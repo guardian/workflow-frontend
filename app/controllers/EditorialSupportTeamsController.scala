@@ -1,19 +1,16 @@
 package controllers
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
-import com.amazonaws.services.dynamodbv2.document.{AttributeUpdate, DynamoDB}
+import com.amazonaws.services.dynamodbv2.document.AttributeUpdate
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec
-import com.gu.workflow.util.AWS.region
+import com.gu.workflow.util.Dynamo
 import config.Config
 import models.{EditorialSupportStaff, EditorialSupportTeam}
 import play.api.mvc.Controller
 
 import scala.collection.JavaConversions._
 
-object EditorialSupportTeamsController extends Controller with PanDomainAuthActions {
+object EditorialSupportTeamsController extends Controller with PanDomainAuthActions with Dynamo {
 
-  lazy val DynamoDb = region.createClient(classOf[AmazonDynamoDBClient], awsCredentialsProvider(), null)
-  lazy val dynamoDb = new DynamoDB(DynamoDb)
   val editorialSupportTable = dynamoDb.getTable(Config.editorialSupportDynamoTable)
 
   def createNewStaff(name: String, team: String) = {
