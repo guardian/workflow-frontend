@@ -3,6 +3,8 @@
     display: flex;
     width: 100%;
 
+    // viewport minus the sidebar
+
     &__warning {
         color: $c-red;
     }
@@ -59,7 +61,8 @@
         }
 
         &--closed {
-            border: 5px solid hotpink;
+            flex: initial;
+            padding: 0;
         }
 
         &--wide {
@@ -72,6 +75,26 @@
         font-weight: bold;
         padding-bottom:10px;
         border-bottom:4px solid $c-grey-300;
+
+        &--closed {
+            writing-mode: vertical-lr;
+            padding: 32px 12px 12px;
+            border: 0;
+            position: relative;
+            // gross, but makes the header the correct height;
+            height: calc(100% - 44px);
+
+            &:hover {
+                cursor: pointer;
+                background-color: $c-grey-170;
+            }
+
+            .drawer__icon {
+                position: absolute;
+                top: 10px;
+                margin: 0;        
+            }
+        }
     }
 
     &__inner {
@@ -81,6 +104,10 @@
         font-size: 1.3rem;
         line-height: 16px;
         line-height: 1.6rem;
+
+        &--closed {
+            display: none;
+        }
     }
 
     &__column {
@@ -186,3 +213,4 @@
         }
     }
 }
+

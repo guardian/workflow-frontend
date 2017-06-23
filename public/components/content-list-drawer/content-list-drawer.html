@@ -4,15 +4,15 @@
         <div class="drawer">
             <div class="drawer__section drawer__section--wide" ng-class="{'drawer__section--closed' : openSection !== 'furniture'}">
 
-                <div class="drawer__header" ng-click="toggleSection('furniture')">
+                <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'furniture'}" ng-click="toggleSection('furniture')">
                     <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
                 </div>
 
-                <span class ="drawer__warning" ng-if="capiData.capiError">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
+                <span class ="drawer__warning" ng-if="capiData.capiError && openSection === 'furniture'">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
 
                 <!--CONTENT DRAWER-->
-                <div class="drawer__inner" ng-if="contentItem.contentType !== 'media'">
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="contentItem.contentType !== 'media'">
 
                     <ul class="drawer__column">
                         <li class="drawer__item">
@@ -254,12 +254,12 @@
             </div>
 
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'management'}">
-                <div class="drawer__header" ng-click="toggleSection('management')">
+                <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'management'}" ng-click="toggleSection('management')">
                     <i class="drawer__icon" wf-icon="management" />
                     Management
                 </div>
 
-                <div class="drawer__inner">
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'management'}" >
 
                     <ul class="drawer__column drawer__column--wide">
                         <li class="drawer__item">
@@ -340,12 +340,12 @@
             </div>
 
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}">
-                <div class="drawer__header" ng-click="toggleSection('usages')">
+                <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'usages'}" ng-click="toggleSection('usages')">
                     <i class="drawer__icon" wf-icon="usages" />
                     Usages
                 </div>
 
-                <div class="drawer__inner">
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'usages'}" >
 
                     <ul class="drawer__column drawer__column--wide">
                         <li class="drawer__item">
