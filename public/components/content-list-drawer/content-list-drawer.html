@@ -130,7 +130,7 @@
                 </div>
 
                 <!--ATOM DRAWER-->
-                <div class="drawer__inner" ng-if="contentItem.contentType === 'media'">
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="contentItem.contentType === 'media'">
 
                     <ul class="drawer__column">
                         <li class="drawer__item">
