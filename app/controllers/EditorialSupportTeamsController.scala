@@ -1,21 +1,27 @@
 package controllers
 
-import com.amazonaws.services.dynamodbv2.document.AttributeUpdate
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
+import com.amazonaws.services.dynamodbv2.document.{AttributeUpdate, DynamoDB}
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec
-import com.gu.workflow.util.Dynamo
+import com.gu.workflow.util.AWS.region
+import config.Config
 import models.{EditorialSupportStaff, EditorialSupportTeam}
 import play.api.mvc.Controller
 
 import scala.collection.JavaConversions._
 
-object EditorialSupportTeamsController extends Controller with PanDomainAuthActions with Dynamo {
+object EditorialSupportTeamsController extends Controller with PanDomainAuthActions {
+
+  lazy val DynamoDb = region.createClient(classOf[AmazonDynamoDBClient], awsCredentialsProvider(), null)
+  lazy val dynamoDb = new DynamoDB(DynamoDb)
+  val editorialSupportTable = dynamoDb.getTable(Config.editorialSupportDynamoTable)
 
   def createNewStaff(name: String, team: String) = {
-    editorialSupportStaff.putItem(EditorialSupportStaff(java.util.UUID.randomUUID().toString, name, false, team).toItem)
+    editorialSupportTable.putItem(EditorialSupportStaff(java.util.UUID.randomUUID().toString, name, false, team).toItem)
   }
 
   def getStaff(): List[EditorialSupportStaff] = {
-    editorialSupportStaff.scan().map(EditorialSupportStaff.fromItem).toList
+    editorialSupportTable.scan().map(EditorialSupportStaff.fromItem).toList
   }
 
   def getTeams():List[EditorialSupportTeam] = {
@@ -23,7 +29,7 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
   }
 
   def toggleStaffStatus(id: String, active: Boolean) = {
-    editorialSupportStaff.updateItem(
+    editorialSupportTable.updateItem(
       new UpdateItemSpec()
         .withPrimaryKey("id", id)
         .withAttributeUpdate(new AttributeUpdate("active").put(if (active) true else false))
@@ -32,13 +38,13 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
 
   def updateStaffDescription(id: String, description: String) = {
     if (description.isEmpty) {
-      editorialSupportStaff.updateItem(
+      editorialSupportTable.updateItem(
         new UpdateItemSpec()
           .withPrimaryKey("id", id)
           .withAttributeUpdate(new AttributeUpdate("description").delete())
       )
     } else {
-      editorialSupportStaff.updateItem(
+      editorialSupportTable.updateItem(
         new UpdateItemSpec()
           .withPrimaryKey("id", id)
           .withAttributeUpdate(new AttributeUpdate("description").put(description))
