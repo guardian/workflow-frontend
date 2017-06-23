@@ -1,9 +1,9 @@
 <tr class="content-list-drawer content-list-drawer--hidden" ng-class="{'content-list-drawer--trashed': contentItem.item.trashed}">
     <td colspan="100" class="content-list-drawer__full-width">
 
-        <div class="drawer" wf-content-list-drawer-accordion wf-open-section="furniture">
-            <div class="drawer__section drawer__section--wide" ng-class="{'drawer__section--closed' : openSection === 'furniture'}">
-                <div class="drawer__header" ng-click="toggleSection('furniture')">
+        <div class="drawer">
+            <div class="drawer__section drawer__section--wide">
+                <div class="drawer__header">
                     <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
                 </div>
@@ -264,7 +264,7 @@
 
             </div>
 
-            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection === 'management'}">
+            <div class="drawer__section">
                 <div class="drawer__header" ng-click="toggleSection('management')">
                     <i class="drawer__icon" wf-icon="management" />
                     Management
