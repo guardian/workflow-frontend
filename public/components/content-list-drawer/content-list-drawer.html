@@ -1,8 +1,9 @@
 <tr class="content-list-drawer content-list-drawer--hidden" ng-class="{'content-list-drawer--trashed': contentItem.item.trashed}">
     <td colspan="100" class="content-list-drawer__full-width">
 
-        <div class="drawer" wf-content-list-drawer-accordion wf-open-section="furniture">
-            <div class="drawer__section drawer__section--wide" ng-class="{'drawer__section--closed' : openSection === 'furniture'}">
+        <div class="drawer">
+            <div class="drawer__section drawer__section--wide" ng-class="{'drawer__section--closed' : openSection !== 'furniture'}">
+
                 <div class="drawer__header" ng-click="toggleSection('furniture')">
                     <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
@@ -185,18 +186,6 @@
                                 {{ capiData.trailText || '-' }}
                             </span>
                         </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Usages</p>
-                            <div class="drawer__item-content" ng-repeat="usage in capiData.usages">
-                                <div>
-                                    {{ usage.webTitle || '-' }}
-                                    <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"></i></a>
-                                    <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="preview"></i></a>
-                                    <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"></i></a>
-                                </div>
-                            </div>
-                        </li>
                     </ul>
 
                     <ul class="drawer__column">
@@ -264,7 +253,7 @@
 
             </div>
 
-            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection === 'management'}">
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'management'}">
                 <div class="drawer__header" ng-click="toggleSection('management')">
                     <i class="drawer__icon" wf-icon="management" />
                     Management
@@ -343,6 +332,31 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Legal status</p>
                             <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
+                        </li>
+                    </ul>
+                    
+                </div>
+
+            </div>
+
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}">
+                <div class="drawer__header" ng-click="toggleSection('usages')">
+                    <i class="drawer__icon" wf-icon="usages" />
+                    Usages
+                </div>
+
+                <div class="drawer__inner">
+
+                    <ul class="drawer__column drawer__column--wide">
+                        <li class="drawer__item">
+                            <div class="drawer__item-content" ng-repeat="usage in capiData.usages">
+                                <div>
+                                    {{ usage.webTitle || '-' }}
+                                    <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"></i></a>
+                                    <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="preview"></i></a>
+                                    <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"></i></a>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                     

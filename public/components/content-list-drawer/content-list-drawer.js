@@ -14,7 +14,7 @@ import _ from 'lodash';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfContentListDrawerAccordionCtrl) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -50,13 +50,13 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
         scope: {
             contentList: '=',
             legalValues: '=',
-            statusValues: '='
+            statusValues: '=',
+            openSection: '@'
         },
         controllerAs: 'contentListDrawerController',
         controller: function ($scope, $element) {
 
             var $parent = $element.parent();
-
             /**
              * Hide the drawer from view.
              * @returns {Promise}
@@ -281,6 +281,11 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 msg.oldValues[field] = oldValue;
 
                 $scope.$emit('contentItem.update', msg);
+            }
+
+            /* Drawer section toggles */
+            $scope.toggleSection = function (section) {
+                $scope.openSection = section;
             }
 
             $scope.onBeforeSaveNote = function (note) {
