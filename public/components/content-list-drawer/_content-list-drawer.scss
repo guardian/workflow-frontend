@@ -67,6 +67,10 @@
 
         &--wide {
             flex: 2.5 0 0;
+            
+            &.drawer__section--closed {
+                flex: initial;
+            }
         }
     }
 
