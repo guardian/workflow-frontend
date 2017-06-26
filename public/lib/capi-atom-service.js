@@ -46,10 +46,10 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         });
     }
 
-    function parseAtom(atom, atomType) {
+    function parseAtom(atom, atomType, id) {
         switch(atomType) {
             case 'media':
-                return wfAtomService.parseMediaAtom(atom)
+                return wfAtomService.parseMediaAtom(atom, id)
             default:
                 return atom;
         }
@@ -77,7 +77,7 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         const atom = _.get(response.data.response[atomType].data, atomType);
         const atomId = _.get(response.data.response[atomType], 'id');
         if(atom) {
-            return parseAtom(atom, atomType);
+            return parseAtom(atom, atomType, atomId);
         }
         return emptyCapiAtomObject();
     }

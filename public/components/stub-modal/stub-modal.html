@@ -8,8 +8,9 @@
     <input type="hidden" ng-model="stub.id"/>
     <div class="modal-body">
         <div class="form-group" ng-if="mode === 'import'">
-            <label for="stub_title">Composer URL *<em class="stubModal__import-help">Copy / paste the Composer URL of the content to import</em></label>
-            <input type="text" ng-model="formData.composerUrl" ng-change="composerUrlChanged()" id="composer_url" name="composerUrl" class="form-control" required  wf-focus focus-me="{{ mode === 'import' }}">
+            <label for="stub_title">Content URL
+            *<em class="stubModal__import-help">Copy / paste the URL of the content to import (e.g. from Composer)</em></label>
+            <input type="text" ng-model="formData.importUrl" ng-change="importUrlChanged()" id="import_url" name="import_url" class="form-control" required  wf-focus focus-me="{{ mode === 'import' }}">
         </div>
         <div class="form-horizontal clearfix">
             <div class="form-group col-xs-8">
@@ -121,7 +122,7 @@
     <div class="modal-footer" ng-if="mode === 'import'" ng-hide="actionInProgress">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         <button type="submit" class="btn btn-primary" id="testing-import-from-composer" ng-click="ok()" ng-disabled="stubForm.$invalid || !validImport">
-            Import
+            Import <span ng-show="importHandler">from {{importHandler.name}}</span>
         </button>
     </div>
 
@@ -149,7 +150,7 @@
 
     <div class="modal-footer alert alert-info" ng-show="wfComposerState ==='invisible'">
         <p>This content is already tracked and not visible in Workflow.
-            <a href="{{composerUrl}}" target="_blank" ng-click="cancel()">View in Composer.</a>
+            <a href="{{composerUrl || editorUrl}}" target="_blank" ng-click="cancel()">View in editor.</a>
         </p>
     </div>
 
