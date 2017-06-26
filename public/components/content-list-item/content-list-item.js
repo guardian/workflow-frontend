@@ -53,7 +53,7 @@ function wfContentItemParser(config, statusLabels, sections) {
     class ContentItemLinks {
         constructor(item) {
             if (item.composerId) {
-                this.composer = config.composerViewContent + '/' + item.composerId;
+                this.composer = `${config.composerViewContent}/${item.composerId}`;
             }
             if (item.path) {
                 this.preview = getViewerURL(item.path);
@@ -61,6 +61,9 @@ function wfContentItemParser(config, statusLabels, sections) {
             if (item.published && item.path) {
                 this.live = LIVE_PATH + item.path;
                 this.ophan = OPHAN_PATH + item.path;
+            }
+            if (item.contentType === 'media') {
+                this.editor = `${config.mediaAtomMakerViewAtom}${item.editorId}`
             }
         }
     }

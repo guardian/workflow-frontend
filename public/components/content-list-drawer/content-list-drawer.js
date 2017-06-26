@@ -14,7 +14,7 @@ import _ from 'lodash';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -27,6 +27,19 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
     function buildComposerRestorerUrl (composerId) {
         return config.composerRestorerUrl + '/' + composerId + '/versions';
+    }
+
+    function isAtom(contentType) {
+        const allAtomTypes = [
+            'explainer',
+            'media',
+            'cta',
+            'recipe',
+            'storyQuestions',
+            'quiz'
+        ];
+
+        return allAtomTypes.indexOf(contentType) !== -1;
     }
 
     return {
@@ -169,14 +182,12 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
 
                 $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
-
-                if(contentItem.contentType === 'media') {
-
-                    wfCapiAtomService.getCapiAtom(contentItem.item.editorId, contentItem.item.contentType)
+                if(isAtom(contentItem.contentType)) {
+                    wfCapiAtomService.getCapiAtom(contentItem.item.editorId, contentItem.contentType)
                         .then((resp) => {
-                            wfCapiAtomService.getAtomUsages(contentItem.item.editorId, contentItem.item.contentType)
+                            wfCapiAtomService.getAtomUsages(contentItem.item.editorId, contentItem.contentType)
                                 .then((usagesResp) => {
-                                    const parsed = wfCapiAtomService.parseCapiAtomData(resp, contentItem.item.contentType);
+                                    const parsed = wfCapiAtomService.parseCapiAtomData(resp, contentItem.contentType);
                                     parsed['usages'] = usagesResp;
                                     contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
                                 });

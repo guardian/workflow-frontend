@@ -4,7 +4,7 @@
         <div class="drawer">
             <div class="drawer__section drawer__section--wide">
                 <div class="drawer__header">
-                    <i class="drawer__icon" wf-icon="furniture"/>
+                    <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
                 </div>
 
@@ -111,7 +111,7 @@
                         <li class="drawer__item">
                             <span class="drawer__item-title">Content type</span>
                             <span class="drawer__item-content">
-                                <i class="drawer__icon" wf-icon="{{ contentItem.contentType }}"/> {{ contentItem.contentTypeTitle }}
+                                <i class="drawer__icon" wf-icon="{{ contentItem.contentType }}"></i> {{ contentItem.contentTypeTitle }}
                             </span>
                         </li>
                         <li class="drawer__item" ng-show="contentItem.contentType == 'article'">
@@ -145,10 +145,10 @@
                             </wf-editable>
                         </li>
                         <li class="drawer__item">
-                            <span class="drawer__item-title">URL</span>
-                            <span class="drawer__item-content" ng-if="capiData.capiUrl">
-                                <a href="{{ capiData.capiUrl }}">
-                                    {{ capiData.capiUrl }}</a>
+                            <p class="drawer__item-title">URL</p>
+                            <span class="drawer__item-content" ng-if="capiData.editorUrl">
+                                <a href="{{ capiData.editorUrl }}">
+                                    {{ capiData.editorUrl }}</a>
                             </span>
                         </li>
                         <li class="drawer__item">
@@ -160,9 +160,30 @@
                     <ul class="drawer__column">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Content type</p>
-                            <wf-editable class="drawer__item-content" ng-model="contentItem.contentTypeTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
+                            <span class="drawer__item-content">
                                 {{ contentItem.contentTypeTitle || '-' }}
-                            </wf-editable>
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Headline (YT title)</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.title || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Standfirst</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.description || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Trail text</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.trailText || '-' }}
+                            </span>
                         </li>
 
                         <li class="drawer__item">
@@ -170,11 +191,71 @@
                             <div class="drawer__item-content" ng-repeat="usage in capiData.usages">
                                 <div>
                                     {{ usage.webTitle || '-' }}
-                                    <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"/></a>
-                                    <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="preview"/></a>
-                                    <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"/></a>
+                                    <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"></i></a>
+                                    <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="preview"></i></a>
+                                    <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"></i></a>
                                 </div>
                             </div>
+                        </li>
+                    </ul>
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Video source</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.source || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Video category</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.category || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Expiry date</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.friendlyExpiryDate || '-' }}
+                            </span>
+                        </li>
+
+                    </ul>
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Youtube category ID</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.metadata.categoryId || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Youtube channel ID</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.metadata.channelId || '-' }}
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Keywords</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.metadata.tags || '-' }}
+                            </span>
+                        </li>
+
+                    </ul>
+
+                    <ul class="drawer__column drawer__column--wide" ng-if="capiData.youtubeUrl">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Video preview</p>
+                            <iframe
+                                className="drawer__item"
+                                ng-src="{{capiData.youtubeUrl | wfTrustedUrl}}"
+                                allowFullScreen
+                                frameBorder="0"
+                                />
                         </li>
                     </ul>
                     
@@ -183,8 +264,8 @@
             </div>
 
             <div class="drawer__section">
-                <div class="drawer__header">
-                    <i class="drawer__icon" wf-icon="management"/>
+                <div class="drawer__header" ng-click="toggleSection('management')">
+                    <i class="drawer__icon" wf-icon="management" />
                     Management
                 </div>
 
@@ -205,7 +286,7 @@
                             </form>
                         </li>
                         <li class="drawer__item">
-                            <span class="drawer__item-title">Scheduled</span>
+                            <p class="drawer__item-title">Scheduled</p>
                             <span class="drawer__item-content">
                                 {{ (contentItem.launchScheduleDetails.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
                             </span>
@@ -244,8 +325,9 @@
                             </div>
                         </li>
                         <li class="drawer__item">
-                            <span class="drawer__item-title">In use by</span>
-                            <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true"></wf-presence-indicators>
+                            <p class="drawer__item-title">In use by</p>
+                            <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true" ng-if="contentItem.composerId"></wf-presence-indicators>
+                            <wf-presence-indicators presence-id="contentItem.item.editorId" in-drawer="true" ng-if="contentItem.contentType === 'media'"></wf-presence-indicators>
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Last modified</p>
@@ -253,7 +335,7 @@
                             <span class="drawer__item-content" ng-show="contentItem.lastModifiedBy">by {{ contentItem.lastModifiedBy }}</span>
                         </li>
                         <li class="drawer__item" ng-if="contentItem.contentType !== 'media'">
-                            <span class="drawer__item-title">InCopy</span>
+                            <p class="drawer__item-title">InCopy</p>
                             <span class="drawer__item-content">{{ contentItem.incopyTitle }}</span>
                             <span class="drawer__item-content" ng-if="contentItem.isOwnedByInCopy"><i>Locked</i></span>
                         </li>

@@ -45,6 +45,10 @@
         }
     }
 
+    &__user-image {
+        border-radius: 50%;
+    }
+
     &__section {
         background-color: $c-grey-150;
         padding: 12px;
@@ -52,6 +56,10 @@
 
         &:not(:last-child) {
             margin-right: 3px;
+        }
+
+        &--closed {
+            border: 5px solid hotpink;
         }
 
         &--wide {
