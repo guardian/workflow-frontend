@@ -2,6 +2,8 @@ import angular from 'angular';
 
 import 'angular-bootstrap-temporary';
 
+import _ from 'lodash';
+
 import 'components/date-time-picker/date-time-picker';
 
 import 'lib/composer-service';
@@ -11,10 +13,10 @@ import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
 
-const wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService'])
+const wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
-function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks) {
+function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
 
     wfContentService.getTypes().then( (types) => {
         $scope.contentName =
@@ -24,7 +26,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         $scope.modalTitle = ({
             'create': `Create ${$scope.contentName}`,
             'edit': `Edit ${$scope.contentName}`,
-            'import': 'Import from Composer'
+            'import': 'Import Existing Content'
         })[mode];
     });
 
@@ -99,8 +101,23 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.validImport = false;
     $scope.wfComposerState;
 
-    $scope.composerUrlChanged = () => {
-        wfComposerService.getComposerContent($scope.formData.composerUrl).then(
+    /* when a request is made to import an item from another tool,
+     * e.g. composer or an atom editor, then we will check to see if
+     * it is already being tracked by Workflow. If, this function will
+     * be called with the workflow entry as it's argument.
+     */
+    function importHandleExisting(content) {
+        if(content.visibleOnUi) {
+            $scope.wfComposerState = 'visible';
+            $scope.stubId = res.data.data.id;
+        }
+        else {
+            $scope.wfComposerState = 'invisible'
+        }
+    }
+
+    function importComposerContent(url) {
+        wfComposerService.getComposerContent($scope.formData.importUrl).then(
             (composerContent) => {
                 //check validity
                 if (composerContent) {
@@ -115,16 +132,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                         $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
 
                         wfContentService.getById(composerId).then(
-                            function(res){
-                                if(res.data.data.visibleOnUi) {
-                                    $scope.wfComposerState = 'visible';
-                                    $scope.stubId = res.data.data.id;
-                                }
-                                else {
-                                    $scope.wfComposerState = 'invisible'
-                                }
-                            },
-                            function(err) {
+                            (res) => importHandleExisting(res.data.data),
+                            (err) => {
                                 if(err.status === 404) {
                                     $scope.validImport = true;
                                     if(err.data.archive) { $scope.wfComposerState = 'archived'; }
@@ -138,6 +147,56 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                 }
             }
         );
+    }
+
+    function importContentAtom(id, atomType) {
+        wfCapiAtomService.getCapiAtom(id, atomType).then((response) => {
+            if(response) {
+                $scope.editorUrl = config.mediaAtomMakerViewAtom + id;
+                const atom = wfCapiAtomService.parseCapiAtomData(response, atomType);
+                $scope.stub.title = atom.title;
+                $scope.stub.contentType = atomType.toLowerCase();
+                $scope.stub.editorId = id;
+                wfContentService.getByEditorId(id).then(
+                    (res) => importHandleExisting(res.data.data),
+                    (err) => {
+                        if(err.status === 404) {
+                            $scope.validImport = true;
+                            if(err.data.archive) { $scope.wfComposerState = 'archived'; }
+                        }
+                    }
+                );
+            }
+        });
+    }
+
+    /* we can import from various different tools. Which one will be
+     * determined by the URL. This list matches URL regexes to
+     * functions which can handle the import. The first one that
+     * matches will be applied. The default fallback is Composer,
+     * which will match against everything and attempt to import. If
+     * that import fails the whole thing has failed. */
+    const importUrlHandlers = [
+        { name: "Media Atom Maker",
+          regex: "videos/([0-9a-f-]+)$",
+          fn: (url, matches) => importContentAtom(matches[1], "media")
+        },
+        { name: "Composer",
+          regex: "^.*$",
+          fn: importComposerContent
+        }
+    ];
+
+    $scope.importUrlChanged = () => {
+        const url = $scope.formData.importUrl;
+        const handler = _.find(importUrlHandlers, (handlerObj) => {
+            return url.search(handlerObj.regex) !== -1;
+        });
+
+        if(handler) {
+            $scope.importHandler = handler;
+            $scope.importHandler.fn(url, url.match(handler.regex));
+        }
     };
 
     $scope.ok = function (addToComposer, addToAtomEditor) {

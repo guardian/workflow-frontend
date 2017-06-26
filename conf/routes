@@ -59,6 +59,9 @@ GET            /capi/*path                                 controllers.CAPIServi
 
 # Content
 GET            /api/v1/content/:id                         controllers.ContentApi.contentById(id: String)
+GET            /api/v1/content/editor/:id                  controllers.ContentApi.contentByEditorId(id: String)
+
+GET            /api/v1/atom/:id                            controllers.ContentApi.contentByEditorId(id: String)
 
 # Admin
 GET            /admin                                      controllers.Admin.index

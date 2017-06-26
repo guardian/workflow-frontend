@@ -51,6 +51,12 @@ object CommonAPI {
       itemRes <- extractDataResponseOpt[Stub](res.json)
     } yield itemRes
 
+  def getStubsByEditorId(editorId: String): ApiResponseFt[Option[Stub]] =
+    for {
+      res <- ApiResponseFt.Async.Right(getRequest(s"content/editor/$editorId"))
+      itemRes <- extractDataResponseOpt[Stub](res.json)
+    } yield itemRes
+
   def getStubs(queryString: Map[String, Seq[String]]): ApiResponseFt[ContentResponse] =
     for {
       res <- ApiResponseFt.Async.Right(getRequest(s"stubs", Some(queryString
