@@ -11,6 +11,7 @@ GET            /dashboard                                  controllers.Applicati
 
 #static user pages
 GET            /about                                      controllers.Assets.at(path="/public", file="/static/about.html")
+GET            /editorialSupport                           controllers.Application.editorialSupport
 GET            /faqs                                       controllers.Application.faqs
 GET            /troubleshooting                            controllers.Application.troubleshooting
 GET            /training                                   controllers.Application.training
@@ -45,6 +46,11 @@ DELETE         /api/stubs/:stubId                          controllers.Api.delet
 
 GET            /api/statuses                               controllers.Api.statusus
 GET            /api/sections                               controllers.Api.sections
+
+GET            /api/editorialSupportTeams                  controllers.Api.editorialSupportTeams
+PUT            /api/editorialSupportTeams                  controllers.Api.addEditorialSupportStaff(name, team)
+POST           /api/editorialSupportTeams/toggle           controllers.Api.toggleEditorialSupportStaff(id, active)
+POST           /api/editorialSupportTeams/update           controllers.Api.updateEditorialSupportStaffDescription(id, description)
 
 # CAPI
 

@@ -8,7 +8,8 @@ object Dependencies {
 
   val awsDependencies = Seq(
     "com.amazonaws" % "aws-java-sdk" % "1.11.8",
-    "com.gu" % "kinesis-logback-appender" % "1.3.0"
+    "com.gu" % "kinesis-logback-appender" % "1.3.0",
+    "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.11.8"
   )
 
   val akkaDependencies = Seq(
