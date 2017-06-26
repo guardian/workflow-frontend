@@ -283,5 +283,25 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
+  def editorialSupportTeams = APIAuthAction {
+    Ok(Json.toJson(EditorialSupportTeamsController.getTeams()))
+  }
+
+  def addEditorialSupportStaff(name: String, team: String) = APIAuthAction {
+    EditorialSupportTeamsController.createNewStaff(name, team)
+    Ok(s"$name added to $team")
+  }
+
+  def toggleEditorialSupportStaff(id: String, status: String) = APIAuthAction {
+    val active = status.toBoolean
+    EditorialSupportTeamsController.toggleStaffStatus(id, active)
+    Ok(s"Status swithced to ${ if (active) "inactive" else "active" }")
+  }
+
+  def updateEditorialSupportStaffDescription(id: String, description: String) = APIAuthAction {
+    EditorialSupportTeamsController.updateStaffDescription(id, description)
+    Ok(s"Descripton updated to '$description'")
+  }
+
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
 }

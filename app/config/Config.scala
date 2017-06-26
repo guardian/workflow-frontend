@@ -53,6 +53,8 @@ object Config extends AwsInstanceTags {
 
   lazy val no2faUser: String = "composer.test@guardian.co.uk"
 
+  lazy val editorialSupportDynamoTable: String = s"support-staff-$stage"
+
   // logstash conf
   private lazy val logStashHost: String = "ingest.logs.gutools.co.uk"
   private lazy val logStashPort: Int = 6379
