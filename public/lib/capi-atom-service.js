@@ -46,10 +46,10 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         });
     }
 
-    function parseAtom(atom, atomType) {
+    function parseAtom(atom, atomType, id) {
         switch(atomType) {
             case 'media':
-                return wfAtomService.parseMediaAtom(atom)
+                return wfAtomService.parseMediaAtom(atom, id)
             default:
                 return atom;
         }
@@ -74,30 +74,10 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
     }
 
     function parseCapiAtomData(response, atomType) {
-<<<<<<< HEAD
-
-        const allAtomTypes = [
-            'explainer',
-            'media',
-            'cta',
-            'recipe',
-            'storyQuestions',
-            'quiz'
-        ];
-        if(allAtomTypes.indexOf(atomType) !== -1) {
-            const atom = _.get(response.data.response[atomType].data, atomType);
-            const atomId = response.data.response[atomType].id;
-
-            if(atom) {
-                const capiUrl = getUrl(atomId, atomType);
-                return Object.assign({}, atom, {capiUrl: capiUrl});
-            }
-=======
         const atom = _.get(response.data.response[atomType].data, atomType);
         const atomId = _.get(response.data.response[atomType], 'id');
         if(atom) {
-            return parseAtom(atom, atomType);
->>>>>>> master
+            return parseAtom(atom, atomType, atomId);
         }
         return emptyCapiAtomObject();
     }
