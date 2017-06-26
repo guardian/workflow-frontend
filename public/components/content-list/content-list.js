@@ -19,7 +19,6 @@ import './content-list.html';
 
 import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
-import { wfContentListDrawerAccordion } from 'components/content-list-drawer-accordion/content-list-drawer-accordion';
 import { wfLoader } from 'components/loader/loader';
 
 
@@ -31,7 +30,6 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'sections', wfContentListItem])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', wfContentListDrawer])
-    .directive('wfContentListDrawerAccordion', ['$rootScope', wfContentListDrawerAccordion])
     .directive("bindCompiledHtml", function($compile, $timeout) {
         return {
             scope: {

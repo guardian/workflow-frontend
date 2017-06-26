@@ -47,3 +47,13 @@ a:hover {
     @extend %fs-data-4;
     margin: 0;
 }
+
+//editorial status page styles
+
+.status {
+    list-style-type: none;
+}
+
+.status label, .status button {
+    margin-left: 5px;
+}

@@ -1,9 +1,9 @@
 <tr class="content-list-drawer content-list-drawer--hidden" ng-class="{'content-list-drawer--trashed': contentItem.item.trashed}">
     <td colspan="100" class="content-list-drawer__full-width">
 
-        <div class="drawer" wf-content-list-drawer-accordion wf-open-section="furniture">
-            <div class="drawer__section drawer__section--wide" ng-class="{'drawer__section--closed' : openSection === 'furniture'}">
-                <div class="drawer__header" ng-click="toggleSection('furniture')">
+        <div class="drawer">
+            <div class="drawer__section drawer__section--wide">
+                <div class="drawer__header">
                     <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
                 </div>
@@ -225,14 +225,14 @@
 
                     <ul class="drawer__column">
                         <li class="drawer__item">
-                            <p class="drawer__item-title">Youtube category</p>
+                            <p class="drawer__item-title">Youtube category ID</p>
                             <span class="drawer__item-content">
                                 {{ capiData.metadata.categoryId || '-' }}
                             </span>
                         </li>
 
                         <li class="drawer__item">
-                            <p class="drawer__item-title">Youtube channel</p>
+                            <p class="drawer__item-title">Youtube channel ID</p>
                             <span class="drawer__item-content">
                                 {{ capiData.metadata.channelId || '-' }}
                             </span>
@@ -251,7 +251,6 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Video preview</p>
                             <iframe
-                                type="text/html"
                                 className="drawer__item"
                                 ng-src="{{capiData.youtubeUrl | wfTrustedUrl}}"
                                 allowFullScreen
@@ -264,7 +263,7 @@
 
             </div>
 
-            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection === 'management'}">
+            <div class="drawer__section">
                 <div class="drawer__header" ng-click="toggleSection('management')">
                     <i class="drawer__icon" wf-icon="management" />
                     Management

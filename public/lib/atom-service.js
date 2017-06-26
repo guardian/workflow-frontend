@@ -5,14 +5,14 @@ angular.module('wfAtomService', [])
 .service('wfAtomService', ['config', wfAtomService]);
 
 function wfAtomService(config) {
-  function parseMediaAtom(atom) {
+  function parseMediaAtom(atom, id) {
     const currentAsset = getCurrentAsset();
     const editorUrl = getUrl();
     const friendlyExpiryDate = moment(atom.metadata.expiryDate).format('dddd, MMMM Do YYYY');
     const mediaAtomFields = {
       friendlyExpiryDate: friendlyExpiryDate,
       editorUrl: editorUrl,
-      youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}?showinfo=0`
+      youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}`
     }
 
     return Object.assign({}, atom, mediaAtomFields);
@@ -23,7 +23,7 @@ function wfAtomService(config) {
     }
 
     function getUrl() {
-        return `${config.mediaAtomMakerViewAtom}${atom.id}`;
+        return `${config.mediaAtomMakerViewAtom}${id || atom.id}`;
     }
   }
 
