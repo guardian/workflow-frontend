@@ -22,7 +22,9 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
   }
 
   def getTeams():List[EditorialSupportTeam] = {
-    getStaff().groupBy(_.team).map(x => EditorialSupportTeam(x._1, x._2)).toList
+    val staff = getStaff()
+    def extractTeam(name: String): EditorialSupportTeam = EditorialSupportTeam(name, staff.filter(x => x.team == name))
+    List(extractTeam("Audience"), extractTeam("Fronts"))
   }
 
   def toggleStaffStatus(id: String, active: Boolean) = {

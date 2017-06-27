@@ -1,11 +1,13 @@
 package controllers
 
+import java.util.NoSuchElementException
+
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import com.gu.workflow.lib.{StatusDatabase, TagService}
 import config.Config
 import config.Config.defaultExecutionContext
 import lib.{Atom, Composer}
-import models.{Desk, Section}
+import models.{Desk, EditorialSupportTeam, Section}
 import play.api.Logger
 import play.api.libs.json.{Format, Json}
 import play.api.mvc._
@@ -57,7 +59,9 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def editorialSupport = AuthAction { request =>
-    Ok(views.html.editorialSupportStatus(EditorialSupportTeamsController.getTeams()))
+    val teams = EditorialSupportTeamsController.getTeams()
+    def filterTeam(name: String) = teams.filter(x => x.name == name).head
+    Ok(views.html.editorialSupportStatus(filterTeam("Audience"), filterTeam("Fronts")))
   }
 
   // limited tag fields we want output into the DOM
