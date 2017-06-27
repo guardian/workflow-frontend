@@ -66,7 +66,7 @@ function wfContentItemParser(config, statusLabels, sections) {
                 this.live = LIVE_PATH + item.path;
                 this.ophan = OPHAN_PATH + item.path;
             }
-            if (item.contentType === 'media') {
+            if (item.contentType === 'media' && item.editorId) {
                 this.editor = `${config.mediaAtomMakerViewAtom}${item.editorId}`
             }
         }
