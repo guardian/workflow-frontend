@@ -283,8 +283,10 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def editorialSupportTeams = APIAuthAction {
-    Ok(Json.toJson(EditorialSupportTeamsController.getTeams()))
+  def editorialSupportTeams = CORSable(composerUrl) {
+    APIAuthAction {
+      Ok(Json.toJson(EditorialSupportTeamsController.getTeams()))
+    }
   }
 
   def addEditorialSupportStaff(name: String, team: String) = APIAuthAction {
