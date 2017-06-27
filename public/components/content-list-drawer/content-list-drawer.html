@@ -348,14 +348,20 @@
 
                     <ul class="drawer__column drawer__column--wide">
                         <li class="drawer__item">
-                            <div class="drawer__item-content" ng-repeat="usage in capiData.usages" ng-if="capiData.usages.length">
-                                <div>
-                                    {{ usage.webTitle || '-' }}
-                                    <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"></i></a>
-                                    <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="preview"></i></a>
-                                    <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"></i></a>
-                                </div>
-                            </div>
+                            <ul class="drawer__item-content usages-list" ng-if="capiData.usages.length">
+
+                                <li class="usage" ng-class="{'usage--highlight' : usage.type === 'video'}" ng-repeat="usage in capiData.usages">
+                                    <p class="usage__title">{{ usage.webTitle || '-' }}</p>
+                                    <div class="usage__details">
+                                        <span class="usage__date">{{ 'Created: ' + usage.friendlyDate }}</span>
+                                        <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer"></i></a>
+                                        <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="preview"></i></a>
+                                        <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="live-site"></i></a>
+                                    </div>
+                                </li>
+
+                            </ul>
+
                             <p class="drawer__item-content" ng-if="!capiData.usages.length">No usages found for this Atom</p>
                         </li>
                     </ul>

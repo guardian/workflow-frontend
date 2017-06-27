@@ -119,7 +119,8 @@
         list-style: none;
         margin: 0;
         padding: 12px 0 0 12px;
-        flex: 1 0 0;
+        flex: 1 1 0;
+        overflow: hidden;
     }
     
     &__item {
@@ -217,6 +218,39 @@
         &-icon {
             margin-right: 4px;
         }
+    }
+}
+
+// Usages
+
+.usages-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex: 0 1 33%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-height: 300px; 
+}
+
+.usage {
+    padding: 12px;
+    max-width: 33%;
+
+    &__title {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    &__details {
+        display: flex;
+        align-items: center;
+    }
+
+    &--highlight {
+        background: $c-white;
+        border-top: 2px solid $c-yellow;
     }
 }
 
