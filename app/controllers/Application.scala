@@ -1,13 +1,11 @@
 package controllers
 
-import java.util.NoSuchElementException
-
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import com.gu.workflow.lib.{StatusDatabase, TagService}
 import config.Config
 import config.Config.defaultExecutionContext
 import lib.{Atom, Composer}
-import models.{Desk, EditorialSupportTeam, Section}
+import models.{Desk, Section}
 import play.api.Logger
 import play.api.libs.json.{Format, Json}
 import play.api.mvc._
