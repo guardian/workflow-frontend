@@ -55,6 +55,10 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         }
     }
 
+    function parseUsage(usage) {
+        return wfAtomService.parseAtomUsage(usage);
+    }
+
     function getAtomUsages(id, atomType) {
         return getCapiAtomUsages(id, atomType).then(res => {
             const usagePaths = res.data.response.results;
@@ -63,9 +67,7 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
             return Promise.all(usagePaths.map(wfCapiContentService.getCapiContent)).then(capiResponse => {
                 const usages = capiResponse.reduce((all, item) => {
                     let content = item.data.response.content;
-                    content['composerUrl'] = config.composerViewContent + '/' + content.id.substr(content.id.lastIndexOf('/') + 1);
-                    content['viewerUrl'] = config.viewerUrl + '/' + content.id;
-                    all.push(content);
+                    all.push(parseUsage(content));
                     return all;
                 }, []);
                 return usages;

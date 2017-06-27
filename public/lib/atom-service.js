@@ -27,5 +27,14 @@ function wfAtomService(config) {
     }
   }
 
+  function parseAtomUsage(usage) {
+    const usageFields = {
+      composerUrl: config.composerViewContent + '/' + usage.id.substr(usage.id.lastIndexOf('/') + 1),
+      viewerUrl: config.viewerUrl + '/' + usage.id,
+    }
+    return Object.assign({}, usage, usageFields);
+  }
+
   this.parseMediaAtom = parseMediaAtom;
+  this.parseAtomUsage = parseAtomUsage;
 }
