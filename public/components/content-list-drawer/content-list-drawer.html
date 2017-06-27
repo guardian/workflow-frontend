@@ -348,7 +348,7 @@
 
                     <ul class="drawer__column drawer__column--wide">
                         <li class="drawer__item">
-                            <div class="drawer__item-content" ng-repeat="usage in capiData.usages">
+                            <div class="drawer__item-content" ng-repeat="usage in capiData.usages" ng-if="capiData.usages.length">
                                 <div>
                                     {{ usage.webTitle || '-' }}
                                     <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"></i></a>
@@ -356,6 +356,7 @@
                                     <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"></i></a>
                                 </div>
                             </div>
+                            <p class="drawer__item-content" ng-if="!capiData.usages.length">No usages found for this Atom</p>
                         </li>
                     </ul>
                     
