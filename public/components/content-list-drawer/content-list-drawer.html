@@ -1,8 +1,8 @@
 <tr class="content-list-drawer content-list-drawer--hidden" ng-class="{'content-list-drawer--trashed': contentItem.item.trashed}">
-    <td colspan="100" class="content-list-drawer__full-width">
+    <td colspan="100">
 
         <div class="drawer">
-            <div class="drawer__section drawer__section--wide" ng-class="{'drawer__section--closed' : openSection !== 'furniture'}">
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'furniture'}">
 
                 <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'furniture'}" ng-click="toggleSection('furniture')">
                     <i class="drawer__icon" wf-icon="furniture"></i>
@@ -240,7 +240,7 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Video preview</p>
                             <iframe
-                                className="drawer__item"
+                                className="drawer__video"
                                 ng-src="{{capiData.youtubeUrl | wfTrustedUrl}}"
                                 allowFullScreen
                                 frameBorder="0"

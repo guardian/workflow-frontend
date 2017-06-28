@@ -54,7 +54,7 @@
     &__section {
         background-color: $c-grey-150;
         padding: 12px;
-        flex: 1 0 0;
+        flex: 1 1 0;
         min-height: 250px;
 
         &:not(:last-child) {
@@ -64,14 +64,6 @@
         &--closed {
             flex: initial;
             padding: 0;
-        }
-
-        &--wide {
-            flex: 2.5 0 0;
-            
-            &.drawer__section--closed {
-                flex: initial;
-            }
         }
     }
 
@@ -138,7 +130,7 @@
         
         &-content {
             display: block;
-            word-wrap: break-word;
+            word-break: break-all;
             color: $c-text;
 
             &--warning {
@@ -172,6 +164,10 @@
 
     &__image {
         width: 100%;
+    }
+
+    &__video {
+        max-width: 100%;
     }
 
     &__icon {
