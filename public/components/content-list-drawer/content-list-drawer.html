@@ -338,7 +338,7 @@
 
             </div>
 
-            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}">
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}" ng-if="contentItem.contentType === 'media'">
                 <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'usages'}" ng-click="toggleSection('usages')">
                     <i class="drawer__icon" wf-icon="usages" />
                     Usages
