@@ -364,7 +364,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         // TODO: if multiple fields need updating, do it in a single API call
         for (var field in msg.data) {
 
-            wfContentService.updateField(msg.contentItem.item, field, msg.data[field]).then(() => {
+            wfContentService.updateField(msg.contentItem.item, field, msg.data[field], msg.contentItem.contentType).then(() => {
                 $scope.$emit('contentItem.updated', {
                     'contentItem': msg.contentItem,
                     'field': field,
