@@ -110,11 +110,15 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Creates an atom in the Media Atom Maker. Effectively setting
                  * the editorId to what we get from the response.
                  */
-                createInMediaAtomMaker(stub) {
+                createInMediaAtomMaker(stub, statusOption) {
 
                     return wfMediaAtomMakerService.create(stub.title).then( (response) => {
 
                         stub['editorId'] = response.data.id;
+
+                        if (statusOption) {
+                            stub['status'] = statusOption;
+                        }
 
                         if (stub.id) {
                             return this.updateStub(stub);
@@ -150,10 +154,14 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  *
                  * @returns {Promise}
                  */
-                updateField(contentItem, field, data) {
+                updateField(contentItem, field, data, contentType) {
 
                     if (field === 'status' && contentItem.status === 'Stub') {
-                        return this.createInComposer(contentItem, data)
+                        if (contentType === 'media') {
+                            return this.createInMediaAtomMaker(contentItem, data);
+                        } else {
+                            return this.createInComposer(contentItem, data)
+                        }
                     }
 
                     var contentId = contentItem.id || contentItem.stubId;
