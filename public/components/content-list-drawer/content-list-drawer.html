@@ -247,15 +247,10 @@
 
                     </ul>
 
-                    <ul class="drawer__column drawer__column--wide" ng-if="capiData.youtubeUrl">
+                    <ul class="drawer__column drawer__column--wide" ng-if="capiData.defaultHtml">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Video preview</p>
-                            <iframe
-                                className="drawer__item"
-                                ng-src="{{capiData.youtubeUrl | wfTrustedUrl}}"
-                                allowFullScreen
-                                frameBorder="0"
-                                />
+                            <div ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
                         </li>
                     </ul>
                     

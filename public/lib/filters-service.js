@@ -3,11 +3,11 @@ import angular from 'angular';
 import _ from 'lodash';
 
 import './date-service';
-import './trusted-url';
+import './trusted-html';
 
-angular.module('wfFiltersService', ['wfDateService', 'wfTrustedUrl'])
-    .factory('wfFiltersService', ['$rootScope', '$location', '$state', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfPreferencesService', 'wfTrustedUrlFilter',
-        function($rootScope, $location, $state, wfDateParser, wfFormatDateTimeFilter, wfPreferencesService, wfTrustedUrlFilter) {
+angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
+    .factory('wfFiltersService', ['$rootScope', '$location', '$state', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfPreferencesService', 'wfTrustedHtmlFilter',
+        function($rootScope, $location, $state, wfDateParser, wfFormatDateTimeFilter, wfPreferencesService, wfTrustedHtmlFilter) {
 
         class FiltersService
         {
