@@ -1,4 +1,6 @@
 <td class="content-list-item__field--presence">
-    <wf-presence-indicators presence-id="contentItem.composerId">
+    <wf-presence-indicators presence-id="contentItem.composerId" ng-if="contentItem.composerId">
+    </wf-presence-indicators>
+    <wf-presence-indicators presence-id="'media-' + contentItem.item.editorId" ng-if="contentItem.contentType === 'media'">
     </wf-presence-indicators>
 </td>

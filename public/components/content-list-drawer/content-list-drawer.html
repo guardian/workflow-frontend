@@ -327,7 +327,7 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">In use by</p>
                             <wf-presence-indicators presence-id="contentItem.composerId" in-drawer="true" ng-if="contentItem.composerId"></wf-presence-indicators>
-                            <wf-presence-indicators presence-id="contentItem.item.editorId" in-drawer="true" ng-if="contentItem.contentType === 'media'"></wf-presence-indicators>
+                            <wf-presence-indicators presence-id="'media-' + contentItem.item.editorId" in-drawer="true" ng-if="contentItem.contentType === 'media'"></wf-presence-indicators>
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Last modified</p>
