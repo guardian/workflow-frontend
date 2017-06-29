@@ -8,11 +8,13 @@ function wfAtomService(config) {
   function parseMediaAtom(atom, id) {
     const currentAsset = getCurrentAsset();
     const editorUrl = getUrl();
+    const keywords = formatKeywords();
     const friendlyExpiryDate = moment(atom.metadata.expiryDate).format('dddd, MMMM Do YYYY');
     const mediaAtomFields = {
       friendlyExpiryDate: friendlyExpiryDate,
       editorUrl: editorUrl,
-      youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}`
+      youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}`,
+      keywords: keywords
     }
 
     return Object.assign({}, atom, mediaAtomFields);
@@ -24,6 +26,10 @@ function wfAtomService(config) {
 
     function getUrl() {
         return `${config.mediaAtomMakerViewAtom}${id || atom.id}`;
+    }
+
+    function formatKeywords() {
+      return atom.metadata.tags.length ? atom.metadata.tags.join(', ') : false;
     }
   }
 
