@@ -60,6 +60,7 @@ function wfCapiContentService($http, $q) {
     }
     
     function parseCapiContentData(response) {
+        console.log(response);
         if (_.get(response.data, 'response.content')) {
             const resp = response.data.response;
             if (resp) {

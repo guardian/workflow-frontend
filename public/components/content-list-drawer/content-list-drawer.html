@@ -236,15 +236,10 @@
 
                     </ul>
 
-                    <ul class="drawer__column drawer__column--wide" ng-if="capiData.youtubeUrl">
+                    <ul class="drawer__column drawer__column--wide" ng-if="capiData.defaultHtml">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Video preview</p>
-                            <iframe
-                                className="drawer__video"
-                                ng-src="{{capiData.youtubeUrl | wfTrustedUrl}}"
-                                allowFullScreen
-                                frameBorder="0"
-                                />
+                            <div class="drawer__video"ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
                         </li>
                     </ul>
                     
@@ -354,7 +349,8 @@
                                     <p class="usage__title">{{ usage.webTitle || '-' }}</p>
                                     <div class="usage__details">
                                         <span class="usage__date">{{ 'Created: ' + usage.friendlyDate }}</span>
-                                        <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer"></i></a>
+                                        <a ng:if="usage.type !== 'video'" href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer"></i></a>
+                                        <a ng:if="usage.type === 'video'" href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer-video"></i></a>
                                         <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="preview"></i></a>
                                         <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="live-site"></i></a>
                                     </div>

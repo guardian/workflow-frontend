@@ -1,4 +1,17 @@
-@(teams: List[EditorialSupportTeam])
+@(audience: EditorialSupportTeam, fronts: EditorialSupportTeam)
+
+@renderTeam(team: EditorialSupportTeam) = {
+@for(staff <- team.staff) {
+    <ul class="status"><input type="checkbox" id="editorialSupportStatus-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val>
+        <label>@staff.name</label>
+        <input type="text" value="@staff.description" id="editorialSupportDescription-@staff.id" onChange="window.updateStatus('@staff.id','@staff.description')">
+    </ul>
+}
+}
+
+@renderAddStaff(teamName: String) = {
+    <ul class="status">Add new team member<input type="text" id="name-entry-@teamName"><button class="btn btn-lrg btn-info" onclick="window.addNewStaff('@teamName')">add</button></ul>
+}
 
 @layout("Support") {
     <div class="admin">
@@ -10,16 +23,12 @@
 
         <div>
             <div class="col-lg-3">
-                @for(team <- teams) {
-                    <h2>@team.name team</h2>
-                    @for(staff <- team.staff){
-                        <ul class="status"><input type="checkbox" id="editorialSupportStatus-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val>
-                            <label>@staff.name</label>
-                            <input type="text" value="@staff.description" id="editorialSupportDescription-@staff.id" onChange="window.updateStatus('@staff.id','@staff.description')">
-                        </ul>
-                    }
-                    <ul class="status">Add new team member<input type="text" id="name-entry-@team.name"><button class="btn btn-lrg btn-info" onclick="window.addNewStaff('@team.name')">add</button></ul>
-                }
+                <h2>@audience.name team</h2>
+                @renderTeam(audience)
+                @renderAddStaff(audience.name)
+                <h2>@fronts.name team</h2>
+                @renderTeam(fronts)
+                @renderAddStaff(fronts.name)
             </div>
         </div>
     </div>
