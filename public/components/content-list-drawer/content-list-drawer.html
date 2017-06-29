@@ -175,8 +175,7 @@
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Standfirst</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.description || '-' }}
+                            <span class="drawer__item-content" ng-bind-html="capiData.description | wfTrustedHtml">
                             </span>
                         </li>
 
@@ -240,7 +239,7 @@
                     <ul class="drawer__column drawer__column--wide" ng-if="capiData.defaultHtml">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Video preview</p>
-                            <div class="drawer__video"ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
+                            <div class="drawer__video" ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
                         </li>
                     </ul>
                     
@@ -349,7 +348,7 @@
                                 <li class="usage" ng-class="{'usage--highlight' : usage.type === 'video'}" ng-repeat="usage in capiData.usages">
                                     <p class="usage__title">{{ usage.webTitle || '-' }}</p>
                                     <div class="usage__details">
-                                        <span class="usage__date">{{ 'Created: ' + usage.friendlyDate }}</span>
+                                        <span class="usage__date">{{ 'Created: ' + usage.friendlyCreationDate + ' '}}</span>
                                         <a ng:if="usage.type !== 'video'" href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer"></i></a>
                                         <a ng:if="usage.type === 'video'" href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer-video"></i></a>
                                         <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="preview"></i></a>

@@ -168,6 +168,10 @@
 
     &__video {
         max-width: 100%;
+
+        iframe, video {
+            max-width: 100%;
+        }
     }
 
     &__icon {
@@ -242,6 +246,10 @@
     &__details {
         display: flex;
         align-items: center;
+    }
+
+    &__date {
+        padding-right: 3px;
     }
 
     &--highlight {
