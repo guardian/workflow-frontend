@@ -398,6 +398,42 @@
 
             </div>
 
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'atoms'}" ng-if="contentItem.contentType !== 'media'">
+                <div class="drawer__header" ng-if="openSection === 'atoms'">
+                    <i class="drawer__icon" wf-icon="atom"></i>
+                    Atoms
+                </div>
+
+                <div class="drawer__header-toggle" ng-if="openSection !== 'atoms'" ng-click="toggleSection('atoms')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="atom"></i>
+                        Atoms
+                    </p>
+                </div>
+
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'atoms'}" >
+
+                    <ul class="drawer__column drawer__column--wide">
+                        <li class="drawer__item">
+                            <ul class="drawer__item-content usages-list" ng-if="capiData.atomUsages.length">
+
+                                <li class="usage" ng-repeat="atom in capiData.atomUsages">
+                                    <p class="usage__title">{{ atom.contentAtomTypeData.atomId }}</p>
+                                    <p class="usage__details">
+                                        {{ atom.contentAtomTypeData.atomType }}
+                                    </p>
+                                </li>
+
+                            </ul>
+
+                            <p class="drawer__item-content" ng-if="!capiData.atomUsages.length">No atoms found in this content</p>
+                        </li>
+                    </ul>
+                    
+                </div>
+
+            </div>
+
         </div>
 
         <div class="drawer__toolbar">
