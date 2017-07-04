@@ -4,9 +4,16 @@
         <div class="drawer">
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'furniture'}">
 
-                <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'furniture'}" ng-click="toggleSection('furniture')">
+                <div class="drawer__header" ng-if="openSection === 'furniture'">
                     <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
+                </div>
+
+                <div class="drawer__header-toggle" ng-if="openSection !== 'furniture'" ng-click="toggleSection('furniture')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="furniture"></i>
+                        Furniture
+                    </p>
                 </div>
 
                 <span class ="drawer__warning" ng-if="capiData.capiError && openSection === 'furniture'">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
@@ -175,8 +182,7 @@
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Standfirst</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.description || '-' }}
+                            <span class="drawer__item-content" ng-bind-html="capiData.description | wfTrustedHtml">
                             </span>
                         </li>
 
@@ -210,9 +216,21 @@
                             </span>
                         </li>
 
+                        <!-- Remove this when YT data is added -->
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Keywords</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.keywords || '-' }}
+                            </span>
+                        </li>
+
                     </ul>
 
-                    <ul class="drawer__column">
+                    </ul>
+
+
+                    <!--TODO: Add helpful Youtube data-->
+                    <!--<ul class="drawer__column">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Youtube category ID</p>
                             <span class="drawer__item-content">
@@ -230,21 +248,16 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Keywords</p>
                             <span class="drawer__item-content">
-                                {{ capiData.metadata.tags || '-' }}
+                                {{ capiData.keywords || '-' }}
                             </span>
                         </li>
 
-                    </ul>
+                    </ul>-->
 
-                    <ul class="drawer__column drawer__column--wide" ng-if="capiData.youtubeUrl">
+                    <ul class="drawer__column drawer__column--wide" ng-if="capiData.defaultHtml">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Video preview</p>
-                            <iframe
-                                className="drawer__video"
-                                ng-src="{{capiData.youtubeUrl | wfTrustedUrl}}"
-                                allowFullScreen
-                                frameBorder="0"
-                                />
+                            <div class="drawer__video" ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
                         </li>
                     </ul>
                     
@@ -253,9 +266,16 @@
             </div>
 
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'management'}">
-                <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'management'}" ng-click="toggleSection('management')">
-                    <i class="drawer__icon" wf-icon="management" />
+                <div class="drawer__header" ng-if="openSection === 'management'">
+                    <i class="drawer__icon" wf-icon="management"></i>
                     Management
+                </div>
+
+                <div class="drawer__header-toggle" ng-if="openSection !== 'management'" ng-click="toggleSection('management')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="management"></i>
+                        Management
+                    </p>
                 </div>
 
                 <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'management'}" >
@@ -339,9 +359,16 @@
             </div>
 
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}" ng-if="contentItem.contentType === 'media'">
-                <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'usages'}" ng-click="toggleSection('usages')">
-                    <i class="drawer__icon" wf-icon="usages" />
+                <div class="drawer__header" ng-if="openSection === 'usages'">
+                    <i class="drawer__icon" wf-icon="usages"></i>
                     Usages
+                </div>
+
+                <div class="drawer__header-toggle" ng-if="openSection !== 'usages'" ng-click="toggleSection('usages')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="usages"></i>
+                        Usages
+                    </p>
                 </div>
 
                 <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'usages'}" >
@@ -353,8 +380,9 @@
                                 <li class="usage" ng-class="{'usage--highlight' : usage.type === 'video'}" ng-repeat="usage in capiData.usages">
                                     <p class="usage__title">{{ usage.webTitle || '-' }}</p>
                                     <div class="usage__details">
-                                        <span class="usage__date">{{ 'Created: ' + usage.friendlyDate }}</span>
-                                        <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer"></i></a>
+                                        <span class="usage__date">{{ 'Created: ' + usage.friendlyCreationDate + ' '}}</span>
+                                        <a ng:if="usage.type !== 'video'" href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer"></i></a>
+                                        <a ng:if="usage.type === 'video'" href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer-video"></i></a>
                                         <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="preview"></i></a>
                                         <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="live-site"></i></a>
                                     </div>

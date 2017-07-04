@@ -44,15 +44,15 @@ function wfCapiContentService($http, $q) {
 
     function emptyCapiContentObject() {
         return {
-            headline: "unknown",
-            standfirst: "unknown",
+            headline: "Unknown",
+            standfirst: "Unknown",
             mainMediaUrl: "",
-            mainMediaCaption: "unknown",
-            mainMediaAltText: "unknown",
+            mainMediaCaption: "Unknown",
+            mainMediaAltText: "Unknown",
             trailImageUrl: "",
-            trailText : "unknown",
-            commentsTitle: "unknown",
-            wordCount: "unknown",
+            trailText : "Unknown",
+            commentsTitle: "Unknown",
+            wordCount: "Unknown",
             commissioningDesks: "",
             firstPublishedDate: "",
             capiError: true
@@ -60,6 +60,7 @@ function wfCapiContentService($http, $q) {
     }
     
     function parseCapiContentData(response) {
+        console.log(response);
         if (_.get(response.data, 'response.content')) {
             const resp = response.data.response;
             if (resp) {

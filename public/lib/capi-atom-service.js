@@ -77,6 +77,8 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
 
     function parseCapiAtomData(response, atomType) {
         const atom = _.get(response.data.response[atomType].data, atomType);
+        atom.defaultHtml = response.data.response[atomType].defaultHtml;
+
         const atomId = _.get(response.data.response[atomType], 'id');
         if(atom) {
             return parseAtom(atom, atomType, atomId);
