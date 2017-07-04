@@ -38,25 +38,16 @@ function wfCapiContentService($http, $q) {
         return null;
     }
 
-    function getContentAtomBlocks(blocks) {
-        return blocks.filter(block => block.type === 'contentatom');
+    function getContentAtomElements(elements) {
+        return elements.filter(element => element.type === 'contentatom');
     }
 
-    function getAtomUsages(id, atomType) {
-        return getCapiAtomUsages(id, atomType).then(res => {
-            const usagePaths = res.data.response.results;
-            // the atom usage endpoint in capi only returns article paths,
-            // lookup the articles in capi to get their fields
-            return Promise.all(usagePaths.map(wfCapiContentService.getCapiContent)).then(capiResponse => {
-                const usages = capiResponse.reduce((all, item) => {
-                    let content = item.data.response.content;
-                    all.push(parseUsage(content));
-                    return all;
-                }, []);
-                return usages;
-            });
+    function getContentUsages(atomUsages) {
+        return Promise.all(atomUsages.map((usage) => getCapiContent(`atom/${usage.contentAtomTypeData.atomType}/${usage.contentAtomTypeData.atomId}`)))
+        .then(capiResponse => {
+            return capiResponse;
         });
-    }
+    } 
     
     function getTagTitles(tags) {
         return tags.map((t) => t.webTitle);
@@ -86,7 +77,8 @@ function wfCapiContentService($http, $q) {
             const fields = _.get(content, 'fields', {});
             const elements = _.get(content, 'elements');
             const tags = _.get(content, 'tags');
-            const atomUsages = getContentAtomBlocks(_.get(content, 'blocks.body[0].elements'));
+            const bodyElements = _.get(content, 'blocks.body[0].elements');
+            const atomUsages = bodyElements ? getContentAtomElements(bodyElements) : [];
             const mainMedia = elements ? getMainMedia(elements): null;
             return Promise.resolve({
                 headline: fields.headline ? fields.headline : "",
@@ -120,7 +112,7 @@ function wfCapiContentService($http, $q) {
             timeout: 1000
         });
     }
-
+    this.getContentUsages = getContentUsages;
     this.getCapiContent = getCapiContent;
     this.parseCapiContentData = parseCapiContentData;
     this.emptyCapiContentObject = emptyCapiContentObject;

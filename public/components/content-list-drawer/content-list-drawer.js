@@ -199,7 +199,11 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                         .then((resp) => {
                         wfCapiContentService.parseCapiContentData(resp)
                             .then((parsed) => {
-                                contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+                                wfCapiContentService.getContentUsages(parsed.atomUsages).then((usages) => {
+                                    parsed['usages'] = usages;
+                                    console.log(parsed);
+                                    contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+                                });
                             });
                     }, (err) => {
                         contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
