@@ -71,26 +71,33 @@
     &__header {
         font-weight: bold;
         padding-bottom:10px;
-        border-bottom:4px solid $c-grey-300;
+        border-bottom: 4px solid $c-grey-300;
 
-        &--closed {
-            writing-mode: vertical-lr;
-            padding: 32px 12px 12px;
-            border: 0;
+        &-toggle {
+            height: 100%;
+            padding: 0 20px;
             position: relative;
-            // gross, but makes the header the correct height;
-            height: calc(100% - 44px);
 
             &:hover {
                 cursor: pointer;
-                background-color: $c-grey-170;
+                background-color: $c-grey-300;
             }
+        }
 
-            .drawer__icon {
-                position: absolute;
-                top: 10px;
-                margin: 0;        
-            }
+        &--closed {
+            position: absolute;
+            border: 0;
+            transform: rotate(90deg) translate(0, -50%);
+            transform-origin: 0 0;
+            top: 12px;
+            padding: 0 0 0 20px;
+            margin: 0;
+
+                .drawer__icon {
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;    
+                }
         }
     }
 

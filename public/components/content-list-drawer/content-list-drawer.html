@@ -4,9 +4,16 @@
         <div class="drawer">
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'furniture'}">
 
-                <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'furniture'}" ng-click="toggleSection('furniture')">
+                <div class="drawer__header" ng-if="openSection === 'furniture'">
                     <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
+                </div>
+
+                <div class="drawer__header-toggle" ng-if="openSection !== 'furniture'" ng-click="toggleSection('furniture')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="furniture"></i>
+                        Furniture
+                    </p>
                 </div>
 
                 <span class ="drawer__warning" ng-if="capiData.capiError && openSection === 'furniture'">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
@@ -209,11 +216,22 @@
                             </span>
                         </li>
 
+                        <!-- Remove this when YT data is added -->
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Keywords</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.keywords || '-' }}
+                            </span>
+                        </li>
+
                     </ul>
 
-                    <ul class="drawer__column">
-                        <!--TODO: Add helpful Youtube data-->
-                        <!--<li class="drawer__item">
+                    </ul>
+
+
+                    <!--TODO: Add helpful Youtube data-->
+                    <!--<ul class="drawer__column">
+                        <li class="drawer__item">
                             <p class="drawer__item-title">Youtube category ID</p>
                             <span class="drawer__item-content">
                                 {{ capiData.metadata.categoryId || '-' }}
@@ -225,7 +243,7 @@
                             <span class="drawer__item-content">
                                 {{ capiData.metadata.channelId || '-' }}
                             </span>
-                        </li>-->
+                        </li>
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Keywords</p>
@@ -234,7 +252,7 @@
                             </span>
                         </li>
 
-                    </ul>
+                    </ul>-->
 
                     <ul class="drawer__column drawer__column--wide" ng-if="capiData.defaultHtml">
                         <li class="drawer__item">
@@ -248,9 +266,16 @@
             </div>
 
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'management'}">
-                <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'management'}" ng-click="toggleSection('management')">
-                    <i class="drawer__icon" wf-icon="management" />
+                <div class="drawer__header" ng-if="openSection === 'management'">
+                    <i class="drawer__icon" wf-icon="management"></i>
                     Management
+                </div>
+
+                <div class="drawer__header-toggle" ng-if="openSection !== 'management'" ng-click="toggleSection('management')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="management"></i>
+                        Management
+                    </p>
                 </div>
 
                 <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'management'}" >
@@ -334,9 +359,16 @@
             </div>
 
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}" ng-if="contentItem.contentType === 'media'">
-                <div class="drawer__header" ng-class="{'drawer__header--closed' : openSection !== 'usages'}" ng-click="toggleSection('usages')">
-                    <i class="drawer__icon" wf-icon="usages" />
+                <div class="drawer__header" ng-if="openSection === 'usages'">
+                    <i class="drawer__icon" wf-icon="usages"></i>
                     Usages
+                </div>
+
+                <div class="drawer__header-toggle" ng-if="openSection !== 'usages'" ng-click="toggleSection('usages')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="usages"></i>
+                        Usages
+                    </p>
                 </div>
 
                 <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'usages'}" >
