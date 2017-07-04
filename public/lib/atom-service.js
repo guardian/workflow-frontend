@@ -29,7 +29,7 @@ function wfAtomService(config) {
     }
 
     function formatKeywords() {
-      return atom.metadata.tags.length ? atom.metadata.tags.join(', ') : false;
+      return atom.metadata.tags && atom.metadata.tags.length ? atom.metadata.tags.join(', ') : false;
     }
   }
 
