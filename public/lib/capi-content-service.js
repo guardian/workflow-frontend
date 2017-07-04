@@ -75,37 +75,33 @@ function wfCapiContentService($http, $q) {
             wordCount: "Unknown",
             commissioningDesks: "",
             firstPublishedDate: "",
-            capiError: true
+            capiError: true,
+            atomUsages: []
         }
     }
 
     function parseCapiContentData(response) {
-        if (_.get(response.data, 'response.content')) {
-            const resp = response.data.response;
-            if (resp) {
-                const content = resp.content;
-                if (content) {
-                    const fields = _.get(content, 'fields', {});
-                    const elements = _.get(content, 'elements');
-                    const tags = _.get(content, 'tags');
-                    const atomUsages = getContentAtomBlocks(_.get(content.blocks.body[0], 'elements'));
-                    const mainMedia = elements ? getMainMedia(elements): null;
-                    return Promise.resolve({
-                        headline: fields.headline ? fields.headline : "",
-                        standfirst: fields.standfirst ? fields.standfirst : "",
-                        mainMediaUrl: mainMedia ? mainMedia.url : "",
-                        mainMediaCaption: mainMedia ? mainMedia.caption : "",
-                        mainMediaAltText: mainMedia ? mainMedia.altText : "",
-                        trailImageUrl: fields.thumbnail ? fields.thumbnail : "",
-                        trailText : fields.trailText ? fields.trailText : "",
-                        commentsTitle: fields.commentable ? (fields.commentable === "true" ? "on" : "off") : "off",
-                        wordCount: fields.wordcount ? fields.wordcount : "",
-                        commissioningDesks: tags ? getTagTitles(tags) : "",
-                        firstPublishedDate: fields.firstPublicationDate ? fields.firstPublicationDate : "",
-                        atomUsages: atomUsages
-                    });
-                }
-            }
+        const content = _.get(response, 'data.response.content');
+        if (content) {
+            const fields = _.get(content, 'fields', {});
+            const elements = _.get(content, 'elements');
+            const tags = _.get(content, 'tags');
+            const atomUsages = getContentAtomBlocks(_.get(content, 'blocks.body[0].elements'));
+            const mainMedia = elements ? getMainMedia(elements): null;
+            return Promise.resolve({
+                headline: fields.headline ? fields.headline : "",
+                standfirst: fields.standfirst ? fields.standfirst : "",
+                mainMediaUrl: mainMedia ? mainMedia.url : "",
+                mainMediaCaption: mainMedia ? mainMedia.caption : "",
+                mainMediaAltText: mainMedia ? mainMedia.altText : "",
+                trailImageUrl: fields.thumbnail ? fields.thumbnail : "",
+                trailText : fields.trailText ? fields.trailText : "",
+                commentsTitle: fields.commentable ? (fields.commentable === "true" ? "on" : "off") : "off",
+                wordCount: fields.wordcount ? fields.wordcount : "",
+                commissioningDesks: tags ? getTagTitles(tags) : "",
+                firstPublishedDate: fields.firstPublicationDate ? fields.firstPublicationDate : "",
+                atomUsages: atomUsages
+            });
         }
         return emptyCapiContentObject();
     }   
