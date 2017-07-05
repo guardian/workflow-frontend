@@ -423,7 +423,8 @@
                                 <li class="usage" ng-repeat="atom in capiData.usages">
                                     <p class="usage__title">{{ atom.atomType }} - {{ atom.title }}</p>
                                     <p class="usage__details">
-                                        {{ 'Created: ' + atom.friendlyCreationDate + ' '}}
+                                        <span class="usage__date">{{ 'Created: ' + atom.friendlyCreationDate + ' '}}</span>
+                                        <a ng:if="atom.editorUrl" href="{{ atom.editorUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="atom"></i></a>
                                     </p>
                                 </li>
 

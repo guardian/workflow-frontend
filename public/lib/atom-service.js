@@ -39,7 +39,10 @@ function wfAtomService(config) {
     }
 
     function getUrl() {
+      if(atomType === 'media') {
         return `${config.mediaAtomMakerViewAtom}${id || atom.id}`;
+      }
+      return '';
     }
 
     function formatKeywords() {
