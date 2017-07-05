@@ -103,7 +103,7 @@ function wfCapiContentService($http, $q) {
             method: 'GET',
             url: "/capi/"+path,
             params: {
-                'show-fields': 'headline,standfirst,thumbnail,trailText,firstPublicationDate,wordcount,commentable',
+                'show-fields': 'headline,standfirst,thumbnail,trailText,firstPublicationDate,wordcount,commentable,internalComposerCode',
                 'show-elements': 'all',
                 'show-blocks': 'body',
                 'show-tags': 'tracking'

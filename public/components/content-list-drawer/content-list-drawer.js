@@ -200,7 +200,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                             .then((parsed) => {
                                 wfCapiContentService.getContentUsages(parsed.atomUsages).then((usages) => {
                                     parsed['usages'] = usages;
-                                    console.log(parsed);
                                     contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
                                 });
                             });
