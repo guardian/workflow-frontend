@@ -13,6 +13,7 @@ function wfAtomService(config) {
     const mediaAtomFields = {
       friendlyExpiryDate: friendlyExpiryDate,
       editorUrl: editorUrl,
+      currentAsset: currentAsset,
       youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}`,
       keywords: keywords,
     }
