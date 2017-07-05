@@ -50,8 +50,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
         scope: {
             contentList: '=',
             legalValues: '=',
-            statusValues: '=',
-            openSection: '@'
+            statusValues: '='
         },
         controllerAs: 'contentListDrawerController',
         controller: function ($scope, $element) {
@@ -156,7 +155,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
         link: function ($scope, elem, attrs, contentListDrawerController) {
 
             $scope.maxNoteLength = config.maxNoteLength;
-
             $scope.prodOffices = prodOfficeService.getProdOffices();
             $scope.incopyExportEnabled = false;
             featureSwitches.withSwitch("incopy-export",
@@ -168,6 +166,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             $rootScope.$on('contentItem.select', ($event, contentItem, contentListItemElement) => {
                 $scope.awaitingDeleteConfirmation = false;
                 $scope.selectedItem = contentItem;
+                $scope.openSection = 'furniture';
 
 
                 if (contentItem.status === 'Stub') {
