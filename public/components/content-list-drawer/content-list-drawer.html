@@ -254,10 +254,13 @@
 
                     </ul>-->
 
-                    <ul class="drawer__column drawer__column--wide" ng-if="capiData.currentAsset">
+                    <ul class="drawer__column drawer__column--wide" >
                         <li class="drawer__item">
                             <p class="drawer__item-title">Video preview</p>
-                            <div class="drawer__video" ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
+                            <div class="drawer__video" ng-if="capiData.currentAsset" ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
+                            <span class="drawer__item-content" ng-if="!capiData.currentAsset">
+                                No preview available
+                            </span>
                         </li>
                     </ul>
                     
