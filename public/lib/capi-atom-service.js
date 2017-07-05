@@ -46,15 +46,6 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         });
     }
 
-    function parseAtom(atom, atomType, id) {
-        switch(atomType) {
-            case 'media':
-                return wfAtomService.parseMediaAtom(atom, id)
-            default:
-                return atom;
-        }
-    }
-
     function parseUsage(usage) {
         return wfAtomService.parseAtomUsage(usage);
     }
@@ -77,11 +68,12 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
 
     function parseCapiAtomData(response, atomType) {
         const atom = _.get(response.data.response[atomType].data, atomType);
-        atom.defaultHtml = response.data.response[atomType].defaultHtml;
+        atom.defaultHtml = _.get(response.data.response[atomType], 'defaultHtml');
+        atom.contentChangeDetails = _.get(response.data.response[atomType], 'contentChangeDetails');
 
         const atomId = _.get(response.data.response[atomType], 'id');
         if(atom) {
-            return parseAtom(atom, atomType, atomId);
+            return wfAtomService.parseAtom(atom, atomType, atomId);
         }
         return emptyCapiAtomObject();
     }

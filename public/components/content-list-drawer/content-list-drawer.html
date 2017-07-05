@@ -417,10 +417,10 @@
                         <li class="drawer__item">
                             <ul class="drawer__item-content usages-list" ng-if="capiData.atomUsages.length">
 
-                                <li class="usage" ng-repeat="atom in capiData.atomUsages">
-                                    <p class="usage__title">{{ atom.contentAtomTypeData.atomId }}</p>
+                                <li class="usage" ng-repeat="atom in capiData.usages">
+                                    <p class="usage__title">{{ atom.atomType }} - {{ atom.title }}</p>
                                     <p class="usage__details">
-                                        {{ atom.contentAtomTypeData.atomType }}
+                                        {{ 'Created: ' + atom.friendlyCreationDate + ' '}}
                                     </p>
                                 </li>
 

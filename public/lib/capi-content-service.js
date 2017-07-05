@@ -2,9 +2,9 @@ import angular from 'angular';
 import _ from 'lodash';
 
 angular.module('wfCapiContentService', [])
-.service('wfCapiContentService', ['$http', '$q', wfCapiContentService]);
+.service('wfCapiContentService', ['$http', '$q', 'wfAtomService', wfCapiContentService]);
 
-function wfCapiContentService($http, $q) {
+function wfCapiContentService($http, $q, wfAtomService) {
     
 
     function getSize(asset) {
@@ -43,10 +43,19 @@ function wfCapiContentService($http, $q) {
     }
 
     function getContentUsages(atomUsages) {
-        return Promise.all(atomUsages.map((usage) => getCapiContent(`atom/${usage.contentAtomTypeData.atomType}/${usage.contentAtomTypeData.atomId}`)))
-        .then(capiResponse => {
-            return capiResponse;
-        });
+        return Promise.all(
+            atomUsages.map((usage) => {
+                const atomType = usage.contentAtomTypeData.atomType;
+                const atomId = usage.contentAtomTypeData.atomId;
+                return getCapiContent(`atom/${atomType}/${atomId}`).then((capiResponse) => {
+                    const atom = _.get(capiResponse.data.response[atomType].data, atomType);
+                    atom.contentChangeDetails = _.get(capiResponse.data.response[atomType], 'contentChangeDetails');
+                    atom.defaultHtml = _.get(capiResponse.data.response[atomType], 'defaultHtml');
+
+                    return wfAtomService.parseAtom(atom, atomType, atomId);
+                })
+            })
+        )
     } 
     
     function getTagTitles(tags) {

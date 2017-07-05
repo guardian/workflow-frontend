@@ -5,15 +5,28 @@ angular.module('wfAtomService', [])
 .service('wfAtomService', ['config', wfAtomService]);
 
 function wfAtomService(config) {
-  function parseMediaAtom(atom, id) {
+
+  function parseAtom(atom, atomType, id) {
+        switch(atomType) {
+          case 'media':
+              return parseMediaAtom(atom, atomType, id)
+          default:
+              return atom;
+      }
+  }
+
+  function parseMediaAtom(atom, atomType, id) {
     const currentAsset = getCurrentAsset();
     const editorUrl = getUrl();
     const keywords = formatKeywords();
     const friendlyExpiryDate = moment(atom.metadata.expiryDate).format('dddd, MMMM Do YYYY');
+    const friendlyCreationDate = moment(atom.contentChangeDetails.created.date).fromNow();
     const mediaAtomFields = {
       friendlyExpiryDate: friendlyExpiryDate,
+      friendlyCreationDate: friendlyCreationDate,
       editorUrl: editorUrl,
       currentAsset: currentAsset,
+      atomType: atomType,
       youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}`,
       keywords: keywords,
     }
@@ -43,6 +56,6 @@ function wfAtomService(config) {
     return Object.assign({}, usage, usageFields);
   }
 
-  this.parseMediaAtom = parseMediaAtom;
+  this.parseAtom = parseAtom;
   this.parseAtomUsage = parseAtomUsage;
 }
