@@ -38,8 +38,13 @@ function wfCapiContentService($http, $q, wfAtomService) {
         return null;
     }
 
-    function getContentAtomElements(elements) {
-        return elements.filter(element => element.type === 'contentatom');
+    function getContentAtomElements(body) {
+        return body.reduce((all, item) => {
+            const atoms = item.elements.filter((element) => {
+                return element.type === 'contentatom';
+            });
+            return all.concat(atoms);
+        }, []);
     }
 
     function getContentUsages(atomUsages) {
@@ -86,8 +91,8 @@ function wfCapiContentService($http, $q, wfAtomService) {
             const fields = _.get(content, 'fields', {});
             const elements = _.get(content, 'elements');
             const tags = _.get(content, 'tags');
-            const bodyElements = _.get(content, 'blocks.body[0].elements');
-            const atomUsages = bodyElements ? getContentAtomElements(bodyElements) : [];
+            const body = _.get(content, 'blocks.body');
+            const atomUsages = body ? getContentAtomElements(body) : [];
             const mainMedia = elements ? getMainMedia(elements): null;
             return Promise.resolve({
                 headline: fields.headline ? fields.headline : "",

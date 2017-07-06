@@ -77,6 +77,9 @@
             height: 100%;
             padding: 0 20px;
             position: relative;
+            background-color: $c-grey-150;
+            -webkit-appearance: none;
+            border: 0;
 
             &:hover {
                 cursor: pointer;

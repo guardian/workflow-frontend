@@ -9,12 +9,12 @@
                     Furniture
                 </div>
 
-                <div class="drawer__header-toggle" ng-if="openSection !== 'furniture'" ng-click="toggleSection('furniture')">
+                <button type="button" class="drawer__header-toggle" ng-if="openSection !== 'furniture'" ng-click="toggleSection('furniture')">
                     <p class="drawer__header drawer__header--closed">
                         <i class="drawer__icon" wf-icon="furniture"></i>
                         Furniture
                     </p>
-                </div>
+                </button>
 
                 <span class ="drawer__warning" ng-if="capiData.capiError && openSection === 'furniture'">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
 
@@ -274,12 +274,12 @@
                     Management
                 </div>
 
-                <div class="drawer__header-toggle" ng-if="openSection !== 'management'" ng-click="toggleSection('management')">
+                <button type="button" class="drawer__header-toggle" ng-if="openSection !== 'management'" ng-click="toggleSection('management')">
                     <p class="drawer__header drawer__header--closed">
                         <i class="drawer__icon" wf-icon="management"></i>
                         Management
                     </p>
-                </div>
+                </button>
 
                 <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'management'}" >
 
@@ -367,12 +367,12 @@
                     Usages
                 </div>
 
-                <div class="drawer__header-toggle" ng-if="openSection !== 'usages'" ng-click="toggleSection('usages')">
+                <button type="button"  class="drawer__header-toggle" ng-if="openSection !== 'usages'" ng-click="toggleSection('usages')">
                     <p class="drawer__header drawer__header--closed">
                         <i class="drawer__icon" wf-icon="usages"></i>
                         Usages
                     </p>
-                </div>
+                </button>
 
                 <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'usages'}" >
 
@@ -407,12 +407,12 @@
                     Atoms
                 </div>
 
-                <div class="drawer__header-toggle" ng-if="openSection !== 'atoms'" ng-click="toggleSection('atoms')">
+                <button type="button" class="drawer__header-toggle" ng-if="openSection !== 'atoms'" ng-click="toggleSection('atoms')">
                     <p class="drawer__header drawer__header--closed">
                         <i class="drawer__icon" wf-icon="atom"></i>
                         Atoms
                     </p>
-                </div>
+                </button>
 
                 <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'atoms'}" >
 
