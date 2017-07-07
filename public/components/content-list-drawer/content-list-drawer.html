@@ -39,7 +39,7 @@
                         <li class="drawer__item">
                             <span class="drawer__item-title">URL</span>
                             <span class="drawer__item-content" ng-if="contentItem.path">
-                                <a href="{{ contentItem.path }}">{{
+                                <a href="{{ contentItem.links.live || contentItem.links.preview || contentItem.links.composer }}">{{
                                 contentItem.path }}</a>
                             </span>
                         </li>
