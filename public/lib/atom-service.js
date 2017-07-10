@@ -53,7 +53,7 @@ function wfAtomService(config) {
   function parseAtomUsage(usage) {
     const usageFields = {
       composerUrl: config.composerViewContent + '/' + usage.fields.internalComposerCode,
-      viewerUrl: config.viewerUrl + '/' + usage.id,
+      viewerUrl: config.viewerUrl + '/preview/' + usage.id,
       friendlyCreationDate: moment(usage.webPublicationDate).fromNow()
     }
     return Object.assign({}, usage, usageFields);
