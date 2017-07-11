@@ -5,14 +5,30 @@ angular.module('wfAtomService', [])
 .service('wfAtomService', ['config', wfAtomService]);
 
 function wfAtomService(config) {
-  function parseMediaAtom(atom, id) {
+
+  function parseAtom(atom, atomType, id) {
+        switch(atomType) {
+          case 'media':
+              return parseMediaAtom(atom, atomType, id)
+          default:
+              return atom;
+      }
+  }
+
+  function parseMediaAtom(atom, atomType, id) {
     const currentAsset = getCurrentAsset();
     const editorUrl = getUrl();
+    const keywords = formatKeywords();
     const friendlyExpiryDate = moment(atom.metadata.expiryDate).format('dddd, MMMM Do YYYY');
+    const friendlyCreationDate = moment(atom.contentChangeDetails.created.date).fromNow();
     const mediaAtomFields = {
       friendlyExpiryDate: friendlyExpiryDate,
+      friendlyCreationDate: friendlyCreationDate,
       editorUrl: editorUrl,
-      youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}`
+      currentAsset: currentAsset,
+      atomType: atomType,
+      youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}`,
+      keywords: keywords,
     }
 
     return Object.assign({}, atom, mediaAtomFields);
@@ -23,9 +39,26 @@ function wfAtomService(config) {
     }
 
     function getUrl() {
+      if(atomType === 'media') {
         return `${config.mediaAtomMakerViewAtom}${id || atom.id}`;
+      }
+      return '';
+    }
+
+    function formatKeywords() {
+      return atom.metadata.tags && atom.metadata.tags.length ? atom.metadata.tags.join(', ') : false;
     }
   }
 
-  this.parseMediaAtom = parseMediaAtom;
+  function parseAtomUsage(usage) {
+    const usageFields = {
+      composerUrl: config.composerViewContent + '/' + usage.fields.internalComposerCode,
+      viewerUrl: config.viewerUrl + '/preview/' + usage.id,
+      friendlyCreationDate: moment(usage.webPublicationDate).fromNow()
+    }
+    return Object.assign({}, usage, usageFields);
+  }
+
+  this.parseAtom = parseAtom;
+  this.parseAtomUsage = parseAtomUsage;
 }

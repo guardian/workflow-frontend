@@ -46,13 +46,8 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         });
     }
 
-    function parseAtom(atom, atomType, id) {
-        switch(atomType) {
-            case 'media':
-                return wfAtomService.parseMediaAtom(atom, id)
-            default:
-                return atom;
-        }
+    function parseUsage(usage) {
+        return wfAtomService.parseAtomUsage(usage);
     }
 
     function getAtomUsages(id, atomType) {
@@ -63,9 +58,7 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
             return Promise.all(usagePaths.map(wfCapiContentService.getCapiContent)).then(capiResponse => {
                 const usages = capiResponse.reduce((all, item) => {
                     let content = item.data.response.content;
-                    content['composerUrl'] = config.composerViewContent + '/' + content.id.substr(content.id.lastIndexOf('/') + 1);
-                    content['viewerUrl'] = config.viewerUrl + '/' + content.id;
-                    all.push(content);
+                    all.push(parseUsage(content));
                     return all;
                 }, []);
                 return usages;
@@ -75,11 +68,12 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
 
     function parseCapiAtomData(response, atomType) {
         const atom = _.get(response.data.response[atomType].data, atomType);
-        atom.defaultHtml = response.data.response[atomType].defaultHtml;
+        atom.defaultHtml = _.get(response.data.response[atomType], 'defaultHtml');
+        atom.contentChangeDetails = _.get(response.data.response[atomType], 'contentChangeDetails');
 
         const atomId = _.get(response.data.response[atomType], 'id');
         if(atom) {
-            return parseAtom(atom, atomType, atomId);
+            return wfAtomService.parseAtom(atom, atomType, atomId);
         }
         return emptyCapiAtomObject();
     }

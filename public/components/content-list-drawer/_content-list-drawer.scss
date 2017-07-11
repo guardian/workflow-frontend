@@ -3,6 +3,8 @@
     display: flex;
     width: 100%;
 
+    // viewport minus the sidebar
+
     &__warning {
         color: $c-red;
     }
@@ -52,18 +54,16 @@
     &__section {
         background-color: $c-grey-150;
         padding: 12px;
-        flex: 1 0 0;
+        flex: 1 1 0;
+        min-height: 250px;
 
         &:not(:last-child) {
             margin-right: 3px;
         }
 
         &--closed {
-            border: 5px solid hotpink;
-        }
-
-        &--wide {
-            flex: 2.5 0 0;
+            flex: initial;
+            padding: 0;
         }
     }
 
@@ -71,7 +71,37 @@
     &__header {
         font-weight: bold;
         padding-bottom:10px;
-        border-bottom:4px solid $c-grey-300;
+        border-bottom: 4px solid $c-grey-300;
+
+        &-toggle {
+            height: 100%;
+            padding: 0 20px;
+            position: relative;
+            background-color: $c-grey-150;
+            -webkit-appearance: none;
+            border: 0;
+
+            &:hover {
+                cursor: pointer;
+                background-color: $c-grey-300;
+            }
+        }
+
+        &--closed {
+            position: absolute;
+            border: 0;
+            transform: rotate(90deg) translate(0, -50%);
+            transform-origin: 0 0;
+            top: 12px;
+            padding: 0 0 0 20px;
+            margin: 0;
+
+                .drawer__icon {
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;    
+                }
+        }
     }
 
     &__inner {
@@ -81,13 +111,18 @@
         font-size: 1.3rem;
         line-height: 16px;
         line-height: 1.6rem;
+
+        &--closed {
+            display: none;
+        }
     }
 
     &__column {
         list-style: none;
         margin: 0;
         padding: 12px 0 0 12px;
-        flex: 1 0 0;
+        flex: 1 1 0;
+        overflow: hidden;
     }
     
     &__item {
@@ -105,11 +140,12 @@
         
         &-content {
             display: block;
-            word-wrap: break-word;
+            word-break: break-all;
             color: $c-text;
 
             &--warning {
                 color: $c-red;
+                margin: 12px 12px 0;
             }
 
             &--empty {
@@ -138,6 +174,14 @@
 
     &__image {
         width: 100%;
+    }
+
+    &__video {
+        max-width: 100%;
+
+        iframe, video {
+            max-width: 100%;
+        }
     }
 
     &__icon {
@@ -186,3 +230,41 @@
         }
     }
 }
+
+// Usages
+
+.usages-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex: 0 1 33%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-height: 300px; 
+}
+
+.usage {
+    padding: 12px;
+    max-width: 33%;
+
+    &__title {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    &__details {
+        display: flex;
+        align-items: center;
+    }
+
+    &__date {
+        padding-right: 3px;
+    }
+
+    &--highlight {
+        background: $c-white;
+        border-top: 2px solid $c-yellow;
+    }
+}
+

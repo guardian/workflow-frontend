@@ -1,17 +1,25 @@
 <tr class="content-list-drawer content-list-drawer--hidden" ng-class="{'content-list-drawer--trashed': contentItem.item.trashed}">
-    <td colspan="100" class="content-list-drawer__full-width">
+    <td colspan="100">
 
         <div class="drawer">
-            <div class="drawer__section drawer__section--wide">
-                <div class="drawer__header">
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'furniture'}">
+
+                <div class="drawer__header" ng-if="openSection === 'furniture'">
                     <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
                 </div>
 
-                <span class ="drawer__warning" ng-if="capiData.capiError">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
+                <button type="button" class="drawer__header-toggle" ng-if="openSection !== 'furniture'" ng-click="toggleSection('furniture')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="furniture"></i>
+                        Furniture
+                    </p>
+                </button>
+
+                <span class ="drawer__warning" ng-if="capiData.capiError && openSection === 'furniture'">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
 
                 <!--CONTENT DRAWER-->
-                <div class="drawer__inner" ng-if="contentItem.contentType !== 'media'">
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="contentItem.contentType !== 'media'">
 
                     <ul class="drawer__column">
                         <li class="drawer__item">
@@ -39,8 +47,8 @@
                         <li class="drawer__item">
                             <span class="drawer__item-title">URL</span>
                             <span class="drawer__item-content" ng-if="contentItem.path">
-                                <a href="{{ contentItem.links.live || contentItem.links.preview || contentItem.links.composer }}">{{
-                                contentItem.path }}</a>
+                                <a href="{{ contentItem.links.live || contentItem.links.preview || contentItem.links.composer || contentItem.links.editor }}">{{
+                                    contentItem.path }}</a>
                             </span>
                         </li>
                         <li class="drawer__item">
@@ -129,7 +137,7 @@
                 </div>
 
                 <!--ATOM DRAWER-->
-                <div class="drawer__inner" ng-if="contentItem.contentType === 'media'">
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="contentItem.contentType === 'media'">
 
                     <ul class="drawer__column">
                         <li class="drawer__item">
@@ -174,8 +182,7 @@
 
                         <li class="drawer__item">
                             <p class="drawer__item-title">Standfirst</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.description || '-' }}
+                            <span class="drawer__item-content" ng-bind-html="capiData.description | wfTrustedHtml">
                             </span>
                         </li>
 
@@ -184,18 +191,6 @@
                             <span class="drawer__item-content">
                                 {{ capiData.trailText || '-' }}
                             </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Usages</p>
-                            <div class="drawer__item-content" ng-repeat="usage in capiData.usages">
-                                <div>
-                                    {{ usage.webTitle || '-' }}
-                                    <a href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="composer"></i></a>
-                                    <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon" wf-icon="preview"></i></a>
-                                    <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon" wf-icon="live-site"></i></a>
-                                </div>
-                            </div>
                         </li>
                     </ul>
 
@@ -221,9 +216,21 @@
                             </span>
                         </li>
 
+                        <!-- Remove this when YT data is added -->
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Keywords</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.keywords || '-' }}
+                            </span>
+                        </li>
+
                     </ul>
 
-                    <ul class="drawer__column">
+                    </ul>
+
+
+                    <!--TODO: Add helpful Youtube data-->
+                    <!--<ul class="drawer__column">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Youtube category ID</p>
                             <span class="drawer__item-content">
@@ -241,16 +248,19 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Keywords</p>
                             <span class="drawer__item-content">
-                                {{ capiData.metadata.tags || '-' }}
+                                {{ capiData.keywords || '-' }}
                             </span>
                         </li>
 
-                    </ul>
+                    </ul>-->
 
-                    <ul class="drawer__column drawer__column--wide" ng-if="capiData.defaultHtml">
+                    <ul class="drawer__column drawer__column--wide" >
                         <li class="drawer__item">
                             <p class="drawer__item-title">Video preview</p>
-                            <div ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
+                            <div class="drawer__video" ng-if="capiData.currentAsset" ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
+                            <span class="drawer__item-content" ng-if="!capiData.currentAsset">
+                                No preview available
+                            </span>
                         </li>
                     </ul>
                     
@@ -258,13 +268,20 @@
 
             </div>
 
-            <div class="drawer__section">
-                <div class="drawer__header" ng-click="toggleSection('management')">
-                    <i class="drawer__icon" wf-icon="management" />
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'management'}">
+                <div class="drawer__header" ng-if="openSection === 'management'">
+                    <i class="drawer__icon" wf-icon="management"></i>
                     Management
                 </div>
 
-                <div class="drawer__inner">
+                <button type="button" class="drawer__header-toggle" ng-if="openSection !== 'management'" ng-click="toggleSection('management')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="management"></i>
+                        Management
+                    </p>
+                </button>
+
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'management'}" >
 
                     <ul class="drawer__column drawer__column--wide">
                         <li class="drawer__item">
@@ -337,6 +354,83 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Legal status</p>
                             <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
+                        </li>
+                    </ul>
+                    
+                </div>
+
+            </div>
+
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}" ng-if="contentItem.contentType === 'media'">
+                <div class="drawer__header" ng-if="openSection === 'usages'">
+                    <i class="drawer__icon" wf-icon="usages"></i>
+                    Usages
+                </div>
+
+                <button type="button"  class="drawer__header-toggle" ng-if="openSection !== 'usages'" ng-click="toggleSection('usages')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="usages"></i>
+                        Usages
+                    </p>
+                </button>
+
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'usages'}" >
+
+                    <ul class="drawer__column drawer__column--wide">
+                        <li class="drawer__item">
+                            <ul class="drawer__item-content usages-list" ng-if="capiData.usages.length">
+
+                                <li class="usage" ng-class="{'usage--highlight' : usage.type === 'video'}" ng-repeat="usage in capiData.usages">
+                                    <p class="usage__title">{{ usage.webTitle || '-' }}</p>
+                                    <div class="usage__details">
+                                        <span class="usage__date">{{ 'Created: ' + usage.friendlyCreationDate + ' '}}</span>
+                                        <a ng:if="usage.type !== 'video'" href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer"></i></a>
+                                        <a ng:if="usage.type === 'video'" href="{{ usage.composerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="composer-video"></i></a>
+                                        <a href="{{ usage.viewerUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="preview"></i></a>
+                                        <a href="{{ usage.webUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="live-site"></i></a>
+                                    </div>
+                                </li>
+
+                            </ul>
+
+                            <p class="drawer__item-content" ng-if="!capiData.usages.length">No usages found for this Atom</p>
+                        </li>
+                    </ul>
+                    
+                </div>
+
+            </div>
+
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'atoms'}" ng-if="contentItem.contentType !== 'media'">
+                <div class="drawer__header" ng-if="openSection === 'atoms'">
+                    <i class="drawer__icon" wf-icon="atom"></i>
+                    Atoms
+                </div>
+
+                <button type="button" class="drawer__header-toggle" ng-if="openSection !== 'atoms'" ng-click="toggleSection('atoms')">
+                    <p class="drawer__header drawer__header--closed">
+                        <i class="drawer__icon" wf-icon="atom"></i>
+                        Atoms
+                    </p>
+                </button>
+
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'atoms'}" >
+
+                    <ul class="drawer__column drawer__column--wide">
+                        <li class="drawer__item">
+                            <ul class="drawer__item-content usages-list" ng-if="capiData.atomUsages.length">
+
+                                <li class="usage" ng-repeat="atom in capiData.usages">
+                                    <p class="usage__title">{{ atom.atomType }} - {{ atom.title }}</p>
+                                    <p class="usage__details">
+                                        <span class="usage__date">{{ 'Created: ' + atom.friendlyCreationDate + ' '}}</span>
+                                        <a ng:if="atom.editorUrl" href="{{ atom.editorUrl }}" target="_blank"><i class="drawer__icon usage__icon" wf-icon="atom"></i></a>
+                                    </p>
+                                </li>
+
+                            </ul>
+
+                            <p class="drawer__item-content" ng-if="!capiData.atomUsages.length">No atoms found in this content</p>
                         </li>
                     </ul>
                     

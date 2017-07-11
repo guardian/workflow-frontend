@@ -14,7 +14,7 @@ import _ from 'lodash';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfContentListDrawerAccordionCtrl) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -56,7 +56,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
         controller: function ($scope, $element) {
 
             var $parent = $element.parent();
-
             /**
              * Hide the drawer from view.
              * @returns {Promise}
@@ -156,7 +155,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
         link: function ($scope, elem, attrs, contentListDrawerController) {
 
             $scope.maxNoteLength = config.maxNoteLength;
-
             $scope.prodOffices = prodOfficeService.getProdOffices();
             $scope.incopyExportEnabled = false;
             featureSwitches.withSwitch("incopy-export",
@@ -168,6 +166,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             $rootScope.$on('contentItem.select', ($event, contentItem, contentListItemElement) => {
                 $scope.awaitingDeleteConfirmation = false;
                 $scope.selectedItem = contentItem;
+                $scope.openSection = 'furniture';
 
 
                 if (contentItem.status === 'Stub') {
@@ -194,11 +193,16 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                         }, (err) => {
                             contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiAtomService.emptyCapiAtomObject());
                     });
-                } else {   
+                } else {
                     wfCapiContentService.getCapiContent(contentItem.path)
                         .then((resp) => {
-                        const parsed = wfCapiContentService.parseCapiContentData(resp);
-                        contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+                        wfCapiContentService.parseCapiContentData(resp)
+                            .then((parsed) => {
+                                wfCapiContentService.getContentUsages(parsed.atomUsages).then((usages) => {
+                                    parsed['usages'] = usages;
+                                    contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
+                                });
+                            });
                     }, (err) => {
                         contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
                     });
@@ -281,6 +285,11 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 msg.oldValues[field] = oldValue;
 
                 $scope.$emit('contentItem.update', msg);
+            }
+
+            /* Drawer section toggles */
+            $scope.toggleSection = function (section) {
+                $scope.openSection = section;
             }
 
             $scope.onBeforeSaveNote = function (note) {
