@@ -37,7 +37,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.sections = getSectionsList(sections);
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
-    $scope.atomTypes = ['Media'];
+    $scope.atomTypes = ['Media', 'CTA'];
 
     if(mode==='import') {
        $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});
@@ -181,6 +181,11 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
           regex: "videos/([0-9a-f-]+)$",
           fn: (url, matches) => importContentAtom(matches[1], "media")
         },
+        {
+            name: "Atom Workshop",
+            regex: /atoms\/([a-z]+)\/([0-9a-f-]+)/gi,
+            fn: (url, matches) => importContentAtom(matches[1], matches[2])
+        },
         { name: "Composer",
           regex: "^.*$",
           fn: importComposerContent
@@ -195,7 +200,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
         if(handler) {
             $scope.importHandler = handler;
-            $scope.importHandler.fn(url, url.match(handler.regex));
+            $scope.importHandler.fn(url, handler.regex.exec(url));
         }
     };
 

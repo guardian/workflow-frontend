@@ -1,10 +1,10 @@
-package controllers
+ package controllers
 
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import com.gu.workflow.lib.{StatusDatabase, TagService}
 import config.Config
 import config.Config.defaultExecutionContext
-import lib.{Atom, Composer}
+import lib.{MediaAtomMakerConfig, AtomWorkshopConfig, Composer}
 import models.{Desk, Section}
 import play.api.Logger
 import play.api.libs.json.{Format, Json}
@@ -86,8 +86,12 @@ object Application extends Controller with PanDomainAuthActions {
           "details" -> Composer.contentDetails
         ),
         "mediaAtomMaker" -> Json.obj(
-          "create" -> Atom.newContentUrl,
-          "view" -> Atom.viewContentUrl
+          "create" -> MediaAtomMakerConfig.newContentUrl,
+          "view" -> MediaAtomMakerConfig.viewContentUrl
+        ),
+        "atomWorkshop" -> Json.obj(
+          "create" -> AtomWorkshopConfig.newContentUrl,
+          "view" -> AtomWorkshopConfig.viewContentUrl
         ),
         "statuses" -> statuses,
         "desks"    -> desks,

@@ -31,6 +31,7 @@ object Config extends AwsInstanceTags {
   lazy val composerRestorerUrl: String = s"https://restorer.$domain/content"
 
   lazy val mediaAtomMakerUrl: String = s"https://video.$domain"
+  lazy val atomWorkshopUrl: String = s"https://atomworkshop.$domain"
 
   // TODO do this better!
   lazy val mediaAtomMakerUrlForCode: String = stage match {
