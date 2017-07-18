@@ -1,7 +1,7 @@
 import 'whatwg-fetch';
 
 function addNewStaff(team) {
-    var name = document.getElementById("name-entry-"+team).value;
+    var name = document.getElementById("name-entry-"+team).value.replace(/[^\w\s.,!?/]/gi, '');
     var endpoint = `/api/editorialSupportTeams?name=${name}&team=${team}`;
     fetch(endpoint, {
         method: 'PUT',
@@ -25,7 +25,7 @@ function toggleStaff(id) {
 }
 
 function updateStatus(id, startText) {
-    var text = document.getElementById("editorialSupportDescription-"+id).value;
+    var text = document.getElementById("editorialSupportDescription-"+id).value.replace(/[^\w\s.,!?/]/gi, '');
     if (text !== startText) {
         var endpoint = `/api/editorialSupportTeams/update?id=${id}&description=${text}`;
         fetch(endpoint, {
