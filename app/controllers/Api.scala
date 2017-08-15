@@ -65,15 +65,25 @@ object Api extends Controller with PanDomainAuthActions {
 
   def content = APIAuthAction.async(getContentBlock)
 
-  def getContentbyId(composerId: String) = CORSable(composerUrl) {
+  def getContentByComposerId(composerId: String) = CORSable(composerUrl) {
       APIAuthAction.async { implicit request =>
         ApiResponseFt[Option[Stub]](for {
-          item <- ContentApi.contentByComposerId(composerId)
+          item <- PrototypeAPI.getStubByComposerId(composerId)
         } yield {
           item
         })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
       }
     }
+
+  def getContentByEditorId(editorId: String) = CORSable(composerUrl) {
+    APIAuthAction.async { implicit request =>
+      ApiResponseFt[Option[Stub]](for {
+        item <- PrototypeAPI.getStubByEditorId(editorId)
+      } yield {
+        item
+      })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
+    }
+  }
 
   def sharedAuthGetContentById(composerId: String) =
     SharedSecretAuthAction.async {

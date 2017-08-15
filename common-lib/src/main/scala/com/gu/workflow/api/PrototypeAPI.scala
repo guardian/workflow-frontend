@@ -31,6 +31,18 @@ object PrototypeAPI {
       item <- extractDataResponseOpt[Stub](req.json)
     } yield item
 
+  def getStubByComposerId(composerId: String): ApiResponseFt[Option[Stub]] =
+  for {
+    req <- ApiResponseFt.Async.Right(getRequest(s"content/$composerId"))
+    item <- extractDataResponseOpt[Stub](req.json)
+  } yield item
+
+  def getStubByEditorId(editorId: String): ApiResponseFt[Option[Stub]] =
+    for {
+      req <- ApiResponseFt.Async.Right(getRequest(s"atom/$editorId"))
+      item <- extractDataResponseOpt[Stub](req.json)
+    } yield item
+
   def putStubDue(id: Long, date: Option[DateTime]): ApiResponseFt[Long] =
     for {
       req <- ApiResponseFt.Async.Right(putRequest(s"stubs/$id/dueDate", Json.toJson(date)))

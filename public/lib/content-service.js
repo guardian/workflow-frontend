@@ -69,17 +69,17 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     });
                 }
 
-                getById(id) {
+                getById(composerId) {
                     return httpRequest({
                         method: 'GET',
-                        url: '/api/v1/content/' + id
+                        url: '/api/content/' + composerId
                     });
                 }
 
                 getByEditorId(editorId) {
                     return httpRequest({
                         method: 'GET',
-                        url: '/api/v1/content/editor/' + editorId
+                        url: '/api/atom/' + editorId
                     });
                 }
 
