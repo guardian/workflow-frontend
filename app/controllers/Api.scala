@@ -41,7 +41,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   implicit val flatStubWrites: Writes[Stub] = Stub.flatStubWrites
 
-  def allowCORSAccess(methods: String, args: Any*) = CORSable(defaultCorsAble) {
+  def allowCORSAccess(methods: String, args: Any*) = CORSable(mediaAtomCorsAble) {
     Action { implicit req =>
       val requestedHeaders = req.headers("Access-Control-Request-Headers")
       NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
