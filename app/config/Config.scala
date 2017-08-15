@@ -12,11 +12,15 @@ object Config extends AwsInstanceTags {
   }
   Logger.info(s"running in stage: $stage")
 
-  lazy val domain: String = stage match {
+  def appDomain(appStage: String): String = {
+    appStage match {
       case "PROD" => "gutools.co.uk"
       case "DEV" => "local.dev-gutools.co.uk"
-      case x => x.toLowerCase() + ".dev-gutools.co.uk"
+      case x => s"${x.toLowerCase()}.dev-gutools.co.uk"
     }
+  }
+
+  lazy val domain: String = appDomain(stage)
 
   Logger.info(s"Domain is: $domain")
 
@@ -27,6 +31,12 @@ object Config extends AwsInstanceTags {
   lazy val composerRestorerUrl: String = s"https://restorer.$domain/content"
 
   lazy val mediaAtomMakerUrl: String = s"https://video.$domain"
+
+  // TODO do this better!
+  lazy val mediaAtomMakerUrlForCode: String = stage match {
+    case "CODE" => s"https://video.${appDomain("DEV")}}" // allow MAM in DEV to call Workflow CODE
+    case _ => mediaAtomMakerUrl
+  }
 
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
