@@ -37,6 +37,7 @@ case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
 object Api extends Controller with PanDomainAuthActions {
 
   val composerUrl: String = Config.composerUrl
+  val mediaAtomMakerUrl: String = Config.mediaAtomMakerUrl
 
   implicit val flatStubWrites: Writes[Stub] = Stub.flatStubWrites
 
@@ -75,7 +76,7 @@ object Api extends Controller with PanDomainAuthActions {
       }
     }
 
-  def getContentByEditorId(editorId: String) = CORSable(composerUrl) {
+  def getContentByEditorId(editorId: String) = CORSable(composerUrl, mediaAtomMakerUrl) {
     APIAuthAction.async { implicit request =>
       ApiResponseFt[Option[Stub]](for {
         item <- PrototypeAPI.getStubByEditorId(editorId)
@@ -283,7 +284,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def sections = CORSable(composerUrl) {
+  def sections = CORSable(composerUrl, mediaAtomMakerUrl) {
     AuthAction.async  {request =>
       ApiResponseFt[List[Section]](for {
         sections <- SectionsAPI.getSections
