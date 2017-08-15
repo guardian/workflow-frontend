@@ -88,7 +88,7 @@ object Api extends Controller with PanDomainAuthActions {
   def sharedAuthGetContentById(composerId: String) =
     SharedSecretAuthAction.async {
       ApiResponseFt[Option[Stub]](for {
-        item <- ContentApi.contentByComposerId(composerId)
+        item <- PrototypeAPI.getStubByComposerId(composerId)
       } yield {
         item
       })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
