@@ -15,6 +15,7 @@ import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.libs.json._
 import play.api.mvc._
+import com.gu.workflow.lib.DBToAPIResponse.getResponse
 
 import scala.concurrent.Future
 
@@ -69,7 +70,7 @@ object Api extends Controller with PanDomainAuthActions {
   def getContentByComposerId(composerId: String) = CORSable(defaultCorsAble) {
       APIAuthAction.async { implicit request =>
         ApiResponseFt[Option[Stub]](for {
-          item <- PrototypeAPI.getStubByComposerId(composerId)
+          item <- getResponse(PrototypeAPI.getStubByComposerId(composerId))
         } yield {
           item
         })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
@@ -79,7 +80,7 @@ object Api extends Controller with PanDomainAuthActions {
   def getContentByEditorId(editorId: String) = CORSable(mediaAtomCorsAble) {
     APIAuthAction.async { implicit request =>
       ApiResponseFt[Option[Stub]](for {
-        item <- PrototypeAPI.getStubByEditorId(editorId)
+        item <- getResponse(PrototypeAPI.getStubByEditorId(editorId))
       } yield {
         item
       })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
@@ -89,7 +90,7 @@ object Api extends Controller with PanDomainAuthActions {
   def sharedAuthGetContentById(composerId: String) =
     SharedSecretAuthAction.async {
       ApiResponseFt[Option[Stub]](for {
-        item <- PrototypeAPI.getStubByComposerId(composerId)
+        item <- getResponse(PrototypeAPI.getStubByComposerId(composerId))
       } yield {
         item
       })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
@@ -285,7 +286,7 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def sections = CORSable(mediaAtomCorsAble) {
-    AuthAction.async  {request =>
+    AuthAction.async { request =>
       ApiResponseFt[List[Section]](for {
         sections <- SectionsAPI.getSections
       } yield {
@@ -308,12 +309,12 @@ object Api extends Controller with PanDomainAuthActions {
   def toggleEditorialSupportStaff(id: String, status: String) = APIAuthAction {
     val active = status.toBoolean
     EditorialSupportTeamsController.toggleStaffStatus(id, active)
-    Ok(s"Status swithced to ${ if (active) "inactive" else "active" }")
+    Ok(s"Status switched to ${ if (active) "inactive" else "active" }")
   }
 
   def updateEditorialSupportStaffDescription(id: String, description: String) = APIAuthAction {
     EditorialSupportTeamsController.updateStaffDescription(id, description)
-    Ok(s"Descripton updated to '$description'")
+    Ok(s"Description updated to '$description'")
   }
 
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
