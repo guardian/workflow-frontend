@@ -18,12 +18,12 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
+case class CORSable[A](allowedOrigins: Set[String])(action: Action[A]) extends Action[A] {
 
   def apply(request: Request[A]): Future[Result] = {
 
     val headers = request.headers.get("Origin").map { origin =>
-      if(origins.contains(origin)) {
+      if(allowedOrigins.contains(origin)) {
         List("Access-Control-Allow-Origin" -> origin, "Access-Control-Allow-Credentials" -> "true")
       } else { Nil }
     }
@@ -36,11 +36,12 @@ case class CORSable[A](origins: String*)(action: Action[A]) extends Action[A] {
 
 object Api extends Controller with PanDomainAuthActions {
 
-  val composerUrl: String = Config.composerUrl
+  val defaultCorsAble: Set[String] = Set(Config.composerUrl)
+  val mediaAtomCorsAble: Set[String] = defaultCorsAble ++ Set(Config.mediaAtomMakerUrl, Config.mediaAtomMakerUrlForCode)
 
   implicit val flatStubWrites: Writes[Stub] = Stub.flatStubWrites
 
-  def allowCORSAccess(methods: String, args: Any*) = CORSable(composerUrl) {
+  def allowCORSAccess(methods: String, args: Any*) = CORSable(defaultCorsAble) {
     Action { implicit req =>
       val requestedHeaders = req.headers("Access-Control-Request-Headers")
       NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
@@ -65,7 +66,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   def content = APIAuthAction.async(getContentBlock)
 
-  def getContentByComposerId(composerId: String) = CORSable(composerUrl) {
+  def getContentByComposerId(composerId: String) = CORSable(defaultCorsAble) {
       APIAuthAction.async { implicit request =>
         ApiResponseFt[Option[Stub]](for {
           item <- PrototypeAPI.getStubByComposerId(composerId)
@@ -75,7 +76,7 @@ object Api extends Controller with PanDomainAuthActions {
       }
     }
 
-  def getContentByEditorId(editorId: String) = CORSable(composerUrl, Config.mediaAtomMakerUrl, Config.mediaAtomMakerUrlForCode) {
+  def getContentByEditorId(editorId: String) = CORSable(mediaAtomCorsAble) {
     APIAuthAction.async { implicit request =>
       ApiResponseFt[Option[Stub]](for {
         item <- PrototypeAPI.getStubByEditorId(editorId)
@@ -96,7 +97,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   private val iso8601DateTimeNoMillis: Mapping[DateTime] = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
 
-  def createContent() =  CORSable(composerUrl) {
+  def createContent() =  CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -107,7 +108,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStub(stubId: Long) =  CORSable(composerUrl) {
+  def putStub(stubId: Long) =  CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -151,7 +152,7 @@ object Api extends Controller with PanDomainAuthActions {
     })
   }
 
-  def putStubNote(stubId: Long) = CORSable(composerUrl) {
+  def putStubNote(stubId: Long) = CORSable(defaultCorsAble) {
     def getNoteOpt(input: String): Option[String] = if(input.length > 0) Some(input) else None
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
@@ -165,7 +166,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubProdOffice(stubId: Long) = CORSable(composerUrl) {
+  def putStubProdOffice(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -177,7 +178,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubStatus(stubId: Long) = CORSable(composerUrl) {
+  def putStubStatus(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -189,7 +190,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubStatusByComposerId(composerId: String) = CORSable(composerUrl) {
+  def putStubStatusByComposerId(composerId: String) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[String](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -201,7 +202,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubSection(stubId: Long) = CORSable(composerUrl) {
+  def putStubSection(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -213,7 +214,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubWorkingTitle(stubId: Long) = CORSable(composerUrl) {
+  def putStubWorkingTitle(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -225,7 +226,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubPriority(stubId: Long) = CORSable(composerUrl) {
+  def putStubPriority(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -237,7 +238,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubLegalStatus(stubId: Long) = CORSable(composerUrl) {
+  def putStubLegalStatus(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -249,7 +250,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def putStubTrashed(stubId: Long) = CORSable(composerUrl) {
+  def putStubTrashed(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -261,7 +262,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def deleteContent(composerId: String) = CORSable(composerUrl) {
+  def deleteContent(composerId: String) = CORSable(defaultCorsAble) {
     APIAuthAction {
       CommonAPI.deleteStubs(Seq(composerId)).fold(err =>
         Logger.error(s"failed to delete content with composer id: $composerId"), identity)
@@ -275,7 +276,7 @@ object Api extends Controller with PanDomainAuthActions {
     NoContent
   }
 
-  def statusus = CORSable(composerUrl)  {
+  def statusus = CORSable(defaultCorsAble)  {
     APIAuthAction.async { implicit req =>
       for(statuses <- StatusDatabase.statuses) yield {
         Ok(renderJsonResponse(statuses))
@@ -283,7 +284,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def sections = CORSable(composerUrl, Config.mediaAtomMakerUrl, Config.mediaAtomMakerUrlForCode) {
+  def sections = CORSable(mediaAtomCorsAble) {
     AuthAction.async  {request =>
       ApiResponseFt[List[Section]](for {
         sections <- SectionsAPI.getSections
@@ -293,7 +294,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def editorialSupportTeams = CORSable(composerUrl) {
+  def editorialSupportTeams = CORSable(defaultCorsAble) {
     APIAuthAction {
       Ok(Json.toJson(EditorialSupportTeamsController.getTeams()))
     }
