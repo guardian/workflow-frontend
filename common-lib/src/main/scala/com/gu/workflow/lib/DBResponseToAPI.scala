@@ -1,7 +1,10 @@
 package com.gu.workflow.lib
 
+import models.Stub
 import models.api._
 import play.api.libs.json.{Format, Json}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class ContentUpdateChanges(collaboratorsInserted: List[String], stubRowsUpdated: Int)
 object ContentUpdateChanges { implicit val jsonFormats: Format[ContentUpdateChanges] = Json.format[ContentUpdateChanges]}
@@ -23,5 +26,9 @@ object DBToAPIResponse {
     else ApiResponseFt.Right(id)
   }
 
+  def getResponse(res: ApiResponseFt[Option[Stub]]): ApiResponseFt[Option[Stub]] = res.flatMap {
+    case Some(item) => ApiResponseFt.Right[Option[Stub]](Some(item))
+    case None => ApiResponseFt.Left[Option[Stub]](ApiErrors.notFound)
+  }
 
 }
