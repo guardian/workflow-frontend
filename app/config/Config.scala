@@ -34,7 +34,7 @@ object Config extends AwsInstanceTags {
 
   // TODO do this better!
   lazy val mediaAtomMakerUrlForCode: String = stage match {
-    case "CODE" => s"https://video.${appDomain("DEV")}}" // allow MAM in DEV to call Workflow CODE
+    case "CODE" => s"https://video.${appDomain("DEV")}" // allow MAM in DEV to call Workflow CODE
     case _ => mediaAtomMakerUrl
   }
 
