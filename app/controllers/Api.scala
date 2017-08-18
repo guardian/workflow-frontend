@@ -42,7 +42,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   implicit val flatStubWrites: Writes[Stub] = Stub.flatStubWrites
 
-  def allowCORSAccess(methods: String, args: Any*) = CORSable(defaultCorsAble) {
+  def allowCORSAccess(methods: String, args: Any*) = CORSable(mediaAtomCorsAble) {
     Action { implicit req =>
       val requestedHeaders = req.headers("Access-Control-Request-Headers")
       NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
@@ -98,7 +98,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   private val iso8601DateTimeNoMillis: Mapping[DateTime] = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
 
-  def createContent() =  CORSable(defaultCorsAble) {
+  def createContent() =  CORSable(mediaAtomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
