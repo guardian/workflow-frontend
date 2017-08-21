@@ -18,7 +18,7 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
   }
 
   def checkIfStaffExists(name: String, team: String): Boolean = {
-    if (getStaff().filter(x => x.name == name).filter(x => x.team == team).size >= 1) true else false
+    if (getStaff().count(x => x.name == name && x.team == team) >= 1) true else false
   }
 
   def getStaff(): List[EditorialSupportStaff] = {
