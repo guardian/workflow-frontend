@@ -6,14 +6,17 @@ function addNewStaff(team) {
     fetch(endpoint, {
         method: 'PUT',
         credentials: 'same-origin'
-    }).then(reloadOnComplete)
+    }).then(function(response) {
+        if (response.status === 304) {
+            alert('Staff member already exists');
+        } else {
+            reloadOnComplete(response);
+        }
+    })
 }
 
 function reloadOnComplete(response) {
-    if (response.status === 304) {
-        alert("Staff member already exists");
-    }
-    else if (response.status === 200) {
+    if (response.status === 200) {
         location.reload();
     }
 }
@@ -36,9 +39,30 @@ function updateStatus(id, startText) {
             credentials: 'same-origin'
         }).then(reloadOnComplete)
     }
+}
 
+function deleteStaff(team) {
+    var text = document.getElementById("delete-name-entry-"+team).value.replace(/[^\w\s.,!?/]/gi, '');
+    var endpoint = `/api/editorialSupportTeams?name=${text}&team=${team}`;
+    fetch(endpoint, {
+        method: 'DELETE',
+        credentials: 'same-origin'
+    }).then(function(response){
+        var status = response.status;
+        if (status === 200) {
+            alert(`${text} from ${team} successfully deleted`);
+            location.reload();
+        }
+        else if (status === 406) {
+            alert(`Cannot delete: ${text} from ${team} is duplicated`);
+        }
+        else if (status === 404) {
+            alert(`Cannot delete: ${text} from ${team} does not exist`);
+        }
+    })
 }
 
 window ? window.addNewStaff = addNewStaff : false
 window ? window.toggleStaff = toggleStaff : false
 window ? window.updateStatus = updateStatus : false
+window ? window.deleteStaff = deleteStaff : false

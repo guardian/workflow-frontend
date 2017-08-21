@@ -13,6 +13,10 @@
     <ul class="status">Add new team member<input type="text" id="name-entry-@teamName"><button class="btn btn-lrg btn-info" onclick="window.addNewStaff('@teamName')">add</button></ul>
 }
 
+@renderDeleteStaff(teamName: String) = {
+    <ul class="status">Delete team member<input type="text" id="delete-name-entry-@teamName"><button class="btn btn-lrg btn-info" onclick="window.deleteStaff('@teamName')">delete</button></ul>
+}
+
 @layout("Support") {
     <div class="admin">
 
@@ -26,9 +30,11 @@
                 <h2>@audience.name team</h2>
                 @renderTeam(audience)
                 @renderAddStaff(audience.name)
+                @renderDeleteStaff(audience.name)
                 <h2>@fronts.name team</h2>
                 @renderTeam(fronts)
                 @renderAddStaff(fronts.name)
+                @renderDeleteStaff(fronts.name)
             </div>
         </div>
     </div>

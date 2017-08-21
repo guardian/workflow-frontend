@@ -321,5 +321,17 @@ object Api extends Controller with PanDomainAuthActions {
     Ok(s"Description updated to '$description'")
   }
 
+  def deleteEditorialSupportStaff(name: String, team: String) = APIAuthAction {
+    val staff = EditorialSupportTeamsController.findStaff(name, team)
+    staff.size match {
+      case 0 => NotFound
+      case 1 => {
+        EditorialSupportTeamsController.deleteStaff(staff(0).id)
+        Ok(s"$name from $team deleted")
+      }
+      case _ => NotAcceptable
+    }
+  }
+
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
 }
