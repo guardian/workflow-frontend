@@ -17,6 +17,10 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
     editorialSupportTable.putItem(EditorialSupportStaff(java.util.UUID.randomUUID().toString, name, false, team).toItem)
   }
 
+  def checkIfStaffExists(name: String, team: String): Boolean = {
+    if (getStaff().filter(x => x.name == name).filter(x => x.team == team).size >= 1) true else false
+  }
+
   def getStaff(): List[EditorialSupportStaff] = {
     editorialSupportTable.scan().map(EditorialSupportStaff.fromItem).toList
   }

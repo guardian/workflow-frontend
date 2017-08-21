@@ -1,7 +1,7 @@
 @(audience: EditorialSupportTeam, fronts: EditorialSupportTeam)
 
 @renderTeam(team: EditorialSupportTeam) = {
-@for(staff <- team.staff) {
+@for(staff <- team.staff.sortBy(_.name)) {
     <ul class="status"><input type="checkbox" id="editorialSupportStatus-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val>
         <label>@staff.name</label>
         <input type="text" value="@staff.description" id="editorialSupportDescription-@staff.id" onChange="window.updateStatus('@staff.id','@staff.description')">

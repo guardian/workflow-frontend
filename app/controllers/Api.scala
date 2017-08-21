@@ -302,8 +302,12 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def addEditorialSupportStaff(name: String, team: String) = APIAuthAction {
-    EditorialSupportTeamsController.createNewStaff(name, team)
-    Ok(s"$name added to $team")
+    if (EditorialSupportTeamsController.checkIfStaffExists(name, team)) {
+      NotModified
+    } else {
+      EditorialSupportTeamsController.createNewStaff(name, team)
+      Ok(s"$name added to $team")
+    }
   }
 
   def toggleEditorialSupportStaff(id: String, status: String) = APIAuthAction {

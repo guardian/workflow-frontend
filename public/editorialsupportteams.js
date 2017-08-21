@@ -10,7 +10,10 @@ function addNewStaff(team) {
 }
 
 function reloadOnComplete(response) {
-    if (response.status === 200) {
+    if (response.status === 304) {
+        alert("Staff member already exists");
+    }
+    else if (response.status === 200) {
         location.reload();
     }
 }
