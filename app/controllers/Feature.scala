@@ -7,7 +7,7 @@ object Feature extends Controller with PanDomainAuthActions {
   def featureList(implicit request: Request[_]): Map[String, Boolean] = {
     def featureDef(name: String): (String, Boolean) =
       (name, request.cookies.get(name).exists(_.value == "1"))
-    Map(featureDef("incopy-export"), featureDef("support-atoms"))
+    Map(featureDef("incopy-export"))
   }
 
   def makeCookie[A](name: String, value: Boolean => Boolean)

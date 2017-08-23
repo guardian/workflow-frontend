@@ -56,10 +56,7 @@ object Api extends Controller with PanDomainAuthActions {
       case r: Request[_] => r.queryString
     }
 
-    val supportAtoms = req.cookies.get("support-atoms").fold(false)(cookie => cookie.value == "1")
-    val queryString = if(supportAtoms) qs + ("supportAtoms" -> Seq(supportAtoms.toString)) else qs
-
-    CommonAPI.getStubs(queryString).asFuture.map {
+    CommonAPI.getStubs(qs).asFuture.map {
       case Left(err) => InternalServerError
       case Right(contentResponse) => Ok(Json.toJson(contentResponse))
     }

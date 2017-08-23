@@ -8,25 +8,20 @@ import './visibility-service';
 import './feature-switches';
 
 angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'config', 'wfFeatureSwitches',
-        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, config, wfFeatureSwitches) {
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'config',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, config) {
 
             const httpRequest = wfHttpSessionService.request;
 
             class ContentService {
                 getTypes() {
-
-                    return wfFeatureSwitches.getSwitch("support-atoms").then( (isActive) => {
-                        const basicTypes = {
-                            "article": "Article",
-                            "liveblog": "Live blog",
-                            "gallery": "Gallery",
-                            "interactive": "Interactive",
-                            "picture": "Picture"
-                        };
-                        return isActive
-                            ? Object.assign({}, basicTypes, {'atom': 'Atom'})
-                        :  basicTypes;
+                    return Promise.resolve({
+                        "article": "Article",
+                        "liveblog": "Live blog",
+                        "gallery": "Gallery",
+                        "interactive": "Interactive",
+                        "picture": "Picture",
+                        'atom': 'Atom'
                     });
                 };
 
