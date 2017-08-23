@@ -59,15 +59,15 @@ var filterDefaults = function (statuses, wfFiltersService, wfFeatureSwitches) {
                 { caption: 'Video', value: 'video', icon: 'video' }
             ]
         },
-        (wfFeatureSwitches.getCookie('support-atoms') === '1' ? {
-                title: 'Atom type',
-                namespace: 'atom-type',
-                listIsOpen: false,
-                multi: true,
-                filterOptions: [
-                    { caption: 'Media', value: 'media', icon: 'media' }
-                ]
-            } : {}),
+        {
+            title: 'Atom type',
+            namespace: 'atom-type',
+            listIsOpen: false,
+            multi: true,
+            filterOptions: [
+                { caption: 'Media', value: 'media', icon: 'media' }
+            ]
+        },
         {
             title: 'Created',
             namespace: 'created',
