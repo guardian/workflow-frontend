@@ -49,6 +49,7 @@ GET            /api/sections                               controllers.Api.secti
 
 GET            /api/editorialSupportTeams                  controllers.Api.editorialSupportTeams
 PUT            /api/editorialSupportTeams                  controllers.Api.addEditorialSupportStaff(name, team)
+DELETE         /api/editorialSupportTeams                  controllers.Api.deleteEditorialSupportStaff(name, team)
 POST           /api/editorialSupportTeams/toggle           controllers.Api.toggleEditorialSupportStaff(id, active)
 POST           /api/editorialSupportTeams/update           controllers.Api.updateEditorialSupportStaffDescription(id, description)
 

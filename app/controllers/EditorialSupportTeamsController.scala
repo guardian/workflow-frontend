@@ -1,7 +1,7 @@
 package controllers
 
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate
-import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec
+import com.amazonaws.services.dynamodbv2.document.spec.{DeleteItemSpec, UpdateItemSpec}
 import com.gu.workflow.util.Dynamo
 import config.Config
 import models.{EditorialSupportStaff, EditorialSupportTeam}
@@ -15,6 +15,10 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
 
   def createNewStaff(name: String, team: String) = {
     editorialSupportTable.putItem(EditorialSupportStaff(java.util.UUID.randomUUID().toString, name, false, team).toItem)
+  }
+
+  def checkIfStaffExists(name: String, team: String): Boolean = {
+    findStaff(name, team).nonEmpty
   }
 
   def getStaff(): List[EditorialSupportStaff] = {
@@ -49,6 +53,17 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
           .withAttributeUpdate(new AttributeUpdate("description").put(description))
       )
     }
+  }
+
+  def findStaff(name: String, team: String): List[EditorialSupportStaff] = {
+    getStaff().filter(x => x.name == name && x.team == team)
+  }
+
+  def deleteStaff(id: String) = {
+    editorialSupportTable.deleteItem(
+      new DeleteItemSpec()
+        .withPrimaryKey("id", id)
+    )
   }
 
 }

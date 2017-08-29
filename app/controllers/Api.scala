@@ -299,8 +299,12 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def addEditorialSupportStaff(name: String, team: String) = APIAuthAction {
-    EditorialSupportTeamsController.createNewStaff(name, team)
-    Ok(s"$name added to $team")
+    if (EditorialSupportTeamsController.checkIfStaffExists(name, team)) {
+      NotModified
+    } else {
+      EditorialSupportTeamsController.createNewStaff(name, team)
+      Ok(s"$name added to $team")
+    }
   }
 
   def toggleEditorialSupportStaff(id: String, status: String) = APIAuthAction {
@@ -312,6 +316,18 @@ object Api extends Controller with PanDomainAuthActions {
   def updateEditorialSupportStaffDescription(id: String, description: String) = APIAuthAction {
     EditorialSupportTeamsController.updateStaffDescription(id, description)
     Ok(s"Description updated to '$description'")
+  }
+
+  def deleteEditorialSupportStaff(name: String, team: String) = APIAuthAction {
+    val staff = EditorialSupportTeamsController.findStaff(name, team)
+    staff.size match {
+      case 0 => NotFound
+      case 1 => {
+        EditorialSupportTeamsController.deleteStaff(staff(0).id)
+        Ok(s"$name from $team deleted")
+      }
+      case _ => NotAcceptable
+    }
   }
 
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)

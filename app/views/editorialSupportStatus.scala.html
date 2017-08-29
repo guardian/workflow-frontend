@@ -1,16 +1,41 @@
 @(audience: EditorialSupportTeam, fronts: EditorialSupportTeam)
 
 @renderTeam(team: EditorialSupportTeam) = {
-@for(staff <- team.staff) {
-    <ul class="status"><input type="checkbox" id="editorialSupportStatus-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val>
-        <label>@staff.name</label>
-        <input type="text" value="@staff.description" id="editorialSupportDescription-@staff.id" onChange="window.updateStatus('@staff.id','@staff.description')">
+    <ul class="support-list">
+    @for(staff <- team.staff.sortBy(_.name)) {
+        <li class="support-list-item">
+            <p class="support-staff-label support-staff-row"><b>@staff.name</b></p>
+            <div class="support-staff-row">
+                <label class="support-staff-label" for="editorialSupportStatus-@staff.id">Active?</label>
+                <input type="checkbox" id="editorialSupportStatus-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val>
+            </div>
+            <div class="support-staff-row">
+                <label class="support-staff-label" for="editorialSupportDescription-@staff.id">Description</label>
+                <input type="text" class="support-text-input" value="@staff.description" id="editorialSupportDescription-@staff.id" onChange="window.updateStatus('@staff.id','@staff.description')">
+            </div>
+        </li>
+    }
     </ul>
-}
 }
 
 @renderAddStaff(teamName: String) = {
-    <ul class="status">Add new team member<input type="text" id="name-entry-@teamName"><button class="btn btn-lrg btn-info" onclick="window.addNewStaff('@teamName')">add</button></ul>
+    <div class="support-admin-label">
+        <status>Add new team member</status>
+        <input type="text" class="support-admin-text-input" id="name-entry-@teamName">
+        <div class="support-admin-button-container">
+            <button class="btn btn-sm btn-info" onclick="window.addNewStaff('@teamName')">add</button>
+        </div>
+    </div>
+}
+
+@renderDeleteStaff(teamName: String) = {
+    <div class="support-admin-label">
+        <status>Delete team member</status>
+        <input type="text" class="support-admin-text-input" id="delete-name-entry-@teamName">
+        <div class="support-admin-button-container">
+            <button class="btn btn-sm btn-info" onclick="window.deleteStaff('@teamName')">delete</button>
+        </div>
+    </div>
 }
 
 @layout("Support") {
@@ -22,13 +47,21 @@
         </div>
 
         <div>
-            <div class="col-lg-3">
+            <div class="col-lg-12">
                 <h2>@audience.name team</h2>
-                @renderTeam(audience)
-                @renderAddStaff(audience.name)
+                <div class="support-list-wrapper">
+                    @renderTeam(audience)
+                    <h3>Admin</h3>
+                    @renderAddStaff(audience.name)
+                    @renderDeleteStaff(audience.name)
+                </div>
                 <h2>@fronts.name team</h2>
-                @renderTeam(fronts)
-                @renderAddStaff(fronts.name)
+                <div class="support-list-wrapper">
+                    @renderTeam(fronts)
+                    <h3>Admin</h3>
+                    @renderAddStaff(fronts.name)
+                    @renderDeleteStaff(fronts.name)
+                </div>
             </div>
         </div>
     </div>
