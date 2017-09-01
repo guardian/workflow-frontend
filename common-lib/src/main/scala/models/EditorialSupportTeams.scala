@@ -10,14 +10,7 @@ object EditorialSupportStaff {
   def fromItem(item: Item) = Json.parse(item.toJSON).as[EditorialSupportStaff]
 }
 
-case class EditorialSupportTeam(name: String, staff: List[EditorialSupportStaff]) {
-
-  def sortActiveFirst: EditorialSupportTeam = {
-    val active = staff.filter(_.active).sortBy(_.name)
-    val inActive = staff.filter(!_.active).sortBy(_.name)
-    EditorialSupportTeam(name, active ::: inActive)
-  }
-}
+case class EditorialSupportTeam(name: String, staff: List[EditorialSupportStaff])
 
 object EditorialSupportTeam { implicit val jf: Format[EditorialSupportTeam] = Json.format[EditorialSupportTeam] }
 
