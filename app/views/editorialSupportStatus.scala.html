@@ -2,7 +2,7 @@
 
 @renderTeam(team: EditorialSupportTeam) = {
     <ul class="support-list">
-    @for(staff <- team.staff.sortBy(_.name)) {
+    @for(staff <- team.staff) {
         <li class="support-list-item">
             <p class="support-staff-label support-staff-row"><b>@staff.name</b></p>
             <div class="support-staff-row">

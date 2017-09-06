@@ -27,7 +27,10 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
 
   def getTeams():List[EditorialSupportTeam] = {
     val staff = getStaff()
-    def extractTeam(name: String): EditorialSupportTeam = EditorialSupportTeam(name, staff.filter(x => x.team == name))
+    def extractTeam(name: String): EditorialSupportTeam = {
+      val teamStaff = staff.filter(x => x.team == name).partition(_.active)
+      EditorialSupportTeam(name, teamStaff._1.sortBy(_.name) ::: teamStaff._2.sortBy(_.name))
+    }
     List(extractTeam("Audience"), extractTeam("Fronts"))
   }
 
