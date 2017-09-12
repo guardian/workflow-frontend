@@ -230,6 +230,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'assigneeEmail': modelParams['assigneeEmail'] || null,
                         'incopy' : modelParams['incopy'] || null,
                         'composerId' : modelParams['composerId'] || null,
+                        'editorId' : modelParams['editorId'] || null,
                         'trashed': modelParams['trashed'] || null
                     };
 
