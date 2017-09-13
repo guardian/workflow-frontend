@@ -182,7 +182,8 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                         'news-list'    : params['news-list'],
                         'trashed'      : params['trashed'],
                         'plan-start-date': params['plan-start-date'],
-                        'plan-end-date': params['plan-end-date']
+                        'plan-end-date': params['plan-end-date'],
+                        'editorId'     :params['editorId']
                     };
 
                     $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);
