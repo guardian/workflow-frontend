@@ -253,7 +253,7 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
             }
 
             postUpdate() {
-                if (this.filters['composerId'] || this.filters['text']) {
+                if (this.filters['composerId'] || this.filters['text'] || this.filters['editorId']) {
                     $rootScope.$broadcast("search-mode.enter");
                 } else {
                     $rootScope.$broadcast("search-mode.exit");
