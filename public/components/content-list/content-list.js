@@ -292,12 +292,21 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         });
     }
 
-    function parseContentForComposerIds(content) {
-        let contentItems = _.flatten(content.map((c) => c.items));
-        let filteredItems = contentItems.filter((item) => item !== undefined);
-        let composerIds = filteredItems.map((item) => item.composerId);
-        let filteredComposerIds = composerIds.filter((item) => item !== undefined);
-        return filteredComposerIds;
+    function parseContentForIds(content) {
+        const contentItems = _.flatten(content.map((c) => c.items));
+        const filteredItems = contentItems.filter((item) => item !== undefined);
+
+        const contentItemIds = filteredItems.map(item => {
+            if (item.composerId) {
+                return item.composerId;
+            }
+
+            if (item.contentType && item.editorId) {
+                return `${item.contentType}-${item.editorId}`;
+            }
+        });
+
+        return contentItemIds;
     }
 
     // =============================================================================== //
@@ -333,7 +342,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
                 doContentTrimAndSetContent();
 
                 (function setUpPresenceContentIds () {
-                    $scope.contentIds = parseContentForComposerIds($scope.content);
+                    $scope.contentIds = parseContentForIds($scope.content);
                 })();
 
                 $scope.$emit('content.render', {
