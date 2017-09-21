@@ -38,11 +38,11 @@ case class CORSable[A](allowedOrigins: Set[String])(action: Action[A]) extends A
 object Api extends Controller with PanDomainAuthActions {
 
   val defaultCorsAble: Set[String] = Set(Config.composerUrl)
-  val mediaAtomCorsAble: Set[String] = defaultCorsAble ++ Set(Config.mediaAtomMakerUrl, Config.mediaAtomMakerUrlForCode)
+  val atomCorsAble: Set[String] = defaultCorsAble ++ Config.mediaAtomMakerUrls ++ Config.atomWorkshopUrls
 
   implicit val flatStubWrites: Writes[Stub] = Stub.flatStubWrites
 
-  def allowCORSAccess(methods: String, args: Any*) = CORSable(mediaAtomCorsAble) {
+  def allowCORSAccess(methods: String, args: Any*) = CORSable(atomCorsAble) {
     Action { implicit req =>
       val requestedHeaders = req.headers("Access-Control-Request-Headers")
       NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
@@ -74,7 +74,7 @@ object Api extends Controller with PanDomainAuthActions {
       }
     }
 
-  def getContentByEditorId(editorId: String) = CORSable(mediaAtomCorsAble) {
+  def getContentByEditorId(editorId: String) = CORSable(atomCorsAble) {
     APIAuthAction.async { implicit request =>
       ApiResponseFt[Option[Stub]](for {
         item <- getResponse(PrototypeAPI.getStubByEditorId(editorId))
@@ -95,7 +95,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   private val iso8601DateTimeNoMillis: Mapping[DateTime] = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
 
-  def createContent() =  CORSable(mediaAtomCorsAble) {
+  def createContent() =  CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -282,7 +282,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def sections = CORSable(mediaAtomCorsAble) {
+  def sections = CORSable(atomCorsAble) {
     AuthAction.async { request =>
       ApiResponseFt[List[Section]](for {
         sections <- SectionsAPI.getSections
