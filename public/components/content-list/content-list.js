@@ -306,7 +306,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
             }
         });
 
-        return contentItemIds;
+        return contentItemIds.filter(Boolean);
     }
 
     // =============================================================================== //
