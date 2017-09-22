@@ -104,7 +104,7 @@ object Application extends Controller with PanDomainAuthActions {
         "incopyExportUrl" -> Config.incopyExportUrl,
         "composerRestorerUrl" -> Config.composerRestorerUrl,
         "commissioningDesks" -> commissioningDesks.map(t => LimitedTag(t.id, t.externalName)),
-        "atomWorkshopAtomTypes" -> Config.atomWorkshopAtomTypes
+        "atomTypes" -> Config.atomTypes
       )
 
       Ok(views.html.app(title, Some(user), config, Config.presenceClientLib))

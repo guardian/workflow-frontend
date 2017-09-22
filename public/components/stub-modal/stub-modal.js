@@ -37,7 +37,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.sections = getSectionsList(sections);
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
-    $scope.atomTypes = ['Media', 'CTA'];
+    $scope.atomTypes = _wfConfig.atomTypes;
 
     if(mode==='import') {
        $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});

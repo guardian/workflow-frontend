@@ -6,7 +6,7 @@ angular.module('wfAtomService', [])
 
 function wfAtomService(config) {
 
-  const atomTypes = ['media', 'explainer', 'cta'];
+  const atomTypes = config.atomTypes;
 
   function parseAtom(atom, atomType, id) {
         switch(atomType) {

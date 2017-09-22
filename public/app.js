@@ -148,7 +148,8 @@ angular.module('workflow',
             'mediaAtomMakerNewAtom': _wfConfig.mediaAtomMaker.create,
             'mediaAtomMakerViewAtom': _wfConfig.mediaAtomMaker.view,
             'atomWorkshopNewAtom': _wfConfig.atomWorkshop.create,
-            'atomWorkshopViewAtom': _wfConfig.atomWorkshop.view
+            'atomWorkshopViewAtom': _wfConfig.atomWorkshop.view,
+            'atomTypes': _wfConfig.atomTypes
         }
     )
     .constant({ 'statuses': _wfConfig.statuses })
