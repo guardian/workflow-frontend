@@ -70,7 +70,7 @@ object Config extends AwsInstanceTags {
 
   lazy val editorialSupportDynamoTable: String = s"support-staff-$stage"
 
-  lazy val atomTypes: List[String] = List("media", "cta", "explainer", "storyquestions")
+  lazy val atomTypes: List[String] = List("media", "cta", "explainer", "storyQuestions", "recipe")
 
   // logstash conf
   private lazy val logStashHost: String = "ingest.logs.gutools.co.uk"
