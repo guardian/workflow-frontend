@@ -108,6 +108,8 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 createInAtomEditor(stub, statusOption) {
 
+                    const that = this;
+
                     function processAtomEditorCreateResponse(response) {
 
                         stub['editorId'] = response.data.id;
@@ -117,14 +119,13 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         }
 
                         if (stub.id) {
-                            return this.updateStub(stub);
+                            return that.updateStub(stub);
                         } else {
-                            return this.createStub(stub);
+                            return that.createStub(stub);
                         }
                     }
 
                     var createResponse = stub.contentType === 'media' ? wfMediaAtomMakerService.create(stub.title) : wfAtomWorkshopService.create(stub.contentType, stub.title);
-
                     return createResponse.then(processAtomEditorCreateResponse);
                 }
 
@@ -158,7 +159,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 updateField(contentItem, field, data, contentType) {
 
                     if (field === 'status' && contentItem.status === 'Stub') {
-                        console.log(contentType);
                         if (wfAtomService.atomTypes.indexOf(contentType) >= 0) {
                             return this.createInAtomEditor(contentItem, data);
                         } else {

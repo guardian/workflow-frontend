@@ -211,7 +211,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             if ($scope.contentName === 'Atom') {
                 stub['contentType'] = $scope.stub.contentType.toLowerCase();
                 if (addToAtomEditor) {
-                    return wfContentService.createInMediaAtomMaker(stub);
+                    return wfContentService.createInAtomEditor(stub);
                 } else if (stub.id) {
                     return wfContentService.updateStub(stub);
                 } else {
