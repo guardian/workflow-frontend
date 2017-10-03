@@ -14,7 +14,7 @@ Uses [webpack](https://webpack.github.io/) for client-side external dependencies
 
 The `../scripts/setup.sh` script will install all node modules (including webpack) locally, then use webpack to bundle dependencies.
 
-[yarn](https://yarnpkg.com/en/) is used for declarative package management.
+[npm v5](www.npmjs.com) is used for declarative package management.
 
 ## Stylesheets
 Workflow uses [Sass](http://sass-lang.com) for CSS pre-processing.
@@ -72,8 +72,8 @@ Appends SVG:
 To run tests:
 ```
     cd /home/workflow/prototype
-    yarn install
-    yarn test
+    npm run install
+    npm test
 ```
 > Note: Currently having issues when running with phantomjs, but works well in Chrome.
 > When the runner has started, visit http://localhost:9876/ in a browser to attach it as a test runner.
