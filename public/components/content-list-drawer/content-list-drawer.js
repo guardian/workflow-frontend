@@ -1,6 +1,9 @@
 import contentListDrawerTemplate from './content-list-drawer.html';
 import _ from 'lodash';
 
+
+var SETTING_OPEN_SECTION = 'openSection';
+
 /**
  * Directive for handling logic around the contentItemRow details drawer.
  *
@@ -14,7 +17,7 @@ import _ from 'lodash';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfContentListDrawerAccordionCtrl) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -166,8 +169,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             $rootScope.$on('contentItem.select', ($event, contentItem, contentListItemElement) => {
                 $scope.awaitingDeleteConfirmation = false;
                 $scope.selectedItem = contentItem;
-                $scope.openSection = 'furniture';
-
+                $scope.defaultSection = getDefaultOpenSection() || 'furniture';
+                $scope.openSection = $scope.defaultSection || 'furniture';
 
                 if (contentItem.status === 'Stub') {
                     $scope.$emit('stub:edit', contentItem.item);
@@ -287,9 +290,18 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 $scope.$emit('contentItem.update', msg);
             }
 
+            function getDefaultOpenSection() {
+                return wfSettingsService.get(SETTING_OPEN_SECTION);
+            }
+
             /* Drawer section toggles */
             $scope.toggleSection = function (section) {
                 $scope.openSection = section;
+            }
+
+            $scope.setDefaultOpenSection = function(section) {
+                wfSettingsService.set(SETTING_OPEN_SECTION, section);
+                $scope.defaultSection = section;
             }
 
             $scope.onBeforeSaveNote = function (note) {

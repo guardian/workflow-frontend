@@ -7,6 +7,8 @@
                 <div class="drawer__header" ng-if="openSection === 'furniture'">
                     <i class="drawer__icon" wf-icon="furniture"></i>
                     Furniture
+
+                    <button type="button" class="btn btn-primary btn-xs pull-right"  ng-disabled="defaultSection === 'furniture'" ng-click="setDefaultOpenSection('furniture')">Set default</button>
                 </div>
 
                 <button type="button" class="drawer__header-toggle" ng-if="openSection !== 'furniture'" ng-click="toggleSection('furniture')">
@@ -272,6 +274,8 @@
                 <div class="drawer__header" ng-if="openSection === 'management'">
                     <i class="drawer__icon" wf-icon="management"></i>
                     Management
+
+                    <button type="button" class="btn btn-primary btn-xs pull-right" ng-disabled="defaultSection === 'management'" ng-click="setDefaultOpenSection('management')">Set default</button>
                 </div>
 
                 <button type="button" class="drawer__header-toggle" ng-if="openSection !== 'management'" ng-click="toggleSection('management')">
@@ -365,6 +369,7 @@
                 <div class="drawer__header" ng-if="openSection === 'usages'">
                     <i class="drawer__icon" wf-icon="usages"></i>
                     Usages
+
                 </div>
 
                 <button type="button"  class="drawer__header-toggle" ng-if="openSection !== 'usages'" ng-click="toggleSection('usages')">
