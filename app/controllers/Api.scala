@@ -8,6 +8,7 @@ import config.Config.defaultExecutionContext
 import lib.Responses._
 import models.Flag.Flag
 import models._
+import models.api.ApiError
 import models.api.ApiResponseFt
 import org.joda.time.DateTime
 import play.api.Logger
@@ -95,11 +96,23 @@ object Api extends Controller with PanDomainAuthActions {
 
   private val iso8601DateTimeNoMillis: Mapping[DateTime] = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
 
+  def validateContentType(body: JsValue): ApiResponseFt[JsValue] = {
+    val atomType: String = (body \ "contentType").as[String]
+    val types: List[String] = Config.atomTypes
+    if (Config.atomTypes.contains(atomType)) {
+      ApiResponseFt.Right(body)
+    } else {
+      ApiResponseFt.Left(ApiError("InvalidAtomType", s"atoms with type $atomType not supported", 400, "badrequest"))
+    }
+  }
+
+
   def createContent() =  CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        stubId <- PrototypeAPI.createStub(jsValue)
+        jsValueWithValidContentType <- validateContentType(jsValue)
+        stubId <- PrototypeAPI.createStub(jsValueWithValidContentType )
       } yield {
         stubId
       })
@@ -289,6 +302,12 @@ object Api extends Controller with PanDomainAuthActions {
       } yield {
         sections
       })
+    }
+  }
+
+  def allowedAtomTypes = CORSable(atomCorsAble) {
+    AuthAction {
+      Ok(Json.toJson(Config.atomTypes))
     }
   }
 
