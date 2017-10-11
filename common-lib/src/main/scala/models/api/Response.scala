@@ -1,35 +1,34 @@
 package models.api
 
+import io.circe.{Decoder, Encoder, Json}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.syntax._
 import play.api.Logger
-import play.api.libs.json._
 import play.api.mvc.{Result, Results}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class ApiError(message: String, friendlyMessage: String, statusCode: Int, statusString: String, data: Option[JsObject] = None)
-
-case class ApiSuccess[T](data: T, status: String = "Ok", statusCode: Int = 200, headers: List[(String,String)]= Nil)
+case class ApiError(message: String, friendlyMessage: String, statusCode: Int, statusString: String, data: Option[Json] = None)
 
 case object ApiError {
-  implicit val apiErrorFormat = Json.format[ApiError]
-}
+  implicit val encoder: Encoder[ApiError] = deriveEncoder
+  implicit val decoder: Decoder[ApiError] = deriveDecoder
 
-object ApiErrors {
   lazy val notFound                  = ApiError("ContentNotFound", "Content does not exist", 404, "notfound")
   lazy val invalidContentSend        = ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")
   lazy val conflict                  = ApiError("WorkflowContentExists", s"This item is already tracked in Workflow", 409, "conflict")
 
-  def jsonParseError(errMsg: String) = ApiError("JsonParseError", s"failed to parse the json. Error(s): $errMsg", 400, "badrequest")
+  def jsonParseError(errMsg: String, json: String) = ApiError("JsonParseError", s"failed to parse the json. Json attempted to parse: $json Error(s): $errMsg", 400, "badrequest")
   def updateError[A](id: A)          = ApiError("UpdateError", s"Item with ID, $id does not exist", 404, "notfound")
   def databaseError(exc: String)     = ApiError("DatabaseError", s"$exc", 500, "internalservererror")
   def updateErrorRevisionTooLow(err: UpdateRevisionTooLow) = ApiError("UpdateError", s"The update to stub with id ${err.stubId} had a revision number ${err.updateRevision} which is lower than that in the database", 412, "preconditionfailed")
 
-  def composerItemLinked(id: Long, composerId: String) = {
+  def composerItemLinked(id: Long, composerId: String): ApiError = {
     ApiError("ComposerItemIsLinked", s"This stub is already linked to a composer article", 409, "conflict",
       Some(
         Json.obj(
-          "stubId" -> JsNumber(id),
-          "composerId" -> JsString(composerId)
+          ("stubId", Json.fromLong(id)),
+          ("composerId", Json.fromString(composerId))
         )
       )
     )
@@ -86,25 +85,25 @@ case class ApiResponseFt[A] private (underlying: Future[Either[ApiError, A]]) {
 }
 
 object ApiResponseFt extends Results {
-  def apply[T](action: => ApiResponseFt[T])(implicit tjs: Writes[T], ec: ExecutionContext): Future[Result] = {
+  def apply[T](action: => ApiResponseFt[T])(implicit encoder: io.circe.Encoder[T], ec: ExecutionContext): Future[Result] = {
     action.fold( {
       apiErrors => Status(apiErrors.statusCode) {
         Logger.error(s"${apiErrors.friendlyMessage} ${apiErrors.message}")
-        JsObject(Seq(
-          "status" -> JsString("error"),
-          "statusCode" -> JsNumber(apiErrors.statusCode),
-          "data" -> JsArray(),
-          "errors" -> Json.toJson(apiErrors)
-        ))
+        Json.obj(
+          ("status", Json.fromString("error")),
+          ("statusCode", Json.fromInt(apiErrors.statusCode)),
+          ("data", Json.Null),
+          ("errors", apiErrors.asJson)
+        ).noSpaces
       }
     },
     t => {
       Ok {
-        JsObject(Seq(
-          "status" -> JsString("ok"),
-          "statusCode" -> JsNumber(200),
-          "data" -> Json.toJson(t)
-        ))
+        Json.obj(
+          ("status", Json.fromString("ok")),
+          ("statusCode", Json.fromInt(200)),
+          ("data", t.asJson)
+        ).noSpaces
       }
     })
   }

@@ -1,13 +1,16 @@
  package controllers
 
+import cats.syntax.either._
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import com.gu.workflow.lib.{StatusDatabase, TagService}
 import config.Config
 import config.Config.defaultExecutionContext
-import lib.{MediaAtomMakerConfig, AtomWorkshopConfig, Composer}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.syntax._
+import io.circe.{Decoder, Encoder, Json, parser}
+import lib.{AtomWorkshopConfig, Composer, MediaAtomMakerConfig}
 import models.{Desk, Section}
 import play.api.Logger
-import play.api.libs.json.{Format, Json}
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -64,7 +67,10 @@ object Application extends Controller with PanDomainAuthActions {
 
   // limited tag fields we want output into the DOM
   case class LimitedTag(id: Long, externalName: String)
-  object LimitedTag { implicit val jsonFormats: Format[LimitedTag] = Json.format[LimitedTag]}
+  object LimitedTag {
+    implicit val encoder: Encoder[LimitedTag] = deriveEncoder
+    implicit val decoder: Decoder[LimitedTag] = deriveDecoder
+  }
 
   def app(title: String) = AuthAction.async { request =>
 
@@ -80,31 +86,31 @@ object Application extends Controller with PanDomainAuthActions {
       val user = request.user
 
       val config = Json.obj(
-        "composer" -> Json.obj(
-          "create" -> Composer.newContentUrl,
-          "view" -> Composer.adminUrl,
-          "details" -> Composer.contentDetails
-        ),
-        "mediaAtomMaker" -> Json.obj(
-          "create" -> MediaAtomMakerConfig.newContentUrl,
-          "view" -> MediaAtomMakerConfig.viewContentUrl
-        ),
-        "atomWorkshop" -> Json.obj(
-          "create" -> AtomWorkshopConfig.newContentUrl,
-          "view" -> AtomWorkshopConfig.viewContentUrl
-        ),
-        "statuses" -> statuses,
-        "desks"    -> desks,
-        "sections" -> sections,
-        "sectionsInDesks" -> sectionsInDesks, // TODO: Combine desks & sectionsInDesks
-        "viewerUrl" -> Config.viewerUrl,
-        "presenceUrl" -> Config.presenceUrl,
-        "preferencesUrl" -> Config.preferencesUrl,
-        "user" -> Json.parse(user.toJson),
-        "incopyExportUrl" -> Config.incopyExportUrl,
-        "composerRestorerUrl" -> Config.composerRestorerUrl,
-        "commissioningDesks" -> commissioningDesks.map(t => LimitedTag(t.id, t.externalName)),
-        "atomTypes" -> Config.atomTypes
+        ("composer", Json.obj(
+          ("create", Json.fromString(Composer.newContentUrl)),
+          ("view", Json.fromString(Composer.adminUrl)),
+          ("details", Json.fromString(Composer.contentDetails))
+        )),
+        ("mediaAtomMaker", Json.obj(
+          ("create", Json.fromString(MediaAtomMakerConfig.newContentUrl)),
+          ("view", Json.fromString(MediaAtomMakerConfig.viewContentUrl))
+        )),
+        ("atomWorkshop", Json.obj(
+          ("create", Json.fromString(AtomWorkshopConfig.newContentUrl)),
+          ("view", Json.fromString(AtomWorkshopConfig.viewContentUrl))
+        )),
+        ("statuses", statuses.asJson),
+        ("desks", desks.asJson),
+        ("sections", sections.asJson),
+        ("sectionsInDesks", sectionsInDesks.asJson), // TODO: Combine desks & sectionsInDesks
+        ("viewerUrl", Json.fromString(Config.viewerUrl)),
+        ("presenceUrl", Json.fromString(Config.presenceUrl)),
+        ("preferencesUrl", Json.fromString(Config.preferencesUrl)),
+        ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
+        ("incopyExportUrl", Json.fromString(Config.incopyExportUrl)),
+        ("composerRestorerUrl", Json.fromString(Config.composerRestorerUrl)),
+        ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
+        ("atomTypes", Config.atomTypes.asJson)
       )
 
       Ok(views.html.app(title, Some(user), config, Config.presenceClientLib))

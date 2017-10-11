@@ -6,7 +6,7 @@ import org.scalatest.{FreeSpec, Matchers}
 
 class ContentResponseTest extends FreeSpec with Matchers {
 
-  def withStatus(st: String): Stub => Stub = s => s.copy(externalData = s.externalData.map(_.copy(status = Status(st))))
+  def withStatus(st: String): Stub => Stub = s => s.copy(externalData = s.externalData.map(_.copy(status = Status.withName(st))))
 
   "statusCountsMap" -    {
     "should give a map of status to count" in {

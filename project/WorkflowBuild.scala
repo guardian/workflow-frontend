@@ -31,8 +31,8 @@ object WorkflowBuild extends Build {
 
   val commonSettings =
     Seq(
-      scalaVersion := "2.11.8",
-      scalaVersion in ThisBuild := "2.11.8",
+      scalaVersion := "2.11.11",
+      scalaVersion in ThisBuild := "2.11.11",
       organization := "com.gu",
       version      := "0.1",
       fork in Test := false,
@@ -47,7 +47,7 @@ object WorkflowBuild extends Build {
 
   lazy val commonLib = project("common-lib")
     .settings(
-      libraryDependencies ++= akkaDependencies ++ logbackDependencies ++ testDependencies ++ playDependencies ++ awsDependencies
+      libraryDependencies ++= akkaDependencies ++ logbackDependencies ++ testDependencies ++ playDependencies ++ awsDependencies ++ jsonDependencies
     )
 
  def appDistSettings(application: String, deployJsonDir: Def.Initialize[File] = baseDirectory) = Seq(
@@ -72,7 +72,7 @@ object WorkflowBuild extends Build {
 
   lazy val root = playProject("workflow-frontend")
                           .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
-                                      ++ testDependencies)
+                                      ++ testDependencies ++ jsonDependencies)
                             .settings(libraryDependencies += filters)
                             .settings(playDefaultPort := 9090)
                             .settings(playArtifactDistSettings ++ playArtifactSettings: _*)
@@ -99,10 +99,4 @@ object WorkflowBuild extends Build {
         <exclude org="org.scala-tools.sbt"/>
       </dependencies>
   )
-
-
-
-
-
-
 }

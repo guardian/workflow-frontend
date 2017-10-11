@@ -1,17 +1,15 @@
 package models
 
-import play.api.libs.json._
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
 case class Desk(name: String, selected: Boolean = false, id: Long = 0) {
   override def toString: String = name
 }
 
 object Desk {
-  implicit val deskReads: Reads[Desk] = new Reads[Desk] {
-    def reads(jsValue: JsValue): JsResult[Desk] = (jsValue \ "tag" \ "desk" \ "name").validate[String].map(Desk(_))
-  }
-
-  implicit val desk: Format[Desk] = Json.format[Desk]
+  implicit val encoder: Encoder[Desk] = deriveEncoder
+  implicit val decoder: Decoder[Desk] = deriveDecoder
 
   def fromSerialised(sd: SerialisedDesk): Desk = {
     Desk(
@@ -23,4 +21,7 @@ object Desk {
 }
 
 case class SerialisedDesk(name: String, selected: Boolean = false, id: Long = 0)
-object SerialisedDesk { implicit val jsonFormats: Format[SerialisedDesk] = Json.format[SerialisedDesk] }
+object SerialisedDesk {
+  implicit val encoder: Encoder[SerialisedDesk] = deriveEncoder
+  implicit val decoder: Decoder[SerialisedDesk] = deriveDecoder
+}
