@@ -98,8 +98,8 @@ object Api extends Controller with PanDomainAuthActions {
 
   def validateContentType(body: JsValue): ApiResponseFt[JsValue] = {
     val atomType: String = (body \ "contentType").as[String]
-    val types: List[String] = Config.atomTypes
-    if (Config.atomTypes.contains(atomType)) {
+    val allTypes: List[String] = Config.atomTypes ++ Config.contentTypes
+    if (allTypes.contains(atomType)) {
       ApiResponseFt.Right(body)
     } else {
       ApiResponseFt.Left(ApiError("InvalidAtomType", s"atoms with type $atomType not supported", 400, "badrequest"))
