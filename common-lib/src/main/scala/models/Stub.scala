@@ -45,7 +45,8 @@ case class ExternalData(path: Option[String] = None,
   legallySensitive: Option[Boolean] = None,
   headline: Option[String] = None,
   hasMainMedia: Option[Boolean] = None,
-  commentable: Option[Boolean] = None)
+  commentable: Option[Boolean] = None,
+  commissionedLength: Option[Int] = None)
 
 object ExternalData {
 
@@ -72,7 +73,8 @@ object ExternalData {
       (__ \ "legallySensitive").readNullable[Boolean] and
       (__ \ "headline").readNullable[String] and
       (__ \ "hasMainMedia").readNullable[Boolean] and
-      (__ \ "commentable").readNullable[Boolean]
+      (__ \ "commentable").readNullable[Boolean] and
+      (__ \ "commissionedLength").readNullable[Int]
     )(ExternalData.apply _)
 
   implicit val jsonWrites: Writes[ExternalData] = Json.writes[ExternalData]
@@ -146,7 +148,8 @@ object Stub {
        (__ \ "legallySensitive").readNullable[Boolean] and
        (__ \ "headline").readNullable[String] and
        (__ \ "hasMainMedia").readNullable[Boolean] and
-       (__ \ "commentable").readNullable[Boolean]
+       (__ \ "commentable").readNullable[Boolean] and
+       (__ \ "commissionedLength").readNullable[Int]
     )(ExternalData.apply _).map(Some(_))
     )(Stub.apply _)
 
