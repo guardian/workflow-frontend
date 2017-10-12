@@ -11,10 +11,15 @@ function wfAtomService(config) {
   function parseAtom(atom, atomType, id) {
         switch(atomType) {
           case 'media':
-              return parseMediaAtom(atom, atomType, id)
+              return parseMediaAtom(atom, atomType, id);
           default:
-              return atom;
+              return parseWorkshopAtom(atom, atomType, id);
       }
+  }
+
+  function parseWorkshopAtom(atom, atomType, id) {
+    const url = `${config.atomWorkshopViewAtom}/${atomType.toUpperCase()}/${id}/edit`;
+    return Object.assign({}, atom, {editorUrl: url});
   }
 
   function parseMediaAtom(atom, atomType, id) {
