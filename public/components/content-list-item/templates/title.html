@@ -1,9 +1,10 @@
 <th id="testing-content-list-item-title" class="content-list-item__field--{{ contentList.showHeadline ? 'headline' : 'working-title' }}" scope="row" title="Working title: {{ contentItem.workingTitle }}{{ contentItem.headline ? '&#10;&#10;Headline: ' + contentItem.headline : '' }}">
     <abbr class="content-list-item__headline-toggle" title="{{ contentList.showHeadline && contentItem.headline ? 'Headline' : 'Working title'}}. (Click to toggle Headlines)" ng-click="contentList.showHeadline = !contentList.showHeadline; $event.stopPropagation()">{{
         contentList.showHeadline && contentItem.headline ? 'HL' : 'WT' }}</abbr>
-    <a ng-if="contentItem.contentType !== 'media'" id="testing-content-list-item-title-anchor-text" ng-href="{{ contentItem.links.composer }}" ng-click="contentList.editItem(contentItem); $event.stopPropagation()" target="_blank">{{
+    <a ng-if="!isSupportedAtomType" id="testing-content-list-item-title-anchor-text" ng-href="{{ contentItem.links.composer }}" ng-click="contentList.editItem(contentItem); $event.stopPropagation()" target="_blank">{{
         contentList.showHeadline && contentItem.headline ? contentItem.headline : contentItem.workingTitle }}</a>
 
-    <a ng-if="contentItem.contentType === 'media'" id="testing-content-list-item-title-anchor-text" ng-href="{{ contentItem.links.editor }}" ng-click="contentList.editItem(contentItem); $event.stopPropagation()" target="_blank">{{
+    <a ng-if="isSupportedAtomType" id="testing-content-list-item-title-anchor-text" ng-href="{{ contentItem.links.editor }}" ng-click="contentList.editItem(contentItem); $event.stopPropagation()" target="_blank">{{
         contentList.showHeadline && contentItem.headline ? contentItem.headline : contentItem.workingTitle }}</a>
+
 </th>
