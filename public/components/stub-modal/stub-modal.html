@@ -32,7 +32,7 @@
             <div class="form-group pull-right col-xs-5" ng-if="contentName === 'Atom'">
                 <label for="stub_content_type">Type *</label>
                 <div>
-                    <select id="stub_content_type" name="content_type" ng-model="stub.contentType" ng-options="(type | lowercase) as type for type in atomTypes" required>
+                    <select id="stub_content_type" name="content_type" ng-model="stub.contentType" ng-options="(type.value | lowercase) as type.displayName for type in atomTypes" required>
                     </select>
                 </div>
             </div>
