@@ -48,6 +48,7 @@ $textualIconSize: 22px;
             &--links,
             &--published-state,
             &--wordcount,
+            &--commissionedLength,
             &--needsLegal {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
@@ -107,6 +108,10 @@ $textualIconSize: 22px;
                 width: 5px;
                 max-width: 5px;
                 min-width: 5px;
+            }
+
+            &--wordcount {
+                width: 40px;
             }
 
             &--wordcount {

@@ -165,6 +165,7 @@
         &--created,
         &--incopy,
         &--wordcount,
+        &--commissionedLength,
         &--needsLegal,
         &--optimisedForWeb,
         &--sensitive,
@@ -289,6 +290,11 @@
                 max-width: 200px;
                 padding: 2px 5px;
             }
+        }
+
+        &--commissionedLength {
+            width: 34px;
+            text-align: center;
         }
 
         &--wordcount {
@@ -440,6 +446,7 @@
         &--published-state,
         &--sensitive,
         &--legally-sensitive,
+        &--commissionedLength,
         &--wordcount {
             @extend %fs-data-2;
         }
