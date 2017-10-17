@@ -281,4 +281,10 @@ function wfGetPriorityStringFilter (priorities) {
     };
 }
 
-export { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter };
+function wfCommissionedLengthCtrl ($scope) {
+    $scope.$watch('contentItem.wordCount', function (newVal, oldVal) {
+        $scope.lengthStatus = "good";
+    });
+}
+
+export { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter, wfCommissionedLengthCtrl };

@@ -18,7 +18,7 @@ import 'components/editable-field/editable-field';
 
 import './content-list.html';
 
-import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from 'components/content-list-item/content-list-item';
+import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter, wfCommissionedLengthCtrl } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
 import { wfLoader } from 'components/loader/loader';
 
@@ -30,6 +30,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .directive('wfContentListLoader', ['$rootScope', wfLoader])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'sections', wfContentListItem])
+    .controller('wfCommissionedLengthCtrl', ['$scope', wfCommissionedLengthCtrl])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', wfContentListDrawer])
     .directive("bindCompiledHtml", function($compile, $timeout) {
         return {

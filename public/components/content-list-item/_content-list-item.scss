@@ -338,6 +338,18 @@
             }
         }
     }
+
+    .content-list-item__field--commissionedLength {
+        &-status {
+            &-good {
+                color: green;
+            }
+            &-bad {
+                color: red;
+            }
+        }
+    }
+
 }
 
 // Animations
