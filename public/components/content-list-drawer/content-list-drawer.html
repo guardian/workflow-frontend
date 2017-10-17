@@ -426,7 +426,7 @@
 
             </div>
 
-            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}" ng-if="contentItem.contentType === 'media'">
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}" ng-if="supportedAtomTypes.includes(contentItem.contentType)">
                 <div class="drawer__header" ng-if="openSection === 'usages'">
                     <i class="drawer__icon" wf-icon="usages"></i>
                     Usages
@@ -467,7 +467,7 @@
 
             </div>
 
-            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'atoms'}" ng-if="contentItem.contentType !== 'media'">
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'atoms'}" ng-if="!supportedAtomTypes.includes(contentItem.contentType)">
                 <div class="drawer__header" ng-if="openSection === 'atoms'">
                     <i class="drawer__icon" wf-icon="atom"></i>
                     Atoms
