@@ -206,7 +206,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
         if(handler) {
             $scope.importHandler = handler;
-            $scope.importHandler.fn(url, handler.regex.exec(url));
+            $scope.importHandler.fn(url, url.match(handler.regex));
         }
     };
 
