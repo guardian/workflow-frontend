@@ -11,7 +11,7 @@ function wfAtomWorkshopService(config, wfHttpSessionService) {
         return request({
             method: 'POST',
             url: config.atomWorkshopNewAtom + '/' + atomType,
-            data: { 'title': title },
+            data: { 'title': title, commissioningDesks: [] },
             withCredentials: true
         });
     };
