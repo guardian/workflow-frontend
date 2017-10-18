@@ -9,6 +9,16 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
 
     const composerContentFetch = config.composerContentDetails;
 
+    function composerUpdateFieldUrl(fieldName, contentId) {
+        function liveOrPreview(isPreview) {
+            return `${composerContentFetch}/${contentId}/${isPreview ? "preview" : "live"}/fields/${fieldName}`
+        }
+        return {
+            preview: liveOrPreview(true),
+            live:    liveOrPreview(false)
+        }
+    }
+
     // budget composer url parser - just gets the portion after the last '/'
     function parseComposerId(url) {
         return url.substring(url.lastIndexOf('/') + 1);
@@ -80,5 +90,18 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
         });
     };
 
-}
+    this.updateField = function (composerId, fieldName, value) {
+        // XXX - I can't figure out whether this should update LIVE or
+        // PREVIEW. Just doing PREVIEW for now. I have a feeling we
+        // should be updating both.
+        let urls = composerUpdateFieldUrl(fieldName, composerId);
+        let req = {
+            method: 'PUT',
+            url: urls.preview,
+            data: `"${value}"`,
+            withCredentials: true
+        };
+        return request(req);
+    };
 
+}
