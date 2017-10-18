@@ -283,7 +283,15 @@ function wfGetPriorityStringFilter (priorities) {
 
 function wfCommissionedLengthCtrl ($scope) {
     $scope.$watch('contentItem.wordCount', function (newVal, oldVal) {
-        $scope.lengthStatus = "good";
+        let commLen = $scope.contentItem.commissionedLength;
+        let difference = $scope.contentItem.wordCount / commLen;
+        if(!newVal || !commLen || difference < 0.75) {
+            $scope.lengthStatus = "low";
+        } else if(difference <= 1) {
+            $scope.lengthStatus = "near";
+        } else {
+            $scope.lengthStatus = "over";
+        }
     });
 }
 

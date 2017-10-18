@@ -341,10 +341,12 @@
 
     .content-list-item__field--commissionedLength {
         &-status {
-            &-good {
+            &-low {
+            }
+            &-near {
                 color: green;
             }
-            &-bad {
+            &-over {
                 color: red;
             }
         }
