@@ -28,13 +28,19 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                 /* what types of stub should be treated as atoms? */
                 getAtomTypes() {
-                    return { "media": true };
+                    return config.atomTypes.reduce((allowedTypes, type) => {
+                      allowedTypes[type] = true;
+                      return allowedTypes;
+                    }, {});
                 }
 
-                getEditorUrl(editorId) {
-                    return {
-                        "media": config.mediaAtomMakerViewAtom + editorId
-                    }
+                getEditorUrl(editorId, atomType) {
+
+                  if (atomType === "media") {
+                    return config.mediaAtomMakerViewAtom + editorId;
+                  } else if (atomType === "storyquestions") {
+                    return `${config.atomWorkshopViewAtom}/${atomType.toUpperCase()}/${editorId}/edit`;
+                  }
                 };
 
                 /**

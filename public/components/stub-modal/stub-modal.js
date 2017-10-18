@@ -248,7 +248,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
             if ($scope.contentName === 'Atom') {
                 if (stub.editorId && ($scope.mode != 'import')) {
-                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId)[stub.contentType];
+                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId, stub.contentType);
                 } else {
                     $modalInstance.close({
                         addToEditor: addToAtomEditor,
@@ -278,7 +278,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                     $scope.composerUrl = config.composerViewContent + '/' + err.data.composerId;
                 }
                 if(err.data.editorId) {
-                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId)[stub.contentType];
+                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId, stub.contentType);
                 }
                 if(err.data.stubId) {
                     $scope.stubId = err.data.stubId;
