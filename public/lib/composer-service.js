@@ -11,7 +11,7 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
 
     function composerUpdateFieldUrl(fieldName, contentId) {
         function liveOrPreview(isPreview) {
-            return `${composerContentFetch}/${contentId}/${isPreview ? "preview" : "live"}/fields/${fieldName}`
+            return `${composerContentFetch}${contentId}/${isPreview ? "preview" : "live"}/fields/${fieldName}`
         }
         return {
             preview: liveOrPreview(true),
