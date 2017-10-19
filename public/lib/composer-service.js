@@ -81,11 +81,18 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
     this.parseComposerData = parseComposerData;
 
 
-    this.create = function createInComposer(type, commissioningDesks) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength) {
+        var params = {
+            'type': type,
+            'tracking': commissioningDesks
+        };
+
+        if(commissionedLength) params['initialCommissionedLength'] = comissionedLength;
+
         return request({
             method: 'POST',
             url: config.composerNewContent,
-            params: { 'type': type, 'tracking': commissioningDesks },
+            params: params,
             withCredentials: true
         });
     };

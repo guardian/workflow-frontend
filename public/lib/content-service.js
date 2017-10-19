@@ -85,7 +85,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 createInComposer(stub, statusOption) {
 
-                    return wfComposerService.create(stub.contentType, stub.commissioningDesks).then( (response) => {
+                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength).then( (response) => {
 
                         wfComposerService.parseComposerData(response.data, stub);
 
