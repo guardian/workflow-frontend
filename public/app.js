@@ -76,6 +76,11 @@ angular.module('workflow',
                    "|^\\s*" + _wfConfig.incopyExportUrl.match("^.*?:")[0])
         );
 
+        $compileProvider.aHrefSanitizationWhitelist(
+            RegExp($compileProvider.aHrefSanitizationWhitelist().source +
+                   "|^\\s*" + _wfConfig.indesignExportUrl.match("^.*?:")[0])
+        );
+
         $provide.decorator('$log', ["$delegate", 'logger', function ($delegate, logger) {
 
             $delegate.error = function (...args) {
@@ -143,6 +148,7 @@ angular.module('workflow',
             'viewerUrl': _wfConfig.viewerUrl,
             'presenceUrl': _wfConfig.presenceUrl,
             'incopyExportUrl': _wfConfig.incopyExportUrl,
+            'indesignExportUrl': _wfConfig.indesignExportUrl,
             'composerRestorerUrl': _wfConfig.composerRestorerUrl,
             'maxNoteLength': 500,
             'mediaAtomMakerNewAtom': _wfConfig.mediaAtomMaker.create,

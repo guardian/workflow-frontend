@@ -56,6 +56,7 @@ object Config extends AwsInstanceTags {
   lazy val capiPreviewPassword = config.getConfigStringOrFail("capi.preview.password")
 
   lazy val incopyExportUrl: String = "gnm://composer/export/${composerId}"
+  lazy val indesignExportUrl: String = "gnm://composerindesign/export/${composerId}"
 
   lazy val viewerUrl: String = s"https://viewer.$domain"
 

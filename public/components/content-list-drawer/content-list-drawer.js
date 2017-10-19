@@ -28,6 +28,13 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             });
     }
 
+    function buildIndesignUrl(fields) {
+        return config.indesignExportUrl
+            .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
+                return fields[fieldName] || "";
+            });
+    }
+
     function buildComposerRestorerUrl (composerId) {
         return config.composerRestorerUrl + '/' + composerId + '/versions';
     }
@@ -182,6 +189,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                 // TODO: move build incopy URL to decorator
                 $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
+                $scope.indesignExportUrl = buildIndesignUrl({ "composerId": contentItem.composerId });
 
                 $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
                 if(isAtom(contentItem.contentType)) {

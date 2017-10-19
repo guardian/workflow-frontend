@@ -461,6 +461,12 @@
                 </a>
             </span>
             <span class="drawer__toolbar-item">
+                <a href="{{ indesignExportUrl }}" class="drawer__item-content" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InDesign">
+                    <i class="drawer__icon drawer__toolbar-icon" wf-icon="indesign"></i>
+                    {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InDesign
+                </a>
+            </span>
+            <span class="drawer__toolbar-item">
                 <a href="{{ incopyExportUrl }}" class="drawer__item-content" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InCopy">
                     <i class="drawer__icon drawer__toolbar-icon" wf-icon="incopy"></i>
                     {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy

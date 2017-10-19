@@ -98,6 +98,7 @@ object Application extends Controller with PanDomainAuthActions {
         "preferencesUrl" -> Config.preferencesUrl,
         "user" -> Json.parse(user.toJson),
         "incopyExportUrl" -> Config.incopyExportUrl,
+        "indesignExportUrl" -> Config.indesignExportUrl,
         "composerRestorerUrl" -> Config.composerRestorerUrl,
         "commissioningDesks" -> commissioningDesks.map(t => LimitedTag(t.id, t.externalName))
       )
