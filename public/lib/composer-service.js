@@ -87,7 +87,7 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
             'tracking': commissioningDesks
         };
 
-        if(commissionedLength) params['initialCommissionedLength'] = comissionedLength;
+        if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
 
         return request({
             method: 'POST',
