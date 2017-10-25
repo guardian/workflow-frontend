@@ -21,13 +21,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
     var hiddenClass = 'content-list-drawer--hidden';
 
-    // function buildIncopyUrl(fields) {
-    //     return config.incopyExportUrl
-    //         .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
-    //             return fields[fieldName] || "";
-    //         });
-    // }
-
     function buildExportUrl(fields, url) {
         return url
             .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
