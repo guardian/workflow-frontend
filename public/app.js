@@ -71,14 +71,16 @@ angular.module('workflow',
 
         $animateProvider.classNameFilter(/^((?!(day-view__item)).)*$/); // https://github.com/angular/angular.js/issues/3613#issuecomment-86704187
 
+        function sanitizeExportUrl(url) {
+            return RegExp($compileProvider.aHrefSanitizationWhitelist().source +
+                   "|^\\s*" + url.match("^.*?:")[0])
+        }
         $compileProvider.aHrefSanitizationWhitelist(
-            RegExp($compileProvider.aHrefSanitizationWhitelist().source +
-                   "|^\\s*" + _wfConfig.incopyExportUrl.match("^.*?:")[0])
+            sanitizeExportUrl(_wfConfig.incopyExportUrl)
         );
 
         $compileProvider.aHrefSanitizationWhitelist(
-            RegExp($compileProvider.aHrefSanitizationWhitelist().source +
-                   "|^\\s*" + _wfConfig.indesignExportUrl.match("^.*?:")[0])
+            sanitizeExportUrl(_wfConfig.indesignExportUrl)
         );
 
         $provide.decorator('$log', ["$delegate", 'logger', function ($delegate, logger) {

@@ -21,15 +21,15 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
     var hiddenClass = 'content-list-drawer--hidden';
 
-    function buildIncopyUrl(fields) {
-        return config.incopyExportUrl
-            .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
-                return fields[fieldName] || "";
-            });
-    }
+    // function buildIncopyUrl(fields) {
+    //     return config.incopyExportUrl
+    //         .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
+    //             return fields[fieldName] || "";
+    //         });
+    // }
 
-    function buildIndesignUrl(fields) {
-        return config.indesignExportUrl
+    function buildExportUrl(fields, url) {
+        return url
             .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
                 return fields[fieldName] || "";
             });
@@ -188,8 +188,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 }
 
                 // TODO: move build incopy URL to decorator
-                $scope.incopyExportUrl = buildIncopyUrl({ "composerId": contentItem.composerId });
-                $scope.indesignExportUrl = buildIndesignUrl({ "composerId": contentItem.composerId });
+                $scope.incopyExportUrl = buildExportUrl({ "composerId": contentItem.composerId }, config.incopyExportUrl);
+                $scope.indesignExportUrl = buildExportUrl({ "composerId": contentItem.composerId }, config.indesignExportUrl );
 
                 $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
                 if(isAtom(contentItem.contentType)) {
