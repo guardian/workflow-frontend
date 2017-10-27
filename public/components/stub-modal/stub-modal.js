@@ -30,6 +30,23 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         })[mode];
     });
 
+    function getAtomDisplayName(type) {
+      switch (type) {
+        case 'storyquestions':
+          return 'Story question';
+        case 'media':
+          return 'Media';
+        default:
+          return type;
+      }
+    }
+
+    function getAtomDropdownData() {
+      return _wfConfig.atomTypes.map(type => {
+        return { value: type, displayName: getAtomDisplayName(type) };
+      });
+    }
+
     $scope.mode = mode;
 
     $scope.formData = {};
@@ -37,13 +54,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.sections = getSectionsList(sections);
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
-    $scope.atomTypes = _wfConfig.atomTypes.map(type => {
-      if (type === 'storyquestions') {
-        return {value: type, displayName: 'reader questions'};
-      } else {
-        return {value: type, displayName: type};
-      }
-    });
+    $scope.atomTypes = getAtomDropdownData();
 
     if(mode==='import') {
        $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});
