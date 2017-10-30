@@ -97,14 +97,12 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
         });
     };
 
-    this.updateField = function (composerId, fieldName, value) {
-        // XXX - I can't figure out whether this should update LIVE or
-        // PREVIEW. Just doing PREVIEW for now. I have a feeling we
-        // should be updating both.
+    this.updateField = function (composerId, fieldName, value, live = false) {
         let urls = composerUpdateFieldUrl(fieldName, composerId);
+        let url = live ? urls.live : urls.preview;
         let req = {
             method: 'PUT',
-            url: urls.preview,
+            url: url,
             data: `"${value}"`,
             withCredentials: true
         };
