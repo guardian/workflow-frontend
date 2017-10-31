@@ -128,6 +128,15 @@
                             <span class="drawer__item-title">Word count</span>
                             <span class="drawer__item-content">{{ capiData.wordCount }} </span>
                         </li>
+                        <li class="drawer__item" ng-show="contentItem.contentType == 'article'">
+                            <span class="drawer__item-title">Commissioned Length</span>
+                            <wf-editable class="drawer__item-content"
+                            wf-editable-type="textarea"
+                            ng-model="contentItem.commissionedLength"
+                            wf-editable-on-update="updateCommissionedLength(newValue)"
+                            wf-editable-maxlength="5">{{contentItem.commissionedLength || "Add" }}
+                            </wf-editable>
+                        </li>
                         <li class="drawer__item">
                             <span class="drawer__item-title">Commissioning info</span>
                             <span class="drawer__item-content" ng-repeat="desk in capiData.commissioningDesks" ng-show="capiData.commissioningDesks.length">{{ desk }}</span>
@@ -265,7 +274,7 @@
                             </span>
                         </li>
                     </ul>
-                    
+
                 </div>
 
             </div>
@@ -360,7 +369,7 @@
                             <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
                         </li>
                     </ul>
-                    
+
                 </div>
 
             </div>
@@ -401,7 +410,7 @@
                             <p class="drawer__item-content" ng-if="!capiData.usages.length">No usages found for this Atom</p>
                         </li>
                     </ul>
-                    
+
                 </div>
 
             </div>
@@ -438,7 +447,7 @@
                             <p class="drawer__item-content" ng-if="!capiData.atomUsages.length">No atoms found in this content</p>
                         </li>
                     </ul>
-                    
+
                 </div>
 
             </div>

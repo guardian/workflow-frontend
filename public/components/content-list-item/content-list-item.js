@@ -84,6 +84,7 @@ function wfContentItemParser(config, statusLabels, sections) {
             this.composerId = item.composerId;
             this.editorId = item.editorId;
             this.wordCount = item.wordCount;
+            this.commissionedLength = item.commissionedLength;
 
             this.headline = item.headline;
             this.standfirst = stripHtml(item.standfirst);
@@ -280,4 +281,18 @@ function wfGetPriorityStringFilter (priorities) {
     };
 }
 
-export { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter };
+function wfCommissionedLengthCtrl ($scope) {
+    $scope.$watch('contentItem.wordCount', function (newVal, oldVal) {
+        let commLen = $scope.contentItem.commissionedLength;
+        let difference = $scope.contentItem.wordCount / commLen;
+        if(!newVal || !commLen || difference < 0.75) {
+            $scope.lengthStatus = "low";
+        } else if(difference <= 1) {
+            $scope.lengthStatus = "near";
+        } else {
+            $scope.lengthStatus = "over";
+        }
+    });
+}
+
+export { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter, wfCommissionedLengthCtrl };

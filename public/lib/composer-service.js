@@ -9,6 +9,16 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
 
     const composerContentFetch = config.composerContentDetails;
 
+    function composerUpdateFieldUrl(fieldName, contentId) {
+        function liveOrPreview(isPreview) {
+            return `${composerContentFetch}${contentId}/${isPreview ? "preview" : "live"}/fields/${fieldName}`
+        }
+        return {
+            preview: liveOrPreview(true),
+            live:    liveOrPreview(false)
+        }
+    }
+
     // budget composer url parser - just gets the portion after the last '/'
     function parseComposerId(url) {
         return url.substring(url.lastIndexOf('/') + 1);
@@ -71,14 +81,32 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
     this.parseComposerData = parseComposerData;
 
 
-    this.create = function createInComposer(type, commissioningDesks) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength) {
+        var params = {
+            'type': type,
+            'tracking': commissioningDesks
+        };
+
+        if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
+
         return request({
             method: 'POST',
             url: config.composerNewContent,
-            params: { 'type': type, 'tracking': commissioningDesks },
+            params: params,
             withCredentials: true
         });
     };
 
-}
+    this.updateField = function (composerId, fieldName, value, live = false) {
+        let urls = composerUpdateFieldUrl(fieldName, composerId);
+        let url = live ? urls.live : urls.preview;
+        let req = {
+            method: 'PUT',
+            url: url,
+            data: `"${value}"`,
+            withCredentials: true
+        };
+        return request(req);
+    };
 
+}

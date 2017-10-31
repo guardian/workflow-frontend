@@ -45,6 +45,10 @@
                 <div ng-if="cdesks.length === 0">
                     <p class="help-block">Selecting commissioning info is temporarily unavailable</p>
                 </div>
+                <label for="commissionedLength">Commissioned Length</label>
+                <div>
+                  <input name="commissionedLength" type="number" ng-model="stub.commissionedLength"/>
+                </div>
                 <!--<p class="help-block" ng-class="{ 'help-block&#45;&#45;invisible': mode === 'import' || stub.status === 'Stub' }">To save as a Stub, change status to News List</p>-->
             </div>
             <div class="form-group pull-right col-xs-5">

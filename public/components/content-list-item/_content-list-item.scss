@@ -165,6 +165,7 @@
         &--created,
         &--incopy,
         &--wordcount,
+        &--commissionedLength,
         &--needsLegal,
         &--optimisedForWeb,
         &--sensitive,
@@ -291,6 +292,11 @@
             }
         }
 
+        &--commissionedLength {
+            width: 34px;
+            text-align: center;
+        }
+
         &--wordcount {
             width: 34px;
             text-align: center;
@@ -332,6 +338,20 @@
             }
         }
     }
+
+    .content-list-item__field--commissionedLength {
+        &-status {
+            &-low {
+            }
+            &-near {
+                color: green;
+            }
+            &-over {
+                color: red;
+            }
+        }
+    }
+
 }
 
 // Animations
@@ -440,6 +460,7 @@
         &--published-state,
         &--sensitive,
         &--legally-sensitive,
+        &--commissionedLength,
         &--wordcount {
             @extend %fs-data-2;
         }
