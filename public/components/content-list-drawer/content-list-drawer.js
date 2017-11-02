@@ -33,16 +33,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
     }
 
     function isAtom(contentType) {
-        const allAtomTypes = [
-            'explainer',
-            'media',
-            'cta',
-            'recipe',
-            'storyQuestions',
-            'quiz'
-        ];
 
-        return allAtomTypes.indexOf(contentType) !== -1;
+        return config.atomTypes.indexOf(contentType) !== -1;
     }
 
     return {
@@ -162,6 +154,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             $scope.incopyExportEnabled = false;
             featureSwitches.withSwitch("incopy-export",
                                        val => $scope.incopyExportEnabled = val);
+            $scope.supportedAtomTypes = config.atomTypes;
 
             /**
              * Listen for event triggered by click in external contentItemRow directive to show or hide drawer

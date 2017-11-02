@@ -55,9 +55,16 @@ function wfContentItemParser(config, statusLabels, sections) {
             if (item.composerId) {
                 this.composer = `${config.composerViewContent}/${item.composerId}`;
             }
-            if (item.contentType == "media" && item.editorId) {
-                this.mediaAtomMaker = `${config.mediaAtomMakerViewAtom}${item.editorId}`;
-                this.editor = this.mediaAtomMaker;
+            if (item.editorId) {
+              if (item.contentType == "media") {
+                  this.mediaAtomMaker = `${config.mediaAtomMakerViewAtom}${item.editorId}`;
+                  this.editor = this.mediaAtomMaker;
+              } else {
+                if (config.atomTypes.includes(item.contentType)) {
+                  this.atomWorkshop = `${config.atomWorkshopViewAtom}/${item.contentType.toUpperCase()}/${item.editorId}/edit`;
+                  this.editor = this.atomWorkshop;
+                }
+              }
             }
             if (item.path) {
                 this.preview = getViewerURL(item.path);
@@ -65,9 +72,6 @@ function wfContentItemParser(config, statusLabels, sections) {
             if (item.published && item.path) {
                 this.live = LIVE_PATH + item.path;
                 this.ophan = OPHAN_PATH + item.path;
-            }
-            if (item.contentType === 'media' && item.editorId) {
-                this.editor = `${config.mediaAtomMakerViewAtom}${item.editorId}`
             }
         }
     }
@@ -202,7 +206,7 @@ function wfContentItemParser(config, statusLabels, sections) {
  * Directive allowing the contentListItems to interact with the details drawer
  * @param $rootScope
  */
-var wfContentListItem = function ($rootScope, statuses, legalValues, sections) {
+var wfContentListItem = function ($rootScope, statuses, legalValues, sections, config) {
     return {
         restrict: 'A',
         template: (tElement, tAttrs) => {
@@ -218,6 +222,7 @@ var wfContentListItem = function ($rootScope, statuses, legalValues, sections) {
             $scope.statusValues = statuses;
             $scope.legalValues = legalValues;
             $scope.sections = sections;
+            $scope.isSupportedAtomType = config.atomTypes.includes($scope.contentItem.contentType);
         },
         link: function ($scope, elem, $attrs) {
 

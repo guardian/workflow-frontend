@@ -30,6 +30,23 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         })[mode];
     });
 
+    function getAtomDisplayName(type) {
+      switch (type) {
+        case 'storyquestions':
+          return 'Reader question';
+        case 'media':
+          return 'Media';
+        default:
+          return type;
+      }
+    }
+
+    function getAtomDropdownData() {
+      return _wfConfig.atomTypes.map(type => {
+        return { value: type, displayName: getAtomDisplayName(type) };
+      });
+    }
+
     $scope.mode = mode;
 
     $scope.formData = {};
@@ -37,7 +54,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.sections = getSectionsList(sections);
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
-    $scope.atomTypes = ['Media'];
+    $scope.atomTypes = getAtomDropdownData();
 
     if(mode==='import') {
        $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});
@@ -181,6 +198,11 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
           regex: "videos/([0-9a-f-]+)$",
           fn: (url, matches) => importContentAtom(matches[1], "media")
         },
+        {
+            name: "Atom Workshop",
+            regex: /atoms\/([a-z]+)\/([0-9a-f-]+)/gi,
+            fn: (url, matches) => importContentAtom(matches[1], matches[2])
+        },
         { name: "Composer",
           regex: "^.*$",
           fn: importComposerContent
@@ -206,7 +228,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             if ($scope.contentName === 'Atom') {
                 stub['contentType'] = $scope.stub.contentType.toLowerCase();
                 if (addToAtomEditor) {
-                    return wfContentService.createInMediaAtomMaker(stub);
+                    return wfContentService.createInAtomEditor(stub);
                 } else if (stub.id) {
                     return wfContentService.updateStub(stub);
                 } else {
@@ -237,7 +259,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
             if ($scope.contentName === 'Atom') {
                 if (stub.editorId && ($scope.mode != 'import')) {
-                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId)[stub.contentType];
+                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId, stub.contentType);
                 } else {
                     $modalInstance.close({
                         addToEditor: addToAtomEditor,
@@ -267,7 +289,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                     $scope.composerUrl = config.composerViewContent + '/' + err.data.composerId;
                 }
                 if(err.data.editorId) {
-                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId)[stub.contentType];
+                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId, stub.contentType);
                 }
                 if(err.data.stubId) {
                     $scope.stubId = err.data.stubId;

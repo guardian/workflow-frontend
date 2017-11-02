@@ -65,7 +65,8 @@ var filterDefaults = function (statuses, wfFiltersService, wfFeatureSwitches) {
             listIsOpen: false,
             multi: true,
             filterOptions: [
-                { caption: 'Media', value: 'media', icon: 'media' }
+                { caption: 'Media', value: 'media', icon: 'media' },
+                { caption: 'Reader Questions', value: 'storyquestions', icon: 'storyquestions' }
             ]
         },
         {
