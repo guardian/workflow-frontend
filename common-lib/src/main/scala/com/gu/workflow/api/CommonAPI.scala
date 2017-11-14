@@ -53,7 +53,7 @@ object CommonAPI {
 
   def getStubsByEditorId(editorId: String): ApiResponseFt[Option[Stub]] =
     for {
-      res <- ApiResponseFt.Async.Right(getRequest(s"content/editor/$editorId"))
+      res <- ApiResponseFt.Async.Right(getRequest(s"atom/$editorId"))
       itemRes <- extractDataResponseOpt[Stub](res.json)
     } yield itemRes
 
