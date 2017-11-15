@@ -57,31 +57,6 @@ object ApiUtils {
       )
     ))
   }
-//
-//  def extractDataResponse[A: Reads](jsValue: JsValue): ApiResponseFt[A] = {
-//    val data = jsValue \ "data"
-//    extractResponse[A](data)
-//  }
-//
-//  def extractDataResponseOpt[A: Reads](jsValue: JsValue): ApiResponseFt[Option[A]] = {
-//    val data = (jsValue \ "data").toOption
-//    ApiResponseFt.Right(data.flatMap(_.asOpt[A]))
-//  }
-//
-//  def extractResponse[A: Reads](jsValue: JsLookupResult): ApiResponseFt[A] = {
-//    jsValue.validate[A] match {
-//      case JsSuccess(a, _) => ApiResponseFt.Right(a)
-//      case error@JsError(_) =>
-//        val errMsg = errorMsgs(error)
-//        Logger.error(s"JsonParseError failed to parse the json. Error(s): $errMsg 400 badrequest. Json: $jsValue")
-//        ApiResponseFt.Left(ApiError("JsonParseError", s"failed to parse the json. Error(s): $errMsg", 400, "badrequest"))
-//    }
-//  }
-//
-//  def errorMsgs(error: JsError): String =
-//    (for ((path, msgs) <- error.errors; msg <- msgs)
-//    yield s"$path: ${msg.message}(${msg.args.mkString(",")})").mkString(";")
-
 
   private def parseResponse[A](json: Json, result: Decoder.Result[A]): ApiResponseFt[A] = result match {
     case Right(a) => ApiResponseFt.Right(a)
