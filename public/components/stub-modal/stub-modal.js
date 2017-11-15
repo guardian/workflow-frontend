@@ -138,7 +138,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     function importComposerContent(url) {
         wfComposerService.getComposerContent($scope.formData.importUrl)
-            .then((response) => wfComposerService.parseComposerData(response))
+            .then((response) => wfComposerService.parseComposerData(response, $scope.stub))
             .then((contentItem) => {
                 const composerId = contentItem.composerId;
 
@@ -156,8 +156,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                             }
                         });
                 }
-            }
-        );
+            }, (err) => {
+            $scope.actionSuccess = false;
+        });
     }
 
     function importContentAtom(id, atomType) {

@@ -53,7 +53,6 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
 
     function parseComposerData(response, target) {
         target = target || {};
-
         if (!response.data || !response.data.data || !response.data.data.id) {
             $log.error("Composer response missing id field. Response: " + JSON.stringify(response) + " \n Stub metadata: " + JSON.stringify(target))
             return Promise.reject({
