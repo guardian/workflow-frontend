@@ -1,7 +1,8 @@
 package models.api
 
+import io.circe.generic.extras.Configuration
 import io.circe.{Decoder, Encoder, Json}
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.generic.extras.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import play.api.Logger
 import play.api.mvc.{Result, Results}
@@ -11,6 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 case class ApiError(message: String, friendlyMessage: String, statusCode: Int, statusString: String, data: Option[Json] = None)
 
 case object ApiError {
+  implicit val customConfig: Configuration = Configuration.default.withDefaults
   implicit val encoder: Encoder[ApiError] = deriveEncoder
   implicit val decoder: Decoder[ApiError] = deriveDecoder
 

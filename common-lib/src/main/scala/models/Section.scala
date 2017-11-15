@@ -1,6 +1,7 @@
 package models
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 case class Section(name: String, selected: Boolean = false, id: Long = 0) {
@@ -8,6 +9,7 @@ case class Section(name: String, selected: Boolean = false, id: Long = 0) {
 }
 
 object Section {
+  implicit val customConfig: Configuration = Configuration.default.withDefaults
   implicit val encoder: Encoder[Section] = deriveEncoder
   implicit val decoder: Decoder[Section] = deriveDecoder
 
@@ -22,6 +24,7 @@ object Section {
 
 case class SerialisedSection(name: String, selected: Boolean = false, id: Long = 0)
 object SerialisedSection {
+  implicit val customConfig: Configuration = Configuration.default.withDefaults
   implicit val encoder: Encoder[SerialisedSection] = deriveEncoder
   implicit val decoder: Decoder[SerialisedSection] = deriveDecoder
 }

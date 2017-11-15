@@ -7,14 +7,14 @@ import lib.ResourcesHelper
 import models._
 import org.scalatest.{FreeSpec, Matchers}
 
-class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
-  "ContentReads" - {
-    "should read the minimum required fields for a stub only" in {
+class StubTest extends FreeSpec with Matchers with ResourcesHelper{
+  "StubReads" - {
+    "should read the minimum required fields for a stub" in {
       val resource = slurp("stub-min-fields.json").getOrElse(
         throw new RuntimeException("could not find test resource"))
 
       decode[Stub](resource).fold(_ => fail("should parse the stub fields"), stub => {
-        stub.section should equal(Section("section"))
+        stub.section should equal("section")
         stub.title should equal("title")
         stub.priority should equal(0)
         stub.needsLegal should equal (Flag.NA)
@@ -25,10 +25,10 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
       })
     }
 
-    "should read the minimum required fields for a content item and set default fields" in {
+    "should read the minimum required fields for a stub and set default fields" in {
       val resource = slurp("content-item-min-fields.json").getOrElse(
         throw new RuntimeException("could not find test resource"))
-      println(decode[Stub](resource))
+
       decode[Stub](resource).fold(_ => fail("should parse the content field"), stub => {
         stub.composerId should equal (Some("56cc74bfa7c8a951d739c3f4"))
         stub.title should equal ("working")
@@ -73,20 +73,21 @@ class ContentItemTest extends FreeSpec with Matchers with ResourcesHelper{
     }
   }
 
-  "ContentWrites" - {
+  "StubWrites" - {
     "should write a stub to json" in {
       val stub = randomStub
       val json = stub.asJson
-      json.as[Stub].fold(_ => fail("should be validate stub json"), stub => {
+      json.as[Stub].fold(e => fail(s"Should be valid stub json: $e"), stub => {
         stub should equal (stub)
       })
     }
 
-    "should write a content item to json" in {
+    "should write a stub to flat json" in {
       val stub = randomStub
-      val jsValue = stub.asJson
-      jsValue.as[Stub](Stub.flatJsonDecoder).fold(e => fail("should be valid stub json" + e.toString), vStub => {
-        val stubWithDateFields = vStub.copy(createdAt = stub.createdAt, lastModified = stub.lastModified)
+      val flatJson = stub.asJson(Stub.flatJsonEncoder)
+
+      flatJson.as[Stub](Stub.flatJsonDecoder).fold(e => fail(s"Should be valid flat stub json: $e"), s => {
+        val stubWithDateFields = s.copy(createdAt = stub.createdAt, lastModified = stub.lastModified)
         stubWithDateFields should equal (stub)
       })
     }

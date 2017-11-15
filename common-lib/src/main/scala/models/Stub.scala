@@ -1,10 +1,13 @@
 package models
 
+import cats.syntax.either._
 import enumeratum.EnumEntry.Uppercase
 import enumeratum._
+import io.circe.Decoder.Result
 import io.circe._
 import io.circe.generic.extras.Configuration
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.generic.extras.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.parser.decode
 import io.circe.syntax._
 import models.DateFormat._
 import org.joda.time.DateTime
@@ -33,6 +36,7 @@ case class ExternalData(
                          commentable: Option[Boolean] = None)
 
 object ExternalData {
+  implicit val customConfig: Configuration = Configuration.default.withDefaults
   implicit val encoder: Encoder[ExternalData] = deriveEncoder
   implicit val decoder: Decoder[ExternalData] = deriveDecoder
 }
@@ -45,8 +49,8 @@ case class Stub(id: Option[Long] = None,
                assigneeEmail: Option[String] = None,
                composerId: Option[String] = None,
                contentType: String,
-               priority: Int,
-               needsLegal: Flag,
+               priority: Int = 0,
+               needsLegal: Flag = Flag.NA,
                note: Option[String] = None,
                prodOffice: String,
                createdAt: DateTime = DateTime.now(),
@@ -57,16 +61,23 @@ case class Stub(id: Option[Long] = None,
                externalData: Option[ExternalData])
 
 object Stub {
-  implicit val encoder: Encoder[Stub] = deriveEncoder
-  implicit val decoder: Decoder[Stub] = new Decoder[Stub] {
-    def apply(c: HCursor) =
-      c.downField("section").withFocus(_.hcursor.downField("name").focus.getOrElse(Json.Null)).as[Stub]
-  }
-
   implicit val customConfig: Configuration = Configuration.default.withDefaults
 
+  implicit val encoder: Encoder[Stub] = deriveEncoder
+
+  implicit val decoderHelper: Decoder[Stub] = new Decoder[Stub] {
+    def apply(c: HCursor): Result[Stub] = {
+      val sectionName: String = c.downField("section").downField("name").as[String].getOrElse(c.downField("section").as[String].getOrElse(""))
+      val newJson: ACursor = c.withFocus(j => j.asObject.map(_.remove("section").add("section", Json.fromString(sectionName))).map(Json.fromJsonObject).getOrElse(j))
+      decode[Stub](newJson.focus.getOrElse(Json.Null).noSpaces)(decoder).fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Could not decode stub: $err while decoding the json.", c.history)), stub => Right(stub))
+    }
+  }
+
+  val decoder: Decoder[Stub] = deriveDecoder
+
+  // This takes a flat json and converts it to a stub
   val flatJsonDecoder: Decoder[Stub] = new Decoder[Stub] {
-    def apply(c: HCursor) =
+    def apply(c: HCursor): Result[Stub] =
       c.as[Stub].fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Could not decode stub: ${err.message} while decoding the flat json.", c.history)), stub =>
         c.as[ExternalData].fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Could not decode externalData: ${err.message} while decoding the flat json.", c.history)), exData =>
           Right(stub.copy(externalData = Some(exData)))
@@ -74,6 +85,7 @@ object Stub {
       )
   }
 
+  // This takes a stub and converts it to a flat json
   val flatJsonEncoder: Encoder[Stub] = new Encoder[Stub] {
     def apply(stub: Stub): Json = {
       val stubJson = stub.asJson
@@ -81,7 +93,8 @@ object Stub {
         stubObj <- stubJson.asObject
         extDataJson <- stubObj("externalData")
         extDataObj <- extDataJson.asObject
-      } yield (stubObj.toMap ++ extDataObj.toMap).asJson).getOrElse(Json.Null)
+        stubObjWithoutExData = stubObj.remove("externalData")
+      } yield (stubObjWithoutExData.toMap ++ extDataObj.toMap).asJson).getOrElse(Json.Null)
     }
   }
 }

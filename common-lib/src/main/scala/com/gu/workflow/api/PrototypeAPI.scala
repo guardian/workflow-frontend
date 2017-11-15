@@ -120,11 +120,11 @@ object PrototypeAPI {
     } yield item
 
 
-  def deleteContentByStubId(id: Long): ApiResponseFt[Option[DeleteOp]] =
+  def deleteContentByStubId(id: Long): ApiResponseFt[Option[String]] =
     for {
       res <- ApiResponseFt.Async.Right(deleteRequest(s"stubs/$id"))
       json <- parseBody(res.body)
-      deleteRes <- extractDataResponseOpt[DeleteOp](json)
+      deleteRes <- extractDataResponseOpt[String](json)
     } yield deleteRes
 
   def updateContentStatus(stubId: Long, status: String): ApiResponseFt[Long] =
