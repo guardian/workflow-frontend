@@ -96,8 +96,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     .then( (response) => wfComposerService.parseComposerData(response, stub))
                     .then((updatedStub) => {
 
-                        // wfComposerService.parseComposerData(response.data, stub);
-
                         if (statusOption) {
                             updatedStub['status'] = statusOption;
                         }
