@@ -290,12 +290,12 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             /* Drawer section toggles */
             $scope.toggleSection = function (section) {
                 $scope.openSection = section;
-            }
+            };
 
             $scope.setDefaultOpenSection = function(section) {
                 wfSettingsService.set(SETTING_OPEN_SECTION, section);
                 $scope.defaultSection = section;
-            }
+            };
 
             $scope.onBeforeSaveNote = function (note) {
 
