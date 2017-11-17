@@ -365,13 +365,13 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Scheduled</p>
                             <span class="drawer__item-content">
-                                {{ (contentItem.launchScheduleDetails.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
+                                {{ (contentItem.item.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
                             </span>
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Embargoed</p>
                             <span class="drawer__item-content">
-                                {{ contentItem.lifecycleStateSupl || (contentItem.lifecycleStateSuplDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd DD MMM HH:mm') || "-" }}
+                                {{ contentItem.lifecycleStateSupl || (contentItem.lifecycleStateSuplDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
                             </span>
                         </li>
                         <li class="drawer__item">
