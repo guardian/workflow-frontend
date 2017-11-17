@@ -67,6 +67,7 @@ object Stub {
 
   implicit val decoderHelper: Decoder[Stub] = new Decoder[Stub] {
     def apply(c: HCursor): Result[Stub] = {
+      // This is needed because sometimes the JSON contains a nested section object
       val sectionName: String = c.downField("section").downField("name").as[String].getOrElse(c.downField("section").as[String].getOrElse(""))
       val newJson: ACursor = c.withFocus(j => j.asObject.map(_.remove("section").add("section", Json.fromString(sectionName))).map(Json.fromJsonObject).getOrElse(j))
       decode[Stub](newJson.focus.getOrElse(Json.Null).noSpaces)(decoder).fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Could not decode stub: $err while decoding the json.", c.history)), stub => Right(stub))
