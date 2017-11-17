@@ -57,7 +57,7 @@ object Api extends Controller with PanDomainAuthActions {
 
     CommonAPI.getStubs(qs).asFuture.map {
       case Left(_) => InternalServerError
-      case Right(contentResponse) => Ok(contentResponse.asJson.spaces4)
+      case Right(contentResponse) => Ok(contentResponse.asJson.noSpaces)
     }
   }
 
@@ -252,7 +252,7 @@ object Api extends Controller with PanDomainAuthActions {
   def statusus = CORSable(defaultCorsAble)  {
     APIAuthAction.async { implicit req =>
       for(statuses <- StatusDatabase.statuses) yield {
-        Ok(renderJsonResponse(statuses).asJson.spaces4)
+        Ok(renderJsonResponse(statuses).asJson.noSpaces)
       }
     }
   }
@@ -267,13 +267,13 @@ object Api extends Controller with PanDomainAuthActions {
 
   def allowedAtomTypes = CORSable(atomCorsAble) {
     AuthAction {
-      Ok(Config.atomTypes.asJson.spaces4)
+      Ok(Config.atomTypes.asJson.noSpaces)
     }
   }
 
   def editorialSupportTeams = CORSable(defaultCorsAble) {
     APIAuthAction {
-      Ok(EditorialSupportTeamsController.getTeams().asJson.spaces4)
+      Ok(EditorialSupportTeamsController.getTeams().asJson.noSpaces)
     }
   }
 
