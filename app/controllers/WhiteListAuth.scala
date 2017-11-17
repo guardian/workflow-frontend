@@ -1,11 +1,11 @@
 package controllers
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import play.api.mvc._
-import com.gu.workflow.lib.Config
 import com.gu.pandomainauth.action.UserRequest
-import play.api.libs.json.Json
+import com.gu.workflow.lib.Config
+import io.circe.Json
+import play.api.mvc._
+
+import scala.concurrent.Future
 
 object WhiteListAuthFilter extends ActionFilter[UserRequest] {
 
@@ -16,7 +16,7 @@ object WhiteListAuthFilter extends ActionFilter[UserRequest] {
     if(whitelist.contains(user.email)) {
       None
     } else {
-      Some(Results.Forbidden(views.html.admin.unauthorisedUser(Json.obj())))
+      Some(Results.Forbidden(views.html.admin.unauthorisedUser(Json.Null)))
     }
   }
 

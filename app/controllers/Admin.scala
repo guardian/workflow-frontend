@@ -1,44 +1,34 @@
 package controllers
 
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
-import config.Config
-import controllers.Application.LimitedTag
-import lib._
-import models.api.{ApiError, ApiResponseFt}
+import com.gu.workflow.lib.{Config => LocalConfig}
+import io.circe.{Json, parser}
+import models.api.ApiError
+import models.{Status => WorkflowStatus, _}
 import play.api.Logger
+import play.api.Play.current
+import play.api.data.Form
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import play.api.mvc._
-import play.api.data.Form
-import models.{Status => WorkflowStatus, _}
-import play.api.libs.json.Json
-
-import scala.util.{Failure, Success}
-import com.gu.workflow.lib.{Config => LocalConfig, _}
-
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
 
 object Admin extends Controller with PanDomainAuthActions {
 
   import play.api.data.Forms._
 
   def getSortedSections(): Future[List[Section]] = {
-    SectionsAPI.getSections.asFuture.map { x =>
-      x match {
-        case Left(err) => Logger.error(s"error fetching sections: $err"); List()
-        case Right(sections) => sections.sortBy(_.name)
-      }
+    SectionsAPI.getSections.asFuture.map {
+      case Left(err) => Logger.error(s"error fetching sections: $err"); List()
+      case Right(sections) => sections.sortBy(_.name)
     }
   }
 
   def getDesks(): Future[List[Desk]] = {
-    DesksAPI.getDesks.asFuture.map { x =>
-      x match {
-        case Right(desks) => desks
-        case Left(err) => Logger.error(s"error fetching desks: $err"); List()
-      }
+    DesksAPI.getDesks.asFuture.map {
+      case Right(desks) => desks
+      case Left(err) => Logger.error(s"error fetching desks: $err"); List()
     }
   }
 
@@ -58,13 +48,11 @@ object Admin extends Controller with PanDomainAuthActions {
       SectionDeskMappingsAPI
         .getSectionsWithRelation(selectedDesk, sectionListFromDB)
         .asFuture
-        .map { res =>
-        res match {
+        .map {
           case Right(relations) => relations
           case Left(err) => Logger.error(s"unable to fetch the sections in the relation: $err")
             List()
         }
-      }
     }.getOrElse(Future(sectionListFromDB))
   }
 
@@ -82,9 +70,7 @@ object Admin extends Controller with PanDomainAuthActions {
       val selectedDeskOption = for {
         selectedDeskId <- selectedDeskIdOption
         selectedDesk <- deskList.find((desk) => selectedDeskId == desk.id)
-      } yield {
-        selectedDesk
-      }
+      } yield selectedDesk
 
       val desks = selectedDeskOption.map { selectedDesk =>
         deskList.map { desk =>
@@ -97,7 +83,7 @@ object Admin extends Controller with PanDomainAuthActions {
 
       Ok(
         views.html.admin.desksAndSections(
-          Json.obj(),
+          Json.Null,
           sectionList.sortBy(_.name),
           addSectionForm,
           desks.sortBy(_.name),
@@ -138,13 +124,12 @@ object Admin extends Controller with PanDomainAuthActions {
       sectionAssignment => {
         SectionDeskMappingsAPI.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
           .asFuture
-          .map { res =>
-          res match {
+          .map {
             case Right(_) => Redirect(routes.Admin.desksAndSections(Some(sectionAssignment.desk)))
-            case Left(err) => Logger.error(s"error upserting section desk mapping: $err")
+            case Left(err) =>
+              Logger.error(s"error upserting section desk mapping: $err")
               InternalServerError
           }
-        }
       }
     )
   }
@@ -157,12 +142,11 @@ object Admin extends Controller with PanDomainAuthActions {
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to add section")),
       section => {
-        SectionsAPI.upsertSection(section).asFuture.map { res =>
-          res match {
-            case Right(_) => Redirect(routes.Admin.desksAndSections(None))
-            case Left(err) => Logger.error(s"error upserting section: $err")
-              InternalServerError
-          }
+        SectionsAPI.upsertSection(section).asFuture.map {
+          case Right(_) => Redirect(routes.Admin.desksAndSections(None))
+          case Left(err) =>
+            Logger.error(s"error upserting section: $err")
+            InternalServerError
         }
       }
     )
@@ -175,9 +159,7 @@ object Admin extends Controller with PanDomainAuthActions {
         for {
         _ <- SectionDeskMappingsAPI.removeSectionMapping(section.id).asFuture
         _ <- SectionsAPI.removeSection(section).asFuture
-        } yield {
-          NoContent
-        }
+        } yield NoContent
       }
     )
   }
@@ -190,12 +172,11 @@ object Admin extends Controller with PanDomainAuthActions {
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(s"failed to add desk ${formWithErrors.errors}")),
       desk => {
-        DesksAPI.upsertDesk(desk).asFuture.map { res =>
-          res match {
-            case Right(_) => Redirect(routes.Admin.desksAndSections(None))
-            case Left(err) => Logger.error(s"error creating desk: $err")
-              InternalServerError
-          }
+        DesksAPI.upsertDesk(desk).asFuture.map {
+          case Right(_) => Redirect(routes.Admin.desksAndSections(None))
+          case Left(err) =>
+            Logger.error(s"error creating desk: $err")
+            InternalServerError
         }
       }
     )
@@ -236,20 +217,16 @@ object Admin extends Controller with PanDomainAuthActions {
   def sectionsAndTags(selectedSectionIdOption: Option[Long]) = AuthAction.async {
 
     val selectedSectionOptionFt:Future[Option[Section]] = selectedSectionIdOption match {
-      case Some(selectedSectionId) => {
+      case Some(selectedSectionId) =>
         for {
           sections <- getSortedSections()
-        }yield{
-          Some(sections.filter( x => x.id == selectedSectionId ).head)
-        }
-      }
+        } yield Some(sections.filter( x => x.id == selectedSectionId ).head)
       case None => Future(None)
     }
     val tagIdsFuture: Future[List[String]] = selectedSectionIdOption match {
-      case Some(selectedSectionId) => {
+      case Some(selectedSectionId) =>
         val tagIdsFt: Future[Either[ApiError, List[String]]] = SectionsAPI.getTagsForSectionFt(selectedSectionId).asFuture
         tagIdsFt.map(_.right.get)
-      }
       case None => Future.successful(List())
     }
     for {
@@ -258,9 +235,7 @@ object Admin extends Controller with PanDomainAuthActions {
       tagIds <- tagIdsFuture
       selectedSectionOption <- selectedSectionOptionFt
     } yield {
-      val config = Json.obj(
-        "CAPI_API_KEY" -> LocalConfig.getConfigString("capi.key").right.get
-      )
+      val config: Json = parser.parse(s"""{"CAPI_API_KEY": ${LocalConfig.getConfigString("capi.key").right.get}}""").right.get
       Ok(
         views.html.admin.sectionsAndTags(
           config,

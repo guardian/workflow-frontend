@@ -30,4 +30,11 @@ object Dependencies {
 
   val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "4.5")
 
+  val jsonDependencies = Seq(
+    "io.circe" %% "circe-core" % "0.8.0",
+    "io.circe" %% "circe-generic" % "0.8.0",
+    "io.circe" %% "circe-parser" % "0.8.0",
+    "io.circe" %% "circe-generic-extras" % "0.8.0",
+    "com.beachape" %% "enumeratum-circe" % "1.5.14"
+  )
 }

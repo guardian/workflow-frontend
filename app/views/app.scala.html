@@ -1,4 +1,4 @@
-@(title: String, user: Option[com.gu.pandomainauth.model.User], config: play.api.libs.json.JsObject, presenceClientLib: String)
+@(title: String, user: Option[com.gu.pandomainauth.model.User], config: io.circe.Json, presenceClientLib: String)
 
 @layout(title, user, config) {
   <div class="main" ui-view>
