@@ -53,8 +53,8 @@ case class Stub(id: Option[Long] = None,
                needsLegal: Flag = Flag.NA,
                note: Option[String] = None,
                prodOffice: String,
-               createdAt: DateTime = DateTime.now(),
-               lastModified: DateTime = DateTime.now(),
+               createdAt: DateTime = DateTime.now,
+               lastModified: DateTime = DateTime.now,
                trashed: Boolean = false,
                commissioningDesks: Option[String] = None,
                editorId: Option[String] = None,
@@ -74,7 +74,7 @@ object Stub {
     }
   }
 
-  val decoder: Decoder[Stub] = deriveDecoder
+  def decoder: Decoder[Stub] = deriveDecoder
 
   // This takes a flat json and converts it to a stub
   val flatJsonDecoder: Decoder[Stub] = new Decoder[Stub] {
