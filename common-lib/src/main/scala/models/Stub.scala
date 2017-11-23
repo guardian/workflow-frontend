@@ -33,7 +33,8 @@ case class ExternalData(
                          legallySensitive: Option[Boolean] = None,
                          headline: Option[String] = None,
                          hasMainMedia: Option[Boolean] = None,
-                         commentable: Option[Boolean] = None)
+                         commentable: Option[Boolean] = None,
+                         commissionedLength: Option[Int] = None)
 
 object ExternalData {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
@@ -89,9 +90,8 @@ object Stub {
   // This takes a stub and converts it to a flat json
   val flatJsonEncoder: Encoder[Stub] = new Encoder[Stub] {
     def apply(stub: Stub): Json = {
-      val stubJson = stub.asJson
       (for {
-        stubObj <- stubJson.asObject
+        stubObj <- stub.asJson.asObject
         extDataJson <- stubObj("externalData")
         extDataObj <- extDataJson.asObject
         stubObjWithoutExData = stubObj.remove("externalData")
