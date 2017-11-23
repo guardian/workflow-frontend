@@ -1,5 +1,7 @@
 package com.gu.workflow.models
 
+import java.util.TimeZone
+
 import com.gu.workflow.test.lib.TestData._
 import io.circe.parser.decode
 import io.circe.syntax._
@@ -7,7 +9,14 @@ import lib.ResourcesHelper
 import models._
 import org.scalatest.{FreeSpec, Matchers}
 
-class StubTest extends FreeSpec with Matchers with ResourcesHelper{
+class StubTest extends FreeSpec with Matchers with ResourcesHelper {
+  /* It's horrible, but this is absolutely necessary for correct interpretation
+     * of datetime columns in prog almost certainly what no sane person ever wants to do.
+     */
+
+  System.setProperty("user.timezone", "UTC")
+  TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+
   "StubReads" - {
     "should read the minimum required fields for a stub" in {
       val resource = slurp("stub-min-fields.json").getOrElse(
@@ -87,7 +96,7 @@ class StubTest extends FreeSpec with Matchers with ResourcesHelper{
       val flatJson = stub.asJson(Stub.flatJsonEncoder)
 
       flatJson.as[Stub](Stub.flatJsonDecoder).fold(e => fail(s"Should be valid flat stub json: $e"), s => {
-        val stubWithDateFields = s.copy(createdAt = stub.createdAt, lastModified = stub.lastModified)
+        val stubWithDateFields = s.copy(lastModified = stub.lastModified)
         stubWithDateFields should equal (stub)
       })
     }
