@@ -17,7 +17,7 @@ var SETTING_OPEN_SECTION = 'openSection';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, composerService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -324,7 +324,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             };
 
             $scope.updateCommissionedLength = function (newValue) {
-                return composerService.updateField($scope.contentItem.composerId, "commissionedLength", newValue)
+                return wfComposerService.updateField($scope.contentItem.composerId, "commissionedLength", newValue)
             };
 
             /**
