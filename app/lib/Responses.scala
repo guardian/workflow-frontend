@@ -1,15 +1,17 @@
 package lib
 
-import play.api.libs.json.{Json, JsValue, Writes}
-
+import io.circe.{Encoder, Json}
+import io.circe.syntax._
 
 object Responses {
 
-  def renderJsonResponse[A : Writes](content: List[A]): JsValue = Json.obj("data" -> content)
+  def renderJsonResponse[A](content: List[A])(implicit encoder: Encoder[A]): Json = Json.obj(("data", content.asJson))
 
-  def renderJsonResponse[A : Writes](content: A): JsValue = Json.obj("data" -> content)
+  def renderJsonResponse[A](content: A)(implicit encoder: Encoder[A]): Json = Json.obj(("data", content.asJson))
 
-  def renderCreateJson[A : Writes](id: A, status: String): JsValue =
-    Json.obj("data" -> Json.obj("stubId" -> id), "status" -> status)
-
+  def renderCreateJson[A](id: A, status: String)(implicit encoder: Encoder[A]): Json =
+    Json.obj(
+      ("data", Json.obj(("stubId", id.asJson))),
+      ("status", status.asJson)
+    )
 }

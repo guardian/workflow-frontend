@@ -5,6 +5,7 @@ import angular from 'angular';
 import _ from 'lodash';
 
 import 'lib/content-service';
+import 'lib/composer-service';
 import 'lib/date-service';
 import 'lib/presence';
 import 'lib/prodoffice-service';
@@ -18,19 +19,20 @@ import 'components/editable-field/editable-field';
 
 import './content-list.html';
 
-import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter } from 'components/content-list-item/content-list-item';
+import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter, wfCommissionedLengthCtrl } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
 import { wfLoader } from 'components/loader/loader';
 
 
-angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService'])
+angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService'])
     .service('wfContentItemParser', ['config', 'statusLabels', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
     .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'legalValues', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', 'wfFiltersService', wfContentListController])
     .directive('wfContentListLoader', ['$rootScope', wfLoader])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
-    .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'sections', wfContentListItem])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', wfContentListDrawer])
+    .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'sections', 'config', wfContentListItem])
+    .controller('wfCommissionedLengthCtrl', ['$scope', wfCommissionedLengthCtrl])
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService', wfContentListDrawer])
     .directive("bindCompiledHtml", function($compile, $timeout) {
         return {
             scope: {

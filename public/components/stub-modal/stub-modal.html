@@ -32,11 +32,11 @@
             <div class="form-group pull-right col-xs-5" ng-if="contentName === 'Atom'">
                 <label for="stub_content_type">Type *</label>
                 <div>
-                    <select id="stub_content_type" name="content_type" ng-model="stub.contentType" ng-options="(type | lowercase) as type for type in atomTypes" required>
+                    <select id="stub_content_type" name="content_type" ng-model="stub.contentType" ng-options="(type.value | lowercase) as type.displayName for type in atomTypes" required>
                     </select>
                 </div>
             </div>
-            <div class="form-group pull-left col-xs-8" ng-if="mode !== 'import'">
+            <div class="form-group pull-left col-xs-8" ng-if="mode !== 'import' && contentName !== 'Atom'">
                 <label for="stub_cdesk">Commissioning info</label>
 
                 <div ng-if="cdesks.length > 0">
@@ -44,6 +44,10 @@
                 </div>
                 <div ng-if="cdesks.length === 0">
                     <p class="help-block">Selecting commissioning info is temporarily unavailable</p>
+                </div>
+                <label for="commissionedLength">Commissioned Length</label>
+                <div>
+                  <input name="commissionedLength" type="number" ng-model="stub.commissionedLength"/>
                 </div>
                 <!--<p class="help-block" ng-class="{ 'help-block&#45;&#45;invisible': mode === 'import' || stub.status === 'Stub' }">To save as a Stub, change status to News List</p>-->
             </div>
@@ -152,10 +156,6 @@
         <p>This content is already tracked and not visible in Workflow.
             <a href="{{composerUrl || editorUrl}}" target="_blank" ng-click="cancel()">View in editor.</a>
         </p>
-    </div>
-
-    <div class="modal-footer alert alert-info" ng-show="wfComposerState ==='archived'">
-        <p>This content has previously been tracked by Workflow. Import to create a new item.</p>
     </div>
 
     <div class="modal-footer alert alert-danger" ng-show="actionSuccess === false">

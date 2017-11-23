@@ -37,7 +37,7 @@
         .content-list-drawer__column{
             pointer-events: none;
         }
-        
+
         .drawer__control-item--restore {
             background-color: transparentize($c-green, 0.1);
             color: #fff;
@@ -67,7 +67,7 @@
         }
     }
 
-    
+
     &__header {
         font-weight: bold;
         padding-bottom:10px;
@@ -99,7 +99,7 @@
                 .drawer__icon {
                     position: absolute;
                     left: 0;
-                    bottom: 0;    
+                    bottom: 0;
                 }
         }
     }
@@ -124,7 +124,7 @@
         flex: 1 1 0;
         overflow: hidden;
     }
-    
+
     &__item {
         padding: 2px 12px 12px 0;
 
@@ -132,12 +132,20 @@
             border-bottom: 1px solid $c-grey-300;
         }
 
+        &-questions {
+          list-style-type: square;
+        }
+
+        &-question {
+          padding: 5px;
+        }
+
         &-title {
             font-weight: bold;
             padding: 2px 0;
             margin: 0;
         }
-        
+
         &-content {
             display: block;
             word-break: break-all;
@@ -241,7 +249,7 @@
     flex: 0 1 33%;
     flex-direction: column;
     flex-wrap: wrap;
-    max-height: 300px; 
+    max-height: 300px;
 }
 
 .usage {

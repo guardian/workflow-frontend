@@ -1,19 +1,28 @@
 import angular from 'angular';
 
 angular.module('wfComposerService', [])
-    .service('wfComposerService', ['$http', '$q', 'config', 'wfHttpSessionService', wfComposerService]);
+    .service('wfComposerService', ['$http', '$q', 'config', '$log', 'wfHttpSessionService', wfComposerService]);
 
-function wfComposerService($http, $q, config, wfHttpSessionService) {
+function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
 
     const request = wfHttpSessionService.request;
 
     const composerContentFetch = config.composerContentDetails;
 
+    function composerUpdateFieldUrl(fieldName, contentId) {
+        function liveOrPreview(isPreview) {
+            return `${composerContentFetch}${contentId}/${isPreview ? "preview" : "live"}/fields/${fieldName}`
+        }
+        return {
+            preview: liveOrPreview(true),
+            live:    liveOrPreview(false)
+        }
+    }
+
     // budget composer url parser - just gets the portion after the last '/'
     function parseComposerId(url) {
         return url.substring(url.lastIndexOf('/') + 1);
     }
-
 
     function deepSearch(obj, path) {
         if (path.length === 0) return obj;
@@ -21,7 +30,6 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
         if (obj[next]) return deepSearch(obj[next], path.slice(1));
         else return null;
     }
-
 
     // Mapping of workflow content fields to transform functions on composer response
     const composerParseMap = {
@@ -45,16 +53,20 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
 
     function parseComposerData(response, target) {
         target = target || {};
+        if (!response.data || !response.data.data || !response.data.data.id) {
+            $log.error("Composer response missing id field. Response: " + JSON.stringify(response) + " \n Stub metadata: " + JSON.stringify(target))
+            return Promise.reject({
+                message: "composer response did not contain id, response: " + JSON.stringify(response)})
+        } else {
+            const data = response.data.data;
 
-        const data = response.data;
+            Object.keys(composerParseMap).forEach((key) => {
+                target[key] = composerParseMap[key](data);
+            });
 
-        Object.keys(composerParseMap).forEach((key) => {
-            target[key] = composerParseMap[key](data);
-        });
-
-        return target;
+            return Promise.resolve(target);
+        }
     }
-
 
     function getComposerContent(url) {
         return $http({
@@ -65,20 +77,36 @@ function wfComposerService($http, $q, config, wfHttpSessionService) {
         });
     }
 
-
     this.getComposerContent = getComposerContent;
-
     this.parseComposerData = parseComposerData;
 
 
-    this.create = function createInComposer(type, commissioningDesks) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength) {
+        var params = {
+            'type': type,
+            'tracking': commissioningDesks
+        };
+
+        if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
+
         return request({
             method: 'POST',
             url: config.composerNewContent,
-            params: { 'type': type, 'tracking': commissioningDesks },
+            params: params,
             withCredentials: true
         });
     };
 
-}
+    this.updateField = function (composerId, fieldName, value, live = false) {
+        let urls = composerUpdateFieldUrl(fieldName, composerId);
+        let url = live ? urls.live : urls.preview;
+        let req = {
+            method: 'PUT',
+            url: url,
+            data: `"${value}"`,
+            withCredentials: true
+        };
+        return request(req);
+    };
 
+}

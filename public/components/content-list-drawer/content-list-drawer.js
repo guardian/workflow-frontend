@@ -17,7 +17,7 @@ var SETTING_OPEN_SECTION = 'openSection';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -33,16 +33,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
     }
 
     function isAtom(contentType) {
-        const allAtomTypes = [
-            'explainer',
-            'media',
-            'cta',
-            'recipe',
-            'storyQuestions',
-            'quiz'
-        ];
 
-        return allAtomTypes.indexOf(contentType) !== -1;
+        return config.atomTypes.indexOf(contentType) !== -1;
     }
 
     return {
@@ -162,6 +154,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             $scope.incopyExportEnabled = false;
             featureSwitches.withSwitch("incopy-export",
                                        val => $scope.incopyExportEnabled = val);
+            $scope.supportedAtomTypes = config.atomTypes;
 
             /**
              * Listen for event triggered by click in external contentItemRow directive to show or hide drawer
@@ -298,12 +291,12 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             /* Drawer section toggles */
             $scope.toggleSection = function (section) {
                 $scope.openSection = section;
-            }
+            };
 
             $scope.setDefaultOpenSection = function(section) {
                 wfSettingsService.set(SETTING_OPEN_SECTION, section);
                 $scope.defaultSection = section;
-            }
+            };
 
             $scope.onBeforeSaveNote = function (note) {
 
@@ -329,6 +322,10 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              */
             $scope.updateDeadline = function () {
                 updateField("dueDate", $scope.currentDatePickerValue);
+            };
+
+            $scope.updateCommissionedLength = function (newValue) {
+                return wfComposerService.updateField($scope.contentItem.composerId, "commissionedLength", newValue)
             };
 
             /**

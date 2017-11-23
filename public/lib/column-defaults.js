@@ -1,23 +1,24 @@
-import priorityTemplate         from "components/content-list-item/templates/priority.html";
-import contentTypeTemplate      from "components/content-list-item/templates/content-type.html";
-import titleTemplate            from "components/content-list-item/templates/title.html";
-import commentsTemplate         from "components/content-list-item/templates/comments.html";
-import mainImageTemplate        from "components/content-list-item/templates/main-image.html";
-import incopyTemplate           from "components/content-list-item/templates/incopy.html";
-import optimisedForWebTemplate  from "components/content-list-item/templates/optimisedForWeb.html";
-import sensitiveTemplate        from "components/content-list-item/templates/sensitive.html";
-import legallySensitiveTemplate from "components/content-list-item/templates/legallySensitive.html";
-import presenceTemplate         from "components/content-list-item/templates/presence.html";
-import assigneeTemplate         from "components/content-list-item/templates/assignee.html";
-import officeTemplate           from "components/content-list-item/templates/office.html";
-import deadlineTemplate         from "components/content-list-item/templates/deadline.html";
-import sectionTemplate          from "components/content-list-item/templates/section.html";
-import statusTemplate           from "components/content-list-item/templates/status.html";
-import notesTemplate            from "components/content-list-item/templates/notes.html";
-import linksTemplate            from "components/content-list-item/templates/links.html";
-import publishedStateTemplate   from "components/content-list-item/templates/published-state.html";
-import wordcountTemplate        from "components/content-list-item/templates/wordcount.html";
-import needsLegalTemplate       from "components/content-list-item/templates/needsLegal.html";
+import priorityTemplate           from "components/content-list-item/templates/priority.html";
+import contentTypeTemplate        from "components/content-list-item/templates/content-type.html";
+import titleTemplate              from "components/content-list-item/templates/title.html";
+import commentsTemplate           from "components/content-list-item/templates/comments.html";
+import mainImageTemplate          from "components/content-list-item/templates/main-image.html";
+import incopyTemplate             from "components/content-list-item/templates/incopy.html";
+import optimisedForWebTemplate    from "components/content-list-item/templates/optimisedForWeb.html";
+import sensitiveTemplate          from "components/content-list-item/templates/sensitive.html";
+import legallySensitiveTemplate   from "components/content-list-item/templates/legallySensitive.html";
+import presenceTemplate           from "components/content-list-item/templates/presence.html";
+import assigneeTemplate           from "components/content-list-item/templates/assignee.html";
+import officeTemplate             from "components/content-list-item/templates/office.html";
+import deadlineTemplate           from "components/content-list-item/templates/deadline.html";
+import sectionTemplate            from "components/content-list-item/templates/section.html";
+import statusTemplate             from "components/content-list-item/templates/status.html";
+import notesTemplate              from "components/content-list-item/templates/notes.html";
+import linksTemplate              from "components/content-list-item/templates/links.html";
+import publishedStateTemplate     from "components/content-list-item/templates/published-state.html";
+import wordcountTemplate          from "components/content-list-item/templates/wordcount.html";
+import commissionedLengthTemplate from "components/content-list-item/templates/commissionedLength.html";
+import needsLegalTemplate         from "components/content-list-item/templates/needsLegal.html";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
@@ -190,6 +191,15 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
     template: wordcountTemplate,
+    active: false
+},{
+    name: 'commissionedLength',
+    prettyName: 'Commissioned Length',
+    labelHTML: 'Commission',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'commissionedLength.html',
+    template: commissionedLengthTemplate,
     active: false
 },{
     name: 'links',

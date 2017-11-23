@@ -1,21 +1,20 @@
 package controllers
 
+import cats.syntax.either._
 import com.gu.pandomainauth.action.UserRequest
 import com.gu.workflow.api.{ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI}
+import com.gu.workflow.lib.DBToAPIResponse.getResponse
 import com.gu.workflow.lib._
 import config.Config
 import config.Config.defaultExecutionContext
+import io.circe.syntax._
+import io.circe.{Encoder, Json}
 import lib.Responses._
-import models.Flag.Flag
-import models._
-import models.api.ApiResponseFt
+import models.api.{ApiError, ApiResponseFt}
+import models.{Flag, _}
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.data.Forms._
-import play.api.data.Mapping
-import play.api.libs.json._
 import play.api.mvc._
-import com.gu.workflow.lib.DBToAPIResponse.getResponse
 
 import scala.concurrent.Future
 
@@ -38,11 +37,11 @@ case class CORSable[A](allowedOrigins: Set[String])(action: Action[A]) extends A
 object Api extends Controller with PanDomainAuthActions {
 
   val defaultCorsAble: Set[String] = Set(Config.composerUrl)
-  val mediaAtomCorsAble: Set[String] = defaultCorsAble ++ Set(Config.mediaAtomMakerUrl, Config.mediaAtomMakerUrlForCode)
+  val atomCorsAble: Set[String] = defaultCorsAble ++ Config.mediaAtomMakerUrls ++ Config.atomWorkshopUrls
 
-  implicit val flatStubWrites: Writes[Stub] = Stub.flatStubWrites
+  implicit val flatStubWrites: Encoder[Stub] = Stub.flatJsonEncoder
 
-  def allowCORSAccess(methods: String, args: Any*) = CORSable(mediaAtomCorsAble) {
+  def allowCORSAccess(methods: String, args: Any*) = CORSable(atomCorsAble) {
     Action { implicit req =>
       val requestedHeaders = req.headers("Access-Control-Request-Headers")
       NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
@@ -57,8 +56,8 @@ object Api extends Controller with PanDomainAuthActions {
     }
 
     CommonAPI.getStubs(qs).asFuture.map {
-      case Left(err) => InternalServerError
-      case Right(contentResponse) => Ok(Json.toJson(contentResponse))
+      case Left(_) => InternalServerError
+      case Right(contentResponse) => Ok(contentResponse.asJson.noSpaces)
     }
   }
 
@@ -68,196 +67,172 @@ object Api extends Controller with PanDomainAuthActions {
       APIAuthAction.async { implicit request =>
         ApiResponseFt[Option[Stub]](for {
           item <- getResponse(PrototypeAPI.getStubByComposerId(composerId))
-        } yield {
-          item
-        })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
-      }
+        } yield item
+      )}
     }
 
-  def getContentByEditorId(editorId: String) = CORSable(mediaAtomCorsAble) {
+  def getContentByEditorId(editorId: String) = CORSable(atomCorsAble) {
     APIAuthAction.async { implicit request =>
       ApiResponseFt[Option[Stub]](for {
         item <- getResponse(PrototypeAPI.getStubByEditorId(editorId))
-      } yield {
-        item
-      })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
-    }
+      } yield item
+    )}
   }
 
   def sharedAuthGetContentById(composerId: String) =
     SharedSecretAuthAction.async {
       ApiResponseFt[Option[Stub]](for {
         item <- getResponse(PrototypeAPI.getStubByComposerId(composerId))
-      } yield {
-        item
-      })(Writes.OptionWrites(Stub.flatStubWrites), defaultExecutionContext)
+      } yield item
+    )}
+
+  def validateContentType(body: Json): ApiResponseFt[Json] = {
+    val atomType: String = body.hcursor.downField("contentType").as[String].getOrElse("")
+    val allTypes: List[String] = Config.atomTypes ++ Config.contentTypes
+    if (allTypes.contains(atomType)) {
+      ApiResponseFt.Right(body)
+    } else {
+      ApiResponseFt.Left(ApiError("InvalidAtomType", s"atoms with type $atomType not supported", 400, "badrequest"))
     }
+  }
 
-  private val iso8601DateTimeNoMillis: Mapping[DateTime] = jodaDate("yyyy-MM-dd'T'HH:mm:ssZ")
 
-  def createContent() =  CORSable(mediaAtomCorsAble) {
+  def createContent() =  CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        stubId <- PrototypeAPI.createStub(jsValue)
-      } yield {
-        stubId
-      })
-    }
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        jsValueWithValidContentType <- validateContentType(json)
+        stubId <- PrototypeAPI.createStub(jsValueWithValidContentType)
+      } yield stubId
+    )}
   }
 
   def putStub(stubId: Long) =  CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        putRes <- PrototypeAPI.putStub(stubId, jsValue)
-      } yield {
-        putRes
-      })
-    }
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        putRes <- PrototypeAPI.putStub(stubId, json)
+      } yield putRes
+    )}
   }
 
   def putStubAssignee(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
-      jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-      assignee <- ApiUtils.extractDataResponse[String](jsValue)
+      json <- ApiUtils.readJsonFromRequestResponse(request.body)
+      assignee <- ApiUtils.extractDataResponse[String](json)
       assigneeData = Some(assignee).filter(_.nonEmpty)
       id <- PrototypeAPI.putStubAssignee(stubId, assigneeData)
-    } yield {
-      id
-    })
-  }
+    } yield id
+  )}
 
   def putStubAssigneeEmail(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
-      jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-      assignee <- ApiUtils.extractDataResponse[String](jsValue)
+      json <- ApiUtils.readJsonFromRequestResponse(request.body)
+      assignee <- ApiUtils.extractDataResponse[String](json)
       assigneeEmailData = Some(assignee).filter(_.nonEmpty)
       id <- PrototypeAPI.putStubAssigneeEmail(stubId, assigneeEmailData)
-    } yield {
-      id
-    })
-  }
+    } yield id
+  )}
 
   def putStubDueDate(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
-      jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-      dueDateOpt <- ApiUtils.extractDataResponseOpt[String](jsValue)
+      json <- ApiUtils.readJsonFromRequestResponse(request.body)
+      dueDateOpt <- ApiUtils.extractDataResponseOpt[String](json)
       dueDateData = dueDateOpt.map(new DateTime(_))
       id <- PrototypeAPI.putStubDue(stubId, dueDateData)
-    } yield {
-      id
-    })
-  }
+    } yield id
+  )}
 
   def putStubNote(stubId: Long) = CORSable(defaultCorsAble) {
     def getNoteOpt(input: String): Option[String] = if(input.length > 0) Some(input) else None
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        note <- ApiUtils.extractDataResponse[String](jsValue)(Stub.noteReads)
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        note <- ApiUtils.extractDataResponse[String](json)
         noteOpt = getNoteOpt(note)
         id <- PrototypeAPI.putStubNote(stubId, noteOpt)
-      } yield {
-        id
-      })
-    }
+      } yield id
+    )}
   }
 
   def putStubProdOffice(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        prodOffice <- ApiUtils.extractDataResponse[String](jsValue)(Stub.prodOfficeReads)
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        prodOffice <- ApiUtils.extractDataResponse[String](json)
         id <- PrototypeAPI.putStubProdOffice(stubId, prodOffice)
-      } yield {
-        id
-      })
-    }
+      } yield id
+    )}
   }
 
   def putStubStatus(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        status <- ApiUtils.extractDataResponse[String](jsValue)
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        status <- ApiUtils.extractDataResponse[String](json)
         id <- PrototypeAPI.updateContentStatus(stubId, status)
-      } yield {
-        id
-      })
-    }
+      } yield id
+    )}
   }
 
   def putStubStatusByComposerId(composerId: String) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[String](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        status <- ApiUtils.extractDataResponse[String](jsValue)
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        status <- ApiUtils.extractDataResponse[String](json)
         id <- PrototypeAPI.updateContentStatusByComposerId(composerId, status)
-      } yield {
-        id
-      })
-    }
+      } yield id
+    )}
   }
 
   def putStubSection(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        section <- ApiUtils.extractResponse[String](jsValue \ "data" \ "name")
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        section <- ApiUtils.extractResponse[String](json.hcursor.downField("data").downField("name").focus.getOrElse(Json.Null))
         id <- PrototypeAPI.putStubSection(stubId, section)
-      } yield {
-        id
-      })
-    }
+      } yield id
+    )}
   }
 
   def putStubWorkingTitle(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        wt <- ApiUtils.extractDataResponse[String](jsValue)(Stub.workingTitleReads)
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        wt <- ApiUtils.extractDataResponse[String](json)
         id <- PrototypeAPI.putStubWorkingTitle(stubId, wt)
-      } yield {
-        id
-      })
-    }
+      } yield id
+    )}
   }
 
   def putStubPriority(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        priority <- ApiUtils.extractDataResponse[Int](jsValue)
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        priority <- ApiUtils.extractDataResponse[Int](json)
         id <- PrototypeAPI.putStubPriority(stubId, priority)
-      } yield {
-        id
-      })
-    }
+      } yield id
+    )}
   }
 
   def putStubLegalStatus(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        status <- ApiUtils.extractDataResponse[Flag](jsValue)
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        status <- ApiUtils.extractDataResponse[Flag](json)
         id <- PrototypeAPI.putStubLegalStatus(stubId, status)
-      } yield {
-        id
-      })
-    }
+      } yield id
+    )}
   }
 
   def putStubTrashed(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        jsValue <- ApiUtils.readJsonFromRequestResponse(request.body)
-        trashed <- ApiUtils.extractDataResponse[Boolean](jsValue)
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        trashed <- ApiUtils.extractDataResponse[Boolean](json)
         id <- PrototypeAPI.putStubTrashed(stubId, trashed)
-      } yield {
-        id
-      })
-    }
+      } yield id
+    )}
   }
 
   def deleteContent(composerId: String) = CORSable(defaultCorsAble) {
@@ -277,24 +252,28 @@ object Api extends Controller with PanDomainAuthActions {
   def statusus = CORSable(defaultCorsAble)  {
     APIAuthAction.async { implicit req =>
       for(statuses <- StatusDatabase.statuses) yield {
-        Ok(renderJsonResponse(statuses))
+        Ok(renderJsonResponse(statuses).asJson.noSpaces)
       }
     }
   }
 
-  def sections = CORSable(mediaAtomCorsAble) {
-    AuthAction.async { request =>
+  def sections = CORSable(atomCorsAble) {
+    AuthAction.async { _ =>
       ApiResponseFt[List[Section]](for {
         sections <- SectionsAPI.getSections
-      } yield {
-        sections
-      })
+      } yield sections
+    )}
+  }
+
+  def allowedAtomTypes = CORSable(atomCorsAble) {
+    AuthAction {
+      Ok(Config.atomTypes.asJson.noSpaces)
     }
   }
 
   def editorialSupportTeams = CORSable(defaultCorsAble) {
     APIAuthAction {
-      Ok(Json.toJson(EditorialSupportTeamsController.getTeams()))
+      Ok(EditorialSupportTeamsController.getTeams().asJson.noSpaces)
     }
   }
 
@@ -322,10 +301,9 @@ object Api extends Controller with PanDomainAuthActions {
     val staff = EditorialSupportTeamsController.findStaff(name, team)
     staff.size match {
       case 0 => NotFound
-      case 1 => {
-        EditorialSupportTeamsController.deleteStaff(staff(0).id)
+      case 1 =>
+        EditorialSupportTeamsController.deleteStaff(staff.head.id)
         Ok(s"$name from $team deleted")
-      }
       case _ => NotAcceptable
     }
   }

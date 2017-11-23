@@ -21,7 +21,7 @@
                 <span class ="drawer__warning" ng-if="capiData.capiError && openSection === 'furniture'">Warning: Could not reach content api. Some fields will be missing. Please go to composer to view full content information. If problem persists contact digitalcms.dev@guardian.co.uk.</span>
 
                 <!--CONTENT DRAWER-->
-                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="contentItem.contentType !== 'media'">
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="!supportedAtomTypes.includes(contentItem.contentType)">
 
                     <ul class="drawer__column">
                         <li class="drawer__item">
@@ -128,6 +128,15 @@
                             <span class="drawer__item-title">Word count</span>
                             <span class="drawer__item-content">{{ capiData.wordCount }} </span>
                         </li>
+                        <li class="drawer__item" ng-show="contentItem.contentType == 'article'">
+                            <span class="drawer__item-title">Commissioned Length</span>
+                            <wf-editable class="drawer__item-content"
+                            wf-editable-type="textarea"
+                            ng-model="contentItem.commissionedLength"
+                            wf-editable-on-update="updateCommissionedLength(newValue)"
+                            wf-editable-maxlength="5">{{contentItem.commissionedLength || "Add" }}
+                            </wf-editable>
+                        </li>
                         <li class="drawer__item">
                             <span class="drawer__item-title">Commissioning info</span>
                             <span class="drawer__item-content" ng-repeat="desk in capiData.commissioningDesks" ng-show="capiData.commissioningDesks.length">{{ desk }}</span>
@@ -138,7 +147,7 @@
 
                 </div>
 
-                <!--ATOM DRAWER-->
+                <!--MEDIA ATOM DRAWER-->
                 <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="contentItem.contentType === 'media'">
 
                     <ul class="drawer__column">
@@ -265,9 +274,61 @@
                             </span>
                         </li>
                     </ul>
-                    
+
                 </div>
 
+                <!--STORYQUESTIOS ATOM DRAWER-->
+                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="contentItem.contentType === 'storyquestions'">
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Working title</p>
+                            <wf-editable class="drawer__item-content" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
+                                {{ contentItem.workingTitle || '-' }}
+                            </wf-editable>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Note</p>
+                            <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">
+                                {{ contentItem.note || 'Add note' }}
+                            </wf-editable>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">URL</p>
+                            <span class="drawer__item-content" ng-if="capiData.editorUrl">
+                                <a href="{{ capiData.editorUrl }}">
+                                    {{ capiData.editorUrl }}</a>
+                            </span>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Content type</p>
+                            <span class="drawer__item-content">
+                                Reader question
+                            </span>
+                        </li>
+
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Title</p>
+                            <span class="drawer__item-content">
+                                {{ capiData.title || '-' }}
+                            </span>
+                        </li>
+
+                    </ul>
+
+                    <ul class="drawer__column">
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Questions</p>
+                            <ul class="drawer__item-questions">
+                                <li class="drawer__item-question" ng-repeat="question in capiData.editorialQuestions[0].questions">
+                                  <span class="drawer__item--content">
+                                    {{question.questionText}}
+                                  </span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'management'}">
@@ -304,13 +365,13 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Scheduled</p>
                             <span class="drawer__item-content">
-                                {{ (contentItem.launchScheduleDetails.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
+                                {{ (contentItem.item.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
                             </span>
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Embargoed</p>
                             <span class="drawer__item-content">
-                                {{ contentItem.lifecycleStateSupl || (contentItem.lifecycleStateSuplDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd DD MMM HH:mm') || "-" }}
+                                {{ contentItem.lifecycleStateSupl || (contentItem.lifecycleStateSuplDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
                             </span>
                         </li>
                         <li class="drawer__item">
@@ -360,12 +421,12 @@
                             <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
                         </li>
                     </ul>
-                    
+
                 </div>
 
             </div>
 
-            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}" ng-if="contentItem.contentType === 'media'">
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'usages'}" ng-if="supportedAtomTypes.includes(contentItem.contentType)">
                 <div class="drawer__header" ng-if="openSection === 'usages'">
                     <i class="drawer__icon" wf-icon="usages"></i>
                     Usages
@@ -401,12 +462,12 @@
                             <p class="drawer__item-content" ng-if="!capiData.usages.length">No usages found for this Atom</p>
                         </li>
                     </ul>
-                    
+
                 </div>
 
             </div>
 
-            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'atoms'}" ng-if="contentItem.contentType !== 'media'">
+            <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'atoms'}" ng-if="!supportedAtomTypes.includes(contentItem.contentType)">
                 <div class="drawer__header" ng-if="openSection === 'atoms'">
                     <i class="drawer__icon" wf-icon="atom"></i>
                     Atoms
@@ -438,7 +499,7 @@
                             <p class="drawer__item-content" ng-if="!capiData.atomUsages.length">No atoms found in this content</p>
                         </li>
                     </ul>
-                    
+
                 </div>
 
             </div>

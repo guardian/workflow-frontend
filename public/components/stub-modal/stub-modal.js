@@ -13,10 +13,13 @@ import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
 
-const wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
+const wfStubModal = angular.module('wfStubModal', [
+    'ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
-function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
+function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode,
+     sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService,
+     wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
 
     wfContentService.getTypes().then( (types) => {
         $scope.contentName =
@@ -30,6 +33,23 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         })[mode];
     });
 
+    function getAtomDisplayName(type) {
+      switch (type) {
+        case 'storyquestions':
+          return 'Reader question';
+        case 'media':
+          return 'Media';
+        default:
+          return type;
+      }
+    }
+
+    function getAtomDropdownData() {
+      return _wfConfig.atomTypes.map(type => {
+        return { value: type, displayName: getAtomDisplayName(type) };
+      });
+    }
+
     $scope.mode = mode;
 
     $scope.formData = {};
@@ -37,7 +57,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.sections = getSectionsList(sections);
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
-    $scope.atomTypes = ['Media'];
+    $scope.atomTypes = getAtomDropdownData();
 
     if(mode==='import') {
        $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});
@@ -117,36 +137,28 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     }
 
     function importComposerContent(url) {
-        wfComposerService.getComposerContent($scope.formData.importUrl).then(
-            (composerContent) => {
-                //check validity
-                if (composerContent) {
+        wfComposerService.getComposerContent($scope.formData.importUrl)
+            .then((response) => wfComposerService.parseComposerData(response, $scope.stub))
+            .then((contentItem) => {
+                const composerId = contentItem.composerId;
 
-                    const contentItem = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
-                    const composerId = contentItem.composerId;
+                if(composerId) {
+                    $scope.composerUrl = config.composerViewContent + '/' + composerId;
+                    $scope.stub.title = contentItem.headline;
+                    // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
+                    $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
 
-                    if(composerId) {
-                        $scope.composerUrl = config.composerViewContent + '/' + composerId;
-                        $scope.stub.title = contentItem.headline;
-                        // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
-                        $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
-
-                        wfContentService.getById(composerId).then(
-                            (res) => importHandleExisting(res.data.data),
-                            (err) => {
-                                if(err.status === 404) {
-                                    $scope.validImport = true;
-                                    if(err.data.archive) { $scope.wfComposerState = 'archived'; }
-                                }
-                            });
-                    }
-                } else {
-                    $scope.stub.title = null;
-                    $scope.stub.composerId = null;
-                    $scope.stub.contentType = null;
+                    wfContentService.getById(composerId).then(
+                        (res) => importHandleExisting(res.data.data),
+                        (err) => {
+                            if(err.status === 404) {
+                                $scope.validImport = true;
+                            }
+                        });
                 }
-            }
-        );
+            }, (err) => {
+            $scope.actionSuccess = false;
+        });
     }
 
     function importContentAtom(id, atomType) {
@@ -162,7 +174,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                     (err) => {
                         if(err.status === 404) {
                             $scope.validImport = true;
-                            if(err.data.archive) { $scope.wfComposerState = 'archived'; }
                         }
                     }
                 );
@@ -180,6 +191,11 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         { name: "Media Atom Maker",
           regex: "videos/([0-9a-f-]+)$",
           fn: (url, matches) => importContentAtom(matches[1], "media")
+        },
+        {
+            name: "Atom Workshop",
+            regex: /atoms\/([a-z]+)\/([0-9a-f-]+)/gi,
+            fn: (url, matches) => importContentAtom(matches[1], matches[2])
         },
         { name: "Composer",
           regex: "^.*$",
@@ -206,7 +222,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             if ($scope.contentName === 'Atom') {
                 stub['contentType'] = $scope.stub.contentType.toLowerCase();
                 if (addToAtomEditor) {
-                    return wfContentService.createInMediaAtomMaker(stub);
+                    return wfContentService.createInAtomEditor(stub);
                 } else if (stub.id) {
                     return wfContentService.updateStub(stub);
                 } else {
@@ -237,7 +253,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
             if ($scope.contentName === 'Atom') {
                 if (stub.editorId && ($scope.mode != 'import')) {
-                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId)[stub.contentType];
+                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId, stub.contentType);
                 } else {
                     $modalInstance.close({
                         addToEditor: addToAtomEditor,
@@ -262,18 +278,16 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $scope.contentUpdateError = true;
 
             if(err.status === 409) {
-                $scope.errorMsg = 'This item is already linked to a composer item.';
                 if(err.data.composerId) {
                     $scope.composerUrl = config.composerViewContent + '/' + err.data.composerId;
                 }
                 if(err.data.editorId) {
-                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId)[stub.contentType];
+                    $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId, stub.contentType);
                 }
                 if(err.data.stubId) {
                     $scope.stubId = err.data.stubId;
                 }
             } else {
-                $scope.errorMsg = err.friendlyMessage || err.message || err;
                 $scope.actionSuccess = false;
             }
 

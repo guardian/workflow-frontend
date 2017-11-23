@@ -31,11 +31,16 @@ object Config extends AwsInstanceTags {
   lazy val composerRestorerUrl: String = s"https://restorer.$domain/content"
 
   lazy val mediaAtomMakerUrl: String = s"https://video.$domain"
+  lazy val atomWorkshopUrl: String = s"https://atomworkshop.$domain"
 
-  // TODO do this better!
-  lazy val mediaAtomMakerUrlForCode: String = stage match {
-    case "CODE" => s"https://video.${appDomain("DEV")}" // allow MAM in DEV to call Workflow CODE
-    case _ => mediaAtomMakerUrl
+  lazy val mediaAtomMakerUrls: Set[String] = stage match {
+    case "CODE" => Set(mediaAtomMakerUrl, s"https://video.${appDomain("DEV")}") // allow MAM in DEV to call Workflow CODE
+    case _ => Set(mediaAtomMakerUrl)
+  }
+
+  lazy val atomWorkshopUrls: Set[String] = stage match {
+    case "CODE" => Set(s"https://atomworkshop.${appDomain("DEV")}", atomWorkshopUrl) // allow MAM in DEV to call Workflow CODE
+    case _ => Set(atomWorkshopUrl)
   }
 
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
@@ -65,6 +70,9 @@ object Config extends AwsInstanceTags {
   lazy val no2faUser: String = "composer.test@guardian.co.uk"
 
   lazy val editorialSupportDynamoTable: String = s"support-staff-$stage"
+
+  lazy val atomTypes: List[String] = List("media", "storyquestions")
+  lazy val contentTypes: List[String] = List("article", "liveblog", "gallery", "interactive", "picture", "video", "audio")
 
   // logstash conf
   private lazy val logStashHost: String = "ingest.logs.gutools.co.uk"

@@ -2,14 +2,15 @@ import angular from 'angular';
 
 import './composer-service';
 import './media-atom-maker-service'
+import './atom-workshop-service'
 import './http-session-service';
 import './user';
 import './visibility-service';
 import './feature-switches';
 
-angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'config',
-        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, config) {
+angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService'])
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'config', 'wfFeatureSwitches',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, wfAtomWorkshopService, config, wfFeatureSwitches) {
 
             const httpRequest = wfHttpSessionService.request;
 
@@ -27,13 +28,19 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                 /* what types of stub should be treated as atoms? */
                 getAtomTypes() {
-                    return { "media": true };
+                    return config.atomTypes.reduce((allowedTypes, type) => {
+                      allowedTypes[type] = true;
+                      return allowedTypes;
+                    }, {});
                 }
 
-                getEditorUrl(editorId) {
-                    return {
-                        "media": config.mediaAtomMakerViewAtom + editorId
-                    }
+                getEditorUrl(editorId, atomType) {
+
+                  if (atomType === "media") {
+                    return config.mediaAtomMakerViewAtom + editorId;
+                  } else if (atomType === "storyquestions") {
+                    return `${config.atomWorkshopViewAtom}/${atomType.toUpperCase()}/${editorId}/edit`;
+                  }
                 };
 
                 /**
@@ -85,29 +92,31 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 createInComposer(stub, statusOption) {
 
-                    return wfComposerService.create(stub.contentType, stub.commissioningDesks).then( (response) => {
-
-                        wfComposerService.parseComposerData(response.data, stub);
+                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength)
+                    .then( (response) => wfComposerService.parseComposerData(response, stub))
+                    .then((updatedStub) => {
 
                         if (statusOption) {
-                            stub['status'] = statusOption;
+                            updatedStub['status'] = statusOption;
                         }
 
                         if (stub.id) {
-                            return this.updateStub(stub);
+                            return this.updateStub(updatedStub);
                         } else {
-                            return this.createStub(stub);
+                            return this.createStub(updatedStub);
                         }
                     });
                 }
 
                 /**
-                 * Creates an atom in the Media Atom Maker. Effectively setting
+                 * Creates an atom. Effectively setting
                  * the editorId to what we get from the response.
                  */
-                createInMediaAtomMaker(stub, statusOption) {
+                createInAtomEditor(stub, statusOption) {
 
-                    return wfMediaAtomMakerService.create(stub.title).then( (response) => {
+                    const that = this;
+
+                    function processAtomEditorCreateResponse(response) {
 
                         stub['editorId'] = response.data.id;
 
@@ -116,11 +125,14 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         }
 
                         if (stub.id) {
-                            return this.updateStub(stub);
+                            return that.updateStub(stub);
                         } else {
-                            return this.createStub(stub);
+                            return that.createStub(stub);
                         }
-                    });
+                    }
+
+                    var createResponse = stub.contentType === 'media' ? wfMediaAtomMakerService.create(stub.title) : wfAtomWorkshopService.create(stub.contentType, stub.title);
+                    return createResponse.then(processAtomEditorCreateResponse);
                 }
 
 
@@ -146,14 +158,15 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * @param {Object} contentItem
                  * @param {String} field
                  * @param {mixed} data
+                 * @param {String} contentType
                  *
                  * @returns {Promise}
                  */
                 updateField(contentItem, field, data, contentType) {
 
                     if (field === 'status' && contentItem.status === 'Stub') {
-                        if (contentType === 'media') {
-                            return this.createInMediaAtomMaker(contentItem, data);
+                        if (wfAtomService.atomTypes.indexOf(contentType) >= 0) {
+                            return this.createInAtomEditor(contentItem, data);
                         } else {
                             return this.createInComposer(contentItem, data)
                         }
