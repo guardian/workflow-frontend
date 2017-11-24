@@ -86,6 +86,7 @@ object Application extends Controller with PanDomainAuthActions {
       val user = request.user
 
       val config = Json.obj(
+
         ("composer", Json.obj(
           ("create", Json.fromString(Composer.newContentUrl)),
           ("view", Json.fromString(Composer.adminUrl)),
@@ -108,6 +109,7 @@ object Application extends Controller with PanDomainAuthActions {
         ("preferencesUrl", Json.fromString(Config.preferencesUrl)),
         ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
         ("incopyExportUrl", Json.fromString(Config.incopyExportUrl)),
+        ("indesignExportUrl", Json.fromString(Config.indesignExportUrl)),
         ("composerRestorerUrl", Json.fromString(Config.composerRestorerUrl)),
         ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
         ("atomTypes", Config.atomTypes.asJson)
