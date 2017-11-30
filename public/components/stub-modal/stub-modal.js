@@ -103,7 +103,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.legalStates = legalStatesService.getLegalStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
 
-    $scope.$watch('stub.section', (newValue, oldValue) => {
+    $scope.$watch('stub.section', (newValue) => {
 
         if (newValue) {
             wfPreferencesService.getPreference('preferedStub').then((data) => {
@@ -129,14 +129,14 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     function importHandleExisting(content) {
         if(content.visibleOnUi) {
             $scope.wfComposerState = 'visible';
-            $scope.stubId = res.data.data.id;
+            $scope.stubId = content.data.data.id;
         }
         else {
             $scope.wfComposerState = 'invisible'
         }
     }
 
-    function importComposerContent(url) {
+    function importComposerContent() {
         wfComposerService.getComposerContent($scope.formData.importUrl)
             .then((response) => wfComposerService.parseComposerData(response, $scope.stub))
             .then((contentItem) => {
@@ -156,7 +156,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                             }
                         });
                 }
-            }, (err) => {
+            }, () => {
             $scope.actionSuccess = false;
         });
     }
@@ -218,9 +218,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
         function createItemPromise() {
-            stub['status'] = stub.status === undefined ? 'Stub' : stub.status;
+            stub.status = stub.status === undefined ? 'Stub' : stub.status;
             if ($scope.contentName === 'Atom') {
-                stub['contentType'] = $scope.stub.contentType.toLowerCase();
+                stub.contentType = $scope.stub.contentType.toLowerCase();
                 if (addToAtomEditor) {
                     return wfContentService.createInAtomEditor(stub);
                 } else if (stub.id) {
@@ -241,7 +241,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
         $scope.actionInProgress = true;
 
-        createItemPromise().then((response) => {
+        createItemPromise().then(() => {
             const eventName = ({
                 'create': 'stub.created',
                 'edit': 'stub.edited',
@@ -252,7 +252,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $rootScope.$broadcast('getContent');
 
             if ($scope.contentName === 'Atom') {
-                if (stub.editorId && ($scope.mode != 'import')) {
+                if (stub.editorId && ($scope.mode !== 'import')) {
                     $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId, stub.contentType);
                 } else {
                     $modalInstance.close({
@@ -261,7 +261,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                     });
                 }
             } else {
-                if(stub.composerId && ($scope.mode != 'import')) {
+                if(stub.composerId && ($scope.mode !== 'import')) {
                     $scope.composerUrl = config.composerViewContent + '/' + stub.composerId;
                 } else {
                     $modalInstance.close({
@@ -325,8 +325,7 @@ wfStubModal.run([
     'wfPreferencesService',
     'wfLocationService',
     'sections',
-    'config',
-    function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, wfPreferencesService, wfLocationService, sections, config) {
+    function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, wfPreferencesService, wfLocationService, sections) {
 
         const defaultAtomType = "media"
 
@@ -379,14 +378,14 @@ wfStubModal.run([
             });
         });
 
-        $rootScope.$on('content:import', function (event) {
+        $rootScope.$on('content:import', function () {
             setUpPreferedStub(null).then((stub) => {
                 open(stub, 'import')
             });
         });
 
         function open(stub, mode) {
-            const modalInstance = $modal.open({
+            $modal.open({
                 templateUrl: '/assets/components/stub-modal/stub-modal.html',
                 controller: StubModalInstanceCtrl,
                 windowClass: 'stubModal',
@@ -399,7 +398,7 @@ wfStubModal.run([
     }]).directive('wfFocus', ['$timeout', function($timeout){
       return {
           restrict: "A",
-          link: function (scope, element, attrs, ctrls) {
+          link: function (scope, element, attrs) {
               if(attrs.focusMe === "true" || attrs.focusMe === undefined) {
                 $timeout(function() { element[0].focus(); }, 500);
               }

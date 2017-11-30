@@ -27,7 +27,7 @@ var KEYCODE_ESC = 27,
     CLASS_EDITABLE = 'editable',
     CLASS_EDITABLE_EDITMODE = 'editable--edit';
 
-function wfEditableDirectiveFactory($timeout) {
+function wfEditableDirectiveFactory() {
 
     return {
         restrict: 'E',
@@ -67,7 +67,7 @@ function wfEditableDirectiveFactory($timeout) {
                 .replaceWith($node.attr(nodeAttrs));
 
 
-            return function wfEditableFieldPostLink($scope, $element, $attrs, editableController) {
+            return function wfEditableFieldPostLink($scope, $element, $attrs) {
                 $attrs.$addClass(CLASS_EDITABLE);
 
                 $scope.$on('wfEditable.changedEditMode', ($event, newValue) => {
@@ -205,7 +205,7 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
             }
 
             function implicitCancel() {
-                if (ngModel.$viewValue == ngModel.$modelValue) {
+                if (ngModel.$viewValue === ngModel.$modelValue) {
                     wfEditable.setEditMode(false);
                 } else {
                     wfEditable.setErrors({ notSaved: true });
@@ -223,7 +223,7 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
             });
 
             $element.on('keydown', ($event) => {
-                if ($event.keyCode == KEYCODE_ESC) {
+                if ($event.keyCode === KEYCODE_ESC) {
                     $scope.$apply(cancel);
 
                 } else if ($event.keyCode === KEYCODE_ENTER) {

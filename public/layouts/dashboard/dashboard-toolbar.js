@@ -29,7 +29,7 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
         function buildSelectedSections () {
             var sectionsString = wfFiltersService.get('section');
             var sectionsStringArray = sectionsString ? sectionsString.split(',') : [];
-            return sections.filter((el) => sectionsStringArray.indexOf(el.name) != -1);
+            return sections.filter((el) => sectionsStringArray.indexOf(el.name) !== -1);
         }
 
         $scope.selectedSections = buildSelectedSections();
@@ -54,14 +54,14 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
                 return null;
             }
 
-            var selectedSectionIds = $scope.sections.filter((el) => selectedSections.indexOf(el.name) != -1).map((el) => el.id);
+            var selectedSectionIds = $scope.sections.filter((el) => selectedSections.indexOf(el.name) !== -1).map((el) => el.id);
             var selectedSectionsInDesksOption = sectionsInDesks.filter((el) => // Dirty Array comparison
-                    el.sectionIds.every((e) => selectedSectionIds.indexOf(e) != -1) && // Has every element the other has
+                    el.sectionIds.every((e) => selectedSectionIds.indexOf(e) !== -1) && // Has every element the other has
                     el.sectionIds.length === selectedSectionIds.length // same length
             );
             if (selectedSectionsInDesksOption.length) {
                 // Found a matching desk
-                return $scope.desks.filter((el) => el.id == selectedSectionsInDesksOption[0].deskId)[0];
+                return $scope.desks.filter((el) => el.id === selectedSectionsInDesksOption[0].deskId)[0];
             } else {
                 // Custom cofiguration -> selectedDesk = 'Custom'
                 return $scope.desks[0];
@@ -77,7 +77,7 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
         $scope.$watch('selectedDesk', function () {
             if ($scope.selectedDesk && $scope.selectedDesk.id) {
                 $scope.$emit('filtersChanged.desk', $scope.selectedDesk.id);
-            } else if ($scope.selectedDesk == null) { // 'All desks'
+            } else if ($scope.selectedDesk === null) { // 'All desks'
                 $scope.$emit('filtersChanged.desk', -1);
             }
 
@@ -101,7 +101,7 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
         $scope.selectedView = wfFiltersService.get('view'); // All
 
-        $scope.$watch('selectedView', (newValue, oldValue) => {
+        $scope.$watch('selectedView', (newValue) => {
             $scope.$emit('filtersChanged.view', newValue);
         }, true);
 
@@ -135,7 +135,7 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
                 ngModel.$render = function () {
                     var newValue = ngModel.$modelValue;
 
-                    if (newValue == value) {
+                    if (newValue === value) {
                         elem.addClass(activeClass);
                         elem.removeClass(className);
                     } else {
@@ -144,7 +144,7 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
                     }
                 };
 
-                elem.on('click', function (event) {
+                elem.on('click', function () {
                     ngModel.$setViewValue(value);
 
                     ngModel.$render();
