@@ -80,22 +80,25 @@ object Stub {
   // This takes a flat json and converts it to a stub
   val flatJsonDecoder: Decoder[Stub] = new Decoder[Stub] {
     def apply(c: HCursor): Result[Stub] =
-      c.as[Stub].fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Could not decode stub: ${err.message} while decoding the flat json.", c.history)), stub =>
-        c.as[ExternalData].fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Could not decode externalData: ${err.message} while decoding the flat json.", c.history)), exData =>
+      c.as[ExternalData].fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Decoding the flat json - Could not decode externalData: ${err.message}.", c.history)), exData => {
+        val wfLastMod = c.downField("wfLastModified").focus.getOrElse(Json.Null)
+        val updatedLastModCursor = c.downField("lastModified").set(wfLastMod).up
+        updatedLastModCursor.as[Stub].fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Decoding the flat json - Could not decode stub: ${err.message}.", c.history)), stub => {
           Right(stub.copy(externalData = Some(exData)))
-        )
-      )
-  }
+        })
+      })
+    }
 
   // This takes a stub and converts it to a flat json
   val flatJsonEncoder: Encoder[Stub] = new Encoder[Stub] {
     def apply(stub: Stub): Json = {
       (for {
         stubObj <- stub.asJson.asObject
+        wfLastModified = stub.lastModified
         extDataJson <- stubObj("externalData")
         extDataObj <- extDataJson.asObject
         stubObjWithoutExData = stubObj.remove("externalData")
-      } yield (stubObjWithoutExData.toMap ++ extDataObj.toMap).asJson).getOrElse(Json.Null)
+      } yield (stubObjWithoutExData.toMap ++ extDataObj.toMap ++ Map("wfLastModified" -> wfLastModified.asJson)).asJson).getOrElse(Json.Null)
     }
   }
 }

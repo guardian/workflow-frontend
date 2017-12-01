@@ -1,7 +1,5 @@
 package com.gu.workflow.models
 
-import java.util.TimeZone
-
 import com.gu.workflow.test.lib.TestData._
 import io.circe.parser.decode
 import io.circe.syntax._
@@ -93,8 +91,7 @@ class StubTest extends FreeSpec with Matchers with ResourcesHelper {
       val flatJson = stub.asJson(Stub.flatJsonEncoder)
 
       flatJson.as[Stub](Stub.flatJsonDecoder).fold(e => fail(s"Should be valid flat stub json: $e"), s => {
-        val stubWithDateFields = s.copy(lastModified = stub.lastModified)
-        stubWithDateFields should equal (stub)
+        s should equal (stub)
       })
     }
   }
