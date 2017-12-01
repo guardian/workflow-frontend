@@ -14,9 +14,6 @@ class StubTest extends FreeSpec with Matchers with ResourcesHelper {
      * of datetime columns in prog almost certainly what no sane person ever wants to do.
      */
 
-  System.setProperty("user.timezone", "UTC")
-  TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-
   "StubReads" - {
     "should read the minimum required fields for a stub" in {
       val resource = slurp("stub-min-fields.json").getOrElse(
