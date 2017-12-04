@@ -18,7 +18,9 @@ angular.module('wfUser', [])
     // TODO: convert wfUser to a class/function as user may change
     .factory('wfUser', [function () {
         var user = window._wfConfig.user;
-        if (!user) return {};
+        if (!user) {
+            return {};
+        }
 
         // Decorate user object
         user.displayName = user.firstName + " " + user.lastName;
@@ -80,7 +82,7 @@ angular.module('wfUser', [])
                 }, IFRAME_TIMEOUT);
 
 
-                $sessionCheckFrame.one('load', function (ev) {
+                $sessionCheckFrame.one('load', function () {
 
                     try {
                         // When logged out, google auth refuses to load in an iframe by setting the X-Frame-Options header

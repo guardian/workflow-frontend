@@ -3,15 +3,14 @@ import angular from 'angular';
 import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/feature-switches';
-import 'lib/prodoffice-service';
 import 'components/location-picker/location-picker';
 import 'components/sidebar-filter/sidebar-filter';
 import { filterDefaults } from 'lib/filter-defaults';
 
 import './dashboard-sidebar.html';
 
-angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wfProdOfficeService', 'wfLocationPicker'])
-    .controller('wfDashboardSidebarController', ['$scope', 'statuses', 'wfFiltersService', 'wfFeatureSwitches', 'wfDateParser', 'wfProdOfficeService', 'sections', function ($scope, statuses, wfFiltersService, wfFeatureSwitches, prodOfficeService, sections) {
+angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wfLocationPicker'])
+    .controller('wfDashboardSidebarController', ['$scope', 'statuses', 'wfFiltersService', 'wfFeatureSwitches', 'wfDateParser', function ($scope, statuses, wfFiltersService, wfFeatureSwitches) {
 
         $scope.statuses = statuses;
 

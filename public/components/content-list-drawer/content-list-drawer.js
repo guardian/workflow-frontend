@@ -55,7 +55,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              * Hide the drawer from view.
              * @returns {Promise}
              */
-            this.hide = () => new Promise((resolve, reject) => {
+            this.hide = () => new Promise((resolve) => {
                 if (this.isHidden()) {
                     return resolve();
                 }
@@ -73,7 +73,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              * Shows the drawer.
              * @returns {Promise}
              */
-            this.show = () => new Promise((resolve, reject) => {
+            this.show = () => new Promise((resolve) => {
                 if (!this.isHidden()) {
                     resolve();
                 }
@@ -184,10 +184,10 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                             wfCapiAtomService.getAtomUsages(contentItem.item.editorId, contentItem.contentType)
                                 .then((usagesResp) => {
                                     const parsed = wfCapiAtomService.parseCapiAtomData(resp, contentItem.contentType);
-                                    parsed['usages'] = usagesResp;
+                                    parsed.usages = usagesResp;
                                     contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
                                 });
-                        }, (err) => {
+                        }, () => {
                             contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiAtomService.emptyCapiAtomObject());
                     });
                 } else {
@@ -196,11 +196,11 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                         wfCapiContentService.parseCapiContentData(resp)
                             .then((parsed) => {
                                 wfCapiContentService.getContentUsages(parsed.atomUsages).then((usages) => {
-                                    parsed['usages'] = usages;
+                                    parsed.usages = usages;
                                     contentListDrawerController.toggleContent(contentItem, contentListItemElement, parsed);
                                 });
                             });
-                    }, (err) => {
+                    }, () => {
                         contentListDrawerController.toggleContent(contentItem, contentListItemElement, wfCapiContentService.emptyCapiContentObject());
                     });
                 }
@@ -341,10 +341,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
              */
             $scope.deleteContentItem = function (trashedState) {
                  updateField("trashed", trashedState)
-            };
-            function errorMessage(err) {
-                $scope.$apply(() => { throw new Error('Error deleting content: ' + (err.message || err)); });
-
             };
 
             $scope.toggleAssigneeEditing = function () {

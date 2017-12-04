@@ -56,7 +56,7 @@ function wfContentItemParser(config, statusLabels, sections) {
                 this.composer = `${config.composerViewContent}/${item.composerId}`;
             }
             if (item.editorId) {
-              if (item.contentType == "media") {
+              if (item.contentType === "media") {
                   this.mediaAtomMaker = `${config.mediaAtomMakerViewAtom}${item.editorId}`;
                   this.editor = this.mediaAtomMaker;
               } else {
@@ -102,7 +102,7 @@ function wfContentItemParser(config, statusLabels, sections) {
             this.hasMainMedia = !!(item.hasMainMedia)
 
             // Currently we don't pull in any preview information about non-image main media
-            this.mainMediaNoPreview = this.mainMediaType && this.mainMediaType != 'image';
+            this.mainMediaNoPreview = this.mainMediaType && this.mainMediaType !== 'image';
 
             this.trailtext = stripHtml(item.trailtext);
             this.trailImageUrl = item.trailImageUrl;
@@ -209,8 +209,7 @@ function wfContentItemParser(config, statusLabels, sections) {
 var wfContentListItem = function ($rootScope, statuses, legalValues, sections, config) {
     return {
         restrict: 'A',
-        template: (tElement, tAttrs) => {
-
+        template: () => {
             return $rootScope.contentItemTemplate;
         },
         scope: {
@@ -224,7 +223,7 @@ var wfContentListItem = function ($rootScope, statuses, legalValues, sections, c
             $scope.sections = sections;
             $scope.isSupportedAtomType = config.atomTypes.includes($scope.contentItem.contentType);
         },
-        link: function ($scope, elem, $attrs) {
+        link: function ($scope, elem) {
 
             /**
              * Emit an event telling the details drawer to move itself to this element, update and display.
@@ -287,7 +286,7 @@ function wfGetPriorityStringFilter (priorities) {
 }
 
 function wfCommissionedLengthCtrl ($scope) {
-    $scope.$watch('contentItem.wordCount', function (newVal, oldVal) {
+    $scope.$watch('contentItem.wordCount', function (newVal) {
         let commLen = $scope.contentItem.commissionedLength;
         let difference = $scope.contentItem.wordCount / commLen;
         if(!newVal || !commLen || difference < 0.75) {

@@ -33,14 +33,16 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'sections', 'config', wfContentListItem])
     .controller('wfCommissionedLengthCtrl', ['$scope', wfCommissionedLengthCtrl])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfFeatureSwitches', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService', wfContentListDrawer])
-    .directive("bindCompiledHtml", function($compile, $timeout) {
+    .directive("bindCompiledHtml", function($compile) {
         return {
             scope: {
                 rawHtml: '=bindCompiledHtml'
             },
-            link: function(scope, elem, attrs) {
+            link: function(scope, elem) {
                 scope.$watch('rawHtml', function(value) {
-                    if (!value) return;
+                    if (!value) {
+                        return;
+                    }
                     var newElem;
                     try { // Crappy javascript :-(
                         newElem = $compile(value)(scope.$parent);
@@ -57,7 +59,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
         return {
             restrict: 'A',
             transclude: true,
-            link: ($scope, elem, attrs) => {
+            link: ($scope, elem) => {
 
                 $rootScope.$watch('contentItemTemplate', () => {
 
@@ -75,7 +77,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                     $rootScope.compiledTemplate = $rootScope.compiledTemplate || $compile(contentListTemplate);
 
-                    $rootScope.compiledTemplate($scope, function(clonedElement, $scope){
+                    $rootScope.compiledTemplate($scope, function(clonedElement){
                         elem.append(clonedElement);
                     });
                 });
@@ -174,7 +176,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         }, setUpWatch);
 
         function setUpWatch () {
-            $scope.$watch('compactView', (newValue, oldValue) => { // store any change to compact view as a pref
+            $scope.$watch('compactView', (newValue) => { // store any change to compact view as a pref
                 wfPreferencesService.setPreference('compactView', newValue);
             }, true);
         }
@@ -190,7 +192,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         }, setUpWatch);
 
         function setUpWatch () {
-            $scope.$watch('contentList.showHeadline', (newValue, oldValue) => {
+            $scope.$watch('contentList.showHeadline', (newValue) => {
                 wfPreferencesService.setPreference('showHeadline', newValue);
             }, true);
         }
@@ -315,19 +317,18 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     // =============================================================================== //
 
     this.render = (response) => {
-        var data = response.data,
-            self = this;
+        var data = response.data;
 
         // TODO stubs and content are separate structures in the API response
         //      make this a single list of content with consistent structure in the API
 
-        data.content['Stub'] = data.stubs;
+        data.content.Stub = data.stubs;
         var grouped = data.content;
 
         // fixes https://docs.angularjs.org/error/$rootScope/inprog http://www.pro-tekconsulting.com/blog/solution-to-error-digest-already-in-progress-in-angularjs-2/
         if(!$scope.$$phase) {
             $scope.$apply(() => {
-                $scope.totalContentItems = data.count['total'];
+                $scope.totalContentItems = data.count.total;
 
                 $scope.originalContent = statuses.map((status) => {
                     // TODO: status is currently stored as presentation text, eg: "Writers"
@@ -336,7 +337,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
                     return {
                         name: status.toLowerCase(),
-                        title: status == 'Stub' ? 'News list' : status,
+                        title: status === 'Stub' ? 'News list' : status,
                         count: data.count[status],
                         items: grouped[status]
                     };
@@ -400,7 +401,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     });
 
-    $scope.$on('content.deleted', ($event, msg) => {
+    $scope.$on('content.deleted', () => {
         this.poller.refresh();
     });
 
@@ -422,7 +423,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     poller.startPolling().then(function(){
         var myListener = $rootScope.$on('content.rendered',
-            function(event, data){
+            function(){
                 $anchorScroll();
                 myListener();
             });

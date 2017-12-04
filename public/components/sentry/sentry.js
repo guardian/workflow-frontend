@@ -29,7 +29,7 @@ angular.module('wfSentry', ['ngRaven', 'wfUser'])
         return {
             'dsn': wfEnvironment.sentry.url,
             config: {
-                'shouldSendCallback': (data) =>
+                'shouldSendCallback': () =>
                     window.location.href.indexOf('local.dev-gutools.co.uk') === -1
             }
         };

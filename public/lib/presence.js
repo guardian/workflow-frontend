@@ -94,7 +94,7 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
                     presenceError(msg, loggingFields);
                 });
 
-                p.on('connectionRetry', msg => {
+                p.on('connectionRetry', () => {
                     broadcast("presence.connection.retry");
                     $log.warn("Presence connection lost, retrying",loggingFields);
                 });
