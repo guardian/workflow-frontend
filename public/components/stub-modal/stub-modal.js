@@ -129,7 +129,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     function importHandleExisting(content) {
         if(content.visibleOnUi) {
             $scope.wfComposerState = 'visible';
-            $scope.stubId = content.data.data.id;
+            $scope.stubId = res.data.data.id;
         }
         else {
             $scope.wfComposerState = 'invisible'
