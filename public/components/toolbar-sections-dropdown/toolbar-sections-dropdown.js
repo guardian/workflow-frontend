@@ -121,7 +121,7 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
                         buttonTitle.innerHTML = updateNameTo($scope.sections);
                         if (sectionsInThisDesk[0].sectionIds.length) {
                             var selectedSectionNamesArray = $scope.sections
-                                .filter((el) => sectionsInThisDesk[0].sectionIds.indexOf(el.id) != -1)
+                                .filter((el) => sectionsInThisDesk[0].sectionIds.indexOf(el.id) !== -1)
                                 .map((el) => el.name);
 
                             $scope.$emit('filtersChanged.section', selectedSectionNamesArray);

@@ -39,7 +39,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
             }
 
             directive.compile = function() {
-                return function(scope, element, attrs) {
+                return function(scope) {
                     // add extra listener to link
                     scope.$on('resetPicker', function () {
                         scope.changeView('day', getUTCTimeNow());
@@ -50,7 +50,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         });
     })
 
-    .directive('wfDateTimePicker', ['$log', '$timeout', 'wfDateParser', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', function ($log, $timeout, wfDateParser, wfLocaliseDateTimeFilter, wfFormatDateTimeFilter) {
+    .directive('wfDateTimePicker', ['$log', '$timeout', 'wfDateParser', 'wfLocaliseDateTimeFilter', 'wfFormatDateTimeFilter', function ($log, $timeout, wfDateParser, wfLocaliseDateTimeFilter) {
 
         var pickerCount = 0;
 
@@ -71,7 +71,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
             },
             template: dateTimePickerTemplate,
 
-            controller: function ($scope, $element, $attrs) {
+            controller: function ($scope, $element) {
                 var idSuffix = pickerCount++;
 
                 this.textInputId = 'wfDateTimePickerText' + idSuffix;
@@ -81,7 +81,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
                 // Watch for model updates to dateValue, and update datePicker when changes
                 $scope.$watch('dateValue', function (newValue) {
-                    if ($scope.datePickerValue != newValue) {
+                    if ($scope.datePickerValue !== newValue) {
 
                         // Date picker will support a localised date when passed a moment object
                         $scope.datePickerValue = wfDateParser.normaliseDateString(wfLocaliseDateTimeFilter(newValue));
@@ -90,7 +90,6 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
 
                 this.onDatePicked = function (newValue) {
-                    console.log(newValue);
                     $scope.dateValue = wfDateParser.parseDate(newValue);
 
 
@@ -106,7 +105,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
         };
     }])
 
-    .directive('wfDateTimeField', ['wfFormatDateTimeFilter', 'wfLocaliseDateTimeFilter', 'wfDateParser', '$browser', '$log', function (wfFormatDateTimeFilter, wfLocaliseDateTimeFilter, wfDateParser, $browser, $log) {
+    .directive('wfDateTimeField', ['wfFormatDateTimeFilter', 'wfLocaliseDateTimeFilter', 'wfDateParser', '$browser', '$log', function (wfFormatDateTimeFilter, wfLocaliseDateTimeFilter, wfDateParser, $browser) {
 
         // Utility methods
         function isArrowKey(keyCode) {
@@ -191,7 +190,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                     var key = ev.keyCode,
                         type = ev.type;
 
-                    if (type == 'keydown') {
+                    if (type === 'keydown') {
 
                         // ignore the following keys on input
                         if ((key === KEYCODE_COMMAND) || isModifierKey(key) || isArrowKey(key)) {
@@ -200,17 +199,17 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
                         $browser.defer(commitUpdate);
 
-                        if (updateOn == 'enter' && key === KEYCODE_ENTER) {
+                        if (updateOn === 'enter' && key === KEYCODE_ENTER) {
                             scope.updateOnEnter();
                         }
                     }
 
-                    if (type == 'blur' && scope.cancelOn == 'blur') {
+                    if (type === 'blur' && scope.cancelOn === 'blur') {
                         cancelUpdate();
                     }
 
                     // cancel via escape
-                    if (type == 'keydown' && key == KEYCODE_ESCAPE) {
+                    if (type === 'keydown' && key === KEYCODE_ESCAPE) {
                         cancelUpdate();
                     }
                 });

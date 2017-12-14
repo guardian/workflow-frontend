@@ -8,19 +8,9 @@ import scala.concurrent.Future
 
 object StatusDatabase {
 
-  val store: Agent[List[Status]] = Agent(List(
-    Status.Stub,
-    Status.Writers,
-    Status.Desk,
-    Status.ProductionEditor,
-    Status.Subs,
-    Status.Revise,
-    Status.Final,
-    Status.Hold
-  ))
+  val store: Agent[List[Status]] = Agent(Status.values.toList)
 
   def statuses: Future[List[Status]] = store.future()
 
-  def find(name: String): Option[Status] = store.get().find(_.name.toUpperCase == name.toUpperCase)
-
+  def find(name: String): Option[Status] = store.get().find(_.entryName.toUpperCase == name.toUpperCase)
 }

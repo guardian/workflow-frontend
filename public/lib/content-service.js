@@ -92,18 +92,18 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 createInComposer(stub, statusOption) {
 
-                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength).then( (response) => {
-
-                        wfComposerService.parseComposerData(response.data, stub);
+                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength)
+                    .then( (response) => wfComposerService.parseComposerData(response, stub))
+                    .then((updatedStub) => {
 
                         if (statusOption) {
-                            stub['status'] = statusOption;
+                            updatedStub['status'] = statusOption;
                         }
 
                         if (stub.id) {
-                            return this.updateStub(stub);
+                            return this.updateStub(updatedStub);
                         } else {
-                            return this.createStub(stub);
+                            return this.createStub(updatedStub);
                         }
                     });
                 }

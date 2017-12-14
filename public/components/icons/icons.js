@@ -65,7 +65,7 @@ function wfIconDirective() {
 
             $scope.$watch('wfIconActive', updateIconClass);
 
-            $scope.$watch('wfIcon', (newValue, oldValue) => {
+            $scope.$watch('wfIcon', (newValue) => {
                 useElem.setAttributeNS(XLINK_NS, 'href', '#icon-' + newValue);
                 updateIconClass();
             });

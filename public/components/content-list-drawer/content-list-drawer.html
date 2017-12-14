@@ -365,13 +365,13 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Scheduled</p>
                             <span class="drawer__item-content">
-                                {{ (contentItem.launchScheduleDetails.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
+                                {{ (contentItem.item.scheduledLaunchDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
                             </span>
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Embargoed</p>
                             <span class="drawer__item-content">
-                                {{ contentItem.lifecycleStateSupl || (contentItem.lifecycleStateSuplDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd DD MMM HH:mm') || "-" }}
+                                {{ contentItem.lifecycleStateSupl || (contentItem.lifecycleStateSuplDate | wfLocaliseDateTime | wfFormatDateTime) || "-" }}
                             </span>
                         </li>
                         <li class="drawer__item">
@@ -519,6 +519,12 @@
                 <a href="{{ composerRestorerUrl }}" target="_blank" class="drawer__item-content" title="View versions">
                     <i class="drawer__icon drawer__toolbar-icon" wf-icon="view-versions"></i>
                     View versions
+                </a>
+            </span>
+            <span class="drawer__toolbar-item">
+                <a href="{{ indesignExportUrl }}" class="drawer__item-content" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InDesign">
+                    <i class="drawer__icon drawer__toolbar-icon" wf-icon="indesign"></i>
+                    {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InDesign
                 </a>
             </span>
             <span class="drawer__toolbar-item">

@@ -1,10 +1,46 @@
 package models
 
-import models.Flag.Flag
+import cats.syntax.either._
+import enumeratum.EnumEntry.Uppercase
+import enumeratum._
+import io.circe.Decoder.Result
+import io.circe._
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.parser.decode
+import io.circe.syntax._
+import models.DateFormat._
 import org.joda.time.DateTime
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
-import play.api.libs.json._
+
+case class ExternalData(
+                         path: Option[String] = None,
+                         lastModified: Option[DateTime] = None,
+                         status: Status = Status.Writers,
+                         published: Option[Boolean] = None,
+                         timePublished: Option[DateTime] = None,
+                         revision: Option[Long] = None,
+                         storyBundleId: Option[String] = None,
+                         activeInInCopy: Option[Boolean] = None,
+                         takenDown: Option[Boolean] = None,
+                         timeTakenDown: Option[DateTime] = None,
+                         wordCount: Option[Int] = None,
+                         embargoedUntil: Option[DateTime] = None,
+                         embargoedIndefinitely: Option[Boolean] = None,
+                         scheduledLaunchDate: Option[DateTime] = None,
+                         optimisedForWeb: Option[Boolean] = None,
+                         optimisedForWebChanged: Option[Boolean] = None,
+                         sensitive: Option[Boolean] = None,
+                         legallySensitive: Option[Boolean] = None,
+                         headline: Option[String] = None,
+                         hasMainMedia: Option[Boolean] = None,
+                         commentable: Option[Boolean] = None,
+                         commissionedLength: Option[Int] = None)
+
+object ExternalData {
+  implicit val customConfig: Configuration = Configuration.default.withDefaults
+  implicit val encoder: Encoder[ExternalData] = deriveEncoder
+  implicit val decoder: Decoder[ExternalData] = deriveDecoder
+}
 
 case class Stub(id: Option[Long] = None,
                title: String,
@@ -14,178 +50,64 @@ case class Stub(id: Option[Long] = None,
                assigneeEmail: Option[String] = None,
                composerId: Option[String] = None,
                contentType: String,
-               priority: Int,
-               needsLegal: Flag,
+               priority: Int = 0,
+               needsLegal: Flag = Flag.NA,
                note: Option[String] = None,
                prodOffice: String,
-               createdAt: DateTime = DateTime.now(),
-               lastModified: DateTime = DateTime.now(),
+               createdAt: DateTime = DateTime.now,
+               lastModified: DateTime = DateTime.now,
                trashed: Boolean = false,
                commissioningDesks: Option[String] = None,
                editorId: Option[String] = None,
                externalData: Option[ExternalData])
 
-case class ExternalData(path: Option[String] = None,
-  lastModified: Option[DateTime] = None,
-  status: Status = Status.Writers,
-  published: Option[Boolean] = None,
-  timePublished: Option[DateTime] = None,
-  revision: Option[Long] = None,
-  storyBundleId: Option[String] = None,
-  activeInInCopy: Option[Boolean] = None,
-  takenDown: Option[Boolean] = None,
-  timeTakenDown: Option[DateTime] = None,
-  wordCount: Option[Int] = None,
-  embargoedUntil: Option[DateTime] = None,
-  embargoedIndefinitely: Option[Boolean] = None,
-  scheduledLaunchDate: Option[DateTime] = None,
-  optimisedForWeb: Option[Boolean] = None,
-  optimisedForWebChanged: Option[Boolean] = None,
-  sensitive: Option[Boolean] = None,
-  legallySensitive: Option[Boolean] = None,
-  headline: Option[String] = None,
-  hasMainMedia: Option[Boolean] = None,
-  commentable: Option[Boolean] = None,
-  commissionedLength: Option[Int] = None)
-
-object ExternalData {
-
-  implicit val dateTimeFormat = DateFormat
-
-  implicit val externalDataJsonReads: Reads[ExternalData] = (
-    (__ \ "path").readNullable[String] and
-      (__ \ "lastModified").readNullable[DateTime] and
-      (__ \ "status").read[String].map(Status(_)) and
-      (__ \ "published").readNullable[Boolean] and
-      (__ \ "timePublished").readNullable[DateTime] and
-      (__ \ "revision").readNullable[Long] and
-      (__ \ "storyBundleId").readNullable[String] and
-      (__ \ "activeInInCopy").readNullable[Boolean] and
-      (__ \ "takenDown").readNullable[Boolean] and
-      (__ \ "timeTakenDown").readNullable[DateTime] and
-      (__ \ "wordCount").readNullable[Int] and
-      (__ \ "embargoedUntil").readNullable[DateTime] and
-      (__ \ "embargoedIndefinitely").readNullable[Boolean] and
-      (__ \ "scheduledLaunchDate").readNullable[DateTime] and
-      (__ \ "optimisedForWeb").readNullable[Boolean] and
-      (__ \ "optimisedForWebChanged").readNullable[Boolean] and
-      (__ \ "sensitive").readNullable[Boolean] and
-      (__ \ "legallySensitive").readNullable[Boolean] and
-      (__ \ "headline").readNullable[String] and
-      (__ \ "hasMainMedia").readNullable[Boolean] and
-      (__ \ "commentable").readNullable[Boolean] and
-      (__ \ "commissionedLength").readNullable[Int]
-    )(ExternalData.apply _)
-
-  implicit val jsonWrites: Writes[ExternalData] = Json.writes[ExternalData]
-}
-
 object Stub {
+  implicit val customConfig: Configuration = Configuration.default.withDefaults
 
-  import ExternalData._
+  implicit val encoder: Encoder[Stub] = deriveEncoder
 
-  implicit val prodOfficeReads: Reads[String] = maxLength[String](20)
-  implicit val noteReads: Reads[String] =  maxLength[String](500)
-  implicit val sectionReads: Reads[String] = maxLength[String](50)
-  implicit val workingTitleReads: Reads[String] = maxLength[String](128)
+  implicit val decoderHelper: Decoder[Stub] = new Decoder[Stub] {
+    def apply(c: HCursor): Result[Stub] = {
+      // This is needed because sometimes the JSON contains a nested section object
+      val sectionName: String = c.downField("section").downField("name").as[String].getOrElse(c.downField("section").as[String].getOrElse(""))
+      val newJson: ACursor = c.withFocus(j => j.asObject.map(_.remove("section").add("section", Json.fromString(sectionName))).map(Json.fromJsonObject).getOrElse(j))
+      decode[Stub](newJson.focus.getOrElse(Json.Null).noSpaces)(decoder).fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Could not decode stub: $err while decoding the json.", c.history)), stub => Right(stub))
+    }
+  }
 
-  implicit val jsonReads: Reads[Stub] =( (__ \ "id").readNullable[Long] and
-                            (__ \ "title").read[String] and
-                            (__ \ "section" \ "name").read[String].orElse((__ \ "section").read[String]) and
-                            (__ \ "due").readNullable[DateTime] and
-                            (__ \ "assignee").readNullable[String] and
-                            (__ \ "assigneeEmail").readNullable[String] and
-                            (__ \ "composerId").readNullable[String] and
-                            (__ \ "contentType").read[String] and
-                            (__ \ "priority").readNullable[Int].map(_.getOrElse(0)) and
-                            (__ \ "needsLegal").readNullable[Flag].map(f  => f.getOrElse(Flag.NotRequired)) and
-                            (__ \ "note").readNullable[String](noteReads) and
-                            (__ \ "prodOffice").read[String](prodOfficeReads) and
-                            (__ \ "createdAt").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
-                            (__ \ "lastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
-                            (__ \ "trashed").readNullable[Boolean].map(t=> t.getOrElse(false)) and
-                            (__ \ "commissioningDesks").readNullable[String] and
-                            (__ \ "editorId").readNullable[String] and
-                            (__ \ "externalData").readNullable[ExternalData](externalDataJsonReads)
-                        )(Stub.apply _)
+  def decoder: Decoder[Stub] = deriveDecoder
 
-  val flatJsonReads: Reads[Stub] =( (__ \ "id").readNullable[Long] and
-    (__ \ "title").read[String] and
-    (__ \ "section" \ "name").read[String].orElse((__ \ "section").read[String]) and
-    (__ \ "due").readNullable[DateTime] and
-    (__ \ "assignee").readNullable[String] and
-    (__ \ "assigneeEmail").readNullable[String] and
-    (__ \ "composerId").readNullable[String] and
-    (__ \ "contentType").read[String] and
-    (__ \ "priority").readNullable[Int].map(_.getOrElse(0)) and
-    (__ \ "needsLegal").readNullable[Flag].map(f  => f.getOrElse(Flag.NotRequired)) and
-    (__ \ "note").readNullable[String](noteReads) and
-    (__ \ "prodOffice").read[String](prodOfficeReads) and
-    (__ \ "createdAt").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
-    (__ \ "wfLastModified").readNullable[DateTime].map { dateOpt => dateOpt.fold(DateTime.now())(d=>d) } and
-    (__ \ "trashed").readNullable[Boolean].map(t=> t.getOrElse(false)) and
-    (__ \ "commissioningDesks").readNullable[String] and
-    (__ \ "editorId").readNullable[String] and
-    // having to write this out in full sucks, but we can't just do (__).readNullable[ExternalData](externalDataJsonReads)
-    // because of this bug, the fix is supposed to be released soon https://github.com/playframework/play-json/issues/11
-       ((__ \ "path").readNullable[String] and
-       (__ \ "lastModified").readNullable[DateTime] and
-       (__ \ "status").read[String].map(Status(_)) and
-       (__ \ "published").readNullable[Boolean] and
-       (__ \ "timePublished").readNullable[DateTime] and
-       (__ \ "revision").readNullable[Long] and
-       (__ \ "storyBundleId").readNullable[String] and
-       (__ \ "activeInInCopy").readNullable[Boolean] and
-       (__ \ "takenDown").readNullable[Boolean] and
-       (__ \ "timeTakenDown").readNullable[DateTime] and
-       (__ \ "wordCount").readNullable[Int] and
-       (__ \ "embargoedUntil").readNullable[DateTime] and
-       (__ \ "embargoedIndefinitely").readNullable[Boolean] and
-       (__ \ "scheduledLaunchDate").readNullable[DateTime] and
-       (__ \ "optimisedForWeb").readNullable[Boolean] and
-       (__ \ "optimisedForWebChanged").readNullable[Boolean] and
-       (__ \ "sensitive").readNullable[Boolean] and
-       (__ \ "legallySensitive").readNullable[Boolean] and
-       (__ \ "headline").readNullable[String] and
-       (__ \ "hasMainMedia").readNullable[Boolean] and
-       (__ \ "commentable").readNullable[Boolean] and
-       (__ \ "commissionedLength").readNullable[Int]
-    )(ExternalData.apply _).map(Some(_))
-    )(Stub.apply _)
+  // This takes a flat json and converts it to a stub
+  val flatJsonDecoder: Decoder[Stub] = new Decoder[Stub] {
+    def apply(c: HCursor): Result[Stub] =
+      c.as[ExternalData].fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Decoding the flat json - Could not decode externalData: ${err.message}.", c.history)), exData => {
+        val wfLastMod = c.downField("wfLastModified").focus.getOrElse(Json.Null)
+        val updatedLastModCursor = c.downField("lastModified").set(wfLastMod).up
+        updatedLastModCursor.as[Stub].fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Decoding the flat json - Could not decode stub: ${err.message}.", c.history)), stub => {
+          Right(stub.copy(externalData = Some(exData)))
+        })
+      })
+    }
 
-  val flatStubWrites: Writes[Stub] = (
-    (JsPath \ "id").writeNullable[Long] and
-    (JsPath \ "title").write[String] and
-    (JsPath \ "section").write[String] and
-    (JsPath \ "due").writeNullable[DateTime] and
-    (JsPath \ "assignee").writeNullable[String] and
-    (JsPath \ "assigneeEmail").writeNullable[String] and
-    (JsPath \ "composerId").writeNullable[String] and
-    (JsPath \ "contentType").write[String] and
-    (JsPath \ "priority").write[Int] and
-    (JsPath \ "needsLegal").write[Flag] and
-    (JsPath \ "note").writeNullable[String] and
-    (JsPath \ "prodOffice").write[String] and
-    (JsPath \ "createdAt").write[DateTime] and
-    (JsPath \ "wfLastModified").write[DateTime] and
-    (JsPath \ "trashed").write[Boolean] and
-    (JsPath \ "commissioningDesks").writeNullable[String] and
-    (JsPath \ "editorId").writeNullable[String] and
-    JsPath.writeNullable[ExternalData]
-    )(unlift(Stub.unapply))
-
-  implicit val stubWrites: Writes[Stub] = Json.writes[Stub]
-
+  // This takes a stub and converts it to a flat json
+  val flatJsonEncoder: Encoder[Stub] = new Encoder[Stub] {
+    def apply(stub: Stub): Json = {
+      (for {
+        stubObj <- stub.asJson.asObject
+        wfLastModified = stub.lastModified
+        extDataJson <- stubObj("externalData")
+        extDataObj <- extDataJson.asObject
+        stubObjWithoutExData = stubObj.remove("externalData")
+      } yield (stubObjWithoutExData.toMap ++ extDataObj.toMap ++ Map("wfLastModified" -> wfLastModified.asJson)).asJson).getOrElse(Json.Null)
+    }
+  }
 }
 
-object Flag extends Enumeration {
-  type Flag = Value
+sealed trait Flag extends EnumEntry with Uppercase
+case object Flag extends Enum[Flag] with CirceEnum[Flag] {
+  case object NA extends Flag
+  case object Required extends Flag
+  case object Complete extends Flag
 
-  val NotRequired = Value("NA")
-  val Required    = Value("REQUIRED")
-  val Complete    = Value("COMPLETE")
-
-  implicit val enumReads: Reads[Flag] = EnumUtils.enumReads(Flag)
-
-  implicit def enumWrites: Writes[Flag] = EnumUtils.enumWrites
+  val values = findValues
 }

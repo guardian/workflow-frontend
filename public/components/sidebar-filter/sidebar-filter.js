@@ -17,13 +17,14 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
         scope: {
             filter: '=wfFilter'
         },
-        link: function ($scope, elem, attrs) {
+        link: function ($scope, elem) {
 
             function isMultiSelect() {
-                if(typeof $scope.filter["multi"] === "boolean")
-                    return $scope.filter["multi"];
-                else
-                    return false
+                if(typeof $scope.filter.multi === "boolean") {
+                    return $scope.filter.multi;
+                } else {
+                    return false;
+                }
             }
 
             $scope.defaultFilter = { caption: "All", value: null };
@@ -73,13 +74,13 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 if ($scope.selectedFilters.length < 1) {
                     return filter.value === $scope.defaultFilter.value
                 } else if ($scope.filter.individualNamespaces) {
-                    return (filter != null && _.includes($scope.selectedFilters, individualNamespacesFilterName(filter)));
+                    return (filter !== null && _.includes($scope.selectedFilters, individualNamespacesFilterName(filter)));
                 } else {
-                    return (filter != null && _.includes($scope.selectedFilters, filter.value));
+                    return (filter !== null && _.includes($scope.selectedFilters, filter.value));
                 }
             };
 
-            $scope.defaultFilterClick = function(filter) {
+            $scope.defaultFilterClick = function() {
                 // this is a replace operation, instead of an add
                 $scope.selectedFilters = [];
 
@@ -253,7 +254,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 delay = defaultDelay;
             }
 
-            if(timeout != null) {
+            if(timeout !== null) {
                 $timeout.cancel(timeout);
             }
 

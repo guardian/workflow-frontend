@@ -57,7 +57,7 @@ function wfUserMessageDirectiveFactory(wfSupportedBrowserService) {
                 this.showMessage(messageDetails);
             });
 
-            $scope.$on('userMessage.clear', ($event, messageDetails) => {
+            $scope.$on('userMessage.clear', () => {
                 this.hideMessage();
             });
 
@@ -67,7 +67,7 @@ function wfUserMessageDirectiveFactory(wfSupportedBrowserService) {
         },
         controllerAs: 'ctrl',
 
-        link: function($scope, $elem, $attrs) {
+        link: function($scope, $elem) {
 
             $scope.$overlayElem = angular.element('<div class="irrecoverable-error-overlay"></div>');
             $elem.after($scope.$overlayElem);

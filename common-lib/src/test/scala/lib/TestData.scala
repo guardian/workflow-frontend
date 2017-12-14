@@ -1,9 +1,9 @@
 package com.gu.workflow.test.lib
 
-import com.gu.workflow.query.{ContentState, PublishedState, TakenDownState, ScheduledState, EmbargoedState, DraftState}
+import com.gu.workflow.query._
+import com.gu.workflow.test.Config
 import models._
 import org.joda.time.DateTime
-import com.gu.workflow.test.Config
 
 object TestData {
 
@@ -15,9 +15,9 @@ object TestData {
   val prodOffices: List[String] = List("UK","US","AU")
   val priority: List[Int] = List(-2,-1,0,1,2)
   val sections: List[String] = List("Arts","Business","Cities","Environment","Film")
-  val needsLegal: List[Flag.Flag] = List(Flag.NotRequired, Flag.Complete, Flag.Required)
+  val needsLegal: List[Flag] = List(Flag.NA, Flag.Complete, Flag.Required)
   val email: List[String] = List("testcake@testcake.com", "google@google.com", "facebook@facebook.com")
-  val statuses: List[Status] = Status.All
+  val statuses: List[Status] = Status.values.toList
   val contentTypes: List[String] = List("article","gallery","live-blog","video","interactive","picture")
   val state: List[ContentState] = List(PublishedState, TakenDownState, ScheduledState, EmbargoedState, DraftState)
   val users: List[User] = List(User("testcake@testcake.com", "test", "cake"), User("google@google.com", "goo", "gle"), User("facebook@facebook.com", "face", "book"))
@@ -61,7 +61,7 @@ object TestData {
       lastModified = newLastModified,
       trashed = newTrashed,
       externalData = Some(rs.externalData.fold(ExternalData())(ed => ed.copy(
-        status = Status(newStatus),
+        status = Status.withName(newStatus),
         lastModified = Some(newLastModified),
         scheduledLaunchDate = lsd,
         embargoedIndefinitely= Some(newEmbargoedIndefinitely)))
@@ -76,7 +76,7 @@ object TestData {
       externalData = Some(s.externalData.fold(ExternalData())(_.copy(
         published = Some(newPublished),
         lastModified = Some(newLastModified),
-        status = Status(newStatus)))))
+        status = Status.withName(newStatus)))))
   }
 
   def generateRandomSizeCollaborators(): List[User] = {
@@ -129,10 +129,6 @@ object TestData {
     )
   }
 
-  def mainMediaGenerator: WorkflowContentMainMedia= {
-    WorkflowContentMainMedia(opt(chooseItem(text)),opt(chooseItem(text)),opt(chooseItem(text)),opt(chooseItem(text)))
-  }
-
   def generateDesk(): Desk = {
     Desk(
       name = chooseId,
@@ -163,7 +159,7 @@ object TestData {
     prodOffice: String = "UK",
     priority: Int = 1,
     section: String = "Section",
-    needsLegal:  Flag.Flag = Flag.NotRequired,
+    needsLegal:  Flag = Flag.NA,
     due: Option[DateTime] = None,
     contentType: String = "article",
     createdAt: DateTime = DateTime.now(),

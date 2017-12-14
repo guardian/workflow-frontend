@@ -7,7 +7,7 @@ function wfLoader ($rootScope) {
         scope: {
             event: '@event'
         },
-        link: ($scope, elem, attrs) => {
+        link: ($scope, elem) => {
 
             var removeEvent = $rootScope.$on($scope.event, () => {
                 elem.remove();

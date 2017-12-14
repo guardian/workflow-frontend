@@ -13,10 +13,13 @@ import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
 
-const wfStubModal = angular.module('wfStubModal', ['ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
+const wfStubModal = angular.module('wfStubModal', [
+    'ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
-function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode, sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService, wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
+function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode,
+     sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService,
+     wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
 
     wfContentService.getTypes().then( (types) => {
         $scope.contentName =
@@ -100,7 +103,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.legalStates = legalStatesService.getLegalStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
 
-    $scope.$watch('stub.section', (newValue, oldValue) => {
+    $scope.$watch('stub.section', (newValue) => {
 
         if (newValue) {
             wfPreferencesService.getPreference('preferedStub').then((data) => {
@@ -133,37 +136,29 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
     }
 
-    function importComposerContent(url) {
-        wfComposerService.getComposerContent($scope.formData.importUrl).then(
-            (composerContent) => {
-                //check validity
-                if (composerContent) {
+    function importComposerContent() {
+        wfComposerService.getComposerContent($scope.formData.importUrl)
+            .then((response) => wfComposerService.parseComposerData(response, $scope.stub))
+            .then((contentItem) => {
+                const composerId = contentItem.composerId;
 
-                    const contentItem = wfComposerService.parseComposerData(composerContent.data, $scope.stub);
-                    const composerId = contentItem.composerId;
+                if(composerId) {
+                    $scope.composerUrl = config.composerViewContent + '/' + composerId;
+                    $scope.stub.title = contentItem.headline;
+                    // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
+                    $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
 
-                    if(composerId) {
-                        $scope.composerUrl = config.composerViewContent + '/' + composerId;
-                        $scope.stub.title = contentItem.headline;
-                        // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
-                        $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
-
-                        wfContentService.getById(composerId).then(
-                            (res) => importHandleExisting(res.data.data),
-                            (err) => {
-                                if(err.status === 404) {
-                                    $scope.validImport = true;
-                                    if(err.data.archive) { $scope.wfComposerState = 'archived'; }
-                                }
-                            });
-                    }
-                } else {
-                    $scope.stub.title = null;
-                    $scope.stub.composerId = null;
-                    $scope.stub.contentType = null;
+                    wfContentService.getById(composerId).then(
+                        (res) => importHandleExisting(res.data.data),
+                        (err) => {
+                            if(err.status === 404) {
+                                $scope.validImport = true;
+                            }
+                        });
                 }
-            }
-        );
+            }, () => {
+            $scope.actionSuccess = false;
+        });
     }
 
     function importContentAtom(id, atomType) {
@@ -179,7 +174,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                     (err) => {
                         if(err.status === 404) {
                             $scope.validImport = true;
-                            if(err.data.archive) { $scope.wfComposerState = 'archived'; }
                         }
                     }
                 );
@@ -224,9 +218,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
         function createItemPromise() {
-            stub['status'] = stub.status === undefined ? 'Stub' : stub.status;
+            stub.status = stub.status === undefined ? 'Stub' : stub.status;
             if ($scope.contentName === 'Atom') {
-                stub['contentType'] = $scope.stub.contentType.toLowerCase();
+                stub.contentType = $scope.stub.contentType.toLowerCase();
                 if (addToAtomEditor) {
                     return wfContentService.createInAtomEditor(stub);
                 } else if (stub.id) {
@@ -247,7 +241,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
         $scope.actionInProgress = true;
 
-        createItemPromise().then((response) => {
+        createItemPromise().then(() => {
             const eventName = ({
                 'create': 'stub.created',
                 'edit': 'stub.edited',
@@ -258,7 +252,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $rootScope.$broadcast('getContent');
 
             if ($scope.contentName === 'Atom') {
-                if (stub.editorId && ($scope.mode != 'import')) {
+                if (stub.editorId && ($scope.mode !== 'import')) {
                     $scope.editorUrl = wfContentService.getEditorUrl(stub.editorId, stub.contentType);
                 } else {
                     $modalInstance.close({
@@ -267,7 +261,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                     });
                 }
             } else {
-                if(stub.composerId && ($scope.mode != 'import')) {
+                if(stub.composerId && ($scope.mode !== 'import')) {
                     $scope.composerUrl = config.composerViewContent + '/' + stub.composerId;
                 } else {
                     $modalInstance.close({
@@ -284,7 +278,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $scope.contentUpdateError = true;
 
             if(err.status === 409) {
-                $scope.errorMsg = 'This item is already linked to a composer item.';
                 if(err.data.composerId) {
                     $scope.composerUrl = config.composerViewContent + '/' + err.data.composerId;
                 }
@@ -295,7 +288,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                     $scope.stubId = err.data.stubId;
                 }
             } else {
-                $scope.errorMsg = err.friendlyMessage || err.message || err;
                 $scope.actionSuccess = false;
             }
 
@@ -333,8 +325,7 @@ wfStubModal.run([
     'wfPreferencesService',
     'wfLocationService',
     'sections',
-    'config',
-    function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, wfPreferencesService, wfLocationService, sections, config) {
+    function ($window, $rootScope, $modal, $log, wfContentService, wfFiltersService, wfProdOfficeService, wfPreferencesService, wfLocationService, sections) {
 
         const defaultAtomType = "media"
 
@@ -387,14 +378,14 @@ wfStubModal.run([
             });
         });
 
-        $rootScope.$on('content:import', function (event) {
+        $rootScope.$on('content:import', function () {
             setUpPreferedStub(null).then((stub) => {
                 open(stub, 'import')
             });
         });
 
         function open(stub, mode) {
-            const modalInstance = $modal.open({
+            $modal.open({
                 templateUrl: '/assets/components/stub-modal/stub-modal.html',
                 controller: StubModalInstanceCtrl,
                 windowClass: 'stubModal',
@@ -407,7 +398,7 @@ wfStubModal.run([
     }]).directive('wfFocus', ['$timeout', function($timeout){
       return {
           restrict: "A",
-          link: function (scope, element, attrs, ctrls) {
+          link: function (scope, element, attrs) {
               if(attrs.focusMe === "true" || attrs.focusMe === undefined) {
                 $timeout(function() { element[0].focus(); }, 500);
               }
