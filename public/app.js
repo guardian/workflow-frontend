@@ -34,8 +34,6 @@ import 'angular-ui-router';
 import 'angular-bootstrap-temporary';
 import 'angular-animate';
 import 'ng-infinite-scroll';
-// import 'autotrack';
-// import 'autotrack/lib/plugins/event-tracker';
 
 // App-wide Styles
 import './main.scss';
