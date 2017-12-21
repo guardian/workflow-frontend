@@ -249,7 +249,7 @@ object Api extends Controller with PanDomainAuthActions {
     NoContent
   }
 
-  def statusus = CORSable(defaultCorsAble)  {
+  def statusus = CORSable(atomCorsAble)  {
     APIAuthAction.async { implicit req =>
       for(statuses <- StatusDatabase.statuses) yield {
         Ok(renderJsonResponse(statuses).asJson.noSpaces)
