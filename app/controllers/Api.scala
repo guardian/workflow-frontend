@@ -165,7 +165,7 @@ object Api extends Controller with PanDomainAuthActions {
     )}
   }
 
-  def putStubStatus(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubStatus(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
