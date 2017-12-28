@@ -70,6 +70,10 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         const atom = _.get(response.data.response[atomType].data, atomType);
         atom.defaultHtml = _.get(response.data.response[atomType], 'defaultHtml');
         atom.contentChangeDetails = _.get(response.data.response[atomType], 'contentChangeDetails');
+        atom.commissioningInfo = _.get(response.data.response[atomType], 'commissioningDesks').map(desk => {
+            const segments = desk.split('/');
+            return segments[segments.length - 1];
+        });
 
         const atomId = _.get(response.data.response[atomType], 'id');
         if(atom) {

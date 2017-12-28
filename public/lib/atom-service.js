@@ -63,11 +63,8 @@ function wfAtomService(config) {
       viewerUrl: config.viewerUrl + '/preview/' + usage.id,
       friendlyCreationDate: moment(usage.webPublicationDate).fromNow()
     };
-    const commDesks = usage.commissioningDesks.split('/');
-    const commDeskField = {
-      commissioningInfo: commDesks[commDesks.length - 1]
-    };
-    return Object.assign({}, usage, usageFields, commDeskField);
+
+    return Object.assign({}, usage, usageFields);
   }
 
   this.parseAtom = parseAtom;
