@@ -1,8 +1,8 @@
 import angular from 'angular';
 
-angular.module('wfPreferencesService', [])
-    .factory('wfPreferencesService', ['$rootScope', '$http', '$log', '$window',
-        function($rootScope, $http, $log, $window) {
+angular.module('wfPreferencesService', ['ngCookies'])
+    .factory('wfPreferencesService', ['$rootScope', '$http', '$log', '$window', '$cookies',
+        function($rootScope, $http, $log, $window, $cookies) {
 
             var TIMEOUT = 5000;
 
@@ -28,6 +28,10 @@ angular.module('wfPreferencesService', [])
 
                     // Debugging tool for prefs
                     $window.workflowPrefsDebug = this.debug.bind(this);
+
+                    $window.onbeforeunload = function(){
+                        $cookies.remove('same_session');
+                    };
                 }
 
                 /**
@@ -53,7 +57,7 @@ angular.module('wfPreferencesService', [])
                 }
 
                 /**
-                 * Perform a cutsom parse on returned preference data as we only care about the users prefs for workflow
+                 * Perform a custom parse on returned preference data as we only care about the users prefs for workflow
                  * and want the data pre-parsed in to js objects ready for use
                  * @param data
                  * @param headersGetter

@@ -1,13 +1,14 @@
 import angular from 'angular';
+import 'angular-cookies';
 
 import _ from 'lodash';
 
 import './date-service';
 import './trusted-html';
 
-angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
-    .factory('wfFiltersService', ['$rootScope', '$location', '$state', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfPreferencesService', 'wfTrustedHtmlFilter',
-        function($rootScope, $location, $state, wfDateParser, wfFormatDateTimeFilter, wfPreferencesService, wfTrustedHtmlFilter) {
+angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml', 'ngCookies'])
+    .factory('wfFiltersService', ['$rootScope', '$location', '$state', '$cookies', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfPreferencesService', 'wfTrustedHtmlFilter',
+        function($rootScope, $location, $state, $cookies, wfDateParser, wfFormatDateTimeFilter, wfPreferencesService, wfTrustedHtmlFilter) {
 
         class FiltersService
         {
@@ -164,26 +165,26 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                     var selectedDate = params['selectedDate'];
 
                     self.filters = {
-                        'status'       : params['status'],
-                        'state'        : params['state'],
-                        'section'      : params['section'],
-                        'content-type' : params['content-type'],
-                        'atom-type'    : params['atom-type'],
-                        'selectedDate' : wfDateParser.parseQueryString(selectedDate),
-                        'flags'        : params['flags'],
-                        'prodOffice'   : params['prodOffice'],
-                        'created'      : params['created'],
-                        'assignee'     : params['assignee'],
-                        'assigneeEmail': params['assigneeEmail'],
-                        'incopy'       : params['incopy'],
-                        'touched'      : params['touched'],
-                        'composerId'   : params['composerId'],
-                        'view'         : params['view'],
-                        'news-list'    : params['news-list'],
-                        'trashed'      : params['trashed'],
+                        'status'         : params['status'],
+                        'state'          : params['state'],
+                        'section'        : params['section'],
+                        'content-type'   : params['content-type'],
+                        'atom-type'      : params['atom-type'],
+                        'selectedDate'   : wfDateParser.parseQueryString(selectedDate),
+                        'flags'          : params['flags'],
+                        'prodOffice'     : params['prodOffice'],
+                        'created'        : params['created'],
+                        'assignee'       : params['assignee'],
+                        'assigneeEmail'  : params['assigneeEmail'],
+                        'incopy'         : params['incopy'],
+                        'touched'        : params['touched'],
+                        'composerId'     : params['composerId'],
+                        'view'           : params['view'],
+                        'news-list'      : params['news-list'],
+                        'trashed'        : params['trashed'],
                         'plan-start-date': params['plan-start-date'],
-                        'plan-end-date': params['plan-end-date'],
-                        'editorId'     :params['editorId']
+                        'plan-end-date'  : params['plan-end-date'],
+                        'editorId'       :params['editorId']
                     };
 
                     $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);
@@ -192,7 +193,9 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
 
                 setUpFilters(params); // base setting
 
-                if (Object.keys(params).length === 0) { // if no params in URL attempt to load filters from user prefs
+                if (Object.keys(params).length === 0 && !$cookies.get('same_session')) { // if no params in URL attempt to load filters from user prefs
+
+                    $cookies.put('same_session', 1);
 
                     wfPreferencesService.getPreference('location').then((data) => {
                         params = data || {};
@@ -240,7 +243,7 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                     this.filters[key] = value;
                     doNotUpdateUrl || $location.search(key, value);
 
-                    if (key == "status") {
+                    if (key === 'status') {
                         $rootScope.currentlySelectedStatusFilters = this.transformStatusList(value);
                     }
                 }
