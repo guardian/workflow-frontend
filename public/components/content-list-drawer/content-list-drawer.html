@@ -275,9 +275,8 @@
                         </li>
                         <li class="drawer__item">
                             <span class="drawer__item-title">Commissioning info</span>
-                            <span class="drawer__item-content" ng-repeat="desk in capiData.commissioningDesks" ng-show="capiData.commissioningDesks.length">{{ desk }}</span>
+                            <span class="drawer__item-content" ng-repeat="desk in capiData.commissioningInfo" ng-show="capiData.commissioningDesks.length">{{ desk }}</span>
                             <span class="drawer__item-content--warning" ng-show="!capiData.commissioningDesks.length">None</span>
-                            <span class="drawer__item-content--warning" ng-show="tagsUnavailable()">Commissioning info is temporarily unavailable</span>
                         </li>
                     </ul>
 
