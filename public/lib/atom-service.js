@@ -36,7 +36,7 @@ function wfAtomService(config) {
       atomType: atomType,
       youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}`,
       keywords: keywords,
-    }
+    };
 
     return Object.assign({}, atom, mediaAtomFields);
 
@@ -62,7 +62,8 @@ function wfAtomService(config) {
       composerUrl: config.composerViewContent + '/' + usage.fields.internalComposerCode,
       viewerUrl: config.viewerUrl + '/preview/' + usage.id,
       friendlyCreationDate: moment(usage.webPublicationDate).fromNow()
-    }
+    };
+
     return Object.assign({}, usage, usageFields);
   }
 

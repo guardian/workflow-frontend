@@ -32,6 +32,9 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         return $http({
             method: 'GET',
             url: getUrl(id, atomType),
+            params: {
+                'show-tags': 'tracking'
+            },
             withCredentials: true,
             timeout: 1000
         });
@@ -70,6 +73,14 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         const atom = _.get(response.data.response[atomType].data, atomType);
         atom.defaultHtml = _.get(response.data.response[atomType], 'defaultHtml');
         atom.contentChangeDetails = _.get(response.data.response[atomType], 'contentChangeDetails');
+
+        // The commissioningDesks field needs to be parsed as it looks like this:
+        // ["tracking/commissioningdesk/uk-culture", "tracking/commissioningdesk/australia-culture"]
+        // and in the end we want an array like this: ["uk-culture", "australia-culture"]
+        atom.commissioningInfo = _.get(response.data.response[atomType].data[atomType], 'commissioningDesks').map(desk => {
+            const segments = desk.split('/');
+            return segments[segments.length - 1];
+        });
 
         const atomId = _.get(response.data.response[atomType], 'id');
         if(atom) {
