@@ -17,3 +17,8 @@ workflow-frontend CODE instance.
 ### Run
 
 To run workflow-frontend, run the start stript `./scripts/start.sh`. Then navigate to https://workflow.local.dev-gutools.co.uk
+
+
+### Deploy
+
+Look for the `Editorial Tools::Workflow::Workflow Frontend` project in RiffRaff.
