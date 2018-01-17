@@ -8,10 +8,11 @@ import com.gu.riffraff.artifact.RiffRaffArtifact
 import com.gu.riffraff.artifact.RiffRaffArtifact.autoImport._
 import com.typesafe.sbt.SbtNativePackager._
 import com.typesafe.sbt.packager.debian.JDebPackaging
+import com.typesafe.sbt.packager.archetypes.JavaServerAppPackaging
+import com.typesafe.sbt.packager.archetypes.ServerLoader.Systemd
 import com.typesafe.sbt.packager.Keys._
 import Dependencies._
 import sbtbuildinfo.Plugin._
-
 
 object WorkflowBuild extends Build {
 
@@ -68,19 +69,26 @@ object WorkflowBuild extends Build {
     artifactName in Universal := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
       artifact.name + "." + artifact.extension
     },
-    riffRaffManifestBranch := Option(System.getenv("CIRCLE_BRANCH")).getOrElse("dev")
+    riffRaffManifestBranch := Option(System.getenv("CIRCLE_BRANCH")).getOrElse("dev"),
+    debianPackageDependencies := Seq("openjdk-8-jre-headless"),
+    serverLoading in Debian := Systemd,
+    maintainer := "Digital CMS <digitalcms.dev@guardian.co.uk>",
+    packageSummary := "workflow-frontend",
+    packageDescription := """Workflow, part of the suite of Guardian CMS tools"""
   )
 
   lazy val root = playProject("workflow-frontend")
-                          .enablePlugins(JDebPackaging)
-                          .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
-                                      ++ testDependencies ++ jsonDependencies)
-                            .settings(libraryDependencies += filters)
-                            .settings(playDefaultPort := 9090)
-                            .settings(playArtifactDistSettings ++ playArtifactSettings: _*)
-                            .enablePlugins(RiffRaffArtifact)
-                            .settings(appDistSettings("workflow-frontend"): _*)
-
+    .enablePlugins(JavaServerAppPackaging, JDebPackaging, RiffRaffArtifact)
+    .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
+      ++ testDependencies ++ jsonDependencies)
+    .settings(libraryDependencies += filters)
+    .settings(playDefaultPort := 9090)
+    .settings(playArtifactDistSettings ++ playArtifactSettings: _*)
+    .settings(appDistSettings("workflow-frontend"): _*)
+    .settings(
+      topLevelDirectory in Universal := Some(normalizedName.value),
+      name in Universal := normalizedName.value
+    )
 
   def project(path: String): Project =
     Project(path, file(path)).settings(commonSettings: _*)
