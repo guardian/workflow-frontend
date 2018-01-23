@@ -55,6 +55,11 @@ object WorkflowBuild extends Build {
  def appDistSettings(application: String, deployJsonDir: Def.Initialize[File] = baseDirectory) = Seq(
     packageName in Universal := application,
     concurrentRestrictions in Universal := List(Tags.limit(Tags.All, 1)),
+    javaOptions in Universal ++= Seq(
+      // Since play uses separate pidfile we have to provide it with a proper path
+      // name of the pid file must be play.pid
+      s"-Dpidfile.path=/var/run/${packageName.value}/play.pid"
+    ),
     riffRaffPackageType := (packageBin in Debian).value,
     riffRaffBuildIdentifier := Option(System.getenv("CIRCLE_BUILD_NUM")).getOrElse("dev"),
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
