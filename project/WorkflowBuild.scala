@@ -60,6 +60,7 @@ object WorkflowBuild extends Build {
       // name of the pid file must be play.pid
       s"-Dpidfile.path=/var/run/${packageName.value}/play.pid"
     ),
+    debianPackageDependencies := Seq("openjdk-8-jre-headless"),
     riffRaffPackageType := (packageBin in Debian).value,
     riffRaffBuildIdentifier := Option(System.getenv("CIRCLE_BUILD_NUM")).getOrElse("dev"),
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
@@ -83,7 +84,7 @@ object WorkflowBuild extends Build {
   )
 
   lazy val root = playProject("workflow-frontend")
-    .enablePlugins(JavaServerAppPackaging, JDebPackaging, RiffRaffArtifact)
+    .enablePlugins(RiffRaffArtifact, JDebPackaging)
     .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
       ++ testDependencies ++ jsonDependencies)
     .settings(libraryDependencies += filters)
