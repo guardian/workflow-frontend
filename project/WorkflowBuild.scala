@@ -75,6 +75,9 @@ object WorkflowBuild extends Build {
     artifactName in Universal := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
       artifact.name + "." + artifact.extension
     },
+    javaOptions in Universal ++= Seq(
+      "-Dpidfile.path=/dev/null"
+    ),
     riffRaffManifestBranch := Option(System.getenv("CIRCLE_BRANCH")).getOrElse("dev"),
     debianPackageDependencies := Seq("openjdk-8-jre-headless"),
     serverLoading in Debian := Systemd,
