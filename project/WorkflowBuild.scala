@@ -7,10 +7,12 @@ import com.typesafe.sbt.web._
 import com.gu.riffraff.artifact.RiffRaffArtifact
 import com.gu.riffraff.artifact.RiffRaffArtifact.autoImport._
 import com.typesafe.sbt.SbtNativePackager._
+import com.typesafe.sbt.packager.debian.JDebPackaging
+import com.typesafe.sbt.packager.archetypes.JavaServerAppPackaging
+import com.typesafe.sbt.packager.archetypes.ServerLoader.Systemd
 import com.typesafe.sbt.packager.Keys._
 import Dependencies._
 import sbtbuildinfo.Plugin._
-
 
 object WorkflowBuild extends Build {
 
@@ -53,7 +55,13 @@ object WorkflowBuild extends Build {
  def appDistSettings(application: String, deployJsonDir: Def.Initialize[File] = baseDirectory) = Seq(
     packageName in Universal := application,
     concurrentRestrictions in Universal := List(Tags.limit(Tags.All, 1)),
-    riffRaffPackageType := (packageZipTarball in Universal).value,
+    javaOptions in Universal ++= Seq(
+      // Since play uses separate pidfile we have to provide it with a proper path
+      // name of the pid file must be play.pid
+      s"-Dpidfile.path=/var/run/${packageName.value}/play.pid"
+    ),
+    debianPackageDependencies := Seq("openjdk-8-jre-headless"),
+    riffRaffPackageType := (packageBin in Debian).value,
     riffRaffBuildIdentifier := Option(System.getenv("CIRCLE_BUILD_NUM")).getOrElse("dev"),
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
     riffRaffUploadManifestBucket := Option("riffraff-builds"),
@@ -61,24 +69,35 @@ object WorkflowBuild extends Build {
     riffRaffPackageName := s"editorial-tools:workflow:$application",
     riffRaffManifestProjectName := riffRaffPackageName.value,
     riffRaffArtifactResources := Seq(
-      riffRaffPackageType.value -> s"$application/$application.tgz",
+      riffRaffPackageType.value -> s"$application/${riffRaffPackageType.value.getName}",
       baseDirectory.value / "conf" / "riff-raff.yaml" -> "riff-raff.yaml"
     ),
     artifactName in Universal := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
       artifact.name + "." + artifact.extension
     },
-    riffRaffManifestBranch := Option(System.getenv("CIRCLE_BRANCH")).getOrElse("dev")
+    javaOptions in Universal ++= Seq(
+      "-Dpidfile.path=/dev/null"
+    ),
+    riffRaffManifestBranch := Option(System.getenv("CIRCLE_BRANCH")).getOrElse("dev"),
+    debianPackageDependencies := Seq("openjdk-8-jre-headless"),
+    serverLoading in Debian := Systemd,
+    maintainer := "Digital CMS <digitalcms.dev@guardian.co.uk>",
+    packageSummary := "workflow-frontend",
+    packageDescription := """Workflow, part of the suite of Guardian CMS tools"""
   )
 
   lazy val root = playProject("workflow-frontend")
-                          .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
-                                      ++ testDependencies ++ jsonDependencies)
-                            .settings(libraryDependencies += filters)
-                            .settings(playDefaultPort := 9090)
-                            .settings(playArtifactDistSettings ++ playArtifactSettings: _*)
-                            .enablePlugins(RiffRaffArtifact)
-                            .settings(appDistSettings("workflow-frontend"): _*)
-
+    .enablePlugins(RiffRaffArtifact, JDebPackaging)
+    .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
+      ++ testDependencies ++ jsonDependencies)
+    .settings(libraryDependencies += filters)
+    .settings(playDefaultPort := 9090)
+    .settings(playArtifactDistSettings ++ playArtifactSettings: _*)
+    .settings(appDistSettings("workflow-frontend"): _*)
+    .settings(
+      topLevelDirectory in Universal := Some(normalizedName.value),
+      name in Universal := normalizedName.value
+    )
 
   def project(path: String): Project =
     Project(path, file(path)).settings(commonSettings: _*)

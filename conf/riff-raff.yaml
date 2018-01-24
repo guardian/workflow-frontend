@@ -10,9 +10,9 @@ deployments:
     type: ami-cloudformation-parameter
     parameters:
       amiTags:
-        ImageName: ubuntu-trusty-java8
-        BuildName: tools-machine-images
-        Branch: master
+        AmigoStage: PROD
+        Recipe: editorial-tools-xenial-java8
+        BuiltBy: amigo
       cloudFormationStackName: Workflow-Frontend
       prependStackToCloudFormationStackName: false
       cloudFormationStackByTags: false
