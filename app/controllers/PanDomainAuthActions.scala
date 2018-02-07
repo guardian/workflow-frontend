@@ -40,7 +40,7 @@ trait PanDomainAuthActions extends AuthActions with PanDomainAuth with Results {
 
   override def awsCredentialsProvider() = new AWSCredentialsProviderChain(
     new ProfileCredentialsProvider("workflow"),
-    new InstanceProfileCredentialsProvider(),
+    InstanceProfileCredentialsProvider.getInstance(),
     new EnvironmentVariableCredentialsProvider()
   )
 }

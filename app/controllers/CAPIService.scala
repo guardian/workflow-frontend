@@ -8,6 +8,7 @@ import com.gu.contentapi.client.IAMSigner
 import play.api.libs.ws.WS
 import config.Config
 import play.api.mvc.Controller
+import play.api.Play.current
 import com.gu.workflow.util.AWS
 
 object CAPIService extends Controller with PanDomainAuthActions{
