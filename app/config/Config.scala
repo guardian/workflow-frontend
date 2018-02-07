@@ -52,7 +52,7 @@ object Config extends AwsInstanceTags {
     case _ => "https://tagmanager.code.dev-gutools.co.uk"
   }
 
-  lazy val capiPreviewIamUrl: String = config.getConfigStringOrFail("capi.preview.iam-url")
+  lazy val capiPreviewIamUrl: String = config.getConfigStringOrFail("capi.preview.iamUrl")
   lazy val capiPreviewRole: String = config.getConfigStringOrFail("capi.preview.role")
 
   lazy val incopyExportUrl: String = "gnm://composer/export/${composerId}"
