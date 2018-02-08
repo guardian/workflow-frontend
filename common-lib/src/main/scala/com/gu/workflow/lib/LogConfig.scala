@@ -5,6 +5,7 @@ import java.security.SecureRandom
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.{Logger => LogbackLogger}
 import com.amazonaws.auth.{InstanceProfileCredentialsProvider, STSAssumeRoleSessionCredentialsProvider}
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.gu.logback.appender.kinesis.KinesisAppender
 import com.gu.workflow.util.{AWS, AwsInstanceTags}
 import net.logstash.logback.layout.LogstashLayout
@@ -54,7 +55,8 @@ object LogConfig extends AwsInstanceTags {
     val random = new SecureRandom()
     val sessionId = s"session${random.nextDouble()}"
 
-    val instanceProvider = new InstanceProfileCredentialsProvider()
-    new STSAssumeRoleSessionCredentialsProvider(instanceProvider, stsRole, sessionId)
+    val instanceProvider = InstanceProfileCredentialsProvider.getInstance
+    val stsClient = AWSSecurityTokenServiceClientBuilder.standard.withCredentials(instanceProvider).build
+    new STSAssumeRoleSessionCredentialsProvider.Builder(stsRole, sessionId).withStsClient(stsClient).build
   }
 }

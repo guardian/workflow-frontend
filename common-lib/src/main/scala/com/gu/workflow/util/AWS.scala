@@ -3,10 +3,10 @@ package com.gu.workflow.util
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.auth.{AWSCredentialsProviderChain, DefaultAWSCredentialsProviderChain, EnvironmentVariableCredentialsProvider, InstanceProfileCredentialsProvider}
 import com.amazonaws.regions.{Region, Regions}
-import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClient
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
+import com.amazonaws.services.cloudwatch.{AmazonCloudWatchAsyncClient, AmazonCloudWatchAsyncClientBuilder}
+import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBClient, AmazonDynamoDBClientBuilder}
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
-import com.amazonaws.services.ec2.AmazonEC2Client
+import com.amazonaws.services.ec2.{AmazonEC2Client, AmazonEC2ClientBuilder}
 import com.amazonaws.services.ec2.model.{DescribeTagsRequest, Filter}
 import com.amazonaws.util.EC2MetadataUtils
 
@@ -16,18 +16,16 @@ object AWS {
 
   lazy val region: Region = Region getRegion Regions.EU_WEST_1
 
-  lazy val EC2Client = region.createClient(classOf[AmazonEC2Client], null, null)
-  lazy val CloudWatch = region.createClient(classOf[AmazonCloudWatchAsyncClient], null, null)
-  lazy val DynamoDb = region.createClient(
-    classOf[AmazonDynamoDBClient],
+  lazy val EC2Client = AmazonEC2ClientBuilder.standard.withRegion(region.getName).build
+  lazy val CloudWatch = AmazonCloudWatchAsyncClientBuilder.standard.withRegion(region.getName).build
+  lazy val DynamoDb = AmazonDynamoDBClientBuilder.standard.withRegion(region.getName).withCredentials(
     new AWSCredentialsProviderChain(
       new EnvironmentVariableCredentialsProvider(),
-      new InstanceProfileCredentialsProvider(),
+      InstanceProfileCredentialsProvider.getInstance(),
       new ProfileCredentialsProvider("workflow"),
       new DefaultAWSCredentialsProviderChain
-    ),
-    null)
-
+    )
+  ).build
 }
 
 trait Dynamo {
