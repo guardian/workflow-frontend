@@ -37,10 +37,12 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
       switch (type) {
         case 'storyquestions':
           return 'Reader question';
-        case 'media':
-          return 'Media';
+        case 'guide':
+          return 'Quick guide';
+        case 'qanda':
+          return 'Q & A';
         default:
-          return type;
+          return type.charAt(0).toUpperCase() + type.slice(1);
       }
     }
 

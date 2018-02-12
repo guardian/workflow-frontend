@@ -66,7 +66,8 @@ object Config extends AwsInstanceTags {
 
   lazy val editorialSupportDynamoTable: String = s"support-staff-$stage"
 
-  lazy val atomTypes: List[String] = List("media", "storyquestions")
+  private lazy val snippetAtomTypes: List[String] = List("guide", "qanda", "timeline", "profile")
+  lazy val atomTypes: List[String] = List("media", "storyquestions") ++ snippetAtomTypes
   lazy val contentTypes: List[String] = List("article", "liveblog", "gallery", "interactive", "picture", "video", "audio")
 
   // logstash conf
