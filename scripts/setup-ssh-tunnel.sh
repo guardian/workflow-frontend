@@ -52,7 +52,7 @@ if [ -z "${SSH_USER}" ]; then
   SSH_USER="ubuntu"
 fi
 
-DATASTORE_ELB=$(aws elb describe-load-balancers --load-balancer-names workflow-Datastor-2BM0DSD8PKK1 --profile workflow --region eu-west-1 | jq .LoadBalancerDescriptions[].DNSName -r)
+DATASTORE_ELB=$(aws elb describe-load-balancers --load-balancer-names workflow-Datastor-11M4N9N3HTIJB --profile workflow --region eu-west-1 | jq .LoadBalancerDescriptions[].DNSName -r)
 
 if [[ -z "$DATASTORE_ELB" ]];
 then
