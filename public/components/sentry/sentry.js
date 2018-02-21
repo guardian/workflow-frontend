@@ -13,18 +13,18 @@ import angular from 'angular';
 
 import 'raven-js/plugins/angular';
 
-import 'lib/user';
 
-angular.module('wfSentry', ['ngRaven', 'wfUser'])
+angular.module('wfSentry', ['ngRaven'])
 
     // Raven's angular module requires "RavenConfig" to be declared
-    .service('RavenConfig', ['wfEnvironment', 'wfUser', function(wfEnvironment, wfUser) {
+    .service('RavenConfig', ['wfEnvironment', function(wfEnvironment) {
 
-        raven.setUserContext({
-            'email': wfUser.email,
-            'first_name': wfUser.firstName,
-            'last_name': wfUser.lastName
+        raven.setExtraContext({
+          session_id: _wfConfig.sessionId
         });
+
+      // Note: this isn't required, but guarantees the user context is empty when an error is sent to sentry.
+        raven.setUserContext();
 
         return {
             'dsn': wfEnvironment.sentry.url,

@@ -22,7 +22,7 @@ object LogConfig extends AwsInstanceTags {
   val config: Configuration = play.api.Play.configuration
   val loggingPrefix = "aws.kinesis.logging"
 
-  def init() = {
+  def init(sessionId: String) = {
     for {
       stack <- readTag("Stack")
       app <- readTag("App")
@@ -30,10 +30,9 @@ object LogConfig extends AwsInstanceTags {
       stream <- config.getString(s"$loggingPrefix.streamName")
     } yield {
       val context = rootLogger.getLoggerContext
-
       val layout = new LogstashLayout()
       layout.setContext(context)
-      layout.setCustomFields(s"""{"stack":"$stack","app":"$app","stage":"$stage"}""")
+      layout.setCustomFields(s"""{"stack":"$stack","app":"$app","stage":"$stage", "sessionId":"$sessionId"}""")
       layout.start()
 
       val appender = new KinesisAppender[ILoggingEvent]()

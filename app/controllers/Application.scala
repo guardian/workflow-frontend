@@ -112,7 +112,8 @@ object Application extends Controller with PanDomainAuthActions {
         ("indesignExportUrl", Json.fromString(Config.indesignExportUrl)),
         ("composerRestorerUrl", Json.fromString(Config.composerRestorerUrl)),
         ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
-        ("atomTypes", Config.atomTypes.asJson)
+        ("atomTypes", Config.atomTypes.asJson),
+        ("sessionId", Json.fromString(Config.sessionId))
       )
 
       Ok(views.html.app(title, Some(user), config, Config.presenceClientLib))
