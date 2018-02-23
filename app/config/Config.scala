@@ -4,6 +4,7 @@ import com.gu.workflow.lib.{Config => config}
 import com.gu.workflow.util.AwsInstanceTags
 import lib.LogStashConf
 import play.Logger
+import java.util.UUID
 
 object Config extends AwsInstanceTags {
   lazy val stage: String = readTag("Stage") match {
@@ -68,6 +69,8 @@ object Config extends AwsInstanceTags {
 
   lazy val atomTypes: List[String] = List("media", "storyquestions")
   lazy val contentTypes: List[String] = List("article", "liveblog", "gallery", "interactive", "picture", "video", "audio")
+
+  lazy val sessionId: String = UUID.randomUUID().toString
 
   // logstash conf
   private lazy val logStashHost: String = "ingest.logs.gutools.co.uk"
