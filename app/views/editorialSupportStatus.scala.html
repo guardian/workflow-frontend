@@ -1,39 +1,41 @@
-@(audience: EditorialSupportTeam, fronts: EditorialSupportTeam)
+@(audience: List[EditorialSupportStaff], fronts: List[EditorialSupportStaff])
 
-@renderTeam(team: EditorialSupportTeam) = {
+@renderTeam(teamName: String, staffMembers: List[EditorialSupportStaff]) = {
     <ul class="support-list">
-    @for(staff <- team.staff) {
-        <li class="support-list-item">
-            <p class="support-staff-label support-staff-row"><b>@staff.name</b></p>
-            <div class="support-staff-row">
-                <label class="support-staff-label" for="editorialSupportStatus-@staff.id">Active?</label>
-                <input type="checkbox" id="editorialSupportStatus-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val>
-            </div>
-            <div class="support-staff-row">
-                <label class="support-staff-label" for="editorialSupportDescription-@staff.id">Description</label>
-                <input type="text" class="support-text-input" value="@staff.description" id="editorialSupportDescription-@staff.id" onChange="window.updateStatus('@staff.id','@staff.description')">
-            </div>
-        </li>
+    @for(staff <- staffMembers) {
+        <form class="support-list-form">
+            <li class="support-list-item">
+                <input type="hidden" name="team" value="@staff.team">
+                <input type="hidden" name="name" value="@staff.name">
+                <p class="support-staff-label support-staff-row"><b>@staff.name</b></p>
+
+                <div class="support-staff-row">
+                    @if(staff.active) {
+                        <label class="support-staff-label">Active?</label>
+                        <input name="active" type="checkbox" checked />
+                    } else {
+                        <label class="support-staff-label">Active?</label>
+                        <input name="active" type="checkbox" />
+                    }
+                </div>
+
+                <div class="support-staff-row">
+                    <label class="support-staff-label">Description</label>
+                    <input name="description" type="text" value="@staff.description" />
+                </div>
+            </li>
+        </form>
     }
     </ul>
 }
 
-@renderAddStaff(teamName: String) = {
+@renderAddTeamMember(teamName: String) = {
     <div class="support-admin-label">
         <status>Add new team member</status>
-        <input type="text" class="support-admin-text-input" id="name-entry-@teamName">
+        <input type="hidden" name="team" value="@teamName" />
+        <input type="text" class="support-admin-text-input" name="name">
         <div class="support-admin-button-container">
-            <button class="btn btn-sm btn-info" onclick="window.addNewStaff('@teamName')">add</button>
-        </div>
-    </div>
-}
-
-@renderDeleteStaff(teamName: String) = {
-    <div class="support-admin-label">
-        <status>Delete team member</status>
-        <input type="text" class="support-admin-text-input" id="delete-name-entry-@teamName">
-        <div class="support-admin-button-container">
-            <button class="btn btn-sm btn-info" onclick="window.deleteStaff('@teamName')">delete</button>
+            <button class="btn btn-sm btn-info">add</button>
         </div>
     </div>
 }
@@ -43,24 +45,16 @@
 
         <div class="starter-template">
             @*<p class="lead">*@
-            <p>Note: this will display at the top of any Composer document. Don't forget to untick yourself so that colleagues aren't trying to contact an empty chair.</p>
+            <p>Note: this will display on all Composer documents. Don't forget to untick yourself so that colleagues aren't trying to contact an empty chair.</p>
         </div>
 
         <div>
             <div class="col-lg-12">
-                <h2>@audience.name team</h2>
+                <h2>Audience team</h2>
                 <div class="support-list-wrapper">
-                    @renderTeam(audience)
+                    @renderTeam("Audience", audience)
                     <h3>Admin</h3>
-                    @renderAddStaff(audience.name)
-                    @renderDeleteStaff(audience.name)
-                </div>
-                <h2>@fronts.name team</h2>
-                <div class="support-list-wrapper">
-                    @renderTeam(fronts)
-                    <h3>Admin</h3>
-                    @renderAddStaff(fronts.name)
-                    @renderDeleteStaff(fronts.name)
+                    @renderAddTeamMember("Audience")
                 </div>
             </div>
         </div>

@@ -273,40 +273,20 @@ object Api extends Controller with PanDomainAuthActions {
 
   def editorialSupportTeams = CORSable(defaultCorsAble) {
     APIAuthAction {
-      Ok(EditorialSupportTeamsController.getTeams().asJson.noSpaces)
-    }
-  }
+      val (audienceStaff, frontStaff) = EditorialSupportTeamsController.listStaff().partition(_.team == "Audience")
+      val audienceTeam = EditorialSupportTeam("Audience", audienceStaff)
+      val frontsTeam = EditorialSupportTeam("Fronts", groupFrontsByName(frontStaff))
 
-  def addEditorialSupportStaff(name: String, team: String) = APIAuthAction {
-    if (EditorialSupportTeamsController.checkIfStaffExists(name, team)) {
-      NotModified
-    } else {
-      EditorialSupportTeamsController.createNewStaff(name, team)
-      Ok(s"$name added to $team")
-    }
-  }
-
-  def toggleEditorialSupportStaff(id: String, status: String) = APIAuthAction {
-    val active = status.toBoolean
-    EditorialSupportTeamsController.toggleStaffStatus(id, active)
-    Ok(s"Status switched to ${ if (active) "inactive" else "active" }")
-  }
-
-  def updateEditorialSupportStaffDescription(id: String, description: String) = APIAuthAction {
-    EditorialSupportTeamsController.updateStaffDescription(id, description)
-    Ok(s"Description updated to '$description'")
-  }
-
-  def deleteEditorialSupportStaff(name: String, team: String) = APIAuthAction {
-    val staff = EditorialSupportTeamsController.findStaff(name, team)
-    staff.size match {
-      case 0 => NotFound
-      case 1 =>
-        EditorialSupportTeamsController.deleteStaff(staff.head.id)
-        Ok(s"$name from $team deleted")
-      case _ => NotAcceptable
+      Ok(List(audienceTeam, frontsTeam).asJson.noSpaces)
     }
   }
 
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
+
+  private def groupFrontsByName(staff: List[EditorialSupportStaff]): List[EditorialSupportStaff] = {
+    staff.map(_.name).distinct.map { name =>
+      val fronts = staff.filter(_.name == name).map(_.team).mkString(", ")
+      EditorialSupportStaff(name, "Fronts", active = true, description = Some(fronts))
+    }
+  }
 }

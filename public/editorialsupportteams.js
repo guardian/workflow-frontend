@@ -1,5 +1,72 @@
 import 'whatwg-fetch';
 
+function attachAdminHandlers(form) {
+    const team = form.querySelector("input[name=\"team\"]").value;
+    const nameInput = form.querySelector("input[name=\"name\"]");
+    const button = form.querySelector("button");
+
+    function addStaff() {
+        const body = new FormData();
+        body.append("team", team);
+        body.append("name", nameInput.value);
+
+        fetch("/editorialSupport", {
+            method: "POST",
+            credentials: "same-origin",
+            body: body
+        }).then(function() {
+            window.location.reload();
+        });
+    }
+
+    button.addEventListener("click", addStaff);
+}
+
+function attachUpdateHandlers(form) {
+    const team = form.querySelector("input[name=\"team\"]").value;
+    const name = form.querySelector("input[name=\"name\"]").value;
+
+    const activeInput = form.querySelector("input[name=\"active\"]");
+    const descriptionInput = form.querySelector("input[name=\"description\"]");
+
+    function update() {
+        const body = new FormData();
+        body.append("team", team);
+        body.append("name", name);
+        body.append("active", activeInput.checked ? "true" : "false");
+        body.append("description", descriptionInput.value.replace(/[^\w\s.,!?/]/gi, ''));
+
+        fetch("/editorialSupport", {
+            method: "POST",
+            credentials: "same-origin",
+            body: body
+        });
+    }
+
+    activeInput.addEventListener("change", update);
+    descriptionInput.addEventListener("change", update);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const admin = document.querySelectorAll(".support-admin-label");
+    const forms = document.querySelectorAll(".support-list-form");
+
+    for(let i = 0; i < admin.length; i++) {
+        attachAdminHandlers(admin[i]);
+    }
+
+    for(let i = 0; i < forms.length; i++) {
+        attachUpdateHandlers(forms[i]);
+    }
+});
+
+
+
+function updateStaff() {
+    return false;
+
+}
+
 function addNewStaff(team) {
     var name = document.getElementById("name-entry-"+team).value.replace(/[^\w\s.,!?/]/gi, '');
     var endpoint = `/api/editorialSupportTeams?name=${name}&team=${team}`;
@@ -17,7 +84,7 @@ function addNewStaff(team) {
 
 function reloadOnComplete(response) {
     if (response.status === 200) {
-        location.reload();
+
     }
 }
 
@@ -62,7 +129,9 @@ function deleteStaff(team) {
     })
 }
 
-window ? window.addNewStaff = addNewStaff : false
-window ? window.toggleStaff = toggleStaff : false
-window ? window.updateStatus = updateStatus : false
-window ? window.deleteStaff = deleteStaff : false
+window ? window.updateStaff = updateStaff : false;
+
+// window ? window.addNewStaff = addNewStaff : false
+// window ? window.toggleStaff = toggleStaff : false
+// window ? window.updateStatus = updateStatus : false
+// window ? window.deleteStaff = deleteStaff : false

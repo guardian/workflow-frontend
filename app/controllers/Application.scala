@@ -9,7 +9,7 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, parser}
 import lib.{AtomWorkshopConfig, Composer, MediaAtomMakerConfig}
-import models.{Desk, Section}
+import models.{Desk, EditorialSupportStaff, Section}
 import play.api.Logger
 import play.api.mvc._
 
@@ -60,9 +60,15 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def editorialSupport = AuthAction { request =>
-    val teams = EditorialSupportTeamsController.getTeams()
-    def filterTeam(name: String) = teams.filter(x => x.name == name).head
-    Ok(views.html.editorialSupportStatus(filterTeam("Audience"), filterTeam("Fronts")))
+    val staff = EditorialSupportTeamsController.listStaff()
+    val (audience, fronts) = staff.partition(_.team == "Audience")
+
+    Ok(views.html.editorialSupportStatus(audience, fronts))
+  }
+
+  def updateEditorialSupport = AuthAction(parse.form(EditorialSupportStaff.staffForm)) { implicit request =>
+    EditorialSupportTeamsController.updateStaff(request.body)
+    NoContent
   }
 
   // limited tag fields we want output into the DOM
@@ -118,5 +124,9 @@ object Application extends Controller with PanDomainAuthActions {
 
       Ok(views.html.app(title, Some(user), config, Config.presenceClientLib))
     }
+  }
+
+  private def renderEditorialSupport(staff: List[EditorialSupportStaff]) = {
+
   }
 }

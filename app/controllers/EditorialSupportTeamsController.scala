@@ -1,72 +1,34 @@
 package controllers
 
-import com.amazonaws.services.dynamodbv2.document.AttributeUpdate
-import com.amazonaws.services.dynamodbv2.document.spec.{DeleteItemSpec, UpdateItemSpec}
 import com.gu.workflow.util.Dynamo
 import config.Config
-import models.{EditorialSupportStaff, EditorialSupportTeam}
+import models.EditorialSupportStaff
 import play.api.mvc.Controller
 
 import scala.collection.JavaConversions._
 
 object EditorialSupportTeamsController extends Controller with PanDomainAuthActions with Dynamo {
 
-  val editorialSupportTable = dynamoDb.getTable(Config.editorialSupportDynamoTable)
+  private val editorialSupportTable = dynamoDb.getTable(Config.editorialSupportDynamoTable)
 
-  def createNewStaff(name: String, team: String) = {
-    editorialSupportTable.putItem(EditorialSupportStaff(java.util.UUID.randomUUID().toString, name, false, team).toItem)
-  }
-
-  def checkIfStaffExists(name: String, team: String): Boolean = {
-    findStaff(name, team).nonEmpty
-  }
-
-  def getStaff(): List[EditorialSupportStaff] = {
+  def listStaff(): List[EditorialSupportStaff] = {
     editorialSupportTable.scan().map(EditorialSupportStaff.fromItem).toList
   }
 
-  def getTeams():List[EditorialSupportTeam] = {
-    val staff = getStaff()
-    def extractTeam(name: String): EditorialSupportTeam = {
-      val teamStaff = staff.filter(x => x.team == name)
-      EditorialSupportTeam(name, teamStaff.sortBy(_.name))
-    }
-    List(extractTeam("Audience"), extractTeam("Fronts"))
-  }
+  def updateStaff(updated: EditorialSupportStaff): List[EditorialSupportStaff] = {
+    val existing = listStaff()
+    editorialSupportTable.putItem(updated.toItem)
 
-  def toggleStaffStatus(id: String, active: Boolean) = {
-    editorialSupportTable.updateItem(
-      new UpdateItemSpec()
-        .withPrimaryKey("id", id)
-        .withAttributeUpdate(new AttributeUpdate("active").put(if (active) true else false))
-    )
-  }
-
-  def updateStaffDescription(id: String, description: String) = {
-    if (description.isEmpty) {
-      editorialSupportTable.updateItem(
-        new UpdateItemSpec()
-          .withPrimaryKey("id", id)
-          .withAttributeUpdate(new AttributeUpdate("description").delete())
-      )
+    if(existing.exists { case EditorialSupportStaff(name, team, _, _) => updated.team == team && updated.name == name }) {
+      existing.map { staff =>
+        if(staff.team == updated.team && staff.name == updated.name) {
+          updated
+        } else {
+          staff
+        }
+      }
     } else {
-      editorialSupportTable.updateItem(
-        new UpdateItemSpec()
-          .withPrimaryKey("id", id)
-          .withAttributeUpdate(new AttributeUpdate("description").put(description))
-      )
+      existing :+ updated
     }
   }
-
-  def findStaff(name: String, team: String): List[EditorialSupportStaff] = {
-    getStaff().filter(x => x.name == name && x.team == team)
-  }
-
-  def deleteStaff(id: String) = {
-    editorialSupportTable.deleteItem(
-      new DeleteItemSpec()
-        .withPrimaryKey("id", id)
-    )
-  }
-
 }
