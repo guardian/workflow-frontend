@@ -15,6 +15,7 @@ import models.{Flag, _}
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.mvc._
+import EditorialSupportStaff._
 
 import scala.concurrent.Future
 
@@ -273,20 +274,13 @@ object Api extends Controller with PanDomainAuthActions {
 
   def editorialSupportTeams = CORSable(defaultCorsAble) {
     APIAuthAction {
-      val (audienceStaff, frontStaff) = EditorialSupportTeamsController.listStaff().partition(_.team == "Audience")
-      val audienceTeam = EditorialSupportTeam("Audience", audienceStaff)
-      val frontsTeam = EditorialSupportTeam("Fronts", groupFrontsByName(frontStaff))
+      val staff = EditorialSupportTeamsController.listStaff()
+      val fronts = EditorialSupportStaff.frontsTeam(staff)
+      val other = staff.teamMembers.map(_.team).distinct.map(EditorialSupportStaff.teamByName(_, staff))
 
-      Ok(List(audienceTeam, frontsTeam).asJson.noSpaces)
+      Ok((fronts +: other).asJson.noSpaces)
     }
   }
 
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
-
-  private def groupFrontsByName(staff: List[EditorialSupportStaff]): List[EditorialSupportStaff] = {
-    staff.map(_.name).distinct.map { name =>
-      val fronts = staff.filter(_.name == name).map(_.team).mkString(", ")
-      EditorialSupportStaff(name, "Fronts", active = true, description = Some(fronts))
-    }
-  }
 }

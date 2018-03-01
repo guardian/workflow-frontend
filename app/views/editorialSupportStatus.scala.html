@@ -1,8 +1,8 @@
-@(audience: List[EditorialSupportStaff], fronts: List[EditorialSupportStaff])
+@(teams: List[EditorialSupportTeam], fronts: List[FrontsEditor])
 
-@renderTeam(teamName: String, staffMembers: List[EditorialSupportStaff]) = {
+@renderTeam(teamName: String, members: List[TeamMember]) = {
     <ul class="support-list">
-    @for(staff <- staffMembers) {
+    @for(staff <- members) {
         <form class="support-list-form">
             <li class="support-list-item">
                 <input type="hidden" name="team" value="@staff.team">
@@ -50,12 +50,14 @@
 
         <div>
             <div class="col-lg-12">
-                <h2>Audience team</h2>
-                <div class="support-list-wrapper">
-                    @renderTeam("Audience", audience)
-                    <h3>Admin</h3>
-                    @renderAddTeamMember("Audience")
-                </div>
+                @for(team <- teams) {
+                    <h2>@team.name team</h2>
+                    <div class="support-list-wrapper">
+                        @renderTeam(team.name, team.staff)
+                        <h3>Admin</h3>
+                        @renderAddTeamMember(team.name)
+                    </div>
+                }
             </div>
         </div>
     </div>

@@ -9,9 +9,10 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, parser}
 import lib.{AtomWorkshopConfig, Composer, MediaAtomMakerConfig}
-import models.{Desk, EditorialSupportStaff, Section}
+import models.{Desk, EditorialSupportStaff, Section, TeamMember}
 import play.api.Logger
 import play.api.mvc._
+import router.Routes
 
 import scala.concurrent.Future
 
@@ -61,14 +62,15 @@ object Application extends Controller with PanDomainAuthActions {
 
   def editorialSupport = AuthAction { request =>
     val staff = EditorialSupportTeamsController.listStaff()
-    val (audience, fronts) = staff.partition(_.team == "Audience")
+    val teams = staff.teamMembers.map(_.team).distinct.map(EditorialSupportStaff.teamByName(_, staff))
 
-    Ok(views.html.editorialSupportStatus(audience, fronts))
+    Ok(views.html.editorialSupportStatus(teams, staff.frontsEditors))
   }
 
-  def updateEditorialSupport = AuthAction(parse.form(EditorialSupportStaff.staffForm)) { implicit request =>
-    EditorialSupportTeamsController.updateStaff(request.body)
-    NoContent
+  def updateEditorialSupport = AuthAction(parse.form(EditorialSupportStaff.form)) { implicit request =>
+    EditorialSupportTeamsController.applyUpdate(request.body)
+    // Get the browser to reload the page once we've sucessfully updated
+    Redirect(routes.Application.editorialSupport())
   }
 
   // limited tag fields we want output into the DOM
