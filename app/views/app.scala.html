@@ -1,4 +1,4 @@
-@(title: String, user: Option[com.gu.pandomainauth.model.User], config: io.circe.Json, presenceClientLib: String)
+@(title: String, user: Option[com.gu.pandomainauth.model.User], config: io.circe.Json, gaId: String, presenceClientLib: String)
 
 @layout(title, user, config) {
   <div class="main" ui-view>
@@ -16,5 +16,13 @@
 
   <script src="@routes.Assets.versioned("build/app.bundle.js")"></script>
   <script src="@presenceClientLib"></script>
+  @if(gaId != "") {
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    </script>
+  }
   <script async src="https://apis.google.com/js/client.js?onload=init"></script>
 }

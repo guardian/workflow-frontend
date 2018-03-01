@@ -378,12 +378,28 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         for (var field in msg.data) {
 
             wfContentService.updateField(msg.contentItem.item, field, msg.data[field], msg.contentItem.contentType).then(() => {
-                $scope.$emit('contentItem.updated', {
-                    'contentItem': msg.contentItem,
-                    'field': field,
-                    'data': msg.data,
-                    'oldValues': msg.oldValues
-                });
+                if (msg.data) {
+
+                    if (msg.data.status) {
+                        $scope.$emit('track:event', 'Content', 'Status changed', null, null, {
+                            'Status transition': msg.oldValues.status + ' to ' + msg.data.status,
+                            'Section': msg.contentItem.section,
+                            'Content type': msg.contentItem.contentType
+                        });
+                    } else {
+                        for (var fieldId in msg.data) {
+                            $scope.$emit('track:event', 'Content', 'Edited', null, null, {
+                                'Field': fieldId,
+                                'Section': msg.contentItem.section,
+                                'Content type': msg.contentItem.contentType
+                            })
+                        }
+                    }
+
+                }
+
+
+
 
                 this.poller.refresh();
 

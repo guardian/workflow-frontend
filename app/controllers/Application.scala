@@ -113,10 +113,11 @@ object Application extends Controller with PanDomainAuthActions {
         ("composerRestorerUrl", Json.fromString(Config.composerRestorerUrl)),
         ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
         ("atomTypes", Config.atomTypes.asJson),
-        ("sessionId", Json.fromString(Config.sessionId))
+        ("sessionId", Json.fromString(Config.sessionId)),
+        ("gaId", Json.fromString(Config.googleTrackingId))
       )
 
-      Ok(views.html.app(title, Some(user), config, Config.presenceClientLib))
+      Ok(views.html.app(title, Some(user), config, Config.googleTrackingId, Config.presenceClientLib))
     }
   }
 }
