@@ -129,8 +129,4 @@ object Application extends Controller with PanDomainAuthActions {
       Ok(views.html.app(title, Some(user), config, Config.presenceClientLib))
     }
   }
-
-  private def renderEditorialSupport(staff: List[EditorialSupportStaff]) = {
-
-  }
 }
