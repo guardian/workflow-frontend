@@ -10,11 +10,10 @@
                 <p class="support-staff-label support-staff-row"><b>@staff.name</b></p>
 
                 <div class="support-staff-row">
+                    <label class="support-staff-label">Active?</label>
                     @if(staff.active) {
-                        <label class="support-staff-label">Active?</label>
                         <input name="active" type="checkbox" checked />
                     } else {
-                        <label class="support-staff-label">Active?</label>
                         <input name="active" type="checkbox" />
                     }
                 </div>
@@ -30,14 +29,17 @@
 }
 
 @renderAddTeamMember(teamName: String) = {
-    <div class="support-admin-label">
-        <status>Add new team member</status>
-        <input type="hidden" name="team" value="@teamName" />
-        <input type="text" class="support-admin-text-input" name="name">
-        <div class="support-admin-button-container">
-            <button class="btn btn-sm btn-info">add</button>
+    <form method="POST">
+        <div class="support-admin-label">
+            <status>Add new team member</status>
+            <input type="hidden" name="category" value="team_member" />
+            <input type="hidden" name="team" value="@teamName" />
+            <input type="text" class="support-admin-text-input" name="name">
+            <div class="support-admin-button-container">
+                <input type="submit" class="btn btn-sm btn-info" value="add" />
+            </div>
         </div>
-    </div>
+    </form>
 }
 
 @layout("Support") {

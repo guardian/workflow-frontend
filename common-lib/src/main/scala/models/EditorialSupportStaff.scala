@@ -30,8 +30,8 @@ object EditorialSupportStaff {
 
   val form = Form(
     mapping(
-      "name" -> text,
       "category" -> text,
+      "name" -> text,
       "team" -> text,
       "active" -> optional(boolean),
       "description" -> optional(text)
