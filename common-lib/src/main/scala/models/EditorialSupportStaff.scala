@@ -11,7 +11,7 @@ import play.api.data._
 case class TeamMember(name: String, team: String, active: Boolean, description: Option[String])
 case class FrontsEditor(name: String, front: String)
 
-case class StaffUpdate(category: String, name: String, team: String, active: Option[Boolean], description: Option[String])
+case class StaffUpdate(category: String, name: String, team: String, active: Boolean, description: Option[String])
 
 case class EditorialSupportTeam(name: String, staff: List[TeamMember])
 case class EditorialSupportStaff(teamMembers: List[TeamMember], frontsEditors: List[FrontsEditor])
@@ -33,9 +33,14 @@ object EditorialSupportStaff {
       "category" -> text,
       "name" -> text,
       "team" -> text,
-      "active" -> optional(boolean),
+      "active" -> optional(text), // HTML form checkboxes return "on" instead of "true"
       "description" -> optional(text)
-    )(StaffUpdate.apply)(StaffUpdate.unapply)
+    ) {
+      (category, name, team, active, description) =>
+        StaffUpdate(category, name, team, active.contains("on"), description)
+    } {
+      u => Some((u.category, u.name, u.team, if(u.active) { Some("on") } else { None }, u.description))
+    }
   )
 
   def teamByName(team: String, staff: EditorialSupportStaff): EditorialSupportTeam = {
@@ -74,7 +79,7 @@ object EditorialSupportStaff {
 
   def updateToItem(update: StaffUpdate): Item = update.category match {
     case "team_member" =>
-      val data = TeamMember(update.name, update.team, update.active.getOrElse(false), update.description)
+      val data = TeamMember(update.name, update.team, update.active, update.description)
 
       new Item()
         .withString("name", update.name)

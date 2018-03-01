@@ -3,8 +3,9 @@
 @renderTeam(teamName: String, members: List[TeamMember]) = {
     <ul class="support-list">
     @for(staff <- members) {
-        <form class="support-list-form">
+        <form class="support-list-form" method="POST">
             <li class="support-list-item">
+                <input type="hidden" name="category" value="team_member">
                 <input type="hidden" name="team" value="@staff.team">
                 <input type="hidden" name="name" value="@staff.name">
                 <p class="support-staff-label support-staff-row"><b>@staff.name</b></p>
@@ -12,15 +13,15 @@
                 <div class="support-staff-row">
                     <label class="support-staff-label">Active?</label>
                     @if(staff.active) {
-                        <input name="active" type="checkbox" checked />
+                        <input name="active" type="checkbox" checked onchange="this.form.submit()" />
                     } else {
-                        <input name="active" type="checkbox" />
+                        <input name="active" type="checkbox" onchange="this.form.submit()" />
                     }
                 </div>
 
                 <div class="support-staff-row">
                     <label class="support-staff-label">Description</label>
-                    <input name="description" type="text" value="@staff.description" />
+                    <input name="description" type="text" value="@staff.description" onchange="this.form.submit()" />
                 </div>
             </li>
         </form>
