@@ -1,11 +1,11 @@
-@(teams: List[EditorialSupportTeam], fronts: List[FrontsEditor])
+@(teams: List[EditorialSupportTeam], fronts: EditorialSupportTeam)
 
-@renderTeam(teamName: String, members: List[TeamMember]) = {
+@renderTeam(team: EditorialSupportTeam) = {
     <ul class="support-list">
-    @for(staff <- members) {
+    @for(staff <- team.staff) {
         <form class="support-list-form" method="POST">
             <li class="support-list-item">
-                <input type="hidden" name="category" value="team_member">
+                <input type="hidden" name="id" value="@staff.id">
                 <input type="hidden" name="team" value="@staff.team">
                 <input type="hidden" name="name" value="@staff.name">
                 <p class="support-staff-label support-staff-row"><b>@staff.name</b></p>
@@ -29,18 +29,19 @@
     </ul>
 }
 
-@renderFronts(fronts: List[FrontsEditor]) = {
+@renderFronts(team: EditorialSupportTeam) = {
     <ul class="support-list">
-    @for(front <- fronts) {
+    @for(staff <- team.staff) {
         <form class="support-list-form" method="POST">
             <li class="support-list-item">
-                <input type="hidden" name="category" value="fronts_editor">
-                <input type="hidden" name="team" value="@front.front">
-                <p class="support-staff-label support-staff-row"><b>@front.front</b></p>
+                <input type="hidden" name="id" value="@staff.id">
+                <input type="hidden" name="team" value="@staff.team">
+                <input type="hidden" name="active" value="on">
+                <p class="support-staff-label support-staff-row"><b>@staff.team</b></p>
 
                 <div class="support-staff-row">
                     <label class="support-staff-label">Description</label>
-                    <input name="name" type="text" value="@front.name" onchange="this.form.submit()" />
+                    <input name="name" type="text" value="@staff.name" onchange="this.form.submit()" />
                 </div>
             </li>
         </form>
@@ -52,7 +53,6 @@
     <form method="POST">
         <div class="support-admin-label">
             <status>Add new team member</status>
-            <input type="hidden" name="category" value="team_member" />
             <input type="hidden" name="team" value="@teamName" />
             <input type="text" class="support-admin-text-input" name="name">
             <div class="support-admin-button-container">
@@ -75,7 +75,7 @@
                 @for(team <- teams) {
                     <h2>@team.name team</h2>
                     <div class="support-list-wrapper">
-                        @renderTeam(team.name, team.staff)
+                        @renderTeam(team)
                         <h3>Admin</h3>
                         @renderAddTeamMember(team.name)
                     </div>

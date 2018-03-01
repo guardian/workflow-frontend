@@ -2,7 +2,7 @@ package controllers
 
 import com.gu.workflow.util.Dynamo
 import config.Config
-import models.{EditorialSupportStaff, StaffUpdate}
+import models.EditorialSupportStaff
 import play.api.mvc.Controller
 
 import scala.collection.JavaConverters._
@@ -11,13 +11,11 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
 
   private val editorialSupportTable = dynamoDb.getTable(Config.editorialSupportDynamoTable)
 
-  def listStaff(): EditorialSupportStaff = {
-    val items = editorialSupportTable.scan().asScala
-    EditorialSupportStaff.fromItems(items)
+  def listStaff(): List[EditorialSupportStaff] = {
+    editorialSupportTable.scan().asScala.toList.map(EditorialSupportStaff.fromItem)
   }
 
-  def applyUpdate(update: StaffUpdate): Unit = {
-    val item = EditorialSupportStaff.updateToItem(update)
-    editorialSupportTable.putItem(item)
+  def updateStaff(staff: EditorialSupportStaff): Unit = {
+    editorialSupportTable.putItem(EditorialSupportStaff.toItem(staff))
   }
 }

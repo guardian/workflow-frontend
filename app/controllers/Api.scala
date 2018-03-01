@@ -275,10 +275,12 @@ object Api extends Controller with PanDomainAuthActions {
   def editorialSupportTeams = CORSable(defaultCorsAble) {
     APIAuthAction {
       val staff = EditorialSupportTeamsController.listStaff()
-      val fronts = EditorialSupportStaff.frontsTeam(staff)
-      val other = staff.teamMembers.map(_.team).distinct.map(EditorialSupportStaff.teamByName(_, staff))
+      val teams = EditorialSupportStaff.groupByTeams(staff)
 
-      Ok((fronts +: other).asJson.noSpaces)
+      val audience = EditorialSupportStaff.getTeam("Audience", teams)
+      val fronts = EditorialSupportStaff.getTeam("Fronts", teams)
+
+      Ok(List(audience, fronts).asJson.noSpaces)
     }
   }
 
