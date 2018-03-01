@@ -22,16 +22,25 @@ object EditorialSupportStaff {
 
   val form = Form(
     mapping(
-      "id" -> optional(text),
       "name" -> text,
       "team" -> text,
+      "id" -> optional(text),
+      "isFront" -> optional(boolean),
       "active" -> optional(text), // HTML form checkboxes return "on" instead of "true"
       "description" -> optional(text)
     ) {
-      (id, name, team, active, description) =>
-        EditorialSupportStaff(id.getOrElse(s"$team-$name"), name, team, active.contains("on"), description)
+      (name, team, maybeId, isFront, active, description) =>
+        val id = maybeId match {
+          case Some(id) => id
+          case _ if isFront.getOrElse(false) => s"Fronts-$team"
+          case _ => s"$team-$name"
+        }
+
+        EditorialSupportStaff(id, name, team, active.contains("on"), description)
     } {
-      u => Some((Some(u.id), u.name, u.team, if(u.active) { Some("on") } else { None }, u.description))
+      u =>
+        val active = if(u.active) { Some("on") } else { None }
+        Some((u.name, u.team, Some(u.id), None, active, u.description))
     }
   )
 
@@ -43,7 +52,7 @@ object EditorialSupportStaff {
 
   def groupByTeams(staff: List[EditorialSupportStaff]): List[EditorialSupportTeam] = {
     staff.foldLeft(Map.empty[String, List[EditorialSupportStaff]]) { (teams, member) =>
-        if(member.id.startsWith("front_")) {
+        if(member.id.startsWith("Fronts-")) {
           addToTeam(teams, "Fronts", member)
         } else {
           addToTeam(teams, member.team, member)
