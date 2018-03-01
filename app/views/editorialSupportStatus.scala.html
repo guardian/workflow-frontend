@@ -51,30 +51,36 @@
 
 @renderAddTeamMember(teamName: String) = {
     <form method="POST">
-        <div class="support-admin-label">
-            <status>Add new team member</status>
-            <input type="hidden" name="team" value="@teamName" />
-            <input type="text" class="support-admin-text-input" name="name">
-            <div class="support-admin-button-container">
-                <input type="submit" class="btn btn-sm btn-info" value="add" />
-            </div>
-        </div>
+        <ul class="support-list">
+            <li class="support-list-item">
+                <input type="hidden" name="team" value="@teamName" />
+                <input type="text" class="support-admin-text-input" name="name">
+                <div class="support-admin-button-container">
+                    <input type="submit" class="btn btn-sm btn-info" value="add" />
+                </div>
+            </li>
+        </ul>
     </form>
 }
 
 @renderAddFrontsEditor() = {
     <form method="POST">
-        <div class="support-admin-label">
-            <status>Add new front</status>
-            <input type="hidden" name="isFront" value="true" />
-            <label class="support-staff-label">Front</label>
-            <input type="text" class="support-admin-text-input" name="team">
-            <label class="support-staff-label">User</label>
-            <input type="text" class="support-admin-text-input" name="name">
-            <div class="support-admin-button-container">
-                <input type="submit" class="btn btn-sm btn-info" value="add" />
-            </div>
-        </div>
+        <ul class="support-list">
+            <li class="support-list-item">
+                <input type="hidden" name="isFront" value="true" />
+                <div class="support-staff-row">
+                    <label class="support-staff-label">Front</label>
+                    <input type="text" class="support-admin-text-input" name="team">
+                </div>
+                <div class="support-staff-row">
+                    <label class="support-staff-label">User</label>
+                    <input type="text" class="support-admin-text-input" name="name">
+                </div>
+                <div class="support-admin-button-container">
+                    <input type="submit" class="btn btn-sm btn-info" value="add" />
+                </div>
+            </li>
+        </ul>
     </form>
 }
 
@@ -92,14 +98,14 @@
                     <h2>@team.name team</h2>
                     <div class="support-list-wrapper">
                         @renderTeam(team)
-                        <h3>Admin</h3>
+                        <status>Add new team member</status>
                         @renderAddTeamMember(team.name)
                     </div>
                 }
                 <h2>Fronts team</h2>
                 <div class="support-list-wrapper">
                     @renderFronts(fronts)
-                    <h3>Admin</h3>
+                    <status>Add new front</status>
                     @renderAddFrontsEditor()
                 </div>
             </div>
