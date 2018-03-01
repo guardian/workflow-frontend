@@ -29,6 +29,25 @@
     </ul>
 }
 
+@renderFronts(fronts: List[FrontsEditor]) = {
+    <ul class="support-list">
+    @for(front <- fronts) {
+        <form class="support-list-form" method="POST">
+            <li class="support-list-item">
+                <input type="hidden" name="category" value="fronts_editor">
+                <input type="hidden" name="team" value="@front.front">
+                <p class="support-staff-label support-staff-row"><b>@front.front</b></p>
+
+                <div class="support-staff-row">
+                    <label class="support-staff-label">Description</label>
+                    <input name="name" type="text" value="@front.name" onchange="this.form.submit()" />
+                </div>
+            </li>
+        </form>
+    }
+    </ul>
+}
+
 @renderAddTeamMember(teamName: String) = {
     <form method="POST">
         <div class="support-admin-label">
@@ -61,6 +80,10 @@
                         @renderAddTeamMember(team.name)
                     </div>
                 }
+                <h2>Fronts team</h2>
+                <div class="support-list-wrapper">
+                    @renderFronts(fronts)
+                </div>
             </div>
         </div>
     </div>
