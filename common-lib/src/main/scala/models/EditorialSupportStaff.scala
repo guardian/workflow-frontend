@@ -62,6 +62,13 @@ object EditorialSupportStaff {
     }.toList
   }
 
+  def groupByPerson(team: EditorialSupportTeam): EditorialSupportTeam = {
+    team.copy(staff = team.staff.map(_.name).distinct.map { name =>
+      val fronts = team.staff.filter(_.name == name).map(_.team).distinct
+      EditorialSupportStaff(name, name, team.name, active = true, description = Some(fronts.mkString(", ")))
+    })
+  }
+
   def getTeam(name: String, teams: List[EditorialSupportTeam]): EditorialSupportTeam = {
     teams.find(_.name == name).getOrElse(EditorialSupportTeam(name, List.empty))
   }
