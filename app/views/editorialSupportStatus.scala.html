@@ -51,19 +51,31 @@
     </ul>
 }
 
-@renderAddTeamMember(teamName: String) = {
-    <form method="POST">
-        <ul class="support-list">
-            <li class="support-list-item">
+@renderModifyTeam(teamName: String) = {
+    <ul class="support-list">
+        <li class="support-list-item">
+            <form method="POST">
+                <status>Add team member</status>
                 <input type="hidden" name="action" value="add_team_member" />
                 <input type="hidden" name="team" value="@teamName" />
                 <input type="text" class="support-admin-text-input" name="name">
                 <div class="support-admin-button-container">
                     <input type="submit" class="btn btn-sm btn-info" value="add" />
                 </div>
-            </li>
-        </ul>
-    </form>
+            </form>
+        </li>
+        <li class="support-list-item">
+            <form method="POST">
+                <status>Delete team member</status>
+                <input type="hidden" name="action" value="delete" />
+                <input type="hidden" name="team" value="@teamName" />
+                <input type="text" class="support-admin-text-input" name="name">
+                <div class="support-admin-button-container">
+                    <input type="submit" class="btn btn-sm btn-danger" value="delete" />
+                </div>
+            </form>
+        </li>
+    </ul>
 }
 
 @renderAddFrontsEditor() = {
@@ -101,8 +113,7 @@
                     <h2>@team.name team</h2>
                     <div class="support-list-wrapper">
                         @renderTeam(team)
-                        <status>Add new team member</status>
-                        @renderAddTeamMember(team.name)
+                        @renderModifyTeam(team.name)
                     </div>
                 }
                 <h2>Fronts team</h2>

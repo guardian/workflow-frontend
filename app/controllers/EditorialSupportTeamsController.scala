@@ -25,6 +25,9 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
     val name = if(update.name == "") { "none" } else { update.name }
 
     update.action match {
+      case "delete" =>
+        editorialSupportTable.deleteItem("id", s"${update.team}-${update.name}")
+
       case "add_front" =>
         save(EditorialSupportStaff(
           id = s"Fronts-${update.team}",
