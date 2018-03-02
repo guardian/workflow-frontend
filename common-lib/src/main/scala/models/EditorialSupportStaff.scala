@@ -11,6 +11,8 @@ import play.api.data._
 case class EditorialSupportStaff(id: String, name: String, team: String, active: Boolean, description: Option[String])
 case class EditorialSupportTeam(name: String, staff: List[EditorialSupportStaff])
 
+case class StaffUpdate(name: String, team: String, action: String, id: Option[String], active: Option[String], description: Option[String])
+
 object EditorialSupportStaff {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
 
@@ -24,24 +26,11 @@ object EditorialSupportStaff {
     mapping(
       "name" -> text,
       "team" -> text,
+      "action" -> text,
       "id" -> optional(text),
-      "isFront" -> optional(boolean),
       "active" -> optional(text), // HTML form checkboxes return "on" instead of "true"
       "description" -> optional(text)
-    ) {
-      (name, team, maybeId, isFront, active, description) =>
-        val id = maybeId match {
-          case Some(id) => id
-          case _ if isFront.getOrElse(false) => s"Fronts-$team"
-          case _ => s"$team-$name"
-        }
-
-        EditorialSupportStaff(id, name, team, active.contains("on"), description)
-    } {
-      u =>
-        val active = if(u.active) { Some("on") } else { None }
-        Some((u.name, u.team, Some(u.id), None, active, u.description))
-    }
+    )(StaffUpdate.apply)(StaffUpdate.unapply)
   )
 
   def toItem(staff: EditorialSupportStaff): Item =

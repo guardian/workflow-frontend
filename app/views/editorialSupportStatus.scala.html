@@ -8,6 +8,7 @@
                 <input type="hidden" name="id" value="@staff.id">
                 <input type="hidden" name="team" value="@staff.team">
                 <input type="hidden" name="name" value="@staff.name">
+                <input type="hidden" name="action" value="update" />
                 <p class="support-staff-label support-staff-row"><b>@staff.name</b></p>
 
                 <div class="support-staff-row">
@@ -36,6 +37,7 @@
             <li class="support-list-item">
                 <input type="hidden" name="id" value="@staff.id">
                 <input type="hidden" name="team" value="@staff.team">
+                <input type="hidden" name="action" value="update" />
                 <input type="hidden" name="active" value="on">
                 <p class="support-staff-label support-staff-row"><b>@staff.team</b></p>
 
@@ -53,6 +55,7 @@
     <form method="POST">
         <ul class="support-list">
             <li class="support-list-item">
+                <input type="hidden" name="action" value="add_team_member" />
                 <input type="hidden" name="team" value="@teamName" />
                 <input type="text" class="support-admin-text-input" name="name">
                 <div class="support-admin-button-container">
@@ -67,7 +70,7 @@
     <form method="POST">
         <ul class="support-list">
             <li class="support-list-item">
-                <input type="hidden" name="isFront" value="true" />
+                <input type="hidden" name="action" value="add_front" />
                 <div class="support-staff-row">
                     <label class="support-staff-label">Front</label>
                     <input type="text" class="support-admin-text-input" name="team">
