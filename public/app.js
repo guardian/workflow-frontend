@@ -23,6 +23,7 @@ import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/column-service';
 import 'lib/preferences-service';
+import 'lib/analytics';
 import 'lib/feature-switches';
 import 'lib/google-api';
 import 'lib/polling-service';
@@ -55,6 +56,7 @@ angular.module('workflow',
         'wfFiltersService',
         'wfColumnService',
         'wfPreferencesService',
+        'wfAnalyticsServiceMod',
         'wfFeatureSwitches',
         'wfGoogleApiService',
         'infinite-scroll',
@@ -158,7 +160,8 @@ angular.module('workflow',
             'atomWorkshopNewAtom': _wfConfig.atomWorkshop.create,
             'atomWorkshopViewAtom': _wfConfig.atomWorkshop.view,
             'atomTypes': _wfConfig.atomTypes,
-            'sessionId': _wfConfig.sessionId
+            'sessionId': _wfConfig.sessionId,
+            'gaId': _wfConfig.googleTrackingId
         }
     )
     .constant({ 'statuses': _wfConfig.statuses })
@@ -195,7 +198,8 @@ angular.module('workflow',
 
     .run(function ($window, wfGoogleApiService) {
         wfGoogleApiService.load();
-    });
+    })
+    .run(['wfAnalyticsService', function(){}]);
 
 // Bootstrap App
 angular.element(document).ready(function () {

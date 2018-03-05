@@ -243,12 +243,30 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
         createItemPromise().then(() => {
             const eventName = ({
-                'create': 'stub.created',
-                'edit': 'stub.edited',
-                'import': 'content.imported'
+                'create': {
+                    category: 'Stub',
+                    action: 'Created',
+                    value: {
+                      'Created in Composer': stub.composerId
+                    }
+                },
+                'edit': {
+                  category: 'Stub',
+                  action: 'Edited'
+                },
+                'import': {
+                  category: 'Content',
+                  action: 'Imported'
+                },
             }[$scope.mode]);
 
-            $rootScope.$broadcast(eventName, { 'contentItem': stub });
+            $rootScope.$broadcast('track:event', eventName.category, eventName.action, null, null, Object.assign(
+                {}, {
+                    'Section': stub.section,
+                    'Content type': stub.contentType
+                }, eventName.value ? eventName.value : {})
+            );
+
             $rootScope.$broadcast('getContent');
 
             if ($scope.contentName === 'Atom') {
@@ -305,7 +323,11 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.delete = function () {
         wfContentService.remove($scope.stub.id)
             .then(() => {
-                $scope.$emit('content.deleted', { contentItem: $scope.stub });
+                $scope.$emit('content.deleted');
+                $scope.$emit('track:event', 'Content', 'Deleted', null, null, {
+                    'Section': $scope.stub.contentItem.section,
+                    'Content type': $scope.stub.contentItem.contentType
+                });
                 $scope.$apply();
                 $modalInstance.dismiss('cancel');
             }, function (err) {
