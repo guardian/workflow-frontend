@@ -15,6 +15,7 @@ import models.{Flag, _}
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.mvc._
+import EditorialSupportStaff._
 
 import scala.concurrent.Future
 
@@ -273,38 +274,13 @@ object Api extends Controller with PanDomainAuthActions {
 
   def editorialSupportTeams = CORSable(defaultCorsAble) {
     APIAuthAction {
-      Ok(EditorialSupportTeamsController.getTeams().asJson.noSpaces)
-    }
-  }
+      val staff = EditorialSupportTeamsController.listStaff().filter(_.name.nonEmpty)
+      val teams = EditorialSupportStaff.groupByTeams(staff)
 
-  def addEditorialSupportStaff(name: String, team: String) = APIAuthAction {
-    if (EditorialSupportTeamsController.checkIfStaffExists(name, team)) {
-      NotModified
-    } else {
-      EditorialSupportTeamsController.createNewStaff(name, team)
-      Ok(s"$name added to $team")
-    }
-  }
+      val audience = EditorialSupportStaff.getTeam("Audience", teams)
+      val fronts = EditorialSupportStaff.groupByPerson(EditorialSupportStaff.getTeam("Fronts", teams))
 
-  def toggleEditorialSupportStaff(id: String, status: String) = APIAuthAction {
-    val active = status.toBoolean
-    EditorialSupportTeamsController.toggleStaffStatus(id, active)
-    Ok(s"Status switched to ${ if (active) "inactive" else "active" }")
-  }
-
-  def updateEditorialSupportStaffDescription(id: String, description: String) = APIAuthAction {
-    EditorialSupportTeamsController.updateStaffDescription(id, description)
-    Ok(s"Description updated to '$description'")
-  }
-
-  def deleteEditorialSupportStaff(name: String, team: String) = APIAuthAction {
-    val staff = EditorialSupportTeamsController.findStaff(name, team)
-    staff.size match {
-      case 0 => NotFound
-      case 1 =>
-        EditorialSupportTeamsController.deleteStaff(staff.head.id)
-        Ok(s"$name from $team deleted")
-      case _ => NotAcceptable
+      Ok(List(audience, fronts).asJson.noSpaces)
     }
   }
 

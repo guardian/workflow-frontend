@@ -1,41 +1,102 @@
-@(audience: EditorialSupportTeam, fronts: EditorialSupportTeam)
+@(teams: List[EditorialSupportTeam], fronts: EditorialSupportTeam)
 
 @renderTeam(team: EditorialSupportTeam) = {
     <ul class="support-list">
     @for(staff <- team.staff) {
-        <li class="support-list-item">
-            <p class="support-staff-label support-staff-row"><b>@staff.name</b></p>
-            <div class="support-staff-row">
-                <label class="support-staff-label" for="editorialSupportStatus-@staff.id">Active?</label>
-                <input type="checkbox" id="editorialSupportStatus-@staff.id" onchange="window.toggleStaff('@staff.id')" @if(staff.active){checked} val>
-            </div>
-            <div class="support-staff-row">
-                <label class="support-staff-label" for="editorialSupportDescription-@staff.id">Description</label>
-                <input type="text" class="support-text-input" value="@staff.description" id="editorialSupportDescription-@staff.id" onChange="window.updateStatus('@staff.id','@staff.description')">
-            </div>
-        </li>
+        <form class="support-list-form" method="POST">
+            <li class="support-list-item">
+                <input type="hidden" name="id" value="@staff.id">
+                <input type="hidden" name="team" value="@staff.team">
+                <input type="hidden" name="name" value="@staff.name">
+                <input type="hidden" name="action" value="update" />
+                <p class="support-staff-label support-staff-row"><b>@staff.name</b></p>
+
+                <div class="support-staff-row">
+                    <label class="support-staff-label">Active?</label>
+                    @if(staff.active) {
+                        <input name="active" type="checkbox" checked onchange="this.form.submit()" />
+                    } else {
+                        <input name="active" type="checkbox" onchange="this.form.submit()" />
+                    }
+                </div>
+
+                <div class="support-staff-row">
+                    <label class="support-staff-label">Description</label>
+                    <input name="description" type="text" value="@staff.description" onchange="this.form.submit()" />
+                </div>
+            </li>
+        </form>
     }
     </ul>
 }
 
-@renderAddStaff(teamName: String) = {
-    <div class="support-admin-label">
-        <status>Add new team member</status>
-        <input type="text" class="support-admin-text-input" id="name-entry-@teamName">
-        <div class="support-admin-button-container">
-            <button class="btn btn-sm btn-info" onclick="window.addNewStaff('@teamName')">add</button>
-        </div>
-    </div>
+@renderFronts(team: EditorialSupportTeam) = {
+    <ul class="support-list">
+    @for(staff <- team.staff) {
+        <form class="support-list-form" method="POST">
+            <li class="support-list-item">
+                <input type="hidden" name="id" value="@staff.id">
+                <input type="hidden" name="team" value="@staff.team">
+                <input type="hidden" name="action" value="update" />
+                <input type="hidden" name="active" value="on">
+                <p class="support-staff-label support-staff-row"><b>@staff.team</b></p>
+
+                <div class="support-staff-row">
+                    <label class="support-staff-label">Name</label>
+                    <input name="name" type="text" value="@staff.name" onchange="this.form.submit()" />
+                </div>
+            </li>
+        </form>
+    }
+    </ul>
 }
 
-@renderDeleteStaff(teamName: String) = {
-    <div class="support-admin-label">
-        <status>Delete team member</status>
-        <input type="text" class="support-admin-text-input" id="delete-name-entry-@teamName">
-        <div class="support-admin-button-container">
-            <button class="btn btn-sm btn-info" onclick="window.deleteStaff('@teamName')">delete</button>
-        </div>
-    </div>
+@renderModifyTeam(teamName: String) = {
+    <ul class="support-list">
+        <li class="support-list-item">
+            <form method="POST">
+                <status>Add team member</status>
+                <input type="hidden" name="action" value="add_team_member" />
+                <input type="hidden" name="team" value="@teamName" />
+                <input type="text" class="support-admin-text-input" name="name">
+                <div class="support-admin-button-container">
+                    <input type="submit" class="btn btn-sm btn-info" value="add" />
+                </div>
+            </form>
+        </li>
+        <li class="support-list-item">
+            <form method="POST">
+                <status>Delete team member</status>
+                <input type="hidden" name="action" value="delete" />
+                <input type="hidden" name="team" value="@teamName" />
+                <input type="text" class="support-admin-text-input" name="name">
+                <div class="support-admin-button-container">
+                    <input type="submit" class="btn btn-sm btn-danger" value="delete" />
+                </div>
+            </form>
+        </li>
+    </ul>
+}
+
+@renderAddFrontsEditor() = {
+    <form method="POST">
+        <ul class="support-list">
+            <li class="support-list-item">
+                <input type="hidden" name="action" value="add_front" />
+                <div class="support-staff-row">
+                    <label class="support-staff-label">Front</label>
+                    <input type="text" class="support-admin-text-input" name="team">
+                </div>
+                <div class="support-staff-row">
+                    <label class="support-staff-label">User</label>
+                    <input type="text" class="support-admin-text-input" name="name">
+                </div>
+                <div class="support-admin-button-container">
+                    <input type="submit" class="btn btn-sm btn-info" value="add" />
+                </div>
+            </li>
+        </ul>
+    </form>
 }
 
 @layout("Support") {
@@ -43,29 +104,26 @@
 
         <div class="starter-template">
             @*<p class="lead">*@
-            <p>Note: this will display at the top of any Composer document. Don't forget to untick yourself so that colleagues aren't trying to contact an empty chair.</p>
+            <p>Note: this will display on all Composer documents. Don't forget to untick yourself so that colleagues aren't trying to contact an empty chair.</p>
         </div>
 
         <div>
             <div class="col-lg-12">
-                <h2>@audience.name team</h2>
+                @for(team <- teams) {
+                    <h2>@team.name team</h2>
+                    <div class="support-list-wrapper">
+                        @renderTeam(team)
+                        @renderModifyTeam(team.name)
+                    </div>
+                }
+                <h2>Fronts team</h2>
                 <div class="support-list-wrapper">
-                    @renderTeam(audience)
-                    <h3>Admin</h3>
-                    @renderAddStaff(audience.name)
-                    @renderDeleteStaff(audience.name)
-                </div>
-                <h2>@fronts.name team</h2>
-                <div class="support-list-wrapper">
-                    @renderTeam(fronts)
-                    <h3>Admin</h3>
-                    @renderAddStaff(fronts.name)
-                    @renderDeleteStaff(fronts.name)
+                    @renderFronts(fronts)
+                    <status>Add new front</status>
+                    @renderAddFrontsEditor()
                 </div>
             </div>
         </div>
     </div>
-
-    <script src="@routes.Assets.versioned("build/editorialsupportteams.bundle.js")"></script>
 }
 

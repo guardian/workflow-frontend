@@ -67,7 +67,7 @@ object Config extends AwsInstanceTags {
 
   lazy val no2faUser: String = "composer.test@guardian.co.uk"
 
-  lazy val editorialSupportDynamoTable: String = s"support-staff-$stage"
+  lazy val editorialSupportDynamoTable: String = s"editorial-support-${if(stage != "PROD") { "CODE" } else { "PROD" }}"
 
   lazy val atomTypes: List[String] = List("media", "storyquestions")
   lazy val contentTypes: List[String] = List("article", "liveblog", "gallery", "interactive", "picture", "video", "audio")
