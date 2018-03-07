@@ -81,8 +81,9 @@ object Stub {
   val flatJsonDecoder: Decoder[Stub] = new Decoder[Stub] {
     def apply(c: HCursor): Result[Stub] =
       c.as[ExternalData].fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Decoding the flat json - Could not decode externalData: ${err.message}.", c.history)), exData => {
-        val wfLastMod = c.downField("wfLastModified").focus.getOrElse(Json.Null)
-        val updatedLastModCursor = c.downField("lastModified").set(wfLastMod).up
+        val wfLastMod: Json = c.downField("wfLastModified").focus.getOrElse(Json.Null)
+        val updatedLastModCursor =
+          if(wfLastMod != Json.Null) c.downField("lastModified").set(wfLastMod).up else c
         updatedLastModCursor.as[Stub].fold[Decoder.Result[Stub]](err => Left(DecodingFailure(s"Decoding the flat json - Could not decode stub: ${err.message}.", c.history)), stub => {
           Right(stub.copy(externalData = Some(exData)))
         })
