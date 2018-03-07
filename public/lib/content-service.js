@@ -9,7 +9,7 @@ import './visibility-service';
 import './feature-switches';
 
 angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'config', 'wfFeatureSwitches',
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomService', 'config', 'wfFeatureSwitches',
         function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, wfAtomWorkshopService, config, wfFeatureSwitches) {
 
             const httpRequest = wfHttpSessionService.request;
@@ -165,7 +165,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 updateField(contentItem, field, data, contentType) {
 
                     if (field === 'status' && contentItem.status === 'Stub') {
-                        if (wfAtomService.atomTypes.indexOf(contentType) >= 0) {
+                        if (config.atomTypes.indexOf(contentType) >= 0) {
                             return this.createInAtomEditor(contentItem, data);
                         } else {
                             return this.createInComposer(contentItem, data)
