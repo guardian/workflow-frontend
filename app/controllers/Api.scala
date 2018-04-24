@@ -277,10 +277,10 @@ object Api extends Controller with PanDomainAuthActions {
       val staff = EditorialSupportTeamsController.listStaff().filter(_.name.nonEmpty)
       val teams = EditorialSupportStaff.groupByTeams(staff)
 
-      val audience = EditorialSupportStaff.getTeam("Audience", teams)
       val fronts = EditorialSupportStaff.groupByPerson(EditorialSupportStaff.getTeam("Fronts", teams))
+      val other = teams.filterNot(_.name == "Fronts")
 
-      Ok(List(audience, fronts).asJson.noSpaces)
+      Ok((other :+ fronts).asJson.noSpaces)
     }
   }
 
