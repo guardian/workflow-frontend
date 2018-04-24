@@ -1,14 +1,18 @@
 package models
 
 import io.circe.syntax._
-import io.circe.{Decoder, DecodingFailure, Encoder, HCursor}
-import org.joda.time.DateTime
+import io.circe._
+import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.{DateTime, DateTimeZone}
 
 object DateFormat {
-  private val datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+  private val formatter = ISODateTimeFormat.dateTime()
 
   implicit val dateTimeEncoder = new Encoder[DateTime] {
-    def apply(d: DateTime) = d.toString(datePattern).asJson
+    def apply(d: DateTime): Json = {
+      val utc = d.withZone(DateTimeZone.UTC)
+      formatter.print(utc).asJson
+    }
   }
   implicit val dateTimeDecoder = new Decoder[DateTime] {
     def apply(c: HCursor): Decoder.Result[DateTime] = {
