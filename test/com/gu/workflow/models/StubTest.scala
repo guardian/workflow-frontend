@@ -8,10 +8,6 @@ import models._
 import org.scalatest.{FreeSpec, Matchers}
 
 class StubTest extends FreeSpec with Matchers with ResourcesHelper {
-  /* It's horrible, but this is absolutely necessary for correct interpretation
-     * of datetime columns in prog almost certainly what no sane person ever wants to do.
-     */
-
   "StubReads" - {
     "should read the minimum required fields for a stub" in {
       val resource = slurp("stub-min-fields.json").getOrElse(
