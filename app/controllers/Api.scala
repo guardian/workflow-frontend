@@ -144,7 +144,7 @@ object Api extends Controller with PanDomainAuthActions {
     } yield id
   )}
 
-  def putStubNote(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubNote(stubId: Long) = CORSable(atomCorsAble) {
     def getNoteOpt(input: String): Option[String] = if(input.length > 0) Some(input) else None
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
