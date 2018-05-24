@@ -325,7 +325,9 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             };
 
             $scope.updateCommissionedLength = function (newValue) {
-                return wfComposerService.updateField($scope.contentItem.composerId, "commissionedLength", newValue)
+                updateField("commissionedLength", newValue);
+                if (newValue === "") return wfComposerService.deleteField($scope.contentItem.composerId, "commissionedLength");
+                else return wfComposerService.updateField($scope.contentItem.composerId, "commissionedLength", newValue)
             };
 
             /**
