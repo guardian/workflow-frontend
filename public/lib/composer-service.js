@@ -110,4 +110,15 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         return request(req);
     };
 
+    this.deleteField = function (composerId, fieldName, live = false) {
+        let urls = composerUpdateFieldUrl(fieldName, composerId);
+        let url = live ? urls.live : urls.preview;
+        let req = {
+            method: 'DELETE',
+            url: url,
+            withCredentials: true
+        };
+        return request(req);
+    };
+
 }

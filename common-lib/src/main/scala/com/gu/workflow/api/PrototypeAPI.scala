@@ -134,6 +134,13 @@ object PrototypeAPI {
       item <- extractDataResponse[Long](json)
     } yield item
 
+  def updateContentCommissionedLength(stubId: Long, commissionedLength: Option[Int]): ApiResponseFt[Long] =
+    for {
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/commissionedLength", commissionedLength.asJson))
+      json <- parseBody(res.body)
+      item <- extractDataResponse[Long](json)
+    } yield item
+
   def updateContentStatusByComposerId(composerId: String, status: String): ApiResponseFt[String] =
     for {
       res <- ApiResponseFt.Async.Right(putRequest(s"content/$composerId/status", status.asJson))

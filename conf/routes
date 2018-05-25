@@ -43,6 +43,7 @@ PUT            /api/stubs/:stubId/workingTitle             controllers.Api.putSt
 PUT            /api/stubs/:stubId/priority                 controllers.Api.putStubPriority(stubId: Long)
 PUT            /api/stubs/:stubId/trashed                  controllers.Api.putStubTrashed(stubId: Long)
 PUT            /api/stubs/:stubId/status                   controllers.Api.putStubStatus(stubId: Long)
+PUT            /api/stubs/:stubId/commissionedLength       controllers.Api.putStubCommissionedLength(stubId: Long)
 DELETE         /api/stubs/:stubId                          controllers.Api.deleteStub(stubId: Long)
 
 GET            /api/statuses                               controllers.Api.statusus
