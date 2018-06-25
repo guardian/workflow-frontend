@@ -1,5 +1,8 @@
-<label class="date-time-picker__label" for="{{dateTimePicker.textInputId}}" ng-if="label">{{ label }}
-    <span class="date-time-picker__help-text" ng-if="helpText">{{ helpText == 'true' && 'e.g. today 3pm, tomorrow 15:00, tuesday next week 18:00, 2014-08-14' || helpText }}</span></label>
+<label class="date-time-picker__label" for="{{dateTimePicker.textInputId}}" ng-if="label"
+    >{{ label }}
+    <span class="date-time-picker__help-text" ng-if="helpText">{{ helpText == 'true' && 'e.g. today 3pm, tomorrow 15:00, tuesday next week 18:00, 2014-08-14' || helpText }}</span>
+</label>
+<span class="date-time-picker__help-text" ng-if="!label && helpText">{{ helpText == 'true' && 'e.g. today 3pm, tomorrow 15:00, tuesday next week 18:00, 2014-08-14' || helpText }}</span>
 <div class="date-time-picker__group input-group">
 
     <input class="date-time-picker__text-input form-control" type="text" placeholder="{{ placeholderText }}" wf-date-time-field id="{{dateTimePicker.textInputId}}" name="due" wf-on-cancel="onCancel()" wf-on-update="onUpdate()" wf-on-submit="onSubmit()" wf-update-on="{{updateOn}}" wf-cancel-on="{{cancelOn}}" ng-class="{'input-sm': small}">

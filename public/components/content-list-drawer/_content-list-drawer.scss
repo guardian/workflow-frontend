@@ -2,7 +2,9 @@
 .drawer {
     display: flex;
     width: 100%;
-
+    * {
+        box-sizing: border-box;
+    }
     // viewport minus the sidebar
 
     &__warning {
@@ -67,6 +69,12 @@
         }
     }
 
+    &__section-data-row {
+        &--editable {
+            cursor: pointer;
+        }
+    }
+
 
     &__header {
         font-weight: bold;
@@ -123,6 +131,9 @@
         padding: 12px 0 0 12px;
         flex: 1 1 0;
         overflow: hidden;
+        &--with-overflow {
+            overflow: visible;
+        }
     }
 
     &__item {

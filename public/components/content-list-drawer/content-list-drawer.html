@@ -352,8 +352,8 @@
                 </button>
 
                 <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'management'}" >
-
-                    <ul class="drawer__column drawer__column--wide">
+                    <!-- We allow overflow here for the datepicker, which will otherwise be occluded by its container -->
+                    <ul class="drawer__column drawer__column--with-overflow drawer__column--wide">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Priority</p>
                             <select ng-model="contentItem.priority" ng-options="p.value as p.name for p in contentList.priorities" wf-content-item-update-action="priority"></select>
@@ -364,7 +364,9 @@
                                 {{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
                             </span>
                             <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
-                                <div wf-date-time-picker wf-update-on="enter" ng-model="currentDatePickerValue" wf-on-cancel="dateTimeEdit = false; revertDeadline()" wf-cancel-on="blur" wf-on-submit="updateDeadline(); dateTimeEdit = false;" wf-small="true" help-text="true"></div>
+                                <div class="form-group">
+                                    <div wf-date-time-picker wf-update-on="enter" ng-model="currentDatePickerValue" wf-on-cancel="dateTimeEdit = false; revertDeadline()" wf-cancel-on="blur" wf-on-submit="updateDeadline(); dateTimeEdit = false;" help-text="true"></div>
+                                </div>
                             </form>
                         </li>
                         <li class="drawer__item">
