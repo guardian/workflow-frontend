@@ -60,16 +60,16 @@
                     </ul>
 
                     <ul class="drawer__column">
-                        <li cng-class="{'drawer__section-mainmedia--nopreview': contentItem.mainMediaNoPreview}">
+                        <li cng-class="{'drawer__section-mainmedia--nopreview': capiData.mainMediaType != 'image'}">
                             <span class="drawer__item-title">Main media</span>
 
-                            <div ng-if="contentItem.mainMediaType == 'image'" class="drawer__image-container">
+                            <div ng-if="capiData.mainMediaType == 'image'" class="drawer__image-container">
                                 <img ng-src="{{ capiData.mainMediaUrl}}" class="drawer__image" alt=""/>
                             </div>
                             <div ng-if="contentItem.mainMediaNoPreview" class="drawer__section-image-container">
-                                {{contentItem.mainMediaType}}
+                                {{capiData.mainMediaType}}
                             </div>
-                            <div ng-if="!contentItem.mainMediaType" class="drawer__item-content drawer__item-content--empty">
+                            <div ng-if="!capiData.mainMediaType" class="drawer__item-content drawer__item-content--empty">
                                 None
                             </div>
                             </span>
