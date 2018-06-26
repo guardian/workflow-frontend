@@ -63,8 +63,6 @@ object Config extends AwsInstanceTags {
 
   lazy val googleTrackingId: String = config.getConfigStringOrFail("google.tracking.id")
 
-  lazy val appSecret: String = config.getConfigStringOrFail("application.secret")
-
   lazy val no2faUser: String = "composer.test@guardian.co.uk"
 
   lazy val editorialSupportDynamoTable: String = s"editorial-support-${if(stage != "PROD") { "CODE" } else { "PROD" }}"
@@ -74,15 +72,6 @@ object Config extends AwsInstanceTags {
 
   lazy val sessionId: String = UUID.randomUUID().toString
 
-  // logstash conf
-  private lazy val logStashHost: String = "ingest.logs.gutools.co.uk"
-  private lazy val logStashPort: Int = 6379
-  private lazy val logStashEnabled: Boolean = config.getConfigBooleanOrElse("logging.logstash.enabled", true)
-  lazy val logStashConf = LogStashConf(logStashHost, logStashPort, logStashEnabled)
-
   implicit val defaultExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global
-
-  lazy val testMode: Boolean = config.getConfigBooleanOrElse("testMode", false)
-
 }
