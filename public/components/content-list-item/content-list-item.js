@@ -101,9 +101,6 @@ function wfContentItemParser(config, statusLabels, sections) {
 
             this.hasMainMedia = !!(item.hasMainMedia)
 
-            // Currently we don't pull in any preview information about non-image main media
-            this.mainMediaNoPreview = this.mainMediaType && this.mainMediaType !== 'image';
-
             this.trailtext = stripHtml(item.trailtext);
             this.trailImageUrl = item.trailImageUrl;
 

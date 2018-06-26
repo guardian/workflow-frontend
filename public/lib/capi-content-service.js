@@ -29,6 +29,7 @@ function wfCapiContentService($http, $q, wfAtomService) {
             const smallest = getSmallestAsset(mainElements[0].assets);
             if (smallest) {
                 return {
+                    type: mainElements[0].type,
                     url: smallest.file,
                     caption: smallest.typeData.caption,
                     altText: smallest.typeData.altText
@@ -71,6 +72,7 @@ function wfCapiContentService($http, $q, wfAtomService) {
         return {
             headline: "Unknown",
             standfirst: "Unknown",
+            mainMediaType: "",
             mainMediaUrl: "",
             mainMediaCaption: "Unknown",
             mainMediaAltText: "Unknown",
@@ -97,6 +99,7 @@ function wfCapiContentService($http, $q, wfAtomService) {
             return Promise.resolve({
                 headline: fields.headline ? fields.headline : "",
                 standfirst: fields.standfirst ? fields.standfirst : "",
+                mainMediaType: mainMedia ? mainMedia.type : "",
                 mainMediaUrl: mainMedia ? mainMedia.url : "",
                 mainMediaCaption: mainMedia ? mainMedia.caption : "",
                 mainMediaAltText: mainMedia ? mainMedia.altText : "",
