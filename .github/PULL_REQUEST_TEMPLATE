@@ -1,5 +1,0 @@
-<!--Your pull request-->
-
-#### Editorial tools integration tests
-The editorial tools integration tests live [here](https://circleci.com/gh/guardian/editorial-tools-integration-tests) and get run every time workflow-frontend is deployed to the CODE environment. You should run them before merging this change to master. The current status of the tests (based off the last thing which was deployed to CODE) is:
-[![CircleCI](https://circleci.com/gh/guardian/editorial-tools-integration-tests.svg?style=svg&circle-token=9363dcf360b976f0beb7ec180ab00051c42910f2)](https://circleci.com/gh/guardian/editorial-tools-integration-tests)
