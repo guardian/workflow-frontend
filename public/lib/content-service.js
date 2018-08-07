@@ -22,7 +22,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         "gallery": "Gallery",
                         "interactive": "Interactive",
                         "picture": "Picture",
-                        'atom': 'Atom'
+                        "atom": "Video/Atom"
                     });
                 };
 
