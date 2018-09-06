@@ -44,11 +44,8 @@ object TestData {
   def randomStub: Stub = generateRandomStub()
 
   //todo - genericise these methods over types
-  def generateTestData(size: Int = 50,
-    acc: List[Stub]=Nil): List[Stub] = {
-    if(size == 0) acc
-    else generateTestData(size-1, randomStub::acc)
-  }
+  def generateTestData(size: Int = 50, acc: List[Stub]=Nil): List[Stub] =
+    if(size == 0) acc else generateTestData(size-1, randomStub::acc)
 
   def composerIdsFromStubs(stubList: List[Stub]) : List[String] = stubList.map(_.composerId.getOrElse(""))
 

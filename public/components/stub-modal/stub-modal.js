@@ -60,7 +60,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.atomTypes = getAtomDropdownData();
 
     if(mode==='import') {
-       $scope.statuses = statusLabels.filter(function(s) { return s.value!=='Stub'});
+       $scope.statuses = statusLabels;
     }
 
     $scope.stub = stub;
@@ -218,7 +218,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
         function createItemPromise() {
-            stub.status = stub.status === undefined ? 'Stub' : stub.status;
             if ($scope.contentName === 'Atom') {
                 stub.contentType = $scope.stub.contentType.toLowerCase();
                 if (addToAtomEditor) {
