@@ -82,10 +82,11 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
     this.parseComposerData = parseComposerData;
 
 
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice) {
         var params = {
             'type': type,
-            'tracking': commissioningDesks
+            'tracking': commissioningDesks,
+            'productionOffice': prodOffice
         };
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
