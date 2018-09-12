@@ -297,7 +297,7 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
              * @returns {U[]}
              */
             transformStatusList (list) {
-                return list ? list.split(',').map((status) => status == 'Stub' ? 'News list' : status) : list;
+                return list ? list.split(',') : list;
             }
         }
 

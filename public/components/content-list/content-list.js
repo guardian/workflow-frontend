@@ -207,7 +207,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     };
 
     this.editItem = (contentItem) => {
-        var prefix = (contentItem.status === 'Stub') ? 'stub' : 'content';
+        var prefix = 'content';
         $scope.$emit(prefix + ':edit', contentItem.item);
     };
 
@@ -319,10 +319,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     this.render = (response) => {
         var data = response.data;
 
-        // TODO stubs and content are separate structures in the API response
-        //      make this a single list of content with consistent structure in the API
-
-        data.content.Stub = data.stubs;
         var grouped = data.content;
 
         // fixes https://docs.angularjs.org/error/$rootScope/inprog http://www.pro-tekconsulting.com/blog/solution-to-error-digest-already-in-progress-in-angularjs-2/
@@ -337,7 +333,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
                     return {
                         name: status.toLowerCase(),
-                        title: status === 'Stub' ? 'News list' : status,
+                        title: status,
                         count: data.count[status],
                         items: grouped[status]
                     };

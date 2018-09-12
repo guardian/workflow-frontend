@@ -5,7 +5,6 @@ import enumeratum._
 
 sealed trait Status extends EnumEntry with CapitalWords
 case object Status extends Enum[Status] with CirceEnum[Status] {
-  case object Stub extends Status
   case object Writers extends Status
   case object Desk extends Status
   case object ProductionEditor extends Status

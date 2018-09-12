@@ -30,7 +30,7 @@ var filterDefaults = function (statuses, wfFiltersService, wfFeatureSwitches) {
             multi: true,
             filterOptions: statuses.map((status) => {
                 return {
-                    caption: status === 'Stub' ? 'News list' : status,
+                    caption: status,
                     value: status
                 };
             })
