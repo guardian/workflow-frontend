@@ -5,6 +5,7 @@
 import angular from 'angular';
 
 import { getEnvironment } from './environment';
+import { registerNotifications } from './lib/notifications';
 
 import 'components/sentry/sentry';
 import 'components/user-message/user-message';
@@ -201,12 +202,7 @@ angular.module('workflow',
     })
     .run(['wfAnalyticsService', function(){}]);
 
-navigator.serviceWorker.register("/assets/build/sw.bundle.js")
-    .then(() => {
-        console.log("Registered service worker");
-    }).catch(err => {
-        console.log(`Unable to register service worker ${err}`);
-    });
+registerNotifications();
 
 // Bootstrap App
 angular.element(document).ready(function () {
