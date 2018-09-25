@@ -17,6 +17,25 @@ angular
         $scope.importContent = function() {
             $scope.$emit('content:import');
         };
+
+        // TODO MRB: remove this
+        $scope.sendTestNotification = () => {
+            console.log("Lets send a test notification!");
+            fetch("/api/notifications", {
+                method: "PUT",
+                body: JSON.stringify({ "title": "It's time for a beer" }),
+                headers: { "Content-Type": "application/json" },
+                credentials: "include"
+            }).then(( { status }) => {
+                if(status == 200) {
+                    console.log("Test notification sent!")
+                } else {
+                    throw new Error(`Status ${status}`)   
+                }
+            }).catch((err) => {
+                console.error("Unable to send test notification", err);
+            });
+        };
     }])
     .directive('wfDropdownToggle', ['$document', function($document){
         return {

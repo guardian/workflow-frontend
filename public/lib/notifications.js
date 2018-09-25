@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 export function registerNotifications() {
     navigator.serviceWorker.register("/assets/build/sw.bundle.js")
         .then(({ pushManager }) => {
@@ -7,18 +9,37 @@ export function registerNotifications() {
             return pushManager.getSubscription().then((sub) => {
                 if(sub) {
                     console.log("Already subscribed");
-                    console.log(JSON.stringify(sub));
+                    saveSubscription(sub);
                 } else {
                     return pushManager.subscribe({ userVisibleOnly: true, applicationServerKey })
                         .then((sub) => {
                             console.log("Created subscription");
-                            console.log(JSON.stringify(sub));
+                            saveSubscription(sub);
                         });
                 }
             });
         }).catch(err => {
             console.log(`Unable to register service worker ${err}`);
         });
+}
+
+function saveSubscription(sub) {
+    // We use plain fetch here since this code will run immediately after page load so
+    // we don't have to worry too much about re-negotiating the session
+    fetch("/api/notifications", {
+        method: "POST",
+        body: JSON.stringify(sub),
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+    }).then(( { status }) => {
+        if(status == 200) {
+            console.log("Saved notification subscription to server")
+        } else {
+            throw new Error(`Status ${status}`)   
+        }
+    }).catch((err) => {
+        console.error("Unable to save notification subscription to server", err);
+    });
 }
 
 // Stupid pointless juggling of key formats. The web-push CLI outputs in some

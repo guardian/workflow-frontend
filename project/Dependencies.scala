@@ -18,7 +18,7 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-slf4j" % "2.4.0"
   )
 
-  val googleOAuthDependencies = Seq("com.gu" %% "pan-domain-auth-play_2-4-0" % "0.4.0")
+  val googleOAuthDependencies = Seq("com.gu" %% "pan-domain-auth-play_2-4-0" % "0.5.1")
 
   val testDependencies = Seq(
     "org.scalatest" %% "scalatest" % "2.2.4" % "test",
@@ -39,5 +39,9 @@ object Dependencies {
     "io.circe" %% "circe-parser" % circeVersion,
     "io.circe" %% "circe-generic-extras" % circeVersion,
     "com.beachape" %% "enumeratum-circe" % "1.5.14"
+  )
+
+  val webPushDependencies = Seq(
+    "nl.martijndwars" % "web-push" % "3.1.1"
   )
 }

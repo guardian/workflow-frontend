@@ -58,6 +58,10 @@ GET            /capi/*path                                 controllers.CAPIServi
 # Atoms
 GET            /api/atom/:editorId                         controllers.Api.getContentByEditorId(editorId: String)
 
+# Notifications - TODO MRB: remove test endpoint
+POST           /api/notifications                          controllers.Notifications.addSubscription
+PUT            /api/notifications                          controllers.Notifications.testNotification
+
 # Admin
 GET            /admin                                      controllers.Admin.index
 GET            /admin/desks-and-sections                   controllers.Admin.desksAndSections(selectedDesk: Option[Long])
