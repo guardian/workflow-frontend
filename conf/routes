@@ -10,6 +10,7 @@ OPTIONS        /api/*url                                   controllers.Api.allow
 GET            /dashboard                                  controllers.Application.dashboard
 
 #static user pages
+GET            /about                                      controllers.Assets.at(path="/public", file="/static/about.html")
 GET            /editorialSupport                           controllers.Application.editorialSupport
 POST           /editorialSupport                           controllers.Application.updateEditorialSupport
 GET            /faqs                                       controllers.Application.faqs
