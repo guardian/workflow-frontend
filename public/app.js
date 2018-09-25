@@ -201,6 +201,13 @@ angular.module('workflow',
     })
     .run(['wfAnalyticsService', function(){}]);
 
+navigator.serviceWorker.register("/assets/build/sw.bundle.js")
+    .then(() => {
+        console.log("Registered service worker");
+    }).catch(err => {
+        console.log(`Unable to register service worker ${err}`);
+    });
+
 // Bootstrap App
 angular.element(document).ready(function () {
     angular.bootstrap(document, ['workflow']);

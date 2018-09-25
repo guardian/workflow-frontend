@@ -7,6 +7,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
     entry: {
         app: './public/app.js',
+        sw: './public/sw.js',
         admin: './public/admin.js'
     },
     output: {
