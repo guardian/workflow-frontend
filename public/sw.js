@@ -1,7 +1,8 @@
 console.log("I am the Workflow Service Worker");
 
 self.addEventListener("push", (event) => {
-    console.log("Received push event");
+    const { title } = event.data.json();
+    self.registration.showNotification(title);
 });
 
 self.addEventListener("notificationclick", (event) => {
