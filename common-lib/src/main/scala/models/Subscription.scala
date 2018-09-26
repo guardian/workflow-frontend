@@ -12,6 +12,10 @@ import io.circe.{Decoder, Encoder}
 
 case class SubscriptionKeys(p256dh: String, auth: String)
 case class SubscriptionEndpoint(endpoint: String, keys: SubscriptionKeys)
+// seenIds is optional as it encodes three states:
+//   None          -> we have not seen any content under the given query yet so don't fire notifications
+//   Some(Nil)     -> we last saw no content matching the query
+//   Some(content) -> the content we saw last (ie do a diff and fire notifications)
 case class Subscription(query: Subscription.Query, seenIds: Option[List[String]], endpoint: SubscriptionEndpoint)
 
 object Subscription {

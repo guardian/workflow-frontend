@@ -1,23 +1,26 @@
 package controllers
 
-import java.nio.charset.StandardCharsets
-
 import com.gu.workflow.api.{ApiUtils, SubscriptionsAPI}
+import com.gu.workflow.lib.Notifier
 import config.Config
 import io.circe._
 import models.api.ApiResponseFt
-import models.{Subscription, SubscriptionEndpoint, SubscriptionKeys}
-import nl.martijndwars.webpush.{Notification, PushService}
+import models.{Subscription, SubscriptionEndpoint}
+import play.api.Logger
 import play.api.mvc.Controller
 
 import scala.concurrent.Future
+import scala.concurrent.duration._
 
 object Notifications extends Controller with PanDomainAuthActions {
-  import config.Config.defaultExecutionContext
   import Subscription.endpointDecoder
+  import config.Config.defaultExecutionContext
 
-  private val subsApi = new SubscriptionsAPI(Config.stage)
-  private val pushService = new PushService(Config.webPushPublicKey, Config.webPushPrivateKey, "mailto:digitalcms.bugs@guardian.co.uk")
+  private val subsApi = new SubscriptionsAPI(Config.stage, Config.webPushPublicKey, Config.webPushPrivateKey)
+
+  if(Config.stage == "DEV") {
+    runNotifierLocally()
+  }
 
   def addSubscription = APIAuthAction.async { request =>
     ApiResponseFt[String](for {
@@ -40,13 +43,17 @@ object Notifications extends Controller with PanDomainAuthActions {
   }
 
   private def sendTestNotification(json: Json): Future[Unit] = {
-    val payload = json.toString().getBytes(StandardCharsets.UTF_8)
-
     subsApi.getAll().map { subs =>
-      subs.foreach { case Subscription(_, _, SubscriptionEndpoint(endpoint, SubscriptionKeys(p256dh, auth))) =>
-        val notification = new Notification(endpoint, p256dh, auth, payload)
-        pushService.send(notification)
+      subs.foreach { sub =>
+        subsApi.sendNotification(json, sub.endpoint)
       }
     }
+  }
+
+  private def runNotifierLocally(): Unit = {
+    Logger.info("Running the notifier locally every 30 seconds")
+    val notifier = new Notifier(subsApi)
+
+    actorSystem.scheduler.schedule(0.seconds, 30.seconds) { notifier.run() }
   }
 }

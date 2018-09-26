@@ -51,7 +51,8 @@ object WorkflowBuild extends Build {
 
   lazy val commonLib = project("common-lib")
     .settings(
-      libraryDependencies ++= akkaDependencies ++ logbackDependencies ++ testDependencies ++ playDependencies ++ awsDependencies ++ jsonDependencies
+      libraryDependencies ++= akkaDependencies ++ logbackDependencies ++ testDependencies ++ playDependencies
+        ++ awsDependencies ++ jsonDependencies ++ webPushDependencies
     )
 
   def appDistSettings(application: String, deployJsonDir: Def.Initialize[File] = baseDirectory) = Seq(
@@ -92,7 +93,7 @@ object WorkflowBuild extends Build {
   lazy val root = playProject("workflow-frontend")
     .enablePlugins(RiffRaffArtifact, JDebPackaging)
     .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
-      ++ testDependencies ++ jsonDependencies ++ webPushDependencies)
+      ++ testDependencies ++ jsonDependencies)
     .settings(libraryDependencies += filters)
     .settings(playDefaultPort := 9090)
     .settings(playArtifactDistSettings ++ playArtifactSettings: _*)
