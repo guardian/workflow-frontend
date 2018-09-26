@@ -8,6 +8,8 @@ object Dependencies {
 
   val notificationDependencies = Seq(
     scalaTest,
+    "com.lihaoyi" %% "requests" % "0.1.4",
+    "org.bouncycastle" % "bcprov-jdk15on" % "1.58",
     "com.amazonaws" % "aws-lambda-java-core" % "1.1.0"
   )
 

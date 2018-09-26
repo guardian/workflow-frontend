@@ -16,7 +16,9 @@ case class SubscriptionEndpoint(endpoint: String, keys: SubscriptionKeys)
 //   None          -> we have not seen any content under the given query yet so don't fire notifications
 //   Some(Nil)     -> we last saw no content matching the query
 //   Some(content) -> the content we saw last (ie do a diff and fire notifications)
-case class Subscription(query: Subscription.Query, seenIds: Option[List[String]], endpoint: SubscriptionEndpoint)
+case class Subscription(query: Subscription.Query, seenIds: Option[Set[Long]], endpoint: SubscriptionEndpoint)
+
+case class SubscriptionUpdate(title: String)
 
 object Subscription {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
@@ -26,6 +28,9 @@ object Subscription {
 
   implicit val endpointEncoder: Encoder[SubscriptionEndpoint] = deriveEncoder
   implicit val endpointDecoder: Decoder[SubscriptionEndpoint] = deriveDecoder
+
+  implicit val updateEncoder: Encoder[SubscriptionUpdate] = deriveEncoder
+  implicit val updateDecoder: Decoder[SubscriptionUpdate] = deriveDecoder
 
   implicit val encoder: Encoder[Subscription] = deriveEncoder
   implicit val decoder: Decoder[Subscription] = deriveDecoder

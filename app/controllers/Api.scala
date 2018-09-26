@@ -16,7 +16,6 @@ import org.joda.time.DateTime
 import play.api.Logger
 import play.api.mvc._
 import EditorialSupportStaff._
-import lib.QueryString
 
 import scala.concurrent.Future
 
