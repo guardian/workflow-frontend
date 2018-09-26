@@ -21,23 +21,6 @@ angular
 
         $scope.registerSubscription = () => {
             registerSubscription();
-        }
-
-        // TODO MRB: remove this
-        $scope.sendTestNotification = () => {
-            console.log("Lets send a test notification!");
-            fetch("/api/notifications", {
-                method: "PUT",
-                credentials: "include"
-            }).then(( { status }) => {
-                if(status == 200) {
-                    console.log("Test notification sent!")
-                } else {
-                    throw new Error(`Status ${status}`)   
-                }
-            }).catch((err) => {
-                console.error("Unable to send test notification", err);
-            });
         };
     }])
     .directive('wfDropdownToggle', ['$document', function($document){
