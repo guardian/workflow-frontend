@@ -46,7 +46,21 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
 
 
                 } else {
-                    const currentSelection = wfFiltersService.get($scope.filter.namespace);
+
+                    // Filter selections are strings most of the time but if we are
+                    // selecting deadlines they can also be moment objects
+                    const filterAsSelection = (filter) => {
+                      if (!filter) {
+                        return filter;
+                      }
+                      if (typeof filter === 'string') {
+                        return filter;
+                      }
+
+                      return filter.format('YYYY-MM-DD');
+                    }
+                    const filter = wfFiltersService.get($scope.filter.namespace);
+                    const currentSelection = filterAsSelection(filter);
 
                     if (!currentSelection) {
                         $scope.selectedFilters = [];
@@ -127,6 +141,13 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                                     flt => flt !== filter.value);
                     } else {
                         $scope.selectFilter(filter.value);
+                    }
+
+                    // We change the selected date to an empty string so that if a deadline
+                    // has been chosen from the date dropdown previously it will no longer be
+                    // displayed here.
+                    if ($scope.filter.namespace === 'selectedDate' && typeof filter.value === 'string') {
+                      $scope.select.selectedDate = '';
                     }
 
                     $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);

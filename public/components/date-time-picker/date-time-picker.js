@@ -87,7 +87,6 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                     }
                 });
 
-
                 this.onDatePicked = function (newValue) {
                     $scope.dateValue = wfDateParser.parseDate(newValue);
 
