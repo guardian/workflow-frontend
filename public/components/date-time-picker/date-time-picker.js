@@ -75,6 +75,8 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
 
                 this.textInputId = 'wfDateTimePickerText' + idSuffix;
                 this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
+                const dropDownId = 'wfDateTimePickerDropdown' + idSuffix;
+                this.dropDownId = dropDownId;
 
                 $element.addClass('date-time-picker');
 
@@ -95,6 +97,7 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                     $timeout(function () {
                         $scope.onUpdate($scope.dateValue);
                         $scope.onSubmit();
+                        angular.element(document.getElementById(dropDownId)).removeClass('open')
                     }, 0);
                 };
             },
