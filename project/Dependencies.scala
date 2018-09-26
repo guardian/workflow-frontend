@@ -3,13 +3,20 @@ import play.Play.autoImport._
 import PlayKeys._
 
 object Dependencies {
+  val awsVersion: String = "1.11.259"
+  val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+
+  val notificationDependencies = Seq(
+    scalaTest,
+    "com.amazonaws" % "aws-lambda-java-core" % "1.1.0"
+  )
 
   val playDependencies = Seq(ws, "com.typesafe.play" %% "play-json" % "2.4.11")
 
   val awsDependencies = Seq(
-    "com.amazonaws" % "aws-java-sdk" % "1.11.259",
+    "com.amazonaws" % "aws-java-sdk" % awsVersion,
     "com.gu" % "kinesis-logback-appender" % "1.3.0",
-    "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.11.259",
+    "com.amazonaws" % "aws-java-sdk-dynamodb" % awsVersion,
     "com.gu" %% "content-api-client-aws" % "0.5"
   )
 
@@ -21,7 +28,7 @@ object Dependencies {
   val googleOAuthDependencies = Seq("com.gu" %% "pan-domain-auth-play_2-4-0" % "0.4.0")
 
   val testDependencies = Seq(
-    "org.scalatest" %% "scalatest" % "2.2.4" % "test",
+    scalaTest,
     "org.seleniumhq.selenium" % "selenium-java" % "2.35.0" % "test",
     "org.scalatestplus" %% "play" % "1.2.0" % "test",
     "org.apache.httpcomponents" % "httpclient" % "4.5.2",
