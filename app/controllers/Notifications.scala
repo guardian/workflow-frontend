@@ -4,6 +4,7 @@ import com.gu.workflow.api.{ApiUtils, SubscriptionsAPI}
 import com.gu.workflow.lib.Notifier
 import config.Config
 import io.circe._
+import lib.QueryString
 import models.api.ApiResponseFt
 import models.{Subscription, SubscriptionEndpoint}
 import play.api.Logger
@@ -23,12 +24,14 @@ object Notifications extends Controller with PanDomainAuthActions {
   }
 
   def addSubscription = APIAuthAction.async { request =>
+    val qs: Map[String, Seq[String]] = QueryString.fromRequest(request)
+
     ApiResponseFt[String](for {
       json <- ApiUtils.readJsonFromRequestResponse(request.body)
 
       // TODO MRB: customisable queries
       endpoint <- ApiUtils.extractResponse[SubscriptionEndpoint](json)
-      sub = Subscription(Map.empty, None, endpoint)
+      sub = Subscription(qs, None, endpoint)
 
       _ <- ApiResponseFt.Async.Right(subsApi.put(sub))
     } yield "Done")

@@ -1,32 +1,48 @@
 import angular from 'angular';
 
-export function registerNotifications() {
-    navigator.serviceWorker.register("/assets/build/sw.bundle.js")
+const serviceWorkerURL = "/assets/build/sw.bundle.js";
+
+export function registerServiceWorker() {
+    navigator.serviceWorker.register(serviceWorkerURL)
         .then(({ pushManager }) => {
             console.log("Registered service worker");
-            const applicationServerKey = urlB64ToUint8Array(_wfConfig.webPush.publicKey);
-
-            return pushManager.getSubscription().then((sub) => {
-                if(sub) {
-                    console.log("Already subscribed");
-                    saveSubscription(sub);
-                } else {
-                    return pushManager.subscribe({ userVisibleOnly: true, applicationServerKey })
-                        .then((sub) => {
-                            console.log("Created subscription");
-                            saveSubscription(sub);
-                        });
-                }
-            });
         }).catch(err => {
             console.log(`Unable to register service worker ${err}`);
         });
 }
 
-function saveSubscription(sub) {
+export function registerSubscription() {
+    // TODO MRB: handle service worker not being registered yet (disable button?)
+    navigator.serviceWorker.getRegistration(serviceWorkerURL).then(({ pushManager }) => {
+        return getBrowserSubscription(pushManager).then((sub) => {
+            saveSubscription(sub, window.location.search);
+        });
+    }).catch(err => {
+        console.error("Unable to register subscription", err);
+    });
+}
+
+function getBrowserSubscription(pushManager) {
+    return pushManager.getSubscription().then((sub) => {
+        if(sub) {
+            console.log("Already subscribed");
+            return sub;
+        } else {
+            const applicationServerKey = urlB64ToUint8Array(_wfConfig.webPush.publicKey);
+
+            return pushManager.subscribe({ userVisibleOnly: true, applicationServerKey })
+                .then((sub) => {
+                    console.log("Created subscription");
+                    return sub;
+                });
+        }
+    });
+}
+
+function saveSubscription(sub, query) {
     // We use plain fetch here since this code will run immediately after page load so
     // we don't have to worry too much about re-negotiating the session
-    fetch("/api/notifications", {
+    fetch("/api/notifications" + query, {
         method: "POST",
         body: JSON.stringify(sub),
         headers: { "Content-Type": "application/json" },

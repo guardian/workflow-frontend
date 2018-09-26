@@ -1,6 +1,7 @@
 import angular from 'angular';
 
 import 'lib/content-service';
+import { registerSubscription } from '../../lib/notifications';
 
 import './dashboard-create.html';
 
@@ -17,6 +18,10 @@ angular
         $scope.importContent = function() {
             $scope.$emit('content:import');
         };
+
+        $scope.registerSubscription = () => {
+            registerSubscription();
+        }
 
         // TODO MRB: remove this
         $scope.sendTestNotification = () => {

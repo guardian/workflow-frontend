@@ -16,6 +16,7 @@ import org.joda.time.DateTime
 import play.api.Logger
 import play.api.mvc._
 import EditorialSupportStaff._
+import lib.QueryString
 
 import scala.concurrent.Future
 
@@ -51,10 +52,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   // can be hidden behind multiple auth endpoints
   private def getContentBlock[R <: Request[_]] = { implicit req: R =>
-    val qs: Map[String, Seq[String]] = req match {
-      case r: UserRequest[_] => r.queryString + ("email" -> Seq(r.user.email))
-      case r: Request[_] => r.queryString
-    }
+    val qs: Map[String, Seq[String]] = QueryString.fromRequest(req)
 
     CommonAPI.getStubs(qs).asFuture.map {
       case Left(_) => InternalServerError
