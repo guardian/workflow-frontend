@@ -4,7 +4,7 @@ import com.gu.workflow.api.{ApiUtils, SubscriptionsAPI}
 import com.gu.workflow.lib.QueryString
 import config.Config
 import models.api.ApiResponseFt
-import models.{Subscription, SubscriptionEndpoint, SubscriptionUpdate}
+import models.{Subscription, SubscriptionEndpoint}
 import play.api.mvc.Controller
 
 object Notifications extends Controller with PanDomainAuthActions {
@@ -24,18 +24,5 @@ object Notifications extends Controller with PanDomainAuthActions {
 
       _ <- ApiResponseFt.Right(subsApi.put(sub))
     } yield "Done")
-  }
-
-  // TODO MRB: remove test endpoint
-  def testNotification = APIAuthAction.async {
-    ApiResponseFt[String](for {
-      _ <- ApiResponseFt.Right(sendTestNotification())
-    } yield "Done")
-  }
-
-  private def sendTestNotification(): Unit = {
-    subsApi.getAll().foreach { sub =>
-      subsApi.sendNotification(SubscriptionUpdate("It's time for a beer"), sub.endpoint)
-    }
   }
 }
