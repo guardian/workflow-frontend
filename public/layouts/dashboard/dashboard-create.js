@@ -20,6 +20,7 @@ angular
         };
 
         $scope.registerSubscription = () => {
+            // TODO MRB: show spinner and success or similar
             registerSubscription();
         };
     }])

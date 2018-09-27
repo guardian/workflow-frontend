@@ -37,16 +37,7 @@ object Subscription {
 
   type Query = Map[String, Seq[String]]
 
-  def queryId(query: Subscription.Query): String = {
-    val hasher = Hashing.md5().newHasher()
-    query.foreach { case (key, values) =>
-      hasher.putString(s"$key->${values.mkString(",")}", StandardCharsets.UTF_8)
-    }
-
-    hasher.hash().toString
-  }
-
-  def endpointId(endpoint: SubscriptionEndpoint): String = {
+  def id(endpoint: SubscriptionEndpoint): String = {
     val hasher = Hashing.md5().newHasher()
     hasher.putString(endpoint.endpoint, StandardCharsets.UTF_8)
     hasher.putString(endpoint.keys.p256dh, StandardCharsets.UTF_8)
@@ -57,8 +48,7 @@ object Subscription {
 
   def toItem(sub: Subscription): Item =
     Item.fromJSON(sub.asJson.toString())
-      .withString("queryId", queryId(sub.query))
-      .withString("endpointId", endpointId(sub.endpoint))
+      .withString("id", id(sub.endpoint))
 
   def fromItem(item: Item): Subscription =
     decode[Subscription](item.toJSON).right.get

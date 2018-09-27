@@ -22,14 +22,12 @@ class SubscriptionsAPI(stage: String, webPushPublicKey: String, webPushPrivateKe
     subscription
   }
 
-  def delete(subscription: Subscription): Unit = {
-    val queryId = Subscription.queryId(subscription.query)
-    val endpointId = Subscription.endpointId(subscription.endpoint)
-
-    table.deleteItem("queryId", queryId, "endpointId", endpointId)
+  def delete(sub: Subscription): Unit = {
+    table.deleteItem("id", Subscription.id(sub.endpoint))
   }
 
   def getAll(): Iterable[Subscription] = {
+    // TODO MRB: handle more results than the default scan page size
     val raw = table.scan().asScala
     raw.map(Subscription.fromItem)
   }
