@@ -18,12 +18,17 @@ class SubscriptionsAPI(stage: String, webPushPublicKey: String, webPushPrivateKe
   def put(subscription: Subscription): Subscription = {
     val item = Subscription.toItem(subscription)
 
-    // TODO MRB: dynamo async client?
     table.putItem(item)
     subscription
   }
 
-  // TODO MRB: pages!
+  def delete(subscription: Subscription): Unit = {
+    val queryId = Subscription.queryId(subscription.query)
+    val endpointId = Subscription.endpointId(subscription.endpoint)
+
+    table.deleteItem("queryId", queryId, "endpointId", endpointId)
+  }
+
   def getAll(): Iterable[Subscription] = {
     val raw = table.scan().asScala
     raw.map(Subscription.fromItem)

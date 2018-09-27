@@ -7,8 +7,6 @@ import models.api.ApiResponseFt
 import models.{Subscription, SubscriptionEndpoint, SubscriptionUpdate}
 import play.api.mvc.Controller
 
-import scala.concurrent.Future
-
 object Notifications extends Controller with PanDomainAuthActions {
   import Subscription.endpointDecoder
   import config.Config.defaultExecutionContext
@@ -21,7 +19,6 @@ object Notifications extends Controller with PanDomainAuthActions {
     ApiResponseFt[String](for {
       json <- ApiUtils.readJsonFromRequestResponse(request.body)
 
-      // TODO MRB: customisable queries
       endpoint <- ApiUtils.extractResponse[SubscriptionEndpoint](json)
       sub = Subscription(qs, None, endpoint)
 
