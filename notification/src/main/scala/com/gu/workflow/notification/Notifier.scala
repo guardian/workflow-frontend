@@ -20,7 +20,9 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
   private val appUrl = stage match {
     case "PROD" => "https://workflow.gutools.co.uk"
     case "CODE" => "https://workflow.code.dev-gutools.co.uk"
-    case "DEV" => "https://workflow.local.dev-gutools.co.uk"
+    // TODO MRB: put this back to https://workflow.local.dev-gutools.co.uk
+    //           by convincing the JVM that our local dev cert is totes legit
+    case "DEV" => "http://localhost:9090"
   }
 
   def run(): Unit = {
@@ -70,7 +72,7 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
   }
 
   private def getStubs(query: Subscription.Query): List[Stub] = {
-    val url = s"$appUrl/stubs"
+    val url = s"$appUrl/api/content"
     val params = QueryString.flatten(query)
 
     val fullUrl = s"$url?${Util.urlEncode(params)}"
@@ -85,10 +87,17 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
       )
     )
 
-    val json = parser.parse(response.text()).right.get
-    val content = json.hcursor.downField("data").as[ContentResponse].right.get
+    val responseText = response.text()
 
-    content.content.values.flatten.toList
+    parser.parse(responseText) match {
+      case Right(json) =>
+        val content = json.as[ContentResponse].right.get
+        content.content.values.flatten.toList
+
+      case Left(err) =>
+        Logger.error(s"Unable to get stubs for $query: ${response.statusCode} $responseText", err)
+        throw err.underlying
+    }
   }
 
   private def notify(stubs: List[Stub], subs: Iterable[Subscription]): Unit = {
