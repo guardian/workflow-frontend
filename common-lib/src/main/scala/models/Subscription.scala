@@ -17,7 +17,7 @@ case class SubscriptionEndpoint(endpoint: String, keys: SubscriptionKeys)
 //   Some(Nil)     -> we last saw no content matching the query
 //   Some(content) -> the content we saw last (ie do a diff and fire notifications)
 case class Subscription(query: Subscription.Query, seenIds: Option[Set[Long]], endpoint: SubscriptionEndpoint)
-case class SubscriptionUpdate(title: String, body: Option[String], url: Option[String])
+case class SubscriptionUpdate(title: String, body: String, url: Option[String])
 
 object Subscription {
   implicit val customConfig: Configuration = Configuration.default.withDefaults

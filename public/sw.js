@@ -7,7 +7,9 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
     const { url } = event.notification.data;
-
     event.notification.close();
-    clients.openWindow(url);
+
+    if(url) {
+        clients.openWindow(url);
+    }
 });

@@ -116,7 +116,8 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
         stubs.foreach { case (status, stub) =>
           // TODO MRB: atom edit URLs?
           val url = stub.composerId.map { id => s"$composerUrl/content/$id"}
-          val update = SubscriptionUpdate(s"${stub.title} now in $status", stub.note, url)
+          val body = stub.note.getOrElse("")
+          val update = SubscriptionUpdate(s"${stub.title} now in $status", body, url)
 
           subsApi.sendNotification(update, sub.endpoint)
         }
