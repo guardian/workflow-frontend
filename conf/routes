@@ -78,14 +78,10 @@ GET            /admin/sections-and-tags                    controllers.Admin.sec
 POST           /admin/sectiontag                           controllers.Admin.addSectionTag
 POST           /admin/sectiontag/delete                    controllers.Admin.removeSectionTag
 
-# feature-switching based enpoinds
+# feature-switching based endpoints
 GET            /feature/:featureName                       controllers.Feature.featureSwitchToggle(featureName)
 GET            /feature/:featureName/on                    controllers.Feature.featureSwitchOn(featureName)
 GET            /feature/:featureName/off                   controllers.Feature.featureSwitchOff(featureName)
-
-# shared secret auth test
-GET            /sharedsecret/content                       controllers.Api.sharedAuthGetContent
-GET            /sharedsecret/content/:id                   controllers.Api.sharedAuthGetContentById(id)
 
 # Support
 POST            /support/logger                            controllers.Support.logger

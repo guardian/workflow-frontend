@@ -1,18 +1,29 @@
 package com.gu.workflow.notification
 
+import java.net.URI
+
+import com.gu.hmac.HMACHeaders
 import com.gu.workflow.api.SubscriptionsAPI
 import com.gu.workflow.lib.QueryString
 import io.circe.parser
 import models.api.ContentResponse
 import models.{Stub, Subscription, SubscriptionUpdate}
 import play.api.Logger
+import requests.Util
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
-class Notifier(datastoreApiRoot: String, subsApi: SubscriptionsAPI)(implicit ec: ExecutionContext) {
+class Notifier(stage: String, override val secret: String, subsApi: SubscriptionsAPI)
+              (implicit ec: ExecutionContext) extends HMACHeaders {
+
+  private val appUrl = stage match {
+    case "PROD" => "https://workflow.gutools.co.uk"
+    case "CODE" => "https://workflow.code.dev-gutools.co.uk"
+    case "DEV" => "https://workflow.local.dev-gutools.co.uk"
+  }
+
   def run(): Unit = {
-    // TODO MRB: use Slf4j logging to fix logging in the lambda
     Logger.info("I am the Workflow notifier!")
 
     val subscriptions = subsApi.getAll()
@@ -59,10 +70,24 @@ class Notifier(datastoreApiRoot: String, subsApi: SubscriptionsAPI)(implicit ec:
   }
 
   private def getStubs(query: Subscription.Query): List[Stub] = {
-    val response = requests.get(s"$datastoreApiRoot/stubs", params = QueryString.flatten(query))
-    val json = parser.parse(response.text()).right.get
+    val url = s"$appUrl/stubs"
+    val params = QueryString.flatten(query)
 
+    val fullUrl = s"$url?${Util.urlEncode(params)}"
+    val hmacHeaders = createHMACHeaderValues(new URI(fullUrl))
+
+    val response = requests.get(
+      url, params = params,
+      headers = Seq(
+        "X-Gu-Tools-Service-Name" -> "workflow-notifier",
+        "X-Gu-Tools-HMAC-Token" -> hmacHeaders.token,
+        "X-Gu-Tools-HMAC-Date" -> hmacHeaders.date
+      )
+    )
+
+    val json = parser.parse(response.text()).right.get
     val content = json.hcursor.downField("data").as[ContentResponse].right.get
+
     content.content.values.flatten.toList
   }
 

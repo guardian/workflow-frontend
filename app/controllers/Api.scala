@@ -35,10 +35,11 @@ case class CORSable[A](allowedOrigins: Set[String])(action: Action[A]) extends A
   lazy val parser: BodyParser[A] = action.parser
 }
 
-object Api extends Controller with PanDomainAuthActions {
+object Api extends Controller with PanDomainAuthActions with HMACAuthActions {
 
   val defaultCorsAble: Set[String] = Set(Config.composerUrl)
   val atomCorsAble: Set[String] = defaultCorsAble ++ Config.mediaAtomMakerUrls ++ Config.atomWorkshopUrls
+  override val secret = Config.hmacSecret
 
   implicit val flatStubWrites: Encoder[Stub] = Stub.flatJsonEncoder
 
@@ -59,7 +60,7 @@ object Api extends Controller with PanDomainAuthActions {
     }
   }
 
-  def content = APIAuthAction.async(getContentBlock)
+  def content = APIHMACAuthAction.async(getContentBlock)
 
   def getContentByComposerId(composerId: String) = CORSable(defaultCorsAble) {
       APIAuthAction.async { implicit request =>
@@ -76,13 +77,6 @@ object Api extends Controller with PanDomainAuthActions {
       } yield item
     )}
   }
-
-  def sharedAuthGetContentById(composerId: String) =
-    SharedSecretAuthAction.async {
-      ApiResponseFt[Option[Stub]](for {
-        item <- getResponse(PrototypeAPI.getStubByComposerId(composerId))
-      } yield item
-    )}
 
   def validateContentType(body: Json): ApiResponseFt[Json] = {
     val atomType: String = body.hcursor.downField("contentType").as[String].getOrElse("")
@@ -290,6 +284,4 @@ object Api extends Controller with PanDomainAuthActions {
       Ok((other :+ fronts).asJson.noSpaces)
     }
   }
-
-  def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
 }

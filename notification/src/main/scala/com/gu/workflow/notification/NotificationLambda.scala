@@ -18,7 +18,7 @@ class NotificationLambda extends RequestHandler[Unit, Unit] {
   Security.addProvider(new BouncyCastleProvider())
 
   private val subsApi = new SubscriptionsAPI(stage, config.webPushPublicKey, config.webPushPrivateKey)
-  private val notifier = new Notifier(config.apiUrl, subsApi)
+  private val notifier = new Notifier(stage, config.hmacSecret, subsApi)
 
   override def handleRequest(input: Unit, context: Context): Unit = {
     notifier.run()

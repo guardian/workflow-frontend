@@ -10,6 +10,7 @@ object Dependencies {
     scalaTest,
     "com.lihaoyi" %% "requests" % "0.1.4",
     "org.bouncycastle" % "bcprov-jdk15on" % "1.58",
+    "com.gu" %% "hmac-headers" % "1.1.2",
     "com.amazonaws" % "aws-lambda-java-core" % "1.1.0"
   )
 
@@ -27,7 +28,10 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-slf4j" % "2.4.0"
   )
 
-  val googleOAuthDependencies = Seq("com.gu" %% "pan-domain-auth-play_2-4-0" % "0.5.1")
+  val authDependencies = Seq(
+    "com.gu" %% "pan-domain-auth-play_2-4-0" % "0.5.1",
+    "com.gu" %% "hmac-headers" % "1.1.2"
+  )
 
   val testDependencies = Seq(
     scalaTest,
