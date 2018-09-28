@@ -25,6 +25,11 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
     case "DEV" => "http://localhost:9090"
   }
 
+  private val composerUrl = stage match {
+    case "PROD" => "https://composer.gutools.co.uk"
+    case _ => "https://composer.code.dev-gutools.co.uk"
+  }
+
   def run(): Unit = {
     Logger.info("I am the Workflow notifier!")
 
@@ -42,7 +47,7 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
     val stubs = getStubs(query)
 
     val oldSeenIds = subs.head.seenIds
-    val newSeenIds = stubs.flatMap(_.id).toSet
+    val newSeenIds = stubs.flatMap(_._2.id).toSet
 
     try {
       oldSeenIds match {
@@ -54,7 +59,7 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
           } else {
             Logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds. Sending notifications for $toNotify")
 
-            val stubsToNotify = stubs.filter(_.id.exists(toNotify.contains))
+            val stubsToNotify = stubs.filter(_._2.id.exists(toNotify.contains))
             notify(stubsToNotify, subs)
           }
 
@@ -71,7 +76,7 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
     }
   }
 
-  private def getStubs(query: Subscription.Query): List[Stub] = {
+  private def getStubs(query: Subscription.Query): List[(String, Stub)] = {
     val url = s"$appUrl/api/content"
     val params = QueryString.flatten(query)
 
@@ -92,7 +97,11 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
     parser.parse(responseText) match {
       case Right(json) =>
         val content = json.as[ContentResponse].right.get
-        content.content.values.flatten.toList
+        val allStubs = content.content.toList
+
+        allStubs.flatMap { case(status, stubs) =>
+          stubs.map(status -> _)
+        }
 
       case Left(err) =>
         Logger.error(s"Unable to get stubs for $query: ${response.statusCode} $responseText", err)
@@ -100,16 +109,19 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
     }
   }
 
-  private def notify(stubs: List[Stub], subs: Iterable[Subscription]): Unit = {
+  private def notify(stubs: List[(String, Stub)], subs: Iterable[Subscription]): Unit = {
     // TODO MRB: allow user to specify a name for the subscription and use it in the title
     subs.foreach { sub =>
       try {
-        stubs.foreach { stub =>
-          val update = SubscriptionUpdate(s"${stub.title} updated")
+        stubs.foreach { case (status, stub) =>
+          // TODO MRB: atom edit URLs?
+          val url = stub.composerId.map { id => s"$composerUrl/content/$id"}
+          val update = SubscriptionUpdate(s"${stub.title} now in $status", stub.note, url)
+
           subsApi.sendNotification(update, sub.endpoint)
         }
 
-        subsApi.put(sub.copy(seenIds = Some(stubs.flatMap(_.id).toSet)))
+        subsApi.put(sub.copy(seenIds = Some(stubs.flatMap(_._2.id).toSet)))
       } catch {
         case NonFatal(e) =>
           Logger.error(s"Error sending notification to ${sub.endpoint}. Removing subscription", e)

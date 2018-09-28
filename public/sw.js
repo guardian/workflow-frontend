@@ -1,16 +1,13 @@
-console.log("I am the Workflow Service Worker");
-
 self.addEventListener("push", (event) => {
-    const { title } = event.data.json();
-    self.registration.showNotification(title);
+    const { title, body, url } = event.data.json();
+    self.registration.showNotification(title, {
+        body, data: { url }
+    });
 });
 
 self.addEventListener("notificationclick", (event) => {
+    const { url } = event.notification.data;
+
     event.notification.close();
-
-    console.log("Notification clicked");
-});
-
-self.addEventListener("notificationclose", (event) => {
-    console.log("Notification closed");
+    clients.openWindow(url);
 });
