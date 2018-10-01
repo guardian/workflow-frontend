@@ -9,7 +9,6 @@ class NotifierConfig(config: Config = ConfigFactory.load()) {
   lazy val apiUrl: String = config.getString("api.url")
   lazy val webPushPublicKey: String = config.getString("webpush.publicKey")
   lazy val webPushPrivateKey: String = config.getString("webpush.privateKey")
-  lazy val hmacSecret: String = config.getString("hmac.secret")
 }
 
 object NotifierConfig {

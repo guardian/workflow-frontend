@@ -1,21 +1,21 @@
 package controllers
 
 import cats.syntax.either._
-import com.gu.pandomainauth.action.UserRequest
 import com.gu.workflow.api.{ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI}
 import com.gu.workflow.lib.DBToAPIResponse.getResponse
 import com.gu.workflow.lib._
+import com.gu.workflow.util.SharedSecretAuthAction
 import config.Config
 import config.Config.defaultExecutionContext
 import io.circe.syntax._
 import io.circe.{Encoder, Json}
 import lib.Responses._
+import models.EditorialSupportStaff._
 import models.api.{ApiError, ApiResponseFt}
 import models.{Flag, _}
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.mvc._
-import EditorialSupportStaff._
 
 import scala.concurrent.Future
 
@@ -35,11 +35,10 @@ case class CORSable[A](allowedOrigins: Set[String])(action: Action[A]) extends A
   lazy val parser: BodyParser[A] = action.parser
 }
 
-object Api extends Controller with PanDomainAuthActions with HMACAuthActions {
+object Api extends Controller with PanDomainAuthActions {
 
   val defaultCorsAble: Set[String] = Set(Config.composerUrl)
   val atomCorsAble: Set[String] = defaultCorsAble ++ Config.mediaAtomMakerUrls ++ Config.atomWorkshopUrls
-  override val secret = Config.hmacSecret
 
   implicit val flatStubWrites: Encoder[Stub] = Stub.flatJsonEncoder
 
@@ -60,7 +59,7 @@ object Api extends Controller with PanDomainAuthActions with HMACAuthActions {
     }
   }
 
-  def content = APIHMACAuthAction.async(getContentBlock)
+  def content = APIAuthAction.async(getContentBlock)
 
   def getContentByComposerId(composerId: String) = CORSable(defaultCorsAble) {
       APIAuthAction.async { implicit request =>
@@ -77,6 +76,13 @@ object Api extends Controller with PanDomainAuthActions with HMACAuthActions {
       } yield item
     )}
   }
+
+  def sharedAuthGetContentById(composerId: String) =
+    SharedSecretAuthAction.async {
+      ApiResponseFt[Option[Stub]](for {
+        item <- getResponse(PrototypeAPI.getStubByComposerId(composerId))
+      } yield item
+      )}
 
   def validateContentType(body: Json): ApiResponseFt[Json] = {
     val atomType: String = body.hcursor.downField("contentType").as[String].getOrElse("")
@@ -284,4 +290,6 @@ object Api extends Controller with PanDomainAuthActions with HMACAuthActions {
       Ok((other :+ fronts).asJson.noSpaces)
     }
   }
+
+  def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
 }

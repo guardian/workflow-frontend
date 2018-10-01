@@ -1,21 +1,18 @@
 package com.gu.workflow.notification
 
-import java.net.URI
+import java.net.HttpCookie
 
-import com.gu.hmac.HMACHeaders
 import com.gu.workflow.api.SubscriptionsAPI
 import com.gu.workflow.lib.QueryString
+import com.gu.workflow.util.SharedSecretAuthAction
 import io.circe.parser
 import models.api.ContentResponse
 import models.{Stub, Subscription, SubscriptionUpdate}
 import play.api.Logger
-import requests.Util
 
-import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
-class Notifier(stage: String, override val secret: String, subsApi: SubscriptionsAPI)
-              (implicit ec: ExecutionContext) extends HMACHeaders {
+class Notifier(stage: String, subsApi: SubscriptionsAPI) {
 
   private val appUrl = stage match {
     case "PROD" => "https://workflow.gutools.co.uk"
@@ -77,18 +74,13 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
   }
 
   private def getStubs(query: Subscription.Query): List[(String, Stub)] = {
-    val url = s"$appUrl/api/content"
-    val params = QueryString.flatten(query)
-
-    val fullUrl = s"$url?${Util.urlEncode(params)}"
-    val hmacHeaders = createHMACHeaderValues(new URI(fullUrl))
+    import SharedSecretAuthAction._
 
     val response = requests.get(
-      url, params = params,
-      headers = Seq(
-        "X-Gu-Tools-Service-Name" -> "workflow-notifier",
-        "X-Gu-Tools-HMAC-Token" -> hmacHeaders.token,
-        "X-Gu-Tools-HMAC-Date" -> hmacHeaders.date
+      s"$appUrl/api/content",
+      params = QueryString.flatten(query),
+      cookies = Map(
+        cookieName -> new HttpCookie(cookieName, sharedSecret.head)
       )
     )
 

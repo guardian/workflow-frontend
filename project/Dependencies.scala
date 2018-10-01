@@ -10,7 +10,6 @@ object Dependencies {
     scalaTest,
     "com.lihaoyi" %% "requests" % "0.1.4",
     "org.bouncycastle" % "bcprov-jdk15on" % "1.58",
-    "com.gu" %% "hmac-headers" % "1.1.2",
     "com.amazonaws" % "aws-lambda-java-core" % "1.1.0"
   )
 

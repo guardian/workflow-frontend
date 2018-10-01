@@ -7,8 +7,6 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.gu.workflow.api.SubscriptionsAPI
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class NotificationLambda extends RequestHandler[Unit, Unit] {
   private val stage = sys.env("STAGE")
 
@@ -18,7 +16,7 @@ class NotificationLambda extends RequestHandler[Unit, Unit] {
   Security.addProvider(new BouncyCastleProvider())
 
   private val subsApi = new SubscriptionsAPI(stage, config.webPushPublicKey, config.webPushPrivateKey)
-  private val notifier = new Notifier(stage, config.hmacSecret, subsApi)
+  private val notifier = new Notifier(stage, subsApi)
 
   override def handleRequest(input: Unit, context: Context): Unit = {
     notifier.run()

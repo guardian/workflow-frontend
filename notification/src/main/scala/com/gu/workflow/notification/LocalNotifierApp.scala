@@ -4,8 +4,6 @@ import com.gu.workflow.api.SubscriptionsAPI
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 object LocalNotifierApp extends App {
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   val stage = sys.env.getOrElse("STAGE", "DEV")
   val config = new NotifierConfig()
 
@@ -14,7 +12,7 @@ object LocalNotifierApp extends App {
   Security.addProvider(new BouncyCastleProvider())
 
   val subsApi = new SubscriptionsAPI(stage, config.webPushPublicKey, config.webPushPrivateKey)
-  val notifier = new Notifier(stage, config.hmacSecret, subsApi)
+  val notifier = new Notifier(stage, subsApi)
 
   notifier.run()
 }
