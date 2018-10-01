@@ -14,7 +14,7 @@ import play.api.mvc._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object Admin extends Controller with PanDomainAuthActions {
+object Admin extends Controller with MaybeAuth {
 
   import play.api.data.Forms._
 
@@ -39,7 +39,7 @@ object Admin extends Controller with PanDomainAuthActions {
       Future[List[Section]] = {
     val selectedDeskOption = for {
       selectedDeskId <- selectedDeskIdOption
-      selectedDesk <- deskList.find((desk) => selectedDeskId == desk.id)
+      selectedDesk <- deskList.find(desk => selectedDeskId == desk.id)
     } yield {
       selectedDesk
     }
@@ -56,11 +56,11 @@ object Admin extends Controller with PanDomainAuthActions {
     }.getOrElse(Future(sectionListFromDB))
   }
 
-  def index() = (AuthAction andThen WhiteListAuthFilter) {
+  def index() = (maybeAuth andThen WhiteListAuthFilter) {
     Redirect("/admin/desks-and-sections")
   }
 
-  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async {
+  def desksAndSections(selectedDeskIdOption: Option[Long]) = (maybeAuth andThen WhiteListAuthFilter).async {
     for {
       deskList <- getDesks()
       sectionListFromDB <- getSortedSections()
@@ -69,7 +69,7 @@ object Admin extends Controller with PanDomainAuthActions {
 
       val selectedDeskOption = for {
         selectedDeskId <- selectedDeskIdOption
-        selectedDesk <- deskList.find((desk) => selectedDeskId == desk.id)
+        selectedDesk <- deskList.find(desk => selectedDeskId == desk.id)
       } yield selectedDesk
 
       val desks = selectedDeskOption.map { selectedDesk =>
@@ -118,7 +118,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )(assignSectionToDeskFormData.apply)(assignSectionToDeskFormData.unapply)
   )
 
-  def assignSectionToDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def assignSectionToDesk = (maybeAuth andThen WhiteListAuthFilter).async { implicit request =>
     assignSectionToDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to update section assignments")),
       sectionAssignment => {
@@ -138,7 +138,7 @@ object Admin extends Controller with PanDomainAuthActions {
    SECTION routes
    */
 
-  def addSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def addSection = (maybeAuth andThen WhiteListAuthFilter).async { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to add section")),
       section => {
@@ -152,7 +152,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def removeSection = (maybeAuth andThen WhiteListAuthFilter).async { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to remove section")),
       section => {
@@ -168,7 +168,7 @@ object Admin extends Controller with PanDomainAuthActions {
    DESK routes
    */
 
-  def addDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def addDesk = (maybeAuth andThen WhiteListAuthFilter).async { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(s"failed to add desk ${formWithErrors.errors}")),
       desk => {
@@ -182,7 +182,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def removeDesk = (maybeAuth andThen WhiteListAuthFilter).async { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to remove desk")),
       desk => {
@@ -214,7 +214,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )(unAssignTagToSectionFormData.apply)(unAssignTagToSectionFormData.unapply)
   )
 
-  def sectionsAndTags(selectedSectionIdOption: Option[Long]) = AuthAction.async {
+  def sectionsAndTags(selectedSectionIdOption: Option[Long]) = maybeAuth.async {
 
     val selectedSectionOptionFt:Future[Option[Section]] = selectedSectionIdOption match {
       case Some(selectedSectionId) =>
@@ -249,7 +249,7 @@ object Admin extends Controller with PanDomainAuthActions {
     }
   }
 
-  def addSectionTag() = AuthAction { implicit request =>
+  def addSectionTag() = maybeAuth { implicit request =>
     addSectionTagForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest("failed to execute controllers.admin.addSectionTag()")
@@ -261,7 +261,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeSectionTag() = AuthAction { implicit request =>
+  def removeSectionTag() = maybeAuth { implicit request =>
     removeSectionTagForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest("failed to execute controllers.admin.removeSectionTag()")

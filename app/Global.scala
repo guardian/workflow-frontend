@@ -7,6 +7,6 @@ import play.filters.gzip.GzipFilter
 object Global extends WithFilters(RedirectToHTTPSFilter, new GzipFilter, LoggingFilter) with GlobalSettings {
   override def beforeStart(app: Application) {
 
-    LogConfig.init(Config.sessionId)
+//    LogConfig.init(Config.sessionId)
   }
 }

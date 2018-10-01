@@ -43,9 +43,7 @@ class ContentResponseTest extends FreeSpec with Matchers {
       content.get("Hold") should equal (Some(hold))
       content.get("Revise") should equal (Some(revise))
     }
-
   }
-
 
   "fromStubs" -  {
     "should give a list of stubs, map of status to content item and a totals map" in {

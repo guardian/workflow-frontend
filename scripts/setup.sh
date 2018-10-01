@@ -11,7 +11,7 @@ if [ $? != "0" ]; then
     exit 1
 fi
 
-printf "\n\rSetting up client side dependancies... \n\r\n\r"
+printf "\n\rSetting up client side dependencies... \n\r\n\r"
 printf "\n\rInstalling NPM packages via yarn... \n\r\n\r"
 
 yarn

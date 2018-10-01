@@ -1,0 +1,16 @@
+version: '3'
+services:
+  workflow-app:
+    networks:
+    - local-docker_tools-network
+    restart: always
+    image: workflow-frontend:0.1
+    ports:
+    - 9090:9000
+    environment:
+    - AWS_ACCESS_KEY_ID=foo
+    - AWS_SECRET_ACCESS_KEY=bar
+    - AWS_SECURITY_TOKEN=foobar
+networks:
+  local-docker_tools-network:
+    external: true

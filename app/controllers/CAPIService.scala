@@ -11,7 +11,7 @@ import play.api.mvc.Controller
 import play.api.Play.current
 import com.gu.workflow.util.AWS
 
-object CAPIService extends Controller with PanDomainAuthActions{
+object CAPIService extends Controller with MaybeAuth {
 
   private val previewSigner = {
     val capiPreviewCredentials = new AWSCredentialsProviderChain(
@@ -25,7 +25,7 @@ object CAPIService extends Controller with PanDomainAuthActions{
     )
   }
 
-  def previewCapiProxy(path: String) = APIAuthAction.async { request =>
+  def previewCapiProxy(path: String) = maybeAPIAuth.async { request =>
 
     import scala.concurrent.ExecutionContext.Implicits.global
 

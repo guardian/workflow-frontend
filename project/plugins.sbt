@@ -22,3 +22,9 @@ addSbtPlugin("com.gu" % "sbt-teamcity-test-reporting-plugin" % "1.5")
 addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % "1.0.0")
 
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.3.2")
+
+addSbtPlugin("se.marcuslonnberg" %% "sbt-docker" % "1.4.1")
+
+addSbtPlugin("com.tapad" %% "sbt-docker-compose" % "1.0.34")
+
+addSbtPlugin("com.github.cb372" % "sbt-explicit-dependencies" % "0.2.6")

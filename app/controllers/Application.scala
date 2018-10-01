@@ -1,4 +1,4 @@
- package controllers
+package controllers
 
 import cats.syntax.either._
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
@@ -15,7 +15,7 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-object Application extends Controller with PanDomainAuthActions {
+object Application extends Controller with MaybeAuth {
 
   def getSortedSections(): Future[List[Section]] = {
     SectionsAPI.getSections.asFuture.map {
@@ -41,17 +41,17 @@ object Application extends Controller with PanDomainAuthActions {
     }
   }
 
-  def index = AuthAction { request =>
+  def index = maybeAuth { request =>
     Redirect(routes.Application.dashboard())
   }
 
   def dashboard = app("Workflow")
 
-  def training = AuthAction { request =>
+  def training = maybeAuth { request =>
       Ok(views.html.training())
   }
 
-  def faqs = AuthAction { request =>
+  def faqs = maybeAuth { request =>
     Ok(views.html.faqs())
   }
 
@@ -59,7 +59,7 @@ object Application extends Controller with PanDomainAuthActions {
     Ok(views.html.troubleshooting())
   }
 
-  def editorialSupport = AuthAction { request =>
+  def editorialSupport = maybeAuth { request =>
     val staff = EditorialSupportTeamsController.listStaff()
     val teams = EditorialSupportStaff.groupByTeams(staff)
 
@@ -69,7 +69,7 @@ object Application extends Controller with PanDomainAuthActions {
     Ok(views.html.editorialSupportStatus(other, fronts))
   }
 
-  def updateEditorialSupport = AuthAction(parse.form(EditorialSupportStaff.form)) { implicit request =>
+  def updateEditorialSupport = maybeAuth(parse.form(EditorialSupportStaff.form)) { implicit request =>
     EditorialSupportTeamsController.updateStaff(request.body)
     // Get the browser to reload the page once we've sucessfully updated
     Redirect(routes.Application.editorialSupport())
@@ -82,7 +82,7 @@ object Application extends Controller with PanDomainAuthActions {
     implicit val decoder: Decoder[LimitedTag] = deriveDecoder
   }
 
-  def app(title: String) = AuthAction.async { request =>
+  def app(title: String) = maybeAuth.async { request =>
 
     for {
       statuses <- StatusDatabase.statuses

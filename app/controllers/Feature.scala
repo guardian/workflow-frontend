@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc._
 
-object Feature extends Controller with PanDomainAuthActions {
+object Feature extends Controller with MaybeAuth {
 
   def featureList(implicit request: Request[_]): Map[String, Boolean] = {
     def featureDef(name: String): (String, Boolean) =
@@ -18,7 +18,7 @@ object Feature extends Controller with PanDomainAuthActions {
     }
 
   def featureSwitch(name: String, value: Boolean => Boolean) =
-    AuthAction { implicit request =>
+    maybeAuth { implicit request =>
       makeCookie(name, value).map(cookie =>
         TemporaryRedirect("/").withCookies(cookie))
         .getOrElse(BadRequest(s"Unknown cookie $name"))

@@ -7,9 +7,9 @@ import play.api.mvc.Controller
 
 import scala.collection.JavaConverters._
 
-object EditorialSupportTeamsController extends Controller with PanDomainAuthActions with Dynamo {
+object EditorialSupportTeamsController extends Controller with MaybeAuth with Dynamo {
 
-  private val editorialSupportTable = dynamoDb.getTable(Config.editorialSupportDynamoTable)
+  private lazy val editorialSupportTable = dynamoDb.getTable(Config.editorialSupportDynamoTable)
 
   def listStaff(): List[EditorialSupportStaff] = {
     val items = editorialSupportTable.scan().asScala.toList
@@ -49,6 +49,6 @@ object EditorialSupportTeamsController extends Controller with PanDomainAuthActi
   }
 
   private def save(staff: EditorialSupportStaff): Unit = {
-    editorialSupportTable.putItem(EditorialSupportStaff.toItem(staff))
+//    editorialSupportTable.putItem(EditorialSupportStaff.toItem(staff))
   }
 }

@@ -6,7 +6,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Controller
 import play.api.libs.Crypto
 
-object Support extends Controller with PanDomainAuthActions {
+object Support extends Controller with MaybeAuth {
 
   def encryptWithApplicationSecret(s: String) = {
     // encryptAES uses the first 16 characters of application.secret to encrypt the string
@@ -18,7 +18,7 @@ object Support extends Controller with PanDomainAuthActions {
   }
 
 
-  def logger = APIAuthAction { implicit request =>
+  def logger = maybeAPIAuth { implicit request =>
 
     (for {
         js <- request.body.asJson

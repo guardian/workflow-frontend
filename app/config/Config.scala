@@ -1,10 +1,10 @@
 package config
 
+import java.util.UUID
+
 import com.gu.workflow.lib.{Config => config}
 import com.gu.workflow.util.AwsInstanceTags
-import lib.LogStashConf
 import play.Logger
-import java.util.UUID
 
 object Config extends AwsInstanceTags {
   lazy val stage: String = readTag("Stage") match {
@@ -65,13 +65,12 @@ object Config extends AwsInstanceTags {
 
   lazy val no2faUser: String = "composer.test@guardian.co.uk"
 
-  lazy val editorialSupportDynamoTable: String = s"editorial-support-${if(stage != "PROD") { "CODE" } else { "PROD" }}"
+  lazy val editorialSupportDynamoTable: String = s"editorial-support-$stage"
 
   lazy val atomTypes: List[String] = List("media", "storyquestions")
   lazy val contentTypes: List[String] = List("article", "liveblog", "gallery", "interactive", "picture", "video", "audio")
 
   lazy val sessionId: String = UUID.randomUUID().toString
 
-  implicit val defaultExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
+  implicit val defaultExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 }

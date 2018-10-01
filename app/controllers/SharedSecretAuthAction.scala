@@ -18,7 +18,7 @@ object SharedSecretAuthAction extends ActionBuilder[Request] {
 
   // openssl sha1 -hmac "ABC"
   def sharedSecret: Seq[String] = {
-    val code = ((new Date().getTime) & ~(mask))
+    val code = new Date().getTime & ~mask
     // give some grace on either side
     List(code - (mask + 1), code, code + (mask + 1)).map(time => sign(time.toString, sharedKey))
   }
@@ -26,9 +26,9 @@ object SharedSecretAuthAction extends ActionBuilder[Request] {
   def matchesSharedSecret(candidate: String): Boolean = sharedSecret.exists({ x => println(s"comparing $x to $candidate"); x == candidate })
 
   def isInOnTheSecret(req: Request[_]): Boolean =
-    req.cookies.get(cookieName).map(cookie => matchesSharedSecret(cookie.value)).getOrElse(false)
+    req.cookies.get(cookieName).exists(cookie => matchesSharedSecret(cookie.value))
 
-  def invokeBlock[A](req: Request[A], block: (Request[A]) => Future[Result]) =
+  def invokeBlock[A](req: Request[A], block: Request[A] => Future[Result]) =
     if(!isInOnTheSecret(req))
       Future(Results.Forbidden)
     else
