@@ -18,6 +18,14 @@ workflow-frontend CODE instance.
 
 To run workflow-frontend, run the start stript `./scripts/start.sh`. Then navigate to https://workflow.local.dev-gutools.co.uk
 
+The lambda that sends notifications does not run automatically locally. You can invoke it:
+
+```
+sbt notification/run
+```
+
+Due to [Classloader issues](https://github.com/web-push-libs/webpush-java/issues/65) it cannot be run more than once in
+a single SBT session. Unfortunately you must run a new instance of SBT each time.
 
 ### Deploy
 
