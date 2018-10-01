@@ -4,8 +4,8 @@ import cats.syntax.either._
 import com.gu.pandomainauth.action.UserRequest
 import com.gu.workflow.api.{ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI}
 import com.gu.workflow.lib.DBToAPIResponse.getResponse
-import com.gu.workflow.lib._
-import com.gu.workflow.util.SharedSecretAuthAction
+import com.gu.workflow.lib.StatusDatabase
+import com.gu.workflow.util.SharedSecretAuth
 import config.Config
 import config.Config.defaultExecutionContext
 import io.circe.syntax._
@@ -36,10 +36,12 @@ case class CORSable[A](allowedOrigins: Set[String])(action: Action[A]) extends A
   lazy val parser: BodyParser[A] = action.parser
 }
 
-object Api extends Controller with PanDomainAuthActions {
+object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
 
   val defaultCorsAble: Set[String] = Set(Config.composerUrl)
   val atomCorsAble: Set[String] = defaultCorsAble ++ Config.mediaAtomMakerUrls ++ Config.atomWorkshopUrls
+
+  override def secret: String = Config.sharedSecret
 
   implicit val flatStubWrites: Encoder[Stub] = Stub.flatJsonEncoder
 
@@ -297,5 +299,13 @@ object Api extends Controller with PanDomainAuthActions {
   def queryString[R <: Request[_]](req: R): Map[String, Seq[String]] = req match {
     case r: UserRequest[_] => r.queryString + ("email" -> Seq(r.user.email))
     case r: Request[_] => r.queryString
+  }
+
+  object SharedSecretAuthAction extends ActionBuilder[Request] {
+    def invokeBlock[A](req: Request[A], block: (Request[A]) => Future[Result]) =
+      if(!isInOnTheSecret(req))
+        Future(Results.Forbidden)
+      else
+        block(req)
   }
 }

@@ -12,7 +12,7 @@ object LocalNotifierApp extends App {
   Security.addProvider(new BouncyCastleProvider())
 
   val subsApi = new SubscriptionsAPI(stage, config.webPushPublicKey, config.webPushPrivateKey)
-  val notifier = new Notifier(stage, subsApi)
+  val notifier = new Notifier(stage, config.sharedSecret, subsApi)
 
   notifier.run()
 }

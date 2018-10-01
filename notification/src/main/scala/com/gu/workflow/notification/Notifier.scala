@@ -4,7 +4,7 @@ import java.net.HttpCookie
 
 import com.gu.workflow.api.SubscriptionsAPI
 import com.gu.workflow.lib.QueryString
-import com.gu.workflow.util.SharedSecretAuthAction
+import com.gu.workflow.util.SharedSecretAuth
 import io.circe.parser
 import models.api.ContentResponse
 import models.{Stub, Subscription, SubscriptionUpdate}
@@ -12,7 +12,7 @@ import play.api.Logger
 
 import scala.util.control.NonFatal
 
-class Notifier(stage: String, subsApi: SubscriptionsAPI) {
+class Notifier(stage: String, override val secret: String, subsApi: SubscriptionsAPI) extends SharedSecretAuth {
 
   private val appUrl = stage match {
     case "PROD" => "https://workflow.gutools.co.uk"
@@ -74,10 +74,10 @@ class Notifier(stage: String, subsApi: SubscriptionsAPI) {
   }
 
   private def getStubs(query: Subscription.Query): List[(String, Stub)] = {
-    import SharedSecretAuthAction._
+    import com.gu.workflow.util.SharedSecretAuth._
 
     val response = requests.get(
-      s"$appUrl/api/content",
+      s"$appUrl/sharedsecret/content",
       params = QueryString.flatten(query),
       cookies = Map(
         cookieName -> new HttpCookie(cookieName, sharedSecret.head)

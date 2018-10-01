@@ -59,6 +59,8 @@ object Config extends AwsInstanceTags {
   lazy val webPushPublicKey: String = config.getConfigStringOrFail("webpush.publicKey")
   lazy val webPushPrivateKey: String = config.getConfigStringOrFail("webpush.privateKey")
 
+  lazy val sharedSecret: String = config.getConfigStringOrFail("api.sharedsecret")
+
   lazy val incopyExportUrl: String = "gnm://composer/export/${composerId}"
   lazy val indesignExportUrl: String = "gnm://composerindesign/export/${composerId}"
 
