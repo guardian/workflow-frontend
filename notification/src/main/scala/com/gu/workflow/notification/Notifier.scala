@@ -118,7 +118,7 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
       } catch {
         case NonFatal(e) =>
           Logger.error(s"Error sending notification to ${sub.endpoint}. Removing subscription", e)
-          subsApi.delete(sub)
+          subsApi.delete(Subscription.id(sub))
       }
     }
   }
