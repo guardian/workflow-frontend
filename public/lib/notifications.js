@@ -2,13 +2,19 @@ import angular from 'angular';
 
 const serviceWorkerURL = "/assets/build/sw.bundle.js";
 
+export function subscriptionsSupported() {
+    return 'serviceWorker' in navigator;
+}
+
 export function registerServiceWorker() {
-    navigator.serviceWorker.register(serviceWorkerURL)
-        .then(({ pushManager }) => {
-            console.log("Registered service worker");
-        }).catch(err => {
-            console.log(`Unable to register service worker ${err}`);
-        });
+    if(subscriptionsSupported()) {
+        navigator.serviceWorker.register(serviceWorkerURL)
+            .then(({ pushManager }) => {
+                console.log("Registered service worker");
+            }).catch(err => {
+                console.log(`Unable to register service worker ${err}`);
+            });
+    }
 }
 
 export function registerSubscription() {

@@ -1,7 +1,7 @@
 import angular from 'angular';
 
 import 'lib/content-service';
-import { registerSubscription } from '../../lib/notifications';
+import { subscriptionsSupported, registerSubscription } from '../../lib/notifications';
 
 import './dashboard-create.html';
 
@@ -19,6 +19,7 @@ angular
             $scope.$emit('content:import');
         };
 
+        $scope.subscriptionsSupported = subscriptionsSupported();
         $scope.registerSubscription = () => {
             // TODO MRB: show spinner and success or similar
             registerSubscription();
