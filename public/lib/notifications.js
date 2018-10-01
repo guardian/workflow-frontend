@@ -46,8 +46,6 @@ function getBrowserSubscription(pushManager) {
 }
 
 function saveSubscription(sub, query) {
-    // We use plain fetch here since this code will run immediately after page load so
-    // we don't have to worry too much about re-negotiating the session
     fetch("/api/notifications" + query, {
         method: "POST",
         body: JSON.stringify(sub),
