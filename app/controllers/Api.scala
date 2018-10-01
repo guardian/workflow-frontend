@@ -1,6 +1,7 @@
 package controllers
 
 import cats.syntax.either._
+import com.gu.pandomainauth.action.UserRequest
 import com.gu.workflow.api.{ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI}
 import com.gu.workflow.lib.DBToAPIResponse.getResponse
 import com.gu.workflow.lib._
@@ -51,7 +52,7 @@ object Api extends Controller with PanDomainAuthActions {
 
   // can be hidden behind multiple auth endpoints
   private def getContentBlock[R <: Request[_]] = { implicit req: R =>
-    val qs: Map[String, Seq[String]] = QueryString.fromRequest(req)
+    val qs: Map[String, Seq[String]] = queryString(req)
 
     CommonAPI.getStubs(qs).asFuture.map {
       case Left(_) => InternalServerError
@@ -292,4 +293,9 @@ object Api extends Controller with PanDomainAuthActions {
   }
 
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
+
+  def queryString[R <: Request[_]](req: R): Map[String, Seq[String]] = req match {
+    case r: UserRequest[_] => r.queryString + ("email" -> Seq(r.user.email))
+    case r: Request[_] => r.queryString
+  }
 }

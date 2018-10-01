@@ -16,9 +16,11 @@ object Dependencies {
   val playDependencies = Seq(ws, "com.typesafe.play" %% "play-json" % "2.4.11")
 
   val awsDependencies = Seq(
-    "com.amazonaws" % "aws-java-sdk" % awsVersion,
     "com.gu" % "kinesis-logback-appender" % "1.3.0",
     "com.amazonaws" % "aws-java-sdk-dynamodb" % awsVersion,
+    "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
+    "com.amazonaws" % "aws-java-sdk-ec2" % awsVersion,
+    "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
     "com.gu" %% "content-api-client-aws" % "0.5"
   )
 
@@ -37,7 +39,6 @@ object Dependencies {
     "org.seleniumhq.selenium" % "selenium-java" % "2.35.0" % "test",
     "org.scalatestplus" %% "play" % "1.2.0" % "test",
     "org.apache.httpcomponents" % "httpclient" % "4.5.2",
-    "com.gu" %% "pan-domain-auth-play_2-4-0" % "0.4.0",
     specs2 % Test
   )
 

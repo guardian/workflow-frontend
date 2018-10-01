@@ -14,7 +14,7 @@ object Notifications extends Controller with PanDomainAuthActions {
   private val subsApi = new SubscriptionsAPI(Config.stage, Config.webPushPublicKey, Config.webPushPrivateKey)
 
   def addSubscription = APIAuthAction.async { request =>
-    val qs: Map[String, Seq[String]] = QueryString.fromRequest(request)
+    val qs: Map[String, Seq[String]] = Api.queryString(request)
 
     ApiResponseFt[String](for {
       json <- ApiUtils.readJsonFromRequestResponse(request.body)
