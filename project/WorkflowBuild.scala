@@ -8,10 +8,12 @@ import com.gu.riffraff.artifact.RiffRaffArtifact
 import com.gu.riffraff.artifact.RiffRaffArtifact.autoImport._
 import com.typesafe.sbt.SbtNativePackager._
 import com.typesafe.sbt.packager.debian.JDebPackaging
-import com.typesafe.sbt.packager.archetypes.JavaServerAppPackaging
+import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.archetypes.ServerLoader.Systemd
 import com.typesafe.sbt.packager.Keys._
 import Dependencies._
+import com.typesafe.sbt.SbtNativePackager.autoImport.packageName
+import com.typesafe.sbt.packager.universal.UniversalPlugin.autoImport.topLevelDirectory
 import sbtbuildinfo.Plugin._
 
 object WorkflowBuild extends Build {
@@ -49,10 +51,11 @@ object WorkflowBuild extends Build {
 
   lazy val commonLib = project("common-lib")
     .settings(
-      libraryDependencies ++= akkaDependencies ++ logbackDependencies ++ testDependencies ++ playDependencies ++ awsDependencies ++ jsonDependencies
+      libraryDependencies ++= akkaDependencies ++ logbackDependencies ++ testDependencies ++ playDependencies
+        ++ awsDependencies ++ jsonDependencies ++ webPushDependencies
     )
 
- def appDistSettings(application: String, deployJsonDir: Def.Initialize[File] = baseDirectory) = Seq(
+  def appDistSettings(application: String, deployJsonDir: Def.Initialize[File] = baseDirectory) = Seq(
     packageName in Universal := application,
     concurrentRestrictions in Universal := List(Tags.limit(Tags.All, 1)),
     javaOptions in Universal ++= Seq(
@@ -70,6 +73,7 @@ object WorkflowBuild extends Build {
     riffRaffManifestProjectName := riffRaffPackageName.value,
     riffRaffArtifactResources := Seq(
       riffRaffPackageType.value -> s"$application/${riffRaffPackageType.value.getName}",
+      (packageBin in Universal in notificationLambda).value -> s"${(name in notificationLambda).value}/${(packageBin in Universal in notificationLambda).value.getName}",
       baseDirectory.value / "conf" / "riff-raff.yaml" -> "riff-raff.yaml"
     ),
     artifactName in Universal := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
@@ -88,7 +92,7 @@ object WorkflowBuild extends Build {
 
   lazy val root = playProject("workflow-frontend")
     .enablePlugins(RiffRaffArtifact, JDebPackaging)
-    .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ googleOAuthDependencies
+    .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ authDependencies
       ++ testDependencies ++ jsonDependencies)
     .settings(libraryDependencies += filters)
     .settings(playDefaultPort := 9090)
@@ -109,6 +113,16 @@ object WorkflowBuild extends Build {
       .settings(magentaPackageName := path)
       .dependsOn(commonLib)
       .dependsOn(commonLib % "test->test")
+
+  lazy val notificationLambda = project("notification")
+    .enablePlugins(JavaAppPackaging)
+    .settings(
+      name := "workflow-notification",
+      topLevelDirectory in Universal := None,
+      packageName in Universal := normalizedName.value,
+      libraryDependencies ++= notificationDependencies
+    )
+    .dependsOn(commonLib % "compile->compile;test->test")
 
   def playArtifactSettings = Seq(
     ivyXML :=

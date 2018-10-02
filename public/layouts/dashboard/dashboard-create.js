@@ -1,6 +1,7 @@
 import angular from 'angular';
 
 import 'lib/content-service';
+import { subscriptionsSupported, registerSubscription } from '../../lib/notifications';
 
 import './dashboard-create.html';
 
@@ -16,6 +17,12 @@ angular
         };
         $scope.importContent = function() {
             $scope.$emit('content:import');
+        };
+
+        $scope.subscriptionsSupported = subscriptionsSupported();
+        $scope.registerSubscription = () => {
+            // TODO MRB: show spinner and success or similar
+            registerSubscription();
         };
     }])
     .directive('wfDropdownToggle', ['$document', function($document){

@@ -5,6 +5,7 @@
 import angular from 'angular';
 
 import { getEnvironment } from './environment';
+import { registerServiceWorker } from './lib/notifications';
 
 import 'components/sentry/sentry';
 import 'components/user-message/user-message';
@@ -200,6 +201,8 @@ angular.module('workflow',
         wfGoogleApiService.load();
     })
     .run(['wfAnalyticsService', function(){}]);
+
+registerServiceWorker();
 
 // Bootstrap App
 angular.element(document).ready(function () {

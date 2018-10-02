@@ -16,3 +16,10 @@ deployments:
       cloudFormationStackName: Workflow-Frontend
       prependStackToCloudFormationStackName: false
       cloudFormationStackByTags: false
+  workflow-notification:
+    type: aws-lambda
+    parameters:
+      bucket: workflow-dist
+      prefixStack: false
+      functionNames: [workflow-notification-]
+      fileName: workflow-notification.zip

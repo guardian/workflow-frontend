@@ -1,6 +1,7 @@
 package com.gu.workflow.api
 
 import com.gu.workflow.api.ApiUtils._
+import com.gu.workflow.lib.QueryString
 import io.circe.syntax._
 import models._
 import models.api._
@@ -67,8 +68,7 @@ object CommonAPI {
 
   def getStubs(queryString: Map[String, Seq[String]]): ApiResponseFt[ContentResponse] =
     for {
-      res <- ApiResponseFt.Async.Right(getRequest(s"stubs", Some(queryString
-        .toList.flatMap(x => x._2 map ( y => x._1 -> y)))))
+      res <- ApiResponseFt.Async.Right(getRequest(s"stubs", Some(QueryString.flatten(queryString))))
       json <- parseBody(res.body)
       contentRes <- extractDataResponse[ContentResponse](json)
     } yield contentRes

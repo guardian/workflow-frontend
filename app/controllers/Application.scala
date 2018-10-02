@@ -124,7 +124,10 @@ object Application extends Controller with PanDomainAuthActions {
         ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
         ("atomTypes", Config.atomTypes.asJson),
         ("sessionId", Json.fromString(Config.sessionId)),
-        ("gaId", Json.fromString(Config.googleTrackingId))
+        ("gaId", Json.fromString(Config.googleTrackingId)),
+        ("webPush", Json.obj(
+          ("publicKey", Json.fromString(Config.webPushPublicKey))
+        ))
       )
 
       Ok(views.html.app(title, Some(user), config, Config.googleTrackingId, Config.presenceClientLib))

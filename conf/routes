@@ -57,6 +57,9 @@ GET            /capi/*path                                 controllers.CAPIServi
 # Atoms
 GET            /api/atom/:editorId                         controllers.Api.getContentByEditorId(editorId: String)
 
+# Notifications
+POST           /api/notifications                          controllers.Notifications.addSubscription
+
 # Admin
 GET            /admin                                      controllers.Admin.index
 GET            /admin/desks-and-sections                   controllers.Admin.desksAndSections(selectedDesk: Option[Long])
@@ -74,7 +77,7 @@ GET            /admin/sections-and-tags                    controllers.Admin.sec
 POST           /admin/sectiontag                           controllers.Admin.addSectionTag
 POST           /admin/sectiontag/delete                    controllers.Admin.removeSectionTag
 
-# feature-switching based enpoinds
+# feature-switching based endpoints
 GET            /feature/:featureName                       controllers.Feature.featureSwitchToggle(featureName)
 GET            /feature/:featureName/on                    controllers.Feature.featureSwitchOn(featureName)
 GET            /feature/:featureName/off                   controllers.Feature.featureSwitchOff(featureName)
