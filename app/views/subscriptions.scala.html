@@ -1,0 +1,19 @@
+@(subscriptions: List[Subscription])
+
+@layout("Notifications") {
+    <div class="admin">
+        <ul class="support-list">
+            @for(sub <- subscriptions) {
+                <li class="support-list-item">
+                    <form method="POST">
+                        <input type="hidden" name="id" value="@Subscription.id(sub)" />
+                        @Subscription.humanReadable(sub.query)
+                        <div class="support-admin-button-container">
+                            <input type="submit" class="btn btn-sm btn-info" value="Delete" />
+                        </div>
+                    </form>
+                </li>
+            }
+        </ul>
+    </div>
+}

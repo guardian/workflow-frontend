@@ -19,9 +19,9 @@ export function registerServiceWorker() {
 
 export function registerSubscription() {
     // TODO MRB: handle service worker not being registered yet (disable button?)
-    navigator.serviceWorker.getRegistration(serviceWorkerURL).then(({ pushManager }) => {
+    return navigator.serviceWorker.getRegistration(serviceWorkerURL).then(({ pushManager }) => {
         return getBrowserSubscription(pushManager).then((sub) => {
-            saveSubscription(sub, window.location.search);
+            return saveSubscription(sub, window.location.search);
         });
     }).catch(err => {
         console.error("Unable to register subscription", err);
@@ -46,16 +46,17 @@ function getBrowserSubscription(pushManager) {
 }
 
 function saveSubscription(sub, query) {
-    fetch("/api/notifications" + query, {
+    return fetch("/api/notifications" + query, {
         method: "POST",
         body: JSON.stringify(sub),
         headers: { "Content-Type": "application/json" },
         credentials: "include"
     }).then(( { status }) => {
         if(status == 200) {
-            console.log("Saved notification subscription to server")
+            console.log("Saved notification subscription to server");
+            return true;
         } else {
-            throw new Error(`Status ${status}`)   
+            throw new Error(`Status ${status}`);
         }
     }).catch((err) => {
         console.error("Unable to save notification subscription to server", err);

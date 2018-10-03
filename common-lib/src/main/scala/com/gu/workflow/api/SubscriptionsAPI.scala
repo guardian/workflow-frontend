@@ -22,8 +22,8 @@ class SubscriptionsAPI(stage: String, webPushPublicKey: String, webPushPrivateKe
     subscription
   }
 
-  def delete(sub: Subscription): Unit = {
-    table.deleteItem("id", Subscription.id(sub.endpoint))
+  def delete(id: String): Unit = {
+    table.deleteItem("id", id)
   }
 
   def getAll(): Iterable[Subscription] = {

@@ -12,6 +12,8 @@ GET            /dashboard                                  controllers.Applicati
 #static user pages
 GET            /editorialSupport                           controllers.Application.editorialSupport
 POST           /editorialSupport                           controllers.Application.updateEditorialSupport
+GET            /subscriptions                              controllers.Notifications.subscriptions
+POST           /subscriptions                              controllers.Notifications.deleteSubscription
 GET            /faqs                                       controllers.Application.faqs
 GET            /troubleshooting                            controllers.Application.troubleshooting
 GET            /training                                   controllers.Application.training

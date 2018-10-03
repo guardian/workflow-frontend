@@ -20,9 +20,16 @@ angular
         };
 
         $scope.subscriptionsSupported = subscriptionsSupported();
+        $scope.subscriptionStatus = null;
+
         $scope.registerSubscription = () => {
-            // TODO MRB: show spinner and success or similar
-            registerSubscription();
+            $scope.subscriptionStatus = "Subscribing...";
+
+            registerSubscription().then(() => {
+                $scope.subscriptionStatus = "Subscribed!";
+            }).catch((err) => {
+                $scope.subscriptionStatus = null;
+            });
         };
     }])
     .directive('wfDropdownToggle', ['$document', function($document){

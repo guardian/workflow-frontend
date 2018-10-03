@@ -28,8 +28,21 @@
         </li>
 
         <li class="dropdown-toolbar__item" ng-if="subscriptionsSupported">
-            <a class="dropdown-toolbar__item-label" href="#" ng-click="registerSubscription()">
-                <span class="dropdown-toolbar__item-title" title="">Subscribe to this page</span>
+            <span class="dropdown-toolbar__item-label" href="#" ng-if="subscriptionStatus">
+                <span class="dropdown-toolbar__item-title" title="{{subscriptionStatus}}">
+                    {{subscriptionStatus}}
+                </span>
+            </span>
+            <a class="dropdown-toolbar__item-label" href="#" ng-click="registerSubscription()" ng-if="!subscriptionStatus">
+                <span class="dropdown-toolbar__item-title" title="Subscribe to this page" >
+                    Subscribe to this page
+                </span>
+            </a>
+        </li>
+
+        <li class="dropdown-toolbar__item" ng-if="subscriptionsSupported">
+            <a class="dropdown-toolbar__item-label" href="/subscriptions" target="_blank">
+                <span class="dropdown-toolbar__item-title" title="Manage and remove subscriptions">Manage Subscriptions</span>
             </a>
         </li>
 
