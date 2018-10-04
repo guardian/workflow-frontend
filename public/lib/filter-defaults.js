@@ -124,14 +124,15 @@ var filterDefaults = function (statuses, wfFiltersService, wfFeatureSwitches) {
             customLinkFunction: ['wfDateParser', '$scope', (wfDateParser, $scope) => {
 
                 $scope.dateOptions = wfDateParser.getDaysThisWeek();
-                var selectedDate = wfFiltersService.get('selectedDate');
+                const storedSelectedDate = wfFiltersService.get('selectedDate');
+                var selectedDate = storedSelectedDate ? storedSelectedDate : '';
 
                 // ensure that the date from the URL is the same object as the
                 // one used in the Select drop-down, as its compared with ===
                 $scope.dateOptions.forEach(function (date) {
                     if (date.isSame(selectedDate)) {
                         selectedDate = date;
-                        $scope.selectFilter('customDate');
+                        $scope.selectedFilters = ['customDate'];
                     }
                 });
 
@@ -140,12 +141,12 @@ var filterDefaults = function (statuses, wfFiltersService, wfFeatureSwitches) {
                 };
 
                 $scope.deadlineSelectActive = function () {
-                    return $scope.select.selectedDate && typeof($scope.select.selectedDate) != 'string' && $scope.selectedFilter === 'customDate';
+                    return $scope.select.selectedDate && typeof($scope.select.selectedDate) !== 'string' && $scope.selectedFilter === 'customDate';
                 };
 
                 $scope.$watch('select.selectedDate', function (newValue, oldValue) {
-                    if (newValue !== oldValue) {  // Prevents fire change event on init
-                        $scope.$emit('filtersChanged.deadline', $scope.select.selectedDate);
+                    if (newValue !== oldValue && newValue) {  // Prevents fire change event on init
+                        $scope.$emit('filtersChanged.selectedDate', $scope.select.selectedDate);
                         if (newValue !== null) {
                             $scope.selectFilter('customDate');
                         } else {

@@ -7,7 +7,7 @@
 
     <input class="date-time-picker__text-input form-control" type="text" placeholder="{{ placeholderText }}" wf-date-time-field id="{{dateTimePicker.textInputId}}" name="due" wf-on-cancel="onCancel()" wf-on-update="onUpdate()" wf-on-submit="onSubmit()" wf-update-on="{{updateOn}}" wf-cancel-on="{{cancelOn}}" ng-class="{'input-sm': small}">
 
-    <div dropdown class="input-group-btn">
+    <div dropdown id="{{dateTimePicker.dropDownId}}" class="input-group-btn">
 
         <button type="button" id="{{dateTimePicker.dropDownButtonId}}" class="btn btn-default dropdown-toggle date-time-picker__dropdown" ng-class="{'btn-sm': small}">
             <i class="glyphicon glyphicon-calendar"></i></button>
