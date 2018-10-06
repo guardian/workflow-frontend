@@ -1,5 +1,6 @@
 package controllers
 
+import com.gu.pandomainauth.model.User
 import com.gu.workflow.api.{ApiUtils, SubscriptionsAPI}
 import config.Config
 import models.api.ApiResponseFt
@@ -13,7 +14,7 @@ object Notifications extends Controller with PanDomainAuthActions {
   private val subsApi = new SubscriptionsAPI(Config.stage, Config.webPushPublicKey, Config.webPushPrivateKey)
 
   def subscriptions = AuthAction { request =>
-    val subs = subsApi.getAll().filter(_.email == request.user.email)
+    val subs = getUserSubs(request.user)
     Ok(views.html.subscriptions(subs.toList))
   }
 
@@ -22,7 +23,7 @@ object Notifications extends Controller with PanDomainAuthActions {
 
     subsApi.delete(id)
 
-    val updated = subsApi.getAll().filterNot { s => Subscription.id(s) == id }
+    val updated = getUserSubs(request.user).filterNot { s => Subscription.id(s) == id }
     Ok(views.html.subscriptions(updated.toList))
   }
 
@@ -37,5 +38,9 @@ object Notifications extends Controller with PanDomainAuthActions {
 
       _ <- ApiResponseFt.Right(subsApi.put(sub))
     } yield "Done")
+  }
+
+  private def getUserSubs(user: User): Iterable[Subscription] = {
+    subsApi.getAll().filter(_.email == user.email)
   }
 }
