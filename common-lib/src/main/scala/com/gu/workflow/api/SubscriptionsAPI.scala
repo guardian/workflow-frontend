@@ -16,6 +16,10 @@ class SubscriptionsAPI(stage: String, webPushPublicKey: String, webPushPrivateKe
 
   private val pushService = new PushService(webPushPublicKey, webPushPrivateKey, "mailto:digitalcms.bugs@guardian.co.uk")
 
+  def get(id: String): Option[Subscription] = {
+    Option(table.getItem("id", id)).map(Subscription.fromItem)
+  }
+
   def put(subscription: Subscription): Subscription = {
     val item = Subscription.toItem(subscription)
 

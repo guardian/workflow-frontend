@@ -1,24 +1,40 @@
 @(subscriptions: List[Subscription])
 
+@import helper._
+
 @layout("Notifications") {
     <div class="admin">
         <ul class="support-list">
             @for(sub <- subscriptions) {
                 <li class="support-list-item">
-                    <form method="POST">
-                        <input type="hidden" name="id" value="@Subscription.id(sub)" />
-                        <p>
-                            @Subscription.humanReadable(sub.query)
-                        </p>
-                        <p>
-                            <small>
-                                @sub.userAgent
-                            </small>
-                        </p>
-                        <div class="support-admin-button-container">
+                    <p>
+                        @Subscription.humanReadable(sub.query)
+                    </p>
+                    <p>
+                        <small>
+                        @sub.userAgent
+                        </small>
+                    </p>
+                    <div class="support-admin-button-container">
+                        @if(sub.schedule.enabled) {
+                            @form(action = routes.Notifications.updateSubscription) {
+                                <input type="hidden" name="enabled" value="false" />
+                                <input type="hidden" name="id" value="@Subscription.id(sub)" />
+                                <input type="submit" class="btn btn-sm" value="Disable" />
+                            }
+                        } else {
+                            @form(action = routes.Notifications.updateSubscription) {
+                                <input type="hidden" name="enabled" value="true" />
+                                <input type="hidden" name="id" value="@Subscription.id(sub)" />
+                                <input type="submit" class="btn btn-sm btn-info" value="Enable" />
+                            }
+                        }
+                        @form(action = routes.Notifications.updateSubscription) {
+                            <input type="hidden" name="delete" value="true" />
+                            <input type="hidden" name="id" value="@Subscription.id(sub)" />
                             <input type="submit" class="btn btn-sm btn-info" value="Delete" />
-                        </div>
-                    </form>
+                        }
+                    </div>
                 </li>
             }
         </ul>

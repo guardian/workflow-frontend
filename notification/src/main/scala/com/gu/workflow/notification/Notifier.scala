@@ -44,11 +44,14 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
       oldSeenIds match {
         case Some(existingSeenIds) =>
           val toNotify = calculateToNotify(existingSeenIds, newSeenIds, stubs)
+          Logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds")
 
           if (toNotify.isEmpty) {
-            Logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds. Not sending any notifications")
+            Logger.info("Not sending any notifications")
+          } else if(!sub.schedule.enabled) {
+            Logger.info("Not sending any notifications as subscription is disabled")
           } else {
-            Logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds. Sending notifications for ${toNotify.map(_._2.id)}")
+            Logger.info(s"Sending notifications for ${toNotify.map(_._2.id)}")
 
             notify(toNotify, sub, newSeenIds)
           }
