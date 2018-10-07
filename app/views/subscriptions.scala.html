@@ -7,7 +7,14 @@
                 <li class="support-list-item">
                     <form method="POST">
                         <input type="hidden" name="id" value="@Subscription.id(sub)" />
-                        @Subscription.humanReadable(sub.query)
+                        <p>
+                            @Subscription.humanReadable(sub.query)
+                        </p>
+                        <p>
+                            <small>
+                                @sub.userAgent
+                            </small>
+                        </p>
                         <div class="support-admin-button-container">
                             <input type="submit" class="btn btn-sm btn-info" value="Delete" />
                         </div>

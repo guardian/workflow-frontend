@@ -29,12 +29,13 @@ object Notifications extends Controller with PanDomainAuthActions {
 
   def addSubscription = APIAuthAction.async { request =>
     val qs: Map[String, Seq[String]] = Api.queryString(request)
+    val userAgent = request.headers.get("User-Agent").getOrElse("unknown")
 
     ApiResponseFt[String](for {
       json <- ApiUtils.readJsonFromRequestResponse(request.body)
 
       endpoint <- ApiUtils.extractResponse[SubscriptionEndpoint](json)
-      sub = Subscription(request.user.email, qs, None, endpoint)
+      sub = Subscription(request.user.email, userAgent, qs, endpoint, runtime = None)
 
       _ <- ApiResponseFt.Right(subsApi.put(sub))
     } yield "Done")

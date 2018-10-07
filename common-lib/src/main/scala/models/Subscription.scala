@@ -13,14 +13,22 @@ import io.circe.{Decoder, Encoder}
 import play.api.data.Forms._
 import play.api.data._
 
+// These are the details provided by the browser as registered to the service worker
 case class SubscriptionKeys(p256dh: String, auth: String)
 case class SubscriptionEndpoint(endpoint: String, keys: SubscriptionKeys)
-// seenIds is optional as it encodes three states:
-//   None          -> we have not seen any content under the given query yet so don't fire notifications
-//   Some(Nil)     -> we last saw no content matching the query
-//   Some(content) -> the content we saw last (ie do a diff and fire notifications)
-case class Subscription(email: String, query: Subscription.Query, seenIds: Option[Set[Long]], endpoint: SubscriptionEndpoint)
+
+// runtime is optional as it encodes three states:
+//   None            -> we have not seen any content under the given query yet so don't fire notifications
+//   Some(Map.empty) -> we last saw no content matching the query
+//   Some(content)   -> the content we saw last and the status it was in (ie do a diff and fire notifications)
+case class Subscription(email: String, userAgent: String, query: Subscription.Query, endpoint: SubscriptionEndpoint,
+                        runtime: Option[SubscriptionRuntime])
+
+case class SubscriptionRuntime(seenIds: Map[Long, Status])
+
+// The actual contents of a notification fired and sent to the service worker to actually display on the users machine
 case class SubscriptionUpdate(title: String, body: String, url: Option[String])
+
 case class DeleteSubscription(id: String)
 
 object Subscription {
@@ -31,6 +39,9 @@ object Subscription {
 
   implicit val endpointEncoder: Encoder[SubscriptionEndpoint] = deriveEncoder
   implicit val endpointDecoder: Decoder[SubscriptionEndpoint] = deriveDecoder
+
+  implicit val runtimeEncoder: Encoder[SubscriptionRuntime] = deriveEncoder
+  implicit val runtimeDecoder: Decoder[SubscriptionRuntime] = deriveDecoder
 
   implicit val updateEncoder: Encoder[SubscriptionUpdate] = deriveEncoder
   implicit val updateDecoder: Decoder[SubscriptionUpdate] = deriveDecoder
