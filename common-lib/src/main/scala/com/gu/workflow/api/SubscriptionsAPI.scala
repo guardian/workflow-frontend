@@ -6,6 +6,7 @@ import com.gu.workflow.util.Dynamo
 import io.circe.syntax._
 import models.{Subscription, SubscriptionEndpoint, SubscriptionUpdate}
 import nl.martijndwars.webpush.{Notification, PushService}
+import play.api.Logger
 
 import scala.collection.JavaConverters._
 
@@ -14,6 +15,10 @@ class SubscriptionsAPI(stage: String, webPushPublicKey: String, webPushPrivateKe
   private val table = dynamoDb.getTable(tableName)
 
   private val pushService = new PushService(webPushPublicKey, webPushPrivateKey, "mailto:digitalcms.bugs@guardian.co.uk")
+
+  def get(id: String): Option[Subscription] = {
+    Option(table.getItem("id", id)).map(Subscription.fromItem)
+  }
 
   def put(subscription: Subscription): Subscription = {
     val item = Subscription.toItem(subscription)
@@ -37,7 +42,10 @@ class SubscriptionsAPI(stage: String, webPushPublicKey: String, webPushPrivateKe
     val payload = json.getBytes(StandardCharsets.UTF_8)
 
     val notification = new Notification(endpoint.endpoint, endpoint.keys.p256dh, endpoint.keys.auth, payload)
+    val resp = pushService.send(notification)
 
-    pushService.send(notification)
+    if(resp.getStatusLine.getStatusCode != 201) {
+      Logger.error(s"Error sending notification. ${resp.getStatusLine.getStatusCode}. Endpoint: $endpoint")
+    }
   }
 }

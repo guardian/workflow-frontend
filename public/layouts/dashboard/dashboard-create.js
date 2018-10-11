@@ -7,7 +7,7 @@ import './dashboard-create.html';
 
 angular
     .module('wfDashboardCreate', ['wfContentService'])
-    .controller('wfDashboardCreateController', ['$scope', 'wfContentService', function ($scope, contentService) {
+    .controller('wfDashboardCreateController', ['$scope', '$rootScope', 'wfContentService', function ($scope, $rootScope, contentService) {
         contentService.getTypes().then( (types) => {
             $scope.options = types;
         });
@@ -31,6 +31,11 @@ angular
                 $scope.subscriptionStatus = null;
             });
         };
+
+        // Mild hack to allow subscribing again if the filters change.
+        $rootScope.$on("getContent", () => {
+            $scope.subscriptionStatus = null;
+        });
     }])
     .directive('wfDropdownToggle', ['$document', function($document){
         return {

@@ -4,7 +4,7 @@ import com.gu.pandomainauth.model.User
 import com.gu.workflow.api.{ApiUtils, SubscriptionsAPI}
 import config.Config
 import models.api.ApiResponseFt
-import models.{Subscription, SubscriptionEndpoint}
+import models.{Subscription, SubscriptionEndpoint, SubscriptionSchedule}
 import play.api.mvc.Controller
 
 object Notifications extends Controller with PanDomainAuthActions {
@@ -18,26 +18,52 @@ object Notifications extends Controller with PanDomainAuthActions {
     Ok(views.html.subscriptions(subs.toList))
   }
 
-  def deleteSubscription = AuthAction(parse.form(Subscription.form)) { request =>
-    val id = request.body.id
+  def updateSubscription = AuthAction(parse.form(Subscription.form)) { request =>
+    val (id, enabled, delete) = request.body
 
-    subsApi.delete(id)
+    if(delete.contains(true)) {
+      val updated = deleteSub(id, request.user)
+      Ok(views.html.subscriptions(updated.toList))
+    } else {
+      subsApi.get(id) match {
+        case Some(before) =>
+          val updated = updateSub(id, enabled, before, request.user)
+          Ok(views.html.subscriptions(updated.toList))
 
-    val updated = getUserSubs(request.user).filterNot { s => Subscription.id(s) == id }
-    Ok(views.html.subscriptions(updated.toList))
+        case None =>
+          NotFound(s"Subscription $id does not exist")
+      }
+    }
   }
 
   def addSubscription = APIAuthAction.async { request =>
     val qs: Map[String, Seq[String]] = Api.queryString(request)
+    val userAgent = request.headers.get("User-Agent").getOrElse("unknown")
 
     ApiResponseFt[String](for {
       json <- ApiUtils.readJsonFromRequestResponse(request.body)
 
       endpoint <- ApiUtils.extractResponse[SubscriptionEndpoint](json)
-      sub = Subscription(request.user.email, qs, None, endpoint)
+      sub = Subscription(request.user.email, userAgent, qs, endpoint,
+        schedule = SubscriptionSchedule(enabled = true), runtime = None)
 
       _ <- ApiResponseFt.Right(subsApi.put(sub))
     } yield "Done")
+  }
+
+  private def updateSub(id: String, enabled: Boolean, before: Subscription, user: User): Iterable[Subscription] = {
+    val after = before.copy(schedule = before.schedule.copy(enabled = enabled))
+    subsApi.put(after)
+
+    getUserSubs(user).map {
+      case sub if Subscription.id(sub) == id => after
+      case sub => sub
+    }
+  }
+
+  private def deleteSub(id: String, user: User): Iterable[Subscription] = {
+    subsApi.delete(id)
+    getUserSubs(user).filterNot { s => Subscription.id(s) == id }
   }
 
   private def getUserSubs(user: User): Iterable[Subscription] = {

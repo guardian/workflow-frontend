@@ -7,7 +7,7 @@ import com.gu.workflow.lib.QueryString
 import com.gu.workflow.util.SharedSecretAuth
 import io.circe.parser
 import models.api.ContentResponse
-import models.{Stub, Subscription, SubscriptionUpdate}
+import models._
 import play.api.Logger
 
 import scala.util.control.NonFatal
@@ -29,51 +29,59 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
 
   def run(): Unit = {
     Logger.info("I am the Workflow notifier!")
-
-    val subscriptions = subsApi.getAll()
-    val subsByQuery = subscriptions.groupBy(_.query)
-
-    subsByQuery.foreach { case(query, subs) =>
-      processSubscriptions(query, subs)
-    }
+    subsApi.getAll().foreach(processSubscription)
   }
 
-  private def processSubscriptions(query: Subscription.Query, subs: Iterable[Subscription]): Unit = {
-    Logger.info(s"Getting current results for $query")
+  private def processSubscription(sub: Subscription): Unit = {
+    Logger.info(s"Getting current results for ${sub.query}")
 
-    val stubs = getStubs(query)
+    val stubs = getStubs(sub.query)
 
-    val oldSeenIds = subs.head.seenIds
-    val newSeenIds = stubs.flatMap(_._2.id).toSet
+    val oldSeenIds: Option[Map[Long, Status]] = sub.runtime.map(_.seenIds)
+    val newSeenIds: Map[Long, Status] = stubs.flatMap { case(status, stub) => stub.id.map(_ -> status) }.toMap
 
     try {
       oldSeenIds match {
         case Some(existingSeenIds) =>
-          val toNotify = newSeenIds -- existingSeenIds
+          val toNotify = calculateToNotify(existingSeenIds, newSeenIds, stubs)
+          Logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds")
 
-          if(toNotify.isEmpty) {
-            Logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds. Not sending any notifications")
+          if (toNotify.isEmpty) {
+            Logger.info("Not sending any notifications")
+          } else if(!sub.schedule.enabled) {
+            Logger.info("Not sending any notifications as subscription is disabled")
           } else {
-            Logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds. Sending notifications for $toNotify")
+            Logger.info(s"Sending notifications for ${toNotify.map(_._2.id)}")
 
-            val stubsToNotify = stubs.filter(_._2.id.exists(toNotify.contains))
-            notify(stubsToNotify, subs)
+            notify(toNotify, sub, newSeenIds)
           }
 
         case None =>
-          Logger.info(s"No existing results for $query. Now seen $newSeenIds. Not sending any notifications")
+          Logger.info(s"No existing results for ${sub.query}. Now seen $newSeenIds. Not sending any notifications")
       }
-    } catch {
-      case NonFatal(e) =>
-
     } finally {
-      subs.foreach { sub =>
-        subsApi.put(sub.copy(seenIds = Some(newSeenIds)))
+      subsApi.put(sub.copy(runtime = Some(SubscriptionRuntime(newSeenIds))))
+    }
+  }
+
+  private def calculateToNotify(allBefore: Map[Long, Status], allAfter: Map[Long, Status], stubs: List[(Status, Stub)]): List[(Status, Stub)] = {
+    val ids = (allBefore.keySet ++ allAfter.keySet).toList
+
+    ids.flatMap { id =>
+      val before = allBefore.get(id)
+      val after = allAfter.get(id)
+
+      (before, after) match {
+        case (Some(statusBefore), Some(statusAfter)) if statusAfter != statusBefore =>
+          stubs.find(_._2.id.contains(id))
+
+        case _ =>
+          None
       }
     }
   }
 
-  private def getStubs(query: Subscription.Query): List[(String, Stub)] = {
+  private def getStubs(query: Subscription.Query): List[(Status, Stub)] = {
     import com.gu.workflow.util.SharedSecretAuth._
 
     val response = requests.get(
@@ -92,7 +100,9 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
         val allStubs = content.content.toList
 
         allStubs.flatMap { case(status, stubs) =>
-          stubs.map(status -> _)
+          Status.withNameOption(status).toList.flatMap { status =>
+            stubs.map(status -> _)
+          }
         }
 
       case Left(err) =>
@@ -101,25 +111,20 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
     }
   }
 
-  private def notify(stubs: List[(String, Stub)], subs: Iterable[Subscription]): Unit = {
-    // TODO MRB: allow user to specify a name for the subscription and use it in the title
-    subs.foreach { sub =>
-      try {
-        stubs.foreach { case (status, stub) =>
-          // TODO MRB: atom edit URLs?
-          val url = stub.composerId.map { id => s"$composerUrl/content/$id"}
-          val body = stub.note.getOrElse("")
-          val update = SubscriptionUpdate(s"${stub.title} now in $status", body, url)
+  private def notify(stubs: List[(Status, Stub)], sub: Subscription, seenIds: Map[Long, Status]): Unit = {
+    try {
+      stubs.foreach { case (status, stub) =>
+        // TODO MRB: atom edit URLs?
+        val url = stub.composerId.map { id => s"$composerUrl/content/$id"}
+        val body = stub.note.getOrElse("")
+        val update = SubscriptionUpdate(s"${stub.title} now in $status", body, url)
 
-          subsApi.sendNotification(update, sub.endpoint)
-        }
-
-        subsApi.put(sub.copy(seenIds = Some(stubs.flatMap(_._2.id).toSet)))
-      } catch {
-        case NonFatal(e) =>
-          Logger.error(s"Error sending notification to ${sub.endpoint}. Removing subscription", e)
-          subsApi.delete(Subscription.id(sub))
+        subsApi.sendNotification(update, sub.endpoint)
       }
+    } catch {
+      case NonFatal(e) =>
+        Logger.error(s"Error sending notification to ${sub.endpoint}. Removing subscription", e)
+        subsApi.delete(Subscription.id(sub))
     }
   }
 }
