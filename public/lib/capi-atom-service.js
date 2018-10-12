@@ -77,7 +77,7 @@ function wfCapiAtomService($http, $q, config, wfCapiContentService, wfAtomServic
         // The commissioningDesks field needs to be parsed as it looks like this:
         // ["tracking/commissioningdesk/uk-culture", "tracking/commissioningdesk/australia-culture"]
         // and in the end we want an array like this: ["uk-culture", "australia-culture"]
-        atom.commissioningInfo = _.get(response.data.response[atomType].data[atomType], 'commissioningDesks').map(desk => {
+        atom.commissioningInfo = _.get(atom, 'commissioningDesks',[]).map(desk => {
             const segments = desk.split('/');
             return segments[segments.length - 1];
         });
