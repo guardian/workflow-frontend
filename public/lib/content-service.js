@@ -38,7 +38,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                   if (atomType === "media") {
                     return config.mediaAtomMakerViewAtom + editorId;
-                  } else if (atomType === "storyquestions") {
+                  } else if (atomType === "storyquestions" || atomType === "chart") {
                     return `${config.atomWorkshopViewAtom}/${atomType.toUpperCase()}/${editorId}/edit`;
                   }
                 };

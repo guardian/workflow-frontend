@@ -39,6 +39,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
           return 'Reader questions';
         case 'media':
           return 'Media';
+        case 'chart':
+          return 'Chart'
         default:
           return type;
       }
