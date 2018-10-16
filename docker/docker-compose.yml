@@ -11,6 +11,8 @@ services:
     - AWS_ACCESS_KEY_ID=foo
     - AWS_SECRET_ACCESS_KEY=bar
     - AWS_SECURITY_TOKEN=foobar
+    - "JAVA_OPTS=-Dcom.amazonaws.sdk.disableCertChecking=true"
+    - AWS_CBOR_DISABLE=true
 networks:
   local-docker_tools-network:
     external: true
