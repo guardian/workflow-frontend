@@ -146,238 +146,200 @@
                     </ul>
 
                 </div>
+                <div ng-switch="contentItem.contentType">
+                    <!--MEDIA ATOM DRAWER-->
+                    <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-switch-when="media">
 
-                <!--MEDIA ATOM DRAWER-->
-                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="contentItem.contentType === 'media'">
+                        <ul class="drawer__column">
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Working title</p>
+                                <wf-editable class="drawer__item-content" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
+                                    {{ contentItem.workingTitle || '-' }}
+                                </wf-editable>
+                            </li>
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Note</p>
+                                <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">
+                                    {{ contentItem.note || 'Add note' }}
+                                </wf-editable>
+                            </li>
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">URL</p>
+                                <span class="drawer__item-content" ng-if="capiData.editorUrl">
+                                    <a href="{{ capiData.editorUrl }}">
+                                        {{ capiData.editorUrl }}</a>
+                                </span>
+                            </li>
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Section</p>
+                                <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="section.name for section in contentList.sections" wf-content-item-update-action="section"></select>
+                            </li>
+                        </ul>
+    
+                        <ul class="drawer__column">
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Content type</p>
+                                <span class="drawer__item-content">
+                                    {{ contentItem.contentTypeTitle || '-' }}
+                                </span>
+                            </li>
+    
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Headline (YT title)</p>
+                                <span class="drawer__item-content">
+                                    {{ capiData.title || '-' }}
+                                </span>
+                            </li>
+    
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Standfirst</p>
+                                <span class="drawer__item-content" ng-bind-html="capiData.description | wfTrustedHtml">
+                                </span>
+                            </li>
+    
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Trail text</p>
+                                <span class="drawer__item-content">
+                                    {{ capiData.trailText || '-' }}
+                                </span>
+                            </li>
+                        </ul>
+    
+                        <ul class="drawer__column">
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Video source</p>
+                                <span class="drawer__item-content">
+                                    {{ capiData.source || '-' }}
+                                </span>
+                            </li>
+    
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Video category</p>
+                                <span class="drawer__item-content">
+                                    {{ capiData.category || '-' }}
+                                </span>
+                            </li>
+    
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Expiry date</p>
+                                <span class="drawer__item-content">
+                                    {{ capiData.friendlyExpiryDate || '-' }}
+                                </span>
+                            </li>
+    
+                            <!-- Remove this when YT data is added -->
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Keywords</p>
+                                <span class="drawer__item-content">
+                                    {{ capiData.keywords || '-' }}
+                                </span>
+                            </li>
+    
+                        </ul>
+    
+                        </ul>
+    
+    
+                        <!--TODO: Add helpful Youtube data-->
+                        <!--<ul class="drawer__column">
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Youtube category ID</p>
+                                <span class="drawer__item-content">
+                                    {{ capiData.metadata.categoryId || '-' }}
+                                </span>
+                            </li>
+    
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Youtube channel ID</p>
+                                <span class="drawer__item-content">
+                                    {{ capiData.metadata.channelId || '-' }}
+                                </span>
+                            </li>
+    
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Keywords</p>
+                                <span class="drawer__item-content">
+                                    {{ capiData.keywords || '-' }}
+                                </span>
+                            </li>
+    
+                        </ul>-->
+    
+                        <ul class="drawer__column drawer__column--wide" >
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Video preview</p>
+                                <div class="drawer__video" ng-if="capiData.currentAsset" ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
+                                <span class="drawer__item-content" ng-if="!capiData.currentAsset">
+                                    No preview available
+                                </span>
+                            </li>
+                            <li class="drawer__item">
+                                <span class="drawer__item-title">Commissioning info</span>
+                                <span class="drawer__item-content" ng-repeat="desk in capiData.commissioningInfo" ng-show="capiData.commissioningDesks.length">{{ desk }}</span>
+                                <span class="drawer__item-content--warning" ng-show="!capiData.commissioningDesks.length">None</span>
+                            </li>
+                        </ul>
+    
+                    </div>
+                    <!--DEFAULT ATOM DRAWER-->
+                    <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-switch-default>
 
-                    <ul class="drawer__column">
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Working title</p>
-                            <wf-editable class="drawer__item-content" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
-                                {{ contentItem.workingTitle || '-' }}
-                            </wf-editable>
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Note</p>
-                            <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">
-                                {{ contentItem.note || 'Add note' }}
-                            </wf-editable>
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">URL</p>
-                            <span class="drawer__item-content" ng-if="capiData.editorUrl">
-                                <a href="{{ capiData.editorUrl }}">
-                                    {{ capiData.editorUrl }}</a>
-                            </span>
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Section</p>
-                            <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="section.name for section in contentList.sections" wf-content-item-update-action="section"></select>
-                        </li>
-                    </ul>
+                        <ul class="drawer__column">
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Working title</p>
+                                <wf-editable class="drawer__item-content" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
+                                    {{ contentItem.workingTitle || '-' }}
+                                </wf-editable>
+                            </li>
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Note</p>
+                                <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">
+                                    {{ contentItem.note || 'Add note' }}
+                                </wf-editable>
+                            </li>
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">URL</p>
+                                <span class="drawer__item-content" ng-if="capiData.editorUrl">
+                                    <a href="{{ capiData.editorUrl }}">
+                                        {{ capiData.editorUrl }}</a>
+                                </span>
+                            </li>
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Content type</p>
+                                <span class="drawer__item-content">
+                                    {{ contentItem.contentTypeTitle || '-' }}
+                                </span>
+                            </li>
+    
+                            <li class="drawer__item">
+                                <p class="drawer__item-title">Title</p>
+                                <span class="drawer__item-content">
+                                    {{ capiData.title || '-' }}
+                                </span>
+                            </li>
+    
+                        </ul>
+    
+                        <ul ng-switch="contentItem.contentType" class="drawer__column">
+                        
+                            <li ng-switch-when="storyquestions" class="drawer__item">
+                                <p class="drawer__item-title">Questions</p>
+                                <ul class="drawer__item-questions">
+                                    <li class="drawer__item-question" ng-repeat="question in capiData.editorialQuestions[0].questions">
+                                        <span class="drawer__item--content">
+                                        {{question.questionText}}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li ng-switch-default>
+                                <p class="drawer__item-title">Preview</p>
+                                <iframe srcdoc="{{capiData.defaultHtml}}" frameborder="0"></iframe>
+                            </li>
+                            
+                        </ul>
+                    </div>
 
-                    <ul class="drawer__column">
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Content type</p>
-                            <span class="drawer__item-content">
-                                {{ contentItem.contentTypeTitle || '-' }}
-                            </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Headline (YT title)</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.title || '-' }}
-                            </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Standfirst</p>
-                            <span class="drawer__item-content" ng-bind-html="capiData.description | wfTrustedHtml">
-                            </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Trail text</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.trailText || '-' }}
-                            </span>
-                        </li>
-                    </ul>
-
-                    <ul class="drawer__column">
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Video source</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.source || '-' }}
-                            </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Video category</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.category || '-' }}
-                            </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Expiry date</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.friendlyExpiryDate || '-' }}
-                            </span>
-                        </li>
-
-                        <!-- Remove this when YT data is added -->
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Keywords</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.keywords || '-' }}
-                            </span>
-                        </li>
-
-                    </ul>
-
-                    </ul>
-
-
-                    <!--TODO: Add helpful Youtube data-->
-                    <!--<ul class="drawer__column">
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Youtube category ID</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.metadata.categoryId || '-' }}
-                            </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Youtube channel ID</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.metadata.channelId || '-' }}
-                            </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Keywords</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.keywords || '-' }}
-                            </span>
-                        </li>
-
-                    </ul>-->
-
-                    <ul class="drawer__column drawer__column--wide" >
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Video preview</p>
-                            <div class="drawer__video" ng-if="capiData.currentAsset" ng-bind-html="capiData.defaultHtml | wfTrustedHtml" />
-                            <span class="drawer__item-content" ng-if="!capiData.currentAsset">
-                                No preview available
-                            </span>
-                        </li>
-                        <li class="drawer__item">
-                            <span class="drawer__item-title">Commissioning info</span>
-                            <span class="drawer__item-content" ng-repeat="desk in capiData.commissioningInfo" ng-show="capiData.commissioningDesks.length">{{ desk }}</span>
-                            <span class="drawer__item-content--warning" ng-show="!capiData.commissioningDesks.length">None</span>
-                        </li>
-                    </ul>
-
-                </div>
-
-                <!--STORYQUESTIONS ATOM DRAWER-->
-                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="contentItem.contentType === 'storyquestions'">
-
-                    <ul class="drawer__column">
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Working title</p>
-                            <wf-editable class="drawer__item-content" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
-                                {{ contentItem.workingTitle || '-' }}
-                            </wf-editable>
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Note</p>
-                            <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">
-                                {{ contentItem.note || 'Add note' }}
-                            </wf-editable>
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">URL</p>
-                            <span class="drawer__item-content" ng-if="capiData.editorUrl">
-                                <a href="{{ capiData.editorUrl }}">
-                                    {{ capiData.editorUrl }}</a>
-                            </span>
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Content type</p>
-                            <span class="drawer__item-content">
-                                Reader questions
-                            </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Title</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.title || '-' }}
-                            </span>
-                        </li>
-
-                    </ul>
-
-                    <ul class="drawer__column">
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Questions</p>
-                            <ul class="drawer__item-questions">
-                                <li class="drawer__item-question" ng-repeat="question in capiData.editorialQuestions[0].questions">
-                                  <span class="drawer__item--content">
-                                    {{question.questionText}}
-                                  </span>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!--Charts ATOM DRAWER-->
-                <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="contentItem.contentType === 'chart'">
-
-                    <ul class="drawer__column">
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Working title</p>
-                            <wf-editable class="drawer__item-content" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
-                                {{ contentItem.workingTitle || '-' }}
-                            </wf-editable>
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Note</p>
-                            <wf-editable class="drawer__item-content" wf-editable-type="textarea" ng-model="contentItem.note" wf-editable-on-update="onBeforeSaveNote(newValue)" wf-editable-maxlength="maxNoteLength">
-                                {{ contentItem.note || 'Add note' }}
-                            </wf-editable>
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">URL</p>
-                            <span class="drawer__item-content" ng-if="capiData.editorUrl">
-                                <a href="{{ capiData.editorUrl }}">
-                                    {{ capiData.editorUrl }}</a>
-                                    {{capiData}}
-                            </span>
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Content type</p>
-                            <span class="drawer__item-content">
-                                Chart
-                            </span>
-                        </li>
-
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Title</p>
-                            <span class="drawer__item-content">
-                                {{ capiData.title || '-' }}
-                            </span>
-                        </li>
-
-                    </ul>
-
-                    <ul class="drawer__column">
-                        <!-- Keeping the pattern consistent but currently it doesn't make sense to display info here 15/10/2018 -->
-                    </ul>
                 </div>
 
             </div>
