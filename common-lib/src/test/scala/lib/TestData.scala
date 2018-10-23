@@ -18,7 +18,7 @@ object TestData {
   val needsLegal: List[Flag] = List(Flag.NA, Flag.Complete, Flag.Required)
   val email: List[String] = List("testcake@testcake.com", "google@google.com", "facebook@facebook.com")
   val statuses: List[Status] = Status.values.toList
-  val contentTypes: List[String] = List("article","gallery","live-blog","video","interactive","picture")
+  val contentTypes: List[String] = List("article","gallery","live-blog","video","interactive","picture","video","audio")
   val state: List[ContentState] = List(PublishedState, TakenDownState, ScheduledState, EmbargoedState, DraftState)
   val users: List[User] = List(User("testcake@testcake.com", "test", "cake"), User("google@google.com", "goo", "gle"), User("facebook@facebook.com", "face", "book"))
   val commissioningDesks: List[String] = List("Hogwarts,The Burrow", "Privet Drive,London", "Hogsmeade")
