@@ -146,7 +146,7 @@
                     </ul>
 
                 </div>
-                <div ng-switch="contentItem.contentType">
+                <div ng-if="supportedAtomTypes.includes(contentItem.contentType)" ng-switch="contentItem.contentType">
                     <!--MEDIA ATOM DRAWER-->
                     <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-switch-when="media">
 
