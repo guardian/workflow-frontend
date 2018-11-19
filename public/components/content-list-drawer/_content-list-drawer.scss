@@ -242,6 +242,44 @@
             &:not(:last-child) {
                 border-right: 1px solid $c-grey-200;
             }
+
+            &--discreet {
+                &:hover {
+                    background-color: $c-grey-400;
+                }
+            }
+
+            &--action {
+                background-color: $c-highlight-blue;
+
+                &:hover {
+                    background-color: darken($c-highlight-blue, 10%);
+                }
+            }
+
+            &--danger {
+                background-color: $c-red;
+
+                &:hover {
+                    background-color: darken($c-red, 10%);
+                }
+            }
+
+            &--action, &--danger {
+                color: white;
+
+                a {
+                    color: white;
+
+                    &:hover {
+                        color: white;
+                    }
+                }
+
+                .drawer__icon svg {
+                    fill: white;
+                }
+            }
         }
 
         &-icon {
