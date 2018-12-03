@@ -163,16 +163,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * @returns {Promise}
                  */
                 updateField(contentItem, field, data, contentType) {
-
-                    if (field === 'status' && contentItem.status === 'Stub') {
-                        if (wfAtomService.atomTypes.indexOf(contentType) >= 0) {
-                            return this.createInAtomEditor(contentItem, data);
-                        } else {
-                            return this.createInComposer(contentItem, data)
-                        }
-                    }
-
-                    var contentId = contentItem.id || contentItem.stubId;
+                    let contentId = contentItem.id || contentItem.stubId;
 
                     // TODO: create a generic PATCH / PUT API
                     return httpRequest({
