@@ -55,6 +55,6 @@ object Dependencies {
   )
 
   val webPushDependencies = Seq(
-    "nl.martijndwars" % "web-push" % "3.1.1"
+    "nl.martijndwars" % "web-push" % "4.0.0"
   )
 }

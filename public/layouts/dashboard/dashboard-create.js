@@ -25,7 +25,7 @@ angular
         $scope.registerSubscription = () => {
             $scope.subscriptionStatus = "Subscribing...";
 
-            registerSubscription().then(() => {
+            registerSubscription(window.location.search).then(() => {
                 $scope.subscriptionStatus = "Subscribed!";
             }).catch((err) => {
                 $scope.subscriptionStatus = null;

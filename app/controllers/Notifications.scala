@@ -4,7 +4,7 @@ import com.gu.pandomainauth.model.User
 import com.gu.workflow.api.{ApiUtils, SubscriptionsAPI}
 import config.Config
 import models.api.ApiResponseFt
-import models.{Subscription, SubscriptionEndpoint, SubscriptionSchedule}
+import models._
 import play.api.mvc.Controller
 
 object Notifications extends Controller with PanDomainAuthActions {
@@ -42,13 +42,27 @@ object Notifications extends Controller with PanDomainAuthActions {
 
     ApiResponseFt[String](for {
       json <- ApiUtils.readJsonFromRequestResponse(request.body)
-
       endpoint <- ApiUtils.extractResponse[SubscriptionEndpoint](json)
-      sub = Subscription(request.user.email, userAgent, qs, endpoint,
-        schedule = SubscriptionSchedule(enabled = true), runtime = None)
+      sub = Subscription(
+        request.user.email,
+        userAgent,
+        parseQuery(qs),
+        endpoint,
+        SubscriptionSchedule(enabled = true)
+      )
 
       _ <- ApiResponseFt.Right(subsApi.put(sub))
     } yield "Done")
+  }
+
+  private def parseQuery(qs: Map[String, Seq[String]]): SubscriptionQuery = {
+    qs.get("phrase").map(_.toList) match {
+      case Some(phrase :: Nil) =>
+        PhraseQuery(phrase, Map.empty)
+
+      case _ =>
+        WorkflowQuery(qs, None)
+    }
   }
 
   private def updateSub(id: String, enabled: Boolean, before: Subscription, user: User): Iterable[Subscription] = {

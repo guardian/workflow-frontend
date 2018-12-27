@@ -29,15 +29,22 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
 
   def run(): Unit = {
     Logger.info("I am the Workflow notifier!")
-    subsApi.getAll().foreach(processSubscription)
+
+    subsApi.getAll().collect {
+      case sub @ Subscription(_, _, query: WorkflowQuery, _, _) =>
+        processSubscription(sub, query)
+
+      case _ =>
+        // This lambda only handles WorkflowQueries
+    }
   }
 
-  private def processSubscription(sub: Subscription): Unit = {
-    Logger.info(s"Getting current results for ${sub.query}")
+  private def processSubscription(sub: Subscription, query: WorkflowQuery): Unit = {
+    Logger.info(s"Getting current results for $query")
 
-    val stubs = getStubs(sub.query)
+    val stubs = getStubs(query)
 
-    val oldSeenIds: Option[Map[Long, Status]] = sub.runtime.map(_.seenIds)
+    val oldSeenIds: Option[Map[Long, Status]] = query.seenIds
     val newSeenIds: Map[Long, Status] = stubs.flatMap { case(status, stub) => stub.id.map(_ -> status) }.toMap
 
     try {
@@ -57,10 +64,10 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
           }
 
         case None =>
-          Logger.info(s"No existing results for ${sub.query}. Now seen $newSeenIds. Not sending any notifications")
+          Logger.info(s"No existing results for $query. Now seen $newSeenIds. Not sending any notifications")
       }
     } finally {
-      subsApi.put(sub.copy(runtime = Some(SubscriptionRuntime(newSeenIds))))
+      subsApi.put(sub.copy(query = query.copy(seenIds = Some(newSeenIds))))
     }
   }
 
@@ -81,12 +88,12 @@ class Notifier(stage: String, override val secret: String, subsApi: Subscription
     }
   }
 
-  private def getStubs(query: Subscription.Query): List[(Status, Stub)] = {
+  private def getStubs(query: WorkflowQuery): List[(Status, Stub)] = {
     import com.gu.workflow.util.SharedSecretAuth._
 
     val response = requests.get(
       s"$appUrl/sharedsecret/content",
-      params = QueryString.flatten(query),
+      params = QueryString.flatten(query.query),
       cookies = Map(
         cookieName -> new HttpCookie(cookieName, sharedSecret.head)
       )
