@@ -21,10 +21,10 @@ object ApiUtils {
     buildRequest(path).delete()
 
   def postRequest(path: String, data: Json = Json.Null): Future[WSResponse] =
-    buildRequest(path).withHeaders("content-type" -> "application/json").post(data.toString())
+    buildRequest(path).withHeaders("Content-Type" -> "application/json").post(data.toString())
 
   def putRequest(path: String, data: Json = Json.Null): Future[WSResponse] =
-    buildRequest(path).withHeaders("content-type" -> "application/json").put(data.toString())
+    buildRequest(path).withHeaders("Content-Type" -> "application/json").put(data.toString())
 
   def getRequest(path: String, params: Option[Seq[(String, String)]] = None):
       Future[WSResponse] =
