@@ -8,7 +8,7 @@ trait AtomEditorConfig {
 }
 
 object MediaAtomMakerConfig extends AtomEditorConfig {
-  lazy val newContentUrl: String = Config.mediaAtomMakerUrl+ "/api2/workflow/atoms"
+  lazy val newContentUrl: String = Config.mediaAtomMakerUrl+ "/api/workflow/atoms"
   lazy val viewContentUrl: String = Config.mediaAtomMakerUrl + "/videos/"
 }
 
