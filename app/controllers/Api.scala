@@ -4,7 +4,7 @@ import cats.syntax.either._
 import com.gu.pandomainauth.action.UserRequest
 import com.gu.workflow.api.{ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI}
 import com.gu.workflow.lib.DBToAPIResponse.getResponse
-import com.gu.workflow.lib.StatusDatabase
+import com.gu.workflow.lib.{Priorities, StatusDatabase}
 import com.gu.workflow.util.SharedSecretAuth
 import config.Config
 import config.Config.defaultExecutionContext
@@ -279,6 +279,12 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def allowedAtomTypes = CORSable(atomCorsAble) {
     AuthAction {
       Ok(Config.atomTypes.asJson.noSpaces)
+    }
+  }
+
+  def priorities = CORSable(atomCorsAble) {
+    AuthAction {
+      Ok(Priorities.all.asJson.noSpaces)
     }
   }
 

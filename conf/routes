@@ -50,6 +50,7 @@ DELETE         /api/stubs/:stubId                          controllers.Api.delet
 GET            /api/statuses                               controllers.Api.statusus
 GET            /api/sections                               controllers.Api.sections
 GET            /api/allowedAtomTypes                       controllers.Api.allowedAtomTypes
+GET            /api/priorities                             controllers.Api.priorities
 
 GET            /api/editorialSupportTeams                  controllers.Api.editorialSupportTeams
 

@@ -183,18 +183,12 @@ angular.module('workflow',
     })
     .constant({ 'sections': _wfConfig.sections })
     .constant({ 'desks': _wfConfig.desks })
+    .constant({ 'priorities': _wfConfig.priorities })
     .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
     .constant({ 'legalValues': [
         { name: 'Not required', value: 'NA' },
         { name: 'Needs checking', value: 'REQUIRED' },
         { name: 'Approved', value: 'COMPLETE'}
-    ]})
-    .constant({ 'priorities': [
-        { name: 'Very-Low', value: -2 },
-        { name: 'Low', value: -1 },
-        { name: 'Normal', value: 0 },
-        { name: 'Urgent', value: 1 },
-        { name: 'Very-Urgent', value: 2 }
     ]})
 
     .run(function ($window, wfGoogleApiService) {
