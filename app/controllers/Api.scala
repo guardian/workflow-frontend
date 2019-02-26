@@ -57,8 +57,12 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
     val qs: Map[String, Seq[String]] = queryString(req)
 
     CommonAPI.getStubs(qs).asFuture.map {
-      case Left(_) => InternalServerError
-      case Right(contentResponse) => Ok(contentResponse.asJson.noSpaces)
+      case Left(err) =>
+        Logger.error(s"Unable to get stubs $err")
+        InternalServerError
+
+      case Right(contentResponse) =>
+        Ok(contentResponse.asJson.noSpaces)
     }
   }
 
