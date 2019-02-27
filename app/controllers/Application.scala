@@ -2,7 +2,7 @@
 
 import cats.syntax.either._
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
-import com.gu.workflow.lib.{StatusDatabase, TagService}
+import com.gu.workflow.lib.{Priorities, StatusDatabase, TagService}
 import config.Config
 import config.Config.defaultExecutionContext
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
@@ -114,6 +114,7 @@ object Application extends Controller with PanDomainAuthActions {
         ("desks", desks.asJson),
         ("sections", sections.asJson),
         ("sectionsInDesks", sectionsInDesks.asJson), // TODO: Combine desks & sectionsInDesks
+        ("priorities", Priorities.all.asJson),
         ("viewerUrl", Json.fromString(Config.viewerUrl)),
         ("presenceUrl", Json.fromString(Config.presenceUrl)),
         ("preferencesUrl", Json.fromString(Config.preferencesUrl)),
