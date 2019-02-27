@@ -9,6 +9,8 @@ import java.util.UUID
 object Config extends AwsInstanceTags {
   lazy val stage: String = readTag("Stage") match {
     case Some(value) => value
+    // If in AWS and we don't know our stage, fail fast to avoid ending up running an instance with dev config in PROD!
+    case other if instanceId.nonEmpty => throw new IllegalStateException(s"Unable to read Stage tag: $other")
     case None => "DEV" // default to dev stage
   }
   Logger.info(s"running in stage: $stage")
