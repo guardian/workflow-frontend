@@ -273,7 +273,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   }
 
   def sections = CORSable(atomCorsAble) {
-    AuthAction.async { _ =>
+    APIAuthAction.async { _ =>
       ApiResponseFt[List[Section]](for {
         sections <- SectionsAPI.getSections
       } yield sections
@@ -281,13 +281,13 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   }
 
   def allowedAtomTypes = CORSable(atomCorsAble) {
-    AuthAction {
+    APIAuthAction {
       Ok(Config.atomTypes.asJson.noSpaces)
     }
   }
 
   def priorities = CORSable(atomCorsAble) {
-    AuthAction {
+    APIAuthAction {
       Ok(Priorities.all.asJson.noSpaces)
     }
   }
