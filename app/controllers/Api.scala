@@ -220,7 +220,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
     )}
   }
 
-  def putStubPriority(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubPriority(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
