@@ -112,7 +112,7 @@ function wfCapiContentService($http, $q, wfAtomService) {
                 commissioningDesks: tags ? getTagTitles(tags) : "",
                 firstPublishedDate: fields.firstPublicationDate ? fields.firstPublicationDate : "",
                 atomUsages: atomUsages,
-                packageId: packages.map((p) => { return p.packageId })
+                packageId: packages.map((p) => { return {id: p.packageId, name: p.packageName} })
             });
         }
         return emptyCapiContentObject();

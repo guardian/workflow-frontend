@@ -116,6 +116,7 @@ object Application extends Controller with PanDomainAuthActions {
         ("sectionsInDesks", sectionsInDesks.asJson), // TODO: Combine desks & sectionsInDesks
         ("priorities", Priorities.all.asJson),
         ("viewerUrl", Json.fromString(Config.viewerUrl)),
+        ("storyPackagesUrl", Json.fromString(Config.storyPackagesUrl)),
         ("presenceUrl", Json.fromString(Config.presenceUrl)),
         ("preferencesUrl", Json.fromString(Config.preferencesUrl)),
         ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
