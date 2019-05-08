@@ -143,6 +143,11 @@
                             <span class="drawer__item-content--warning" ng-show="!capiData.commissioningDesks.length">None</span>
                             <span class="drawer__item-content--warning" ng-show="tagsUnavailable()">Commissioning info is temporarily unavailable</span>
                         </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Story packages</span>
+                            <span class="drawer__item-content" ng-repeat="p in capiData.packageId" ng-show="capiData.packageId.length">{{ p }}</span>
+                            <span class="drawer__item-content--warning" ng-show="!capiData.packageId.length">None</span>
+                        </li>
                     </ul>
 
                 </div>
