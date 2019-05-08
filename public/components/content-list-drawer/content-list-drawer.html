@@ -146,7 +146,7 @@
                         <li class="drawer__item">
                             <span class="drawer__item-title">Story packages</span>
                             <span class="drawer__item-content" ng-repeat="p in capiData.packageId" ng-show="capiData.packageId.length">
-                                <a href="{{capiData.storyPackagesUrl}}/editorial?layout=latest,content:{{p.id}},packages">{{ p.name }}</a>
+                                <a href="{{storyPackagesUrl}}/editorial?layout=latest,content:{{p.id}},packages">{{ p.name }}</a>
                             </span>
                             <span class="drawer__item-content--warning" ng-show="!capiData.packageId.length">None</span>
                         </li>
