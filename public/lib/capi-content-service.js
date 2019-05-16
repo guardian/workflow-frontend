@@ -84,7 +84,7 @@ function wfCapiContentService($http, $q, wfAtomService) {
             firstPublishedDate: "",
             capiError: true,
             atomUsages: [],
-            packageId: []
+            packages: []
         }
     }
 
@@ -112,7 +112,7 @@ function wfCapiContentService($http, $q, wfAtomService) {
                 commissioningDesks: tags ? getTagTitles(tags) : "",
                 firstPublishedDate: fields.firstPublicationDate ? fields.firstPublicationDate : "",
                 atomUsages: atomUsages,
-                packageId: packages.map((p) => { return {id: p.packageId, name: p.packageName} })
+                packages: packages.map((p) => { return {id: p.packageId, name: p.packageName} })
             });
         }
         return emptyCapiContentObject();

@@ -145,10 +145,10 @@
                         </li>
                         <li class="drawer__item">
                             <span class="drawer__item-title">Story packages</span>
-                            <span class="drawer__item-content" ng-repeat="p in capiData.packageId" ng-show="capiData.packageId.length">
+                            <span class="drawer__item-content" ng-repeat="p in capiData.packages" ng-show="capiData.packages.length">
                                 <a href="{{storyPackagesUrl}}/editorial?layout=latest,content:{{p.id}},packages" target="_blank">{{ p.name }}</a>
                             </span>
-                            <span class="drawer__item-content--warning" ng-show="!capiData.packageId.length">None</span>
+                            <span class="drawer__item-content--warning" ng-show="!capiData.packages.length">None</span>
                         </li>
                     </ul>
 
