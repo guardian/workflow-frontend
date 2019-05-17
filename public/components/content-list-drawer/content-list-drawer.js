@@ -177,6 +177,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 $scope.incopyExportUrl = buildExportUrl({ "composerId": contentItem.composerId }, config.incopyExportUrl);
                 $scope.indesignExportUrl = buildExportUrl({ "composerId": contentItem.composerId }, config.indesignExportUrl );
 
+                $scope.storyPackagesUrl = config.storyPackagesUrl;
+
                 $scope.composerRestorerUrl = buildComposerRestorerUrl(contentItem.composerId);
                 if(isAtom(contentItem.contentType)) {
                     wfCapiAtomService.getCapiAtom(contentItem.item.editorId, contentItem.contentType)

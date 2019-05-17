@@ -68,6 +68,8 @@ object Config extends AwsInstanceTags {
 
   lazy val viewerUrl: String = s"https://viewer.$domain"
 
+  lazy val storyPackagesUrl: String = s"https://packages.$domain"
+
   lazy val googleTrackingId: String = config.getConfigStringOrFail("google.tracking.id")
 
   lazy val no2faUser: String = "composer.test@guardian.co.uk"

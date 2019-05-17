@@ -83,12 +83,14 @@ function wfCapiContentService($http, $q, wfAtomService) {
             commissioningDesks: "",
             firstPublishedDate: "",
             capiError: true,
-            atomUsages: []
+            atomUsages: [],
+            packages: []
         }
     }
 
     function parseCapiContentData(response) {
         const content = _.get(response, 'data.response.content');
+        const packages = _.get(response, 'data.response.packages');
         if (content) {
             const fields = _.get(content, 'fields', {});
             const elements = _.get(content, 'elements');
@@ -109,7 +111,8 @@ function wfCapiContentService($http, $q, wfAtomService) {
                 wordCount: fields.wordcount ? fields.wordcount : "",
                 commissioningDesks: tags ? getTagTitles(tags) : "",
                 firstPublishedDate: fields.firstPublicationDate ? fields.firstPublicationDate : "",
-                atomUsages: atomUsages
+                atomUsages: atomUsages,
+                packages: packages.map((p) => { return {id: p.packageId, name: p.packageName} })
             });
         }
         return emptyCapiContentObject();
@@ -123,7 +126,8 @@ function wfCapiContentService($http, $q, wfAtomService) {
                 'show-fields': 'headline,standfirst,thumbnail,trailText,firstPublicationDate,wordcount,commentable,internalComposerCode',
                 'show-elements': 'all',
                 'show-blocks': 'body',
-                'show-tags': 'tracking'
+                'show-tags': 'tracking',
+                'show-packages': 'true'
             },
             withCredentials: true,
             timeout: 1000

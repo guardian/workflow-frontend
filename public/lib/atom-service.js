@@ -35,7 +35,7 @@ function wfAtomService(config) {
       currentAsset: currentAsset,
       atomType: atomType,
       youtubeUrl: currentAsset && `https://www.youtube.com/embed/${currentAsset.id}`,
-      keywords: keywords,
+      keywords: keywords
     };
 
     return Object.assign({}, atom, mediaAtomFields);
