@@ -65,7 +65,6 @@ object WorkflowBuild extends Build {
     ),
     debianPackageDependencies := Seq("openjdk-8-jre-headless"),
     riffRaffPackageType := (packageBin in Debian).value,
-    riffRaffBuildIdentifier := Option(System.getenv("CIRCLE_BUILD_NUM")).getOrElse("dev"),
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
     riffRaffUploadManifestBucket := Option("riffraff-builds"),
     riffRaffArtifactPublishPath := application,
@@ -82,7 +81,6 @@ object WorkflowBuild extends Build {
     javaOptions in Universal ++= Seq(
       "-Dpidfile.path=/dev/null"
     ),
-    riffRaffManifestBranch := Option(System.getenv("CIRCLE_BRANCH")).getOrElse("dev"),
     debianPackageDependencies := Seq("openjdk-8-jre-headless"),
     serverLoading in Debian := Systemd,
     maintainer := "Digital CMS <digitalcms.dev@guardian.co.uk>",
