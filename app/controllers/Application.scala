@@ -90,7 +90,7 @@ object Application extends Controller with PanDomainAuthActions {
       desks <- getSortedDesks()
       sectionsInDesks <- getSectionsInDesks()
       commissioningDesks <- TagService.getTags(Config.tagManagerUrl+
-        "/hyper/tags?limit=100&query=tracking/commissioningdesk/&type=tracking&searchField=path")
+        "/hyper/tags?limit=200&query=tracking/commissioningdesk/&type=tracking&searchField=path")
     }
     yield {
       val user = request.user
