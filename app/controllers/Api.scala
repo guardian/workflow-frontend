@@ -112,7 +112,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
     )}
   }
 
-  def putStub(stubId: Long) =  CORSable(defaultCorsAble) {
+  def putStub(stubId: Long) =  CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -160,7 +160,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
     )}
   }
 
-  def putStubProdOffice(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubProdOffice(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
@@ -200,7 +200,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
     )}
   }
 
-  def putStubSection(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubSection(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
