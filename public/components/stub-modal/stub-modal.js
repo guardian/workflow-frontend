@@ -35,8 +35,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     function getAtomDisplayName(type) {
       switch (type) {
-        case 'storyquestions':
-          return 'Reader questions';
         case 'media':
           return 'Media';
         case 'chart':

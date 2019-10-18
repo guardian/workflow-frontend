@@ -76,7 +76,7 @@ object Config extends AwsInstanceTags {
 
   lazy val editorialSupportDynamoTable: String = s"editorial-support-${if(stage != "PROD") { "CODE" } else { "PROD" }}"
 
-  lazy val atomTypes: List[String] = List("media", "storyquestions", "chart")
+  lazy val atomTypes: List[String] = List("media", "chart")
   lazy val contentTypes: List[String] = List("article", "liveblog", "gallery", "interactive", "picture", "video", "audio")
 
   lazy val sessionId: String = UUID.randomUUID().toString
