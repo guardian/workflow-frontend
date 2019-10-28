@@ -327,24 +327,6 @@
     
                         </ul>
     
-                        <ul ng-switch="contentItem.contentType" class="drawer__column">
-                        
-                            <li ng-switch-when="storyquestions" class="drawer__item">
-                                <p class="drawer__item-title">Questions</p>
-                                <ul class="drawer__item-questions">
-                                    <li class="drawer__item-question" ng-repeat="question in capiData.editorialQuestions[0].questions">
-                                        <span class="drawer__item--content">
-                                        {{question.questionText}}
-                                        </span>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li ng-switch-default>
-                                <p class="drawer__item-title">Preview</p>
-                                <iframe srcdoc="{{capiData.defaultHtml}}" frameborder="0"></iframe>
-                            </li>
-                            
-                        </ul>
                     </div>
 
                 </div>
