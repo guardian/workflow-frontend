@@ -526,15 +526,21 @@
                 </a>
             </span>
             <span class="drawer__toolbar-item drawer__toolbar-item--action">
-                <a href="{{ indesignExportUrl }}" class="drawer__item-content" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InDesign">
+                <a 
+                    href="{{ contentItem.linkedWithIncopy ? indesignOpenUrl : indesignExportUrl }}" 
+                    title="{{ contentItem.linkedWithIncopy ? 'Open in' : 'Send to' }} InDesign"
+                    class="drawer__item-content" >
                     <i class="drawer__icon drawer__toolbar-icon" wf-icon="indesign"></i>
-                    {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InDesign
+                    {{ contentItem.linkedWithIncopy ? "Open in" : "Send to" }} InDesign
                 </a>
             </span>
             <span class="drawer__toolbar-item drawer__toolbar-item--action">
-                <a href="{{ incopyExportUrl }}" class="drawer__item-content" title="{{ contentItem.linkedWithIncopy ? 'Resend' : 'Send' }} to InCopy">
+                <a 
+                    href="{{ contentItem.linkedWithIncopy ? incopyOpenUrl : incopyExportUrl }}" 
+                    title="{{ contentItem.linkedWithIncopy ? 'Open in' : 'Send to' }} InCopy"
+                    class="drawer__item-content" >
                     <i class="drawer__icon drawer__toolbar-icon" wf-icon="incopy"></i>
-                    {{ contentItem.linkedWithIncopy ? "Resend" : "Send" }} to InCopy
+                    {{ contentItem.linkedWithIncopy ? "Open in" : "Send to" }} InCopy
                 </a>
             </span>
             <span class="drawer__toolbar-item drawer__toolbar-item--discreet" ng-click="contentListDrawerController.hide()" title="Close details">

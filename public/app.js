@@ -74,16 +74,25 @@ angular.module('workflow',
 
         $animateProvider.classNameFilter(/^((?!(day-view__item)).)*$/); // https://github.com/angular/angular.js/issues/3613#issuecomment-86704187
 
-        function sanitizeExportUrl(url) {
+        function sanitizeUrl(url) {
             return RegExp($compileProvider.aHrefSanitizationWhitelist().source +
                    "|^\\s*" + url.match("^.*?:")[0])
         }
+
         $compileProvider.aHrefSanitizationWhitelist(
-            sanitizeExportUrl(_wfConfig.incopyExportUrl)
+            sanitizeUrl(_wfConfig.incopyOpenUrl)
         );
 
         $compileProvider.aHrefSanitizationWhitelist(
-            sanitizeExportUrl(_wfConfig.indesignExportUrl)
+            sanitizeUrl(_wfConfig.indesignOpenUrl)
+        );
+
+        $compileProvider.aHrefSanitizationWhitelist(
+            sanitizeUrl(_wfConfig.incopyExportUrl)
+        );
+
+        $compileProvider.aHrefSanitizationWhitelist(
+            sanitizeUrl(_wfConfig.indesignExportUrl)
         );
 
         $provide.decorator('$log', ["$delegate", 'logger', function ($delegate, logger) {
@@ -153,6 +162,8 @@ angular.module('workflow',
             'viewerUrl': _wfConfig.viewerUrl,
             'storyPackagesUrl': _wfConfig.storyPackagesUrl,
             'presenceUrl': _wfConfig.presenceUrl,
+            'incopyOpenUrl': _wfConfig.incopyOpenUrl,
+            'indesignOpenUrl': _wfConfig.indesignOpenUrl,
             'incopyExportUrl': _wfConfig.incopyExportUrl,
             'indesignExportUrl': _wfConfig.indesignExportUrl,
             'composerRestorerUrl': _wfConfig.composerRestorerUrl,
