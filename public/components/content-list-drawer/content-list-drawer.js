@@ -174,8 +174,9 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 }
 
                 // TODO: move build incopy URL to decorator
-                $scope.incopyOpenUrl = buildUrl({ "composerId": contentItem.composerId }, config.incopyOpenUrl);
-                $scope.indesignOpenUrl = buildUrl({ "composerId": contentItem.composerId }, config.indesignOpenUrl );
+                $scope.incopyOpenUrl = buildUrl({ "storyBundleId": contentItem.storyBundleId }, config.incopyOpenUrl);
+                $scope.indesignOpenUrl = buildUrl({ "storyBundleId": contentItem.storyBundleId }, config.indesignOpenUrl );
+
                 $scope.incopyExportUrl = buildUrl({ "composerId": contentItem.composerId }, config.incopyExportUrl);
                 $scope.indesignExportUrl = buildUrl({ "composerId": contentItem.composerId }, config.indesignExportUrl );
 
