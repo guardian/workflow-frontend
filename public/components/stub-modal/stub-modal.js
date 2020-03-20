@@ -3,6 +3,7 @@ import angular from 'angular';
 import 'angular-bootstrap-temporary';
 
 import _ from 'lodash';
+import moment from 'moment';
 
 import 'components/date-time-picker/date-time-picker';
 
@@ -33,6 +34,14 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         })[mode];
     });
 
+    wfComposerService.loadTemplates().then(templates => {
+        const sortedTemplates = _.sortBy(templates, 'title');
+
+        $scope.templates = sortedTemplates.map(({ title, dateCreated }) =>
+            `${title} - ${moment(dateCreated).format("Do MMMM YYYY")}`
+        );
+    });
+
     function getAtomDisplayName(type) {
       switch (type) {
         case 'media':
@@ -55,8 +64,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.formData = {};
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
-    // TODO MRB: fill in with templates
-    $scope.templates = ["test A", "test B"];
+    $scope.templates = [];
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
     $scope.atomTypes = getAtomDropdownData();

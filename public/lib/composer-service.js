@@ -99,6 +99,16 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         });
     };
 
+    this.loadTemplates = function() {
+        return request({
+            method: 'GET',
+            url: config.composerTemplates,
+            withCredentials: true
+        }).then(({ data }) => {
+            return data;
+        });
+    };
+
     this.updateField = function (composerId, fieldName, value, live = false) {
         let urls = composerUpdateFieldUrl(fieldName, composerId);
         let url = live ? urls.live : urls.preview;

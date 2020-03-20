@@ -10,6 +10,7 @@ object Composer {
   lazy val newContentUrl = baseUrl + "/api/content"
   lazy val adminUrl = baseUrl + "/content"
   lazy val contentDetails = baseUrl + "/api/content/"
+  lazy val templates = baseUrl + "/api/templates"
 
   def parseId(json: JsValue): Option[String] = {
     (json \ "data" \ "id").asOpt[String]
