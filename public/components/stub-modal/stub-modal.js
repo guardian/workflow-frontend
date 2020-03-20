@@ -55,6 +55,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.formData = {};
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
+    // TODO MRB: fill in with templates
+    $scope.templates = ["test A", "test B"];
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
     $scope.atomTypes = getAtomDropdownData();
