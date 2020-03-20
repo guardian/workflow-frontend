@@ -122,7 +122,6 @@ object Application extends Controller with PanDomainAuthActions {
         ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
         ("incopyOpenUrl", Json.fromString(Config.incopyOpenUrl)),
         ("incopyExportUrl", Json.fromString(Config.incopyExportUrl)),
-        ("indesignOpenUrl", Json.fromString(Config.indesignOpenUrl)),
         ("indesignExportUrl", Json.fromString(Config.indesignExportUrl)),
         ("composerRestorerUrl", Json.fromString(Config.composerRestorerUrl)),
         ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),

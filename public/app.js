@@ -84,10 +84,6 @@ angular.module('workflow',
         );
 
         $compileProvider.aHrefSanitizationWhitelist(
-            sanitizeUrl(_wfConfig.indesignOpenUrl)
-        );
-
-        $compileProvider.aHrefSanitizationWhitelist(
             sanitizeUrl(_wfConfig.incopyExportUrl)
         );
 
@@ -163,7 +159,6 @@ angular.module('workflow',
             'storyPackagesUrl': _wfConfig.storyPackagesUrl,
             'presenceUrl': _wfConfig.presenceUrl,
             'incopyOpenUrl': _wfConfig.incopyOpenUrl,
-            'indesignOpenUrl': _wfConfig.indesignOpenUrl,
             'incopyExportUrl': _wfConfig.incopyExportUrl,
             'indesignExportUrl': _wfConfig.indesignExportUrl,
             'composerRestorerUrl': _wfConfig.composerRestorerUrl,
