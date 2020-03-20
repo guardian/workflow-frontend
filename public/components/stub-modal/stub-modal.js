@@ -37,9 +37,14 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     wfComposerService.loadTemplates().then(templates => {
         const sortedTemplates = _.sortBy(templates, 'title');
 
-        $scope.templates = sortedTemplates.map(({ title, dateCreated }) =>
-            `${title} - ${moment(dateCreated).format("Do MMMM YYYY")}`
-        );
+        $scope.templates = sortedTemplates.map(({ title, dateCreated }) => {
+            // TODO MRB: should really be an ID parameter back from Composer
+            return {
+                id: `${title}_${dateCreated}`,
+                display: `${title} - ${moment(dateCreated).format("Do MMMM YYYY")}`
+            }
+            
+        });
     });
 
     function getAtomDisplayName(type) {

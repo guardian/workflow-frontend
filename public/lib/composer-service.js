@@ -90,7 +90,10 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         };
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
-        if(template) params['template'] = template;
+        
+        if(template) {
+            params['template'] = template.id;
+        }
 
         return request({
             method: 'POST',
