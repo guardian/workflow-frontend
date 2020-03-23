@@ -57,7 +57,7 @@
                 </div>
                 <div ng-if="contentName === 'Article'">
                     <label for="stub_template">Template</label>
-                    <div ng-if="templates.length === 0">
+                    <div ng-if="!loadingTemplates && templates.length === 0">
                         <p class="help-block">Cannot load templates. Try logging into Composer directly.</p>
                     </div>
                     <div>

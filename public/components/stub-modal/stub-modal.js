@@ -34,6 +34,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         })[mode];
     });
 
+    $scope.loadingTemplates = true;
+
     wfComposerService.loadTemplates().then(templates => {
         const sortedTemplates = _.sortBy(templates, 'title');
 
@@ -47,6 +49,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             }
             
         });
+    }).finally(() => {
+        $scope.loadingTemplates = false;
     });
 
     function getAtomDisplayName(type) {
