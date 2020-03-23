@@ -38,7 +38,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         const sortedTemplates = _.sortBy(templates, 'title');
 
         $scope.templates = sortedTemplates.map(({ title, dateCreated }) => {
-            // TODO MRB: should really be an ID parameter back from Composer
+            // TODO MRB: Ideally Composer would give us back an opaque ID.
+            // It's like this for now so we can roll Composer and Workflow
+            // forward and back independently. 
             return {
                 id: `${title}_${dateCreated}`,
                 display: `${title} - ${moment(dateCreated).format("Do MMMM YYYY")}`
