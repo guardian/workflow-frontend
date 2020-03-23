@@ -82,7 +82,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
     this.parseComposerData = parseComposerData;
 
 
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template) {
         var params = {
             'type': type,
             'tracking': commissioningDesks,
@@ -90,12 +90,26 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         };
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
+        
+        if(template) {
+            params['template'] = template.id;
+        }
 
         return request({
             method: 'POST',
             url: config.composerNewContent,
             params: params,
             withCredentials: true
+        });
+    };
+
+    this.loadTemplates = function() {
+        return request({
+            method: 'GET',
+            url: config.composerTemplates,
+            withCredentials: true
+        }).then(({ data }) => {
+            return data;
         });
     };
 

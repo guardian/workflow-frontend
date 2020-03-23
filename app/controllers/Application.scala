@@ -100,7 +100,8 @@ object Application extends Controller with PanDomainAuthActions {
         ("composer", Json.obj(
           ("create", Json.fromString(Composer.newContentUrl)),
           ("view", Json.fromString(Composer.adminUrl)),
-          ("details", Json.fromString(Composer.contentDetails))
+          ("details", Json.fromString(Composer.contentDetails)),
+          ("templates", Json.fromString(Composer.templates))
         )),
         ("mediaAtomMaker", Json.obj(
           ("create", Json.fromString(MediaAtomMakerConfig.newContentUrl)),

@@ -3,6 +3,7 @@ import angular from 'angular';
 import 'angular-bootstrap-temporary';
 
 import _ from 'lodash';
+import moment from 'moment';
 
 import 'components/date-time-picker/date-time-picker';
 
@@ -33,6 +34,25 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         })[mode];
     });
 
+    $scope.loadingTemplates = true;
+
+    wfComposerService.loadTemplates().then(templates => {
+        const sortedTemplates = _.sortBy(templates, 'title');
+
+        $scope.templates = sortedTemplates.map(({ title, dateCreated }) => {
+            // TODO MRB: Ideally Composer would give us back an opaque ID.
+            // It's like this for now so we can roll Composer and Workflow
+            // forward and back independently. 
+            return {
+                id: `${title}_${dateCreated}`,
+                display: `${title} - ${moment(dateCreated).format("Do MMMM YYYY")}`
+            }
+            
+        });
+    }).finally(() => {
+        $scope.loadingTemplates = false;
+    });
+
     function getAtomDisplayName(type) {
       switch (type) {
         case 'media':
@@ -55,6 +75,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.formData = {};
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
+    $scope.templates = [];
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
     $scope.atomTypes = getAtomDropdownData();

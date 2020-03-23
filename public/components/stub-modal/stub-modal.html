@@ -55,6 +55,16 @@
                     <select id="stub_section" name="section" ng-model="stub.section" ng-options="section.name for section in sections" required>
                     </select>
                 </div>
+                <div ng-if="contentName === 'Article'">
+                    <label for="stub_template">Template</label>
+                    <div ng-if="!loadingTemplates && templates.length === 0">
+                        <p class="help-block">Cannot load templates. Try logging into Composer directly.</p>
+                    </div>
+                    <div>
+                        <select id="stub_template" class="col-xs-12" name="template" ng-model="stub.template" ng-disabled="templates.length === 0" ng-options="template.display for template in templates">
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
