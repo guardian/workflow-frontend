@@ -63,7 +63,7 @@ object Config extends AwsInstanceTags {
 
   lazy val sharedSecret: String = config.getConfigStringOrFail("api.sharedsecret")
 
-  lazy val incopyOpenUrl: String = "gnm://openinincopy/${storyBundleId}/checkout/readwrite"
+  lazy val incopyOpenUrl: String = "gnm://openinincopy/storybundle/${storyBundleId}/checkout/readwrite"
   lazy val incopyExportUrl: String = "gnm://composer/export/${composerId}"
   lazy val indesignExportUrl: String = "gnm://composerindesign/export/${composerId}"
 
