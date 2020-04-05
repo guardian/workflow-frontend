@@ -534,9 +534,12 @@
                     Send to InDesign
                 </a>
             </span>
-            <span ng-hide="contentItem.linkedWithIncopy && !contentItem.storyBundleId" class="drawer__toolbar-item drawer__toolbar-item--action">
+            <span class="drawer__toolbar-item drawer__toolbar-item--action">
                 <a 
-                    href="{{ contentItem.linkedWithIncopy ? incopyOpenUrl : incopyExportUrl }}" 
+                    href="{{ contentItem.linkedWithIncopy ?
+                        buildUrl({ 'storyBundleId': contentItem.storyBundleId }, incopyOpenUrlTemplate) :
+                        buildUrl({ 'composerId': contentItem.composerId }, incopyExportUrlTemplate)
+                         }}"
                     title="{{ contentItem.linkedWithIncopy ? 'Open in' : 'Send to' }} InCopy"
                     class="drawer__item-content" >
                     <i class="drawer__icon drawer__toolbar-icon" wf-icon="incopy"></i>

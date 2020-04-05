@@ -21,14 +21,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
     var hiddenClass = 'content-list-drawer--hidden';
 
-    function buildUrl(fields, url) {
-        console.log(url, fields)
-        return url
-            .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
-                return fields[fieldName] || "";
-            });
-    }
-
     function buildComposerRestorerUrl (composerId) {
         return config.composerRestorerUrl + '/' + composerId + '/versions';
     }
@@ -175,10 +167,18 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 }
 
                 // TODO: move build incopy URL to decorator
-                $scope.incopyOpenUrl = buildUrl({ "storyBundleId": contentItem.storyBundleId }, config.incopyOpenUrl);
 
-                $scope.incopyExportUrl = buildUrl({ "composerId": contentItem.composerId }, config.incopyExportUrl);
-                $scope.indesignExportUrl = buildUrl({ "composerId": contentItem.composerId }, config.indesignExportUrl );
+                $scope.buildUrl = function(fields, url) {
+                    console.log(url, fields)
+                    return url
+                        .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
+                            return fields[fieldName] || "";
+                        });
+                };
+                $scope.incopyOpenUrlTemplate = config.incopyOpenUrl;
+                $scope.incopyExportUrlTemplate = config.incopyExportUrl;
+
+                $scope.indesignExportUrl = $scope.buildUrl({ "composerId": contentItem.composerId }, config.indesignExportUrl );
 
                 $scope.storyPackagesUrl = config.storyPackagesUrl;
 
