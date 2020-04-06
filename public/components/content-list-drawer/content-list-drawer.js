@@ -169,7 +169,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 // TODO: move build incopy URL to decorator
 
                 $scope.buildUrl = function(fields, url) {
-                    console.log(url, fields)
                     return url
                         .replace(/\$\{(.*?)\}/g, function(match, fieldName) {
                             return fields[fieldName] || "";
