@@ -121,6 +121,7 @@ object Application extends Controller with PanDomainAuthActions {
         ("presenceUrl", Json.fromString(Config.presenceUrl)),
         ("preferencesUrl", Json.fromString(Config.preferencesUrl)),
         ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
+        ("incopyOpenUrl", Json.fromString(Config.incopyOpenUrl)),
         ("incopyExportUrl", Json.fromString(Config.incopyExportUrl)),
         ("indesignExportUrl", Json.fromString(Config.indesignExportUrl)),
         ("composerRestorerUrl", Json.fromString(Config.composerRestorerUrl)),
