@@ -29,7 +29,7 @@ workflow-frontend CODE instance.
 - Run the install script `./scripts/setup.sh`
 - Download the DEV config: `./scripts/fetch-config.sh`
 - Run the script `./scripts/setup-ssh-tunnel.sh` to set up an ssh tunnel to a CODE datastore instance. You will need [ssm-scala](https://github.com/guardian/ssm-scala) installed for this script to work.
-- Run the `setup-app.rb` in the `dev-nginx` repo with the `nginx/nginx-mapping.yml` file in this repo
+- Run `dev-nginx setup-app nginx/nginx-mapping.yml` 
 
 ### Run
 
