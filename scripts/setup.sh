@@ -4,7 +4,7 @@ red='\x1B[0;31m'
 
 if [[ -z "$JAVA_HOME" ]]; then
     echo -e "\r${red}JAVA_HOME must be set" 1>&2
-    echo "This can be done by adding \"export JAVA_HOME=$(/usr/libexec/java_home)\" to your ~/.profile"
+    echo "This can be done by adding \"export JAVA_HOME=\`/usr/libexec/java_home\`\" to your ~/.profile"
     exit 1
 fi
 
