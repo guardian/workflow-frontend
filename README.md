@@ -19,7 +19,7 @@ The Angular frontend and associated Scala API for Workflow.
  
 You will need `workflow` and `capi` (API Gateway invocation) credentials from Janus.
 
-In order to run, workflow-frontend needs to talk to the a workflow datastore. 
+In order to run, workflow-frontend needs to talk to the a workflow datastore and a preferences datastore.
 It can use either a local store, or CODE.
 
 ### Common installation steps
@@ -28,6 +28,7 @@ It can use either a local store, or CODE.
  1. Run the install script `./scripts/setup.sh`
  1. Download the DEV config: `./scripts/fetch-config.sh`
  1. Run the `setup-app.rb` in the `dev-nginx` repo with the `nginx/nginx-mapping.yml` file in this repo
+ 1. Check out [preferences](https://github.com/guardian/editorial-preferences) and follow the README instructions carefully to get it running locally. 
 
 #### CODE config
 
