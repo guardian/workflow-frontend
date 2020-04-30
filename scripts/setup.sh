@@ -2,6 +2,12 @@
 
 red='\x1B[0;31m'
 
+if [[ -z "$JAVA_HOME" ]]; then
+    echo -e "\r${red}JAVA_HOME must be set" 1>&2
+    echo "This can be done by adding \"export JAVA_HOME=\`/usr/libexec/java_home\`\" to your ~/.profile"
+    exit 1
+fi
+
 test $(which yarn)
 if [ $? != "0" ]; then
     echo -e "\n\r\n\r${red}yarn not found: please install yarn from https://yarnpkg.com/${plain}\n\r or run 'npm install -g yarn'"
