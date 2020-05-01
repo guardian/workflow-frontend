@@ -17,6 +17,7 @@ import notesTemplate              from "components/content-list-item/templates/n
 import linksTemplate              from "components/content-list-item/templates/links.html";
 import publishedStateTemplate     from "components/content-list-item/templates/published-state.html";
 import wordcountTemplate          from "components/content-list-item/templates/wordcount.html";
+import printWordcountTemplate     from "components/content-list-item/templates/printwordcount.html";
 import commissionedLengthTemplate from "components/content-list-item/templates/commissionedLength.html";
 import needsLegalTemplate         from "components/content-list-item/templates/needsLegal.html";
 
@@ -185,12 +186,21 @@ var columnDefaults = [{
     active: true
 },{
     name: 'wordcount',
-    prettyName: 'Wordcount',
-    labelHTML: 'Words',
+    prettyName: 'Web Wordcount',
+    labelHTML: 'Web Words',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
     template: wordcountTemplate,
+    active: false
+},{
+    name: 'printwordcount',
+    prettyName: 'Print Wordcount',
+    labelHTML: 'Print Words',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'printwordcount.html',
+    template: printWordcountTemplate,
     active: false
 },{
     name: 'commissionedLength',

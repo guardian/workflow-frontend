@@ -48,6 +48,7 @@ $textualIconSize: 22px;
             &--links,
             &--published-state,
             &--wordcount,
+            &--printwordcount,
             &--commissionedLength,
             &--needsLegal {
                 padding: 15px 10px 5px 5px;
@@ -114,7 +115,7 @@ $textualIconSize: 22px;
                 width: 40px;
             }
 
-            &--wordcount {
+            &--printwordcount {
                 width: 40px;
             }
 

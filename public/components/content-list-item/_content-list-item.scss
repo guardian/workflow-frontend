@@ -165,6 +165,7 @@
         &--created,
         &--incopy,
         &--wordcount,
+        &--printwordcount,
         &--commissionedLength,
         &--needsLegal,
         &--optimisedForWeb,
@@ -298,6 +299,11 @@
         }
 
         &--wordcount {
+            width: 34px;
+            text-align: center;
+        }
+
+        &--printwordcount {
             width: 34px;
             text-align: center;
         }
