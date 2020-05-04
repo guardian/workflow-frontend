@@ -24,6 +24,7 @@ case class ExternalData(
                          takenDown: Option[Boolean] = None,
                          timeTakenDown: Option[DateTime] = None,
                          wordCount: Option[Int] = None,
+                         printWordCount: Option[Int] = None,
                          embargoedUntil: Option[DateTime] = None,
                          embargoedIndefinitely: Option[Boolean] = None,
                          scheduledLaunchDate: Option[DateTime] = None,

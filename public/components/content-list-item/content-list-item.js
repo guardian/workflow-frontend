@@ -88,6 +88,7 @@ function wfContentItemParser(config, statusLabels, sections) {
             this.composerId = item.composerId;
             this.editorId = item.editorId;
             this.wordCount = item.wordCount;
+            this.printWordCount = item.printWordCount;
             this.commissionedLength = item.commissionedLength;
 
             this.headline = item.headline;
