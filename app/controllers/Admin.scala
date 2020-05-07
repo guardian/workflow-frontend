@@ -3,8 +3,9 @@ package controllers
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import com.gu.workflow.lib.{Config => LocalConfig}
 import io.circe.{Json, parser}
+import lib.AdminPermissionFilter
+import models._
 import models.api.ApiError
-import models.{Status => WorkflowStatus, _}
 import play.api.Logger
 import play.api.Play.current
 import play.api.data.Form
@@ -56,11 +57,11 @@ object Admin extends Controller with PanDomainAuthActions {
     }.getOrElse(Future(sectionListFromDB))
   }
 
-  def index() = (AuthAction andThen WhiteListAuthFilter) {
+  def index() = (AuthAction andThen AdminPermissionFilter) {
     Redirect("/admin/desks-and-sections")
   }
 
-  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async {
+  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen AdminPermissionFilter).async {
     for {
       deskList <- getDesks()
       sectionListFromDB <- getSortedSections()
@@ -118,7 +119,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )(assignSectionToDeskFormData.apply)(assignSectionToDeskFormData.unapply)
   )
 
-  def assignSectionToDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def assignSectionToDesk = (AuthAction andThen AdminPermissionFilter).async { implicit request =>
     assignSectionToDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to update section assignments")),
       sectionAssignment => {
@@ -138,7 +139,7 @@ object Admin extends Controller with PanDomainAuthActions {
    SECTION routes
    */
 
-  def addSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def addSection = (AuthAction andThen AdminPermissionFilter).async { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to add section")),
       section => {
@@ -152,7 +153,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def removeSection = (AuthAction andThen AdminPermissionFilter).async { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to remove section")),
       section => {
@@ -168,7 +169,7 @@ object Admin extends Controller with PanDomainAuthActions {
    DESK routes
    */
 
-  def addDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def addDesk = (AuthAction andThen AdminPermissionFilter).async { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(s"failed to add desk ${formWithErrors.errors}")),
       desk => {
@@ -182,7 +183,7 @@ object Admin extends Controller with PanDomainAuthActions {
     )
   }
 
-  def removeDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def removeDesk = (AuthAction andThen AdminPermissionFilter).async { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to remove desk")),
       desk => {
