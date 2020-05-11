@@ -17,13 +17,12 @@ if [ $? != "0" ]; then
     exit 1
 fi
 
-source "$NVM_DIR/nvm.sh"
-
 if ! test -e "$NVM_DIR/nvm.sh"; then
     echo -e "NVM not found. NVM is required to run this project"
     echo -e "Install it from https://github.com/creationix/nvm#installation"
     exit 1
   else
+    source "$NVM_DIR/nvm.sh"
     nvm install
   fi
 
