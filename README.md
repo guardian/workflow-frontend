@@ -27,8 +27,8 @@ It can use either a local store, or CODE.
  1. Make sure that you are running the right version of nodejs, (tested and working with v6.1.0). We recommend using [nvm](https://github.com/creationix/nvm) to easily manage multiple versions of node. With this you can use `nvm use` to switch to this version quickly.
  1. Run the install script `./scripts/setup.sh`
  1. Download the DEV config: `./scripts/fetch-config.sh`
- 1. Run the `setup-app.rb` in the `dev-nginx` repo with the `nginx/nginx-mapping.yml` file in this repo
- 1. Check out [preferences](https://github.com/guardian/editorial-preferences) and follow the README instructions carefully to get it running locally. 
+ 2. Run the `dev-nginx setup-app nginx/nginx-mapping.yml`
+ 3. Check out [preferences](https://github.com/guardian/editorial-preferences) and follow the README instructions carefully to get it running locally. 
 
 If you encounter a `Module build failed` error due to Node Sass during set up, run `npm rebuild node-sass`.
 
