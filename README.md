@@ -30,6 +30,8 @@ It can use either a local store, or CODE.
  1. Run the `setup-app.rb` in the `dev-nginx` repo with the `nginx/nginx-mapping.yml` file in this repo
  1. Check out [preferences](https://github.com/guardian/editorial-preferences) and follow the README instructions carefully to get it running locally. 
 
+If you encounter a `Module build failed` error due to Node Sass during set up, run `npm rebuild node-sass`.
+
 #### CODE config
 
 Create an SSH tunnel to a workflow-frontend CODE instance.
