@@ -27,10 +27,18 @@ It can use either a local store, or CODE.
  1. Make sure that you are running the right version of nodejs, (tested and working with v6.1.0). We recommend using [nvm](https://github.com/creationix/nvm) to easily manage multiple versions of node. With this you can use `nvm use` to switch to this version quickly.
  1. Run the install script `./scripts/setup.sh`
  1. Download the DEV config: `./scripts/fetch-config.sh`
- 2. Run the `dev-nginx setup-app nginx/nginx-mapping.yml`
- 3. Check out [preferences](https://github.com/guardian/editorial-preferences) and follow the README instructions carefully to get it running locally. 
+ 1. Run `dev-nginx setup-app nginx/nginx-mapping.yml`
+ 1. Check out [preferences](https://github.com/guardian/editorial-preferences) and follow the README instructions carefully to get it running locally. 
 
 If you encounter a `Module build failed` error due to Node Sass during set up, run `npm rebuild node-sass`.
+
+Certain functionality will require running other services locally, e.g. you should run [atom-workshop](https://github.com/guardian/atom-workshop) locally if you want to test creating a Chart atom through Workflow.
+
+Note: when running Workflow Frontend locally, some functionality will currently not work. 
+
+  * Connect to CAPI
+  * Presence 
+  * 'Assign to me'
 
 #### CODE config
 
@@ -41,19 +49,14 @@ You will need [ssm-scala](https://github.com/guardian/ssm-scala) installed for t
 
 #### Local config
 
-NB At present, the Play Framework version does not support https as well as it should.
-
   * Set up workflow (aka workflow backend).
   * Check it is working:
-  
   
     curl -is http://localhost:9095/management/healthcheck
 
 Open `/etc/gu/workflow-frontend.private.conf` and amend `api.url` as follows:
 
     api.url="http://localhost:9095/api"
-
-You can check that you have workflow backend running with 
 
 ### Run
 
