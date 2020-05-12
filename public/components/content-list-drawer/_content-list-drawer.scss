@@ -171,6 +171,11 @@
                 color: $c-grey-400;
             }
         }
+
+        &-wordcount {
+            padding: 0 2px;
+            display: inline-block;
+          }
     }
 
     &__mainmedia {
