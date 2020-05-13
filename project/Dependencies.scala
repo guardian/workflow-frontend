@@ -57,4 +57,10 @@ object Dependencies {
   val webPushDependencies = Seq(
     "nl.martijndwars" % "web-push" % "3.1.1"
   )
+
+  val permissionsClientVersion = "2.0"
+
+  val permissionsDependencies = Seq(
+    "com.gu" %% "editorial-permissions-client" % permissionsClientVersion
+  )
 }
