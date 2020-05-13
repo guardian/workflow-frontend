@@ -232,7 +232,8 @@
 
         &--deadline,
         &--created,
-        &--legal {
+        &--legal,
+        &--last-modified {
             width: 100px;
         }
 
@@ -259,12 +260,14 @@
         }
 
         &--section,
-        &--deadline {
+        &--deadline,
+        &--last-modified {
             @extend %fs-data-1;
         }
 
         &--deadline,
-        &--created {
+        &--created,
+        &--last-modified {
             white-space: nowrap;
         }
 
@@ -467,7 +470,8 @@
         &--sensitive,
         &--legally-sensitive,
         &--commissionedLength,
-        &--wordcount {
+        &--wordcount,
+        &--last-modified {
             @extend %fs-data-2;
         }
 
