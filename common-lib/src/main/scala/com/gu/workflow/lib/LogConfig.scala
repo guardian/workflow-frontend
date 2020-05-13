@@ -1,16 +1,22 @@
 package lib
 
+import java.net.InetSocketAddress
 import java.security.SecureRandom
 
 import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.classic.{Logger => LogbackLogger}
+import ch.qos.logback.classic.{LoggerContext, Logger => LogbackLogger}
 import com.amazonaws.auth.{InstanceProfileCredentialsProvider, STSAssumeRoleSessionCredentialsProvider}
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.gu.logback.appender.kinesis.KinesisAppender
 import com.gu.workflow.util.{AWS, AwsInstanceTags}
+import net.logstash.logback.appender.LogstashTcpSocketAppender
+import net.logstash.logback.encoder.LogstashEncoder
 import net.logstash.logback.layout.LogstashLayout
 import org.slf4j.{LoggerFactory, Logger => SLFLogger}
+import play.api.libs.json.Json
 import play.api.{Configuration, Logger => PlayLogger}
+
+import scala.util.Try
 
 case class LogStashConf(host: String, port: Int, enabled: Boolean)
 
@@ -22,6 +28,43 @@ object LogConfig extends AwsInstanceTags {
   val config: Configuration = play.api.Play.configuration
   val loggingPrefix = "aws.kinesis.logging"
 
+  private val BUFFER_SIZE = 1000
+
+  private def createCustomFields(stack: String, stage: String, app: String, sessionId: String): String = Json.toJson(Map(
+    "stack" -> stack,
+    "stage" -> stage,
+    "app" -> app,
+    "sessionId" -> sessionId
+  )).toString()
+
+  private def createLogstashAppender(sessionId: String): LogstashTcpSocketAppender = {
+    val customFields = createCustomFields("workflow", "DEV", "workflow-frontend", sessionId)
+
+    val appender = new LogstashTcpSocketAppender()
+    appender.setContext(rootLogger.getLoggerContext)
+    appender.addDestinations(new InetSocketAddress("localhost", 5000))
+    appender.setWriteBufferSize(BUFFER_SIZE)
+
+    val encoder = new LogstashEncoder()
+    encoder.setCustomFields(customFields)
+    appender.setEncoder(encoder)
+
+    encoder.start()
+    appender.start()
+
+    appender
+  }
+
+  def initLocalLogShipping(sessionId: String) = {
+    Try {
+      rootLogger.info("Configuring local logstash log shipping")
+      rootLogger.addAppender(createLogstashAppender(sessionId))
+      rootLogger.info("Local logstash log shipping configured")
+    } recover {
+      case e => rootLogger.error("Local logstash log shipping failed", e)
+    }
+  }
+
   def init(sessionId: String) = {
     for {
       stack <- readTag("Stack")
@@ -29,14 +72,15 @@ object LogConfig extends AwsInstanceTags {
       stage <- readTag("Stage")
       stream <- config.getString(s"$loggingPrefix.streamName")
     } yield {
+      val customFields = createCustomFields(stack, stage, app, sessionId)
       val context = rootLogger.getLoggerContext
       val layout = new LogstashLayout()
       layout.setContext(context)
-      layout.setCustomFields(s"""{"stack":"$stack","app":"$app","stage":"$stage", "sessionId":"$sessionId"}""")
+      layout.setCustomFields(customFields)
       layout.start()
 
       val appender = new KinesisAppender[ILoggingEvent]()
-      appender.setBufferSize(1000)
+      appender.setBufferSize(BUFFER_SIZE)
       appender.setRegion(AWS.region.getName)
       appender.setStreamName(stream)
       appender.setContext(context)
