@@ -125,8 +125,14 @@
                             </span>
                         </li>
                         <li class="drawer__item" ng-show="contentItem.contentType == 'article'">
-                            <span class="drawer__item-title">Word count</span>
-                            <span class="drawer__item-content">{{ capiData.wordCount }} </span>
+                            <div class="drawer__item-wordcount">
+                                <span class="drawer__item-title">Web word count</span>
+                                <span class="drawer__item-content">{{ capiData.wordCount }} </span>
+                            </div>
+                            <div class="drawer__item-wordcount">
+                                <span class="drawer__item-title">Print word count</span>
+                                <span class="drawer__item-content">{{ contentItem.printWordCount || "Unknown" }} </span>
+                            </div>
                         </li>
                         <li class="drawer__item" ng-show="contentItem.contentType == 'article'">
                             <span class="drawer__item-title">Commissioned Length</span>
