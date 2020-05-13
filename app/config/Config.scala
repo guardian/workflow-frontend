@@ -23,8 +23,6 @@ object Config extends AwsInstanceTags {
     }
   }
 
-  lazy val isProd: Boolean = stage == "PROD"
-
   lazy val domain: String = appDomain(stage)
 
   Logger.info(s"Domain is: $domain")
