@@ -91,7 +91,7 @@ object WorkflowBuild extends Build {
   lazy val root = playProject("workflow-frontend")
     .enablePlugins(RiffRaffArtifact, JDebPackaging)
     .settings(libraryDependencies ++= akkaDependencies ++ awsDependencies ++ authDependencies
-      ++ testDependencies ++ jsonDependencies ++ permissionsDependencies)
+      ++ testDependencies ++ jsonDependencies)
     .settings(libraryDependencies += filters)
     .settings(playDefaultPort := 9090)
     .settings(playArtifactDistSettings ++ playArtifactSettings: _*)
