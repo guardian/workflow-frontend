@@ -1,33 +1,25 @@
 package config
 
 import com.gu.workflow.lib.{Config => config}
-import com.gu.workflow.util.AwsInstanceTags
+import com.gu.workflow.util._
 import lib.LogStashConf
 import play.Logger
 import java.util.UUID
 
 object Config extends AwsInstanceTags {
-  lazy val stage: String = readTag("Stage") match {
-    case Some(value) => value
+  lazy val stage: Stage = readTag("Stage") match {
+    case Some(value) => Stage(value)
     // If in AWS and we don't know our stage, fail fast to avoid ending up running an instance with dev config in PROD!
     case other if instanceId.nonEmpty => throw new IllegalStateException(s"Unable to read Stage tag: $other")
-    case None => "DEV" // default to dev stage
+    case None => Stage("DEV") // default to dev stage
   }
   Logger.info(s"running in stage: $stage")
 
-  lazy val isDev: Boolean = stage == "DEV"
+  lazy val isDev: Boolean = stage == Dev
+
+  lazy val domain: String = stage.appDomain
 
   lazy val localLogShipping: Boolean = sys.env.getOrElse("LOCAL_LOG_SHIPPING", "false").toBoolean
-
-  def appDomain(appStage: String): String = {
-    appStage match {
-      case "PROD" => "gutools.co.uk"
-      case "DEV" => "local.dev-gutools.co.uk"
-      case x => s"${x.toLowerCase()}.dev-gutools.co.uk"
-    }
-  }
-
-  lazy val domain: String = appDomain(stage)
 
   Logger.info(s"Domain is: $domain")
 
@@ -41,12 +33,12 @@ object Config extends AwsInstanceTags {
   lazy val atomWorkshopUrl: String = s"https://atomworkshop.$domain"
 
   lazy val mediaAtomMakerUrls: Set[String] = stage match {
-    case "CODE" => Set(mediaAtomMakerUrl, s"https://video.${appDomain("DEV")}") // allow MAM in DEV to call Workflow CODE
+    case Code => Set(mediaAtomMakerUrl, s"https://video.${Dev.appDomain}") // allow MAM in DEV to call Workflow CODE
     case _ => Set(mediaAtomMakerUrl)
   }
 
   lazy val atomWorkshopUrls: Set[String] = stage match {
-    case "CODE" => Set(s"https://atomworkshop.${appDomain("DEV")}", atomWorkshopUrl) // allow MAM in DEV to call Workflow CODE
+    case Code => Set(s"https://atomworkshop.${Dev.appDomain}", atomWorkshopUrl) // allow MAM in DEV to call Workflow CODE
     case _ => Set(atomWorkshopUrl)
   }
 
@@ -55,8 +47,8 @@ object Config extends AwsInstanceTags {
 
   lazy val preferencesUrl: String = s"https://preferences.$domain/preferences"
   lazy val tagManagerUrl: String = stage match {
-    case "PROD" => s"https://tagmanager.$domain"
-    case _ => "https://tagmanager.code.dev-gutools.co.uk"
+    case Prod => s"https://tagmanager.$domain"
+    case _ => s"https://tagmanager.${Code.appDomain}"
   }
 
   lazy val capiPreviewIamUrl: String = config.getConfigStringOrFail("capi.preview.iamUrl")
@@ -79,7 +71,10 @@ object Config extends AwsInstanceTags {
 
   lazy val no2faUser: String = "composer.test@guardian.co.uk"
 
-  lazy val editorialSupportDynamoTable: String = s"editorial-support-${if(stage != "PROD") { "CODE" } else { "PROD" }}"
+  lazy val editorialSupportDynamoTable: String = stage match {
+    case Prod => "editorial-support-PROD"
+    case _ => "editorial-support-CODE"
+  }
 
   lazy val atomTypes: List[String] = List("media", "chart")
   lazy val contentTypes: List[String] = List("article", "liveblog", "gallery", "interactive", "picture", "video", "audio")
