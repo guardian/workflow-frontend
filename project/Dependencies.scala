@@ -42,7 +42,7 @@ object Dependencies {
     specs2 % Test
   )
 
-  val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "4.5")
+  val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "6.3")
 
   val circeVersion = "0.8.0"
 

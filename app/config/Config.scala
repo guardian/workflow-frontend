@@ -15,6 +15,10 @@ object Config extends AwsInstanceTags {
   }
   Logger.info(s"running in stage: $stage")
 
+  lazy val isDev: Boolean = stage == "DEV"
+
+  lazy val localLogShipping: Boolean = sys.env.getOrElse("LOCAL_LOG_SHIPPING", "false").toBoolean
+
   def appDomain(appStage: String): String = {
     appStage match {
       case "PROD" => "gutools.co.uk"
