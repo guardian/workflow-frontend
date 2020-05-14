@@ -45,7 +45,11 @@ object Config extends AwsInstanceTags {
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
 
-  lazy val preferencesUrl: String = s"https://preferences.$domain/preferences"
+  lazy val preferencesUrl: String = stage match {
+    case Prod => s"https://preferences.$domain/preferences"
+    case _ => s"https://preferences.${Code.appDomain}/preferences"
+  }
+
   lazy val tagManagerUrl: String = stage match {
     case Prod => s"https://tagmanager.$domain"
     case _ => s"https://tagmanager.${Code.appDomain}"
