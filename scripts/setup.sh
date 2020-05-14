@@ -17,6 +17,15 @@ if [ $? != "0" ]; then
     exit 1
 fi
 
+if ! test -e "$NVM_DIR/nvm.sh"; then
+    echo -e "NVM not found. NVM is required to run this project"
+    echo -e "Install it from https://github.com/creationix/nvm#installation"
+    exit 1
+  else
+    source "$NVM_DIR/nvm.sh"
+    nvm install
+  fi
+
 printf "\n\rSetting up client side dependancies... \n\r\n\r"
 printf "\n\rInstalling NPM packages via yarn... \n\r\n\r"
 
