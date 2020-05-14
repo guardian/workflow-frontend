@@ -79,4 +79,6 @@ change has not deployed then look for the
 
 ### Admin Permissions
 
-The `/admin` path allows the user to manage desks and sections. Not all users that have access to Workflow have access to admin. Admin permissions are managed by the [Permissions app](https://permissions.gutools.co.uk/).
+The `/admin` path allows the user to manage desks and sections. Not all users that have access to workflow have access to admin. Currently admin permissions are managed by adding email addresses to the private conf file stored in s3 and doing a redeploy. Long term this should be changed to used the [permissions app](https://permissions.gutools.co.uk/) so that permissions management is consistent across tools. 
+
+When running Workflow Frontend locally, you can amend the config file created by `fetch-config` to include a `application.admin.whitelist` array and include your email address as a value.
