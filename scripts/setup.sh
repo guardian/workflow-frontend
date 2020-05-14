@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 red='\x1B[0;31m'
 
 if [[ -z "$JAVA_HOME" ]]; then
