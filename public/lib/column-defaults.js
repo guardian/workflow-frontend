@@ -21,6 +21,7 @@ import printWordcountTemplate     from "components/content-list-item/templates/p
 import commissionedLengthTemplate from "components/content-list-item/templates/commissionedLength.html";
 import needsLegalTemplate         from "components/content-list-item/templates/needsLegal.html";
 import lastModifiedTemplate       from "components/content-list-item/templates/last-modified.html";
+import lastModifiedByTemplate       from "components/content-list-item/templates/last-modified-by.html";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
@@ -247,6 +248,15 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'last-modified.html',
     template: lastModifiedTemplate,
+    active: false
+},{
+    name: 'last-modified-by',
+    prettyName: 'Last modified by',
+    labelHTML: 'Last modified by',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'last-modified-by.html',
+    template: lastModifiedByTemplate,
     active: false
 }];
 
