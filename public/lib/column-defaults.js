@@ -119,8 +119,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'sensitive.html',
     template: sensitiveTemplate,
-    active: false,
-    isNew: true
+    active: false
 },{
     name: 'legallySensitive',
     prettyName: 'Legally sensitive',
@@ -129,8 +128,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'legallySensitive.html',
     template: legallySensitiveTemplate,
-    active: false,
-    isNew: true
+    active: false
 },{
     name: 'presence',
     prettyName: 'Presence',
@@ -203,7 +201,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'printwordcount.html',
     template: printWordcountTemplate,
-    active: false
+    active: false,
+    isNew: true
 },{
     name: 'commissionedLength',
     prettyName: 'Commissioned Length',
@@ -248,7 +247,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'last-modified.html',
     template: lastModifiedTemplate,
-    active: false
+    active: false,
+    isNew: true
 },{
     name: 'last-modified-by',
     prettyName: 'Last modified by',
@@ -257,7 +257,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'last-modified-by.html',
     template: lastModifiedByTemplate,
-    active: false
+    active: false,
+    isNew: true
 }];
 
 export { columnDefaults }
