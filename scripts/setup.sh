@@ -4,37 +4,52 @@ set -e
 
 red='\x1B[0;31m'
 
-if [[ -z "$JAVA_HOME" ]]; then
-    echo -e "\r${red}JAVA_HOME must be set" 1>&2
-    echo "This can be done by adding \"export JAVA_HOME=\`/usr/libexec/java_home\`\" to your ~/.profile"
-    exit 1
-fi
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR=${DIR}/..
 
-test $(which yarn)
-if [ $? != "0" ]; then
-    echo -e "\n\r\n\r${red}yarn not found: please install yarn from https://yarnpkg.com/${plain}\n\r or run 'npm install -g yarn'"
-    echo -e "Yarn is not required for the application (but is for the scripts)"
-    echo -e "Packages can be manually installed with npm\n\r\n\r"
-
-    exit 1
-fi
-
-if ! test -e "$NVM_DIR/nvm.sh"; then
-    echo -e "NVM not found. NVM is required to run this project"
-    echo -e "Install it from https://github.com/creationix/nvm#installation"
-    exit 1
-  else
-    source "$NVM_DIR/nvm.sh"
-    nvm install
+preamble() {
+  if [[ -z "$JAVA_HOME" ]]; then
+      echo -e "\r${red}JAVA_HOME must be set" 1>&2
+      echo "This can be done by adding \"export JAVA_HOME=\`/usr/libexec/java_home\`\" to your ~/.profile"
+      exit 1
   fi
 
-printf "\n\rSetting up client side dependancies... \n\r\n\r"
-printf "\n\rInstalling NPM packages via yarn... \n\r\n\r"
+  if ! test -e "$NVM_DIR/nvm.sh"; then
+      echo -e "NVM not found. NVM is required to run this project"
+      echo -e "Install it from https://github.com/creationix/nvm#installation"
+      exit 1
+  else
+      source "$NVM_DIR/nvm.sh"
+      nvm install
+  fi
+}
 
-yarn
+installDependencies() {
+  echo "Installing dependencies"
 
-printf "\n\rCompiling Javascript... \n\r\n\r"
+  brew bundle --file="$ROOT_DIR/Brewfile"
+  echo "  homebrew dependencies installed"
 
-yarn build
+  yarn
+  echo "  yarn dependencies installed"
+}
 
-printf "\n\rDone.\n\r\n\r"
+setupDevNginx() {
+  echo "Setting up dev-nginx"
+  dev-nginx setup-app "$ROOT_DIR/nginx/nginx-mapping.yml"
+}
+
+end() {
+  echo "PSST! Workflow calls to a number of other Tools in CODE."
+  echo "  You need a cookie for these requests to succeed."
+  echo "  Visit https://workflow.code.dev-gutools.co.uk to get a cookie."
+}
+
+main() {
+  preamble
+  installDependencies
+  setupDevNginx
+  end
+}
+
+main
