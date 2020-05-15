@@ -51,7 +51,8 @@ $textualIconSize: 22px;
             &--printwordcount,
             &--commissionedLength,
             &--needsLegal,
-            &--last-modified {
+            &--last-modified,
+            &--last-modified-by {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 
@@ -126,6 +127,10 @@ $textualIconSize: 22px;
 
             &--last-modified {
                 min-width: 100px;
+            }
+
+            &--last-modified-by {
+                min-width: 110px;
             }
         }
     }
