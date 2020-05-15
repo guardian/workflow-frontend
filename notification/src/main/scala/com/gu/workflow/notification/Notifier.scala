@@ -4,7 +4,7 @@ import java.net.HttpCookie
 
 import com.gu.workflow.api.SubscriptionsAPI
 import com.gu.workflow.lib.QueryString
-import com.gu.workflow.util.SharedSecretAuth
+import com.gu.workflow.util.{Dev, Prod, SharedSecretAuth, Stage}
 import io.circe.parser
 import models.api.ContentResponse
 import models._
@@ -12,18 +12,17 @@ import play.api.Logger
 
 import scala.util.control.NonFatal
 
-class Notifier(stage: String, override val secret: String, subsApi: SubscriptionsAPI) extends SharedSecretAuth {
+class Notifier(stage: Stage, override val secret: String, subsApi: SubscriptionsAPI) extends SharedSecretAuth {
 
   private val appUrl = stage match {
-    case "PROD" => "https://workflow.gutools.co.uk"
-    case "CODE" => "https://workflow.code.dev-gutools.co.uk"
     // TODO MRB: put this back to https://workflow.local.dev-gutools.co.uk
     //           by convincing the JVM that our local dev cert is totes legit
-    case "DEV" => "http://localhost:9090"
+    case Dev => "http://localhost:9090"
+    case stage => s"https://workflow.${stage.appDomain}"
   }
 
   private val composerUrl = stage match {
-    case "PROD" => "https://composer.gutools.co.uk"
+    case Prod => "https://composer.gutools.co.uk"
     case _ => "https://composer.code.dev-gutools.co.uk"
   }
 

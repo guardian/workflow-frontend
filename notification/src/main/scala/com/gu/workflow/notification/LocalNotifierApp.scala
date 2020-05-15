@@ -1,10 +1,11 @@
 package com.gu.workflow.notification
 
 import com.gu.workflow.api.SubscriptionsAPI
+import com.gu.workflow.util.Stage
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 object LocalNotifierApp extends App {
-  val stage = sys.env.getOrElse("STAGE", "DEV")
+  val stage: Stage = Stage(sys.env.getOrElse("STAGE", "DEV"))
   val config = new NotifierConfig()
 
   import java.security.Security

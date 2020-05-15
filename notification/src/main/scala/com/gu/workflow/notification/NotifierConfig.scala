@@ -3,6 +3,7 @@ package com.gu.workflow.notification
 import java.io.InputStreamReader
 
 import com.amazonaws.services.s3.AmazonS3
+import com.gu.workflow.util.Stage
 import com.typesafe.config.{Config, ConfigFactory}
 
 class NotifierConfig(config: Config = ConfigFactory.load()) {
@@ -13,7 +14,7 @@ class NotifierConfig(config: Config = ConfigFactory.load()) {
 }
 
 object NotifierConfig {
-  def apply(stage: String, s3Client: AmazonS3): NotifierConfig = {
+  def apply(stage: Stage, s3Client: AmazonS3): NotifierConfig = {
     val key = s"$stage/workflow-frontend/application.defaults.conf"
     val obj = s3Client.getObject("workflow-private", key)
 
