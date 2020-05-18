@@ -27,7 +27,8 @@ $textualIconSize: 22px;
 
 .content-list {
     width: 100%;
-    border: 5px solid $c-grey-100;
+    border-top: 5px solid $c-grey-100;
+    border-bottom: 5px solid $c-grey-100;
 
     // Table header
     &-head {
