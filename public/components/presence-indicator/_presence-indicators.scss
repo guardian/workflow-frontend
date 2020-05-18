@@ -4,7 +4,7 @@
 
 // Compact view
 
-$topIconOffset: 8px !default;
+$topIconOffset: 7px !default;
 $rightIconOffset: 2px !default;
 $topIconOffsetCompact: 3px;
 $rightIconOffsetCompact: 8px;
@@ -117,8 +117,8 @@ $iconAnimationEasingFunction: ease-in-out;
         position: static;
         display: inline-block;
         .content-list-item__icon--presence {
-            width: auto;
-            height: auto;
+            width: 24px;
+            height: 24px;
             text-transform: none;
             @extend %fs-data-2;
             @include border-radius(50px);
