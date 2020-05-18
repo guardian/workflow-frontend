@@ -1,0 +1,8 @@
+<td class="content-list-item__field--preview">
+    <a href="{{ contentItem.links.preview }}" title="Preview (opens in new window)" target="_blank" ng-if="contentItem.links.preview && !isSupportedAtomType" ng-click="$event.stopPropagation()">
+        <i class="content-list-item__icon--preview" wf-icon="preview"></i>
+    </a>
+    <span ng-if="!contentItem.links.preview && !isSupportedAtomType" title="Preview (unavailable)" class="content-list-item__icon--inactive">
+        <i class="content-list-item__icon--preview" wf-icon="preview" wf-icon-active="false"></i>
+    </span>
+</td>
