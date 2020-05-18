@@ -1,6 +1,6 @@
 package com.gu.workflow.api
 
-import com.gu.workflow.lib.Config
+import com.gu.workflow.lib.CommonConfig
 import io.circe.syntax._
 import io.circe.{Decoder, Json, parser}
 import models.Stub
@@ -13,9 +13,7 @@ import play.api.mvc.AnyContent
 import scala.concurrent.Future
 
 object ApiUtils {
-  lazy val apiRoot: String = Config.getConfigStringOrFail("api.url")
-
-  def buildRequest(path: String): WSRequest = WS.url(s"$apiRoot/$path")
+  def buildRequest(path: String): WSRequest = WS.url(s"${CommonConfig.apiRoot}/$path")
 
   def deleteRequest(path: String): Future[WSResponse] =
     buildRequest(path).delete()

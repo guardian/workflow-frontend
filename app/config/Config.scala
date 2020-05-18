@@ -1,12 +1,12 @@
 package config
 
-import com.gu.workflow.lib.{Config => config}
 import com.gu.workflow.util._
-import lib.LogStashConf
 import play.Logger
 import java.util.UUID
 
-object Config extends AwsInstanceTags {
+import com.gu.workflow.lib.CommonConfig
+
+object Config extends CommonConfig with AwsInstanceTags {
   lazy val stage: Stage = readTag("Stage") match {
     case Some(value) => Stage(value)
     // If in AWS and we don't know our stage, fail fast to avoid ending up running an instance with dev config in PROD!
@@ -55,13 +55,13 @@ object Config extends AwsInstanceTags {
     case _ => s"https://tagmanager.${Code.appDomain}"
   }
 
-  lazy val capiPreviewIamUrl: String = config.getConfigStringOrFail("capi.preview.iamUrl")
-  lazy val capiPreviewRole: String = config.getConfigStringOrFail("capi.preview.role")
+  lazy val capiPreviewIamUrl: String = getConfigStringOrFail("capi.preview.iamUrl")
+  lazy val capiPreviewRole: String = getConfigStringOrFail("capi.preview.role")
 
-  lazy val webPushPublicKey: String = config.getConfigStringOrFail("webpush.publicKey")
-  lazy val webPushPrivateKey: String = config.getConfigStringOrFail("webpush.privateKey")
+  lazy val webPushPublicKey: String = getConfigStringOrFail("webpush.publicKey")
+  lazy val webPushPrivateKey: String = getConfigStringOrFail("webpush.privateKey")
 
-  lazy val sharedSecret: String = config.getConfigStringOrFail("api.sharedsecret")
+  lazy val sharedSecret: String = getConfigStringOrFail("api.sharedsecret")
 
   lazy val incopyOpenUrl: String = "gnm://openinincopy/storybundle/${storyBundleId}/checkout/readwrite"
   lazy val incopyExportUrl: String = "gnm://composer/export/${composerId}"
@@ -71,7 +71,7 @@ object Config extends AwsInstanceTags {
 
   lazy val storyPackagesUrl: String = s"https://packages.$domain"
 
-  lazy val googleTrackingId: String = config.getConfigStringOrFail("google.tracking.id")
+  lazy val googleTrackingId: String = getConfigStringOrFail("google.tracking.id")
 
   lazy val no2faUser: String = "composer.test@guardian.co.uk"
 
@@ -85,6 +85,9 @@ object Config extends AwsInstanceTags {
 
   lazy val sessionId: String = UUID.randomUUID().toString
 
-  implicit val defaultExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
+  implicit val defaultExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+
+  lazy val adminWhitelist: List[String] = getConfigStringList("application.admin.whitelist").right.getOrElse(List.empty)
+
+  lazy val capiKey: String = getConfigStringOrFail("capi.key")
 }
