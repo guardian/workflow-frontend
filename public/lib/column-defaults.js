@@ -15,7 +15,6 @@ import sectionTemplate            from "components/content-list-item/templates/s
 import statusTemplate             from "components/content-list-item/templates/status.html";
 import notesTemplate              from "components/content-list-item/templates/notes.html";
 import linksTemplate              from "components/content-list-item/templates/links.html";
-import previewTemplate            from "components/content-list-item/templates/preview.html";
 import publishedStateTemplate     from "components/content-list-item/templates/published-state.html";
 import wordcountTemplate          from "components/content-list-item/templates/wordcount.html";
 import printWordcountTemplate     from "components/content-list-item/templates/printwordcount.html";
@@ -217,18 +216,10 @@ var columnDefaults = [{
     name: 'links',
     prettyName: 'Open in...',
     labelHTML: 'Open in',
-    colspan: 3,
+    colspan: 4,
     title: '',
     templateUrl: templateRoot + 'links.html',
     template: linksTemplate,
-    active: true
-},{
-    name: 'preview',
-    prettyName: 'Preview',
-    labelHTML: 'Preview',
-    title: '',
-    templateUrl: templateRoot + 'preview.html',
-    template: previewTemplate,
     active: true
 },{
     name: 'published-state',
