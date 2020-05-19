@@ -4,7 +4,7 @@ import { wfPresenceCurrentState } from 'components/presence-indicator/presence-s
 
 var module = angular.module('wfPresenceService', []);
 
-module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureSwitches', 'wfUser', function($rootScope, $log, config, wfFeatureSwitches, wfUser) {
+module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfUser', function($rootScope, $log, config, wfUser) {
 
     function presenceError(msg, loggingFields) {
         var err = new Error(msg);
@@ -15,14 +15,6 @@ module.factory('wfPresenceService', ['$rootScope', '$log', 'config', 'wfFeatureS
     }
 
     var self = {};
-
-//    Save this code for when feature switched are implemented.
-//    self.whenEnabled = wfFeatureSwitches.getSwitch("presence-indicator").then(function (value) {
-//        if(value) return true;
-//        else reject("presence disabled");
-//    }, function(err) {
-//        $log.error("error: " + err);
-//    });
 
     self.whenEnabled = Promise.resolve(true);
 
