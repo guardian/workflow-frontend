@@ -1,24 +1,20 @@
 package controllers
 
-import com.amazonaws.auth._
-import com.gu.pandomainauth.PanDomainAuth
 import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
-import com.gu.workflow.util.AWS
+import config.Config
 import play.api.Logger
 import play.api.mvc._
-import config.Config
 
-trait PanDomainAuthActions extends AuthActions with PanDomainAuth with Results {
-
-  import play.api.Play.current
+trait PanDomainAuthActions extends AuthActions with Results {
+  def config: Config
 
   override def validateUser(authedUser: AuthenticatedUser): Boolean = {
     (authedUser.user.emailDomain == "guardian.co.uk") &&
-    (authedUser.multiFactor || (Config.no2faUser.length > 0 && Config.no2faUser == authedUser.user.email))
+    (authedUser.multiFactor || (config.no2faUser.length > 0 && config.no2faUser == authedUser.user.email))
   }
 
-  override def authCallbackUrl: String = Config.host + "/oauthCallback"
+  override def authCallbackUrl: String = config.host + "/oauthCallback"
 
   override def showUnauthedMessage(message: String)(implicit request: RequestHeader): Result = {
     Logger.info(message)
@@ -33,10 +29,4 @@ trait PanDomainAuthActions extends AuthActions with PanDomainAuth with Results {
       s"${claimedAuth.user.email} is not valid for use with Workflow. You need to use your Guardian Google account to login. Please sign in with your Guardian Google account first, then retry logging in"
     }
   }
-
-  override lazy val domain: String = Config.domain
-  override lazy val system: String = "workflow"
-
-
-  override def awsCredentialsProvider(): AWSCredentialsProvider = AWS.credentialsProvider
 }
