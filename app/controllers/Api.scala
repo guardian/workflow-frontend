@@ -50,7 +50,7 @@ class Api(
 
   // can be hidden behind multiple auth endpoints
   private def getContentBlock[R <: Request[_]] = { implicit req: R =>
-    val qs: Map[String, Seq[String]] = queryString(req)
+    val qs: Map[String, Seq[String]] = Api.queryString(req)
 
     StubAPI.getStubs(stubDecorator, qs).asFuture.map {
       case Left(err) =>
@@ -302,16 +302,18 @@ class Api(
 
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
 
-  def queryString[R <: Request[_]](req: R): Map[String, Seq[String]] = req match {
-    case r: UserRequest[_] => r.queryString + ("email" -> Seq(r.user.email))
-    case r: Request[_] => r.queryString
-  }
-
   object SharedSecretAuthAction extends ActionBuilder[Request] {
     def invokeBlock[A](req: Request[A], block: (Request[A]) => Future[Result]) =
       if(!isInOnTheSecret(req))
         Future(Results.Forbidden)
       else
         block(req)
+  }
+}
+
+object Api {
+  def queryString[R <: Request[_]](req: R): Map[String, Seq[String]] = req match {
+    case r: UserRequest[_] => r.queryString + ("email" -> Seq(r.user.email))
+    case r: Request[_] => r.queryString
   }
 }
