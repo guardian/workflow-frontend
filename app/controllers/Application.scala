@@ -1,6 +1,6 @@
  package controllers
 
-import cats.syntax.either._
+import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import com.gu.workflow.lib.{Priorities, StatusDatabase, TagService}
 import config.Config
@@ -11,11 +11,18 @@ import io.circe.{Decoder, Encoder, Json, parser}
 import lib.{AtomWorkshopConfig, Composer, MediaAtomMakerConfig}
 import models.{Desk, EditorialSupportStaff, Section}
 import play.api.Logger
+import play.api.libs.ws.WSClient
 import play.api.mvc._
 
 import scala.concurrent.Future
 
-object Application extends Controller with PanDomainAuthActions {
+class Application(
+  val editorialSupportTeams: EditorialSupportTeamsController,
+  override val config: Config,
+  override val controllerComponents: ControllerComponents,
+  override val wsClient: WSClient,
+  override val panDomainSettings: PanDomainAuthSettingsRefresher
+) extends BaseController with PanDomainAuthActions {
 
   def getSortedSections(): Future[List[Section]] = {
     SectionsAPI.getSections.asFuture.map {
@@ -57,7 +64,7 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def editorialSupport = AuthAction { request =>
-    val staff = EditorialSupportTeamsController.listStaff()
+    val staff = editorialSupportTeams.listStaff()
     val teams = EditorialSupportStaff.groupByTeams(staff)
 
     val fronts = EditorialSupportStaff.getTeam("Fronts", teams)
@@ -67,7 +74,7 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def updateEditorialSupport = AuthAction(parse.form(EditorialSupportStaff.form)) { implicit request =>
-    EditorialSupportTeamsController.updateStaff(request.body)
+    editorialSupportTeams.updateStaff(request.body)
     // Get the browser to reload the page once we've sucessfully updated
     Redirect(routes.Application.editorialSupport())
   }
@@ -86,13 +93,13 @@ object Application extends Controller with PanDomainAuthActions {
       sections <-  getSortedSections()
       desks <- getSortedDesks()
       sectionsInDesks <- getSectionsInDesks()
-      commissioningDesks <- TagService.getTags(Config.tagManagerUrl+
+      commissioningDesks <- TagService.getTags(config.tagManagerUrl+
         "/hyper/tags?limit=200&query=tracking/commissioningdesk/&type=tracking&searchField=path")
     }
     yield {
       val user = request.user
 
-      val config = Json.obj(
+      val jsonConfig = Json.obj(
 
         ("composer", Json.obj(
           ("create", Json.fromString(Composer.newContentUrl)),
@@ -113,25 +120,25 @@ object Application extends Controller with PanDomainAuthActions {
         ("sections", sections.asJson),
         ("sectionsInDesks", sectionsInDesks.asJson), // TODO: Combine desks & sectionsInDesks
         ("priorities", Priorities.all.asJson),
-        ("viewerUrl", Json.fromString(Config.viewerUrl)),
-        ("storyPackagesUrl", Json.fromString(Config.storyPackagesUrl)),
-        ("presenceUrl", Json.fromString(Config.presenceUrl)),
-        ("preferencesUrl", Json.fromString(Config.preferencesUrl)),
+        ("viewerUrl", Json.fromString(config.viewerUrl)),
+        ("storyPackagesUrl", Json.fromString(config.storyPackagesUrl)),
+        ("presenceUrl", Json.fromString(config.presenceUrl)),
+        ("preferencesUrl", Json.fromString(config.preferencesUrl)),
         ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
-        ("incopyOpenUrl", Json.fromString(Config.incopyOpenUrl)),
-        ("incopyExportUrl", Json.fromString(Config.incopyExportUrl)),
-        ("indesignExportUrl", Json.fromString(Config.indesignExportUrl)),
-        ("composerRestorerUrl", Json.fromString(Config.composerRestorerUrl)),
+        ("incopyOpenUrl", Json.fromString(config.incopyOpenUrl)),
+        ("incopyExportUrl", Json.fromString(config.incopyExportUrl)),
+        ("indesignExportUrl", Json.fromString(config.indesignExportUrl)),
+        ("composerRestorerUrl", Json.fromString(config.composerRestorerUrl)),
         ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
-        ("atomTypes", Config.atomTypes.asJson),
-        ("sessionId", Json.fromString(Config.sessionId)),
-        ("gaId", Json.fromString(Config.googleTrackingId)),
+        ("atomTypes", config.atomTypes.asJson),
+        ("sessionId", Json.fromString(config.sessionId)),
+        ("gaId", Json.fromString(config.googleTrackingId)),
         ("webPush", Json.obj(
-          ("publicKey", Json.fromString(Config.webPushPublicKey))
+          ("publicKey", Json.fromString(config.webPushPublicKey))
         ))
       )
 
-      Ok(views.html.app(title, Some(user), config, Config.googleTrackingId, Config.presenceClientLib))
+      Ok(views.html.app(title, Some(user), jsonConfig, config.googleTrackingId, config.presenceClientLib))
     }
   }
 }
