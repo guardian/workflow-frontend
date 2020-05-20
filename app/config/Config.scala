@@ -82,11 +82,17 @@ class Config(playConfig: Configuration) extends AwsInstanceTags {
 
   lazy val sessionId: String = UUID.randomUUID().toString
 
-  implicit val defaultExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-
   lazy val adminWhitelist: List[String] = Try {
     playConfig.underlying.getStringList("application.admin.whitelist").asScala.toList
   }.toOption.getOrElse(List.empty)
 
   lazy val capiKey: String = playConfig.get[String]("capi.key")
+
+  lazy val pandaSystem: String = playConfig.getOptional[String]("capi.key").getOrElse("workflow")
+  lazy val pandaBucketName: String = "pan-domain-auth-settings"
+  lazy val pandaSettingsFile: String = s"$domain.settings"
+}
+
+object Config {
+  implicit val defaultExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 }
