@@ -1,20 +1,26 @@
 package controllers
 
+import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import config.Config
 import io.circe.{Json, parser}
 import models.api.ApiError
 import models._
 import play.api.Logger
-import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
+import play.api.libs.ws.WSClient
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object Admin extends Controller with PanDomainAuthActions {
+class Admin(
+  override val config: Config,
+  override val controllerComponents: ControllerComponents,
+  override val wsClient: WSClient,
+  override val panDomainSettings: PanDomainAuthSettingsRefresher
+) extends BaseController with PanDomainAuthActions {
 
   import play.api.data.Forms._
 
@@ -235,10 +241,10 @@ object Admin extends Controller with PanDomainAuthActions {
       tagIds <- tagIdsFuture
       selectedSectionOption <- selectedSectionOptionFt
     } yield {
-      val config: Json = parser.parse(s"""{"CAPI_API_KEY": ${Config.capiKey}}""").right.get
+      val capiKeyJson: Json = parser.parse(s"""{"CAPI_API_KEY": ${config.capiKey}}""").right.get
       Ok(
         views.html.admin.sectionsAndTags(
-          config,
+          capiKeyJson,
           sectionListFromDB,
           selectedSectionIdOption,
           selectedSectionOption,
