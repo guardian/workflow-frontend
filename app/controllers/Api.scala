@@ -1,6 +1,6 @@
 package controllers
 
-import cats.syntax.either._
+import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.pandomainauth.action.UserRequest
 import com.gu.workflow.api.{ApiUtils, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.DBToAPIResponse.getResponse
@@ -10,41 +10,34 @@ import config.Config
 import config.Config.defaultExecutionContext
 import io.circe.syntax._
 import io.circe.{Encoder, Json}
+import lib.CORSable
 import lib.Responses._
 import models.EditorialSupportStaff._
 import models.api.{ApiError, ApiResponseFt}
 import models.{Flag, _}
 import org.joda.time.DateTime
 import play.api.Logger
+import play.api.libs.ws.WSClient
 import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class CORSable[A](allowedOrigins: Set[String])(action: Action[A]) extends Action[A] {
+class Api(
+  val apiUtils: ApiUtils,
+  val editorialSupportTeams: EditorialSupportTeamsController,
+  override val config: Config,
+  override val controllerComponents: ControllerComponents,
+  override val wsClient: WSClient,
+  override val panDomainSettings: PanDomainAuthSettingsRefresher
+) extends BaseController with PanDomainAuthActions with SharedSecretAuth {
 
-  def apply(request: Request[A]): Future[Result] = {
-
-    val headers = request.headers.get("Origin").map { origin =>
-      if(allowedOrigins.contains(origin)) {
-        List("Access-Control-Allow-Origin" -> origin, "Access-Control-Allow-Credentials" -> "true")
-      } else { Nil }
-    }
-
-    action(request).map(_.withHeaders(headers.getOrElse(Nil) :_*))
-  }
-
-  lazy val parser: BodyParser[A] = action.parser
-}
-
-object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
-
-  val contentAPI = new ContentAPI(Config.capiPreviewRole, Config.capiPreviewIamUrl)
+  val contentAPI = new ContentAPI(config.capiPreviewRole, config.capiPreviewIamUrl)
   val stubDecorator = new StubDecorator(contentAPI)
 
-  val defaultCorsAble: Set[String] = Set(Config.composerUrl)
-  val atomCorsAble: Set[String] = defaultCorsAble ++ Config.mediaAtomMakerUrls ++ Config.atomWorkshopUrls
+  val defaultCorsAble: Set[String] = Set(config.composerUrl)
+  val atomCorsAble: Set[String] = defaultCorsAble ++ config.mediaAtomMakerUrls ++ config.atomWorkshopUrls
 
-  override def secret: String = Config.sharedSecret
+  override def secret: String = config.sharedSecret
 
   implicit val flatStubWrites: Encoder[Stub] = Stub.flatJsonEncoder
 
@@ -96,7 +89,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
 
   def validateContentType(body: Json): ApiResponseFt[Json] = {
     val atomType: String = body.hcursor.downField("contentType").as[String].getOrElse("")
-    val allTypes: List[String] = Config.atomTypes ++ Config.contentTypes
+    val allTypes: List[String] = config.atomTypes ++ config.contentTypes
     if (allTypes.contains(atomType)) {
       ApiResponseFt.Right(body)
     } else {
@@ -108,7 +101,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def createContent() =  CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
         jsValueWithValidContentType <- validateContentType(json)
         stubId <- StubAPI.createStub(jsValueWithValidContentType)
       } yield stubId
@@ -118,7 +111,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def putStub(stubId: Long) =  CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
         putRes <- StubAPI.putStub(stubId, json)
       } yield putRes
     )}
@@ -126,8 +119,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
 
   def putStubAssignee(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
-      json <- ApiUtils.readJsonFromRequestResponse(request.body)
-      assignee <- ApiUtils.extractDataResponse[String](json)
+      json <- apiUtils.readJsonFromRequestResponse(request.body)
+      assignee <- apiUtils.extractDataResponse[String](json)
       assigneeData = Some(assignee).filter(_.nonEmpty)
       id <- StubAPI.putStubAssignee(stubId, assigneeData)
     } yield id
@@ -135,8 +128,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
 
   def putStubAssigneeEmail(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
-      json <- ApiUtils.readJsonFromRequestResponse(request.body)
-      assignee <- ApiUtils.extractDataResponse[String](json)
+      json <- apiUtils.readJsonFromRequestResponse(request.body)
+      assignee <- apiUtils.extractDataResponse[String](json)
       assigneeEmailData = Some(assignee).filter(_.nonEmpty)
       id <- StubAPI.putStubAssigneeEmail(stubId, assigneeEmailData)
     } yield id
@@ -144,8 +137,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
 
   def putStubDueDate(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
-      json <- ApiUtils.readJsonFromRequestResponse(request.body)
-      dueDateOpt <- ApiUtils.extractDataResponseOpt[String](json)
+      json <- apiUtils.readJsonFromRequestResponse(request.body)
+      dueDateOpt <- apiUtils.extractDataResponseOpt[String](json)
       dueDateData = dueDateOpt.map(new DateTime(_))
       id <- StubAPI.putStubDue(stubId, dueDateData)
     } yield id
@@ -155,8 +148,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
     def getNoteOpt(input: String): Option[String] = if(input.length > 0) Some(input) else None
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        note <- ApiUtils.extractDataResponse[String](json)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        note <- apiUtils.extractDataResponse[String](json)
         noteOpt = getNoteOpt(note)
         id <- StubAPI.putStubNote(stubId, noteOpt)
       } yield id
@@ -166,8 +159,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def putStubProdOffice(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        prodOffice <- ApiUtils.extractDataResponse[String](json)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        prodOffice <- apiUtils.extractDataResponse[String](json)
         id <- StubAPI.putStubProdOffice(stubId, prodOffice)
       } yield id
     )}
@@ -176,8 +169,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def putStubStatus(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        status <- ApiUtils.extractDataResponse[String](json)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        status <- apiUtils.extractDataResponse[String](json)
         id <- StubAPI.updateContentStatus(stubId, status)
       } yield id
     )}
@@ -186,8 +179,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def putStubCommissionedLength(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        status <- ApiUtils.extractDataResponse[Option[Int]](json)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        status <- apiUtils.extractDataResponse[Option[Int]](json)
         id <- StubAPI.updateContentCommissionedLength(stubId, status)
       } yield id
       )}
@@ -196,8 +189,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def putStubStatusByComposerId(composerId: String) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[String](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        status <- ApiUtils.extractDataResponse[String](json)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        status <- apiUtils.extractDataResponse[String](json)
         id <- StubAPI.updateContentStatusByComposerId(composerId, status)
       } yield id
     )}
@@ -206,8 +199,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def putStubSection(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        section <- ApiUtils.extractResponse[String](json.hcursor.downField("data").downField("name").focus.getOrElse(Json.Null))
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        section <- apiUtils.extractResponse[String](json.hcursor.downField("data").downField("name").focus.getOrElse(Json.Null))
         id <- StubAPI.putStubSection(stubId, section)
       } yield id
     )}
@@ -216,8 +209,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def putStubWorkingTitle(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        wt <- ApiUtils.extractDataResponse[String](json)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        wt <- apiUtils.extractDataResponse[String](json)
         id <- StubAPI.putStubWorkingTitle(stubId, wt)
       } yield id
     )}
@@ -226,8 +219,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def putStubPriority(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        priority <- ApiUtils.extractDataResponse[Int](json)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        priority <- apiUtils.extractDataResponse[Int](json)
         id <- StubAPI.putStubPriority(stubId, priority)
       } yield id
     )}
@@ -236,8 +229,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def putStubLegalStatus(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        status <- ApiUtils.extractDataResponse[Flag](json)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        status <- apiUtils.extractDataResponse[Flag](json)
         id <- StubAPI.putStubLegalStatus(stubId, status)
       } yield id
     )}
@@ -246,8 +239,8 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def putStubTrashed(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        trashed <- ApiUtils.extractDataResponse[Boolean](json)
+        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        trashed <- apiUtils.extractDataResponse[Boolean](json)
         id <- StubAPI.putStubTrashed(stubId, trashed)
       } yield id
     )}
@@ -285,7 +278,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
 
   def allowedAtomTypes = CORSable(atomCorsAble) {
     APIAuthAction {
-      Ok(Config.atomTypes.asJson.noSpaces)
+      Ok(config.atomTypes.asJson.noSpaces)
     }
   }
 
@@ -297,7 +290,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
 
   def editorialSupportTeams = CORSable(defaultCorsAble) {
     APIAuthAction {
-      val staff = EditorialSupportTeamsController.listStaff().filter(_.name.nonEmpty)
+      val staff = editorialSupportTeams.listStaff().filter(_.name.nonEmpty)
       val teams = EditorialSupportStaff.groupByTeams(staff)
 
       val fronts = EditorialSupportStaff.groupByPerson(EditorialSupportStaff.getTeam("Fronts", teams))
