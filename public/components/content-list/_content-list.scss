@@ -38,7 +38,8 @@ $textualIconSize: 22px;
         z-index: 1;
 
         &.content-list__group-heading {
-            top: 45px;
+            $tableHeaderRowHeight: 37px; // ideally this would be calculated dynamically
+            top: $tableHeaderRowHeight; // keep `status` row headings below the column header row
             background-color: $c-bluegrey;
         }
     }
