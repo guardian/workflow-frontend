@@ -10,6 +10,7 @@ $content-list-icon-size: 14px;
 $compact-display-td-padding: 2px 5px;
 
 $textualIconSize: 22px;
+$tableHeaderRowHeight: 48px;
 
 // Global padding for cells
 %content-list__field-padding {
@@ -29,18 +30,25 @@ $textualIconSize: 22px;
     width: 100%;
     border-bottom: 5px solid $c-grey-100;
 
-    position: relative;
+    thead {
+        th {
+            z-index: 3; // always keep table header on top, even on top of the column selector
+            background-color: $c-white;
+        }
+        tr {
+            height: $tableHeaderRowHeight;
+        }
+    }
 
     &--sticky-row th {
         position: sticky;
         top: 0;
-        background-color: $c-white;
-        z-index: 1;
+        background-color: $c-bluegrey;
 
         &.content-list__group-heading {
-            $tableHeaderRowHeight: 37px; // ideally this would be calculated dynamically
-            top: $tableHeaderRowHeight; // keep `status` row headings below the column header row
-            background-color: $c-bluegrey;
+            // Chrome has a gap between the table header and a group heading row
+            $strangeChromeGap: 1px;
+            top: $tableHeaderRowHeight - $strangeChromeGap;
         }
     }
     // Table header
@@ -285,7 +293,7 @@ $textualIconSize: 22px;
 
 .column-configurator {
     position: absolute;
-    top: 34px;
+    top: $tableHeaderRowHeight;
     right: 6px;
     width: 180px;
     z-index: 2;
