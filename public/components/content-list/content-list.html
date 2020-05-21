@@ -5,7 +5,7 @@
 
 <table class="content-list" ng-class="{ 'content-list--compact': compactView.visible, 'content-list--animations-enabled': animationsEnabled, 'content-list--presence-disabled': !presenceIsActive}" infinite-scroll="moreContent()" infinite-scroll-distance="contentItemsLoadingThreshold" infinite-scroll-immediate-check="false" infinite-scroll-parent="true" infinite-scroll-disabled="infiniteScrollDisabled">
     <thead class="content-list-head">
-        <tr class="content-list-head__row">
+        <tr class="content-list-head__row content-list--sticky-row">
             <th class="content-list-head__heading--group content-list-head__heading--notifier" colspan="1">
                 <div class="content-list__compact-button" ng-class="{ 'content-list__compact-button--active': compactView.visible }" ng-click="compactView.visible = !compactView.visible" title="Toggle compact view"></div>
             </th>

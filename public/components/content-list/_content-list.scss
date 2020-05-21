@@ -27,9 +27,21 @@ $textualIconSize: 22px;
 
 .content-list {
     width: 100%;
-    border-top: 5px solid $c-grey-100;
     border-bottom: 5px solid $c-grey-100;
 
+    position: relative;
+
+    &--sticky-row th {
+        position: sticky;
+        top: 0;
+        background-color: $c-white;
+        z-index: 1;
+
+        &.content-list__group-heading {
+            top: 45px;
+            background-color: $c-bluegrey;
+        }
+    }
     // Table header
     &-head {
         &__row {
@@ -197,8 +209,6 @@ $textualIconSize: 22px;
     &--presence-disabled {
       .content-list-head__heading--presence,
       .content-list-item__field--presence {
-        position: relative;
-
         &:after {
           content: "";
           display: block;
