@@ -259,6 +259,6 @@ var columnDefaults = [{
     template: lastModifiedByTemplate,
     active: false,
     isNew: true
-}];
+}].map(col => col.labelHTML === '' ? {...col, labelHTML: '&nbsp;'} : col);
 
 export { columnDefaults }
