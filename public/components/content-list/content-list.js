@@ -88,7 +88,13 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 
 function wfContentListController($rootScope, $scope, $anchorScroll, statuses, legalValues, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService, wfFiltersService) {
-
+    $scope.googleAuthBannerVisible = false;
+    $rootScope.$on('wfGoogleApiService.userIsNotAuthorized', () => {
+        $scope.googleAuthBannerVisible = true;
+    });
+    $rootScope.$on('wfGoogleApiService.userIsAuthorized', () => {
+        $scope.googleAuthBannerVisible = false;
+    });
 
     $scope.presenceIsActive = false;
     $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = false);

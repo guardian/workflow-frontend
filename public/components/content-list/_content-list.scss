@@ -12,6 +12,17 @@ $compact-display-td-padding: 2px 5px;
 $textualIconSize: 22px;
 $tableHeaderRowHeight: 48px;
 
+google-auth-banner .alert {
+    position: sticky;
+    top: 0;
+
+    // reset bootstrap styles
+    margin: 0;
+    z-index: 3;
+    border: none;
+    border-radius: 0;
+}
+
 // Global padding for cells
 %content-list__field-padding {
     padding: 10px 5px;
@@ -46,11 +57,21 @@ $tableHeaderRowHeight: 48px;
         background-color: $c-bluegrey;
 
         &.content-list__group-heading {
-            // Chrome has a gap between the table header and a group heading row
-            $strangeChromeGap: 1px;
-            top: $tableHeaderRowHeight - $strangeChromeGap;
+            top: $tableHeaderRowHeight;
         }
     }
+
+    &--auth-banner-visible &--sticky-row th {
+        // Google auth banner is run through bootstrap,
+        // with padding, it is 52px
+        $googleAuthBannerHeight: 52px;
+        top: $googleAuthBannerHeight;
+
+        &.content-list__group-heading {
+            top: $tableHeaderRowHeight + $googleAuthBannerHeight;
+        }
+    }
+
     // Table header
     &-head {
         &__row {
@@ -163,7 +184,6 @@ $tableHeaderRowHeight: 48px;
 
         &-row {
             background-color:  $c-bluegrey;
-            border-top: 1px solid $c-grey-300;
             border-bottom: 1px solid #ffffff;
         }
 
