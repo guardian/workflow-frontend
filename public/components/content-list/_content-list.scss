@@ -341,17 +341,30 @@ google-auth-banner .alert {
         list-style: none;
         padding: 0;
         margin: 0;
+        max-height: 400px;
+        overflow-x: hidden;
+        overflow-y: scroll;
     }
 
     .column-configurator__list-item {
         border-bottom: 1px solid $c-grey-300;
-        padding: 6px 10px;
         .column-configurator__label {
+            padding: 6px 10px;
             color: $c-grey-700;
             font-weight: normal;
             @extend %fs-data-3;
             text-transform: capitalize;
             margin: 0;
+            cursor: pointer;
+            width: 100%;
+
+            input {
+                width: auto;
+            }
+
+            &:hover {
+                background-color: $c-grey-200;
+            }
         }
 
         .column-configurator__label {
@@ -361,6 +374,7 @@ google-auth-banner .alert {
         &:last-child {
             border: none;
         }
+
     }
 }
 
