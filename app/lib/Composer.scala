@@ -6,7 +6,7 @@ import config.Config
 object Composer {
 
   //default to localhost for now
-  lazy val baseUrl = Config.composerUrl
+  lazy val baseUrl = Config.editorialToolsConfig.composerUrl.toString
   lazy val newContentUrl = baseUrl + "/api/content"
   lazy val adminUrl = baseUrl + "/content"
   lazy val contentDetails = baseUrl + "/api/content/"

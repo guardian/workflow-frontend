@@ -26,34 +26,12 @@ object Config extends CommonConfig with AwsInstanceTags {
   lazy val host: String = s"https://workflow.$domain"
   Logger.info(s"Host is: $host")
 
-  lazy val composerUrl: String = s"https://composer.$domain"
-  lazy val composerRestorerUrl: String = s"https://restorer.$domain/content"
-
-  lazy val mediaAtomMakerUrl: String = s"https://video.$domain"
-  lazy val atomWorkshopUrl: String = s"https://atomworkshop.$domain"
-
-  lazy val mediaAtomMakerUrls: Set[String] = stage match {
-    case Code => Set(mediaAtomMakerUrl, s"https://video.${Dev.appDomain}") // allow MAM in DEV to call Workflow CODE
-    case _ => Set(mediaAtomMakerUrl)
+  lazy val editorialToolsConfig: EditorialToolsConfig = stage match {
+    case Dev => EditorialToolsConfig(Code) // DEV uses the CODE version of other Tools
+    case _ => EditorialToolsConfig(stage)
   }
 
-  lazy val atomWorkshopUrls: Set[String] = stage match {
-    case Code => Set(s"https://atomworkshop.${Dev.appDomain}", atomWorkshopUrl) // allow MAM in DEV to call Workflow CODE
-    case _ => Set(atomWorkshopUrl)
-  }
-
-  lazy val presenceUrl: String = s"wss://presence.$domain/socket"
-  lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
-
-  lazy val preferencesUrl: String = stage match {
-    case Prod => s"https://preferences.$domain/preferences"
-    case _ => s"https://preferences.${Code.appDomain}/preferences"
-  }
-
-  lazy val tagManagerUrl: String = stage match {
-    case Prod => s"https://tagmanager.$domain"
-    case _ => s"https://tagmanager.${Code.appDomain}"
-  }
+  lazy val corsConfig: CORSConfig = CORSConfig(stage)
 
   lazy val capiPreviewIamUrl: String = getConfigStringOrFail("capi.preview.iamUrl")
   lazy val capiPreviewRole: String = getConfigStringOrFail("capi.preview.role")

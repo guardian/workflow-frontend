@@ -86,8 +86,9 @@ object Application extends Controller with PanDomainAuthActions {
       sections <-  getSortedSections()
       desks <- getSortedDesks()
       sectionsInDesks <- getSectionsInDesks()
-      commissioningDesks <- TagService.getTags(Config.tagManagerUrl+
-        "/hyper/tags?limit=200&query=tracking/commissioningdesk/&type=tracking&searchField=path")
+      commissioningDesks <- TagService.getTags(
+        Config.editorialToolsConfig.tagManagerUrl.toString + "/hyper/tags?limit=200&query=tracking/commissioningdesk/&type=tracking&searchField=path"
+      )
     }
     yield {
       val user = request.user
@@ -115,13 +116,13 @@ object Application extends Controller with PanDomainAuthActions {
         ("priorities", Priorities.all.asJson),
         ("viewerUrl", Json.fromString(Config.viewerUrl)),
         ("storyPackagesUrl", Json.fromString(Config.storyPackagesUrl)),
-        ("presenceUrl", Json.fromString(Config.presenceUrl)),
-        ("preferencesUrl", Json.fromString(Config.preferencesUrl)),
+        ("presenceUrl", Json.fromString(Config.editorialToolsConfig.presenceUrl.toString)),
+        ("preferencesUrl", Json.fromString(Config.editorialToolsConfig.preferencesUrl.toString)),
         ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
         ("incopyOpenUrl", Json.fromString(Config.incopyOpenUrl)),
         ("incopyExportUrl", Json.fromString(Config.incopyExportUrl)),
         ("indesignExportUrl", Json.fromString(Config.indesignExportUrl)),
-        ("composerRestorerUrl", Json.fromString(Config.composerRestorerUrl)),
+        ("composerRestorerUrl", Json.fromString(Config.editorialToolsConfig.restorerUrl.toString)),
         ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
         ("atomTypes", Config.atomTypes.asJson),
         ("sessionId", Json.fromString(Config.sessionId)),
@@ -131,7 +132,7 @@ object Application extends Controller with PanDomainAuthActions {
         ))
       )
 
-      Ok(views.html.app(title, Some(user), config, Config.googleTrackingId, Config.presenceClientLib))
+      Ok(views.html.app(title, Some(user), config, Config.googleTrackingId, Config.editorialToolsConfig.presenceClientLib.toString))
     }
   }
 }

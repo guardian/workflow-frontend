@@ -8,11 +8,11 @@ trait AtomEditorConfig {
 }
 
 object MediaAtomMakerConfig extends AtomEditorConfig {
-  lazy val newContentUrl: String = Config.mediaAtomMakerUrl+ "/api/workflow/atoms"
-  lazy val viewContentUrl: String = Config.mediaAtomMakerUrl + "/videos/"
+  lazy val newContentUrl: String = Config.editorialToolsConfig.mediaAtomMakerUrl.toString + "/api/workflow/atoms"
+  lazy val viewContentUrl: String = Config.editorialToolsConfig.mediaAtomMakerUrl.toString + "/videos/"
 }
 
 object AtomWorkshopConfig extends AtomEditorConfig {
-  lazy val newContentUrl: String = Config.atomWorkshopUrl + "/api/preview"
-  lazy val viewContentUrl: String = Config.atomWorkshopUrl + "/atoms"
+  lazy val newContentUrl: String = Config.editorialToolsConfig.atomWorkshopUrl.toString + "/api/preview"
+  lazy val viewContentUrl: String = Config.editorialToolsConfig.atomWorkshopUrl.toString + "/atoms"
 }
