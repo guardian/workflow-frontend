@@ -121,8 +121,8 @@ $iconAnimationEasingFunction: ease-in-out;
         position: static;
         display: inline-block;
         .content-list-item__icon--presence {
-            width: 24px;
-            height: 24px;
+            width: auto;
+            height: auto;
             text-transform: none;
             @extend %fs-data-2;
             @include border-radius(50px);
