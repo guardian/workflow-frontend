@@ -43,7 +43,7 @@ google-auth-banner .alert {
 
     thead {
         th {
-            z-index: 3; // always keep table header on top, even on top of the column selector
+            z-index: 3;
             background-color: $c-white;
         }
         tr {
@@ -58,6 +58,7 @@ google-auth-banner .alert {
 
         &.content-list__group-heading {
             top: $tableHeaderRowHeight;
+            z-index: 2;
         }
     }
 
