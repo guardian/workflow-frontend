@@ -6,7 +6,7 @@
 <table class="content-list" ng-class="{ 'content-list--compact': compactView.visible, 'content-list--animations-enabled': animationsEnabled, 'content-list--presence-disabled': !presenceIsActive, 'content-list--auth-banner-visible': googleAuthBannerVisible}" infinite-scroll="moreContent()" infinite-scroll-distance="contentItemsLoadingThreshold" infinite-scroll-immediate-check="false" infinite-scroll-parent="true" infinite-scroll-disabled="infiniteScrollDisabled">
     <thead class="content-list-head">
         <tr class="content-list-head__row content-list--sticky-row">
-            <th class="content-list-head__heading--group content-list-head__heading--notifier" colspan="1"></th>
+            <th class="content-list-head__heading--group content-list-head__heading--notifier" colspan="1">&nbsp;</th>
             <th ng-repeat="col in columns" ng-if="::col.active" class="content-list-head__heading--{{ col.name }}" ng-attr-title="{{ getColumnTitle(col) }}" colspan="{{ col.colspan }}" bind-compiled-html="col.labelHTML"></th>
             <th class="content-list-head__heading--group content-list-head__heading--notifier content-list-head--button-container" colspan="1">
                 <div class="configure-columns" ng-click="$parent.showColumnMenu = !$parent.showColumnMenu" title="Select columns">
