@@ -34,7 +34,7 @@
     </tbody>
 </table>
 
-<div class="column-configurator" ng-show="showColumnMenu">
+<div class="column-configurator" ng-show="showColumnMenu" ng-class="{'column-configurator--auth-banner-visible': googleAuthBannerVisible}">
     <ul class="column-configurator__list">
         <li class="column-configurator__list-item" ng-repeat="col in columns" ng-if="col.name!='titles'">
             <label class="column-configurator__label" for="{{ col.name }}">
