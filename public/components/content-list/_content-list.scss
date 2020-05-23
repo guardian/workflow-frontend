@@ -314,11 +314,20 @@ google-auth-banner .alert {
 }
 
 .column-configurator {
+    $columnConfiguratorBorder: 1px;
+    $columnConfiguratorTopOffset: $tableHeaderRowHeight + $topToolbarHeight + $columnConfiguratorBorder;
+    $columnConfiguratorTopOffsetWithAuth: $columnConfiguratorTopOffset + $googleAuthBannerHeight;
+
     position: fixed;
-    top: $tableHeaderRowHeight + $topToolbarHeight;
+    top: $columnConfiguratorTopOffset;
+
+    max-height: calc(100vh - #{$columnConfiguratorTopOffset});
+    overflow-x: hidden;
+    overflow-y: scroll;
 
     &--auth-banner-visible {
-        top: $tableHeaderRowHeight + $topToolbarHeight + $googleAuthBannerHeight;
+        top: $columnConfiguratorTopOffsetWithAuth;
+        max-height: calc(100vh - #{$columnConfiguratorTopOffsetWithAuth});
     }
 
     right: 15px;
@@ -327,7 +336,7 @@ google-auth-banner .alert {
 
     // _toolbar-sections-dropdown.scss:71
     background-color: #ffffff;
-    border: 1px solid $c-grey-400;
+    border: $columnConfiguratorBorder solid $c-grey-400;
     box-shadow: 2px 1px 5px $c-grey-300;
     display: block;
     -webkit-transition: opacity .35 ease-in-out;
@@ -341,9 +350,6 @@ google-auth-banner .alert {
         list-style: none;
         padding: 0;
         margin: 0;
-        max-height: 400px;
-        overflow-x: hidden;
-        overflow-y: scroll;
     }
 
     .column-configurator__list-item {
@@ -357,6 +363,7 @@ google-auth-banner .alert {
             margin: 0;
             cursor: pointer;
             width: 100%;
+            user-select: none;
 
             input {
                 width: auto;
