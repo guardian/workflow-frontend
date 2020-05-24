@@ -50,7 +50,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'priority.html',
     template: priorityTemplate,
-    active: true
+    active: true,
+    alwaysShown: true
 },{
     name: 'content-type',
     prettyName: 'Content Type',
@@ -68,7 +69,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'title.html',
     template: titleTemplate,
-    active: true
+    active: true,
+    alwaysShown: true
 },{
     name: 'notes',
     prettyName: 'Notes',

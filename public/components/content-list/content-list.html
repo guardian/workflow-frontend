@@ -36,7 +36,7 @@
 
 <div class="column-configurator" ng-show="showColumnMenu" ng-class="{'column-configurator--auth-banner-visible': googleAuthBannerVisible}">
     <ul class="column-configurator__list">
-        <li class="column-configurator__list-item" ng-repeat="col in columns" ng-if="col.name!='titles'">
+        <li class="column-configurator__list-item" ng-repeat="col in columns" ng-if="!col.alwaysShown">
             <label class="column-configurator__label" for="{{ col.name }}">
                 <input class="column-configurator__label" type="checkbox" ng-model="col.active" id="{{ col.name }}" name="{{ col.name }}" ng-change="colChangeSelect()"/>
                 {{ col.prettyName }}
