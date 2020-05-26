@@ -10,8 +10,11 @@ import play.api.mvc.AnyContent
 
 import scala.concurrent.Future
 
-class ApiUtils(apiRoot: String, ws: WSClient) {
-  private def buildRequest(path: String): WSRequest = ws.url(s"$apiRoot/$path")
+trait ApiUtils {
+  def apiRoot: String
+  def ws: WSClient
+
+  protected def buildRequest(path: String): WSRequest = ws.url(s"$apiRoot/$path")
 
   def deleteRequest(path: String): Future[WSResponse] =
     buildRequest(path).delete()

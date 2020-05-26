@@ -1,13 +1,16 @@
 package com.gu.workflow.api
 
-import com.gu.workflow.api.ApiUtils._
 import models.api.{ApiResponseFt, DeskAndSection, SectionsInDeskMapping}
 import models.{Desk, Section}
 import io.circe.syntax._
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object SectionDeskMappingsAPI {
+class SectionDeskMappingsAPI(
+  override val apiRoot: String,
+  override val ws: WSClient
+) extends ApiUtils {
 
   def getSectionsInDesks: ApiResponseFt[List[SectionsInDeskMapping]] =
     for {

@@ -9,11 +9,15 @@ import models.DateFormat._
 import models.api._
 import models.{ContentItemIds, Flag, Stub}
 import org.joda.time.DateTime
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object StubAPI {
+class StubAPI(
+  override val apiRoot: String,
+  override val ws: WSClient
+) extends ApiUtils {
 
   def createStub(body: Json): ApiResponseFt[ContentUpdate] =
     for {
