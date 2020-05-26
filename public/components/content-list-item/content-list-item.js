@@ -171,14 +171,6 @@ function wfContentItemParser(config, statusLabels, sections) {
             this.sensitiveTitle = 'This content features children, vulnerable people, or is on a topic that is likely to attract online abuse.';
             this.legallySensitiveTitle = 'This content involves active criminal proceedings.';
 
-            this.actualPrintLocationDescription = item.actualPrintLocationDescription;
-            this.actualNewspaperPageNumber = item.actualNewspaperPageNumber;
-            this.actualNewspaperPublicationDate = item.actualNewspaperPublicationDate;
-
-            this.plannedPrintLocationDescription = item.plannedPrintLocationDescription;
-            this.plannedNewspaperPageNumber = item.plannedNewspaperPageNumber;
-            this.plannedNewspaperPublicationDate = item.plannedNewspaperPublicationDate;
-
             this.item = item;
         }
 

@@ -52,7 +52,7 @@ object WorkflowBuild extends Build {
   lazy val commonLib = project("common-lib")
     .settings(
       libraryDependencies ++= akkaDependencies ++ logbackDependencies ++ testDependencies ++ playDependencies
-        ++ awsDependencies ++ jsonDependencies ++ webPushDependencies ++ cacheDependencies
+        ++ awsDependencies ++ jsonDependencies ++ webPushDependencies
     )
 
   def appDistSettings(application: String, deployJsonDir: Def.Initialize[File] = baseDirectory) = Seq(

@@ -87,7 +87,6 @@ case class ApiResponseFt[A] private (underlying: Future[Either[ApiError, A]]) {
 }
 
 object ApiResponseFt extends Results {
-
   def apply[T](action: => ApiResponseFt[T])(implicit encoder: io.circe.Encoder[T], ec: ExecutionContext): Future[Result] = {
     action.fold( {
       apiErrors => Status(apiErrors.statusCode) {

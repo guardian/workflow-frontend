@@ -12,8 +12,6 @@ import io.circe.syntax._
 import models.DateFormat._
 import org.joda.time.DateTime
 
-import scala.collection.immutable
-
 case class ExternalData(
                          path: Option[String] = None,
                          lastModified: Option[DateTime] = None,
@@ -38,10 +36,7 @@ case class ExternalData(
                          headline: Option[String] = None,
                          hasMainMedia: Option[Boolean] = None,
                          commentable: Option[Boolean] = None,
-                         commissionedLength: Option[Int] = None,
-                         // Description enriched for use by WF front end client code.
-                         actualPrintLocationDescription: Option[String] = None) {
-}
+                         commissionedLength: Option[Int] = None)
 
 object ExternalData {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
@@ -104,17 +99,11 @@ object Stub {
     def apply(stub: Stub): Json = {
       (for {
         stubObj <- stub.asJson.asObject
-        wfLastModified = stub.lastModified.asJson
+        wfLastModified = stub.lastModified
         extDataJson <- stubObj("externalData")
         extDataObj <- extDataJson.asObject
         stubObjWithoutExData = stubObj.remove("externalData")
-      } yield (
-        stubObjWithoutExData.toMap
-          ++ extDataObj.toMap
-          ++ Map(
-            "wfLastModified" -> wfLastModified
-          )).asJson
-      ).getOrElse(Json.Null)
+      } yield (stubObjWithoutExData.toMap ++ extDataObj.toMap ++ Map("wfLastModified" -> wfLastModified.asJson)).asJson).getOrElse(Json.Null)
     }
   }
 }
@@ -125,5 +114,5 @@ case object Flag extends Enum[Flag] with CirceEnum[Flag] {
   case object Required extends Flag
   case object Complete extends Flag
 
-  val values: immutable.IndexedSeq[Flag] = findValues
+  val values = findValues
 }
