@@ -12,6 +12,8 @@ import io.circe.syntax._
 import models.DateFormat._
 import org.joda.time.DateTime
 
+import scala.collection.immutable
+
 case class ExternalData(
                          path: Option[String] = None,
                          lastModified: Option[DateTime] = None,
@@ -36,7 +38,10 @@ case class ExternalData(
                          headline: Option[String] = None,
                          hasMainMedia: Option[Boolean] = None,
                          commentable: Option[Boolean] = None,
-                         commissionedLength: Option[Int] = None)
+                         commissionedLength: Option[Int] = None,
+                         // Description enriched for use by WF front end client code.
+                         actualPrintLocationDescription: Option[String] = None) {
+}
 
 object ExternalData {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
@@ -45,23 +50,25 @@ object ExternalData {
 }
 
 case class Stub(id: Option[Long] = None,
-               title: String,
-               section: String,
-               due: Option[DateTime] = None,
-               assignee: Option[String] = None,
-               assigneeEmail: Option[String] = None,
-               composerId: Option[String] = None,
-               contentType: String,
-               priority: Int = 0,
-               needsLegal: Flag = Flag.NA,
-               note: Option[String] = None,
-               prodOffice: String,
-               createdAt: DateTime = DateTime.now,
-               lastModified: DateTime = DateTime.now,
-               trashed: Boolean = false,
-               commissioningDesks: Option[String] = None,
-               editorId: Option[String] = None,
-               externalData: Option[ExternalData])
+                title: String,
+                section: String,
+                due: Option[DateTime] = None,
+                assignee: Option[String] = None,
+                assigneeEmail: Option[String] = None,
+                composerId: Option[String] = None,
+                contentType: String,
+                priority: Int = 0,
+                needsLegal: Flag = Flag.NA,
+                note: Option[String] = None,
+                prodOffice: String,
+                createdAt: DateTime = DateTime.now,
+                lastModified: DateTime = DateTime.now,
+                trashed: Boolean = false,
+                commissioningDesks: Option[String] = None,
+                editorId: Option[String] = None,
+                externalData: Option[ExternalData],
+                // Description enriched for use by WF front end client code.
+                plannedPrintLocationDescription: Option[String])
 
 object Stub {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
@@ -97,11 +104,17 @@ object Stub {
     def apply(stub: Stub): Json = {
       (for {
         stubObj <- stub.asJson.asObject
-        wfLastModified = stub.lastModified
+        wfLastModified = stub.lastModified.asJson
         extDataJson <- stubObj("externalData")
         extDataObj <- extDataJson.asObject
         stubObjWithoutExData = stubObj.remove("externalData")
-      } yield (stubObjWithoutExData.toMap ++ extDataObj.toMap ++ Map("wfLastModified" -> wfLastModified.asJson)).asJson).getOrElse(Json.Null)
+      } yield (
+        stubObjWithoutExData.toMap
+          ++ extDataObj.toMap
+          ++ Map(
+            "wfLastModified" -> wfLastModified
+          )).asJson
+      ).getOrElse(Json.Null)
     }
   }
 }
@@ -112,5 +125,5 @@ case object Flag extends Enum[Flag] with CirceEnum[Flag] {
   case object Required extends Flag
   case object Complete extends Flag
 
-  val values = findValues
+  val values: immutable.IndexedSeq[Flag] = findValues
 }
