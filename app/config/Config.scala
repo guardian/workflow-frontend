@@ -45,15 +45,9 @@ object Config extends CommonConfig with AwsInstanceTags {
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
 
-  lazy val preferencesUrl: String = stage match {
-    case Prod => s"https://preferences.$domain/preferences"
-    case _ => s"https://preferences.${Code.appDomain}/preferences"
-  }
+  lazy val preferencesUrl: String = s"https://preferences.${stage.appDomain}/preferences"
 
-  lazy val tagManagerUrl: String = stage match {
-    case Prod => s"https://tagmanager.$domain"
-    case _ => s"https://tagmanager.${Code.appDomain}"
-  }
+  lazy val tagManagerUrl: String = s"https://tagmanager.${stage.appDomain}"
 
   lazy val capiPreviewIamUrl: String = getConfigStringOrFail("capi.preview.iamUrl")
   lazy val capiPreviewRole: String = getConfigStringOrFail("capi.preview.role")

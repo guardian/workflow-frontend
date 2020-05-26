@@ -2,9 +2,9 @@ package controllers
 
 import cats.syntax.either._
 import com.gu.pandomainauth.action.UserRequest
-import com.gu.workflow.api.{ApiUtils, CommonAPI, PrototypeAPI, SectionsAPI}
+import com.gu.workflow.api.{ApiUtils, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.DBToAPIResponse.getResponse
-import com.gu.workflow.lib.{Priorities, StatusDatabase}
+import com.gu.workflow.lib.{ContentAPI, Priorities, StatusDatabase}
 import com.gu.workflow.util.SharedSecretAuth
 import config.Config
 import config.Config.defaultExecutionContext
@@ -38,6 +38,8 @@ case class CORSable[A](allowedOrigins: Set[String])(action: Action[A]) extends A
 
 object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
 
+  val contentAPI = new ContentAPI(Config.capiPreviewRole, Config.capiPreviewIamUrl)
+
   val defaultCorsAble: Set[String] = Set(Config.composerUrl)
   val atomCorsAble: Set[String] = defaultCorsAble ++ Config.mediaAtomMakerUrls ++ Config.atomWorkshopUrls
 
@@ -56,7 +58,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   private def getContentBlock[R <: Request[_]] = { implicit req: R =>
     val qs: Map[String, Seq[String]] = queryString(req)
 
-    CommonAPI.getStubs(qs).asFuture.map {
+    StubAPI.getStubs(contentAPI, qs).asFuture.map {
       case Left(err) =>
         Logger.error(s"Unable to get stubs $err")
         InternalServerError
@@ -71,7 +73,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def getContentByComposerId(composerId: String) = CORSable(defaultCorsAble) {
       APIAuthAction.async { implicit request =>
         ApiResponseFt[Option[Stub]](for {
-          item <- getResponse(PrototypeAPI.getStubByComposerId(composerId))
+          item <- getResponse(StubAPI.getStubByComposerId(contentAPI, composerId))
         } yield item
       )}
     }
@@ -79,7 +81,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def getContentByEditorId(editorId: String) = CORSable(atomCorsAble) {
     APIAuthAction.async { implicit request =>
       ApiResponseFt[Option[Stub]](for {
-        item <- getResponse(PrototypeAPI.getStubByEditorId(editorId))
+        item <- getResponse(StubAPI.getStubByEditorId(editorId))
       } yield item
     )}
   }
@@ -87,7 +89,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def sharedAuthGetContentById(composerId: String) =
     SharedSecretAuthAction.async {
       ApiResponseFt[Option[Stub]](for {
-        item <- getResponse(PrototypeAPI.getStubByComposerId(composerId))
+        item <- getResponse(StubAPI.getStubByComposerId(contentAPI, composerId))
       } yield item
       )}
 
@@ -107,7 +109,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       ApiResponseFt[models.api.ContentUpdate](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         jsValueWithValidContentType <- validateContentType(json)
-        stubId <- PrototypeAPI.createStub(jsValueWithValidContentType)
+        stubId <- StubAPI.createStub(jsValueWithValidContentType)
       } yield stubId
     )}
   }
@@ -116,7 +118,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        putRes <- PrototypeAPI.putStub(stubId, json)
+        putRes <- StubAPI.putStub(stubId, json)
       } yield putRes
     )}
   }
@@ -126,7 +128,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       json <- ApiUtils.readJsonFromRequestResponse(request.body)
       assignee <- ApiUtils.extractDataResponse[String](json)
       assigneeData = Some(assignee).filter(_.nonEmpty)
-      id <- PrototypeAPI.putStubAssignee(stubId, assigneeData)
+      id <- StubAPI.putStubAssignee(stubId, assigneeData)
     } yield id
   )}
 
@@ -135,7 +137,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       json <- ApiUtils.readJsonFromRequestResponse(request.body)
       assignee <- ApiUtils.extractDataResponse[String](json)
       assigneeEmailData = Some(assignee).filter(_.nonEmpty)
-      id <- PrototypeAPI.putStubAssigneeEmail(stubId, assigneeEmailData)
+      id <- StubAPI.putStubAssigneeEmail(stubId, assigneeEmailData)
     } yield id
   )}
 
@@ -144,7 +146,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       json <- ApiUtils.readJsonFromRequestResponse(request.body)
       dueDateOpt <- ApiUtils.extractDataResponseOpt[String](json)
       dueDateData = dueDateOpt.map(new DateTime(_))
-      id <- PrototypeAPI.putStubDue(stubId, dueDateData)
+      id <- StubAPI.putStubDue(stubId, dueDateData)
     } yield id
   )}
 
@@ -155,7 +157,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         note <- ApiUtils.extractDataResponse[String](json)
         noteOpt = getNoteOpt(note)
-        id <- PrototypeAPI.putStubNote(stubId, noteOpt)
+        id <- StubAPI.putStubNote(stubId, noteOpt)
       } yield id
     )}
   }
@@ -165,7 +167,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         prodOffice <- ApiUtils.extractDataResponse[String](json)
-        id <- PrototypeAPI.putStubProdOffice(stubId, prodOffice)
+        id <- StubAPI.putStubProdOffice(stubId, prodOffice)
       } yield id
     )}
   }
@@ -175,7 +177,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         status <- ApiUtils.extractDataResponse[String](json)
-        id <- PrototypeAPI.updateContentStatus(stubId, status)
+        id <- StubAPI.updateContentStatus(stubId, status)
       } yield id
     )}
   }
@@ -185,7 +187,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         status <- ApiUtils.extractDataResponse[Option[Int]](json)
-        id <- PrototypeAPI.updateContentCommissionedLength(stubId, status)
+        id <- StubAPI.updateContentCommissionedLength(stubId, status)
       } yield id
       )}
   }
@@ -195,7 +197,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       ApiResponseFt[String](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         status <- ApiUtils.extractDataResponse[String](json)
-        id <- PrototypeAPI.updateContentStatusByComposerId(composerId, status)
+        id <- StubAPI.updateContentStatusByComposerId(composerId, status)
       } yield id
     )}
   }
@@ -205,7 +207,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         section <- ApiUtils.extractResponse[String](json.hcursor.downField("data").downField("name").focus.getOrElse(Json.Null))
-        id <- PrototypeAPI.putStubSection(stubId, section)
+        id <- StubAPI.putStubSection(stubId, section)
       } yield id
     )}
   }
@@ -215,7 +217,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         wt <- ApiUtils.extractDataResponse[String](json)
-        id <- PrototypeAPI.putStubWorkingTitle(stubId, wt)
+        id <- StubAPI.putStubWorkingTitle(stubId, wt)
       } yield id
     )}
   }
@@ -225,7 +227,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         priority <- ApiUtils.extractDataResponse[Int](json)
-        id <- PrototypeAPI.putStubPriority(stubId, priority)
+        id <- StubAPI.putStubPriority(stubId, priority)
       } yield id
     )}
   }
@@ -235,7 +237,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         status <- ApiUtils.extractDataResponse[Flag](json)
-        id <- PrototypeAPI.putStubLegalStatus(stubId, status)
+        id <- StubAPI.putStubLegalStatus(stubId, status)
       } yield id
     )}
   }
@@ -245,21 +247,21 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
       ApiResponseFt[Long](for {
         json <- ApiUtils.readJsonFromRequestResponse(request.body)
         trashed <- ApiUtils.extractDataResponse[Boolean](json)
-        id <- PrototypeAPI.putStubTrashed(stubId, trashed)
+        id <- StubAPI.putStubTrashed(stubId, trashed)
       } yield id
     )}
   }
 
   def deleteContent(composerId: String) = CORSable(defaultCorsAble) {
     APIAuthAction {
-      CommonAPI.deleteStubs(Seq(composerId)).fold(err =>
+      StubAPI.deleteStubs(Seq(composerId)).fold(err =>
         Logger.error(s"failed to delete content with composer id: $composerId"), identity)
       NoContent
     }
   }
 
   def deleteStub(stubId: Long) = APIAuthAction {
-    PrototypeAPI.deleteContentByStubId(stubId).fold(err =>
+    StubAPI.deleteContentByStubId(stubId).fold(err =>
     Logger.error(s"failed to delete content with stub id: $stubId"), identity)
     NoContent
   }
@@ -319,3 +321,21 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
         block(req)
   }
 }
+
+//      def getTag(publicationId: Option[Int],
+//                 bookId: Option[Int],
+//                 bookSectionId: Option[Int],
+//                 newspaperPage: Option[Int],
+//                 publicationDate: Option[Int]
+//                ):String = {"no idea"}
+
+//      def getActualPublicationLocation = {
+//        stub.externalData.flatMap(e => getTag(None, None, None, None, None)).getOrElse("Location coming soon").asJson
+//      }
+
+//        actualPublicationLocation = getActualPublicationLocation
+//        plannedPublicationLocation = stub.externalData.flatMap(e => e.path).getOrElse("Location coming soon").asJson
+
+//          ,
+//            "plannedPublicationLocation" -> plannedPublicationLocation,
+//            "actualPublicationLocation" -> actualPublicationLocation
