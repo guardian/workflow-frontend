@@ -41,7 +41,7 @@ function wfEditableDirectiveFactory() {
             validateMaxlength: '=wfEditableMaxlength',
             noCloseMode:    '=wfNoCloseMode',
             onEditableEditModeUpdate: '&wfEditableOnEditModeUpdate',
-            inputType: '=wfEditableInputType'
+            inputType: '=?wfEditableInputType'
         },
         compile: function(tElement, tAttrs) {
             var nodeName,
