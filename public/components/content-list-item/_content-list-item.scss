@@ -170,8 +170,7 @@
         &--needsLegal,
         &--optimisedForWeb,
         &--sensitive,
-        &--legally-sensitive,
-        &--publicationlocation {
+        &--legally-sensitive {
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
@@ -477,8 +476,7 @@
         &--wordcount,
         &--printwordcount,
         &--last-modified,
-        &--last-modified-by,
-        &--publicationlocation {
+        &--last-modified-by {
             @extend %fs-data-2;
         }
 
