@@ -68,7 +68,7 @@ case class Stub(id: Option[Long] = None,
                 editorId: Option[String] = None,
                 externalData: Option[ExternalData],
                 // Description enriched for use by WF front end client code.
-                plannedPrintLocationDescription: Option[String])
+                plannedPrintLocationDescription: Option[String] = None)
 
 object Stub {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
