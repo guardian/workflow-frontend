@@ -3,12 +3,16 @@
         <div ng-if="contentItem.actualPrintLocationDescription" class="actual-print-location">
             {{ contentItem.actualPrintLocationDescription }}
             <br/>
-            {{ contentItem.actualNewspaperPageNumber }}; {{ contentItem.actualNewspaperPublicationDate }}
+            {{ contentItem.actualNewspaperPageNumber }}
+            <br/>
+            {{ contentItem.actualNewspaperPublicationDate }}
         </div>
         <div ng-if="!(contentItem.actualPrintLocationDescription) && contentItem.plannedPrintLocationDescription" class="planned-print-location">
             {{ contentItem.plannedPrintLocationDescription }}
             <br/>
-            {{ contentItem.plannedNewspaperPageNumber }}; {{ contentItem.plannedNewspaperPublicationDate }}
+            {{ contentItem.plannedNewspaperPageNumber }}
+            <br/>
+            {{ contentItem.plannedNewspaperPublicationDate }}
         </div>
     </span>
 </td>
