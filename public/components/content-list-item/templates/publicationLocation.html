@@ -3,16 +3,20 @@
         <div ng-if="contentItem.actualPrintLocationDescription" class="actual-print-location">
             {{ contentItem.actualPrintLocationDescription }}
             <br/>
-            {{ contentItem.actualNewspaperPageNumber }}
-            <br/>
-            {{ contentItem.actualNewspaperPublicationDate }}
+            <div ng-if="contentItem.actualNewspaperPageNumber">
+                Page {{ contentItem.actualNewspaperPageNumber }}
+                <br/>
+            </div>
+            {{ contentItem.actualNewspaperPublicationDate | wfFormatDateTime:'ddd DD MMM'}}
         </div>
         <div ng-if="!(contentItem.actualPrintLocationDescription) && contentItem.plannedPrintLocationDescription" class="planned-print-location">
             {{ contentItem.plannedPrintLocationDescription }}
             <br/>
-            {{ contentItem.plannedNewspaperPageNumber }}
-            <br/>
-            {{ contentItem.plannedNewspaperPublicationDate }}
+            <div ng-if="contentItem.plannedNewspaperPageNumber">
+                Page {{ contentItem.plannedNewspaperPageNumber }}
+                <br/>
+            </div>
+            {{ contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'ddd DD MMM'}}
         </div>
     </span>
 </td>
