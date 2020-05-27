@@ -2,7 +2,7 @@ package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.pandomainauth.action.UserRequest
-import com.gu.workflow.api.{ApiUtils, SectionsAPI, StubAPI}
+import com.gu.workflow.api.{SectionsAPI, StubAPI}
 import com.gu.workflow.lib.DBToAPIResponse.getResponse
 import com.gu.workflow.lib.{ContentAPI, Priorities, StatusDatabase}
 import com.gu.workflow.util.{SharedSecretAuth, StubDecorator}
@@ -23,13 +23,16 @@ import play.api.mvc._
 import scala.concurrent.Future
 
 class Api(
-  val apiUtils: ApiUtils,
-  val editorialSupportTeams: EditorialSupportTeamsController,
+  stubsApi: StubAPI,
+  sectionsApi: SectionsAPI,
+  editorialSupportTeams: EditorialSupportTeamsController,
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
 ) extends BaseController with PanDomainAuthActions with SharedSecretAuth {
+
+  import stubsApi.{extractDataResponse, extractDataResponseOpt, extractResponse, readJsonFromRequestResponse}
 
   val contentAPI = new ContentAPI(config.capiPreviewRole, config.capiPreviewIamUrl)
   val stubDecorator = new StubDecorator(contentAPI)
@@ -52,7 +55,7 @@ class Api(
   private def getContentBlock[R <: Request[_]] = { implicit req: R =>
     val qs: Map[String, Seq[String]] = Api.queryString(req)
 
-    StubAPI.getStubs(stubDecorator, qs).asFuture.map {
+    stubsApi.getStubs(stubDecorator, qs).asFuture.map {
       case Left(err) =>
         Logger.error(s"Unable to get stubs $err")
         InternalServerError
@@ -67,7 +70,7 @@ class Api(
   def getContentByComposerId(composerId: String) = CORSable(defaultCorsAble) {
       APIAuthAction.async { implicit request =>
         ApiResponseFt[Option[Stub]](for {
-          item <- getResponse(StubAPI.getStubByComposerId(stubDecorator, composerId))
+          item <- getResponse(stubsApi.getStubByComposerId(stubDecorator, composerId))
         } yield item
       )}
     }
@@ -75,7 +78,7 @@ class Api(
   def getContentByEditorId(editorId: String) = CORSable(atomCorsAble) {
     APIAuthAction.async { implicit request =>
       ApiResponseFt[Option[Stub]](for {
-        item <- getResponse(StubAPI.getStubByEditorId(editorId))
+        item <- getResponse(stubsApi.getStubByEditorId(editorId))
       } yield item
     )}
   }
@@ -83,7 +86,7 @@ class Api(
   def sharedAuthGetContentById(composerId: String) =
     SharedSecretAuthAction.async {
       ApiResponseFt[Option[Stub]](for {
-        item <- getResponse(StubAPI.getStubByComposerId(stubDecorator, composerId))
+        item <- getResponse(stubsApi.getStubByComposerId(composerId))
       } yield item
       )}
 
@@ -101,9 +104,9 @@ class Api(
   def createContent() =  CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
+        json <- readJsonFromRequestResponse(request.body)
         jsValueWithValidContentType <- validateContentType(json)
-        stubId <- StubAPI.createStub(jsValueWithValidContentType)
+        stubId <- stubsApi.createStub(jsValueWithValidContentType)
       } yield stubId
     )}
   }
@@ -111,36 +114,36 @@ class Api(
   def putStub(stubId: Long) =  CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        putRes <- StubAPI.putStub(stubId, json)
+        json <- readJsonFromRequestResponse(request.body)
+        putRes <- stubsApi.putStub(stubId, json)
       } yield putRes
     )}
   }
 
   def putStubAssignee(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
-      json <- apiUtils.readJsonFromRequestResponse(request.body)
-      assignee <- apiUtils.extractDataResponse[String](json)
+      json <- readJsonFromRequestResponse(request.body)
+      assignee <- extractDataResponse[String](json)
       assigneeData = Some(assignee).filter(_.nonEmpty)
-      id <- StubAPI.putStubAssignee(stubId, assigneeData)
+      id <- stubsApi.putStubAssignee(stubId, assigneeData)
     } yield id
   )}
 
   def putStubAssigneeEmail(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
-      json <- apiUtils.readJsonFromRequestResponse(request.body)
-      assignee <- apiUtils.extractDataResponse[String](json)
+      json <- readJsonFromRequestResponse(request.body)
+      assignee <- extractDataResponse[String](json)
       assigneeEmailData = Some(assignee).filter(_.nonEmpty)
-      id <- StubAPI.putStubAssigneeEmail(stubId, assigneeEmailData)
+      id <- stubsApi.putStubAssigneeEmail(stubId, assigneeEmailData)
     } yield id
   )}
 
   def putStubDueDate(stubId: Long) = APIAuthAction.async { request =>
     ApiResponseFt[Long](for {
-      json <- apiUtils.readJsonFromRequestResponse(request.body)
-      dueDateOpt <- apiUtils.extractDataResponseOpt[String](json)
+      json <- readJsonFromRequestResponse(request.body)
+      dueDateOpt <- extractDataResponseOpt[String](json)
       dueDateData = dueDateOpt.map(new DateTime(_))
-      id <- StubAPI.putStubDue(stubId, dueDateData)
+      id <- stubsApi.putStubDue(stubId, dueDateData)
     } yield id
   )}
 
@@ -148,10 +151,10 @@ class Api(
     def getNoteOpt(input: String): Option[String] = if(input.length > 0) Some(input) else None
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        note <- apiUtils.extractDataResponse[String](json)
+        json <- readJsonFromRequestResponse(request.body)
+        note <- extractDataResponse[String](json)
         noteOpt = getNoteOpt(note)
-        id <- StubAPI.putStubNote(stubId, noteOpt)
+        id <- stubsApi.putStubNote(stubId, noteOpt)
       } yield id
     )}
   }
@@ -159,9 +162,9 @@ class Api(
   def putStubProdOffice(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        prodOffice <- apiUtils.extractDataResponse[String](json)
-        id <- StubAPI.putStubProdOffice(stubId, prodOffice)
+        json <- readJsonFromRequestResponse(request.body)
+        prodOffice <- extractDataResponse[String](json)
+        id <- stubsApi.putStubProdOffice(stubId, prodOffice)
       } yield id
     )}
   }
@@ -169,9 +172,9 @@ class Api(
   def putStubStatus(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        status <- apiUtils.extractDataResponse[String](json)
-        id <- StubAPI.updateContentStatus(stubId, status)
+        json <- readJsonFromRequestResponse(request.body)
+        status <- extractDataResponse[String](json)
+        id <- stubsApi.updateContentStatus(stubId, status)
       } yield id
     )}
   }
@@ -179,9 +182,9 @@ class Api(
   def putStubCommissionedLength(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        status <- apiUtils.extractDataResponse[Option[Int]](json)
-        id <- StubAPI.updateContentCommissionedLength(stubId, status)
+        json <- readJsonFromRequestResponse(request.body)
+        status <- extractDataResponse[Option[Int]](json)
+        id <- stubsApi.updateContentCommissionedLength(stubId, status)
       } yield id
       )}
   }
@@ -189,9 +192,9 @@ class Api(
   def putStubStatusByComposerId(composerId: String) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[String](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        status <- apiUtils.extractDataResponse[String](json)
-        id <- StubAPI.updateContentStatusByComposerId(composerId, status)
+        json <- readJsonFromRequestResponse(request.body)
+        status <- extractDataResponse[String](json)
+        id <- stubsApi.updateContentStatusByComposerId(composerId, status)
       } yield id
     )}
   }
@@ -199,9 +202,9 @@ class Api(
   def putStubSection(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        section <- apiUtils.extractResponse[String](json.hcursor.downField("data").downField("name").focus.getOrElse(Json.Null))
-        id <- StubAPI.putStubSection(stubId, section)
+        json <- readJsonFromRequestResponse(request.body)
+        section <- extractResponse[String](json.hcursor.downField("data").downField("name").focus.getOrElse(Json.Null))
+        id <- stubsApi.putStubSection(stubId, section)
       } yield id
     )}
   }
@@ -209,9 +212,9 @@ class Api(
   def putStubWorkingTitle(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        wt <- apiUtils.extractDataResponse[String](json)
-        id <- StubAPI.putStubWorkingTitle(stubId, wt)
+        json <- readJsonFromRequestResponse(request.body)
+        wt <- extractDataResponse[String](json)
+        id <- stubsApi.putStubWorkingTitle(stubId, wt)
       } yield id
     )}
   }
@@ -219,9 +222,9 @@ class Api(
   def putStubPriority(stubId: Long) = CORSable(atomCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        priority <- apiUtils.extractDataResponse[Int](json)
-        id <- StubAPI.putStubPriority(stubId, priority)
+        json <- readJsonFromRequestResponse(request.body)
+        priority <- extractDataResponse[Int](json)
+        id <- stubsApi.putStubPriority(stubId, priority)
       } yield id
     )}
   }
@@ -229,9 +232,9 @@ class Api(
   def putStubLegalStatus(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        status <- apiUtils.extractDataResponse[Flag](json)
-        id <- StubAPI.putStubLegalStatus(stubId, status)
+        json <- readJsonFromRequestResponse(request.body)
+        status <- extractDataResponse[Flag](json)
+        id <- stubsApi.putStubLegalStatus(stubId, status)
       } yield id
     )}
   }
@@ -239,23 +242,23 @@ class Api(
   def putStubTrashed(stubId: Long) = CORSable(defaultCorsAble) {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- apiUtils.readJsonFromRequestResponse(request.body)
-        trashed <- apiUtils.extractDataResponse[Boolean](json)
-        id <- StubAPI.putStubTrashed(stubId, trashed)
+        json <- readJsonFromRequestResponse(request.body)
+        trashed <- extractDataResponse[Boolean](json)
+        id <- stubsApi.putStubTrashed(stubId, trashed)
       } yield id
     )}
   }
 
   def deleteContent(composerId: String) = CORSable(defaultCorsAble) {
     APIAuthAction {
-      StubAPI.deleteStubs(Seq(composerId)).fold(err =>
+      stubsApi.deleteStubs(Seq(composerId)).fold(err =>
         Logger.error(s"failed to delete content with composer id: $composerId"), identity)
       NoContent
     }
   }
 
   def deleteStub(stubId: Long) = APIAuthAction {
-    StubAPI.deleteContentByStubId(stubId).fold(err =>
+    stubsApi.deleteContentByStubId(stubId).fold(err =>
     Logger.error(s"failed to delete content with stub id: $stubId"), identity)
     NoContent
   }
@@ -271,7 +274,7 @@ class Api(
   def sections = CORSable(atomCorsAble) {
     APIAuthAction.async { _ =>
       ApiResponseFt[List[Section]](for {
-        sections <- SectionsAPI.getSections
+        sections <- sectionsApi.getSections
       } yield sections
     )}
   }

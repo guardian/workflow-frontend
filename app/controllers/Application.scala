@@ -18,6 +18,10 @@ import scala.concurrent.Future
 
 class Application(
   val editorialSupportTeams: EditorialSupportTeamsController,
+  val sectionsAPI: SectionsAPI,
+  val tagService: TagService,
+  val desksAPI: DesksAPI,
+  val sectionDeskMappingsAPI: SectionDeskMappingsAPI,
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
@@ -25,21 +29,21 @@ class Application(
 ) extends BaseController with PanDomainAuthActions {
 
   def getSortedSections(): Future[List[Section]] = {
-    SectionsAPI.getSections.asFuture.map {
+    sectionsAPI.getSections.asFuture.map {
       case Left(err) => Logger.error(s"error fetching sections: $err"); List()
       case Right(sections) => sections.sortBy(_.name)
     }
   }
 
   def getSortedDesks(): Future[List[Desk]] = {
-    DesksAPI.getDesks.asFuture.map {
+    desksAPI.getDesks.asFuture.map {
       case Right(desks) => desks.sortBy(_.name)
       case Left(err) => Logger.error(s"error fetching desks: $err"); List()
     }
   }
 
   def getSectionsInDesks(): Future[List[models.api.SectionsInDeskMapping]] = {
-    SectionDeskMappingsAPI.getSectionsInDesks.asFuture.map {
+    sectionDeskMappingsAPI.getSectionsInDesks.asFuture.map {
       case Right(mappings) => mappings
       case Left(err) => Logger.error(s"error fetching section desk mappings: $err"); List()
     }
@@ -87,14 +91,19 @@ class Application(
   }
 
   def app(title: String) = AuthAction.async { request =>
-
     for {
       statuses <- StatusDatabase.statuses
       sections <-  getSortedSections()
       desks <- getSortedDesks()
       sectionsInDesks <- getSectionsInDesks()
-      commissioningDesks <- TagService.getTags(config.tagManagerUrl+
-        "/hyper/tags?limit=200&query=tracking/commissioningdesk/&type=tracking&searchField=path")
+      commissioningDesks <- tagService.getTags(
+        Map(
+          "limit" -> "200",
+          "query" -> "tracking/commissioningdesk/",
+          "type" -> "tracking",
+          "searchField" -> "path"
+        )
+      )
     }
     yield {
       val user = request.user

@@ -16,6 +16,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class Admin(
+  sectionsAPI: SectionsAPI,
+  desksAPI: DesksAPI,
+  sectionDeskMappingsAPI: SectionDeskMappingsAPI,
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
@@ -25,14 +28,14 @@ class Admin(
   import play.api.data.Forms._
 
   def getSortedSections(): Future[List[Section]] = {
-    SectionsAPI.getSections.asFuture.map {
+    sectionsAPI.getSections.asFuture.map {
       case Left(err) => Logger.error(s"error fetching sections: $err"); List()
       case Right(sections) => sections.sortBy(_.name)
     }
   }
 
   def getDesks(): Future[List[Desk]] = {
-    DesksAPI.getDesks.asFuture.map {
+    desksAPI.getDesks.asFuture.map {
       case Right(desks) => desks
       case Left(err) => Logger.error(s"error fetching desks: $err"); List()
     }
@@ -51,7 +54,7 @@ class Admin(
     }
 
     selectedDeskOption.map { selectedDesk =>
-      SectionDeskMappingsAPI
+      sectionDeskMappingsAPI
         .getSectionsWithRelation(selectedDesk, sectionListFromDB)
         .asFuture
         .map {
@@ -128,7 +131,7 @@ class Admin(
     assignSectionToDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to update section assignments")),
       sectionAssignment => {
-        SectionDeskMappingsAPI.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
+        sectionDeskMappingsAPI.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
           .asFuture
           .map {
             case Right(_) => Redirect(routes.Admin.desksAndSections(Some(sectionAssignment.desk)))
@@ -148,7 +151,7 @@ class Admin(
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to add section")),
       section => {
-        SectionsAPI.upsertSection(section).asFuture.map {
+        sectionsAPI.upsertSection(section).asFuture.map {
           case Right(_) => Redirect(routes.Admin.desksAndSections(None))
           case Left(err) =>
             Logger.error(s"error upserting section: $err")
@@ -163,8 +166,8 @@ class Admin(
       formWithErrors => Future(BadRequest("failed to remove section")),
       section => {
         for {
-        _ <- SectionDeskMappingsAPI.removeSectionMapping(section.id).asFuture
-        _ <- SectionsAPI.removeSection(section).asFuture
+        _ <- sectionDeskMappingsAPI.removeSectionMapping(section.id).asFuture
+        _ <- sectionsAPI.removeSection(section).asFuture
         } yield NoContent
       }
     )
@@ -178,7 +181,7 @@ class Admin(
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(s"failed to add desk ${formWithErrors.errors}")),
       desk => {
-        DesksAPI.upsertDesk(desk).asFuture.map {
+        desksAPI.upsertDesk(desk).asFuture.map {
           case Right(_) => Redirect(routes.Admin.desksAndSections(None))
           case Left(err) =>
             Logger.error(s"error creating desk: $err")
@@ -193,8 +196,8 @@ class Admin(
       formWithErrors => Future(BadRequest("failed to remove desk")),
       desk => {
         for {
-          _ <- SectionDeskMappingsAPI.removeDeskMapping(desk.id).asFuture
-          _ <- DesksAPI.removeDesk(desk).asFuture
+          _ <- sectionDeskMappingsAPI.removeDeskMapping(desk.id).asFuture
+          _ <- desksAPI.removeDesk(desk).asFuture
         } yield {
           NoContent
         }
@@ -231,7 +234,7 @@ class Admin(
     }
     val tagIdsFuture: Future[List[String]] = selectedSectionIdOption match {
       case Some(selectedSectionId) =>
-        val tagIdsFt: Future[Either[ApiError, List[String]]] = SectionsAPI.getTagsForSectionFt(selectedSectionId).asFuture
+        val tagIdsFt: Future[Either[ApiError, List[String]]] = sectionsAPI.getTagsForSectionFt(selectedSectionId).asFuture
         tagIdsFt.map(_.right.get)
       case None => Future.successful(List())
     }
@@ -261,7 +264,7 @@ class Admin(
         BadRequest("failed to execute controllers.admin.addSectionTag()")
       },
       data => {
-        SectionsAPI.insertSectionTag(data.sectionId,data.tagId)
+        sectionsAPI.insertSectionTag(data.sectionId,data.tagId)
         NoContent
       }
     )
@@ -273,7 +276,7 @@ class Admin(
         BadRequest("failed to execute controllers.admin.removeSectionTag()")
       },
       data => {
-        SectionsAPI.removeSectionTag(data.sectionId,data.tagId)
+        sectionsAPI.removeSectionTag(data.sectionId,data.tagId)
         NoContent
       }
     )
