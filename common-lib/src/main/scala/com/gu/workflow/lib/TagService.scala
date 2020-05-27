@@ -1,11 +1,10 @@
 package com.gu.workflow.lib
 
-import com.gu.workflow.api.ApiUtils.parseBody
+import com.gu.workflow.api.ApiUtils
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder, Json}
 import models.Tag
 import play.api.Logger
-import play.api.Play.current
 import play.api.libs.ws._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,10 +16,13 @@ object TagArrayItem {
   implicit val decoder: Decoder[TagArrayItem] = deriveDecoder
 }
 
-object TagService {
-  def getTags(queryUrl: String): Future[List[Tag]] = {
+class TagService(
+  override val apiRoot: String,
+  override val ws: WSClient
+) extends ApiUtils {
+  def getTags(params:  Map[String, String]): Future[List[Tag]] = {
     for {
-      response <- WS.url(queryUrl).withRequestTimeout(2000).get()
+      response <- getRequest("/hyper/tags", Some(params.toList))
       json <- parseBody(response.body).asFutureOption("Error extracting the tag response.")
     } yield {
       json.getOrElse(Json.Null).hcursor.downField("data").as[List[TagArrayItem]] match {
