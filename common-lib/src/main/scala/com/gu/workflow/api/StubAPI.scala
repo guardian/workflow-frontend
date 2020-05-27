@@ -44,7 +44,7 @@ object StubAPI extends Caching {
                                            stub: Option[Stub]
                                          ): Future[Option[String]] = {
     stub
-      .flatMap(s => Some(Some(22222L), Some(11111L), Some(11111L))) match {
+      .flatMap(s => Some(s.plannedPublicationId, s.plannedBookSectionId, s.plannedBookSectionId)) match {
       case Some((Some(pId), Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, pId, bId, bsId)
       case _ => Future.successful(None)
     }}
@@ -54,7 +54,7 @@ object StubAPI extends Caching {
                                            externalData: Option[ExternalData]
                                          ): Future[Option[String]] = {
     externalData
-      .flatMap(e => Some(Some(11111L), Some(11111L), Some(11111L))) match {
+      .flatMap(e => Some(e.actualPublicationId, e.actualBookId, e.actualBookSectionId)) match {
       case Some((Some(pId), Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, pId, bId, bsId)
       case _ => Future.successful(None)
     }}
