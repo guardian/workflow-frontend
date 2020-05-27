@@ -497,6 +497,7 @@
 
         &--status {
             width: 125px;
+
             &--select {
                 width: 125px;
             }
@@ -542,4 +543,11 @@
         line-height: 16px;
         display: inline-block;
     }
+}
+
+.planned-print-location {
+    color: grey;
+}
+.actual-print-location {
+    color: black;
 }

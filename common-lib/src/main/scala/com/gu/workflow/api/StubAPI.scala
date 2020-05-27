@@ -39,17 +39,17 @@ object StubAPI extends Caching {
       item <- extractDataResponseOpt[Stub](json)
     } yield item
 
-  private def getPrintLocationDescriptionForStub(
+  private def getPlannedPrintLocationDescriptionFromStub(
                                            contentAPI: ContentAPI,
                                            stub: Option[Stub]
                                          ): Future[Option[String]] = {
     stub
-      .flatMap(s => Some(Some(11111L), Some(11111L), Some(11111L))) match {
+      .flatMap(s => Some(Some(22222L), Some(11111L), Some(11111L))) match {
       case Some((Some(pId), Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, pId, bId, bsId)
       case _ => Future.successful(None)
     }}
 
-  private def getPrintLocationDescriptionForExternalData(
+  private def getActualPrintLocationDescriptionFromExternalData(
                                            contentAPI: ContentAPI,
                                            externalData: Option[ExternalData]
                                          ): Future[Option[String]] = {
@@ -62,10 +62,10 @@ object StubAPI extends Caching {
   private def getPrintLocationDescriptionFromIds(contentAPI: ContentAPI, pId: Long, bId: Long, bsId: Long): Future[Option[String]] =
     memoize(60.minutes) {
       for {
-        actualPublicationDescription <- contentAPI.getTagInternalName(pId)
-        actualBookDescription <- contentAPI.getTagInternalName(bId)
-        actualBookSectionDescription <- contentAPI.getTagInternalName(bsId)
-      } yield (actualPublicationDescription, actualBookDescription, actualBookSectionDescription) match {
+        publicationDescription <- contentAPI.getTagInternalName(pId)
+        bookDescription <- contentAPI.getTagInternalName(bId)
+        bookSectionDescription <- contentAPI.getTagInternalName(bsId)
+      } yield (publicationDescription, bookDescription, bookSectionDescription) match {
         case (Some(a), Some(b), Some(c)) => Some(a + " >> " + b + " >> " + c)
         case _ => None
       }
@@ -77,8 +77,8 @@ object StubAPI extends Caching {
       json <- parseBody(res.body)
       maybeStub <- extractDataResponseOpt[Stub](json)
       maybeExternalData = maybeStub.flatMap(_.externalData)
-      actualPrintLocationDescription <- ApiResponseFt.Async.Right(getPrintLocationDescriptionForExternalData(contentAPI, maybeExternalData))
-      plannedPrintLocationDescription <- ApiResponseFt.Async.Right(getPrintLocationDescriptionForStub(contentAPI, maybeStub))
+      actualPrintLocationDescription <- ApiResponseFt.Async.Right(getActualPrintLocationDescriptionFromExternalData(contentAPI, maybeExternalData))
+      plannedPrintLocationDescription <- ApiResponseFt.Async.Right(getPlannedPrintLocationDescriptionFromStub(contentAPI, maybeStub))
     } yield maybeStub.map(
       stub => stub
         .copy(
@@ -252,17 +252,19 @@ object StubAPI extends Caching {
 
   def decorateStub(contentAPI: ContentAPI, stub: Stub): Future[Stub] = {
     for {
-      plannedPrintLocationDescription <- getPrintLocationDescriptionForStub(contentAPI, Some(stub))
+      plannedPrintLocationDescription <- getPlannedPrintLocationDescriptionFromStub(contentAPI, Some(stub))
       externalData <- decorateExternalData(contentAPI, stub, stub.externalData)
-    } yield externalData match {
-      case maybeEd@Some(_) => stub.copy(externalData = maybeEd).copy(plannedPrintLocationDescription = plannedPrintLocationDescription)
-      case None => stub.copy(plannedPrintLocationDescription = plannedPrintLocationDescription)
-    }
+    } yield (
+      (externalData match {
+        case maybeEd@Some(_) => stub.copy(externalData = maybeEd)
+        case None => stub
+      })
+      .copy(plannedPrintLocationDescription = plannedPrintLocationDescription))
   }
 
   def decorateExternalData(contentAPI: ContentAPI, stub: Stub, externalData: Option[ExternalData]): Future[Option[ExternalData]] = {
     for {
-      actualPrintLocationDescription <- getPrintLocationDescriptionForExternalData(contentAPI, stub.externalData)
+      actualPrintLocationDescription <- getActualPrintLocationDescriptionFromExternalData(contentAPI, stub.externalData)
     } yield externalData.map( e => e.copy(actualPrintLocationDescription = actualPrintLocationDescription))
   }
 

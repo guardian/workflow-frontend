@@ -1,16 +1,14 @@
 <td class="content-list-item__field--publicationlocation" title="Publication Location">
     <span ng-show="contentItem.contentType == 'article'">
-        <div ng-if="contentItem.actualPrintLocationDescription">
+        <div ng-if="contentItem.actualPrintLocationDescription" class="actual-print-location">
             {{ contentItem.actualPrintLocationDescription }}
             <br/>
             {{ contentItem.actualNewspaperPageNumber }}; {{ contentItem.actualNewspaperPublicationDate }}
         </div>
-        <div ng-if="!(contentItem.actualPrintLocationDescription) && contentItem.plannedPrintLocationDescription">
-            <i>
-                {{ contentItem.plannedPrintLocationDescription }}
-                <br/>
-                {{ contentItem.plannedNewspaperPageNumber }}; {{ contentItem.plannedNewspaperPublicationDate }}
-            </i>
+        <div ng-if="!(contentItem.actualPrintLocationDescription) && contentItem.plannedPrintLocationDescription" class="planned-print-location">
+            {{ contentItem.plannedPrintLocationDescription }}
+            <br/>
+            {{ contentItem.plannedNewspaperPageNumber }}; {{ contentItem.plannedNewspaperPublicationDate }}
         </div>
     </span>
 </td>
