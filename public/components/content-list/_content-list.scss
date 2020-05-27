@@ -10,6 +10,22 @@ $content-list-icon-size: 14px;
 $compact-display-td-padding: 2px 5px;
 
 $textualIconSize: 22px;
+$tableHeaderRowHeight: 48px;
+
+// Google auth banner is run through bootstrap,
+// with padding, it is 52px
+$googleAuthBannerHeight: 52px;
+
+google-auth-banner .alert {
+    position: sticky;
+    top: 0;
+
+    // reset bootstrap styles
+    margin: 0;
+    z-index: 3;
+    border: none;
+    border-radius: 0;
+}
 
 // Global padding for cells
 %content-list__field-padding {
@@ -27,8 +43,36 @@ $textualIconSize: 22px;
 
 .content-list {
     width: 100%;
-    border-top: 5px solid $c-grey-100;
     border-bottom: 5px solid $c-grey-100;
+
+    thead {
+        th {
+            z-index: 3;
+            background-color: $c-white;
+        }
+        tr {
+            height: $tableHeaderRowHeight;
+        }
+    }
+
+    &--sticky-row th {
+        position: sticky;
+        top: 0;
+        background-color: $c-bluegrey;
+
+        &.content-list__group-heading {
+            top: $tableHeaderRowHeight;
+            z-index: 2;
+        }
+    }
+
+    &--auth-banner-visible &--sticky-row th {
+        top: $googleAuthBannerHeight;
+
+        &.content-list__group-heading {
+            top: $tableHeaderRowHeight + $googleAuthBannerHeight;
+        }
+    }
 
     // Table header
     &-head {
@@ -142,7 +186,6 @@ $textualIconSize: 22px;
 
         &-row {
             background-color:  $c-bluegrey;
-            border-top: 1px solid $c-grey-300;
             border-bottom: 1px solid #ffffff;
         }
 
@@ -197,8 +240,6 @@ $textualIconSize: 22px;
     &--presence-disabled {
       .content-list-head__heading--presence,
       .content-list-item__field--presence {
-        position: relative;
-
         &:after {
           content: "";
           display: block;
@@ -273,15 +314,29 @@ $textualIconSize: 22px;
 }
 
 .column-configurator {
-    position: absolute;
-    top: 34px;
-    right: 6px;
+    $columnConfiguratorBorder: 1px;
+    $columnConfiguratorTopOffset: $tableHeaderRowHeight + $topToolbarHeight + $columnConfiguratorBorder;
+    $columnConfiguratorTopOffsetWithAuth: $columnConfiguratorTopOffset + $googleAuthBannerHeight;
+
+    position: fixed;
+    top: $columnConfiguratorTopOffset;
+
+    max-height: calc(100vh - #{$columnConfiguratorTopOffset});
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+    &--auth-banner-visible {
+        top: $columnConfiguratorTopOffsetWithAuth;
+        max-height: calc(100vh - #{$columnConfiguratorTopOffsetWithAuth});
+    }
+
+    right: 15px;
     width: 180px;
     z-index: 2;
 
     // _toolbar-sections-dropdown.scss:71
     background-color: #ffffff;
-    border: 1px solid $c-grey-400;
+    border: $columnConfiguratorBorder solid $c-grey-400;
     box-shadow: 2px 1px 5px $c-grey-300;
     display: block;
     -webkit-transition: opacity .35 ease-in-out;
@@ -299,13 +354,24 @@ $textualIconSize: 22px;
 
     .column-configurator__list-item {
         border-bottom: 1px solid $c-grey-300;
-        padding: 6px 10px;
         .column-configurator__label {
+            padding: 6px 10px;
             color: $c-grey-700;
             font-weight: normal;
             @extend %fs-data-3;
             text-transform: capitalize;
             margin: 0;
+            cursor: pointer;
+            width: 100%;
+            user-select: none;
+
+            input {
+                width: auto;
+            }
+
+            &:hover {
+                background-color: $c-grey-200;
+            }
         }
 
         .column-configurator__label {
@@ -315,6 +381,7 @@ $textualIconSize: 22px;
         &:last-child {
             border: none;
         }
+
     }
 }
 
@@ -371,9 +438,6 @@ $textualIconSize: 22px;
 }
 
 .content-list__compact-button {
-    position: absolute;
-    bottom: 4px;
-    left: 6px;
     display: block;
     height: 16px;
     width: 16px;
