@@ -1,10 +1,10 @@
 package controllers
 
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.auth._
 import com.gu.pandomainauth.PanDomainAuth
 import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
+import com.gu.workflow.util.AWS
 import play.api.Logger
 import play.api.mvc._
 import config.Config
@@ -38,9 +38,5 @@ trait PanDomainAuthActions extends AuthActions with PanDomainAuth with Results {
   override lazy val system: String = "workflow"
 
 
-  override def awsCredentialsProvider() = new AWSCredentialsProviderChain(
-    new ProfileCredentialsProvider("workflow"),
-    InstanceProfileCredentialsProvider.getInstance(),
-    new EnvironmentVariableCredentialsProvider()
-  )
+  override def awsCredentialsProvider(): AWSCredentialsProvider = AWS.credentialsProvider
 }

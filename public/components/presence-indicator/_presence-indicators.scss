@@ -4,11 +4,12 @@
 
 // Compact view
 
-$topIconOffset: 8px !default;
-$rightIconOffset: 14px !default;
+$topIconOffset: 7px !default;
+$rightIconOffset: 2px !default;
 $topIconOffsetCompact: 3px;
 $rightIconOffsetCompact: 8px;
 $iconsToStack: $textualIconSize / 4px; // Return a number (must divide values with units with values with units)
+$stackOffset: 4px;
 $iconExpandIntervalDistance: 24;
 $iconExpandIntervalDistanceCompact: 18;
 $stackColorLightenIncrement: 14%;
@@ -76,10 +77,15 @@ $iconAnimationEasingFunction: ease-in-out;
             @include transition(color $iconAnimationTransTime, background-color $iconAnimationTransTime $iconAnimationEasingFunction);
         }
 
-        @for $i from 1 to $iconsToStack {
-            &:nth-of-type(#{$i+1}) {
-                right: ($i * -4) + $rightIconOffset;
+        @for $i from 1 to $iconsToStack + 50 {
+            &:nth-of-type(#{$i+1}){
                 z-index: $i*-1;
+            }
+        }
+
+        @for $i from 1 to 3 {
+            &:nth-of-type(#{$i+1}) {
+                right: ($i * -$stackOffset) + $rightIconOffset;
                 .content-list-item__icon--presence {
                     background-color: lighten($c-presence-purple, $i*$stackColorLightenIncrement);
                     color: rgba(255, 255, 255, 0);
@@ -93,7 +99,6 @@ $iconAnimationEasingFunction: ease-in-out;
             // ensure all icons shown when expanded
             &:nth-of-type(#{$i+1}) {
                 right: ($i * $iconExpandIntervalDistance) + $rightIconOffset;
-                z-index: $i*-1;
                 .content-list-item__icon--presence {
                     background-color: $c-presence-purple;
                     color: rgba(255, 255, 255, 1);

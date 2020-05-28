@@ -17,8 +17,11 @@ import notesTemplate              from "components/content-list-item/templates/n
 import linksTemplate              from "components/content-list-item/templates/links.html";
 import publishedStateTemplate     from "components/content-list-item/templates/published-state.html";
 import wordcountTemplate          from "components/content-list-item/templates/wordcount.html";
+import printWordcountTemplate     from "components/content-list-item/templates/printwordcount.html";
 import commissionedLengthTemplate from "components/content-list-item/templates/commissionedLength.html";
 import needsLegalTemplate         from "components/content-list-item/templates/needsLegal.html";
+import lastModifiedTemplate       from "components/content-list-item/templates/last-modified.html";
+import lastModifiedByTemplate     from "components/content-list-item/templates/last-modified-by.html";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
@@ -38,12 +41,17 @@ var templateRoot = '/assets/components/content-list-item/templates/';
 var columnDefaults = [{
     name: 'priority',
     prettyName: 'Priority',
-    labelHTML: '',
+    // Oh hello, yes you're right the `labelHTML` doesn't represent `priority` does it?!
+    // There's a good reason though, principally it's a wider column than the column to the left, notifier.
+    // The notifier column needs to remain slim to not consume valuable real estate.
+    // Add the table compactor toggle here as there is no text here anyway otherwise.
+    labelHTML: '<div class="content-list__compact-button" ng-class="{ \'content-list__compact-button--active\': compactView.visible }" ng-click="compactView.visible = !compactView.visible" title="Toggle compact view"></div>',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'priority.html',
     template: priorityTemplate,
-    active: true
+    active: true,
+    alwaysShown: true
 },{
     name: 'content-type',
     prettyName: 'Content Type',
@@ -61,7 +69,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'title.html',
     template: titleTemplate,
-    active: true
+    active: true,
+    alwaysShown: true
 },{
     name: 'notes',
     prettyName: 'Notes',
@@ -116,8 +125,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'sensitive.html',
     template: sensitiveTemplate,
-    active: false,
-    isNew: true
+    active: false
 },{
     name: 'legallySensitive',
     prettyName: 'Legally sensitive',
@@ -126,8 +134,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'legallySensitive.html',
     template: legallySensitiveTemplate,
-    active: false,
-    isNew: true
+    active: false
 },{
     name: 'presence',
     prettyName: 'Presence',
@@ -185,13 +192,23 @@ var columnDefaults = [{
     active: true
 },{
     name: 'wordcount',
-    prettyName: 'Wordcount',
-    labelHTML: 'Words',
+    prettyName: 'Web Wordcount',
+    labelHTML: 'Web Words',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
     template: wordcountTemplate,
     active: false
+},{
+    name: 'printwordcount',
+    prettyName: 'Print Wordcount',
+    labelHTML: 'Print Words',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'printwordcount.html',
+    template: printWordcountTemplate,
+    active: false,
+    isNew: true
 },{
     name: 'commissionedLength',
     prettyName: 'Commissioned Length',
@@ -228,6 +245,26 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'needsLegal.html',
     template: needsLegalTemplate,
     active: true
-}];
+},{
+    name: 'last-modified',
+    prettyName: 'Last modified',
+    labelHTML: 'Last modified',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'last-modified.html',
+    template: lastModifiedTemplate,
+    active: false,
+    isNew: true
+},{
+    name: 'last-modified-by',
+    prettyName: 'Last modified by',
+    labelHTML: 'Last modified by',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'last-modified-by.html',
+    template: lastModifiedByTemplate,
+    active: false,
+    isNew: true
+}].map(col => col.labelHTML === '' ? {...col, labelHTML: '&nbsp;'} : col);
 
 export { columnDefaults }

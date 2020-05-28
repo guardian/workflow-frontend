@@ -1,4 +1,8 @@
-<td class="content-list-item__field--commissionedLength" title="Commission">
-    <span ng-class="'content-list-item__field--commissionedLength-status-'
-    + lengthStatus" ng-controller="wfCommissionedLengthCtrl" ng-show="contentItem.contentType == 'article'">{{ contentItem.commissionedLength }}</span>
+<td class="content-list-item__field--commissionedLength"
+    ng-controller="wfCommissionedLengthCtrl"
+    ng-attr-title="{{'Commissioned word count (' + lengthStatus + ' in comparison to web words)'}}">
+    <span ng-class="'content-list-item__field--commissionedLength-status-'+ lengthStatus"
+          ng-show="contentItem.contentType == 'article'">
+        {{ contentItem.commissionedLength }}
+    </span>
 </td>

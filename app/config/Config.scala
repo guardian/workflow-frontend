@@ -1,29 +1,25 @@
 package config
 
-import com.gu.workflow.lib.{Config => config}
-import com.gu.workflow.util.AwsInstanceTags
-import lib.LogStashConf
+import com.gu.workflow.util._
 import play.Logger
 import java.util.UUID
 
-object Config extends AwsInstanceTags {
-  lazy val stage: String = readTag("Stage") match {
-    case Some(value) => value
+import com.gu.workflow.lib.CommonConfig
+
+object Config extends CommonConfig with AwsInstanceTags {
+  lazy val stage: Stage = readTag("Stage") match {
+    case Some(value) => Stage(value)
     // If in AWS and we don't know our stage, fail fast to avoid ending up running an instance with dev config in PROD!
     case other if instanceId.nonEmpty => throw new IllegalStateException(s"Unable to read Stage tag: $other")
-    case None => "DEV" // default to dev stage
+    case None => Stage("DEV") // default to dev stage
   }
   Logger.info(s"running in stage: $stage")
 
-  def appDomain(appStage: String): String = {
-    appStage match {
-      case "PROD" => "gutools.co.uk"
-      case "DEV" => "local.dev-gutools.co.uk"
-      case x => s"${x.toLowerCase()}.dev-gutools.co.uk"
-    }
-  }
+  lazy val isDev: Boolean = stage == Dev
 
-  lazy val domain: String = appDomain(stage)
+  lazy val domain: String = stage.appDomain
+
+  lazy val localLogShipping: Boolean = sys.env.getOrElse("LOCAL_LOG_SHIPPING", "false").toBoolean
 
   Logger.info(s"Domain is: $domain")
 
@@ -37,31 +33,35 @@ object Config extends AwsInstanceTags {
   lazy val atomWorkshopUrl: String = s"https://atomworkshop.$domain"
 
   lazy val mediaAtomMakerUrls: Set[String] = stage match {
-    case "CODE" => Set(mediaAtomMakerUrl, s"https://video.${appDomain("DEV")}") // allow MAM in DEV to call Workflow CODE
+    case Code => Set(mediaAtomMakerUrl, s"https://video.${Dev.appDomain}") // allow MAM in DEV to call Workflow CODE
     case _ => Set(mediaAtomMakerUrl)
   }
 
   lazy val atomWorkshopUrls: Set[String] = stage match {
-    case "CODE" => Set(s"https://atomworkshop.${appDomain("DEV")}", atomWorkshopUrl) // allow MAM in DEV to call Workflow CODE
+    case Code => Set(s"https://atomworkshop.${Dev.appDomain}", atomWorkshopUrl) // allow MAM in DEV to call Workflow CODE
     case _ => Set(atomWorkshopUrl)
   }
 
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
 
-  lazy val preferencesUrl: String = s"https://preferences.$domain/preferences"
-  lazy val tagManagerUrl: String = stage match {
-    case "PROD" => s"https://tagmanager.$domain"
-    case _ => "https://tagmanager.code.dev-gutools.co.uk"
+  lazy val preferencesUrl: String = stage match {
+    case Prod => s"https://preferences.$domain/preferences"
+    case _ => s"https://preferences.${Code.appDomain}/preferences"
   }
 
-  lazy val capiPreviewIamUrl: String = config.getConfigStringOrFail("capi.preview.iamUrl")
-  lazy val capiPreviewRole: String = config.getConfigStringOrFail("capi.preview.role")
+  lazy val tagManagerUrl: String = stage match {
+    case Prod => s"https://tagmanager.$domain"
+    case _ => s"https://tagmanager.${Code.appDomain}"
+  }
 
-  lazy val webPushPublicKey: String = config.getConfigStringOrFail("webpush.publicKey")
-  lazy val webPushPrivateKey: String = config.getConfigStringOrFail("webpush.privateKey")
+  lazy val capiPreviewIamUrl: String = getConfigStringOrFail("capi.preview.iamUrl")
+  lazy val capiPreviewRole: String = getConfigStringOrFail("capi.preview.role")
 
-  lazy val sharedSecret: String = config.getConfigStringOrFail("api.sharedsecret")
+  lazy val webPushPublicKey: String = getConfigStringOrFail("webpush.publicKey")
+  lazy val webPushPrivateKey: String = getConfigStringOrFail("webpush.privateKey")
+
+  lazy val sharedSecret: String = getConfigStringOrFail("api.sharedsecret")
 
   lazy val incopyOpenUrl: String = "gnm://openinincopy/storybundle/${storyBundleId}/checkout/readwrite"
   lazy val incopyExportUrl: String = "gnm://composer/export/${composerId}"
@@ -71,17 +71,23 @@ object Config extends AwsInstanceTags {
 
   lazy val storyPackagesUrl: String = s"https://packages.$domain"
 
-  lazy val googleTrackingId: String = config.getConfigStringOrFail("google.tracking.id")
+  lazy val googleTrackingId: String = getConfigStringOrFail("google.tracking.id")
 
   lazy val no2faUser: String = "composer.test@guardian.co.uk"
 
-  lazy val editorialSupportDynamoTable: String = s"editorial-support-${if(stage != "PROD") { "CODE" } else { "PROD" }}"
+  lazy val editorialSupportDynamoTable: String = stage match {
+    case Prod => "editorial-support-PROD"
+    case _ => "editorial-support-CODE"
+  }
 
   lazy val atomTypes: List[String] = List("media", "chart")
   lazy val contentTypes: List[String] = List("article", "liveblog", "gallery", "interactive", "picture", "video", "audio")
 
   lazy val sessionId: String = UUID.randomUUID().toString
 
-  implicit val defaultExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
+  implicit val defaultExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+
+  lazy val adminWhitelist: List[String] = getConfigStringList("application.admin.whitelist").right.getOrElse(List.empty)
+
+  lazy val capiKey: String = getConfigStringOrFail("capi.key")
 }

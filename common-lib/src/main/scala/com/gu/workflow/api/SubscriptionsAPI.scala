@@ -2,7 +2,7 @@ package com.gu.workflow.api
 
 import java.nio.charset.StandardCharsets
 
-import com.gu.workflow.util.Dynamo
+import com.gu.workflow.util.{Dynamo, Stage, Prod}
 import io.circe.syntax._
 import models.{Subscription, SubscriptionEndpoint, SubscriptionUpdate}
 import nl.martijndwars.webpush.{Notification, PushService}
@@ -10,8 +10,12 @@ import play.api.Logger
 
 import scala.collection.JavaConverters._
 
-class SubscriptionsAPI(stage: String, webPushPublicKey: String, webPushPrivateKey: String) extends Dynamo {
-  private val tableName = s"workflow-subscriptions-${if(stage != "PROD") { "CODE" } else { "PROD" }}"
+class SubscriptionsAPI(stage: Stage, webPushPublicKey: String, webPushPrivateKey: String) extends Dynamo {
+  private val tableName = stage match {
+    case Prod => "workflow-subscriptions-PROD"
+    case _ => "workflow-subscriptions-CODE"
+  }
+
   private val table = dynamoDb.getTable(tableName)
 
   private val pushService = new PushService(webPushPublicKey, webPushPrivateKey, "mailto:digitalcms.bugs@guardian.co.uk")

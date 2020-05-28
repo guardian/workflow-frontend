@@ -8,7 +8,7 @@ import org.joda.time.DateTime
 object TestData {
 
   val randomSeed = Config.randomSeed.getOrElse(scala.util.Random.nextLong)
-  println(s"Using random seed: $randomSeed")
+
   private val random = new scala.util.Random(randomSeed)
 
   val text: List[String] = List("Title", "Hello", "Working Title", "More", "Words", "Blah", "path", "jelly")

@@ -17,7 +17,7 @@ var SETTING_OPEN_SECTION = 'openSection';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, featureSwitches, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService) {
 
     var hiddenClass = 'content-list-drawer--hidden';
 
@@ -144,9 +144,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
             $scope.maxNoteLength = config.maxNoteLength;
             $scope.prodOffices = prodOfficeService.getProdOffices();
-            $scope.incopyExportEnabled = false;
-            featureSwitches.withSwitch("incopy-export",
-                                       val => $scope.incopyExportEnabled = val);
             $scope.supportedAtomTypes = config.atomTypes;
 
             /**

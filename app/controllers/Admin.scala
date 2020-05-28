@@ -1,10 +1,10 @@
 package controllers
 
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
-import com.gu.workflow.lib.{Config => LocalConfig}
+import config.Config
 import io.circe.{Json, parser}
 import models.api.ApiError
-import models.{Status => WorkflowStatus, _}
+import models._
 import play.api.Logger
 import play.api.Play.current
 import play.api.data.Form
@@ -235,7 +235,7 @@ object Admin extends Controller with PanDomainAuthActions {
       tagIds <- tagIdsFuture
       selectedSectionOption <- selectedSectionOptionFt
     } yield {
-      val config: Json = parser.parse(s"""{"CAPI_API_KEY": ${LocalConfig.getConfigString("capi.key").right.get}}""").right.get
+      val config: Json = parser.parse(s"""{"CAPI_API_KEY": ${Config.capiKey}}""").right.get
       Ok(
         views.html.admin.sectionsAndTags(
           config,

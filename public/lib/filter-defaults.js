@@ -20,7 +20,7 @@
  * }
  */
 
-var filterDefaults = function (statuses, wfFiltersService, wfFeatureSwitches) {
+var filterDefaults = function (statuses, wfFiltersService) {
 
     return [
         {

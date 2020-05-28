@@ -35,8 +35,8 @@ object WorkflowBuild extends Build {
 
   val commonSettings =
     Seq(
-      scalaVersion := "2.11.11",
-      scalaVersion in ThisBuild := "2.11.11",
+      scalaVersion := "2.11.12",
+      scalaVersion in ThisBuild := "2.11.12",
       organization := "com.gu",
       version      := "0.1",
       fork in Test := false,

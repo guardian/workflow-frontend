@@ -50,7 +50,7 @@
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-sinon": "^1.0.5",
     "karma-webpack": "^2.0.3",
-    "lodash": "4.17.4",
+    "lodash": "4.17.13",
     "mocha": "^3.3.0",
     "moment": "^2.11.2",
     "moment-timezone": "0.5.14",

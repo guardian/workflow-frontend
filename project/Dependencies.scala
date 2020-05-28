@@ -3,7 +3,7 @@ import play.Play.autoImport._
 import PlayKeys._
 
 object Dependencies {
-  val awsVersion: String = "1.11.259"
+  val awsVersion: String = "1.11.784"
   val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 
   val notificationDependencies = Seq(
@@ -42,7 +42,7 @@ object Dependencies {
     specs2 % Test
   )
 
-  val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "4.5")
+  val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "6.3")
 
   val circeVersion = "0.8.0"
 

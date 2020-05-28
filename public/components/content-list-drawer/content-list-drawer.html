@@ -125,13 +125,21 @@
                             </span>
                         </li>
                         <li class="drawer__item" ng-show="contentItem.contentType == 'article'">
-                            <span class="drawer__item-title">Word count</span>
-                            <span class="drawer__item-content">{{ capiData.wordCount }} </span>
+                            <div class="drawer__item-wordcount">
+                                <span class="drawer__item-title">Web word count</span>
+                                <span class="drawer__item-content">{{ capiData.wordCount }} </span>
+                            </div>
+                            <div class="drawer__item-wordcount">
+                                <span class="drawer__item-title">Print word count</span>
+                                <span class="drawer__item-content" ng-class="{'drawer__item-content--empty': !contentItem.printWordCount}">
+                                    {{ contentItem.printWordCount || "n/a" }} </span>
+                            </div>
                         </li>
                         <li class="drawer__item" ng-show="contentItem.contentType == 'article'">
                             <span class="drawer__item-title">Commissioned Length</span>
                             <wf-editable class="drawer__item-content"
-                            wf-editable-type="textarea"
+                            wf-editable-type="input"
+                            wf-editable-input-type="number"
                             ng-model="contentItem.commissionedLength"
                             wf-editable-on-update="updateCommissionedLength(newValue)"
                             wf-editable-maxlength="5">{{contentItem.commissionedLength || "Add" }}

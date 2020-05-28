@@ -15,6 +15,7 @@ import org.joda.time.DateTime
 case class ExternalData(
                          path: Option[String] = None,
                          lastModified: Option[DateTime] = None,
+                         lastModifiedBy: Option[String] = None,
                          status: Status = Status.Writers,
                          published: Option[Boolean] = None,
                          timePublished: Option[DateTime] = None,
@@ -24,6 +25,7 @@ case class ExternalData(
                          takenDown: Option[Boolean] = None,
                          timeTakenDown: Option[DateTime] = None,
                          wordCount: Option[Int] = None,
+                         printWordCount: Option[Int] = None,
                          embargoedUntil: Option[DateTime] = None,
                          embargoedIndefinitely: Option[Boolean] = None,
                          scheduledLaunchDate: Option[DateTime] = None,

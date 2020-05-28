@@ -32,12 +32,9 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def getSectionsInDesks(): Future[List[models.api.SectionsInDeskMapping]] = {
-    SectionDeskMappingsAPI.getSectionsInDesks.asFuture.map { x =>
-      println(s"sections in desks: $x")
-      x match {
-        case Right(mappings) => mappings
-        case Left(err) => Logger.error(s"error fetching section desk mappings: $err"); List()
-      }
+    SectionDeskMappingsAPI.getSectionsInDesks.asFuture.map {
+      case Right(mappings) => mappings
+      case Left(err) => Logger.error(s"error fetching section desk mappings: $err"); List()
     }
   }
 

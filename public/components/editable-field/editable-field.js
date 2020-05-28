@@ -40,7 +40,8 @@ function wfEditableDirectiveFactory() {
             validateMinlength: '=wfEditableMinlength',
             validateMaxlength: '=wfEditableMaxlength',
             noCloseMode:    '=wfNoCloseMode',
-            onEditableEditModeUpdate: '&wfEditableOnEditModeUpdate'
+            onEditableEditModeUpdate: '&wfEditableOnEditModeUpdate',
+            inputType: '=?wfEditableInputType'
         },
         compile: function(tElement, tAttrs) {
             var nodeName,
@@ -57,7 +58,7 @@ function wfEditableDirectiveFactory() {
                 nodeName = 'textarea';
             } else {
                 nodeName = 'input';
-                nodeAttrs.type = 'text';
+                nodeAttrs.type = tAttrs.wfEditableInputType || 'text';
             }
 
             $node = angular.element(document.createElement(nodeName));

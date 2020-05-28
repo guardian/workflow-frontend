@@ -25,7 +25,6 @@ import 'lib/filters-service';
 import 'lib/column-service';
 import 'lib/preferences-service';
 import 'lib/analytics';
-import 'lib/feature-switches';
 import 'lib/google-api';
 import 'lib/polling-service';
 import 'lib/title-service';
@@ -58,7 +57,6 @@ angular.module('workflow',
         'wfColumnService',
         'wfPreferencesService',
         'wfAnalyticsServiceMod',
-        'wfFeatureSwitches',
         'wfGoogleApiService',
         'infinite-scroll',
         'wfTitleService',

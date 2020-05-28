@@ -21,7 +21,7 @@ trait SharedSecretAuth {
     List(code - (mask + 1), code, code + (mask + 1)).map(time => sign(time.toString))
   }
 
-  def matchesSharedSecret(candidate: String): Boolean = sharedSecret.exists({ x => println(s"comparing $x to $candidate"); x == candidate })
+  def matchesSharedSecret(candidate: String): Boolean = sharedSecret.contains(candidate)
 
   def isInOnTheSecret(req: Request[_]): Boolean =
     req.cookies.get(cookieName).map(cookie => matchesSharedSecret(cookie.value)).getOrElse(false)

@@ -41,9 +41,6 @@ object PlayArtifact extends Plugin {
       }
       IO.zip(playArtifactResources.value, distFile)
 
-      // Tells TeamCity to publish the artifact => leave this println in here
-//      println(s"##teamcity[publishArtifacts '$distFile => ${name.value}']")
-
       streams.value.log.info("Done disting.")
       distFile
     }
