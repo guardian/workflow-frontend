@@ -554,6 +554,8 @@
 .planned-print-location, .actual-print-location {
     position: relative;
     display: inline-block;
+    text-align: center;
+    vertical-align: middle;
 }
 
 /* Tooltip text */
