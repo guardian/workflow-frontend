@@ -1,7 +1,8 @@
 <td class="content-list-item__field--publicationlocation" title="Publication Location">
     <span ng-show="contentItem.contentType == 'article'">
-        <div ng-if="contentItem.shortActualPrintLocationDescription" class="actual-print-location">
-            <span class="print-location-tooltip">{{ contentItem.longActualPrintLocationDescription }}</span>
+        <div ng-if="contentItem.shortActualPrintLocationDescription"
+             class="actual-print-location"
+             title="{{ contentItem.longActualPrintLocationDescription }}">
             {{ contentItem.shortActualPrintLocationDescription }}
             <br/>
             <span ng-if="contentItem.actualNewspaperPageNumber">
@@ -9,8 +10,10 @@
             </span>
             {{ contentItem.actualNewspaperPublicationDate | wfFormatDateTime:'DD MMM'}}
         </div>
-        <div ng-if="!(contentItem.shortActualPrintLocationDescription) && contentItem.shortPlannedPrintLocationDescription" class="planned-print-location">
-            <span class="print-location-tooltip">{{ contentItem.longPlannedPrintLocationDescription }}</span>
+        <div
+                ng-if="!(contentItem.shortActualPrintLocationDescription) && contentItem.shortPlannedPrintLocationDescription"
+                class="planned-print-location"
+                title="{{ contentItem.longPlannedPrintLocationDescription }}">
             {{ contentItem.shortPlannedPrintLocationDescription }}
             <br/>
             <span ng-if="contentItem.plannedNewspaperPageNumber">
