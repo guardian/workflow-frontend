@@ -17,7 +17,6 @@ object TagArrayItem {
   implicit val decoder: Decoder[TagArrayItem] = deriveDecoder
 }
 
-case class TagService(tagApiUrl: String)
 object TagService {
   def getTags(queryUrl: String): Future[List[Tag]] = {
     for {
