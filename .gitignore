@@ -34,6 +34,7 @@ lib_managed/
 src_managed/
 project/boot/
 project/plugins/project/
+project/metals.sbt
 
 # Scala-IDE specific
 .scala_dependencies
@@ -77,3 +78,4 @@ build/
 
 # OS X generated file storing custom attributes of a folder
 .DS_Store
+Brewfile.lock.json
