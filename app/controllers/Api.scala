@@ -321,21 +321,3 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
         block(req)
   }
 }
-
-//      def getTag(publicationId: Option[Int],
-//                 bookId: Option[Int],
-//                 bookSectionId: Option[Int],
-//                 newspaperPage: Option[Int],
-//                 publicationDate: Option[Int]
-//                ):String = {"no idea"}
-
-//      def getActualPublicationLocation = {
-//        stub.externalData.flatMap(e => getTag(None, None, None, None, None)).getOrElse("Location coming soon").asJson
-//      }
-
-//        actualPublicationLocation = getActualPublicationLocation
-//        plannedPublicationLocation = stub.externalData.flatMap(e => e.path).getOrElse("Location coming soon").asJson
-
-//          ,
-//            "plannedPublicationLocation" -> plannedPublicationLocation,
-//            "actualPublicationLocation" -> actualPublicationLocation
