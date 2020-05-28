@@ -546,7 +546,7 @@
 }
 
 .planned-print-location {
-    color: grey;
+    color: $c-grey-600;
 }
 .actual-print-location {
     color: black;
@@ -560,7 +560,7 @@
 .print-location-tooltip {
     visibility: hidden;
     width: 240px;
-    background-color: lightgray;
+    background-color: $c-grey-300;
     text-align: center;
     padding: 5px 0;
     border-radius: 6px;
