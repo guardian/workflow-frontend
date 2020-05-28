@@ -45,6 +45,7 @@ class ContentAPI(capiPreviewRole: String, capiPreviewIamUrl: String) extends Cac
     val headers = previewSigner.addIAMHeaders(Map.empty, URI.create(url))
     WS.url(url)
       .withHeaders(headers.toSeq: _*)
+      .withRequestTimeout(2000) // timeout in millis
       .get()
       .map(response => parser.parse(response.body))
       .map {
@@ -58,7 +59,7 @@ class ContentAPI(capiPreviewRole: String, capiPreviewIamUrl: String) extends Cac
               .get
         case Left(e) =>
           Logger.warn("Unable to communicate with CAPI", e)
-          None
+          Some("Print location unavailable")
       }
   }
 

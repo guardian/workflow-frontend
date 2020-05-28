@@ -41,8 +41,8 @@ object StubAPI {
                                            stub: Option[Stub]
                                          ): Future[(Option[String], Option[String])] = {
     stub
-      .flatMap(s => Some(s.plannedPublicationId, s.plannedBookSectionId, s.plannedBookSectionId)) match {
-      case Some((Some(pId), Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, pId, bId, bsId)
+      .flatMap(s => Some(s.plannedBookSectionId, s.plannedBookSectionId)) match {
+      case Some((Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, bId, bsId)
       case _ => Future.successful((None, None))
     }}
 
@@ -51,20 +51,19 @@ object StubAPI {
                                            externalData: Option[ExternalData]
                                          ): Future[(Option[String], Option[String])] = {
     externalData
-      .flatMap(e => Some(e.actualPublicationId, e.actualBookId, e.actualBookSectionId)) match {
-      case Some((Some(pId), Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, pId, bId, bsId)
+      .flatMap(e => Some(e.actualBookId, e.actualBookSectionId)) match {
+      case Some((Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, bId, bsId)
       case _ => Future.successful((None, None))
     }}
 
-  private def getPrintLocationDescriptionFromIds(contentAPI: ContentAPI, pId: Long, bId: Long, bsId: Long): Future[(Option[String], Option[String])] =
+  private def getPrintLocationDescriptionFromIds(contentAPI: ContentAPI, bId: Long, bsId: Long): Future[(Option[String], Option[String])] =
     {
       for {
-        publicationDescription <- contentAPI.getTagInternalName(pId)
-        bookDescription <- contentAPI.getTagInternalName(bId)
-        bookSectionDescription <- contentAPI.getTagInternalName(bsId)
-      } yield (publicationDescription, bookDescription, bookSectionDescription) match {
-        case (Some(a), Some(b), Some(c)) => (Some(a + " >> " + b + " >> " + c), Some(c))
-        case (_, _, Some(c)) => (None, Some(c))
+        maybeBook <- contentAPI.getTagInternalName(bId)
+        maybeBookSection <- contentAPI.getTagInternalName(bsId)
+      } yield (maybeBook, maybeBookSection) match {
+        case (Some(book), Some(bookSection)) => (Some(book + " >> " + bookSection), Some(bookSection))
+        case ( _, Some(bookSection)) => (None, Some(bookSection))
         case _ => (None, None)
       }
     }
