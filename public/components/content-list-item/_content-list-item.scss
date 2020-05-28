@@ -170,7 +170,8 @@
         &--needsLegal,
         &--optimisedForWeb,
         &--sensitive,
-        &--legally-sensitive {
+        &--legally-sensitive,
+        &--publicationlocation {
             @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
@@ -473,7 +474,8 @@
         &--wordcount,
         &--printwordcount,
         &--last-modified,
-        &--last-modified-by {
+        &--last-modified-by,
+        &--publicationlocation {
             @extend %fs-data-2;
         }
 
@@ -492,6 +494,7 @@
 
         &--status {
             width: 125px;
+
             &--select {
                 width: 125px;
             }
@@ -538,3 +541,15 @@
         display: inline-block;
     }
 }
+
+.planned-print-location {
+    color: $c-grey-600;
+}
+.actual-print-location {
+    color: black;
+}
+.planned-print-location, .actual-print-location {
+    text-align: center;
+    vertical-align: middle;
+}
+

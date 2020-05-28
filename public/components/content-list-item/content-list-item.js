@@ -171,6 +171,16 @@ function wfContentItemParser(config, statusLabels, sections) {
             this.sensitiveTitle = 'This content features children, vulnerable people, or is on a topic that is likely to attract online abuse.';
             this.legallySensitiveTitle = 'This content involves active criminal proceedings.';
 
+            this.shortActualPrintLocationDescription = item.shortActualPrintLocationDescription;
+            this.longActualPrintLocationDescription = item.longActualPrintLocationDescription;
+            this.actualNewspaperPageNumber = item.actualNewspaperPageNumber;
+            this.actualNewspaperPublicationDate = item.actualNewspaperPublicationDate;
+
+            this.shortPlannedPrintLocationDescription = item.shortPlannedPrintLocationDescription;
+            this.longPlannedPrintLocationDescription = item.longPlannedPrintLocationDescription;
+            this.plannedNewspaperPageNumber = item.plannedNewspaperPageNumber;
+            this.plannedNewspaperPublicationDate = item.plannedNewspaperPublicationDate;
+
             this.item = item;
         }
 

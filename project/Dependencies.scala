@@ -57,4 +57,8 @@ object Dependencies {
   val webPushDependencies = Seq(
     "nl.martijndwars" % "web-push" % "3.1.1"
   )
+
+  val cacheDependencies = Seq(
+    "com.github.cb372" %% "scalacache-caffeine" % "0.9.3"
+  )
 }

@@ -97,7 +97,8 @@ google-auth-banner .alert {
             &--commissionedLength,
             &--needsLegal,
             &--last-modified,
-            &--last-modified-by {
+            &--last-modified-by,
+            &--publicationlocation {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 
@@ -158,12 +159,13 @@ google-auth-banner .alert {
                 min-width: 5px;
             }
 
-            &--wordcount {
+            &--wordcount,
+            &--printwordcount {
                 width: 40px;
             }
 
-            &--printwordcount {
-                width: 40px;
+            &--publicationlocation {
+                width: 300px;
             }
 
             &--titles {
