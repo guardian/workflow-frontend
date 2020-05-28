@@ -5,8 +5,8 @@
     display: -ms-flexbox;
     display: flex;
 
-    min-height: 50px;
-    max-height: 50px;
+    min-height: $topToolbarHeight;
+    max-height: $topToolbarHeight;
     background-color: $c-bluegrey;
     border-bottom: 1px solid $c-grey-400;
 

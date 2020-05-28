@@ -42,12 +42,17 @@ var templateRoot = '/assets/components/content-list-item/templates/';
 var columnDefaults = [{
     name: 'priority',
     prettyName: 'Priority',
-    labelHTML: '',
+    // Oh hello, yes you're right the `labelHTML` doesn't represent `priority` does it?!
+    // There's a good reason though, principally it's a wider column than the column to the left, notifier.
+    // The notifier column needs to remain slim to not consume valuable real estate.
+    // Add the table compactor toggle here as there is no text here anyway otherwise.
+    labelHTML: '<div class="content-list__compact-button" ng-class="{ \'content-list__compact-button--active\': compactView.visible }" ng-click="compactView.visible = !compactView.visible" title="Toggle compact view"></div>',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'priority.html',
     template: priorityTemplate,
-    active: true
+    active: true,
+    alwaysShown: true
 },{
     name: 'content-type',
     prettyName: 'Content Type',
@@ -65,7 +70,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'title.html',
     template: titleTemplate,
-    active: true
+    active: true,
+    alwaysShown: true
 },{
     name: 'notes',
     prettyName: 'Notes',
@@ -270,6 +276,6 @@ var columnDefaults = [{
     template: lastModifiedByTemplate,
     active: false,
     isNew: true
-}];
+}].map(col => col.labelHTML === '' ? {...col, labelHTML: '&nbsp;'} : col);
 
 export { columnDefaults }

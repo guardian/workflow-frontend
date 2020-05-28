@@ -63,7 +63,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                 $rootScope.$watch('contentItemTemplate', () => {
 
-                    var contentListHeading = '<tr class="content-list__group-heading-row" ng-show="currentlySelectedStatusFilters.indexOf(group.title) != -1"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count">{{ group.count || "0" }}</span></span></th></tr>';
+                    var contentListHeading = '<tr class="content-list__group-heading-row content-list--sticky-row" ng-show="currentlySelectedStatusFilters.indexOf(group.title) != -1"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count">{{ group.count || "0" }}</span></span></th></tr>';
 
                     var contentListItemDirective = '<tr wf-content-list-item class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-repeat="contentItem in group.items track by contentItem.id" ';
 
@@ -88,7 +88,13 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 
 function wfContentListController($rootScope, $scope, $anchorScroll, statuses, legalValues, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService, wfFiltersService) {
-
+    $scope.googleAuthBannerVisible = false;
+    $rootScope.$on('wfGoogleApiService.userIsNotAuthorized', () => {
+        $scope.googleAuthBannerVisible = true;
+    });
+    $rootScope.$on('wfGoogleApiService.userIsAuthorized', () => {
+        $scope.googleAuthBannerVisible = false;
+    });
 
     $scope.presenceIsActive = false;
     $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = false);

@@ -12,10 +12,10 @@ describe('lib/date-service', function () {
 
             angular.mock.inject(function (wfDateParser) {
 
-                // 6am on 14 August 2014 in London local time (BST +0100)
-                var parsed = wfDateParser.parseDate('14-08-2014 6:00', 'LON');
+                // 6am on 14 August 2025 in London local time (BST +0100)
+                var parsed = wfDateParser.parseDate('14-08-2025 6:00', 'LON');
                 expect(parsed).to.be.an.instanceof(Date);
-                expect(parsed.toISOString()).to.eql('2014-08-14T05:00:00.000Z');
+                expect(parsed.toISOString()).to.eql('2025-08-14T05:00:00.000Z');
             });
         });
 
@@ -24,11 +24,11 @@ describe('lib/date-service', function () {
 
             angular.mock.inject(function (wfDateParser) {
 
-                // 6am on 14 August 2014 in New York local time (EDT -0400)
-                var parsed = wfDateParser.parseDate('08-14-2014 6:00', 'NYC');
+                // 6am on 14 August 2025 in New York local time (EDT -0400)
+                var parsed = wfDateParser.parseDate('08-14-2025 6:00', 'NYC');
 
                 expect(parsed).to.be.an.instanceof(Date);
-                expect(parsed.toISOString()).to.eql('2014-08-14T10:00:00.000Z');
+                expect(parsed.toISOString()).to.eql('2025-08-14T10:00:00.000Z');
             });
         });
 
@@ -37,11 +37,11 @@ describe('lib/date-service', function () {
 
             angular.mock.inject(function (wfDateParser) {
 
-                // 6am on 14 August 2014 in Sydney local time (EST +1000)
-                var parsed = wfDateParser.parseDate('14-08-2014 6am', 'SYD');
+                // 6am on 14 August 2025 in Sydney local time (EST +1000)
+                var parsed = wfDateParser.parseDate('14-08-2025 6am', 'SYD');
 
                 expect(parsed).to.be.an.instanceof(Date);
-                expect(parsed.toISOString()).to.eql('2014-08-13T20:00:00.000Z');
+                expect(parsed.toISOString()).to.eql('2025-08-13T20:00:00.000Z');
             });
         });
 
@@ -54,7 +54,7 @@ describe('lib/date-service', function () {
 
             angular.mock.inject(function (wfDateParser) {
 
-                sinon.stub(wfDateParser, 'now').returns(new Date('2014-10-07T06:48:32Z'));
+                sinon.stub(wfDateParser, 'now').returns(new Date('2025-10-07T06:48:32Z'));
 
                 var parsed = wfDateParser.parseRangeFromString('today', 'LON');
 
@@ -62,9 +62,9 @@ describe('lib/date-service', function () {
                 expect(parsed.from).to.be.an.instanceof(Date);
                 expect(parsed.until).to.be.an.instanceof(Date);
 
-                // 2014-10-11 is BST +0100
-                expect(parsed.from.toISOString()).to.eql('2014-10-06T23:00:00.000Z');
-                expect(parsed.until.toISOString()).to.eql('2014-10-07T23:00:00.000Z');
+                // 2025-10-11 is BST +0100
+                expect(parsed.from.toISOString()).to.eql('2025-10-06T23:00:00.000Z');
+                expect(parsed.until.toISOString()).to.eql('2025-10-07T23:00:00.000Z');
             });
 
         });
@@ -74,7 +74,7 @@ describe('lib/date-service', function () {
 
             angular.mock.inject(function (wfDateParser) {
 
-                sinon.stub(wfDateParser, 'now').returns(new Date('2014-10-07T06:48:32Z'));
+                sinon.stub(wfDateParser, 'now').returns(new Date('2025-10-07T06:48:32Z'));
 
                 var parsed = wfDateParser.parseRangeFromString('tomorrow', 'LON');
 
@@ -82,9 +82,9 @@ describe('lib/date-service', function () {
                 expect(parsed.from).to.be.an.instanceof(Date);
                 expect(parsed.until).to.be.an.instanceof(Date);
 
-                // 2014-10-11 is BST +0100
-                expect(parsed.from.toISOString()).to.eql('2014-10-07T23:00:00.000Z');
-                expect(parsed.until.toISOString()).to.eql('2014-10-08T23:00:00.000Z');
+                // 2025-10-11 is BST +0100
+                expect(parsed.from.toISOString()).to.eql('2025-10-07T23:00:00.000Z');
+                expect(parsed.until.toISOString()).to.eql('2025-10-08T23:00:00.000Z');
             });
 
         });
@@ -94,17 +94,18 @@ describe('lib/date-service', function () {
 
             angular.mock.inject(function (wfDateParser) {
 
-                sinon.stub(wfDateParser, 'now').returns(new Date('2014-10-07T06:48:32Z'));
+                sinon.stub(wfDateParser, 'now').returns(new Date('2025-10-07T06:48:32Z'));
 
                 var parsed = wfDateParser.parseRangeFromString('weekend', 'LON');
 
                 expect(parsed).not.to.be.null;
                 expect(parsed.from).to.be.an.instanceof(Date);
                 expect(parsed.until).to.be.an.instanceof(Date);
-
-                // 2014-10-11 is BST +0100
-                expect(parsed.from.toISOString()).to.eql('2014-10-10T23:00:00.000Z');
-                expect(parsed.until.toISOString()).to.eql('2014-10-12T23:00:00.000Z');
+                console.log(parsed)
+                console.log(JSON.stringify(parsed))
+                // 2025-10-11 is BST +0100
+                expect(parsed.from.toISOString()).to.eql('2025-10-10T23:00:00.000Z');
+                expect(parsed.until.toISOString()).to.eql('2025-10-12T23:00:00.000Z');
             });
 
         });
@@ -114,7 +115,7 @@ describe('lib/date-service', function () {
 
             angular.mock.inject(function (wfDateParser) {
 
-                sinon.stub(wfDateParser, 'now').returns(new Date('2014-10-07T06:48:32Z'));
+                sinon.stub(wfDateParser, 'now').returns(new Date('2025-10-07T06:48:32Z'));
 
                 var parsed = wfDateParser.parseRangeFromString('tomorrow', 'NYC');
 
@@ -122,9 +123,9 @@ describe('lib/date-service', function () {
                 expect(parsed.from).to.be.an.instanceof(Date);
                 expect(parsed.until).to.be.an.instanceof(Date);
 
-                // 2014-10-11 is EDT -0400
-                expect(parsed.from.toISOString()).to.eql('2014-10-08T04:00:00.000Z');
-                expect(parsed.until.toISOString()).to.eql('2014-10-09T04:00:00.000Z');
+                // 2025-10-11 is EDT -0400
+                expect(parsed.from.toISOString()).to.eql('2025-10-08T04:00:00.000Z');
+                expect(parsed.until.toISOString()).to.eql('2025-10-09T04:00:00.000Z');
             });
 
         });
@@ -134,7 +135,7 @@ describe('lib/date-service', function () {
 
             angular.mock.inject(function (wfDateParser) {
 
-                sinon.stub(wfDateParser, 'now').returns(new Date('2014-10-07T06:48:32Z'));
+                sinon.stub(wfDateParser, 'now').returns(new Date('2025-10-07T06:48:32Z'));
 
                 var parsed = wfDateParser.parseRangeFromString('tomorrow', 'SYD');
 
@@ -142,9 +143,9 @@ describe('lib/date-service', function () {
                 expect(parsed.from).to.be.an.instanceof(Date);
                 expect(parsed.until).to.be.an.instanceof(Date);
 
-                // 2014-10-11 is +1100
-                expect(parsed.from.toISOString()).to.eql('2014-10-07T13:00:00.000Z');
-                expect(parsed.until.toISOString()).to.eql('2014-10-08T13:00:00.000Z');
+                // 2025-10-11 is +1100
+                expect(parsed.from.toISOString()).to.eql('2025-10-07T13:00:00.000Z');
+                expect(parsed.until.toISOString()).to.eql('2025-10-08T13:00:00.000Z');
             });
 
         });
@@ -154,15 +155,15 @@ describe('lib/date-service', function () {
 
             angular.mock.inject(function (wfDateParser) {
 
-                var parsed = wfDateParser.parseRangeFromString('2014-08-14', 'SYD');
+                var parsed = wfDateParser.parseRangeFromString('2025-08-14', 'SYD');
 
                 expect(parsed).not.to.be.null;
                 expect(parsed.from).to.be.an.instanceof(Date);
                 expect(parsed.until).to.be.an.instanceof(Date);
 
-                // 2014-08-14 is +1000
-                expect(parsed.from.toISOString()).to.eql('2014-08-13T14:00:00.000Z');
-                expect(parsed.until.toISOString()).to.eql('2014-08-14T14:00:00.000Z');
+                // 2025-08-14 is +1000
+                expect(parsed.from.toISOString()).to.eql('2025-08-13T14:00:00.000Z');
+                expect(parsed.until.toISOString()).to.eql('2025-08-14T14:00:00.000Z');
             });
 
         });

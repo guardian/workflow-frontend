@@ -407,6 +407,7 @@
 // Compact layout
 .content-list--compact {
     .content-list-item__field--working-title,
+    .content-list-item__field--headline,
     .content-list-item__field--notes {
         @include text-truncate;
         max-width: 200px;
@@ -417,10 +418,6 @@
         @include smallScreen {
             @include font-size(11, 14); // Can't extend placeholders (%fs-data-1) into @media so including the font-size mixin directly
             max-width: 160px;
-        }
-
-        @include largeScreen {
-            max-width: 375px;
         }
     }
 

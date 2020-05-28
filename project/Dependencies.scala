@@ -3,7 +3,7 @@ import play.Play.autoImport._
 import PlayKeys._
 
 object Dependencies {
-  val awsVersion: String = "1.11.259"
+  val awsVersion: String = "1.11.784"
   val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 
   val notificationDependencies = Seq(

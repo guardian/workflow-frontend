@@ -1,31 +1,39 @@
 package com.gu.workflow.util
 
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.auth.{AWSCredentialsProviderChain, DefaultAWSCredentialsProviderChain, EnvironmentVariableCredentialsProvider, InstanceProfileCredentialsProvider}
+import com.amazonaws.auth.{AWSCredentialsProviderChain, InstanceProfileCredentialsProvider}
 import com.amazonaws.regions.{Region, Regions}
-import com.amazonaws.services.cloudwatch.{AmazonCloudWatchAsyncClient, AmazonCloudWatchAsyncClientBuilder}
-import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBClient, AmazonDynamoDBClientBuilder}
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
-import com.amazonaws.services.ec2.{AmazonEC2Client, AmazonEC2ClientBuilder}
+import com.amazonaws.services.dynamodbv2.{AmazonDynamoDB, AmazonDynamoDBClientBuilder}
 import com.amazonaws.services.ec2.model.{DescribeTagsRequest, Filter}
+import com.amazonaws.services.ec2.{AmazonEC2, AmazonEC2ClientBuilder}
 import com.amazonaws.util.EC2MetadataUtils
 
 import scala.collection.JavaConverters._
 
 object AWS {
+  lazy val credentialsProvider = new AWSCredentialsProviderChain(
+    new ProfileCredentialsProvider("workflow"),
+    InstanceProfileCredentialsProvider.getInstance()
+  )
 
   lazy val region: Region = Region getRegion Regions.EU_WEST_1
 
-  lazy val EC2Client = AmazonEC2ClientBuilder.standard.withRegion(region.getName).build
-  lazy val CloudWatch = AmazonCloudWatchAsyncClientBuilder.standard.withRegion(region.getName).build
-  lazy val DynamoDb = AmazonDynamoDBClientBuilder.standard.withRegion(region.getName).withCredentials(
-    new AWSCredentialsProviderChain(
-      new EnvironmentVariableCredentialsProvider(),
-      InstanceProfileCredentialsProvider.getInstance(),
-      new ProfileCredentialsProvider("workflow"),
-      new DefaultAWSCredentialsProviderChain
-    )
-  ).build
+  lazy val EC2Client: AmazonEC2 = {
+    AmazonEC2ClientBuilder
+      .standard
+      .withCredentials(credentialsProvider)
+      .withRegion(region.getName)
+      .build
+  }
+
+  lazy val DynamoDb: AmazonDynamoDB = {
+    AmazonDynamoDBClientBuilder
+      .standard
+      .withCredentials(credentialsProvider)
+      .withRegion(region.getName)
+      .build
+  }
 }
 
 trait Dynamo {
