@@ -11,6 +11,8 @@ function HELP {
 
     -d            Don't run in the background
 
+    -v            Verbose ssh output
+
     -h            Displays this help message. No further functions are
                   performed.
 
@@ -19,15 +21,19 @@ exit 1
 }
 
 BACKGROUND="-f"
+VERBOSE=""
 
 # Process options
-while getopts u:s:t:dh FLAG; do
+while getopts u:s:t:dhv FLAG; do
   case $FLAG in
     d)
       BACKGROUND=""
       ;;
     h)  #show help
       HELP
+      ;;
+    v)
+      VERBOSE="-v"
       ;;
   esac
 done
@@ -38,13 +44,22 @@ if [ -z "${STAGE}" ]; then
   STAGE="CODE"
 fi
 
+echo "📡 getting ELB name from AWS"
+
 DATASTORE_ELB=$(aws elb describe-load-balancers --load-balancer-names workflow-Datastor-11M4N9N3HTIJB --profile workflow --region eu-west-1 | jq .LoadBalancerDescriptions[].DNSName -r)
 
 if [[ -z "$DATASTORE_ELB" ]];
 then
-    echo "Couldn't find Datastore ELB (no auth creds?)"
+    echo "❌ Couldn't find Datastore ELB (no auth creds?)"
     exit 1
 fi
+echo "🛰 ELB identified $DATASTORE_ELB"
 
-eval $(ssm ssh --profile workflow -t workflow-frontend,workflow,$STAGE --newest --raw) \
-    -L 5002:${DATASTORE_ELB}:80 -N ${BACKGROUND}
+echo "🛰 fetching connection details from ssm"
+
+SSM_COMMAND=$(ssm ssh --profile workflow -t workflow-frontend,workflow,$STAGE --newest --ssm-tunnel --raw)
+
+echo "📠 ESTABLISHING CONNECTION"
+
+echo "$SSM_COMMAND"
+eval $SSM_COMMAND $VERBOSE -L 5002:${DATASTORE_ELB}:80 -N ${BACKGROUND}
