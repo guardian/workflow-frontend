@@ -9,7 +9,6 @@ import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.parser.decode
 import io.circe.syntax._
-import models.DateFormat._
 import org.joda.time.{DateTime, LocalDate}
 import DateFormat._ // Required for serialisation / deserialisation of DateTime
 
@@ -46,7 +45,8 @@ case class ExternalData(
                          actualNewspaperPageNumber: Option[Int] = None,
                          actualNewspaperPublicationDate: Option[LocalDate] = None,
                          // Description enriched for use by WF front end client code.
-                         actualPrintLocationDescription: Option[String] = None) {
+                         shortActualPrintLocationDescription: Option[String] = None,
+                         longActualPrintLocationDescription: Option[String] = None) {
 }
 
 object ExternalData {
@@ -79,7 +79,8 @@ case class Stub(id: Option[Long] = None,
                 plannedNewspaperPageNumber: Option[Int] = None,
                 plannedNewspaperPublicationDate: Option[LocalDate] = None,
                 // Description enriched for use by WF front end client code.
-                plannedPrintLocationDescription: Option[String] = None)
+                shortPlannedPrintLocationDescription: Option[String] = None,
+                longPlannedPrintLocationDescription: Option[String] = None)
 
 object Stub {
   implicit val customConfig: Configuration = Configuration.default.withDefaults

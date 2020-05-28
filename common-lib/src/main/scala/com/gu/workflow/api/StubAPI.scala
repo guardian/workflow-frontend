@@ -1,7 +1,7 @@
 package com.gu.workflow.api
 
 import com.gu.workflow.api.ApiUtils._
-import com.gu.workflow.lib.{Caching, ContentAPI, QueryString}
+import com.gu.workflow.lib.{ContentAPI, QueryString}
 import io.circe.Json
 import io.circe.syntax._
 import models.DateFormat._
@@ -39,32 +39,33 @@ object StubAPI {
   private def getPlannedPrintLocationDescriptionFromStub(
                                            contentAPI: ContentAPI,
                                            stub: Option[Stub]
-                                         ): Future[Option[String]] = {
+                                         ): Future[(Option[String], Option[String])] = {
     stub
       .flatMap(s => Some(s.plannedPublicationId, s.plannedBookSectionId, s.plannedBookSectionId)) match {
       case Some((Some(pId), Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, pId, bId, bsId)
-      case _ => Future.successful(None)
+      case _ => Future.successful((None, None))
     }}
 
   private def getActualPrintLocationDescriptionFromExternalData(
                                            contentAPI: ContentAPI,
                                            externalData: Option[ExternalData]
-                                         ): Future[Option[String]] = {
+                                         ): Future[(Option[String], Option[String])] = {
     externalData
       .flatMap(e => Some(e.actualPublicationId, e.actualBookId, e.actualBookSectionId)) match {
       case Some((Some(pId), Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, pId, bId, bsId)
-      case _ => Future.successful(None)
+      case _ => Future.successful((None, None))
     }}
 
-  private def getPrintLocationDescriptionFromIds(contentAPI: ContentAPI, pId: Long, bId: Long, bsId: Long): Future[Option[String]] =
+  private def getPrintLocationDescriptionFromIds(contentAPI: ContentAPI, pId: Long, bId: Long, bsId: Long): Future[(Option[String], Option[String])] =
     {
       for {
         publicationDescription <- contentAPI.getTagInternalName(pId)
         bookDescription <- contentAPI.getTagInternalName(bId)
         bookSectionDescription <- contentAPI.getTagInternalName(bsId)
       } yield (publicationDescription, bookDescription, bookSectionDescription) match {
-        case (Some(a), Some(b), Some(c)) => Some(a + " >> " + b + " >> " + c)
-        case _ => None
+        case (Some(a), Some(b), Some(c)) => (Some(a + " >> " + b + " >> " + c), Some(c))
+        case (_, _, Some(c)) => (None, Some(c))
+        case _ => (None, None)
       }
     }
 
@@ -80,11 +81,14 @@ object StubAPI {
       stub => stub
         .copy(
           externalData = stub.externalData.map(
-            e => e.copy(actualPrintLocationDescription = actualPrintLocationDescription)
+            e => e.copy(
+              longActualPrintLocationDescription = actualPrintLocationDescription._1,
+              shortActualPrintLocationDescription = actualPrintLocationDescription._2)
           )
         )
         .copy(
-          plannedPrintLocationDescription = plannedPrintLocationDescription
+          longPlannedPrintLocationDescription = plannedPrintLocationDescription._1,
+          shortPlannedPrintLocationDescription = plannedPrintLocationDescription._2
         )
       )
 
@@ -251,18 +255,24 @@ object StubAPI {
     for {
       plannedPrintLocationDescription <- getPlannedPrintLocationDescriptionFromStub(contentAPI, Some(stub))
       externalData <- decorateExternalData(contentAPI, stub, stub.externalData)
-    } yield (
+    } yield
       (externalData match {
         case maybeEd@Some(_) => stub.copy(externalData = maybeEd)
         case None => stub
       })
-      .copy(plannedPrintLocationDescription = plannedPrintLocationDescription))
+      .copy(
+        longPlannedPrintLocationDescription = plannedPrintLocationDescription._1,
+        shortPlannedPrintLocationDescription = plannedPrintLocationDescription._2)
   }
 
   def decorateExternalData(contentAPI: ContentAPI, stub: Stub, externalData: Option[ExternalData]): Future[Option[ExternalData]] = {
     for {
       actualPrintLocationDescription <- getActualPrintLocationDescriptionFromExternalData(contentAPI, stub.externalData)
-    } yield externalData.map( e => e.copy(actualPrintLocationDescription = actualPrintLocationDescription))
+    } yield externalData.map( e => e
+      .copy(
+        longActualPrintLocationDescription = actualPrintLocationDescription._1,
+        shortActualPrintLocationDescription = actualPrintLocationDescription._2)
+    )
   }
 
   def decorateContent(contentAPI: ContentAPI, contentResponse: ContentResponse): Future[ContentResponse] = {

@@ -1,22 +1,22 @@
 <td class="content-list-item__field--publicationlocation" title="Publication Location">
     <span ng-show="contentItem.contentType == 'article'">
-        <div ng-if="contentItem.actualPrintLocationDescription" class="actual-print-location">
-            {{ contentItem.actualPrintLocationDescription }}
+        <div ng-if="contentItem.shortActualPrintLocationDescription" class="actual-print-location">
+            <span class="print-location-tooltip">{{ contentItem.longActualPrintLocationDescription }}</span>
+            {{ contentItem.shortActualPrintLocationDescription }}
             <br/>
-            <div ng-if="contentItem.actualNewspaperPageNumber">
-                Page {{ contentItem.actualNewspaperPageNumber }}
-                <br/>
-            </div>
-            {{ contentItem.actualNewspaperPublicationDate | wfFormatDateTime:'ddd DD MMM'}}
+            <span ng-if="contentItem.actualNewspaperPageNumber">
+                p. {{ contentItem.actualNewspaperPageNumber }},
+            </span>
+            {{ contentItem.actualNewspaperPublicationDate | wfFormatDateTime:'DD MMM'}}
         </div>
-        <div ng-if="!(contentItem.actualPrintLocationDescription) && contentItem.plannedPrintLocationDescription" class="planned-print-location">
-            {{ contentItem.plannedPrintLocationDescription }}
+        <div ng-if="!(contentItem.shortActualPrintLocationDescription) && contentItem.shortPlannedPrintLocationDescription" class="planned-print-location">
+            <span class="print-location-tooltip">{{ contentItem.longPlannedPrintLocationDescription }}</span>
+            {{ contentItem.shortPlannedPrintLocationDescription }}
             <br/>
-            <div ng-if="contentItem.plannedNewspaperPageNumber">
-                Page {{ contentItem.plannedNewspaperPageNumber }}
-                <br/>
-            </div>
-            {{ contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'ddd DD MMM'}}
+            <span ng-if="contentItem.plannedNewspaperPageNumber">
+                p. {{ contentItem.plannedNewspaperPageNumber }},
+            </span>
+            {{ contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'DD MMM'}}
         </div>
     </span>
 </td>

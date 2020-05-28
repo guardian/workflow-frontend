@@ -551,3 +551,28 @@
 .actual-print-location {
     color: black;
 }
+.planned-print-location, .actual-print-location {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.print-location-tooltip {
+    visibility: hidden;
+    width: 240px;
+    background-color: lightgray;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.planned-print-location:hover .print-location-tooltip {
+    visibility: visible;
+}
+.actual-print-location:hover .print-location-tooltip {
+    visibility: visible;
+}
