@@ -8,13 +8,10 @@ import models.DateFormat._
 import models.{ContentItemIds, ExternalData, Flag, Stub}
 import models.api._
 import org.joda.time.DateTime
-import scalacache.memoization._
-import concurrent.duration._
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object StubAPI extends Caching {
+object StubAPI {
 
   def createStub(body: Json): ApiResponseFt[ContentUpdate] =
     for {
@@ -60,7 +57,7 @@ object StubAPI extends Caching {
     }}
 
   private def getPrintLocationDescriptionFromIds(contentAPI: ContentAPI, pId: Long, bId: Long, bsId: Long): Future[Option[String]] =
-    memoize(60.minutes) {
+    {
       for {
         publicationDescription <- contentAPI.getTagInternalName(pId)
         bookDescription <- contentAPI.getTagInternalName(bId)

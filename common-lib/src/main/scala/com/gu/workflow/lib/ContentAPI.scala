@@ -10,10 +10,12 @@ import com.gu.workflow.util.AWS
 import io.circe.parser
 import play.api.Application
 import play.api.libs.ws.{WS, WSResponse}
-
+import scalacache.memoization._
+import concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class ContentAPI(capiPreviewRole: String, capiPreviewIamUrl: String) {
+class ContentAPI(capiPreviewRole: String, capiPreviewIamUrl: String) extends Caching {
 
   private val previewSigner = {
     val capiPreviewCredentials = new AWSCredentialsProviderChain(
@@ -36,7 +38,7 @@ class ContentAPI(capiPreviewRole: String, capiPreviewIamUrl: String) {
   }
 
   import play.api.Play.current
-  def getTagInternalName(tagId: Long)(implicit ec: ExecutionContext): Future[Option[String]] = {
+  def getTagInternalName(tagId: Long)(implicit ec: ExecutionContext): Future[Option[String]] = memoize(60.minutes) {
     val path = s"internal-code/tag/$tagId"
     val request = "page-size=0"
     val url = s"$capiPreviewIamUrl/$path?$request"
@@ -46,7 +48,7 @@ class ContentAPI(capiPreviewRole: String, capiPreviewIamUrl: String) {
       .get()
       .map(response => parser.parse(response.body))
       .map {
-        case Right(a) => {
+        case Right(a) =>
           a.hcursor
             .downField("response")
             .downField("tag")
@@ -54,7 +56,6 @@ class ContentAPI(capiPreviewRole: String, capiPreviewIamUrl: String) {
               .as[Option[String]]
               .right
               .get
-        }
         case Left(e) =>
           Logger.warn("Unable to communicate with CAPI", e)
           None
