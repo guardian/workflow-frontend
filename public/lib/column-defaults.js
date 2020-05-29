@@ -193,7 +193,7 @@ var columnDefaults = [{
     active: true
 },{
     name: 'wordcount',
-    prettyName: 'Web Wordcount',
+    prettyName: 'Web words',
     labelHTML: 'Web words',
     colspan: 1,
     title: '',
@@ -202,7 +202,7 @@ var columnDefaults = [{
     active: false
 },{
     name: 'printwordcount',
-    prettyName: 'Print Wordcount',
+    prettyName: 'Print words',
     labelHTML: 'Print words',
     colspan: 1,
     title: '',
