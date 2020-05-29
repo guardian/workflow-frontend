@@ -194,7 +194,7 @@ var columnDefaults = [{
 },{
     name: 'wordcount',
     prettyName: 'Web Wordcount',
-    labelHTML: 'Web Words',
+    labelHTML: 'Web words',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
@@ -203,7 +203,7 @@ var columnDefaults = [{
 },{
     name: 'printwordcount',
     prettyName: 'Print Wordcount',
-    labelHTML: 'Print Words',
+    labelHTML: 'Print words',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'printwordcount.html',
@@ -212,8 +212,8 @@ var columnDefaults = [{
     isNew: true
 },{
     name: 'publicationlocation',
-    prettyName: 'Publication Location',
-    labelHTML: 'Publication Location',
+    prettyName: 'Publication location',
+    labelHTML: 'Publication location',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'publicationLocation.html',
