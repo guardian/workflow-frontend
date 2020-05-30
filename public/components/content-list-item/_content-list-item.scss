@@ -164,15 +164,21 @@
         &--ophan,
         &--created,
         &--incopy,
-        &--wordcount,
-        &--printwordcount,
+        &--wordcount {
+            @extend %fs-data-1;
+        }
+
+        &--printwordcount {
+            @extend %fs-data-1;
+        }
+
         &--commissionedLength,
         &--needsLegal,
         &--optimisedForWeb,
         &--sensitive,
         &--legally-sensitive,
         &--publicationlocation {
-            @extend %fs-data-3;
+            @extend %fs-data-1;
             @extend %content-list__field-padding;
         }
 
