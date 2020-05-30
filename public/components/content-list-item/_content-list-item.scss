@@ -164,7 +164,17 @@
         &--ophan,
         &--created,
         &--incopy,
+        &--wordcount {
+            width: 34px;
+            text-align: center;
+        }
+
         &--wordcount,
+        &--printwordcount {
+            width: 34px;
+            text-align: center;
+        }
+
         &--printwordcount,
         &--commissionedLength,
         &--needsLegal,
@@ -172,10 +182,10 @@
         &--sensitive,
         &--legally-sensitive,
         &--publicationlocation {
-            @extend %fs-data-3;
             @extend %content-list__field-padding;
         }
 
+        &--publicationlocation,
         // smaller font size for assignee & presence
         &--assignee,
         &--presence {
@@ -237,8 +247,10 @@
         &--last-modified,
         &--last-modified-by {
             width: 100px;
+            white-space: nowrap;
         }
 
+        &--last-modified-by,
         &--status {
             @include smallScreen {
                 width: 80px;
@@ -263,18 +275,7 @@
 
         &--section,
         &--deadline,
-        &--last-modified,
-        &--last-modified-by {
-            @extend %fs-data-1;
-        }
-
-        &--deadline,
         &--created,
-        &--last-modified,
-        &--last-modified-by {
-            white-space: nowrap;
-        }
-
         &--notes {
             @extend %fs-data-1;
             padding: 2px 10px;
@@ -301,16 +302,6 @@
         }
 
         &--commissionedLength {
-            width: 34px;
-            text-align: center;
-        }
-
-        &--wordcount {
-            width: 34px;
-            text-align: center;
-        }
-
-        &--printwordcount {
             width: 34px;
             text-align: center;
         }
@@ -475,10 +466,7 @@
         &--printwordcount,
         &--last-modified,
         &--last-modified-by,
-        &--publicationlocation {
-            @extend %fs-data-1;
-        }
-
+        &--publicationlocation,
         &--published-state {
             width: 148px;
             padding: $compact-display-td-padding;
