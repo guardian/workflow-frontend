@@ -164,14 +164,8 @@
         &--ophan,
         &--created,
         &--incopy,
-        &--wordcount {
-            @extend %fs-data-1;
-        }
-
-        &--printwordcount {
-            @extend %fs-data-1;
-        }
-
+        &--wordcount,
+        &--printwordcount
         &--commissionedLength,
         &--needsLegal,
         &--optimisedForWeb,
@@ -557,4 +551,3 @@
 .planned-print-location, .actual-print-location {
     vertical-align: middle;
 }
-
