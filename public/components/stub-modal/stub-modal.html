@@ -135,7 +135,7 @@
     </div>
 
     <div class="modal-footer" ng-if="mode === 'import'" ng-hide="actionInProgress">
-        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         <button type="submit" class="btn btn-primary" id="testing-import-from-composer" ng-click="ok()" ng-disabled="stubForm.$invalid || !validImport">
             Import <span ng-show="importHandler">from {{importHandler.name}}</span>
         </button>
