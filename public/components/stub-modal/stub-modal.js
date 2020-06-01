@@ -236,6 +236,16 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
     };
 
+    $scope.submit = function (form) {
+        if (form.$invalid)
+            return;  // Form is not ready to submit
+        if ($scope.actionSuccess)
+            return;  // Form has already been submitted
+        const addToComposer = $scope.stub.status !== 'Stub' && $scope.contentName !== 'Atom';
+        const addToAtomEditor = !addToComposer && $scope.contentName === 'Atom' && $scope.stub.status !== 'Stub';
+        $scope.ok(addToComposer, addToAtomEditor);
+    };
+
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
         function createItemPromise() {
