@@ -128,7 +128,7 @@
             <button type="button" class="btn btn-primary" id="testing-create-in-composer" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status !== 'Stub' && contentName !== 'Atom'">
                 Create new
             </button>
-            <button type="button" class="btn btn-primary" id="testing-create-atom" ng-click="ok(addToComposer=false,addToAtomEditor=true)" ng-disabled="disabled || stubForm.$invalid " ng-show="contentName === 'Atom' && stub.status !== 'Stub'">
+            <button type="button" class="btn btn-primary" id="testing-create-atom" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="contentName === 'Atom' && stub.status !== 'Stub'">
                 Create atom
             </button>
         </div>
