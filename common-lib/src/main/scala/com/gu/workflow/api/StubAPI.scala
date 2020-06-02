@@ -43,10 +43,7 @@ object StubAPI {
       res <- ApiResponseFt.Async.Right(getRequest(s"content/$composerId"))
       json <- parseBody(res.body)
       maybeStub <- extractDataResponseOpt[Stub](json)
-      maybeDecoratedStub <- ApiResponseFt.Async.Right(maybeStub match {
-        case Some(stub) => stubDecorator.withPrintLocationDescriptions(stub).map(Some(_))
-        case _ => Future.successful(None)
-      })
+      maybeDecoratedStub <- ApiResponseFt.Async.Right(Future.traverse(maybeStub)(stubDecorator.withPrintLocationDescriptions))
     } yield maybeDecoratedStub
   }
 
