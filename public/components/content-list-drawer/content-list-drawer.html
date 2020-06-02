@@ -86,9 +86,7 @@
                                 {{ capiData.mainMediaAltText || "None" }}
                             </span>
                         </li>
-                    </ul>
-
-                    <ul class="drawer__column">
+     
                         <li class="drawer__item">
                             <span class="drawer__item-title">Trail picture</span>
                             <div ng-if="capiData.trailImageUrl" class="drawer__image-container">
@@ -397,7 +395,91 @@
                             <select ng-model="contentItem.status" ng-options="status.value as status.label for status in contentItem.statusValues" wf-content-item-update-action="status"></select>
                         </li>
                     </ul>
+                    <!-- Actual Print Info -->
+                    <ul class="drawer__column" ng-if="contentItem.longActualPrintLocationDescription">
+             
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Print Location</p>
+                            <p class="drawer__item-content">{{ contentItem.longActualPrintLocationDescription }}</p>
+                            
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Newspaper Page Number</p>
+                            <p class="drawer__item-content">{{ contentItem.actualPageNumber || 'None' }}</p>                            
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-content"><em>Publication data has been filled from inDesign or Composer and can no longer be edited in Workflow.</em></p>                            
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Publication Date</p>
+                            <p class="drawer__item-content">{{ (contentItem.actualNewspaperPublicationDate | wfLocaliseDateTime | wfFormatDateTime) || 'None'}}</p>
+                            
+                        </li>
+                    </ul>
 
+                    <!-- Planned Print Info -->
+                    <!-- We allow overflow here for the datepicker, which will otherwise be occluded by its container -->
+
+                    <ul class="drawer__column  drawer__column--wide drawer__column--with-overflow" ng-if="!contentItem.longActualPrintLocationDescription">
+                       
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Planned Print Location</p>
+                            <span class="drawer__item-content" ng-hide="bookTagHide" ng-click="bookTagHide = true">
+                                {{ (contentItem.longPlannedPrintLocationDescription) || 'Add planned print location' }}</span>
+                            <div class="autocomplete" ng-show="bookTagHide">
+                                <input class="text-input fullwidth"
+                                        ng-model="$parent.bookSectionQuery"
+                                       placeholder="Enter a book section…"
+                                       name="bookSection"
+                                       autocomplete="off"
+                                       ui-filter-list="candidateBookSections"
+                                       ui-filter-list-on-filter="setBookSections()"
+                                       ui-filter-list-on-select="pickBookSection(selectedItem)"
+                                       >
+                                <ul class="autocomplete__results" ng:show="candidateBookSections">
+                                    <li ng-repeat="tag in candidateBookSections" ng:class="{'is-selected': tag.selected}">
+                                        <button ng-click="pickBookSection(tag.item)" >{{tag.item.internalName}}</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="drawer__item">
+                            <span class="drawer__item-title">Planned Newspaper Page Number</span>
+                            <wf-editable class="drawer__item-content" ng-model="contentItem.plannedPageNumber" wf-editable-on-update="onBeforeSavePlannedPageNumber(newValue)">
+                                {{ contentItem.plannedPageNumber || 'Add planned page number.' }}
+                            </wf-editable>
+
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Planned Publication Date</p>
+
+                            <span 
+                                ng-hide="publicationDateTimeEdit" 
+                                ng-click="publicationDateTimeEdit = true" 
+                                ng-class="{ 'drawer__section-data-row--editable': contentItem.plannedNewspaperPublicationDate, 'drawer__section-data-row--editable-empty': !contentItem.plannedNewspaperPublicationDate }" 
+                                title="{{ (contentItem.plannedNewspaperPublicationDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}"
+                                >
+                                {{ (contentItem.plannedNewspaperPublicationDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add planned publication date' }}
+                        </span>
+                            <form ng-show="publicationDateTimeEdit" ng-submit="publicationDateTimeEdit = false">
+                                <div class="form-group">
+                                    <div 
+                                    wf-date-time-picker 
+                                    wf-update-on="enter" 
+                                    ng-model="currentPublicationDatePickerValue" 
+                                    wf-on-cancel="publicationDateTimeEdit = false; revertPlannedPublicationDate()" 
+                                    wf-cancel-on="blur" 
+                                    wf-on-submit="updatePlannedPublicationDate(); publicationDateTimeEdit = false;" 
+                                    wf-no-time="true"
+                                    ></div>
+                                </div>
+                            </form>
+                            
+
+                        </li>
+                    </ul>
+
+            
                     <ul class="drawer__column drawer__column--wide">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Office</p>
@@ -476,7 +558,7 @@
                     </ul>
 
                 </div>
-
+                
             </div>
 
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'atoms'}" ng-if="!supportedAtomTypes.includes(contentItem.contentType)">

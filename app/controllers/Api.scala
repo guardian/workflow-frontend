@@ -13,9 +13,10 @@ import lib.Responses._
 import models.EditorialSupportStaff._
 import models.api.{ApiError, ApiResponseFt}
 import models.{Flag, _}
-import org.joda.time.DateTime
 import play.api.Logging
 import play.api.libs.ws.WSClient
+import org.joda.time.{DateTime, LocalDate}
+import play.api.Logger
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -236,7 +237,58 @@ class Api(
     )}
   }
 
-  def deleteContent(composerId: String) = {
+  def putStubPlannedPublicationId(stubId: Long) = CORSable(defaultCorsAble) {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        plannedPublicationId <- ApiUtils.extractDataResponse[Long](json)
+        id <- StubAPI.putStubPlannedPublicationId(stubId, plannedPublicationId)
+      } yield id
+    )}
+  }
+
+  def putStubPlannedBookId(stubId: Long) = CORSable(defaultCorsAble) {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        plannedBookId <- ApiUtils.extractDataResponse[Long](json)
+        id <- StubAPI.putStubPlannedBookId(stubId, plannedBookId)
+      } yield id
+    )}
+  }
+  def putStubPlannedBookSectionId(stubId: Long) = CORSable(defaultCorsAble) {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        plannedBookSectionId <- ApiUtils.extractDataResponse[Long](json)
+        id <- StubAPI.putStubPlannedBookSectionId(stubId, plannedBookSectionId)
+      } yield id
+    )}
+  }
+
+  def putStubPlannedNewspaperPageNumber(stubId: Long) = CORSable(defaultCorsAble) {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        plannedNewspaperPageNumber <- ApiUtils.extractDataResponse[Int](json)
+        id <- StubAPI.putStubPlannedNewspaperPageNumber(stubId, plannedNewspaperPageNumber)
+      } yield id
+    )}
+  }
+
+  def putStubPlannedNewspaperPublicationDate(stubId: Long) = 
+   CORSable(defaultCorsAble) {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- ApiUtils.readJsonFromRequestResponse(request.body)
+        plannedNewspaperPublicationDateString <- ApiUtils.extractDataResponse[String](json)
+        plannedNewspaperPublicationDate = new LocalDate(plannedNewspaperPublicationDateString)
+        id <- StubAPI.putStubPlannedNewspaperPublicationDate(stubId, plannedNewspaperPublicationDate)
+      } yield id
+    )}
+  }
+
+  def deleteContent(composerId: String) = CORSable(defaultCorsAble) {
     APIAuthAction {
       stubsApi.deleteStubs(Seq(composerId)).fold(err =>
         logger.error(s"failed to delete content with composer id: $composerId"), identity)

@@ -66,13 +66,13 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 cancelOn: '@wfCancelOn',
                 onCancel: '&wfOnCancel',
                 onUpdate: '&wfOnUpdate',
-                onSubmit: '&wfOnSubmit'
+                onSubmit: '&wfOnSubmit',
             },
             template: dateTimePickerTemplate,
 
             controller: function ($scope, $element) {
                 var idSuffix = pickerCount++;
-
+                $scope._config = $element.attr('wf-no-time')?{ minView: 'day' }:{}; //This seems to work in reverse 
                 this.textInputId = 'wfDateTimePickerText' + idSuffix;
                 this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
                 const dropDownId = 'wfDateTimePickerDropdown' + idSuffix;
