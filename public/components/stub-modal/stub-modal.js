@@ -244,6 +244,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
                 window.open($scope.composerUrl, "_blank");
             if ($scope.editorUrl)
                 window.open($scope.editorUrl, "_blank");
+            $scope.cancel()
         }
         else {
             const addToComposer = $scope.stub.status !== 'Stub' && $scope.contentName !== 'Atom';
