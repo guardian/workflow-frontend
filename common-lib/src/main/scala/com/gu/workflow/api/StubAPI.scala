@@ -1,13 +1,15 @@
 package com.gu.workflow.api
 
 import com.gu.workflow.api.ApiUtils._
-import com.gu.workflow.lib.{ContentAPI, QueryString}
+import com.gu.workflow.lib.QueryString
+import com.gu.workflow.util.StubDecorator
 import io.circe.Json
 import io.circe.syntax._
 import models.DateFormat._
-import models.{ContentItemIds, ExternalData, Flag, Stub}
 import models.api._
+import models.{ContentItemIds, Flag, Stub}
 import org.joda.time.DateTime
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -36,60 +38,17 @@ object StubAPI {
       item <- extractDataResponseOpt[Stub](json)
     } yield item
 
-  private def getPlannedPrintLocationDescriptionFromStub(
-                                           contentAPI: ContentAPI,
-                                           stub: Option[Stub]
-                                         ): Future[(Option[String], Option[String])] = {
-    stub
-      .flatMap(s => Some(s.plannedBookSectionId, s.plannedBookSectionId)) match {
-      case Some((Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, bId, bsId)
-      case _ => Future.successful((None, None))
-    }}
-
-  private def getActualPrintLocationDescriptionFromExternalData(
-                                           contentAPI: ContentAPI,
-                                           externalData: Option[ExternalData]
-                                         ): Future[(Option[String], Option[String])] = {
-    externalData
-      .flatMap(e => Some(e.actualBookId, e.actualBookSectionId)) match {
-      case Some((Some(bId), Some(bsId))) => getPrintLocationDescriptionFromIds(contentAPI, bId, bsId)
-      case _ => Future.successful((None, None))
-    }}
-
-  private def getPrintLocationDescriptionFromIds(contentAPI: ContentAPI, bId: Long, bsId: Long): Future[(Option[String], Option[String])] =
-    {
-      for {
-        maybeBook <- contentAPI.getTagInternalName(bId)
-        maybeBookSection <- contentAPI.getTagInternalName(bsId)
-      } yield (maybeBook, maybeBookSection) match {
-        case (Some(book), Some(bookSection)) => (Some(book + " >> " + bookSection), Some(bookSection))
-        case ( _, Some(bookSection)) => (None, Some(bookSection))
-        case _ => (None, None)
-      }
-    }
-
-  def getStubByComposerId(contentAPI: ContentAPI, composerId: String): ApiResponseFt[Option[Stub]] =
+  def getStubByComposerId(stubDecorator: StubDecorator, composerId: String): ApiResponseFt[Option[Stub]] = {
     for {
       res <- ApiResponseFt.Async.Right(getRequest(s"content/$composerId"))
       json <- parseBody(res.body)
       maybeStub <- extractDataResponseOpt[Stub](json)
-      maybeExternalData = maybeStub.flatMap(_.externalData)
-      actualPrintLocationDescription <- ApiResponseFt.Async.Right(getActualPrintLocationDescriptionFromExternalData(contentAPI, maybeExternalData))
-      plannedPrintLocationDescription <- ApiResponseFt.Async.Right(getPlannedPrintLocationDescriptionFromStub(contentAPI, maybeStub))
-    } yield maybeStub.map(
-      stub => stub
-        .copy(
-          externalData = stub.externalData.map(
-            e => e.copy(
-              longActualPrintLocationDescription = actualPrintLocationDescription._1,
-              shortActualPrintLocationDescription = actualPrintLocationDescription._2)
-          )
-        )
-        .copy(
-          longPlannedPrintLocationDescription = plannedPrintLocationDescription._1,
-          shortPlannedPrintLocationDescription = plannedPrintLocationDescription._2
-        )
-      )
+      maybeDecoratedStub <- ApiResponseFt.Async.Right(maybeStub match {
+        case Some(stub) => stubDecorator.withPrintLocationDescriptions(stub).map(Some(_))
+        case _ => Future.successful(None)
+      })
+    } yield maybeDecoratedStub
+  }
 
   def getStubByEditorId(editorId: String): ApiResponseFt[Option[Stub]] =
     for {
@@ -239,51 +198,24 @@ object StubAPI {
       listRes <- extractDataResponse[List[ContentItemIds]](json)
     } yield listRes
 
-  def getStubs(contentAPI: ContentAPI, queryString: Map[String, Seq[String]]): ApiResponseFt[ContentResponse] =
+  def getStubs(stubDecorator: StubDecorator, queryString: Map[String, Seq[String]]): ApiResponseFt[ContentResponse] =
     for {
       res <- ApiResponseFt.Async.Right(getRequest(s"stubs", Some(QueryString.flatten(queryString))))
       json <- parseBody(res.body)
       contentRes <- extractDataResponse[ContentResponse](json)
-      decoratedContentRes <- ApiResponseFt.Async.Right(decorateContent(contentAPI, contentRes))
+      decoratedContentRes <- ApiResponseFt.Async.Right(decorateContent(stubDecorator, contentRes))
     } yield decoratedContentRes
 
-  def decorateStubs(contentAPI: ContentAPI, stubs: List[Stub]): Future[List[Stub]] =
-    Future.traverse(stubs)(s => decorateStub(contentAPI, s))
+  def decorateStubs(stubDecorator: StubDecorator, stubs: List[Stub]): Future[List[Stub]] = Future.traverse(stubs)(stubDecorator.withPrintLocationDescriptions)
 
-  def decorateStub(contentAPI: ContentAPI, stub: Stub): Future[Stub] = {
-    for {
-      plannedPrintLocationDescription <- getPlannedPrintLocationDescriptionFromStub(contentAPI, Some(stub))
-      externalData <- decorateExternalData(contentAPI, stub, stub.externalData)
-    } yield
-      (externalData match {
-        case maybeEd@Some(_) => stub.copy(externalData = maybeEd)
-        case None => stub
-      })
-      .copy(
-        longPlannedPrintLocationDescription = plannedPrintLocationDescription._1,
-        shortPlannedPrintLocationDescription = plannedPrintLocationDescription._2)
-  }
-
-  def decorateExternalData(contentAPI: ContentAPI, stub: Stub, externalData: Option[ExternalData]): Future[Option[ExternalData]] = {
-    for {
-      actualPrintLocationDescription <- getActualPrintLocationDescriptionFromExternalData(contentAPI, stub.externalData)
-    } yield externalData.map( e => e
-      .copy(
-        longActualPrintLocationDescription = actualPrintLocationDescription._1,
-        shortActualPrintLocationDescription = actualPrintLocationDescription._2)
-    )
-  }
-
-  def decorateContent(contentAPI: ContentAPI, contentResponse: ContentResponse): Future[ContentResponse] = {
+  def decorateContent(stubDecorator: StubDecorator, contentResponse: ContentResponse): Future[ContentResponse] = {
     // decoration needed here on every stub in the response!
     val decoratedEntries = contentResponse.content.toList.map(
       mapEntry => for {
-        y <- decorateStubs(contentAPI, mapEntry._2)
+        y <- decorateStubs(stubDecorator, mapEntry._2)
       } yield (mapEntry._1, y)
     )
     Future.traverse(decoratedEntries)(l => l).map(l =>
      ContentResponse(l.toMap, contentResponse.count))
   }
-
-
 }
