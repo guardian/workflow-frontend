@@ -4,7 +4,7 @@ import PlayKeys._
 
 object Dependencies {
   val awsVersion: String = "1.11.784"
-  val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+  val scalaTest = "org.scalatest" %% "scalatest" % "3.1.0" % "test"
 
   val notificationDependencies = Seq(
     scalaTest,
@@ -39,7 +39,8 @@ object Dependencies {
     "org.seleniumhq.selenium" % "selenium-java" % "2.35.0" % "test",
     "org.scalatestplus" %% "play" % "1.2.0" % "test",
     "org.apache.httpcomponents" % "httpclient" % "4.5.2",
-    specs2 % Test
+    specs2 % Test,
+    "org.scalamock" %% "scalamock" % "4.4.0" % Test
   )
 
   val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "6.3")

@@ -5,7 +5,7 @@ import com.gu.pandomainauth.action.UserRequest
 import com.gu.workflow.api.{ApiUtils, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.DBToAPIResponse.getResponse
 import com.gu.workflow.lib.{ContentAPI, Priorities, StatusDatabase}
-import com.gu.workflow.util.SharedSecretAuth
+import com.gu.workflow.util.{SharedSecretAuth, StubDecorator}
 import config.Config
 import config.Config.defaultExecutionContext
 import io.circe.syntax._
@@ -39,6 +39,7 @@ case class CORSable[A](allowedOrigins: Set[String])(action: Action[A]) extends A
 object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
 
   val contentAPI = new ContentAPI(Config.capiPreviewRole, Config.capiPreviewIamUrl)
+  val stubDecorator = new StubDecorator(contentAPI)
 
   val defaultCorsAble: Set[String] = Set(Config.composerUrl)
   val atomCorsAble: Set[String] = defaultCorsAble ++ Config.mediaAtomMakerUrls ++ Config.atomWorkshopUrls
@@ -58,7 +59,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   private def getContentBlock[R <: Request[_]] = { implicit req: R =>
     val qs: Map[String, Seq[String]] = queryString(req)
 
-    StubAPI.getStubs(contentAPI, qs).asFuture.map {
+    StubAPI.getStubs(stubDecorator, qs).asFuture.map {
       case Left(err) =>
         Logger.error(s"Unable to get stubs $err")
         InternalServerError
@@ -73,7 +74,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def getContentByComposerId(composerId: String) = CORSable(defaultCorsAble) {
       APIAuthAction.async { implicit request =>
         ApiResponseFt[Option[Stub]](for {
-          item <- getResponse(StubAPI.getStubByComposerId(contentAPI, composerId))
+          item <- getResponse(StubAPI.getStubByComposerId(stubDecorator, composerId))
         } yield item
       )}
     }
@@ -89,7 +90,7 @@ object Api extends Controller with PanDomainAuthActions with SharedSecretAuth {
   def sharedAuthGetContentById(composerId: String) =
     SharedSecretAuthAction.async {
       ApiResponseFt[Option[Stub]](for {
-        item <- getResponse(StubAPI.getStubByComposerId(contentAPI, composerId))
+        item <- getResponse(StubAPI.getStubByComposerId(stubDecorator, composerId))
       } yield item
       )}
 

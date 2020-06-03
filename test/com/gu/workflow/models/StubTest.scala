@@ -5,9 +5,10 @@ import io.circe.parser.decode
 import io.circe.syntax._
 import lib.ResourcesHelper
 import models._
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class StubTest extends FreeSpec with Matchers with ResourcesHelper {
+class StubTest extends AnyFreeSpec with Matchers with ResourcesHelper {
   "StubReads" - {
     "should read the minimum required fields for a stub" in {
       val resource = slurp("stub-min-fields.json").getOrElse(

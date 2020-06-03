@@ -2,9 +2,10 @@ package models
 
 import com.gu.workflow.test.lib.TestData._
 import models.api.ContentResponse
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class ContentResponseTest extends FreeSpec with Matchers {
+class ContentResponseTest extends AnyFreeSpec with Matchers {
 
   def withStatus(st: String): Stub => Stub = s => s.copy(externalData = s.externalData.map(_.copy(status = Status.withName(st))))
 
