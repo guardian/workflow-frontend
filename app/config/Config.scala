@@ -91,6 +91,9 @@ class Config(playConfig: Configuration) extends AwsInstanceTags {
   lazy val pandaSystem: String = playConfig.getOptional[String]("capi.key").getOrElse("workflow")
   lazy val pandaBucketName: String = "pan-domain-auth-settings"
   lazy val pandaSettingsFile: String = s"$domain.settings"
+
+  lazy val loggingStreamName: String = playConfig.get[String]("aws.kinesis.logging.streamName")
+  lazy val loggingRole: String = playConfig.get[String]("aws.kinesis.logging.stsRoleToAssume")
 }
 
 object Config {

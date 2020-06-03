@@ -4,7 +4,7 @@ import java.net.InetSocketAddress
 import java.security.SecureRandom
 
 import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.classic.{LoggerContext, Logger => LogbackLogger}
+import ch.qos.logback.classic.{Logger => LogbackLogger}
 import com.amazonaws.auth.{InstanceProfileCredentialsProvider, STSAssumeRoleSessionCredentialsProvider}
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.gu.logback.appender.kinesis.KinesisAppender
@@ -14,19 +14,12 @@ import net.logstash.logback.encoder.LogstashEncoder
 import net.logstash.logback.layout.LogstashLayout
 import org.slf4j.{LoggerFactory, Logger => SLFLogger}
 import play.api.libs.json.Json
-import play.api.{Configuration, Logger => PlayLogger}
 
 import scala.util.Try
 
-case class LogStashConf(host: String, port: Int, enabled: Boolean)
-
 object LogConfig extends AwsInstanceTags {
-  import play.api.Play.current
 
   val rootLogger: LogbackLogger = LoggerFactory.getLogger(SLFLogger.ROOT_LOGGER_NAME).asInstanceOf[LogbackLogger]
-
-  val config: Configuration = play.api.Play.configuration
-  val loggingPrefix = "aws.kinesis.logging"
 
   private val BUFFER_SIZE = 1000
 
@@ -65,12 +58,11 @@ object LogConfig extends AwsInstanceTags {
     }
   }
 
-  def init(sessionId: String) = {
+  def init(sessionId: String, streamName: String, stsRole: String) = {
     for {
       stack <- readTag("Stack")
       app <- readTag("App")
       stage <- readTag("Stage")
-      stream <- config.getString(s"$loggingPrefix.streamName")
     } yield {
       val customFields = createCustomFields(stack, stage, app, sessionId)
       val context = rootLogger.getLoggerContext
@@ -82,24 +74,13 @@ object LogConfig extends AwsInstanceTags {
       val appender = new KinesisAppender[ILoggingEvent]()
       appender.setBufferSize(BUFFER_SIZE)
       appender.setRegion(AWS.region.getName)
-      appender.setStreamName(stream)
+      appender.setStreamName(streamName)
       appender.setContext(context)
       appender.setLayout(layout)
-      appender.setCredentialsProvider(buildCredentialsProvider())
+      appender.setRoleToAssumeArn(stsRole)
       appender.start()
 
       rootLogger.addAppender(appender)
     }
-  }
-
-  private def buildCredentialsProvider() = {
-    val stsRole = config.getString(s"$loggingPrefix.stsRoleToAssume").get
-
-    val random = new SecureRandom()
-    val sessionId = s"session${random.nextDouble()}"
-
-    val instanceProvider = InstanceProfileCredentialsProvider.getInstance
-    val stsClient = AWSSecurityTokenServiceClientBuilder.standard.withCredentials(instanceProvider).build
-    new STSAssumeRoleSessionCredentialsProvider.Builder(stsRole, sessionId).withStsClient(stsClient).build
   }
 }

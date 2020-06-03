@@ -1,9 +1,6 @@
-import com.gu.workflow.lib.Config
 import config.Config
 import lib.LogConfig
 import play.api.{Application, ApplicationLoader, LoggerConfigurator}
-
-import scala.concurrent.Future
 
 class AppLoader extends ApplicationLoader {
   override def load(context: ApplicationLoader.Context): Application = {
@@ -15,6 +12,6 @@ class AppLoader extends ApplicationLoader {
     if (config.isDev && config.localLogShipping) {
       LogConfig.initLocalLogShipping(config.sessionId)
     }
-    LogConfig.init(config.sessionId)
+    LogConfig.init(config.sessionId, config.loggingStreamName, config.loggingRole)
   }
 }
