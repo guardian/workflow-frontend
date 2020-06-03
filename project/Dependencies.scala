@@ -20,6 +20,14 @@ object Dependencies {
     "com.gu" %% "content-api-client-aws" % "0.5"
   )
 
+  val akkaDependencies = Seq(
+    // akka-agent 2.5.X has deprecated Agents,
+    // so use the latest version that still has it
+    // TODO move to latest version of akka-agent
+    "com.typesafe.akka" %% "akka-agent" % "2.4.20",
+    "com.typesafe.akka" %% "akka-slf4j" % "2.6.5"
+  )
+
   val authDependencies = Seq(
     "com.gu" %% "pan-domain-auth-play_2-6" % "0.9.1",
     "com.gu" %% "hmac-headers" % "1.1.2"

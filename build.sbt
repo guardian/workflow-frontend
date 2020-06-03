@@ -25,6 +25,7 @@ lazy val commonLib = project("common-lib")
       ++ logbackDependencies
       ++ testDependencies
       ++ awsDependencies
+      ++ akkaDependencies
       ++ jsonDependencies
       ++ webPushDependencies
       ++ cacheDependencies
@@ -34,8 +35,14 @@ val application = "workflow-frontend"
 
 lazy val root = playProject(application)
   .enablePlugins(RiffRaffArtifact, JDebPackaging)
-  .settings(libraryDependencies ++= awsDependencies ++ authDependencies
-    ++ testDependencies ++ jsonDependencies)
+  .settings(
+    libraryDependencies
+      ++= awsDependencies
+      ++ authDependencies
+      ++ akkaDependencies
+      ++ testDependencies
+      ++ jsonDependencies
+  )
   .settings(libraryDependencies += filters)
   .settings(playDefaultPort := 9090)
   .settings(
