@@ -243,7 +243,8 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'incopy' : modelParams['incopy'] || null,
                         'composerId' : modelParams['composerId'] || null,
                         'editorId' : modelParams['editorId'] || null,
-                        'trashed': modelParams['trashed'] || null
+                        'trashed': modelParams['trashed'] || null,
+                        'hasPrintInfo': modelParams['hasPrintInfo'] || null,
                     };
 
                     return params;

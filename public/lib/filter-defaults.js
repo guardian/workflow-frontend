@@ -175,6 +175,16 @@ var filterDefaults = function (statuses, wfFiltersService) {
             filterOptions: [
                 { caption: 'Trashed', value: 'true'}
             ]
+        },
+        {
+            title: 'Print Info',
+            namespace: 'hasPrintInfo',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'Has print info', value: 'true' },
+                { caption: 'No print info', value: 'false' }
+            ]
         }
     ].filter(notEmpty);
 };

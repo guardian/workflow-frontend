@@ -145,6 +145,11 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('filtersChanged.hasPrintInfo', function(event, data) {
+                    self.update('hasPrintInfo', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
             }
 
             init() {
@@ -183,7 +188,8 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                         'trashed'      : params['trashed'],
                         'plan-start-date': params['plan-start-date'],
                         'plan-end-date': params['plan-end-date'],
-                        'editorId'     :params['editorId']
+                        'editorId'     :params['editorId'],
+                        'hasPrintInfo': params['hasPrintInfo']
                     };
 
                     $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);
