@@ -1,6 +1,5 @@
 package com.gu.workflow.api
 
-import com.gu.workflow.api.ApiUtils._
 import com.gu.workflow.lib.QueryString
 import com.gu.workflow.util.StubDecorator
 import io.circe.Json
