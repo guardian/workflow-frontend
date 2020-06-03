@@ -203,7 +203,7 @@ class StubAPI(
 
   def getStubs(stubDecorator: StubDecorator, queryString: Map[String, Seq[String]]): ApiResponseFt[ContentResponse] =
     for {
-      res <- ApiResponseFt.Async.Right(getRequest(s"stubs", Some(QueryString.flatten(queryString))))
+      res <- ApiResponseFt.Async.Right(getRequest(s"stubs", QueryString.flatten(queryString)))
       json <- parseBody(res.body)
       contentRes <- extractDataResponse[ContentResponse](json)
       decoratedContentRes <- ApiResponseFt.Async.Right(decorateContent(stubDecorator, contentRes))

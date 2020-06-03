@@ -22,7 +22,7 @@ class TagService(
 ) extends ApiUtils {
   def getTags(params:  Map[String, String]): Future[List[Tag]] = {
     for {
-      response <- getRequest("/hyper/tags", Some(params.toList))
+      response <- getRequest("/hyper/tags", params.toList)
       json <- parseBody(response.body).asFutureOption("Error extracting the tag response.")
     } yield {
       json.getOrElse(Json.Null).hcursor.downField("data").as[List[TagArrayItem]] match {
