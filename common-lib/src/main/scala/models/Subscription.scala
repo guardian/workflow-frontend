@@ -5,13 +5,12 @@ import java.nio.charset.StandardCharsets
 import com.amazonaws.services.dynamodbv2.document.Item
 import com.google.common.hash.Hashing
 import io.circe.generic.extras.Configuration
-import io.circe.generic.extras.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.generic.extras.semiauto.{deriveConfiguredDecoder, deriveConfiguredEncoder}
 import io.circe.parser.decode
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
 import play.api.data.Forms._
 import play.api.data._
-import play.api.data.format.Formatter
 
 // These are the details provided by the browser as registered to the service worker
 case class SubscriptionKeys(p256dh: String, auth: String)
@@ -33,23 +32,23 @@ case class SubscriptionUpdate(title: String, body: String, url: Option[String])
 object Subscription {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
 
-  implicit val keysEncoder: Encoder[SubscriptionKeys] = deriveEncoder
-  implicit val keysDecoder: Decoder[SubscriptionKeys] = deriveDecoder
+  implicit val keysEncoder: Encoder[SubscriptionKeys] = deriveConfiguredEncoder
+  implicit val keysDecoder: Decoder[SubscriptionKeys] = deriveConfiguredDecoder
 
-  implicit val endpointEncoder: Encoder[SubscriptionEndpoint] = deriveEncoder
-  implicit val endpointDecoder: Decoder[SubscriptionEndpoint] = deriveDecoder
+  implicit val endpointEncoder: Encoder[SubscriptionEndpoint] = deriveConfiguredEncoder
+  implicit val endpointDecoder: Decoder[SubscriptionEndpoint] = deriveConfiguredDecoder
 
-  implicit val runtimeEncoder: Encoder[SubscriptionRuntime] = deriveEncoder
-  implicit val runtimeDecoder: Decoder[SubscriptionRuntime] = deriveDecoder
+  implicit val runtimeEncoder: Encoder[SubscriptionRuntime] = deriveConfiguredEncoder
+  implicit val runtimeDecoder: Decoder[SubscriptionRuntime] = deriveConfiguredDecoder
 
-  implicit val scheduleEncoder: Encoder[SubscriptionSchedule] = deriveEncoder
-  implicit val scheduleDecoder: Decoder[SubscriptionSchedule] = deriveDecoder
+  implicit val scheduleEncoder: Encoder[SubscriptionSchedule] = deriveConfiguredEncoder
+  implicit val scheduleDecoder: Decoder[SubscriptionSchedule] = deriveConfiguredDecoder
 
-  implicit val updateEncoder: Encoder[SubscriptionUpdate] = deriveEncoder
-  implicit val updateDecoder: Decoder[SubscriptionUpdate] = deriveDecoder
+  implicit val updateEncoder: Encoder[SubscriptionUpdate] = deriveConfiguredEncoder
+  implicit val updateDecoder: Decoder[SubscriptionUpdate] = deriveConfiguredDecoder
 
-  implicit val encoder: Encoder[Subscription] = deriveEncoder
-  implicit val decoder: Decoder[Subscription] = deriveDecoder
+  implicit val encoder: Encoder[Subscription] = deriveConfiguredEncoder
+  implicit val decoder: Decoder[Subscription] = deriveConfiguredDecoder
 
   type Query = Map[String, Seq[String]]
 
@@ -62,7 +61,7 @@ object Subscription {
   )
 
   def id(sub: Subscription): String = {
-    val hasher = Hashing.md5().newHasher()
+    val hasher = Hashing.sha256().newHasher()
 
     // Sort for stable iteration order to ensure consistent hash
     val params = sub.query.toList.flatMap { case(k, v) => v.map(k -> _) }.sorted

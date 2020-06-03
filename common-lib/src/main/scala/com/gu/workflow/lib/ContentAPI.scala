@@ -8,7 +8,7 @@ import com.gu.contentapi.client.IAMSigner
 import com.gu.workflow.api.ApiUtils
 import com.gu.workflow.util.AWS
 import io.circe.parser
-import play.api.{Application, Logger}
+import play.api.{Application, Logger, Logging}
 import play.api.libs.ws.{WSClient, WSResponse}
 import scalacache.memoization._
 
@@ -19,7 +19,7 @@ class ContentAPI(
   capiPreviewRole: String,
   override val apiRoot: String,
   override val ws: WSClient
-) extends ApiUtils with Caching {
+) extends ApiUtils with Caching with Logging {
 
   private val previewSigner = {
     val capiPreviewCredentials = new AWSCredentialsProviderChain(
@@ -61,7 +61,7 @@ class ContentAPI(
               .right
               .get
         case Left(e) =>
-          Logger.warn("Unable to communicate with CAPI", e)
+          logger.warn("Unable to communicate with CAPI", e)
           Some("Print location unavailable")
       }
   }

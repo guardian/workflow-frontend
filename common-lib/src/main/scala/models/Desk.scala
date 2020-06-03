@@ -2,7 +2,7 @@ package models
 
 import io.circe.generic.extras.Configuration
 import io.circe.{Decoder, Encoder}
-import io.circe.generic.extras.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.generic.extras.semiauto.{deriveConfiguredDecoder, deriveConfiguredEncoder}
 
 case class Desk(name: String, selected: Boolean = false, id: Long = 0) {
   override def toString: String = name
@@ -10,8 +10,8 @@ case class Desk(name: String, selected: Boolean = false, id: Long = 0) {
 
 object Desk {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
-  implicit val encoder: Encoder[Desk] = deriveEncoder
-  implicit val decoder: Decoder[Desk] = deriveDecoder
+  implicit val encoder: Encoder[Desk] = deriveConfiguredEncoder
+  implicit val decoder: Decoder[Desk] = deriveConfiguredDecoder
 
   def fromSerialised(sd: SerialisedDesk): Desk = {
     Desk(
@@ -25,6 +25,6 @@ object Desk {
 case class SerialisedDesk(name: String, selected: Boolean = false, id: Long = 0)
 object SerialisedDesk {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
-  implicit val encoder: Encoder[SerialisedDesk] = deriveEncoder
-  implicit val decoder: Decoder[SerialisedDesk] = deriveDecoder
+  implicit val encoder: Encoder[SerialisedDesk] = deriveConfiguredEncoder
+  implicit val decoder: Decoder[SerialisedDesk] = deriveConfiguredDecoder
 }

@@ -6,7 +6,7 @@ import enumeratum._
 import io.circe.Decoder.Result
 import io.circe._
 import io.circe.generic.extras.Configuration
-import io.circe.generic.extras.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.generic.extras.semiauto.{deriveConfiguredDecoder, deriveConfiguredEncoder}
 import io.circe.parser.decode
 import io.circe.syntax._
 import org.joda.time.{DateTime, LocalDate}
@@ -51,8 +51,8 @@ case class ExternalData(
 
 object ExternalData {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
-  implicit val encoder: Encoder[ExternalData] = deriveEncoder
-  implicit val decoder: Decoder[ExternalData] = deriveDecoder
+  implicit val encoder: Encoder[ExternalData] = deriveConfiguredEncoder
+  implicit val decoder: Decoder[ExternalData] = deriveConfiguredDecoder
 }
 
 case class Stub(id: Option[Long] = None,
@@ -85,7 +85,7 @@ case class Stub(id: Option[Long] = None,
 object Stub {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
 
-  implicit val encoder: Encoder[Stub] = deriveEncoder
+  implicit val encoder: Encoder[Stub] = deriveConfiguredEncoder
 
   implicit val decoderHelper: Decoder[Stub] = new Decoder[Stub] {
     def apply(c: HCursor): Result[Stub] = {
@@ -96,7 +96,7 @@ object Stub {
     }
   }
 
-  def decoder: Decoder[Stub] = deriveDecoder
+  def decoder: Decoder[Stub] = deriveConfiguredDecoder
 
   // This takes a flat json and converts it to a stub
   val flatJsonDecoder: Decoder[Stub] = new Decoder[Stub] {

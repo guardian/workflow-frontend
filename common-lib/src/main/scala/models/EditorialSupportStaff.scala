@@ -16,11 +16,11 @@ case class StaffUpdate(name: String, team: String, action: String, id: Option[St
 object EditorialSupportStaff {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
 
-  implicit val teamMemberEncoder: Encoder[EditorialSupportStaff] = derivationWithDefaults.deriveEncoder
-  implicit val teamMemberDecoder: Decoder[EditorialSupportStaff] = derivationWithDefaults.deriveDecoder
+  implicit val teamMemberEncoder: Encoder[EditorialSupportStaff] = derivationWithDefaults.deriveConfiguredEncoder
+  implicit val teamMemberDecoder: Decoder[EditorialSupportStaff] = derivationWithDefaults.deriveConfiguredDecoder
 
-  implicit val teamEncoder: Encoder[EditorialSupportTeam] = derivationWithDefaults.deriveEncoder
-  implicit val teamDecoder: Decoder[EditorialSupportTeam] = derivationWithDefaults.deriveDecoder
+  implicit val teamEncoder: Encoder[EditorialSupportTeam] = derivationWithDefaults.deriveConfiguredEncoder
+  implicit val teamDecoder: Decoder[EditorialSupportTeam] = derivationWithDefaults.deriveConfiguredDecoder
 
   val form = Form(
     mapping(

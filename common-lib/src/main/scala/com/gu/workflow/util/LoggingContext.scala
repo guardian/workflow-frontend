@@ -2,6 +2,7 @@ package com.gu.workflow.util
 
 import org.slf4j.MDC
 import play.Logger
+import play.api.Logging
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
@@ -15,7 +16,7 @@ import scala.util.control.NonFatal
  *  This workflow instance was borrowed from Flexible Content's equivalent
  */
 
-object LoggingContext {
+object LoggingContext extends Logging {
   val LOGGING_CONTEXT_HEADER = "X-GU-LoggingContext"
 
   def get(key:String) = Option(MDC.get(key))
@@ -57,7 +58,7 @@ object LoggingContext {
       header.split(";").map{ _.trim.split("=", 2) }.map{c => c(0) -> c(1)}.toMap
     } catch {
       case NonFatal(e) =>
-        Logger.warn(s"Couldn't parse logging context header (returning empty map): $header", e)
+        logger.warn(s"Couldn't parse logging context header (returning empty map): $header", e)
         Map.empty
     }
 

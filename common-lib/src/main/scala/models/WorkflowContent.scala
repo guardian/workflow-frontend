@@ -13,8 +13,8 @@ object ContentItemIds {
 case class Tag(id: Long, section: Section, `type`: String, externalName: String, path: Option[String] = None)
 object Tag {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
-  implicit val encoder: Encoder[Tag] = derivationWithDefaults.deriveEncoder
-  implicit val decoder: Decoder[Tag] = derivationWithDefaults.deriveDecoder
+  implicit val encoder: Encoder[Tag] = derivationWithDefaults.deriveConfiguredEncoder
+  implicit val decoder: Decoder[Tag] = derivationWithDefaults.deriveConfiguredDecoder
 }
 
 case class User(email: String, firstName: String, lastName: String)
