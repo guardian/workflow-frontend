@@ -25,6 +25,8 @@ class Admin(
   override val panDomainSettings: PanDomainAuthSettingsRefresher
 ) extends BaseController with PanDomainAuthActions with I18nSupport {
 
+  private val whitelistAuthFilter = new WhiteListAuthFilter(config)
+
   import play.api.data.Forms._
 
   def getSortedSections(): Future[List[Section]] = {
@@ -65,11 +67,11 @@ class Admin(
     }.getOrElse(Future(sectionListFromDB))
   }
 
-  def index() = (AuthAction andThen WhiteListAuthFilter) {
+  def index() = (AuthAction andThen whitelistAuthFilter) {
     Redirect("/admin/desks-and-sections")
   }
 
-  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen whitelistAuthFilter).async { implicit request =>
     for {
       deskList <- getDesks()
       sectionListFromDB <- getSortedSections()
@@ -127,7 +129,7 @@ class Admin(
     )(assignSectionToDeskFormData.apply)(assignSectionToDeskFormData.unapply)
   )
 
-  def assignSectionToDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def assignSectionToDesk = (AuthAction andThen whitelistAuthFilter).async { implicit request =>
     assignSectionToDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to update section assignments")),
       sectionAssignment => {
@@ -147,7 +149,7 @@ class Admin(
    SECTION routes
    */
 
-  def addSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def addSection = (AuthAction andThen whitelistAuthFilter).async { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to add section")),
       section => {
@@ -161,7 +163,7 @@ class Admin(
     )
   }
 
-  def removeSection = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def removeSection = (AuthAction andThen whitelistAuthFilter).async { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to remove section")),
       section => {
@@ -177,7 +179,7 @@ class Admin(
    DESK routes
    */
 
-  def addDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def addDesk = (AuthAction andThen whitelistAuthFilter).async { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(s"failed to add desk ${formWithErrors.errors}")),
       desk => {
@@ -191,7 +193,7 @@ class Admin(
     )
   }
 
-  def removeDesk = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
+  def removeDesk = (AuthAction andThen whitelistAuthFilter).async { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to remove desk")),
       desk => {
