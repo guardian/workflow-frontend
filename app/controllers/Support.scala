@@ -1,10 +1,18 @@
 package controllers
 
+import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.workflow.lib.{ClientLog, ClientMessageLoggable}
+import config.Config
 import play.api.Logger
-import play.api.mvc.{Action, AnyContent, Controller}
+import play.api.libs.ws.WSClient
+import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 
-object Support extends Controller with PanDomainAuthActions {
+class Support(
+  override val config: Config,
+  override val controllerComponents: ControllerComponents,
+  override val wsClient: WSClient,
+  override val panDomainSettings: PanDomainAuthSettingsRefresher
+) extends BaseController with PanDomainAuthActions {
   def logger: Action[AnyContent] = APIAuthAction { implicit request =>
     (for {
         js <- request.body.asJson

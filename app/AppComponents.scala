@@ -1,5 +1,5 @@
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
-import com.gu.workflow.api.{ApiUtils, DesksAPI, SectionDeskMappingsAPI, SectionsAPI, StubAPI}
+import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.TagService
 import com.gu.workflow.util.AWS
 import config.Config
@@ -14,7 +14,8 @@ import router.Routes
 class AppComponents(context: Context)
   extends BuiltInComponentsFromContext(context)
   with HttpFiltersComponents
-  with AhcWSComponents {
+  with AhcWSComponents
+  with AssetsComponents {
 
   val config = new Config(context.initialConfiguration)
 
@@ -42,7 +43,8 @@ class AppComponents(context: Context)
 
   val notificationsController = new Notifications(config, controllerComponents, wsClient, panDomainRefresher)
 
-  // TODO re-order per routes file
+  val supportController = new Support(config, controllerComponents, wsClient, panDomainRefresher)
+  
   override val router = new Routes(
     httpErrorHandler,
     applicationController,
@@ -51,8 +53,9 @@ class AppComponents(context: Context)
     loginController,
     capiServiceController,
     adminController,
-
-    managementController
+    supportController,
+    managementController,
+    assets
   )
   override lazy val httpFilters: Seq[EssentialFilter] = super.httpFilters.filterNot(_ == allowedHostsFilter)
 }
