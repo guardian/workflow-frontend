@@ -1,12 +1,7 @@
 package controllers
 
-import java.net.URI
-
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.auth.{AWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
-import com.gu.contentapi.client.IAMSigner
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
-import com.gu.workflow.util.AWS
+import com.gu.workflow.lib.ContentAPI
 import config.Config
 import play.api.libs.ws.WSClient
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
@@ -18,33 +13,18 @@ class CAPIService(
   override val panDomainSettings: PanDomainAuthSettingsRefresher
 ) extends BaseController with PanDomainAuthActions {
 
-  private val previewSigner = {
-    val capiPreviewCredentials = new AWSCredentialsProviderChain(
-      new ProfileCredentialsProvider("capi"),
-      new STSAssumeRoleSessionCredentialsProvider.Builder(config.capiPreviewRole, "capi").build()
-    )
-
-    new IAMSigner(
-      credentialsProvider = capiPreviewCredentials,
-      awsRegion = AWS.region.getName
-    )
-  }
+  private val contentApi = new ContentAPI(config.capiPreviewIamUrl, config.capiPreviewIamUrl, wsClient)
 
   def previewCapiProxy(path: String): Action[AnyContent] = APIAuthAction.async { request =>
-
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    val url = s"${config.capiPreviewIamUrl}/$path?${request.rawQueryString}"
-    val headers = previewSigner.addIAMHeaders(Map.empty, URI.create(url))
+    val queryString: List[(String, String)] = request.queryString.toList.map { case (a, b) if b.nonEmpty => (a, b.head) }
 
-    val req = wsClient
-      .url(url)
-      .withHeaders(headers.toSeq: _*)
-      .get()
-
-    req.map(response => response.status match {
-      case 200 => Ok(response.json)
-      case _ => BadGateway(s"CAPI returned error code ${response.status}")
-    })
+    contentApi.getPreview(path, queryString).map(response =>
+      response.status match {
+        case 200 => Ok(response.json)
+        case _ => BadGateway(s"CAPI returned error code ${response.status}")
+      }
+    )
   }
 }

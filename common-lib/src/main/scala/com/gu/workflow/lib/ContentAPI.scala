@@ -8,8 +8,8 @@ import com.gu.contentapi.client.IAMSigner
 import com.gu.workflow.api.{ApiUtils, WSUtils}
 import com.gu.workflow.util.AWS
 import io.circe.parser
+import play.api.Logging
 import play.api.libs.ws.{WSClient, WSResponse}
-import play.api.{Application, Logging}
 import scalacache.memoization._
 
 import scala.concurrent.duration._
@@ -39,7 +39,7 @@ class ContentAPI(
     previewSigner.addIAMHeaders(Map.empty, URI.create(url)).toList
   }
 
-  def getPreview(path: String, params: List[(String, String)])(implicit app:Application): Future[WSResponse] = {
+  def getPreview(path: String, params: List[(String, String)]): Future[WSResponse] = {
     val headers = getHeaders(path, params)
     getRequest(path, params, headers)
   }
