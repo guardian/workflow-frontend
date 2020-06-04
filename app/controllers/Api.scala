@@ -25,7 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class Api(
   stubsApi: StubAPI,
   sectionsApi: SectionsAPI,
-  editorialSupportTeams: EditorialSupportTeamsController,
+  editorialSupportTeamsController: EditorialSupportTeamsController,
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
@@ -293,7 +293,7 @@ class Api(
 
   def editorialSupportTeams = CORSable(defaultCorsAble) {
     APIAuthAction {
-      val staff = editorialSupportTeams.listStaff().filter(_.name.nonEmpty)
+      val staff = editorialSupportTeamsController.listStaff().filter(_.name.nonEmpty)
       val teams = EditorialSupportStaff.groupByTeams(staff)
 
       val fronts = EditorialSupportStaff.groupByPerson(EditorialSupportStaff.getTeam("Fronts", teams))

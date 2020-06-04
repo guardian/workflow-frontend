@@ -13,5 +13,7 @@ class AppLoader extends ApplicationLoader {
       LogConfig.initLocalLogShipping(config.sessionId)
     }
     LogConfig.init(config.sessionId, config.loggingStreamName, config.loggingRole)
+
+    new AppComponents(context).application
   }
 }
