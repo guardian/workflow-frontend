@@ -4,6 +4,7 @@ import com.gu.workflow.lib.TagService
 import com.gu.workflow.util.AWS
 import config.Config
 import controllers._
+import lib.LoggingFilter
 import play.api.ApplicationLoader.Context
 import play.api.BuiltInComponentsFromContext
 import play.api.libs.ws.ahc.AhcWSComponents
@@ -44,7 +45,7 @@ class AppComponents(context: Context)
   val notificationsController = new Notifications(config, controllerComponents, wsClient, panDomainRefresher)
 
   val supportController = new Support(config, controllerComponents, wsClient, panDomainRefresher)
-  
+
   override val router = new Routes(
     httpErrorHandler,
     applicationController,
@@ -57,5 +58,5 @@ class AppComponents(context: Context)
     managementController,
     assets
   )
-  override lazy val httpFilters: Seq[EssentialFilter] = super.httpFilters.filterNot(_ == allowedHostsFilter)
+  override lazy val httpFilters: Seq[EssentialFilter] = super.httpFilters.filterNot(_ == allowedHostsFilter) ++ Seq(new LoggingFilter(materializer))
 }
