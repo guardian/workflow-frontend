@@ -14,7 +14,6 @@ case object ApiError {
 }
 
 object ApiErrors {
-  lazy val composerUrl = Config.composerUrl
   lazy val notFound                  = ApiError("ContentNotFound", "Content does not exist", 404, "notfound")
   lazy val invalidContentSend        = ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")
   lazy val conflict                  = ApiError("WorkflowContentExists", s"This item is already tracked in Workflow", 409, "conflict")
