@@ -1,20 +1,43 @@
 import play.sbt.PlayImport.PlayKeys._
-import sbt.project
 import Dependencies._
-import WorkflowBuild._
-import com.typesafe.sbt.packager.Keys.{debianPackageDependencies, maintainer, packageDescription, packageSummary}
-import sbtbuildinfo.BuildInfoPlugin
+import com.gu.riffraff.artifact.BuildInfo
 
 parallelExecution in Test := false
 
-def project(path: String): Project =
-  Project(path, file(path)).settings(commonSettings: _*)
+val scalaVersionNumber = "2.12.11"
+
+val buildInfo = Seq(
+  buildInfoPackage := "build",
+  buildInfoKeys ++= {
+    val buildInfo = BuildInfo(baseDirectory.value)
+
+    Seq[BuildInfoKey](
+      "gitCommitId" -> buildInfo.revision,
+      "buildNumber" -> buildInfo.buildIdentifier
+    )
+  }
+)
+
+val commonSettings = Seq(
+  scalaVersion := scalaVersionNumber,
+  scalaVersion in ThisBuild := scalaVersionNumber,
+  organization := "com.gu",
+  version      := "0.1",
+  fork in Test := false,
+  resolvers ++= Seq(
+    "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+    "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+  ),
+  scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings")
+)
+
+def project(path: String): Project = Project(path, file(path)).settings(commonSettings)
 
 def playProject(path: String): Project =
   Project(path, file("."))
     .enablePlugins(PlayScala, JDebPackaging, SystemdPlugin, BuildInfoPlugin)
     .settings(libraryDependencies += ws)
-    .settings(commonSettings: _*)
+    .settings(commonSettings ++ buildInfo)
     .dependsOn(commonLib)
     .dependsOn(commonLib % "test->test")
 
