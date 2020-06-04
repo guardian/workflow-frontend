@@ -8,7 +8,7 @@ import models.api.ApiError
 import models._
 import play.api.Logger
 import play.api.data.Form
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.I18nSupport
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
@@ -23,7 +23,7 @@ class Admin(
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
-) extends BaseController with PanDomainAuthActions {
+) extends BaseController with PanDomainAuthActions with I18nSupport {
 
   import play.api.data.Forms._
 
@@ -69,7 +69,7 @@ class Admin(
     Redirect("/admin/desks-and-sections")
   }
 
-  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async {
+  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen WhiteListAuthFilter).async { implicit request =>
     for {
       deskList <- getDesks()
       sectionListFromDB <- getSortedSections()

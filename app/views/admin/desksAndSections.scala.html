@@ -1,4 +1,4 @@
-@(config:io.circe.Json, sections: List[Section], addSectionForm: Form[Section], desks: List[Desk], addDeskForm: Form[Desk], selectedDeskOption: Option[Desk])(implicit messages: Messages)
+@(config:io.circe.Json, sections: List[Section], addSectionForm: Form[Section], desks: List[Desk], addDeskForm: Form[Desk], selectedDeskOption: Option[Desk])(implicit messagesProvider: MessagesProvider)
 
 @import helper._
 
