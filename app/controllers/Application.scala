@@ -117,12 +117,12 @@ class Application(
           ("templates", Json.fromString(Composer.templates))
         )),
         ("mediaAtomMaker", Json.obj(
-          ("create", Json.fromString(MediaAtomMakerConfig.newContentUrl)),
-          ("view", Json.fromString(MediaAtomMakerConfig.viewContentUrl))
+          ("create", Json.fromString(MediaAtomMakerConfig(config).newContentUrl)),
+          ("view", Json.fromString(MediaAtomMakerConfig(config).viewContentUrl))
         )),
         ("atomWorkshop", Json.obj(
-          ("create", Json.fromString(AtomWorkshopConfig.newContentUrl)),
-          ("view", Json.fromString(AtomWorkshopConfig.viewContentUrl))
+          ("create", Json.fromString(AtomWorkshopConfig(config).newContentUrl)),
+          ("view", Json.fromString(AtomWorkshopConfig(config).viewContentUrl))
         )),
         ("statuses", statuses.asJson),
         ("desks", desks.asJson),

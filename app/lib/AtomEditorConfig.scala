@@ -7,12 +7,30 @@ trait AtomEditorConfig {
   val viewContentUrl: String
 }
 
-object MediaAtomMakerConfig extends AtomEditorConfig {
-  lazy val newContentUrl: String = Config.mediaAtomMakerUrl+ "/api/workflow/atoms"
-  lazy val viewContentUrl: String = Config.mediaAtomMakerUrl + "/videos/"
+case class MediaAtomMakerConfig(
+  override val newContentUrl: String,
+  override val viewContentUrl: String
+) extends AtomEditorConfig
+
+object MediaAtomMakerConfig {
+  def apply(config: Config): MediaAtomMakerConfig = {
+    MediaAtomMakerConfig(
+      newContentUrl = s"${config.mediaAtomMakerUrl}/api/workflow/atoms",
+      viewContentUrl = s"${config.mediaAtomMakerUrl}/videos/",
+    )
+  }
 }
 
-object AtomWorkshopConfig extends AtomEditorConfig {
-  lazy val newContentUrl: String = Config.atomWorkshopUrl + "/api/preview"
-  lazy val viewContentUrl: String = Config.atomWorkshopUrl + "/atoms"
+case class AtomWorkshopConfig(
+  override val newContentUrl: String,
+  override val viewContentUrl: String
+) extends AtomEditorConfig
+
+object AtomWorkshopConfig {
+  def apply(config: Config): MediaAtomMakerConfig = {
+    MediaAtomMakerConfig(
+      newContentUrl = s"${config.atomWorkshopUrl}/api/preview",
+      viewContentUrl = s"${config.atomWorkshopUrl}/atoms",
+    )
+  }
 }
