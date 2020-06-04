@@ -34,7 +34,7 @@ class Api(
 
   import stubsApi.{extractDataResponse, extractDataResponseOpt, extractResponse, readJsonFromRequestResponse}
 
-  val contentAPI = new ContentAPI(config.capiPreviewRole, config.capiPreviewIamUrl)
+  val contentAPI = new ContentAPI(capiPreviewRole = config.capiPreviewRole, apiRoot = config.capiPreviewIamUrl, ws = wsClient)
   val stubDecorator = new StubDecorator(contentAPI)
 
   val defaultCorsAble: Set[String] = Set(config.composerUrl)
@@ -86,7 +86,7 @@ class Api(
   def sharedAuthGetContentById(composerId: String) =
     SharedSecretAuthAction.async {
       ApiResponseFt[Option[Stub]](for {
-        item <- getResponse(stubsApi.getStubByComposerId(composerId))
+        item <- getResponse(stubsApi.getStubByComposerId(stubDecorator, composerId))
       } yield item
       )}
 

@@ -8,7 +8,7 @@ import config.Config.defaultExecutionContext
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, parser}
-import lib.{AtomWorkshopConfig, Composer, MediaAtomMakerConfig}
+import lib.{AtomWorkshopConfig, ComposerConfig, MediaAtomMakerConfig}
 import models.{Desk, EditorialSupportStaff, Section}
 import play.api.Logger
 import play.api.libs.ws.WSClient
@@ -111,10 +111,10 @@ class Application(
       val jsonConfig = Json.obj(
 
         ("composer", Json.obj(
-          ("create", Json.fromString(Composer.newContentUrl)),
-          ("view", Json.fromString(Composer.adminUrl)),
-          ("details", Json.fromString(Composer.contentDetails)),
-          ("templates", Json.fromString(Composer.templates))
+          ("create", Json.fromString(ComposerConfig(config).newContentUrl)),
+          ("view", Json.fromString(ComposerConfig(config).adminUrl)),
+          ("details", Json.fromString(ComposerConfig(config).contentDetails)),
+          ("templates", Json.fromString(ComposerConfig(config).templates))
         )),
         ("mediaAtomMaker", Json.obj(
           ("create", Json.fromString(MediaAtomMakerConfig(config).newContentUrl)),
