@@ -137,6 +137,20 @@ angular.module('wfDateService', ['wfLocationService'])
         }
 
         /**
+         * Minus a second from a "from" date to avoid midnight dates being filtered out
+         * 
+         * @param {Date} fromDate
+         * 
+         * @return {Date}
+         */
+        fromDate(fromDate){
+            if(!!fromDate && moment(fromDate).isValid()){
+                return moment(fromDate).subtract(1, 'seconds').toDate();
+            }
+            return null;
+        }
+
+        /**
          * Parses a date range using simple natural language strings
          * (eg: "tomorrow") and explicit standard date formatted date strings,
          * such as in YYYY-MM-DD.
