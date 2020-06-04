@@ -162,7 +162,7 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                     updatePreference('listIsOpen', false);
                 } else {
                     $scope.listIsOpen = true;
-                    $scope.list.style.maxHeight = $scope.listHeight + 'px';
+                    $scope.list.style.maxHeight ='none';
                     updatePreference('listIsOpen', true);
                 }
 
@@ -202,12 +202,6 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
 
                 function setUpListDisplay () {
                     $scope.list = $scope.list || elem[0].querySelector('.sidebar__filter-list');
-
-                    if (!$scope.listHeight) {
-                        $scope.listHeight = $scope.list.offsetHeight;
-                        $scope.list.style.maxHeight = $scope.listHeight + 'px';
-                        getComputedStyle($scope.list).maxHeight; // Force reflow in FF & IE
-                    }
 
                     if (!$scope.listIsOpen) {
                         $scope.list.style.maxHeight = '0px';
