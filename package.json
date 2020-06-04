@@ -36,6 +36,7 @@
     "webpack-manifest-plugin": "^2.2.0"
   },
   "dependencies": {
+    "@babel/preset-react": "^7.10.1",
     "angular": "1.5.11",
     "angular-animate": "1.5.11",
     "angular-bootstrap-datetimepicker": "1.1.4",
@@ -60,7 +61,11 @@
     "moment": "^2.11.2",
     "moment-timezone": "0.5.14",
     "ng-infinite-scroll": "1.2.0",
+    "prop-types": "^15.7.2",
     "raven-js": "1.1.22",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react2angular": "^4.0.6",
     "sinon": "^2.1.0",
     "sugar": "1.4.1",
     "ua-parser-js": "0.7.12",

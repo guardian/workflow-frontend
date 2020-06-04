@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 
 module.exports = {
+    mode:'development',
     optimization: {
         minimize: false
     },
@@ -22,9 +23,12 @@ module.exports = {
     module: {
         rules: [
             {
-                test:    /\.js$/,
+                test: /\.(js|jsx)$/,
+                resolve: {
+                    extensions: ['.js', '.jsx']
+                },
                 exclude: /node_modules/,
-                use: ['babel-loader']
+                use: { loader: 'babel-loader' }
             },
             {
               test: /\.(html|svg)$/,
@@ -64,7 +68,7 @@ module.exports = {
     },
 
     plugins: [
-        new MiniCssExtractPlugin({ filename:'main.css'}),
+        new MiniCssExtractPlugin(),
         new ManifestPlugin()
     ]
 };

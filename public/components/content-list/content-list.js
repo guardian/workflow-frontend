@@ -22,9 +22,12 @@ import './content-list.html';
 import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter, wfCommissionedLengthCtrl } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
 import { wfLoader } from 'components/loader/loader';
-
+ 
+import { react2angular } from 'react2angular'
+import { Drawer } from 'components/jsx/drawer'
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService'])
+    .component('drawer',react2angular(Drawer,['contentItem','contentList','legalValues','statusValues']))
     .service('wfContentItemParser', ['config', 'statusLabels', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
     .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'legalValues', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', 'wfFiltersService', wfContentListController])
