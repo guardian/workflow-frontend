@@ -1,6 +1,5 @@
 package lib
 
-import config.Config
 import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{Result, Results}
