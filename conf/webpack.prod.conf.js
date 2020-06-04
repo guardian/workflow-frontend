@@ -7,7 +7,9 @@ module.exports = function() {
   return Merge(CommonConfig, {
     optimization: {
       minimize: true,
-      minimizer: [new TerserPlugin()],
+      minimizer: [new TerserPlugin({
+        terserOptions:{mangle:false}
+      })],
     },
   })
 }

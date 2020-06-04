@@ -32,25 +32,15 @@ module.exports = {
               loader: 'html-loader'
             },
             {
-                test: /\.scss$/,
+                test: /.s?css$/,
                 resolve: {
                     extensions: ['scss', 'css']
                 },
                 use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { sourceMap: true } }, {
                     loader: 'sass-loader', options: {
                         sourceMap: true,
-                   
-                           
-                       
-                        // includePaths: ['public']
                     }
                 }],
-            
- 
-            },
-            {
-                test: /\.css$/,
-                use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { sourceMap: true } }]
             },
             {
                 test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?$/,
@@ -74,7 +64,7 @@ module.exports = {
     },
 
     plugins: [
-        new MiniCssExtractPlugin(),
+        new MiniCssExtractPlugin({ filename:'main.css'}),
         new ManifestPlugin()
     ]
 };
