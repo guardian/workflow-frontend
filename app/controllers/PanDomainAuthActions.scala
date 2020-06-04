@@ -3,10 +3,10 @@ package controllers
 import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
 import config.Config
-import play.api.Logger
+import play.api.{Logger, Logging}
 import play.api.mvc._
 
-trait PanDomainAuthActions extends AuthActions with Results {
+trait PanDomainAuthActions extends AuthActions with Results with Logging {
   def config: Config
 
   override def validateUser(authedUser: AuthenticatedUser): Boolean = {
@@ -17,7 +17,7 @@ trait PanDomainAuthActions extends AuthActions with Results {
   override def authCallbackUrl: String = config.host + "/oauthCallback"
 
   override def showUnauthedMessage(message: String)(implicit request: RequestHeader): Result = {
-    Logger.info(message)
+    logger.info(message)
     Ok(views.html.login(Some(message)))
   }
 

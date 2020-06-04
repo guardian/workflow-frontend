@@ -85,7 +85,7 @@ GET            /sharedsecret/content                       controllers.Api.share
 GET            /sharedsecret/content/:id                   controllers.Api.sharedAuthGetContentById(id)
 
 # Support
-POST            /support/logger                            controllers.Support.logger
+POST            /support/logger                            controllers.Support.sendLog
 
 # Management
 GET            /management/healthcheck                     controllers.Management.healthCheck

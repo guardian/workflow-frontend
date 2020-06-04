@@ -6,7 +6,7 @@ import config.Config
 import io.circe.{Json, parser}
 import models.api.ApiError
 import models._
-import play.api.Logger
+import play.api.{Logger, Logging}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.libs.ws.WSClient
@@ -23,7 +23,7 @@ class Admin(
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
-) extends BaseController with PanDomainAuthActions with I18nSupport {
+) extends BaseController with PanDomainAuthActions with I18nSupport with Logging {
 
   private val whitelistAuthFilter = new WhiteListAuthFilter(config)
 
@@ -31,7 +31,7 @@ class Admin(
 
   def getSortedSections(): Future[List[Section]] = {
     sectionsAPI.getSections.asFuture.map {
-      case Left(err) => Logger.error(s"error fetching sections: $err"); List()
+      case Left(err) => logger.error(s"error fetching sections: $err"); List()
       case Right(sections) => sections.sortBy(_.name)
     }
   }
@@ -39,7 +39,7 @@ class Admin(
   def getDesks(): Future[List[Desk]] = {
     desksAPI.getDesks.asFuture.map {
       case Right(desks) => desks
-      case Left(err) => Logger.error(s"error fetching desks: $err"); List()
+      case Left(err) => logger.error(s"error fetching desks: $err"); List()
     }
   }
 
@@ -61,7 +61,7 @@ class Admin(
         .asFuture
         .map {
           case Right(relations) => relations
-          case Left(err) => Logger.error(s"unable to fetch the sections in the relation: $err")
+          case Left(err) => logger.error(s"unable to fetch the sections in the relation: $err")
             List()
         }
     }.getOrElse(Future(sectionListFromDB))
@@ -138,7 +138,7 @@ class Admin(
           .map {
             case Right(_) => Redirect(routes.Admin.desksAndSections(Some(sectionAssignment.desk)))
             case Left(err) =>
-              Logger.error(s"error upserting section desk mapping: $err")
+              logger.error(s"error upserting section desk mapping: $err")
               InternalServerError
           }
       }
@@ -156,7 +156,7 @@ class Admin(
         sectionsAPI.upsertSection(section).asFuture.map {
           case Right(_) => Redirect(routes.Admin.desksAndSections(None))
           case Left(err) =>
-            Logger.error(s"error upserting section: $err")
+            logger.error(s"error upserting section: $err")
             InternalServerError
         }
       }
@@ -186,7 +186,7 @@ class Admin(
         desksAPI.upsertDesk(desk).asFuture.map {
           case Right(_) => Redirect(routes.Admin.desksAndSections(None))
           case Left(err) =>
-            Logger.error(s"error creating desk: $err")
+            logger.error(s"error creating desk: $err")
             InternalServerError
         }
       }

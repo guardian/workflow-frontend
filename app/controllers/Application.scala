@@ -9,7 +9,7 @@ import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, parser}
 import lib.{AtomWorkshopConfig, ComposerConfig, MediaAtomMakerConfig}
 import models.{Desk, EditorialSupportStaff, Section}
-import play.api.Logger
+import play.api.{Logger, Logging}
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
@@ -26,11 +26,11 @@ class Application(
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
-) extends BaseController with PanDomainAuthActions {
+) extends BaseController with PanDomainAuthActions with Logging {
 
   def getSortedSections(): Future[List[Section]] = {
     sectionsAPI.getSections.asFuture.map {
-      case Left(err) => Logger.error(s"error fetching sections: $err"); List()
+      case Left(err) => logger.error(s"error fetching sections: $err"); List()
       case Right(sections) => sections.sortBy(_.name)
     }
   }
@@ -38,14 +38,14 @@ class Application(
   def getSortedDesks(): Future[List[Desk]] = {
     desksAPI.getDesks.asFuture.map {
       case Right(desks) => desks.sortBy(_.name)
-      case Left(err) => Logger.error(s"error fetching desks: $err"); List()
+      case Left(err) => logger.error(s"error fetching desks: $err"); List()
     }
   }
 
   def getSectionsInDesks(): Future[List[models.api.SectionsInDeskMapping]] = {
     sectionDeskMappingsAPI.getSectionsInDesks.asFuture.map {
       case Right(mappings) => mappings
-      case Left(err) => Logger.error(s"error fetching section desk mappings: $err"); List()
+      case Left(err) => logger.error(s"error fetching section desk mappings: $err"); List()
     }
   }
 

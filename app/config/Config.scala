@@ -4,19 +4,19 @@ import java.util.UUID
 
 import com.gu.workflow.util._
 import play.Logger
-import play.api.Configuration
+import play.api.{Configuration, Logging}
 
 import scala.collection.JavaConverters._
 import scala.util.Try
 
-class Config(playConfig: Configuration) extends AwsInstanceTags {
+class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val stage: Stage = readTag("Stage") match {
     case Some(value) => Stage(value)
     // If in AWS and we don't know our stage, fail fast to avoid ending up running an instance with dev config in PROD!
     case other if instanceId.nonEmpty => throw new IllegalStateException(s"Unable to read Stage tag: $other")
     case None => Stage("DEV") // default to dev stage
   }
-  Logger.info(s"running in stage: $stage")
+  logger.info(s"running in stage: $stage")
 
   lazy val isDev: Boolean = stage == Dev
 
@@ -24,10 +24,10 @@ class Config(playConfig: Configuration) extends AwsInstanceTags {
 
   lazy val localLogShipping: Boolean = sys.env.getOrElse("LOCAL_LOG_SHIPPING", "false").toBoolean
 
-  Logger.info(s"Domain is: $domain")
+  logger.info(s"Domain is: $domain")
 
   lazy val host: String = s"https://workflow.$domain"
-  Logger.info(s"Host is: $host")
+  logger.info(s"Host is: $host")
 
   lazy val composerUrl: String = s"https://composer.$domain"
   lazy val composerRestorerUrl: String = s"https://restorer.$domain/content"

@@ -15,7 +15,7 @@ import models.EditorialSupportStaff._
 import models.api.{ApiError, ApiResponseFt}
 import models.{Flag, _}
 import org.joda.time.DateTime
-import play.api.Logger
+import play.api.{Logger, Logging}
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
@@ -30,7 +30,7 @@ class Api(
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
-) extends BaseController with PanDomainAuthActions with SharedSecretAuth {
+) extends BaseController with PanDomainAuthActions with SharedSecretAuth with Logging {
 
   import stubsApi.{extractDataResponse, extractDataResponseOpt, extractResponse, readJsonFromRequestResponse}
 
@@ -57,7 +57,7 @@ class Api(
 
     stubsApi.getStubs(stubDecorator, qs).asFuture.map {
       case Left(err) =>
-        Logger.error(s"Unable to get stubs $err")
+        logger.error(s"Unable to get stubs $err")
         InternalServerError
 
       case Right(contentResponse) =>
@@ -252,14 +252,14 @@ class Api(
   def deleteContent(composerId: String) = CORSable(defaultCorsAble) {
     APIAuthAction {
       stubsApi.deleteStubs(Seq(composerId)).fold(err =>
-        Logger.error(s"failed to delete content with composer id: $composerId"), identity)
+        logger.error(s"failed to delete content with composer id: $composerId"), identity)
       NoContent
     }
   }
 
   def deleteStub(stubId: Long) = APIAuthAction {
     stubsApi.deleteContentByStubId(stubId).fold(err =>
-    Logger.error(s"failed to delete content with stub id: $stubId"), identity)
+    logger.error(s"failed to delete content with stub id: $stubId"), identity)
     NoContent
   }
 

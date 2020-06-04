@@ -26,7 +26,7 @@ class LoggingFilter(override val mat: Materializer) extends Filter with Logging 
           val endTime = System.currentTimeMillis
           val requestTime = endTime - startTime
 
-          Logger.info(
+          logger.info(
             s"(${result.header.status}) ${requestHeader.method} ${requestHeader.uri} " +
               s"took ${requestTime}ms"
           )

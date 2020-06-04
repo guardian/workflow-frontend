@@ -1,6 +1,6 @@
 package lib
 
-import play.api.Logger
+import play.api.{Logger, Logging}
 import play.api.libs.json._
 import play.api.mvc.{Result, Results}
 
@@ -36,13 +36,13 @@ object ApiErrors {
 
 
 
-object Response extends Results {
+object Response extends Results with Logging {
   type Response[T] = Either[ApiError, ApiSuccess[T]]
 
   def apply[T](action: => Response[T])(implicit tjs: Writes[T]): Result = {
     action.fold({
       apiError => {
-        Logger.info(apiError.friendlyMessage)
+        logger.info(apiError.friendlyMessage)
         Status(apiError.statusCode) {
           JsObject(Seq(
             "status" -> JsString(apiError.statusString),

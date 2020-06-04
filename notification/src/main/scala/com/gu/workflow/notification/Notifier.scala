@@ -6,13 +6,13 @@ import com.gu.workflow.api.SubscriptionsAPI
 import com.gu.workflow.lib.QueryString
 import com.gu.workflow.util.{Dev, Prod, SharedSecretAuth, Stage}
 import io.circe.parser
-import models.api.ContentResponse
 import models._
-import play.api.Logger
+import models.api.ContentResponse
+import play.api.Logging
 
 import scala.util.control.NonFatal
 
-class Notifier(stage: Stage, override val secret: String, subsApi: SubscriptionsAPI) extends SharedSecretAuth {
+class Notifier(stage: Stage, override val secret: String, subsApi: SubscriptionsAPI) extends SharedSecretAuth with Logging {
 
   private val appUrl = stage match {
     // TODO MRB: put this back to https://workflow.local.dev-gutools.co.uk
@@ -27,12 +27,12 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
   }
 
   def run(): Unit = {
-    Logger.info("I am the Workflow notifier!")
+    logger.info("I am the Workflow notifier!")
     subsApi.getAll().foreach(processSubscription)
   }
 
   private def processSubscription(sub: Subscription): Unit = {
-    Logger.info(s"Getting current results for ${sub.query}")
+    logger.info(s"Getting current results for ${sub.query}")
 
     val stubs = getStubs(sub.query)
 
@@ -43,20 +43,20 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
       oldSeenIds match {
         case Some(existingSeenIds) =>
           val toNotify = calculateToNotify(existingSeenIds, newSeenIds, stubs)
-          Logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds")
+          logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds")
 
           if (toNotify.isEmpty) {
-            Logger.info("Not sending any notifications")
+            logger.info("Not sending any notifications")
           } else if(!sub.schedule.enabled) {
-            Logger.info("Not sending any notifications as subscription is disabled")
+            logger.info("Not sending any notifications as subscription is disabled")
           } else {
-            Logger.info(s"Sending notifications for ${toNotify.map(_._2.id)}")
+            logger.info(s"Sending notifications for ${toNotify.map(_._2.id)}")
 
             notify(toNotify, sub, newSeenIds)
           }
 
         case None =>
-          Logger.info(s"No existing results for ${sub.query}. Now seen $newSeenIds. Not sending any notifications")
+          logger.info(s"No existing results for ${sub.query}. Now seen $newSeenIds. Not sending any notifications")
       }
     } finally {
       subsApi.put(sub.copy(runtime = Some(SubscriptionRuntime(newSeenIds))))
@@ -105,7 +105,7 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
         }
 
       case Left(err) =>
-        Logger.error(s"Unable to get stubs for $query: ${response.statusCode} $responseText", err)
+        logger.error(s"Unable to get stubs for $query: ${response.statusCode} $responseText", err)
         throw err.underlying
     }
   }
@@ -122,7 +122,7 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
       }
     } catch {
       case NonFatal(e) =>
-        Logger.error(s"Error sending notification to ${sub.endpoint}. Removing subscription", e)
+        logger.error(s"Error sending notification to ${sub.endpoint}. Removing subscription", e)
         subsApi.delete(Subscription.id(sub))
     }
   }
