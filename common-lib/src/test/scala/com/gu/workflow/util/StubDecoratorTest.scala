@@ -8,6 +8,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -23,7 +24,9 @@ class StubDecoratorTest extends AnyFreeSpec with MockFactory with Matchers with 
     actualNewspaperPublicationDate = Some(LocalDate.now())
   )
 
-  class MockableContentApi extends ContentAPI("test", "test")
+  val wsClient = mock[WSClient]
+  
+  class MockableContentApi extends ContentAPI("test", "test", wsClient)
 
   val contentApi: ContentAPI = stub[MockableContentApi]
   (contentApi.getTagInternalName (_: Long)(_:ExecutionContext)).when(*, *).returns(Future.successful(Some("internal-tag-name")))
