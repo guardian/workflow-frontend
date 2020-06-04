@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class SectionsAPI(
   override val apiRoot: String,
   override val ws: WSClient
-) extends ApiUtils {
+) extends ApiUtils with WSUtils {
 
   def getSections: ApiResponseFt[List[Section]] =
     for {

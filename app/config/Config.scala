@@ -94,8 +94,6 @@ class Config(playConfig: Configuration) extends AwsInstanceTags {
 
   lazy val loggingStreamName: String = playConfig.get[String]("aws.kinesis.logging.streamName")
   lazy val loggingRole: String = playConfig.get[String]("aws.kinesis.logging.stsRoleToAssume")
-}
 
-object Config {
-  implicit val defaultExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  lazy val apiRoot: String = playConfig.get[String]("api.url")
 }

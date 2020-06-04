@@ -7,7 +7,6 @@ import com.gu.workflow.lib.DBToAPIResponse.getResponse
 import com.gu.workflow.lib.{ContentAPI, Priorities, StatusDatabase}
 import com.gu.workflow.util.{SharedSecretAuth, StubDecorator}
 import config.Config
-import config.Config.defaultExecutionContext
 import io.circe.syntax._
 import io.circe.{Encoder, Json}
 import lib.CORSable
@@ -21,6 +20,7 @@ import play.api.libs.ws.WSClient
 import play.api.mvc._
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class Api(
   stubsApi: StubAPI,

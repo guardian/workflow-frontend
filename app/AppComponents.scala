@@ -1,5 +1,6 @@
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
-import com.gu.workflow.api.ApiUtils
+import com.gu.workflow.api.{ApiUtils, DesksAPI, SectionDeskMappingsAPI, SectionsAPI, StubAPI}
+import com.gu.workflow.lib.TagService
 import com.gu.workflow.util.AWS
 import config.Config
 import controllers._
@@ -8,6 +9,7 @@ import play.api.BuiltInComponentsFromContext
 import play.api.libs.ws.ahc.AhcWSComponents
 import play.api.mvc.EssentialFilter
 import play.filters.HttpFiltersComponents
+import router.Routes
 
 class AppComponents(context: Context)
   extends BuiltInComponentsFromContext(context)
@@ -27,20 +29,29 @@ class AppComponents(context: Context)
   val managementController = new Management(controllerComponents)
   val loginController = new Login(config, controllerComponents, wsClient, panDomainRefresher)
   val capiServiceController = new CAPIService(config, controllerComponents, wsClient, panDomainRefresher)
-  val adminController = new Admin(config, controllerComponents, wsClient, panDomainRefresher)
+  val sectionsApi = new SectionsAPI(config.apiRoot, wsClient)
+  val desksApi = new DesksAPI(config.apiRoot, wsClient)
+  val sectionsDeskMappingsApi = new SectionDeskMappingsAPI(config.apiRoot, wsClient)
+  val stubsApi = new StubAPI(config.apiRoot, wsClient)
+  val tagService = new TagService(config.apiRoot, wsClient)
+
+  val adminController = new Admin(sectionsApi, desksApi, sectionsDeskMappingsApi, config, controllerComponents, wsClient, panDomainRefresher)
   val editorialSupportTeamsController = new EditorialSupportTeamsController(config, controllerComponents, wsClient, panDomainRefresher)
-  val apiUtils = new ApiUtils(???, wsClient)
-  val apiController = new Api(apiUtils, editorialSupportTeamsController, config, controllerComponents, wsClient, panDomainRefresher)
-  val applicationController = new Application(editorialSupportTeamsController, config, controllerComponents, wsClient, panDomainRefresher)
+  val apiController = new Api(stubsApi, sectionsApi, editorialSupportTeamsController, config, controllerComponents, wsClient, panDomainRefresher)
+  val applicationController = new Application(editorialSupportTeamsController, sectionsApi, tagService, desksApi, sectionsDeskMappingsApi, config, controllerComponents, wsClient, panDomainRefresher)
+
+  val notificationsController = new Notifications(config, controllerComponents, wsClient, panDomainRefresher)
 
   // TODO re-order per routes file
   override val router = new Routes(
     httpErrorHandler,
     applicationController,
-    loginController,
     apiController,
+    notificationsController,
+    loginController,
     capiServiceController,
     adminController,
+
     managementController
   )
   override lazy val httpFilters: Seq[EssentialFilter] = super.httpFilters.filterNot(_ == allowedHostsFilter)

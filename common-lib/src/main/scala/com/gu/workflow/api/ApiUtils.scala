@@ -5,36 +5,9 @@ import io.circe.{Decoder, Json, parser}
 import models.Stub
 import models.Stub.flatJsonDecoder
 import models.api._
-import play.api.libs.ws._
 import play.api.mvc.AnyContent
 
-import scala.concurrent.Future
-import scala.concurrent.duration._
-
 trait ApiUtils {
-  def apiRoot: String
-  def ws: WSClient
-
-  protected def buildRequest(path: String): WSRequest = ws.url(s"$apiRoot/$path")
-
-  def deleteRequest(path: String): Future[WSResponse] =
-    buildRequest(path).delete()
-
-  def postRequest(path: String, data: Json = Json.Null): Future[WSResponse] =
-    buildRequest(path).withHttpHeaders("Content-Type" -> "application/json").post(data.toString())
-
-  def putRequest(path: String, data: Json = Json.Null): Future[WSResponse] =
-    buildRequest(path).withHttpHeaders("Content-Type" -> "application/json").put(data.toString())
-
-  def getRequest(path: String, params: List[(String, String)] = List.empty, headers: List[(String, String)] = List.empty, timeout: Duration = 2.seconds): Future[WSResponse] = {
-    val request = buildRequest(path).withRequestTimeout(timeout)
-
-    if(params.nonEmpty) request.withQueryStringParameters(params: _*)
-    if (headers.nonEmpty) request.withHttpHeaders(headers: _*)
-
-    request.get()
-  }
-
   def readJsonFromRequestResponse(requestBody: AnyContent): ApiResponseFt[Json] = requestBody.asJson.map(_.toString) match {
     case Some(str) =>
       parser.parse(str).fold(

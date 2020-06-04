@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class DesksAPI(
   override val apiRoot: String,
   override val ws: WSClient
-) extends ApiUtils {
+) extends ApiUtils with WSUtils {
 
   def getDesks: ApiResponseFt[List[Desk]] =
     for {

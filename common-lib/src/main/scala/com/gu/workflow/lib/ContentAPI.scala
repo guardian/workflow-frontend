@@ -5,11 +5,11 @@ import java.net.URI
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.auth.{AWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
 import com.gu.contentapi.client.IAMSigner
-import com.gu.workflow.api.ApiUtils
+import com.gu.workflow.api.{ApiUtils, WSUtils}
 import com.gu.workflow.util.AWS
 import io.circe.parser
-import play.api.{Application, Logger, Logging}
 import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.{Application, Logging}
 import scalacache.memoization._
 
 import scala.concurrent.duration._
@@ -19,7 +19,7 @@ class ContentAPI(
   capiPreviewRole: String,
   override val apiRoot: String,
   override val ws: WSClient
-) extends ApiUtils with Caching with Logging {
+) extends ApiUtils with WSUtils with Caching with Logging {
 
   private val previewSigner = {
     val capiPreviewCredentials = new AWSCredentialsProviderChain(

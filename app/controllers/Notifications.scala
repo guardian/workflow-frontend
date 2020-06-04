@@ -4,19 +4,19 @@ import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.pandomainauth.model.User
 import com.gu.workflow.api.{ApiUtils, SubscriptionsAPI}
 import config.Config
-import config.Config.defaultExecutionContext
 import models.api.ApiResponseFt
 import models.{Subscription, SubscriptionEndpoint, SubscriptionSchedule}
 import play.api.libs.ws.WSClient
 import play.api.mvc.{BaseController, ControllerComponents}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class Notifications(
-  val apiUtils: ApiUtils,
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
-) extends BaseController with PanDomainAuthActions {
+) extends BaseController with PanDomainAuthActions with ApiUtils {
   import Subscription.endpointDecoder
 
   private val subsApi = new SubscriptionsAPI(config.stage, config.webPushPublicKey, config.webPushPrivateKey)
@@ -49,9 +49,9 @@ class Notifications(
     val userAgent = request.headers.get("User-Agent").getOrElse("unknown")
 
     ApiResponseFt[String](for {
-      json <- apiUtils.readJsonFromRequestResponse(request.body)
+      json <- readJsonFromRequestResponse(request.body)
 
-      endpoint <- apiUtils.extractResponse[SubscriptionEndpoint](json)
+      endpoint <- extractResponse[SubscriptionEndpoint](json)
       sub = Subscription(request.user.email, userAgent, qs, endpoint,
         schedule = SubscriptionSchedule(enabled = true), runtime = None)
 

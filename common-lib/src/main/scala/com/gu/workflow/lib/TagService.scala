@@ -1,10 +1,10 @@
 package com.gu.workflow.lib
 
-import com.gu.workflow.api.ApiUtils
+import com.gu.workflow.api.{ApiUtils, WSUtils}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder, Json}
 import models.Tag
-import play.api.{Logger, Logging}
+import play.api.Logging
 import play.api.libs.ws._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,7 +19,7 @@ object TagArrayItem {
 class TagService(
   override val apiRoot: String,
   override val ws: WSClient
-) extends ApiUtils with Logging {
+) extends ApiUtils with WSUtils with Logging {
   def getTags(params:  Map[String, String]): Future[List[Tag]] = {
     for {
       response <- getRequest("/hyper/tags", params.toList)

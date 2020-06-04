@@ -6,7 +6,7 @@ import com.gu.workflow.util.{Dynamo, Prod, Stage}
 import io.circe.syntax._
 import models.{Subscription, SubscriptionEndpoint, SubscriptionUpdate}
 import nl.martijndwars.webpush.{Notification, PushService}
-import play.api.{Logger, Logging}
+import play.api.Logging
 
 import scala.collection.JavaConverters._
 

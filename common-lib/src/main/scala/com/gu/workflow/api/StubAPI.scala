@@ -16,7 +16,7 @@ import scala.concurrent.Future
 class StubAPI(
   override val apiRoot: String,
   override val ws: WSClient
-) extends ApiUtils {
+) extends ApiUtils with WSUtils {
 
   def createStub(body: Json): ApiResponseFt[ContentUpdate] =
     for {

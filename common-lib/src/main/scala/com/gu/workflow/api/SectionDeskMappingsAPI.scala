@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class SectionDeskMappingsAPI(
   override val apiRoot: String,
   override val ws: WSClient
-) extends ApiUtils {
+) extends ApiUtils with WSUtils {
 
   def getSectionsInDesks: ApiResponseFt[List[SectionsInDeskMapping]] =
     for {
