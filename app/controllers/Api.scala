@@ -19,7 +19,7 @@ import play.api.Logger
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class Api(
@@ -305,7 +305,10 @@ class Api(
 
   def sharedAuthGetContent = SharedSecretAuthAction.async(getContentBlock)
 
-  object SharedSecretAuthAction extends ActionBuilder[Request] {
+  object SharedSecretAuthAction extends ActionBuilder[Request, AnyContent] {
+    override def parser: BodyParser[AnyContent] = controllerComponents.parsers.default
+    override protected def executionContext: ExecutionContext = controllerComponents.executionContext
+
     def invokeBlock[A](req: Request[A], block: (Request[A]) => Future[Result]) =
       if(!isInOnTheSecret(req))
         Future(Results.Forbidden)
