@@ -35,7 +35,7 @@ class AppComponents(context: Context)
   val desksApi = new DesksAPI(config.apiRoot, wsClient)
   val sectionsDeskMappingsApi = new SectionDeskMappingsAPI(config.apiRoot, wsClient)
   val stubsApi = new StubAPI(config.apiRoot, wsClient)
-  val tagService = new TagService(config.apiRoot, wsClient)
+  val tagService = new TagService(config.tagManagerUrl, wsClient)
 
   val adminController = new Admin(sectionsApi, desksApi, sectionsDeskMappingsApi, config, controllerComponents, wsClient, panDomainRefresher)
   val editorialSupportTeamsController = new EditorialSupportTeamsController(config, controllerComponents, wsClient, panDomainRefresher)
