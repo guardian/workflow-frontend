@@ -59,28 +59,33 @@ object LogConfig extends AwsInstanceTags {
   }
 
   def init(sessionId: String, streamName: String, stsRole: String) = {
-    for {
-      stack <- readTag("Stack")
-      app <- readTag("App")
-      stage <- readTag("Stage")
-    } yield {
-      val customFields = createCustomFields(stack, stage, app, sessionId)
-      val context = rootLogger.getLoggerContext
-      val layout = new LogstashLayout()
-      layout.setContext(context)
-      layout.setCustomFields(customFields)
-      layout.start()
+    Try {
+      for {
+        stack <- readTag("Stack")
+        app <- readTag("App")
+        stage <- readTag("Stage")
+      } yield {
+        val customFields = createCustomFields(stack, stage, app, sessionId)
+        val context = rootLogger.getLoggerContext
+        val layout = new LogstashLayout()
+        layout.setContext(context)
+        layout.setCustomFields(customFields)
+        layout.start()
 
-      val appender = new KinesisAppender[ILoggingEvent]()
-      appender.setBufferSize(BUFFER_SIZE)
-      appender.setRegion(AWS.region.getName)
-      appender.setStreamName(streamName)
-      appender.setContext(context)
-      appender.setLayout(layout)
-      appender.setRoleToAssumeArn(stsRole)
-      appender.start()
+        val appender = new KinesisAppender[ILoggingEvent]()
+        appender.setBufferSize(BUFFER_SIZE)
+        appender.setRegion(AWS.region.getName)
+        appender.setStreamName(streamName)
+        appender.setContext(context)
+        appender.setLayout(layout)
+        appender.setRoleToAssumeArn(stsRole)
+        appender.start()
 
-      rootLogger.addAppender(appender)
+        rootLogger.addAppender(appender)
+        rootLogger.info("Configured Logback")
+      }
+    } recover {
+      case e => rootLogger.error("LogConfig Failed!", e)
     }
   }
 }
