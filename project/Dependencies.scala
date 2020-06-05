@@ -61,4 +61,10 @@ object Dependencies {
   val cryptoDependencies = Seq(
     "org.bouncycastle" % "bcprov-jdk15on" % "1.60"
   )
+
+  val permissionsClientVersion = "2.0"
+
+  val permissionsDependencies = Seq(
+    "com.gu" %% "editorial-permissions-client" % permissionsClientVersion
+  )
 }

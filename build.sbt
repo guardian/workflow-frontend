@@ -66,6 +66,7 @@ lazy val root = playProject(application)
       ++ akkaDependencies
       ++ testDependencies
       ++ jsonDependencies
+      ++ permissionsDependencies
   )
   .settings(libraryDependencies += filters)
   .settings(playDefaultPort := 9090)
