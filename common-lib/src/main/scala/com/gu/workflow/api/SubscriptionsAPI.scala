@@ -1,13 +1,14 @@
 package com.gu.workflow.api
 
 import java.nio.charset.StandardCharsets
+import java.security.Security
 
 import com.gu.workflow.util.{Dynamo, Prod, Stage}
 import io.circe.syntax._
 import models.{Subscription, SubscriptionEndpoint, SubscriptionUpdate}
 import nl.martijndwars.webpush.{Notification, PushService}
 import play.api.Logging
-
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import scala.collection.JavaConverters._
 
 class SubscriptionsAPI(stage: Stage, webPushPublicKey: String, webPushPrivateKey: String) extends Dynamo with Logging {
@@ -18,6 +19,7 @@ class SubscriptionsAPI(stage: Stage, webPushPublicKey: String, webPushPrivateKey
 
   private val table = dynamoDb.getTable(tableName)
 
+  Security.addProvider(new BouncyCastleProvider())
   private val pushService = new PushService(webPushPublicKey, webPushPrivateKey, "mailto:digitalcms.bugs@guardian.co.uk")
 
   def get(id: String): Option[Subscription] = {

@@ -12,7 +12,11 @@ class AppLoader extends ApplicationLoader {
     if (config.isDev && config.localLogShipping) {
       LogConfig.initLocalLogShipping(config.sessionId)
     }
-    LogConfig.init(config.sessionId, config.loggingStreamName, config.loggingRole)
+
+    (config.loggingStreamName, config.loggingRole) match {
+      case (Some(streamName), Some(role)) => LogConfig.init(config.sessionId, streamName, role)
+      case _ =>
+    }
 
     new AppComponents(context).application
   }

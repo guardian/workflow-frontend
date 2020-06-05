@@ -52,6 +52,7 @@ lazy val commonLib = project("common-lib")
       ++ jsonDependencies
       ++ webPushDependencies
       ++ cacheDependencies
+      ++ cryptoDependencies
   )
 
 val application = "workflow-frontend"

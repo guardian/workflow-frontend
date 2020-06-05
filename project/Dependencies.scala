@@ -25,7 +25,7 @@ object Dependencies {
     // so use the latest version that still has it
     // TODO move to latest version of akka-agent
     "com.typesafe.akka" %% "akka-agent" % "2.4.20",
-    "com.typesafe.akka" %% "akka-slf4j" % "2.6.5"
+    "com.typesafe.akka" %% "akka-slf4j" % "2.4.20"
   )
 
   val authDependencies = Seq(
@@ -56,5 +56,9 @@ object Dependencies {
 
   val cacheDependencies = Seq(
     "com.github.cb372" %% "scalacache-caffeine" % "0.9.3"
+  )
+
+  val cryptoDependencies = Seq(
+    "org.bouncycastle" % "bcprov-jdk15on" % "1.60"
   )
 }
