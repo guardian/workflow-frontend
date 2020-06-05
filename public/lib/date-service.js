@@ -137,6 +137,22 @@ angular.module('wfDateService', ['wfLocationService'])
         }
 
         /**
+         * Minuses a second from a "from" date
+         * This allows us to filter content dates within a range without exlcuding those equal to the "from" value.
+         * The content API removes any data with a date value equal to the "from" value when querying.
+         * 
+         * @param {Date} fromDate
+         * 
+         * @return {Date}
+         */
+        getFromDate(fromDate){
+            if(!!fromDate && moment(fromDate).isValid()){
+                return moment(fromDate).subtract(1, 'seconds').toDate();
+            }
+            return null;
+        }
+
+        /**
          * Parses a date range using simple natural language strings
          * (eg: "tomorrow") and explicit standard date formatted date strings,
          * such as in YYYY-MM-DD.
