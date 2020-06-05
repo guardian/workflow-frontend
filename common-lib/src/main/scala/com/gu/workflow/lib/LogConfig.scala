@@ -79,6 +79,7 @@ object LogConfig extends AwsInstanceTags {
         appender.setContext(context)
         appender.setLayout(layout)
         appender.setRoleToAssumeArn(stsRole)
+        appender.setCredentialsProvider(buildCredentialsProvider(stsRole))
         appender.start()
 
         rootLogger.addAppender(appender)
@@ -87,5 +88,14 @@ object LogConfig extends AwsInstanceTags {
     } recover {
       case e => rootLogger.error("LogConfig Failed!", e)
     }
+  }
+
+  private def buildCredentialsProvider(stsRole: String) = {
+    val random = new SecureRandom()
+    val sessionId = s"session${random.nextDouble()}"
+
+    val instanceProvider = InstanceProfileCredentialsProvider.getInstance
+    val stsClient = AWSSecurityTokenServiceClientBuilder.standard.withCredentials(instanceProvider).build
+    new STSAssumeRoleSessionCredentialsProvider.Builder(stsRole, sessionId).withStsClient(stsClient).build
   }
 }

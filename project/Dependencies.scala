@@ -12,7 +12,7 @@ object Dependencies {
   )
 
   val awsDependencies = Seq(
-    "com.gu" % "kinesis-logback-appender" % "2.0.0",
+    "com.gu" % "kinesis-logback-appender" % "1.4.4",
     "com.amazonaws" % "aws-java-sdk-dynamodb" % awsVersion,
     "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
     "com.amazonaws" % "aws-java-sdk-ec2" % awsVersion,
