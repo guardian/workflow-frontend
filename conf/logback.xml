@@ -1,13 +1,18 @@
 <configuration>
-
     <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
 
+    <if condition='property("STAGE").contains("DEV")'>
+        <then>
+            <property name="LOGS_LOCATION" value="${application.home:-.}/logs" />
+        </then>
+    </if>
+
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${application.home:-.}/logs/application.log</file>
+        <file>${LOGS_LOCATION:-logs}/application.log</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <fileNamePattern>
-                ${application.home:-.}/logs/application.log.%i
+                ${LOGS_LOCATION:-logs}/application.log.%i
             </fileNamePattern>
             <minIndex>1</minIndex>
             <maxIndex>30</maxIndex>
