@@ -2,7 +2,7 @@ package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.pandomainauth.action.UserRequest
-import com.gu.workflow.api.{SectionsAPI, StubAPI}
+import com.gu.workflow.api.{ApiUtils, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.DBToAPIResponse.getResponse
 import com.gu.workflow.lib.{ContentAPI, Priorities, StatusDatabase}
 import com.gu.workflow.util.{SharedSecretAuth, StubDecorator}
@@ -15,12 +15,12 @@ import models.EditorialSupportStaff._
 import models.api.{ApiError, ApiResponseFt}
 import models.{Flag, _}
 import org.joda.time.DateTime
-import play.api.{Logger, Logging}
+import play.api.Logging
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 class Api(
   stubsApi: StubAPI,
@@ -30,9 +30,7 @@ class Api(
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
-) extends BaseController with PanDomainAuthActions with SharedSecretAuth with Logging {
-
-  import stubsApi.{extractDataResponse, extractDataResponseOpt, extractResponse, readJsonFromRequestResponse}
+) extends BaseController with PanDomainAuthActions with SharedSecretAuth with Logging with ApiUtils {
 
   val contentAPI = new ContentAPI(capiPreviewRole = config.capiPreviewRole, apiRoot = config.capiPreviewIamUrl, ws = wsClient)
   val stubDecorator = new StubDecorator(contentAPI)
