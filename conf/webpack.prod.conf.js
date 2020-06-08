@@ -5,6 +5,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = function() {
   return Merge(CommonConfig, {
+    mode:'production',
     optimization: {
       minimize: true,
       minimizer: [new TerserPlugin({
