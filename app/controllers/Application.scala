@@ -102,7 +102,7 @@ class Application(
           "query" -> "tracking/commissioningdesk/",
           "type" -> "tracking",
           "searchField" -> "path"
-        )
+        ).toList
       )
     }
     yield {

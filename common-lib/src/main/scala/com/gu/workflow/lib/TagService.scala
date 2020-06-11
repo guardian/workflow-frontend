@@ -20,9 +20,9 @@ class TagService(
   override val apiRoot: String,
   override val ws: WSClient
 ) extends ApiUtils with WSUtils with Logging {
-  def getTags(params:  Map[String, String]): Future[List[Tag]] = {
+  def getTags(params: List[(String, String)]): Future[List[Tag]] = {
     for {
-      response <- getRequest("hyper/tags", params.toList)
+      response <- getRequest("hyper/tags", params)
       json <- parseBody(response.body).asFutureOption("Error extracting the tag response.")
     } yield {
       json.getOrElse(Json.Null).hcursor.downField("data").as[List[TagArrayItem]] match {
