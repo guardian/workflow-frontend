@@ -1,10 +1,15 @@
 /* global module:false, __dirname:false */
 
-var path = require('path');
-var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
 
 module.exports = {
+    mode:'development',
+    optimization: {
+        minimize: false
+    },
     entry: {
         app: './public/app.js',
         sw: './public/sw.js',
@@ -14,12 +19,16 @@ module.exports = {
         filename: '[name].bundle.js',
         path: path.join(__dirname, '..', 'public', 'build'),
     },
+    devtool: 'source-map',
     module: {
-        loaders: [
+        rules: [
             {
-                test:    /\.js$/,
+                test: /\.(js|jsx)$/,
+                resolve: {
+                    extensions: ['.js', '.jsx']
+                },
                 exclude: /node_modules/,
-                loaders: ['babel-loader']
+                use: { loader: 'babel-loader' }
             },
             {
               test: /\.(html|svg)$/,
@@ -27,23 +36,15 @@ module.exports = {
               loader: 'html-loader'
             },
             {
-              test: /\.json$/,
-              exclude: /node_modules/,
-              use: 'json-loader'
-            },
-            {
-                test: /\.scss$/,
-                loader: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: 'css-loader?sourceMap!sass-loader?sourceMap'
-                })
-            },
-            {
-                test: /\.css$/,
-                loader: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: 'css-loader?sourceMap'
-                })
+                test: /.s?css$/,
+                resolve: {
+                    extensions: ['scss', 'css']
+                },
+                use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { sourceMap: true } }, {
+                    loader: 'sass-loader', options: {
+                        sourceMap: true,
+                    }
+                }],
             },
             {
                 test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?$/,
@@ -67,7 +68,7 @@ module.exports = {
     },
 
     plugins: [
-        new ExtractTextPlugin('main.css')
+        new MiniCssExtractPlugin(),
+        new ManifestPlugin()
     ]
 };
-
