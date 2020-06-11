@@ -13,7 +13,7 @@ class CAPIService(
   override val panDomainSettings: PanDomainAuthSettingsRefresher
 ) extends BaseController with PanDomainAuthActions {
 
-  private val contentApi = new ContentAPI(config.capiPreviewIamUrl, config.capiPreviewIamUrl, wsClient)
+  private val contentApi = new ContentAPI(config.capiPreviewRole, config.capiPreviewIamUrl, wsClient)
 
   def previewCapiProxy(path: String): Action[AnyContent] = APIAuthAction.async { request =>
     import scala.concurrent.ExecutionContext.Implicits.global
