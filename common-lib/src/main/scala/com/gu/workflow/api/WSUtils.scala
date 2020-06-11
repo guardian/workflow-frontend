@@ -12,8 +12,7 @@ trait WSUtils {
 
   protected def buildRequest(path: String): WSRequest = ws.url(s"$apiRoot/$path")
 
-  def deleteRequest(path: String): Future[WSResponse] =
-    buildRequest(path).delete()
+  def deleteRequest(path: String): Future[WSResponse] = buildRequest(path).delete()
 
   def postRequest(path: String, data: Json = Json.Null): Future[WSResponse] =
     buildRequest(path).withHttpHeaders("Content-Type" -> "application/json").post(data.toString())
@@ -21,12 +20,11 @@ trait WSUtils {
   def putRequest(path: String, data: Json = Json.Null): Future[WSResponse] =
     buildRequest(path).withHttpHeaders("Content-Type" -> "application/json").put(data.toString())
 
-  def getRequest(path: String, params: List[(String, String)] = List.empty, headers: List[(String, String)] = List.empty, timeout: Duration = 2.seconds): Future[WSResponse] = {
-    val request = buildRequest(path).withRequestTimeout(timeout)
-
-    if(params.nonEmpty) request.withQueryStringParameters(params: _*)
-    if (headers.nonEmpty) request.withHttpHeaders(headers: _*)
-
-    request.get()
+  def getRequest(path: String, params: List[(String, String)] = List.empty, headers: List[(String, String)] = List.empty): Future[WSResponse] = {
+    val baseRequest = buildRequest(path)
+    val requestWithQueryString = if(params.nonEmpty) baseRequest.withQueryStringParameters(params: _*) else baseRequest
+    val finalRequest = if(headers.nonEmpty) requestWithQueryString.withHttpHeaders(headers: _*) else requestWithQueryString
+    
+    finalRequest.get()
   }
 }
