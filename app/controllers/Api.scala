@@ -9,7 +9,6 @@ import com.gu.workflow.util.{SharedSecretAuth, StubDecorator}
 import config.Config
 import io.circe.syntax._
 import io.circe.{Encoder, Json}
-import lib.CORSable
 import lib.Responses._
 import models.EditorialSupportStaff._
 import models.api.{ApiError, ApiResponseFt}
@@ -35,19 +34,9 @@ class Api(
   val contentAPI = new ContentAPI(capiPreviewRole = config.capiPreviewRole, apiRoot = config.capiPreviewIamUrl, ws = wsClient)
   val stubDecorator = new StubDecorator(contentAPI)
 
-  val defaultCorsAble: Set[String] = Set(config.composerUrl)
-  val atomCorsAble: Set[String] = defaultCorsAble ++ config.mediaAtomMakerUrls ++ config.atomWorkshopUrls
-
   override def secret: String = config.sharedSecret
 
   implicit val flatStubWrites: Encoder[Stub] = Stub.flatJsonEncoder
-
-  def allowCORSAccess(methods: String, args: Any*) = CORSable(atomCorsAble) {
-    Action { implicit req =>
-      val requestedHeaders = req.headers("Access-Control-Request-Headers")
-      NoContent.withHeaders("Access-Control-Allow-Methods" -> methods, "Access-Control-Allow-Headers" -> requestedHeaders)
-    }
-  }
 
   // can be hidden behind multiple auth endpoints
   private def getContentBlock[R <: Request[_]] = { implicit req: R =>
@@ -65,7 +54,7 @@ class Api(
 
   def content = APIAuthAction.async(getContentBlock)
 
-  def getContentByComposerId(composerId: String) = CORSable(defaultCorsAble) {
+  def getContentByComposerId(composerId: String) = {
       APIAuthAction.async { implicit request =>
         ApiResponseFt[Option[Stub]](for {
           item <- getResponse(stubsApi.getStubByComposerId(stubDecorator, composerId))
@@ -73,7 +62,7 @@ class Api(
       )}
     }
 
-  def getContentByEditorId(editorId: String) = CORSable(atomCorsAble) {
+  def getContentByEditorId(editorId: String) = {
     APIAuthAction.async { implicit request =>
       ApiResponseFt[Option[Stub]](for {
         item <- getResponse(stubsApi.getStubByEditorId(editorId))
@@ -99,7 +88,7 @@ class Api(
   }
 
 
-  def createContent() =  CORSable(atomCorsAble) {
+  def createContent() = {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -109,7 +98,7 @@ class Api(
     )}
   }
 
-  def putStub(stubId: Long) =  CORSable(atomCorsAble) {
+  def putStub(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -145,7 +134,7 @@ class Api(
     } yield id
   )}
 
-  def putStubNote(stubId: Long) = CORSable(atomCorsAble) {
+  def putStubNote(stubId: Long) = {
     def getNoteOpt(input: String): Option[String] = if(input.length > 0) Some(input) else None
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
@@ -157,7 +146,7 @@ class Api(
     )}
   }
 
-  def putStubProdOffice(stubId: Long) = CORSable(atomCorsAble) {
+  def putStubProdOffice(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -167,7 +156,7 @@ class Api(
     )}
   }
 
-  def putStubStatus(stubId: Long) = CORSable(atomCorsAble) {
+  def putStubStatus(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -177,7 +166,7 @@ class Api(
     )}
   }
 
-  def putStubCommissionedLength(stubId: Long) = CORSable(atomCorsAble) {
+  def putStubCommissionedLength(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -187,7 +176,7 @@ class Api(
       )}
   }
 
-  def putStubStatusByComposerId(composerId: String) = CORSable(defaultCorsAble) {
+  def putStubStatusByComposerId(composerId: String) = {
     APIAuthAction.async { request =>
       ApiResponseFt[String](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -197,7 +186,7 @@ class Api(
     )}
   }
 
-  def putStubSection(stubId: Long) = CORSable(atomCorsAble) {
+  def putStubSection(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -207,7 +196,7 @@ class Api(
     )}
   }
 
-  def putStubWorkingTitle(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubWorkingTitle(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -217,7 +206,7 @@ class Api(
     )}
   }
 
-  def putStubPriority(stubId: Long) = CORSable(atomCorsAble) {
+  def putStubPriority(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -227,7 +216,7 @@ class Api(
     )}
   }
 
-  def putStubLegalStatus(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubLegalStatus(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -237,7 +226,7 @@ class Api(
     )}
   }
 
-  def putStubTrashed(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubTrashed(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
@@ -247,7 +236,7 @@ class Api(
     )}
   }
 
-  def deleteContent(composerId: String) = CORSable(defaultCorsAble) {
+  def deleteContent(composerId: String) = {
     APIAuthAction {
       stubsApi.deleteStubs(Seq(composerId)).fold(err =>
         logger.error(s"failed to delete content with composer id: $composerId"), identity)
@@ -261,7 +250,7 @@ class Api(
     NoContent
   }
 
-  def statusus = CORSable(atomCorsAble)  {
+  def statusus = {
     APIAuthAction.async { implicit req =>
       for(statuses <- StatusDatabase.statuses) yield {
         Ok(renderJsonResponse(statuses).asJson.noSpaces)
@@ -269,7 +258,7 @@ class Api(
     }
   }
 
-  def sections = CORSable(atomCorsAble) {
+  def sections = {
     APIAuthAction.async { _ =>
       ApiResponseFt[List[Section]](for {
         sections <- sectionsApi.getSections
@@ -277,19 +266,19 @@ class Api(
     )}
   }
 
-  def allowedAtomTypes = CORSable(atomCorsAble) {
+  def allowedAtomTypes = {
     APIAuthAction {
       Ok(config.atomTypes.asJson.noSpaces)
     }
   }
 
-  def priorities = CORSable(atomCorsAble) {
+  def priorities = {
     APIAuthAction {
       Ok(Priorities.all.asJson.noSpaces)
     }
   }
 
-  def editorialSupportTeams = CORSable(defaultCorsAble) {
+  def editorialSupportTeams = {
     APIAuthAction {
       val staff = editorialSupportTeamsController.listStaff().filter(_.name.nonEmpty)
       val teams = EditorialSupportStaff.groupByTeams(staff)
