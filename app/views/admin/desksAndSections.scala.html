@@ -1,4 +1,4 @@
-@(config:io.circe.Json, sections: List[Section], addSectionForm: Form[Section], desks: List[Desk], addDeskForm: Form[Desk], selectedDeskOption: Option[Desk])(implicit messagesProvider: MessagesProvider)
+@(config:io.circe.Json, sections: List[Section], addSectionForm: Form[Section], desks: List[Desk], addDeskForm: Form[Desk], selectedDeskOption: Option[Desk])(implicit messagesProvider: MessagesProvider, request: RequestHeader)
 
 @import helper._
 
@@ -20,6 +20,7 @@
         <div class="form">
             <h3>Add a new desk</h3>
             @form(action=routes.Admin.addDesk){
+                @CSRF.formField
                 @inputText(addDeskForm("name"))
                 <input type="hidden" name="id" value="0">
                 <input type="hidden" name="selected" value="false">
@@ -35,7 +36,7 @@
         @selectedDeskOption match {
             case Some(selectedDesk) => {
                 @form(action=routes.Admin.assignSectionToDesk){
-
+                    @CSRF.formField
                     <input type="hidden" name="desk" value="@selectedDesk.id"/>
 
                     <ul class="list-unstyled list-group">
@@ -68,6 +69,7 @@
         <div class="form">
             <h3>Add a new section</h3>
             @form(action=routes.Admin.addSection){
+                @CSRF.formField
                 @inputText(addSectionForm("name"))
                 <input type="hidden" name="id" value="0">
                 <input type="hidden" name="selected" value="false">

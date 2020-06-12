@@ -1,4 +1,4 @@
-@(subscriptions: List[Subscription])
+@(subscriptions: List[Subscription])(implicit request: RequestHeader)
 
 @import helper._
 
@@ -18,18 +18,21 @@
                     <div class="support-admin-button-container">
                         @if(sub.schedule.enabled) {
                             @form(action = routes.Notifications.updateSubscription) {
+                                @CSRF.formField
                                 <input type="hidden" name="enabled" value="false" />
                                 <input type="hidden" name="id" value="@Subscription.id(sub)" />
                                 <input type="submit" class="btn btn-sm" value="Disable" />
                             }
                         } else {
                             @form(action = routes.Notifications.updateSubscription) {
+                                @CSRF.formField
                                 <input type="hidden" name="enabled" value="true" />
                                 <input type="hidden" name="id" value="@Subscription.id(sub)" />
                                 <input type="submit" class="btn btn-sm btn-info" value="Enable" />
                             }
                         }
                         @form(action = routes.Notifications.updateSubscription) {
+                            @CSRF.formField
                             <input type="hidden" name="delete" value="true" />
                             <input type="hidden" name="id" value="@Subscription.id(sub)" />
                             <input type="submit" class="btn btn-sm btn-info" value="Delete" />

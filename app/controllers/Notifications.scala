@@ -21,12 +21,12 @@ class Notifications(
 
   private val subsApi = new SubscriptionsAPI(config.stage, config.webPushPublicKey, config.webPushPrivateKey)
 
-  def subscriptions = AuthAction { request =>
+  def subscriptions = AuthAction { implicit request =>
     val subs = getUserSubs(request.user)
     Ok(views.html.subscriptions(subs.toList))
   }
 
-  def updateSubscription = AuthAction(parse.form(Subscription.form)) { request =>
+  def updateSubscription = AuthAction(parse.form(Subscription.form)) { implicit request =>
     val (id, enabled, delete) = request.body
 
     if(delete.contains(true)) {
