@@ -66,7 +66,7 @@ angular.module('workflow',
 
         //'angular-loading-bar',
     ])
-    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', '$animateProvider', "$provide", function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider, $animateProvider, $provide) {
+    .config(['$stateProvider', '$urlRouterProvider', '$compileProvider', '$locationProvider', '$animateProvider', "$provide", "$httpProvider", function ($stateProvider, $urlRouterProvider, $compileProvider, $locationProvider, $animateProvider, $provide, $httpProvider) {
         // TODO: remember user's state and redirect there on default '' route
         $urlRouterProvider.when('', '/dashboard');
 
@@ -141,6 +141,11 @@ angular.module('workflow',
             requireBase: false
         });
 
+        // Use a custom header for the csrf token.
+        // `Csrf-Token` is what Play looks for by default.
+        // See https://www.playframework.com/documentation/2.7.x/ScalaCsrf#Plays-CSRF-protection
+        // See https://code.angularjs.org/1.5.11/docs/api/ng/service/$http#usage
+        $httpProvider.defaults.xsrfHeaderName = 'Csrf-Token';
     }])
 
     // Environment specific globals
