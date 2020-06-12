@@ -1,15 +1,22 @@
 package controllers
 
+import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.workflow.util.Dynamo
 import config.Config
 import models.{EditorialSupportStaff, StaffUpdate}
-import play.api.mvc.Controller
+import play.api.libs.ws.WSClient
+import play.api.mvc.{BaseController, ControllerComponents}
 
 import scala.collection.JavaConverters._
 
-object EditorialSupportTeamsController extends Controller with PanDomainAuthActions with Dynamo {
+class EditorialSupportTeamsController(
+  override val config: Config,
+  override val controllerComponents: ControllerComponents,
+  override val wsClient: WSClient,
+  override val panDomainSettings: PanDomainAuthSettingsRefresher
+) extends BaseController with PanDomainAuthActions with Dynamo {
 
-  private val editorialSupportTable = dynamoDb.getTable(Config.editorialSupportDynamoTable)
+  private val editorialSupportTable = dynamoDb.getTable(config.editorialSupportDynamoTable)
 
   def listStaff(): List[EditorialSupportStaff] = {
     val items = editorialSupportTable.scan().asScala.toList

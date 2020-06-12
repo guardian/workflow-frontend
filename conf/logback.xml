@@ -1,14 +1,10 @@
 <configuration>
-
     <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
-
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${application.home}/logs/application.log</file>
+        <file>${application.home:-.}/logs/application.log</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <fileNamePattern>
-                ${application.home}/logs/application.log.%i
-            </fileNamePattern>
+            <fileNamePattern>${application.home:-.}/logs/application.log.%i</fileNamePattern>
             <minIndex>1</minIndex>
             <maxIndex>30</maxIndex>
         </rollingPolicy>

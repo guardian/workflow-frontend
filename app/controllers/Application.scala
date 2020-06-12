@@ -1,40 +1,51 @@
  package controllers
 
-import cats.syntax.either._
+import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import com.gu.workflow.lib.{Priorities, StatusDatabase, TagService}
 import config.Config
-import config.Config.defaultExecutionContext
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, parser}
-import lib.{AtomWorkshopConfig, Composer, MediaAtomMakerConfig}
+import lib.{AtomWorkshopConfig, ComposerConfig, MediaAtomMakerConfig}
 import models.{Desk, EditorialSupportStaff, Section}
-import play.api.Logger
+import play.api.{Logger, Logging}
+import play.api.libs.ws.WSClient
 import play.api.mvc._
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-object Application extends Controller with PanDomainAuthActions {
+class Application(
+  val editorialSupportTeams: EditorialSupportTeamsController,
+  val sectionsAPI: SectionsAPI,
+  val tagService: TagService,
+  val desksAPI: DesksAPI,
+  val sectionDeskMappingsAPI: SectionDeskMappingsAPI,
+  override val config: Config,
+  override val controllerComponents: ControllerComponents,
+  override val wsClient: WSClient,
+  override val panDomainSettings: PanDomainAuthSettingsRefresher
+) extends BaseController with PanDomainAuthActions with Logging {
 
   def getSortedSections(): Future[List[Section]] = {
-    SectionsAPI.getSections.asFuture.map {
-      case Left(err) => Logger.error(s"error fetching sections: $err"); List()
+    sectionsAPI.getSections.asFuture.map {
+      case Left(err) => logger.error(s"error fetching sections: $err"); List()
       case Right(sections) => sections.sortBy(_.name)
     }
   }
 
   def getSortedDesks(): Future[List[Desk]] = {
-    DesksAPI.getDesks.asFuture.map {
+    desksAPI.getDesks.asFuture.map {
       case Right(desks) => desks.sortBy(_.name)
-      case Left(err) => Logger.error(s"error fetching desks: $err"); List()
+      case Left(err) => logger.error(s"error fetching desks: $err"); List()
     }
   }
 
   def getSectionsInDesks(): Future[List[models.api.SectionsInDeskMapping]] = {
-    SectionDeskMappingsAPI.getSectionsInDesks.asFuture.map {
+    sectionDeskMappingsAPI.getSectionsInDesks.asFuture.map {
       case Right(mappings) => mappings
-      case Left(err) => Logger.error(s"error fetching section desk mappings: $err"); List()
+      case Left(err) => logger.error(s"error fetching section desk mappings: $err"); List()
     }
   }
 
@@ -57,7 +68,7 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def editorialSupport = AuthAction { request =>
-    val staff = EditorialSupportTeamsController.listStaff()
+    val staff = editorialSupportTeams.listStaff()
     val teams = EditorialSupportStaff.groupByTeams(staff)
 
     val fronts = EditorialSupportStaff.getTeam("Fronts", teams)
@@ -67,7 +78,7 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def updateEditorialSupport = AuthAction(parse.form(EditorialSupportStaff.form)) { implicit request =>
-    EditorialSupportTeamsController.updateStaff(request.body)
+    editorialSupportTeams.updateStaff(request.body)
     // Get the browser to reload the page once we've sucessfully updated
     Redirect(routes.Application.editorialSupport())
   }
@@ -80,58 +91,63 @@ object Application extends Controller with PanDomainAuthActions {
   }
 
   def app(title: String) = AuthAction.async { request =>
-
     for {
       statuses <- StatusDatabase.statuses
       sections <-  getSortedSections()
       desks <- getSortedDesks()
       sectionsInDesks <- getSectionsInDesks()
-      commissioningDesks <- TagService.getTags(Config.tagManagerUrl+
-        "/hyper/tags?limit=200&query=tracking/commissioningdesk/&type=tracking&searchField=path")
+      commissioningDesks <- tagService.getTags(
+        Map(
+          "limit" -> "200",
+          "query" -> "tracking/commissioningdesk/",
+          "type" -> "tracking",
+          "searchField" -> "path"
+        ).toList
+      )
     }
     yield {
       val user = request.user
 
-      val config = Json.obj(
+      val jsonConfig = Json.obj(
 
         ("composer", Json.obj(
-          ("create", Json.fromString(Composer.newContentUrl)),
-          ("view", Json.fromString(Composer.adminUrl)),
-          ("details", Json.fromString(Composer.contentDetails)),
-          ("templates", Json.fromString(Composer.templates))
+          ("create", Json.fromString(ComposerConfig(config).newContentUrl)),
+          ("view", Json.fromString(ComposerConfig(config).adminUrl)),
+          ("details", Json.fromString(ComposerConfig(config).contentDetails)),
+          ("templates", Json.fromString(ComposerConfig(config).templates))
         )),
         ("mediaAtomMaker", Json.obj(
-          ("create", Json.fromString(MediaAtomMakerConfig.newContentUrl)),
-          ("view", Json.fromString(MediaAtomMakerConfig.viewContentUrl))
+          ("create", Json.fromString(MediaAtomMakerConfig(config).newContentUrl)),
+          ("view", Json.fromString(MediaAtomMakerConfig(config).viewContentUrl))
         )),
         ("atomWorkshop", Json.obj(
-          ("create", Json.fromString(AtomWorkshopConfig.newContentUrl)),
-          ("view", Json.fromString(AtomWorkshopConfig.viewContentUrl))
+          ("create", Json.fromString(AtomWorkshopConfig(config).newContentUrl)),
+          ("view", Json.fromString(AtomWorkshopConfig(config).viewContentUrl))
         )),
         ("statuses", statuses.asJson),
         ("desks", desks.asJson),
         ("sections", sections.asJson),
         ("sectionsInDesks", sectionsInDesks.asJson), // TODO: Combine desks & sectionsInDesks
         ("priorities", Priorities.all.asJson),
-        ("viewerUrl", Json.fromString(Config.viewerUrl)),
-        ("storyPackagesUrl", Json.fromString(Config.storyPackagesUrl)),
-        ("presenceUrl", Json.fromString(Config.presenceUrl)),
-        ("preferencesUrl", Json.fromString(Config.preferencesUrl)),
+        ("viewerUrl", Json.fromString(config.viewerUrl)),
+        ("storyPackagesUrl", Json.fromString(config.storyPackagesUrl)),
+        ("presenceUrl", Json.fromString(config.presenceUrl)),
+        ("preferencesUrl", Json.fromString(config.preferencesUrl)),
         ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
-        ("incopyOpenUrl", Json.fromString(Config.incopyOpenUrl)),
-        ("incopyExportUrl", Json.fromString(Config.incopyExportUrl)),
-        ("indesignExportUrl", Json.fromString(Config.indesignExportUrl)),
-        ("composerRestorerUrl", Json.fromString(Config.composerRestorerUrl)),
+        ("incopyOpenUrl", Json.fromString(config.incopyOpenUrl)),
+        ("incopyExportUrl", Json.fromString(config.incopyExportUrl)),
+        ("indesignExportUrl", Json.fromString(config.indesignExportUrl)),
+        ("composerRestorerUrl", Json.fromString(config.composerRestorerUrl)),
         ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
-        ("atomTypes", Config.atomTypes.asJson),
-        ("sessionId", Json.fromString(Config.sessionId)),
-        ("gaId", Json.fromString(Config.googleTrackingId)),
+        ("atomTypes", config.atomTypes.asJson),
+        ("sessionId", Json.fromString(config.sessionId)),
+        ("gaId", Json.fromString(config.googleTrackingId)),
         ("webPush", Json.obj(
-          ("publicKey", Json.fromString(Config.webPushPublicKey))
+          ("publicKey", Json.fromString(config.webPushPublicKey))
         ))
       )
 
-      Ok(views.html.app(title, Some(user), config, Config.googleTrackingId, Config.presenceClientLib))
+      Ok(views.html.app(title, Some(user), jsonConfig, config.googleTrackingId, config.presenceClientLib))
     }
   }
 }

@@ -1,35 +1,13 @@
 package com.gu.workflow.api
 
-import com.gu.workflow.lib.CommonConfig
 import io.circe.syntax._
 import io.circe.{Decoder, Json, parser}
 import models.Stub
 import models.Stub.flatJsonDecoder
 import models.api._
-import play.api.Play.current
-import play.api.libs.ws.{WS, WSRequest, WSResponse}
 import play.api.mvc.AnyContent
 
-import scala.concurrent.Future
-
-object ApiUtils {
-  def buildRequest(path: String): WSRequest = WS.url(s"${CommonConfig.apiRoot}/$path")
-
-  def deleteRequest(path: String): Future[WSResponse] =
-    buildRequest(path).delete()
-
-  def postRequest(path: String, data: Json = Json.Null): Future[WSResponse] =
-    buildRequest(path).withHeaders("Content-Type" -> "application/json").post(data.toString())
-
-  def putRequest(path: String, data: Json = Json.Null): Future[WSResponse] =
-    buildRequest(path).withHeaders("Content-Type" -> "application/json").put(data.toString())
-
-  def getRequest(path: String, params: Option[Seq[(String, String)]] = None):
-      Future[WSResponse] =
-    if(params.isDefined) {
-      buildRequest(path).withQueryString(params.get.toList: _*).get()
-    } else buildRequest(path).get()
-
+trait ApiUtils {
   def readJsonFromRequestResponse(requestBody: AnyContent): ApiResponseFt[Json] = requestBody.asJson.map(_.toString) match {
     case Some(str) =>
       parser.parse(str).fold(

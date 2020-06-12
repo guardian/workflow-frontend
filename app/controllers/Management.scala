@@ -1,12 +1,11 @@
 package controllers
 
-import play.api.mvc.{Action, Controller}
+import play.api.mvc._
 
-
-object Management extends Controller {
-
-  def healthCheck = Action {
+class Management(
+  override val controllerComponents: ControllerComponents
+) extends BaseController {
+  def healthCheck: Action[AnyContent] = Action {
     Ok(views.html.healthcheck())
   }
-
 }

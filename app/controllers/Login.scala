@@ -1,14 +1,22 @@
 package controllers
 
+import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
+import config.Config
+import play.api.libs.ws.WSClient
 import play.api.mvc._
-import scala.concurrent.Future
 
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object Login extends Controller with PanDomainAuthActions {
+class Login(
+  override val config: Config,
+  override val controllerComponents: ControllerComponents,
+  override val wsClient: WSClient,
+  override val panDomainSettings: PanDomainAuthSettingsRefresher
+) extends BaseController with PanDomainAuthActions {
 
   def oauthCallback = Action.async { implicit request =>
-    processGoogleCallback()
+    processOAuthCallback()
   }
 
   def status = AuthAction { request =>

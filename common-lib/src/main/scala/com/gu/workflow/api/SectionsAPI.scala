@@ -2,16 +2,17 @@ package com.gu.workflow.api
 
 import java.net.URLEncoder
 
-import com.gu.workflow.api.ApiUtils._
 import io.circe.syntax._
 import models.api.ApiResponseFt
 import models.{Section, SerialisedSection}
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object SectionsAPI {
-
-  // Sections
+class SectionsAPI(
+  override val apiRoot: String,
+  override val ws: WSClient
+) extends ApiUtils with WSUtils {
 
   def getSections: ApiResponseFt[List[Section]] =
     for {

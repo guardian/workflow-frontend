@@ -2,20 +2,24 @@ package com.gu.workflow.lib
 
 import java.net.URI
 
-import com.amazonaws.auth.{AWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import com.amazonaws.auth.{AWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
 import com.gu.contentapi.client.IAMSigner
-import play.api.Logger
+import com.gu.workflow.api.{ApiUtils, WSUtils}
 import com.gu.workflow.util.AWS
 import io.circe.parser
-import play.api.Application
-import play.api.libs.ws.{WS, WSResponse}
+import play.api.Logging
+import play.api.libs.ws.{WSClient, WSResponse}
 import scalacache.memoization._
-import concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 
-class ContentAPI(capiPreviewRole: String, capiPreviewIamUrl: String) extends Caching {
+import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
+
+class ContentAPI(
+  capiPreviewRole: String,
+  override val apiRoot: String,
+  override val ws: WSClient
+) extends ApiUtils with WSUtils with Caching with Logging {
 
   private val previewSigner = {
     val capiPreviewCredentials = new AWSCredentialsProviderChain(
@@ -29,24 +33,23 @@ class ContentAPI(capiPreviewRole: String, capiPreviewIamUrl: String) extends Cac
     )
   }
 
-  def getPreview(path: String, request: String)(implicit app:Application): Future[WSResponse] = {
-    val url = s"$capiPreviewIamUrl/$path?$request"
-    val headers = previewSigner.addIAMHeaders(Map.empty, URI.create(url))
-    WS.url(url)
-      .withHeaders(headers.toSeq: _*)
-      .get()
+  private def getHeaders(path: String, params: List[(String, String)]): List[(String, String)] = {
+    val qs = params.map{case (a,b) => s"$a=$b"}.mkString("&")
+    val url = s"$apiRoot/$path?$qs"
+    previewSigner.addIAMHeaders(Map.empty, URI.create(url)).toList
   }
 
-  import play.api.Play.current
+  def getPreview(path: String, params: List[(String, String)]): Future[WSResponse] = {
+    val headers = getHeaders(path, params)
+    getRequest(path, params, headers)
+  }
+
   def getTagInternalName(tagId: Long)(implicit ec: ExecutionContext): Future[Option[String]] = memoize(60.minutes) {
     val path = s"internal-code/tag/$tagId"
-    val request = "page-size=0"
-    val url = s"$capiPreviewIamUrl/$path?$request"
-    val headers = previewSigner.addIAMHeaders(Map.empty, URI.create(url))
-    WS.url(url)
-      .withHeaders(headers.toSeq: _*)
-      .withRequestTimeout(2000) // timeout in millis
-      .get()
+    val params = List(("page-size", "0"))
+    val headers = getHeaders(path, params)
+
+    getRequest(path, params, headers)
       .map(response => parser.parse(response.body))
       .map {
         case Right(a) =>
@@ -58,7 +61,7 @@ class ContentAPI(capiPreviewRole: String, capiPreviewIamUrl: String) extends Cac
               .right
               .get
         case Left(e) =>
-          Logger.warn("Unable to communicate with CAPI", e)
+          logger.warn("Unable to communicate with CAPI", e)
           Some("Print location unavailable")
       }
   }

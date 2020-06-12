@@ -1,13 +1,16 @@
 package com.gu.workflow.api
 
-import com.gu.workflow.api.ApiUtils._
 import models.api.ApiResponseFt
 import models.{Desk, SerialisedDesk}
 import io.circe.syntax._
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object DesksAPI {
+class DesksAPI(
+  override val apiRoot: String,
+  override val ws: WSClient
+) extends ApiUtils with WSUtils {
 
   def getDesks: ApiResponseFt[List[Desk]] =
     for {

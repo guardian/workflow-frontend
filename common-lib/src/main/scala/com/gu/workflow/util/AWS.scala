@@ -7,6 +7,7 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import com.amazonaws.services.dynamodbv2.{AmazonDynamoDB, AmazonDynamoDBClientBuilder}
 import com.amazonaws.services.ec2.model.{DescribeTagsRequest, Filter}
 import com.amazonaws.services.ec2.{AmazonEC2, AmazonEC2ClientBuilder}
+import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import com.amazonaws.util.EC2MetadataUtils
 
 import scala.collection.JavaConverters._
@@ -33,6 +34,14 @@ object AWS {
       .withCredentials(credentialsProvider)
       .withRegion(region.getName)
       .build
+  }
+
+  lazy val S3Client: AmazonS3 = {
+    AmazonS3ClientBuilder
+      .standard()
+      .withCredentials(credentialsProvider)
+      .withRegion(region.getName)
+      .build()
   }
 }
 

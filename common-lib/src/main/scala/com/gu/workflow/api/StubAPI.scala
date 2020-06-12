@@ -1,6 +1,5 @@
 package com.gu.workflow.api
 
-import com.gu.workflow.api.ApiUtils._
 import com.gu.workflow.lib.QueryString
 import com.gu.workflow.util.StubDecorator
 import io.circe.Json
@@ -9,11 +8,15 @@ import models.DateFormat._
 import models.api._
 import models.{ContentItemIds, Flag, Stub}
 import org.joda.time.DateTime
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object StubAPI {
+class StubAPI(
+  override val apiRoot: String,
+  override val ws: WSClient
+) extends ApiUtils with WSUtils {
 
   def createStub(body: Json): ApiResponseFt[ContentUpdate] =
     for {
@@ -200,7 +203,7 @@ object StubAPI {
 
   def getStubs(stubDecorator: StubDecorator, queryString: Map[String, Seq[String]]): ApiResponseFt[ContentResponse] =
     for {
-      res <- ApiResponseFt.Async.Right(getRequest(s"stubs", Some(QueryString.flatten(queryString))))
+      res <- ApiResponseFt.Async.Right(getRequest(s"stubs", QueryString.flatten(queryString)))
       json <- parseBody(res.body)
       contentRes <- extractDataResponse[ContentResponse](json)
       decoratedContentRes <- ApiResponseFt.Async.Right(decorateContent(stubDecorator, contentRes))

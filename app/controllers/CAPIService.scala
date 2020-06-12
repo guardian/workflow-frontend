@@ -1,23 +1,30 @@
 package controllers
 
+import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.workflow.lib.ContentAPI
-import play.api.mvc.Controller
 import config.Config
-import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.libs.ws.WSClient
+import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 
-object CAPIService extends Controller with PanDomainAuthActions{
+class CAPIService(
+  override val config: Config,
+  override val controllerComponents: ControllerComponents,
+  override val wsClient: WSClient,
+  override val panDomainSettings: PanDomainAuthSettingsRefresher
+) extends BaseController with PanDomainAuthActions {
 
-  val contentAPI = new ContentAPI(Config.capiPreviewRole, Config.capiPreviewIamUrl)
+  private val contentApi = new ContentAPI(config.capiPreviewRole, config.capiPreviewIamUrl, wsClient)
 
-  def previewCapiProxy(path: String) = APIAuthAction.async { request =>
+  def previewCapiProxy(path: String): Action[AnyContent] = APIAuthAction.async { request =>
+    import scala.concurrent.ExecutionContext.Implicits.global
 
-    import play.api.Play.current
+    val queryString: List[(String, String)] = request.queryString.toList.map { case (a, b) if b.nonEmpty => (a, b.head) }
 
-    contentAPI.getPreview(path, request.rawQueryString).map(response =>
+    contentApi.getPreview(path, queryString).map(response =>
       response.status match {
         case 200 => Ok(response.json)
         case _ => BadGateway(s"CAPI returned error code ${response.status}")
-      })
+      }
+    )
   }
-
 }

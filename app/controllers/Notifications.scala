@@ -1,24 +1,32 @@
 package controllers
 
+import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.pandomainauth.model.User
 import com.gu.workflow.api.{ApiUtils, SubscriptionsAPI}
 import config.Config
 import models.api.ApiResponseFt
 import models.{Subscription, SubscriptionEndpoint, SubscriptionSchedule}
-import play.api.mvc.Controller
+import play.api.libs.ws.WSClient
+import play.api.mvc.{BaseController, ControllerComponents}
 
-object Notifications extends Controller with PanDomainAuthActions {
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class Notifications(
+  override val config: Config,
+  override val controllerComponents: ControllerComponents,
+  override val wsClient: WSClient,
+  override val panDomainSettings: PanDomainAuthSettingsRefresher
+) extends BaseController with PanDomainAuthActions with ApiUtils {
   import Subscription.endpointDecoder
-  import config.Config.defaultExecutionContext
 
-  private val subsApi = new SubscriptionsAPI(Config.stage, Config.webPushPublicKey, Config.webPushPrivateKey)
+  private val subsApi = new SubscriptionsAPI(config.stage, config.webPushPublicKey, config.webPushPrivateKey)
 
-  def subscriptions = AuthAction { request =>
+  def subscriptions = AuthAction { implicit request =>
     val subs = getUserSubs(request.user)
     Ok(views.html.subscriptions(subs.toList))
   }
 
-  def updateSubscription = AuthAction(parse.form(Subscription.form)) { request =>
+  def updateSubscription = AuthAction(parse.form(Subscription.form)) { implicit request =>
     val (id, enabled, delete) = request.body
 
     if(delete.contains(true)) {
@@ -41,9 +49,9 @@ object Notifications extends Controller with PanDomainAuthActions {
     val userAgent = request.headers.get("User-Agent").getOrElse("unknown")
 
     ApiResponseFt[String](for {
-      json <- ApiUtils.readJsonFromRequestResponse(request.body)
+      json <- readJsonFromRequestResponse(request.body)
 
-      endpoint <- ApiUtils.extractResponse[SubscriptionEndpoint](json)
+      endpoint <- extractResponse[SubscriptionEndpoint](json)
       sub = Subscription(request.user.email, userAgent, qs, endpoint,
         schedule = SubscriptionSchedule(enabled = true), runtime = None)
 

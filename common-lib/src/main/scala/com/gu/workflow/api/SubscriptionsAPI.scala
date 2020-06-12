@@ -1,16 +1,17 @@
 package com.gu.workflow.api
 
 import java.nio.charset.StandardCharsets
+import java.security.Security
 
-import com.gu.workflow.util.{Dynamo, Stage, Prod}
+import com.gu.workflow.util.{Dynamo, Prod, Stage}
 import io.circe.syntax._
 import models.{Subscription, SubscriptionEndpoint, SubscriptionUpdate}
 import nl.martijndwars.webpush.{Notification, PushService}
-import play.api.Logger
-
+import play.api.Logging
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import scala.collection.JavaConverters._
 
-class SubscriptionsAPI(stage: Stage, webPushPublicKey: String, webPushPrivateKey: String) extends Dynamo {
+class SubscriptionsAPI(stage: Stage, webPushPublicKey: String, webPushPrivateKey: String) extends Dynamo with Logging {
   private val tableName = stage match {
     case Prod => "workflow-subscriptions-PROD"
     case _ => "workflow-subscriptions-CODE"
@@ -18,6 +19,7 @@ class SubscriptionsAPI(stage: Stage, webPushPublicKey: String, webPushPrivateKey
 
   private val table = dynamoDb.getTable(tableName)
 
+  Security.addProvider(new BouncyCastleProvider())
   private val pushService = new PushService(webPushPublicKey, webPushPrivateKey, "mailto:digitalcms.bugs@guardian.co.uk")
 
   def get(id: String): Option[Subscription] = {
@@ -49,7 +51,7 @@ class SubscriptionsAPI(stage: Stage, webPushPublicKey: String, webPushPrivateKey
     val resp = pushService.send(notification)
 
     if(resp.getStatusLine.getStatusCode != 201) {
-      Logger.error(s"Error sending notification. ${resp.getStatusLine.getStatusCode}. Endpoint: $endpoint")
+      logger.error(s"Error sending notification. ${resp.getStatusLine.getStatusCode}. Endpoint: $endpoint")
     }
   }
 }

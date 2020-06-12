@@ -2,9 +2,9 @@ package models.api
 
 import io.circe.generic.extras.Configuration
 import io.circe.{Decoder, Encoder, Json}
-import io.circe.generic.extras.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.generic.extras.semiauto.{deriveConfiguredDecoder, deriveConfiguredEncoder}
 import io.circe.syntax._
-import play.api.Logger
+import play.api.{Logger, Logging}
 import play.api.mvc.{Result, Results}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -13,8 +13,8 @@ case class ApiError(message: String, friendlyMessage: String, statusCode: Int, s
 
 case object ApiError {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
-  implicit val encoder: Encoder[ApiError] = deriveEncoder
-  implicit val decoder: Decoder[ApiError] = deriveDecoder
+  implicit val encoder: Encoder[ApiError] = deriveConfiguredEncoder
+  implicit val decoder: Decoder[ApiError] = deriveConfiguredDecoder
 
   lazy val notFound                  = ApiError("ContentNotFound", "Content does not exist", 404, "notfound")
   lazy val invalidContentSend        = ApiError("InvalidContentType", "could not read json from the request", 400, "badrequest")
@@ -56,7 +56,7 @@ case class FutureO[+A](future: Future[Option[A]]) extends AnyVal {
   }
 }
 
-case class ApiResponseFt[A] private (underlying: Future[Either[ApiError, A]]) {
+case class ApiResponseFt[A] private (underlying: Future[Either[ApiError, A]]) extends Logging {
 
   def map[B](f: A => B)(implicit ec: ExecutionContext): ApiResponseFt[B] = ApiResponseFt(underlying.map(ft => ft.right.map(a => f(a))))
 
@@ -79,19 +79,19 @@ case class ApiResponseFt[A] private (underlying: Future[Either[ApiError, A]]) {
 
   def asFutureOption(errorMessage: String)(implicit ex: ExecutionContext): Future[Option[A]] = {
     fold(e => {
-      Logger.error(s"$errorMessage: ${e.friendlyMessage} (${e.statusCode})")
+      logger.error(s"$errorMessage: ${e.friendlyMessage} (${e.statusCode})")
       None
     }, res => Some(res))
   }
 
 }
 
-object ApiResponseFt extends Results {
+object ApiResponseFt extends Results with Logging {
 
   def apply[T](action: => ApiResponseFt[T])(implicit encoder: io.circe.Encoder[T], ec: ExecutionContext): Future[Result] = {
     action.fold( {
       apiErrors => Status(apiErrors.statusCode) {
-        Logger.error(s"${apiErrors.friendlyMessage} ${apiErrors.message}")
+        logger.error(s"${apiErrors.friendlyMessage} ${apiErrors.message}")
         Json.obj(
           ("status", Json.fromString("error")),
           ("statusCode", Json.fromInt(apiErrors.statusCode)),

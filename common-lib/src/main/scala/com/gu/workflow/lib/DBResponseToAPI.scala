@@ -2,29 +2,29 @@ package com.gu.workflow.lib
 
 import models.Stub
 import models.api._
-import play.api.Logger
+import play.api.{Logger, Logging}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 case class ContentUpdateChanges(collaboratorsInserted: List[String], stubRowsUpdated: Int)
 
-object DBToAPIResponse {
+object DBToAPIResponse extends Logging {
   def upsertContentResponse(cuEit: Either[ContentUpdateError, ContentUpdate]): ApiResponseFt[ContentUpdate] = {
     cuEit match {
       case Left(db: DatabaseError) =>
-        Logger.error(s"ContentUpdateError - DatabaseError - ${db.message}")
+        logger.error(s"ContentUpdateError - DatabaseError - ${db.message}")
         ApiResponseFt.Left(ApiError.databaseError(db.message))
       case Left(ContentItemExists) =>
-        Logger.error("ContentUpdateError - ContentItemExists")
+        logger.error("ContentUpdateError - ContentItemExists")
         ApiResponseFt.Left(ApiError.conflict)
       case Left(s: StubNotFound) =>
-        Logger.error(s"ContentUpdateError - StubNotFound - ${s.id}")
+        logger.error(s"ContentUpdateError - StubNotFound - ${s.id}")
         ApiResponseFt.Left(ApiError.updateError(s.id))
       case Left(s: UpdateRevisionTooLow) =>
-        Logger.error(s"ContentUpdateError - UpdateRevisionTooLow stubid: ${s.stubId} updateRevision: ${s.updateRevision}")
+        logger.error(s"ContentUpdateError - UpdateRevisionTooLow stubid: ${s.stubId} updateRevision: ${s.updateRevision}")
         ApiResponseFt.Left(ApiError.updateErrorRevisionTooLow(s))
       case Left(c: ComposerIdsConflict) =>
-        Logger.error("ContentUpdateError - ComposerIdsConflict")
+        logger.error("ContentUpdateError - ComposerIdsConflict")
         ApiResponseFt.Left(ApiError.conflict)
       case Right(cu) => ApiResponseFt.Right(cu)
     }
