@@ -82,8 +82,8 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val sessionId: String = UUID.randomUUID().toString
 
-  lazy val adminWhitelist: List[String] = Try {
-    playConfig.underlying.getStringList("application.admin.whitelist").asScala.toList
+  lazy val adminUsers: List[String] = Try {
+    playConfig.underlying.getStringList("application.admin.users").asScala.toList
   }.toOption.getOrElse(List.empty)
 
   lazy val capiKey: String = playConfig.get[String]("capi.key")

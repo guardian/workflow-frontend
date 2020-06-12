@@ -7,13 +7,13 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class WhiteListAuthFilter(config: Config)(implicit ec: ExecutionContext) extends ActionFilter[UserRequest] {
+class AdminUserFilter(config: Config)(implicit ec: ExecutionContext) extends ActionFilter[UserRequest] {
   override protected def executionContext: ExecutionContext = ec
 
   override def filter[A](request:UserRequest[A]): Future[Option[Result]] = Future.successful {
     val user = request.user
 
-    if(config.adminWhitelist.contains(user.email)) {
+    if(config.adminUsers.contains(user.email)) {
       None
     } else {
       Some(Results.Forbidden(views.html.admin.unauthorisedUser(Json.Null)))
