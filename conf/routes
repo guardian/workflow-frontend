@@ -5,8 +5,6 @@
 # Application
 GET            /                                           controllers.Application.index
 
-OPTIONS        /api/*url                                   controllers.Api.allowCORSAccess(methods = "PUT, POST, DELETE", url: String)
-
 GET            /dashboard                                  controllers.Application.dashboard
 
 #static user pages
@@ -61,7 +59,7 @@ GET            /capi/*path                                 controllers.CAPIServi
 GET            /api/atom/:editorId                         controllers.Api.getContentByEditorId(editorId: String)
 
 # Notifications
-# This endpoint is POSTed to via JS outside of a form thus no CSRF token
+# This endpoint is POSTed to via our service worker with no access to a csrf token
 +nocsrf
 POST           /api/notifications                          controllers.Notifications.addSubscription
 
@@ -87,8 +85,6 @@ GET            /sharedsecret/content                       controllers.Api.share
 GET            /sharedsecret/content/:id                   controllers.Api.sharedAuthGetContentById(id)
 
 # Support
-# This endpoint is POSTed to via JS outside of a form thus no CSRF token
-+nocsrf
 POST            /support/logger                            controllers.Support.sendLog
 
 # Management

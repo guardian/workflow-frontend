@@ -45,6 +45,8 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
     case _ => Set(atomWorkshopUrl)
   }
 
+  lazy val corsAllowedDomains: Set[String] = Set(composerUrl) ++ mediaAtomMakerUrls ++ atomWorkshopUrls
+
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
 

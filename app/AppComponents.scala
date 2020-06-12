@@ -10,13 +10,16 @@ import play.api.BuiltInComponentsFromContext
 import play.api.libs.ws.ahc.AhcWSComponents
 import play.api.mvc.EssentialFilter
 import play.filters.HttpFiltersComponents
+import play.filters.cors.{CORSComponents, CORSConfig}
+import play.filters.cors.CORSConfig.Origins
 import router.Routes
 
 class AppComponents(context: Context)
   extends BuiltInComponentsFromContext(context)
   with HttpFiltersComponents
   with AhcWSComponents
-  with AssetsComponents {
+  with AssetsComponents
+  with CORSComponents {
 
   val config = new Config(context.initialConfiguration)
 
@@ -49,14 +52,23 @@ class AppComponents(context: Context)
   override val router = new Routes(
     httpErrorHandler,
     applicationController,
-    apiController,
     notificationsController,
     loginController,
+    apiController,
     capiServiceController,
     adminController,
     supportController,
     managementController,
     assets
   )
-  override lazy val httpFilters: Seq[EssentialFilter] = super.httpFilters.filterNot(_ == allowedHostsFilter) ++ Seq(new LoggingFilter(materializer))
+
+  final override lazy val corsConfig: CORSConfig = CORSConfig.fromConfiguration(context.initialConfiguration).copy(
+    allowedOrigins = Origins.Matching(Set(config.host) ++ config.corsAllowedDomains)
+  )
+
+  override lazy val httpFilters: Seq[EssentialFilter] = {
+    // corsFilter before csrfFilter to allow other Tools to call the api
+    // see https://www.playframework.com/documentation/2.7.x/ScalaCsrf#Trusting-CORS-requests
+    Seq(corsFilter, csrfFilter, securityHeadersFilter, new LoggingFilter(materializer))
+  }
 }
