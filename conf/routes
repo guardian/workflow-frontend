@@ -87,6 +87,8 @@ GET            /sharedsecret/content                       controllers.Api.share
 GET            /sharedsecret/content/:id                   controllers.Api.sharedAuthGetContentById(id)
 
 # Support
+# This endpoint is POSTed to via JS outside of a form thus no CSRF token
++nocsrf
 POST            /support/logger                            controllers.Support.sendLog
 
 # Management
