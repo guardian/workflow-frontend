@@ -67,7 +67,7 @@ class Application(
     Ok(views.html.troubleshooting())
   }
 
-  def editorialSupport = AuthAction { request =>
+  def editorialSupport = AuthAction { implicit request =>
     val staff = editorialSupportTeams.listStaff()
     val teams = EditorialSupportStaff.groupByTeams(staff)
 
