@@ -37,17 +37,22 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val mediaAtomMakerUrl: String = s"https://video.$domain"
   lazy val atomWorkshopUrl: String = s"https://atomworkshop.$domain"
 
-  lazy val mediaAtomMakerUrls: Set[String] = stage match {
+  private lazy val composerUrls: Set[String] = stage match {
+    case Dev => Set(composerUrl) // Composer secondary does not exist in DEV
+    case _ => Set(composerUrl, s"https://composer-secondary.$domain")
+  }
+
+  private lazy val mediaAtomMakerUrls: Set[String] = stage match {
     case Code => Set(mediaAtomMakerUrl, s"https://video.${Dev.appDomain}") // allow MAM in DEV to call Workflow CODE
     case _ => Set(mediaAtomMakerUrl)
   }
 
-  lazy val atomWorkshopUrls: Set[String] = stage match {
+  private lazy val atomWorkshopUrls: Set[String] = stage match {
     case Code => Set(s"https://atomworkshop.${Dev.appDomain}", atomWorkshopUrl) // allow MAM in DEV to call Workflow CODE
     case _ => Set(atomWorkshopUrl)
   }
 
-  lazy val corsAllowedDomains: Set[String] = Set(composerUrl) ++ mediaAtomMakerUrls ++ atomWorkshopUrls
+  lazy val corsAllowedDomains: Set[String] = composerUrls ++ mediaAtomMakerUrls ++ atomWorkshopUrls
 
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
