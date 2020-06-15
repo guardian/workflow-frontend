@@ -1,9 +1,10 @@
-@(teams: List[EditorialSupportTeam], fronts: EditorialSupportTeam)
-
+@(teams: List[EditorialSupportTeam], fronts: EditorialSupportTeam)(implicit request: RequestHeader)
+@import helper._
 @renderTeam(team: EditorialSupportTeam) = {
     <ul class="support-list">
     @for(staff <- team.staff) {
         <form class="support-list-form" method="POST">
+            @CSRF.formField
             <li class="support-list-item">
                 <input type="hidden" name="id" value="@staff.id">
                 <input type="hidden" name="team" value="@staff.team">
@@ -34,6 +35,7 @@
     <ul class="support-list">
     @for(staff <- team.staff) {
         <form class="support-list-form" method="POST">
+            @CSRF.formField
             <li class="support-list-item">
                 <input type="hidden" name="id" value="@staff.id">
                 <input type="hidden" name="team" value="@staff.team">
@@ -55,6 +57,7 @@
     <ul class="support-list">
         <li class="support-list-item">
             <form method="POST">
+                @CSRF.formField
                 <status>Add team member</status>
                 <input type="hidden" name="action" value="add_team_member" />
                 <input type="hidden" name="team" value="@teamName" />
@@ -66,6 +69,7 @@
         </li>
         <li class="support-list-item">
             <form method="POST">
+                @CSRF.formField
                 <status>Delete team member</status>
                 <input type="hidden" name="action" value="delete" />
                 <input type="hidden" name="team" value="@teamName" />
@@ -80,6 +84,7 @@
 
 @renderAddFrontsEditor() = {
     <form method="POST">
+        @CSRF.formField
         <ul class="support-list">
             <li class="support-list-item">
                 <input type="hidden" name="action" value="add_front" />
