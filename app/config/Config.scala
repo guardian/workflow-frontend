@@ -20,6 +20,8 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val isDev: Boolean = stage == Dev
 
+  lazy val isProd: Boolean = stage == Prod
+
   lazy val domain: String = stage.appDomain
 
   lazy val localLogShipping: Boolean = sys.env.getOrElse("LOCAL_LOG_SHIPPING", "false").toBoolean
@@ -83,10 +85,6 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val contentTypes: List[String] = List("article", "liveblog", "gallery", "interactive", "picture", "video", "audio")
 
   lazy val sessionId: String = UUID.randomUUID().toString
-
-  lazy val adminUsers: List[String] = Try {
-    playConfig.underlying.getStringList("application.admin.users").asScala.toList
-  }.toOption.getOrElse(List.empty)
 
   lazy val capiKey: String = playConfig.get[String]("capi.key")
 

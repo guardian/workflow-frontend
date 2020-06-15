@@ -4,6 +4,8 @@ import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import config.Config
 import io.circe.{Json, parser}
+import lib.AdminPermissionFilter
+import models.api.ApiError
 import models._
 import models.api.ApiError
 import play.api.Logging
@@ -25,7 +27,7 @@ class Admin(
   override val panDomainSettings: PanDomainAuthSettingsRefresher
 ) extends BaseController with PanDomainAuthActions with I18nSupport with Logging {
 
-  private val adminUserFilter = new AdminUserFilter(config)
+  private val PermissionFilter = new AdminPermissionFilter(config)
 
   import play.api.data.Forms._
 
@@ -67,11 +69,11 @@ class Admin(
     }.getOrElse(Future(sectionListFromDB))
   }
 
-  def index() = (AuthAction andThen adminUserFilter) {
+  def index() = (AuthAction andThen PermissionFilter) {
     Redirect("/admin/desks-and-sections")
   }
 
-  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen adminUserFilter).async { implicit request =>
+  def desksAndSections(selectedDeskIdOption: Option[Long]) = (AuthAction andThen PermissionFilter).async { implicit request =>
     for {
       deskList <- getDesks()
       sectionListFromDB <- getSortedSections()
@@ -129,7 +131,7 @@ class Admin(
     )(assignSectionToDeskFormData.apply)(assignSectionToDeskFormData.unapply)
   )
 
-  def assignSectionToDesk = (AuthAction andThen adminUserFilter).async { implicit request =>
+  def assignSectionToDesk = (AuthAction andThen PermissionFilter).async { implicit request =>
     assignSectionToDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to update section assignments")),
       sectionAssignment => {
@@ -149,7 +151,7 @@ class Admin(
    SECTION routes
    */
 
-  def addSection = (AuthAction andThen adminUserFilter).async { implicit request =>
+  def addSection = (AuthAction andThen PermissionFilter).async { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to add section")),
       section => {
@@ -163,7 +165,7 @@ class Admin(
     )
   }
 
-  def removeSection = (AuthAction andThen adminUserFilter).async { implicit request =>
+  def removeSection = (AuthAction andThen PermissionFilter).async { implicit request =>
     addSectionForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to remove section")),
       section => {
@@ -179,7 +181,7 @@ class Admin(
    DESK routes
    */
 
-  def addDesk = (AuthAction andThen adminUserFilter).async { implicit request =>
+  def addDesk = (AuthAction andThen PermissionFilter).async { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(s"failed to add desk ${formWithErrors.errors}")),
       desk => {
@@ -193,7 +195,7 @@ class Admin(
     )
   }
 
-  def removeDesk = (AuthAction andThen adminUserFilter).async { implicit request =>
+  def removeDesk = (AuthAction andThen PermissionFilter).async { implicit request =>
     addDeskForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("failed to remove desk")),
       desk => {
@@ -225,7 +227,7 @@ class Admin(
     )(unAssignTagToSectionFormData.apply)(unAssignTagToSectionFormData.unapply)
   )
 
-  def sectionsAndTags(selectedSectionIdOption: Option[Long]) = (AuthAction andThen adminUserFilter).async {
+  def sectionsAndTags(selectedSectionIdOption: Option[Long]) = (AuthAction andThen PermissionFilter).async {
 
     val selectedSectionOptionFt:Future[Option[Section]] = selectedSectionIdOption match {
       case Some(selectedSectionId) =>
@@ -260,7 +262,7 @@ class Admin(
     }
   }
 
-  def addSectionTag() = (AuthAction andThen adminUserFilter) { implicit request =>
+  def addSectionTag() = (AuthAction andThen PermissionFilter) { implicit request =>
     addSectionTagForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest("failed to execute controllers.admin.addSectionTag()")
@@ -272,7 +274,7 @@ class Admin(
     )
   }
 
-  def removeSectionTag() = (AuthAction andThen adminUserFilter) { implicit request =>
+  def removeSectionTag() = (AuthAction andThen PermissionFilter) { implicit request =>
     removeSectionTagForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest("failed to execute controllers.admin.removeSectionTag()")
