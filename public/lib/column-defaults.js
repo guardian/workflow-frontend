@@ -34,10 +34,23 @@ import publicationLocationTemplate from "components/content-list-item/templates/
  *      colspan: number, // colspan of this field
  *      title: string, // title attribute contents for the column heading
  *      templateUrl: string // URL for the content-list-item template for this field
+ *      isSortable: boolean // Can the column be sorted by clicking its header?
+ *      sortField: string // The field to sort on, if different from `name`. Can be an item path, e.g. `a.nested.field`
  * }
  */
 
 var templateRoot = '/assets/components/content-list-item/templates/';
+
+const createSortTemplate = (sortField, labelHTML) => `
+    <div ng-click="toggleSortState('${sortField}')" class="content-list-head__heading-sort-by">
+      ${labelHTML}
+      <span ng-switch="getSortDirection('${sortField}')">
+        <span ng-switch-when="asc">🔼</span>
+        <span ng-switch-when="desc">🔽</span>
+        <span ng-switch-default></span>
+      </span>
+    </div>
+`;
 
 var columnDefaults = [{
     name: 'priority',
@@ -71,7 +84,9 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'title.html',
     template: titleTemplate,
     active: true,
-    alwaysShown: true
+    alwaysShown: true,
+    isSortable: true,
+    sortField: 'workingTitle'
 },{
     name: 'notes',
     prettyName: 'Notes',
@@ -80,7 +95,9 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'notes.html',
     template: notesTemplate,
-    active: true
+    active: true,
+    isSortable: true,
+    sortField: 'note'
 },{
     name: 'comments',
     prettyName: 'Comments: On/Off',
@@ -163,7 +180,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'office.html',
     template: officeTemplate,
-    active: true
+    active: true,
+    isSortable: true
 },{
     name: 'deadline',
     prettyName: 'Deadline',
@@ -172,7 +190,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'deadline.html',
     template: deadlineTemplate,
-    active: true
+    active: true,
+    isSortable: true
 },{
     name: 'section',
     prettyName: 'Section',
@@ -181,7 +200,9 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'section.html',
     template: sectionTemplate,
-    active: true
+    active: true,
+    isSortable: true,
+    sortField: 'item.section',
 },{
     name: 'status',
     prettyName: 'Status',
@@ -199,7 +220,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
     template: wordcountTemplate,
-    active: false
+    active: false,
+    isSortable: true
 },{
     name: 'printwordcount',
     prettyName: 'Print wordcount',
@@ -209,7 +231,8 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'printwordcount.html',
     template: printWordcountTemplate,
     active: false,
-    isNew: true
+    isNew: true,
+    isSortable: true
 },{
     name: 'publicationlocation',
     prettyName: 'Publication location',
@@ -219,7 +242,8 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'publicationLocation.html',
     template: publicationLocationTemplate,
     active: false,
-    isNew: true
+    isNew: true,
+    isSortable: true
 },{
     name: 'commissionedLength',
     prettyName: 'Commissioned Length',
@@ -228,7 +252,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'commissionedLength.html',
     template: commissionedLengthTemplate,
-    active: false
+    active: false,
+    isSortable: true
 },{
     name: 'links',
     prettyName: 'Open in...',
@@ -265,7 +290,8 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'last-modified.html',
     template: lastModifiedTemplate,
     active: false,
-    isNew: true
+    isNew: true,
+    isSortable: true
 },{
     name: 'last-modified-by',
     prettyName: 'Last modified by',
@@ -275,7 +301,16 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'last-modified-by.html',
     template: lastModifiedByTemplate,
     active: false,
-    isNew: true
-}].map(col => col.labelHTML === '' ? {...col, labelHTML: '&nbsp;'} : col);
+    isNew: true,
+    isSortable: true
+}].map(col => {
+  if (col.labelHTML === '') {
+    return {...col, labelHTML: '&nbsp;'};
+  }
+  if (col.isSortable) {
+    return { ...col, labelHTML: createSortTemplate(col.sortField || col.name, col.labelHTML)}
+  }
+  return col;
+});
 
 export { columnDefaults }
