@@ -220,8 +220,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
     template: wordcountTemplate,
-    active: false,
-    isSortable: true
+    active: false
 },{
     name: 'printwordcount',
     prettyName: 'Print wordcount',
@@ -231,8 +230,7 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'printwordcount.html',
     template: printWordcountTemplate,
     active: false,
-    isNew: true,
-    isSortable: true
+    isNew: true
 },{
     name: 'publicationlocation',
     prettyName: 'Publication location',
@@ -242,8 +240,7 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'publicationLocation.html',
     template: publicationLocationTemplate,
     active: false,
-    isNew: true,
-    isSortable: true
+    isNew: true
 },{
     name: 'commissionedLength',
     prettyName: 'Commissioned Length',
@@ -252,8 +249,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'commissionedLength.html',
     template: commissionedLengthTemplate,
-    active: false,
-    isSortable: true
+    active: false
 },{
     name: 'links',
     prettyName: 'Open in...',
@@ -290,8 +286,7 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'last-modified.html',
     template: lastModifiedTemplate,
     active: false,
-    isNew: true,
-    isSortable: true
+    isNew: true
 },{
     name: 'last-modified-by',
     prettyName: 'Last modified by',
@@ -301,8 +296,7 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'last-modified-by.html',
     template: lastModifiedByTemplate,
     active: false,
-    isNew: true,
-    isSortable: true
+    isNew: true
 }].map(col => {
   if (col.labelHTML === '') {
     return {...col, labelHTML: '&nbsp;'};
