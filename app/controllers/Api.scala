@@ -237,58 +237,58 @@ class Api(
     )}
   }
 
-  def putStubPlannedPublicationId(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubPlannedPublicationId(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        plannedPublicationId <- ApiUtils.extractDataResponse[Long](json)
-        id <- StubAPI.putStubPlannedPublicationId(stubId, plannedPublicationId)
+        json <- readJsonFromRequestResponse(request.body)
+        plannedPublicationId <- extractDataResponse[Long](json)
+        id <- stubsApi.putStubPlannedPublicationId(stubId, plannedPublicationId)
       } yield id
     )}
   }
 
-  def putStubPlannedBookId(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubPlannedBookId(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        plannedBookId <- ApiUtils.extractDataResponse[Long](json)
-        id <- StubAPI.putStubPlannedBookId(stubId, plannedBookId)
+        json <- readJsonFromRequestResponse(request.body)
+        plannedBookId <- extractDataResponse[Long](json)
+        id <- stubsApi.putStubPlannedBookId(stubId, plannedBookId)
       } yield id
     )}
   }
-  def putStubPlannedBookSectionId(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubPlannedBookSectionId(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        plannedBookSectionId <- ApiUtils.extractDataResponse[Long](json)
-        id <- StubAPI.putStubPlannedBookSectionId(stubId, plannedBookSectionId)
+        json <- readJsonFromRequestResponse(request.body)
+        plannedBookSectionId <- extractDataResponse[Long](json)
+        id <- stubsApi.putStubPlannedBookSectionId(stubId, plannedBookSectionId)
       } yield id
     )}
   }
 
-  def putStubPlannedNewspaperPageNumber(stubId: Long) = CORSable(defaultCorsAble) {
+  def putStubPlannedNewspaperPageNumber(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        plannedNewspaperPageNumber <- ApiUtils.extractDataResponse[Int](json)
-        id <- StubAPI.putStubPlannedNewspaperPageNumber(stubId, plannedNewspaperPageNumber)
+        json <- readJsonFromRequestResponse(request.body)
+        plannedNewspaperPageNumber <- extractDataResponse[Int](json)
+        id <- stubsApi.putStubPlannedNewspaperPageNumber(stubId, plannedNewspaperPageNumber)
       } yield id
     )}
   }
 
   def putStubPlannedNewspaperPublicationDate(stubId: Long) = 
-   CORSable(defaultCorsAble) {
+   {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
-        json <- ApiUtils.readJsonFromRequestResponse(request.body)
-        plannedNewspaperPublicationDateString <- ApiUtils.extractDataResponse[String](json)
+        json <- readJsonFromRequestResponse(request.body)
+        plannedNewspaperPublicationDateString <- extractDataResponse[String](json)
         plannedNewspaperPublicationDate = new LocalDate(plannedNewspaperPublicationDateString)
-        id <- StubAPI.putStubPlannedNewspaperPublicationDate(stubId, plannedNewspaperPublicationDate)
+        id <- stubsApi.putStubPlannedNewspaperPublicationDate(stubId, plannedNewspaperPublicationDate)
       } yield id
     )}
   }
 
-  def deleteContent(composerId: String) = CORSable(defaultCorsAble) {
+  def deleteContent(composerId: String) = {
     APIAuthAction {
       stubsApi.deleteStubs(Seq(composerId)).fold(err =>
         logger.error(s"failed to delete content with composer id: $composerId"), identity)
