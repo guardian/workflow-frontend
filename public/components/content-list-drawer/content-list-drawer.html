@@ -363,9 +363,9 @@
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Production deadline</p>
-                            <span ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.item.due, 'drawer__section-data-row--editable-empty': !contentItem.item.due }" title="{{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}">
+                            <button ng-hide="dateTimeEdit" ng-click="dateTimeEdit = true" ng-class="{ 'drawer__section-data-row--editable': contentItem.item.due, 'drawer__section-data-row--editable-empty': !contentItem.item.due, 'editable__view-value': true, 'editable__edit-button': true }" title="{{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}">
                                 {{ (contentItem.item.due | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add deadline' }}
-                            </span>
+                            </button>
                             <form ng-show="dateTimeEdit" ng-submit="dateTimeEdit = false">
                                 <div class="form-group">
                                     <div wf-date-time-picker wf-update-on="enter" ng-model="currentDatePickerValue" wf-on-cancel="dateTimeEdit = false; revertDeadline()" wf-cancel-on="blur" wf-on-submit="updateDeadline(); dateTimeEdit = false;" help-text="true"></div>
@@ -424,8 +424,8 @@
                        
                         <li class="drawer__item">
                             <p class="drawer__item-title">Planned Print Location</p>
-                            <span class="drawer__item-content" ng-hide="bookTagHide" ng-click="bookTagHide = true">
-                                {{ (contentItem.longPlannedPrintLocationDescription) || 'Add planned print location' }}</span>
+                            <button class="drawer__item-content editable__edit-button editable__view-value" ng-hide="bookTagHide" ng-click="bookTagHide = true">
+                                {{ (contentItem.longPlannedPrintLocationDescription) || 'Add planned print location' }}</button>
                             <div class="autocomplete" ng-show="bookTagHide">
                                 <input class="text-input fullwidth"
                                         ng-model="$parent.bookSectionQuery"
@@ -453,24 +453,24 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Planned Publication Date</p>
 
-                            <span 
+                            <button 
                                 ng-hide="publicationDateTimeEdit" 
                                 ng-click="publicationDateTimeEdit = true" 
-                                ng-class="{ 'drawer__section-data-row--editable': contentItem.plannedNewspaperPublicationDate, 'drawer__section-data-row--editable-empty': !contentItem.plannedNewspaperPublicationDate }" 
+                                ng-class="{ 'drawer__section-data-row--editable': contentItem.plannedNewspaperPublicationDate, 'drawer__section-data-row--editable-empty': !contentItem.plannedNewspaperPublicationDate, 'editable__view-value': true, 'editable__edit-button': true }"
                                 title="{{ (contentItem.plannedNewspaperPublicationDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'long') || '' }}"
                                 >
                                 {{ (contentItem.plannedNewspaperPublicationDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || 'Add planned publication date' }}
-                        </span>
+                            </button>
                             <form ng-show="publicationDateTimeEdit" ng-submit="publicationDateTimeEdit = false">
                                 <div class="form-group">
                                     <div 
-                                    wf-date-time-picker 
-                                    wf-update-on="enter" 
-                                    ng-model="$parent.currentPublicationDatePickerValue" 
-                                    wf-on-cancel="publicationDateTimeEdit = false; revertPlannedPublicationDate()" 
-                                    wf-cancel-on="blur" 
-                                    wf-on-submit="updatePlannedPublicationDate(); publicationDateTimeEdit = false;" 
-                                    wf-no-time="true"
+                                      wf-date-time-picker 
+                                      wf-update-on="enter" 
+                                      ng-model="$parent.currentPublicationDatePickerValue" 
+                                      wf-on-cancel="publicationDateTimeEdit = false; revertPlannedPublicationDate()" 
+                                      wf-cancel-on="blur" 
+                                      wf-on-submit="updatePlannedPublicationDate(); publicationDateTimeEdit = false;" 
+                                      wf-no-time="true"
                                     ></div>
                                 </div>
                             </form>
