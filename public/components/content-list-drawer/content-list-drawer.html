@@ -466,7 +466,7 @@
                                     <div 
                                     wf-date-time-picker 
                                     wf-update-on="enter" 
-                                    ng-model="currentPublicationDatePickerValue" 
+                                    ng-model="$parent.currentPublicationDatePickerValue" 
                                     wf-on-cancel="publicationDateTimeEdit = false; revertPlannedPublicationDate()" 
                                     wf-cancel-on="blur" 
                                     wf-on-submit="updatePlannedPublicationDate(); publicationDateTimeEdit = false;" 

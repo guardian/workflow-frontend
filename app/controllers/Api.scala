@@ -282,7 +282,7 @@ class Api(
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
         plannedNewspaperPublicationDateString <- extractDataResponse[String](json)
-        plannedNewspaperPublicationDate = new LocalDate(plannedNewspaperPublicationDateString)
+        plannedNewspaperPublicationDate = LocalDate.parse(plannedNewspaperPublicationDateString.split("T").head)
         id <- stubsApi.putStubPlannedNewspaperPublicationDate(stubId, plannedNewspaperPublicationDate)
       } yield id
     )}

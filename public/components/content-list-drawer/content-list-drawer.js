@@ -316,8 +316,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 updateField("workingTitle", workingTitle, $scope.contentItem.workingTitle);
             };
 
-            $scope.onBeforeSavePlannedPageNumber = function (plannedPageNumber) {
-                updateField("plannedPageNumber",plannedPageNumber, $scope.plannedPageNumber)
+            $scope.onBeforeSavePlannedPageNumber = function (plannedNewspaperPageNumber) {
+                updateField("plannedNewspaperPageNumber",plannedNewspaperPageNumber, $scope.plannedNewspaperPageNumber)
             }
 
             /**
@@ -327,8 +327,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 updateField("dueDate", $scope.currentDatePickerValue);
             };
 
-            $scope.updatePlannedPublicationDate = function () {
-                updateField("plannedPublicationDate", $scope.currentPublicationDatePickerValue);
+            $scope.updatePlannedPublicationDate = function (stupid) {
+                updateField("plannedNewspaperPublicationDate", $scope.currentPublicationDatePickerValue);
             };
 
             $scope.updateCommissionedLength = function (newValue) {
@@ -354,7 +354,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             };
 
             $scope.revertPlannedPublicationDate = function () {
-                $scope.currentPublicationDatePickerValue = $scope.contentItem.plannedPublicationDate;
+                $scope.currentPublicationDatePickerValue = $scope.contentItem.plannedNewspaperPublicationDate;
             }
 
             /**
