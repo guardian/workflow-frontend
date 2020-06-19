@@ -424,11 +424,11 @@
                        
                         <li class="drawer__item">
                             <p class="drawer__item-title">Planned Print Location</p>
-                            <button class="drawer__item-content editable__edit-button editable__view-value" ng-hide="bookTagHide" ng-click="bookTagHide = true">
-                                {{ (contentItem.longPlannedPrintLocationDescription) || 'Add planned print location' }}</button>
-                            <div class="autocomplete" ng-show="bookTagHide">
+                            <button class="drawer__item-content editable__edit-button editable__view-value" ng-hide="showBookTagPicker" ng-click="toggleBookTagPicker(true)">
+                                {{ (editedLongPlannedPrintLocationDescription || contentItem.longPlannedPrintLocationDescription) || 'Add planned print location' }}</button>
+                            <div class="autocomplete" ng-show="showBookTagPicker">
                                 <input class="text-input fullwidth"
-                                        ng-model="$parent.bookSectionQuery"
+                                       ng-model="$parent.bookSectionQuery"
                                        placeholder="Enter a book section…"
                                        name="bookSection"
                                        autocomplete="off"

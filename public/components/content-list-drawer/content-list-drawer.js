@@ -35,6 +35,8 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
         template: contentListDrawerTemplate,
         priority: 1001,
         scope: {
+            showBookTagPicker: '<',
+            editedLongPlannedPrintLocationDescription: '<',
             contentList: '=',
             legalValues: '=',
             statusValues: '='
@@ -426,13 +428,18 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                         updateField("plannedBookId", book.data.id, $scope.plannedBookId)
                         updateField("plannedBookSectionId", bookSectionTag.id, $scope.plannedBookSectionId)
                         updateField("plannedPublicationId", publication.data.id, $scope.plannedPublicationId)
-
+                        $scope.showBookTagPicker = false;
+                        $scope.editedLongPlannedPrintLocationDescription = `${book.data.internalName} >> ${bookSectionTag.internalName}`
                     });
                 });
-       
+                
                 delete $scope.candidateBookSections;
                 delete $scope.bookSectionQuery;
             };
+            $scope.toggleBookTagPicker = function (show) {
+                $scope.showBookTagPicker = show;
+            }
+            $scope.showBookTagPicker = false;
 
         }
     };
