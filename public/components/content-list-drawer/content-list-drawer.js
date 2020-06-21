@@ -319,7 +319,11 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             };
 
             $scope.onBeforeSavePlannedPageNumber = function (plannedNewspaperPageNumber) {
-                updateField("plannedNewspaperPageNumber",plannedNewspaperPageNumber, $scope.plannedNewspaperPageNumber)
+                const pageNumber = parseInt(plannedNewspaperPageNumber, 10)
+                if (pageNumber === NaN) {
+                    return;
+                }
+                updateField("plannedNewspaperPageNumber", pageNumber, $scope.contentItem.plannedNewspaperPageNumber)
             }
 
             /**
@@ -329,7 +333,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 updateField("dueDate", $scope.currentDatePickerValue);
             };
 
-            $scope.updatePlannedPublicationDate = function (stupid) {
+            $scope.updatePlannedPublicationDate = function () {
                 updateField("plannedNewspaperPublicationDate", $scope.currentPublicationDatePickerValue);
             };
 
@@ -437,6 +441,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 delete $scope.bookSectionQuery;
             };
             $scope.toggleBookTagPicker = function (show) {
+                $scope.bookSectionQuery = undefined;
                 $scope.showBookTagPicker = show;
             }
             $scope.showBookTagPicker = false;

@@ -16,6 +16,11 @@ Autocomplete styles.
   position: relative;
 }
 
+.autocomplete.editable--edit {
+  padding-right: 28px;
+}
+
+
 .autocomplete input {
   border: 1px solid $c-grey-300;
   padding: 3px 5px;
@@ -71,7 +76,7 @@ Autocomplete styles.
   &:active,
   &.is-selected {
       button {
-          background-color: $c-green;
+          background-color: $c-highlight-blue;
           color: white;
       }
   }
