@@ -111,8 +111,9 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     $scope.sortColumn = undefined;
     $scope.sortDirection = undefined;
+    const defaultSortColName = 'titles';
+    const sortStates = ['asc', 'desc', undefined];
 
-    const sortStates = ['asc', 'desc', undefined]
     $scope.toggleSortState = columnName => {
       // Reset the sort order if we're toggling a new field
       const sortDirectionIndex = columnName === $scope.sortColumn
@@ -136,6 +137,12 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     wfColumnService.getColumns().then((data) => {
         $scope.columns = data;
+
+        // Apply sort defaults
+        const column = $scope.columns.find(_ => _.name === defaultSortColName);
+        if (column) {
+          $scope.toggleSortState(column.sortField || column.name)
+        }
     });
 
     $scope.getColumnTitle = function(col) {
