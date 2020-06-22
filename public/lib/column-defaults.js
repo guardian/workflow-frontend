@@ -226,7 +226,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
     template: wordcountTemplate,
-    active: false,
+    active: true,
     isSortable: true,
     sortField: 'wordCount'
 },{
@@ -237,7 +237,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'printwordcount.html',
     template: printWordcountTemplate,
-    active: false,
+    active: true,
     isNew: true,
     isSortable: true,
     sortField: 'printWordCount'
@@ -249,8 +249,10 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'publicationLocation.html',
     template: publicationLocationTemplate,
-    active: false,
-    isNew: true
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: 'printLocationSortString'
 },{
     name: 'commissionedLength',
     prettyName: 'Commissioned Length',
@@ -259,7 +261,7 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'commissionedLength.html',
     template: commissionedLengthTemplate,
-    active: false,
+    active: true,
     isSortable: true
 },{
     name: 'links',
@@ -296,9 +298,10 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'last-modified.html',
     template: lastModifiedTemplate,
-    active: false,
+    active: true,
     isNew: true,
-    isSortable: true
+    isSortable: true,
+    sortField: 'lastModified'
 },{
     name: 'last-modified-by',
     prettyName: 'Last modified by',
@@ -307,9 +310,10 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'last-modified-by.html',
     template: lastModifiedByTemplate,
-    active: false,
+    active: true,
     isNew: true,
-    isSortable: true
+    isSortable: true,
+    sortField: 'lastModifiedBy'
 }].map(col => {
   const _labelHTML = col.labelHTML === ''
     ? '&nbsp;'
