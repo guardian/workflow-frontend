@@ -226,7 +226,9 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
     template: wordcountTemplate,
-    active: false
+    active: false,
+    isSortable: true,
+    sortField: 'wordCount'
 },{
     name: 'printwordcount',
     prettyName: 'Print wordcount',
@@ -236,7 +238,9 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'printwordcount.html',
     template: printWordcountTemplate,
     active: false,
-    isNew: true
+    isNew: true,
+    isSortable: true,
+    sortField: 'printWordCount'
 },{
     name: 'publicationlocation',
     prettyName: 'Publication location',
@@ -255,7 +259,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'commissionedLength.html',
     template: commissionedLengthTemplate,
-    active: false
+    active: false,
+    isSortable: true
 },{
     name: 'links',
     prettyName: 'Open in...',
@@ -292,7 +297,8 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'last-modified.html',
     template: lastModifiedTemplate,
     active: false,
-    isNew: true
+    isNew: true,
+    isSortable: true
 },{
     name: 'last-modified-by',
     prettyName: 'Last modified by',
@@ -302,7 +308,8 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'last-modified-by.html',
     template: lastModifiedByTemplate,
     active: false,
-    isNew: true
+    isNew: true,
+    isSortable: true
 }].map(col => {
   const _labelHTML = col.labelHTML === ''
     ? '&nbsp;'
