@@ -107,6 +107,26 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         wfFiltersService.clearAll(false);
     };
 
+    $scope.getSortDirection = columnName => columnName === $scope.sortColumn ? $scope.sortDirection : undefined;
+
+    $scope.sortColumn = undefined;
+    $scope.sortDirection = undefined;
+    const defaultSortColName = 'titles';
+    // If we'd prefer to allow people to remove the sort state entirely,
+    // this list can be changed to ['asc', 'desc', undefined]
+    const sortStates = ['asc', 'desc'];
+
+    $scope.toggleSortState = columnName => {
+      // Reset the sort order if we're toggling a new field
+      const sortDirectionIndex = columnName === $scope.sortColumn
+        ? (sortStates.indexOf($scope.sortDirection) + 1) % sortStates.length
+        : 0;
+      $scope.sortDirection = sortStates[sortDirectionIndex];
+      $scope.sortColumn = $scope.sortDirection ? columnName : undefined;
+
+      applyNewContentState();
+    };
+
     $scope.animationsEnabled = true;
 
     $rootScope.$on('getContent', () => {
@@ -119,6 +139,12 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     wfColumnService.getColumns().then((data) => {
         $scope.columns = data;
+
+        // Apply sort defaults
+        const column = $scope.columns.find(_ => _.name === defaultSortColName);
+        if (column) {
+          $scope.toggleSortState(column.sortField || column.name)
+        }
     });
 
     $scope.getColumnTitle = function(col) {
@@ -249,29 +275,44 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     });
 
     /**
-     * Trim the content to length over the status groups.
+     * Sort and trim the content to length over the status groups.
      * ie: If 100 items are requested you might get 20 from Stubs, 30 from Writers and 50 from Desk making 100 in total
      * @param content The content grouped by status
      * @param trimTo Amount of items to return
      * @returns {*}
      */
-    $scope.trimContentToLength = function (content, trimTo) {
+    $scope.getSortedAndTrimmedContent = (content, trimTo) => {
+      const { content: newContent } = content.reduce(({ itemsRemaining, content }, group) => {
+        // Avoid hydrating and sorted if we're not rendering any of these items
+        if (!itemsRemaining) {
+          return {
+            itemsRemaining,
+            content: content.concat({...group, items: []})
+          }
+        }
 
-        var groups = _.cloneDeep(content); // Ensure originalContent is left unchanged
+        const hydratedItems = (group.items || []).map(wfContentItemParser.parse);
+        const sortedGroupItems = this.sortGroupItems(hydratedItems || [], $scope.sortColumn, $scope.sortDirection);
+        const newItemsRemaining = sortedGroupItems.length < itemsRemaining
+          ? itemsRemaining - sortedGroupItems.length
+          : 0;
 
-        groups.forEach((group) => {
-            if (group.items && group.items.length) {
-                if (group.items.length < trimTo) {
-                    trimTo = trimTo - group.items.length;
-                } else {
-                    group.items.length = trimTo;
-                    trimTo = 0;
-                }
-            }
-        });
+        const newGroup = {
+          ...group,
+          items: sortedGroupItems.slice(0, itemsRemaining)
+        };
 
-        return groups;
-    };
+        return {
+          itemsRemaining: newItemsRemaining,
+          content: content.concat(newGroup)
+        }
+      }, {
+        itemsRemaining: trimTo,
+        content: []
+      });
+
+      return newContent;
+    }
 
     /**
      * Method called when the bottom of the list gets within
@@ -283,24 +324,19 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         $scope.infiniteScrollDisabled = true;
         $scope.contentItemsDisplayed += $scope.contentItemLoadingIncrement;
         $scope.animationsEnabled = false;
-        doContentTrimAndSetContent();
+        applyNewContentState();
         $scope.infiniteScrollDisabled = false;
     };
 
-    function doContentTrimAndSetContent () {
+    function applyNewContentState() {
         if ($scope.contentItemsDisplayed >= $scope.totalContentItems) {
-            $scope.content = $scope.originalContent;
             $scope.displayingEverything = true;
             $scope.infiniteScrollDisabled = true;
         } else {
-            $scope.content = $scope.trimContentToLength($scope.originalContent,  $scope.contentItemsDisplayed);
             $scope.displayingEverything = false;
         }
 
-        $scope.content.map((status) => {
-            status.items = status.items ? status.items.map(wfContentItemParser.parse) : status.items;
-            return status;
-        });
+        $scope.content = $scope.getSortedAndTrimmedContent($scope.originalContent, $scope.contentItemsDisplayed, $scope.totalContentItems);
     }
 
     function parseContentForIds(content) {
@@ -343,9 +379,10 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
                         count: data.count[status],
                         items: grouped[status]
                     };
+
                 });
 
-                doContentTrimAndSetContent();
+                applyNewContentState();
 
                 (function setUpPresenceContentIds () {
                     $scope.contentIds = parseContentForIds($scope.content);
@@ -373,10 +410,21 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     };
 
+    this.sortGroupItems = (items, sortColumn, sortDirection) => {
+      if (!$scope.sortColumn) {
+        return items;
+      }
+
+      const iteratee = item => (_.get(item, sortColumn) || '').toLowerCase();
+
+      return _.orderBy(items, iteratee, sortDirection);
+    }
+
     $scope.$on('contentItem.update', ($event, msg) => {
 
         // generally there'll only be one field to update, but iterate just incase
         // TODO: if multiple fields need updating, do it in a single API call
+
         for (var field in msg.data) {
 
             wfContentService.updateField(msg.contentItem.item, field, msg.data[field], msg.contentItem.contentType).then(() => {
@@ -399,9 +447,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
                     }
 
                 }
-
-
-
 
                 this.poller.refresh();
 

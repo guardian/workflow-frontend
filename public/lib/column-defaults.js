@@ -34,10 +34,28 @@ import publicationLocationTemplate from "components/content-list-item/templates/
  *      colspan: number, // colspan of this field
  *      title: string, // title attribute contents for the column heading
  *      templateUrl: string // URL for the content-list-item template for this field
+ *      isSortable: boolean // Can the column be sorted by clicking its header?
+ *      sortField: string // The field to sort on, if different from `name`. Can be an item path, e.g. `a.nested.field`
  * }
  */
 
 var templateRoot = '/assets/components/content-list-item/templates/';
+
+const createSortTemplate = (sortField, labelHTML) => `
+    <div ng-click="toggleSortState('${sortField}')" class="content-list-head__heading-sort-by">
+      ${labelHTML}
+      <span
+        class="content-list-head__heading-sort-indicator"
+        ng-class="{invisible: !getSortDirection('${sortField}')}"
+        ng-switch="getSortDirection('${sortField}')">
+        <span ng-switch-when="asc">&#9660;</span>
+        <span ng-switch-when="desc">&#9650;</span>
+        <!-- We add a character here and use ng-visible above to prevent -->
+        <!-- sort state from interfering with table header spacing -->
+        <span ng-switch-default>&#9650;</span>
+      </span>
+    </div>
+`;
 
 var columnDefaults = [{
     name: 'priority',
@@ -71,7 +89,9 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'title.html',
     template: titleTemplate,
     active: true,
-    alwaysShown: true
+    alwaysShown: true,
+    isSortable: true,
+    sortField: 'workingTitle'
 },{
     name: 'notes',
     prettyName: 'Notes',
@@ -80,7 +100,9 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'notes.html',
     template: notesTemplate,
-    active: true
+    active: true,
+    isSortable: true,
+    sortField: 'note'
 },{
     name: 'comments',
     prettyName: 'Comments: On/Off',
@@ -163,7 +185,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'office.html',
     template: officeTemplate,
-    active: true
+    active: true,
+    isSortable: true
 },{
     name: 'deadline',
     prettyName: 'Deadline',
@@ -172,7 +195,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'deadline.html',
     template: deadlineTemplate,
-    active: true
+    active: true,
+    isSortable: true
 },{
     name: 'section',
     prettyName: 'Section',
@@ -181,7 +205,9 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'section.html',
     template: sectionTemplate,
-    active: true
+    active: true,
+    isSortable: true,
+    sortField: 'item.section',
 },{
     name: 'status',
     prettyName: 'Status',
@@ -276,6 +302,16 @@ var columnDefaults = [{
     template: lastModifiedByTemplate,
     active: false,
     isNew: true
-}].map(col => col.labelHTML === '' ? {...col, labelHTML: '&nbsp;'} : col);
+}].map(col => {
+  const _labelHTML = col.labelHTML === ''
+    ? '&nbsp;'
+    : col.labelHTML;
+
+  const labelHTML = col.isSortable
+    ? createSortTemplate(col.sortField || col.name, _labelHTML)
+    : _labelHTML;
+
+  return {...col, labelHTML};
+});
 
 export { columnDefaults }

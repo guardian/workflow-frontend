@@ -49,6 +49,7 @@ google-auth-banner .alert {
         th {
             z-index: 3;
             background-color: $c-white;
+            white-space: nowrap;
         }
         tr {
             height: $tableHeaderRowHeight;
@@ -437,6 +438,14 @@ google-auth-banner .alert {
 
 .content-list-head__heading--group {
     position: relative;
+}
+
+.content-list-head__heading-sort-by {
+  cursor: pointer;
+}
+
+.content-list-head__heading-sort-indicator {
+  font-size: 10px;
 }
 
 .content-list__compact-button {

@@ -116,9 +116,7 @@ function wfContentItemParser(config, statusLabels, sections) {
 
             this.status = item.status || 'Stub';
             this.statusValues = this.status === 'Stub' ? statusLabels : contentStatusValues;
-
-            item.section = sections.filter((section) => section.name === item.section)[0]; // Get section object
-            this.section = item.section;
+            this.section = sections.filter((section) => section.name === item.section)[0]; // Get section object
             this.needsLegal = item.needsLegal;
             this.note = item.note;
 
