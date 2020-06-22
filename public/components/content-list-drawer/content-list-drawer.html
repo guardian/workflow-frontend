@@ -1,4 +1,6 @@
 <tr class="content-list-drawer content-list-drawer--hidden" ng-class="{'content-list-drawer--trashed': contentItem.item.trashed}">
+  
+
     <td colspan="100">
 
         <div class="drawer">
@@ -22,10 +24,12 @@
 
                 <!--CONTENT DRAWER-->
                 <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-if="!supportedAtomTypes.includes(contentItem.contentType)">
-
                     <ul class="drawer__column">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Working title</p>
+                            <drawer content-item="contentItem" content-list="contentList" legal-values="contentList.legalValues" status-values="statusValues"></drawer>
+
+
                             <wf-editable class="drawer__item-content" ng-model="contentItem.workingTitle" wf-editable-on-update="onBeforeSaveWorkingTitle(newValue)" wf-editable-required="true">
                                 {{ contentItem.workingTitle || '-' }}
                             </wf-editable>
