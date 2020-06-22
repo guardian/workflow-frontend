@@ -336,7 +336,9 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
             $scope.displayingEverything = false;
         }
 
-        $scope.content = $scope.getSortedAndTrimmedContent($scope.originalContent, $scope.contentItemsDisplayed, $scope.totalContentItems);
+        if ($scope.originalContent) {
+          $scope.content = $scope.getSortedAndTrimmedContent($scope.originalContent, $scope.contentItemsDisplayed, $scope.totalContentItems);
+        }
     }
 
     function parseContentForIds(content) {
