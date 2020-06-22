@@ -112,7 +112,9 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     $scope.sortColumn = undefined;
     $scope.sortDirection = undefined;
     const defaultSortColName = 'titles';
-    const sortStates = ['asc', 'desc', undefined];
+    // If we'd prefer to allow people to remove the sort state entirely,
+    // this list can be changed to ['asc', 'desc', undefined]
+    const sortStates = ['asc', 'desc'];
 
     $scope.toggleSortState = columnName => {
       // Reset the sort order if we're toggling a new field
