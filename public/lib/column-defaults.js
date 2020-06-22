@@ -44,10 +44,15 @@ var templateRoot = '/assets/components/content-list-item/templates/';
 const createSortTemplate = (sortField, labelHTML) => `
     <div ng-click="toggleSortState('${sortField}')" class="content-list-head__heading-sort-by">
       ${labelHTML}
-      <span ng-switch="getSortDirection('${sortField}')">
-        <span ng-switch-when="asc">🔼</span>
-        <span ng-switch-when="desc">🔽</span>
-        <span ng-switch-default></span>
+      <span
+        class="content-list-head__heading-sort-indicator"
+        ng-class="{invisible: !getSortDirection('${sortField}')}"
+        ng-switch="getSortDirection('${sortField}')">
+        <span ng-switch-when="asc">&#9660;</span>
+        <span ng-switch-when="desc">&#9650;</span>
+        <!-- We add a character here and use ng-visible above to prevent -->
+        <!-- sort state from interfering with table header spacing -->
+        <span ng-switch-default>&#9650;</span>
       </span>
     </div>
 `;
@@ -298,13 +303,15 @@ var columnDefaults = [{
     active: false,
     isNew: true
 }].map(col => {
-  if (col.labelHTML === '') {
-    return {...col, labelHTML: '&nbsp;'};
-  }
-  if (col.isSortable) {
-    return { ...col, labelHTML: createSortTemplate(col.sortField || col.name, col.labelHTML)}
-  }
-  return col;
+  const _labelHTML = col.labelHTML === ''
+    ? '&nbsp;'
+    : col.labelHTML;
+
+  const labelHTML = col.isSortable
+    ? createSortTemplate(col.sortField || col.name, _labelHTML)
+    : _labelHTML;
+
+  return {...col, labelHTML};
 });
 
 export { columnDefaults }
