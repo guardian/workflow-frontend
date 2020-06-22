@@ -280,7 +280,9 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'published-state.html',
     template: publishedStateTemplate,
-    active: true
+    active: true,
+    isSortable: true,
+    sortField: 'lifecycleStateSortString'
 },{
     name: 'needsLegal',
     prettyName: 'Needs Legal',

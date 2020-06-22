@@ -143,6 +143,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.lifecycleStateKey  = lifecycleState.key;
             this.lifecycleStateSupl = lifecycleState.supl;
             this.lifecycleStateSuplDate = lifecycleState.suplDate;
+            this.lifecycleStateSortString = `${lifecycleState.display}-${lifecycleState.suplDate}`;
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -194,7 +195,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
                 : '';
               this.printLocationDisplayString = `${shortPrintLocationDescription}<br />${newspaperPageNumberStr} ${wfFormatDateTime(newspaperPublicationDate, 'DD MMMM')}`;
               // We use 8601 dates to make the date sortable.
-              this.printLocationSortString = `${shortPrintLocationDescription} ${newspaperPageNumberStr} ${wfFormatDateTime(newspaperPublicationDate, 'ISO8601')}`
+              this.printLocationSortString = `${shortPrintLocationDescription}-${newspaperPageNumberStr}-${wfFormatDateTime(newspaperPublicationDate, 'ISO8601')}`
               this.longPrintLocationDescription = longPrintLocationDescription;
               this.printLocationType = printLocationType;
             }
