@@ -48,8 +48,8 @@ const createSortTemplate = (sortField, labelHTML) => `
         class="content-list-head__heading-sort-indicator"
         ng-class="{invisible: !getSortDirection('${sortField}')}"
         ng-switch="getSortDirection('${sortField}')">
-        <span ng-switch-when="asc">&#9660;</span>
-        <span ng-switch-when="desc">&#9650;</span>
+        <span ng-switch-when="desc">&#9660;</span>
+        <span ng-switch-when="asc">&#9650;</span>
         <!-- We add a character here and use ng-visible above to prevent -->
         <!-- sort state from interfering with table header spacing -->
         <span ng-switch-default>&#9650;</span>

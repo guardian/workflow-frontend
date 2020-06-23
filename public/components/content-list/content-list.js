@@ -266,7 +266,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
      */
     $scope.getSortedAndTrimmedContent = (content, trimTo) => {
       const { content: newContent } = content.reduce(({ itemsRemaining, content }, group) => {
-        // Avoid hydrating and sorted if we're not rendering any of these items
+        // Avoid hydrating and sorting if we're not rendering any of these items
         if (!itemsRemaining) {
           return {
             itemsRemaining,
