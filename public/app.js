@@ -88,8 +88,6 @@ angular.module('workflow',
         $compileProvider.aHrefSanitizationWhitelist(
             sanitizeUrl(_wfConfig.indesignExportUrl)
         );
-        
-        $compileProvider.debugInfoEnabled(false);
 
         $provide.decorator('$log', ["$delegate", 'logger', function ($delegate, logger) {
 
