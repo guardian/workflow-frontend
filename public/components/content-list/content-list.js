@@ -23,6 +23,7 @@ import './content-list.html';
 import { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter, wfCommissionedLengthCtrl } from 'components/content-list-item/content-list-item';
 import { wfContentListDrawer } from 'components/content-list-drawer/content-list-drawer';
 import { wfLoader } from 'components/loader/loader';
+import { getSortField } from '../../lib/column-defaults';
 
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService'])
@@ -108,22 +109,31 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         wfFiltersService.clearAll(false);
     };
 
-    $scope.getSortDirection = columnName => columnName === $scope.sortColumn ? $scope.sortDirection : undefined;
+    $scope.getSortDirection = columnName => {
+      return columnName === $scope.sortColumn ? $scope.sortDirection : undefined
+    }
 
     $scope.sortColumn = undefined;
     $scope.sortDirection = undefined;
     const defaultSortColName = 'priority';
     // If we'd prefer to allow people to remove the sort state entirely,
-    // this list can be changed to ['asc', 'desc', undefined]
-    const sortStates = ['desc', 'asc'];
+    // this list can be changed to ['desc', 'asc', undefined]
+    const sortStates = ['asc', 'desc'];
 
-    $scope.toggleSortState = columnName => {
+    $scope.toggleSortState = sortField => {
+      const column = $scope.columns.find(col => getSortField(col) === sortField);
+
+      if (!column) {
+        return;
+      }
+
       // Reset the sort order if we're toggling a new field
-      const sortDirectionIndex = columnName === $scope.sortColumn
+      const sortDirectionIndex = sortField === $scope.sortColumn
         ? (sortStates.indexOf($scope.sortDirection) + 1) % sortStates.length
-        : 0;
+        : Math.max(sortStates.indexOf(column.defaultSortOrder), 0);
+
       $scope.sortDirection = sortStates[sortDirectionIndex];
-      $scope.sortColumn = $scope.sortDirection ? columnName : undefined;
+      $scope.sortColumn = $scope.sortDirection ? sortField : undefined;
 
       applyNewContentState();
     };
@@ -142,9 +152,10 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         $scope.columns = data;
 
         // Apply sort defaults
-        const column = $scope.columns.find(_ => _.name === defaultSortColName);
+        const column = $scope.columns.find(col => getSortField(col) === defaultSortColName);
+
         if (column) {
-          $scope.toggleSortState(column.sortField || column.name)
+          $scope.toggleSortState(getSortField(column))
         }
     });
 
