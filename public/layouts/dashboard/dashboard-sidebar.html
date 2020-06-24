@@ -1,4 +1,8 @@
 <div class="sidebar-filters--{{enabled}}">
-    <wf-sidebar-filter ng-repeat="filter in filters" wf-filter="filter"></wf-sidebar-filter>
+  <wf-sidebar-filter
+    ng-repeat="filter in filters"
+    wf-filter="filter"
+  ></wf-sidebar-filter>
 </div>
+<wf-compactor-toggle></wf-compactor-toggle>
 <wf-location-picker></wf-location-picker>

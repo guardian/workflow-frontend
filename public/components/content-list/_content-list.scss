@@ -135,6 +135,12 @@ google-auth-banner .alert {
               text-align: right;
             }
 
+            &--priority {
+              // The priority icon is a slightly different shape, and needs
+              // different padding as a result
+              padding-top: 17px;
+            }
+
             &-icon {
                 &--presence,
                 &--assignee {
@@ -446,30 +452,6 @@ google-auth-banner .alert {
 
 .content-list-head__heading-sort-indicator {
   font-size: 10px;
-}
-
-.content-list__compact-button {
-    display: block;
-    height: 16px;
-    width: 16px;
-    cursor: pointer;
-    background: repeating-linear-gradient(
-            0deg,
-            #ffffff,
-            #ffffff 1px,
-            $c-grey-400 1px,
-            $c-grey-400 2px
-    );
-
-    &--active {
-        background: repeating-linear-gradient(
-                0deg,
-                #ffffff,
-                #ffffff 2px,
-                $c-grey-400 2px,
-                $c-grey-400 4px
-        );
-    }
 }
 
 .content-list__content-end {
