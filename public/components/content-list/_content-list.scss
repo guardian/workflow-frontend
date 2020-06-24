@@ -448,6 +448,7 @@ google-auth-banner .alert {
 
 .content-list-head__heading-sort-by {
   cursor: pointer;
+  user-select: none;
 }
 
 .content-list-head__heading-sort-indicator {
