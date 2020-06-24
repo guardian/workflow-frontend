@@ -60,10 +60,6 @@ const createSortTemplate = (sortField, labelHTML) => `
 var columnDefaults = [{
     name: 'priority',
     prettyName: 'Priority',
-    // Oh hello, yes you're right the `labelHTML` doesn't represent `priority` does it?!
-    // There's a good reason though, principally it's a wider column than the column to the left, notifier.
-    // The notifier column needs to remain slim to not consume valuable real estate.
-    // Add the table compactor toggle here as there is no text here anyway otherwise.
     labelHTML: '<i class="content-list-item__icon--priority" wf-icon="priority-neutral" />',
     colspan: 1,
     title: '',
