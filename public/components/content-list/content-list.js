@@ -3,6 +3,7 @@
 
 import angular from 'angular';
 import _ from 'lodash';
+import { EVENT_PREFERENCE_CHANGED } from '../../lib/preferences-service';
 
 import 'lib/content-service';
 import 'lib/composer-service';
@@ -111,10 +112,10 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     $scope.sortColumn = undefined;
     $scope.sortDirection = undefined;
-    const defaultSortColName = 'titles';
+    const defaultSortColName = 'priority';
     // If we'd prefer to allow people to remove the sort state entirely,
     // this list can be changed to ['asc', 'desc', undefined]
-    const sortStates = ['asc', 'desc'];
+    const sortStates = ['desc', 'asc'];
 
     $scope.toggleSortState = columnName => {
       // Reset the sort order if we're toggling a new field
@@ -195,24 +196,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     $scope.colChangeSelect = function () {
         $scope.columnsEdited = true;
     };
-
-    (function handleCompactView () {
-
-        $scope.compactView = {
-            visible: false // compact view off by default
-        };
-
-        wfPreferencesService.getPreference('compactView').then((data) => { // query prefs for compact view
-            $scope.compactView = data;
-            setUpWatch();
-        }, setUpWatch);
-
-        function setUpWatch () {
-            $scope.$watch('compactView', (newValue) => { // store any change to compact view as a pref
-                wfPreferencesService.setPreference('compactView', newValue);
-            }, true);
-        }
-    })();
 
     (function handleHeadlineVisibility (controller) {
 
@@ -417,7 +400,16 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         return items;
       }
 
-      const iteratee = item => (_.get(item, sortColumn) || '').toLowerCase();
+      const iteratee = item => {
+        const val = _.get(item, sortColumn) || '';
+        return typeof val === 'string' ? val.toLowerCase() : val;
+      }
+
+      // Priority is a special case – on the server, we sort by priority -> title
+      // by default, so we add this secondary sort to reflect that behaviour.
+      if (sortColumn === 'priority') {
+        return _.orderBy(items, [iteratee, 'title'], [sortDirection, 'desc']);
+      }
 
       return _.orderBy(items, iteratee, sortDirection);
     }
@@ -500,4 +492,10 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     // TODO: use more specific event names to trigger a refresh, eg: filterChanged, contentImported
     $scope.$on('getContent', this.poller.refresh.bind(this.poller));
+
+    $scope.$on(EVENT_PREFERENCE_CHANGED, (_, { name, data }) => {
+      if (name === 'compactView') {
+        $scope.compactView = data;
+      }
+    })
 }

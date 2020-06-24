@@ -3,12 +3,13 @@ import angular from 'angular';
 import 'lib/date-service';
 import 'lib/filters-service';
 import 'components/location-picker/location-picker';
+import 'components/compactor-toggle/compactor-toggle';
 import 'components/sidebar-filter/sidebar-filter';
 import { filterDefaults } from 'lib/filter-defaults';
 
 import './dashboard-sidebar.html';
 
-angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wfLocationPicker'])
+angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wfLocationPicker', 'wfCompactorToggle'])
     .controller('wfDashboardSidebarController', ['$scope', 'statuses', 'wfFiltersService', 'wfDateParser', function ($scope, statuses, wfFiltersService) {
 
         $scope.statuses = statuses;
