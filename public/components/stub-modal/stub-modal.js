@@ -109,16 +109,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
      * @returns Filtered list of sections
      */
     function getSectionsList (sections) {
-        const deskId = wfFiltersService.get('desk');
-
-        if (deskId) {
-            const sectionsIdsInThisDesk = sectionsInDesks.filter((el) => el.deskId === parseInt(deskId, 10));
-            if (sectionsIdsInThisDesk.length > 0) {
-                const setSectionsIdsInThisDesk = new Set(sectionsIdsInThisDesk[0].sectionIds);
-                sections = sections.filter((el) => setSectionsIdsInThisDesk.has(el.id))
-            }
-        }
-        return sections;
+        return sections.filter(({selected})=>selected);
     }
 
     $scope.legalStates = legalStatesService.getLegalStates();
