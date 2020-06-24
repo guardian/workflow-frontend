@@ -56,9 +56,7 @@ const createSortTemplate = (sortField, labelHTML) => `
       </span>
     </div>
 `;
-// const compactor = '<div class="content-list__compact-button" ng-class="{ \'content-list__compact-button--active\': compactView.visible }" ng-click="compactView.visible = !compactView.visible" title="Toggle compact view"></div>';
 
-// '<i class="content-list-item__icon--priority" wf-icon="priority-{{ contentItem.priority | getPriorityString }}" ng-show="contentItem.priority !== 0"/>'
 var columnDefaults = [{
     name: 'priority',
     prettyName: 'Priority',

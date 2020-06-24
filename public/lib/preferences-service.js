@@ -1,5 +1,7 @@
 import angular from 'angular';
 
+export const EVENT_PREFERENCE_CHANGED = 'wfPreferencesService.preferenceChanged';
+
 angular.module('wfPreferencesService', [])
     .factory('wfPreferencesService', ['$rootScope', '$http', '$log', '$window',
         function($rootScope, $http, $log, $window) {
@@ -100,7 +102,11 @@ angular.module('wfPreferencesService', [])
                         {
                             withCredentials: true
                         }
-                    );
+                    ).then(() => {
+                      $rootScope.$broadcast(EVENT_PREFERENCE_CHANGED, {
+                        name, data
+                      });
+                    })
                 }
 
                 /**

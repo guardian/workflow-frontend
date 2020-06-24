@@ -5,7 +5,6 @@
  */
 
 import angular from 'angular';
-
 import compactorToggle from './compactor-toggle.html';
 
 angular.module('wfCompactorToggle', ['wfPreferencesService', 'wfIcons'])

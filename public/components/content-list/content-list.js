@@ -3,6 +3,7 @@
 
 import angular from 'angular';
 import _ from 'lodash';
+import { EVENT_PREFERENCE_CHANGED } from '../../lib/preferences-service';
 
 import 'lib/content-service';
 import 'lib/composer-service';
@@ -491,4 +492,10 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     // TODO: use more specific event names to trigger a refresh, eg: filterChanged, contentImported
     $scope.$on('getContent', this.poller.refresh.bind(this.poller));
+
+    $scope.$on(EVENT_PREFERENCE_CHANGED, (_, { name, data }) => {
+      if (name === 'compactView') {
+        $scope.compactView = data;
+      }
+    })
 }
