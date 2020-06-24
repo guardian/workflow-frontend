@@ -139,6 +139,8 @@ google-auth-banner .alert {
               // The priority icon is a slightly different shape, and needs
               // different padding as a result
               padding-top: 17px;
+              padding-left: 10px;
+              padding-right: 0;
             }
 
             &-icon {
