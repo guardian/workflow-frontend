@@ -48,8 +48,8 @@ const createSortTemplate = (sortField, labelHTML) => `
         class="content-list-head__heading-sort-indicator"
         ng-class="{invisible: !getSortDirection('${sortField}')}"
         ng-switch="getSortDirection('${sortField}')">
-        <span ng-switch-when="asc">&#9660;</span>
-        <span ng-switch-when="desc">&#9650;</span>
+        <span ng-switch-when="desc">&#9660;</span>
+        <span ng-switch-when="asc">&#9650;</span>
         <!-- We add a character here and use ng-visible above to prevent -->
         <!-- sort state from interfering with table header spacing -->
         <span ng-switch-default>&#9650;</span>
@@ -222,7 +222,9 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'wordcount.html',
     template: wordcountTemplate,
-    active: false
+    active: true,
+    isSortable: true,
+    sortField: 'wordCount'
 },{
     name: 'printwordcount',
     prettyName: 'Print wordcount',
@@ -231,8 +233,10 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'printwordcount.html',
     template: printWordcountTemplate,
-    active: false,
-    isNew: true
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: 'printWordCount'
 },{
     name: 'publicationlocation',
     prettyName: 'Publication location',
@@ -241,8 +245,10 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'publicationLocation.html',
     template: publicationLocationTemplate,
-    active: false,
-    isNew: true
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: 'printLocationSortString'
 },{
     name: 'commissionedLength',
     prettyName: 'Commissioned Length',
@@ -251,7 +257,8 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'commissionedLength.html',
     template: commissionedLengthTemplate,
-    active: false
+    active: true,
+    isSortable: true
 },{
     name: 'links',
     prettyName: 'Open in...',
@@ -269,7 +276,9 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'published-state.html',
     template: publishedStateTemplate,
-    active: true
+    active: true,
+    isSortable: true,
+    sortField: 'lifecycleStateSortString'
 },{
     name: 'needsLegal',
     prettyName: 'Needs Legal',
@@ -287,8 +296,10 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'last-modified.html',
     template: lastModifiedTemplate,
-    active: false,
-    isNew: true
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: 'lastModified'
 },{
     name: 'last-modified-by',
     prettyName: 'Last modified by',
@@ -297,8 +308,10 @@ var columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'last-modified-by.html',
     template: lastModifiedByTemplate,
-    active: false,
-    isNew: true
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: 'lastModifiedBy'
 }].map(col => {
   const _labelHTML = col.labelHTML === ''
     ? '&nbsp;'

@@ -26,7 +26,7 @@ import { wfLoader } from 'components/loader/loader';
 
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService'])
-    .service('wfContentItemParser', ['config', 'statusLabels', 'sections', wfContentItemParser])
+    .service('wfContentItemParser', ['config', 'wfFormatDateTimeFilter', 'statusLabels', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
     .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'legalValues', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', 'wfFiltersService', wfContentListController])
     .directive('wfContentListLoader', ['$rootScope', wfLoader])
@@ -266,7 +266,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
      */
     $scope.getSortedAndTrimmedContent = (content, trimTo) => {
       const { content: newContent } = content.reduce(({ itemsRemaining, content }, group) => {
-        // Avoid hydrating and sorted if we're not rendering any of these items
+        // Avoid hydrating and sorting if we're not rendering any of these items
         if (!itemsRemaining) {
           return {
             itemsRemaining,

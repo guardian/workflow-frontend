@@ -1,8 +1,8 @@
 
-var OPHAN_PATH = 'https://dashboard.ophan.co.uk/summary?path=/',
+const OPHAN_PATH = 'https://dashboard.ophan.co.uk/summary?path=/',
     LIVE_PATH = 'http://www.theguardian.com/';
 
-function wfContentItemParser(config, statusLabels, sections) {
+function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
     /*jshint validthis:true */
 
     function getFullOfficeString(office) {
@@ -143,6 +143,7 @@ function wfContentItemParser(config, statusLabels, sections) {
             this.lifecycleStateKey  = lifecycleState.key;
             this.lifecycleStateSupl = lifecycleState.supl;
             this.lifecycleStateSuplDate = lifecycleState.suplDate;
+            this.lifecycleStateSortString = `${lifecycleState.display}-${lifecycleState.suplDate}`;
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -179,7 +180,60 @@ function wfContentItemParser(config, statusLabels, sections) {
             this.plannedNewspaperPageNumber = item.plannedNewspaperPageNumber;
             this.plannedNewspaperPublicationDate = item.plannedNewspaperPublicationDate;
 
+            // These are derived values used for display purposes.
+            const {
+              shortPrintLocationDescription,
+              newspaperPageNumber,
+              newspaperPublicationDate,
+              longPrintLocationDescription,
+              printLocationType
+            } = this.getPrintValues(item);
+
+            if (shortPrintLocationDescription) {
+              const newspaperPageNumberStr = newspaperPageNumber
+                ? `p. ${newspaperPageNumber}`
+                : '';
+              this.printLocationDisplayString = `${shortPrintLocationDescription}<br />${newspaperPageNumberStr} ${wfFormatDateTime(newspaperPublicationDate, 'DD MMMM')}`;
+              // We use 8601 dates to make the date sortable.
+              this.printLocationSortString = `${shortPrintLocationDescription}-${newspaperPageNumberStr}-${wfFormatDateTime(newspaperPublicationDate, 'ISO8601')}`
+              this.longPrintLocationDescription = longPrintLocationDescription;
+              this.printLocationType = printLocationType;
+            }
+
             this.item = item;
+        }
+
+        getPrintValues(item) {
+          const printLocationType = this.getPrintLocationType(item);
+          if (printLocationType === 'actual') {
+            return {
+              longPrintLocationDescription: item.longActualPrintLocationDescription,
+              shortPrintLocationDescription: item.shortActualPrintLocationDescription,
+              newspaperPageNumber: item.actualNewspaperPageNumber,
+              newspaperPublicationDate: new Date(item.actualNewspaperPublicationDate),
+              printLocationType
+            }
+          }
+          if (printLocationType === 'planned') {
+            return {
+                longPrintLocationDescription: item.longPlannedPrintLocationDescription,
+                shortPrintLocationDescription: item.shortPlannedPrintLocationDescription,
+                newspaperPageNumber: item.plannedNewspaperPageNumber,
+                newspaperPublicationDate: new Date(item.plannedNewspaperPublicationDate),
+                printLocationType
+            }
+          }
+          return {}; // For easy destructuring in the caller;
+        }
+
+        getPrintLocationType(item) {
+          if (item.shortActualPrintLocationDescription) {
+            return 'actual';
+          }
+          if (item.shortPlannedPrintLocationDescription) {
+            return 'planned';
+          }
+          return undefined;
         }
 
         lifecycleState(item) {
