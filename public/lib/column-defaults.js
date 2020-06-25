@@ -34,30 +34,46 @@ import publicationLocationTemplate from "components/content-list-item/templates/
  *      colspan: number, // colspan of this field
  *      title: string, // title attribute contents for the column heading
  *      templateUrl: string // URL for the content-list-item template for this field
- *      isSortable: boolean // Can the column be sorted by clicking its header?
- *      sortField: string // The field to sort on, if different from `name`. Can be an item path, e.g. `a.nested.field`
+ *      isSortable: boolean = false // Can the column be sorted by clicking its header?
+ *      sortField?: string // The field to sort on, if different from `name`. Can be an item path, e.g. `a.nested.field`
+ *      defaultSortOrder?: 'asc' | 'desc' // The default sort order for the column on first click. Defaults to 'asc'
+ *      flipSortIconDirection: boolean = false // Flip the direction of the sort chevron relative to the sort order. Defaults to 'desc' -> ▼
  * }
  */
 
 var templateRoot = '/assets/components/content-list-item/templates/';
 
-const createSortTemplate = (sortField, labelHTML) => `
+const chevronUp = '&#9660;'
+const chevronDown = '&#9650;'
+
+const createSortTemplate = (sortField, labelHTML, flipSortIconDirection = false) => {
+  // For some field types, the semantics of 'up' or 'down' differ; we use
+  // flipSortIconDirection to switch them when needed.
+  const descChevron = flipSortIconDirection ? chevronDown : chevronUp;
+  const ascChevron = flipSortIconDirection ? chevronUp : chevronDown;
+
+  return `
     <div ng-click="toggleSortState('${sortField}')" class="content-list-head__heading-sort-by">
       ${labelHTML}
       <span
         class="content-list-head__heading-sort-indicator"
         ng-class="{invisible: !getSortDirection('${sortField}')}"
         ng-switch="getSortDirection('${sortField}')">
-        <span ng-switch-when="desc">&#9660;</span>
-        <span ng-switch-when="asc">&#9650;</span>
+        <span ng-switch-when="desc">${descChevron}</span>
+        <span ng-switch-when="asc">${ascChevron}</span>
         <!-- We add a character here and use ng-visible above to prevent -->
         <!-- sort state from interfering with table header spacing -->
         <span ng-switch-default>&#9650;</span>
       </span>
     </div>
-`;
+  `;
+};
 
-var columnDefaults = [{
+export const getSortField = column => column
+  && column.isSortable
+  && (column.sortField || column.name);
+
+const columnDefaults = [{
     name: 'priority',
     prettyName: 'Priority',
     labelHTML: '<i class="content-list-item__icon--priority" wf-icon="priority-neutral" />',
@@ -67,7 +83,9 @@ var columnDefaults = [{
     template: priorityTemplate,
     active: true,
     alwaysShown: true,
-    isSortable: true
+    isSortable: true,
+    defaultSortOrder: 'desc',
+    flipSortIconDirection: true
 },{
     name: 'content-type',
     prettyName: 'Content Type',
@@ -193,7 +211,8 @@ var columnDefaults = [{
     templateUrl: templateRoot + 'deadline.html',
     template: deadlineTemplate,
     active: true,
-    isSortable: true
+    isSortable: true,
+    defaultSortOrder: 'desc'
 },{
     name: 'section',
     prettyName: 'Section',
@@ -299,7 +318,8 @@ var columnDefaults = [{
     active: true,
     isNew: true,
     isSortable: true,
-    sortField: 'lastModified'
+    sortField: 'lastModified',
+    defaultSortOrder: 'desc'
 },{
     name: 'last-modified-by',
     prettyName: 'Last modified by',
@@ -318,10 +338,10 @@ var columnDefaults = [{
     : col.labelHTML;
 
   const labelHTML = col.isSortable
-    ? createSortTemplate(col.sortField || col.name, _labelHTML)
+    ? createSortTemplate(getSortField(col), _labelHTML, col.flipSortIconDirection)
     : _labelHTML;
 
-  return {...col, labelHTML};
+  return {...col, active: true, labelHTML};
 });
 
 export { columnDefaults }
