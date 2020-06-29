@@ -142,10 +142,17 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 };
 
                 $scope.deadlineSelectActive = function () {
-                    return $scope.select.selectedDate && typeof($scope.select.selectedDate) !== 'string' && $scope.selectedFilter === 'customDate';
+                    return $scope.select.selectedDate && typeof ($scope.select.selectedDate) !== 'string' && $scope.selectedFilter === 'customDate';
                 };
+                $scope.$watch('select', (n, o) => console.log("shit", n, o))
+                $scope.$watch('select.boop', function (newValue, oldValue) { 
+                    console.log("AAA", oldValue, newValue)
+                    
+                })
 
                 $scope.$watch('select.selectedDate', function (newValue, oldValue) {
+                    console.log(newValue, oldValue)
+                    $scope.selectedDate.boop = undefined
                     if (newValue !== oldValue && newValue) {  // Prevents fire change event on init
                         $scope.$emit('filtersChanged.selectedDate', $scope.select.selectedDate);
                         if (newValue !== null) {

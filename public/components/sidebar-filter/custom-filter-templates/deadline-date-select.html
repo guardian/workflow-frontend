@@ -1,3 +1,12 @@
-<select ng-class="{'sidebar__filter__deadline-select': !deadlineSelectActive(), 'sidebar__filter__deadline-select--active': deadlineSelectActive()}" ng-model="select.selectedDate" ng-change="dateSelected()" ng-options="date as (date | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd D MMM') for date in dateOptions" title="Choose date">
-  <option value="">Choose date</option>
-</select>
+<div>
+<div style="overflow: visible">
+<div 
+  wf-date-time-picker 
+  wf-no-time
+  wf-update-on="enter" 
+  ng-model="select.boop" 
+  wf-on-cancel="dateTimeEdit = false; revertDeadline()" 
+  wf-cancel-on="blur"
+  wf-on-submit="dateSelected()"
+  ></div>
+</div></div>

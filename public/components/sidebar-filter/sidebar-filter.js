@@ -159,10 +159,12 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                 if ($scope.listIsOpen) {
                     $scope.listIsOpen = false;
                     $scope.list.style.maxHeight = '0px';
+                    $scope.list.style.overflow = 'hidden';
                     updatePreference('listIsOpen', false);
                 } else {
                     $scope.listIsOpen = true;
                     $scope.list.style.maxHeight ='none';
+                    $scope.list.style.overflow = 'unset';
                     updatePreference('listIsOpen', true);
                 }
 
