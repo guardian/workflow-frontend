@@ -176,18 +176,16 @@
 // moz dropdown arrow masking
 .sidebar__filter-custom--customDate {
     position: relative;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
 
-    &:after {
-        content: " ";
-        background: $i-arrow-down center no-repeat #F6F6F6;
-        background-size: 12px;
-        width: 20px;
-        position: absolute;
-        height: 100%;
-        top: 0;
-        right: 0;
-        pointer-events: none;
+    input[type="date"] {
+        display: block;
+        margin-top: 5px;
+        padding: 3 0 3 0;
+        line-height: 16px;
     }
+    
 }
 
 .sidebar__filter--active .sidebar__filter-custom--customDate:after {
