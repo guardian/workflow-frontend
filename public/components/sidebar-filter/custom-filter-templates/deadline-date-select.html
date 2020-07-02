@@ -1,5 +1,6 @@
 <label
-  ng-class="{'sidebar__filter__deadline-select': !deadlineSelectActive(), 'sidebar__filter__deadline-select--active': deadlineSelectActive()}">
+  ng-class="{'sidebar__filter__deadline-select': !deadlineSelectActive(), 'sidebar__filter__deadline-select--active': deadlineSelectActive()}"
+  for="datepicker">
   Choose date
 </label>
-<input type="date" ng-model="select.deadline" max="9999-12-31" />
+<input type="date" id="datepicker" ng-model="select.deadline" max="9999-12-31" />
