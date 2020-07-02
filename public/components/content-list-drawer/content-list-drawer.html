@@ -461,9 +461,9 @@
                                 ng-hide="publicationDateTimeEdit" 
                                 ng-click="publicationDateTimeEdit = true" 
                                 ng-class="{ 'drawer__section-data-row--editable': contentItem.plannedNewspaperPublicationDate, 'drawer__section-data-row--editable-empty': !contentItem.plannedNewspaperPublicationDate, 'editable__view-value': true, 'editable__edit-button': true }"
-                                title="{{ (contentItem.plannedNewspaperPublicationDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'date') || '' }}"
+                                title="{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || '' }}"
                                 >
-                                {{ (contentItem.plannedNewspaperPublicationDate | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'date') || 'Add planned publication date' }}
+                                {{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || 'Add planned publication date' }}
                             </button>
                             <form ng-show="publicationDateTimeEdit" ng-submit="publicationDateTimeEdit = false">
                                 <div class="form-group">
@@ -474,7 +474,7 @@
                                       wf-on-cancel="publicationDateTimeEdit = false; revertPlannedPublicationDate()" 
                                       wf-cancel-on="blur" 
                                       wf-on-submit="updatePlannedPublicationDate(); publicationDateTimeEdit = false;" 
-                                      wf-no-time="true"
+                                      wf-date-only="true"
                                     ></div>
                                 </div>
                             </form>

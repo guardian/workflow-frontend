@@ -275,15 +275,15 @@ class Api(
       } yield id
     )}
   }
-
+  
   def putStubPlannedNewspaperPublicationDate(stubId: Long) = 
    {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
-        plannedNewspaperPublicationDateString <- extractDataResponse[String](json)
-        plannedNewspaperPublicationDate = LocalDate.parse(plannedNewspaperPublicationDateString.split("T").head)
-        id <- stubsApi.putStubPlannedNewspaperPublicationDate(stubId, plannedNewspaperPublicationDate)
+        dateString <- extractDataResponse[String](json)
+        date = LocalDate.parse(dateString)
+        id <- stubsApi.putStubPlannedNewspaperPublicationDate(stubId, date)
       } yield id
     )}
   }

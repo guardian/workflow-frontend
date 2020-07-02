@@ -17,7 +17,7 @@ var SETTING_OPEN_SECTION = 'openSection';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService, wfTagApiService) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService, wfTagApiService, wfFormatDateTime) {
     var hiddenClass = 'content-list-drawer--hidden';
 
     function buildComposerRestorerUrl (composerId) {
@@ -334,7 +334,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             };
 
             $scope.updatePlannedPublicationDate = function () {
-                updateField("plannedNewspaperPublicationDate", $scope.currentPublicationDatePickerValue);
+                updateField("plannedNewspaperPublicationDate", wfFormatDateTime($scope.currentPublicationDatePickerValue,'YYYY-MM-DD'));
             };
 
             $scope.updateCommissionedLength = function (newValue) {

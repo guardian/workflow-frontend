@@ -35,7 +35,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'sections', 'config', wfContentListItem])
     .controller('wfCommissionedLengthCtrl', ['$scope', wfCommissionedLengthCtrl])
     .directive('uiFilterList', ['$q','$window', uiFilterList])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService', 'wfTagApiService', wfContentListDrawer])
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService', 'wfTagApiService', 'wfFormatDateTimeFilter', wfContentListDrawer])
     .directive("bindCompiledHtml", function($compile) {
         return {
             scope: {

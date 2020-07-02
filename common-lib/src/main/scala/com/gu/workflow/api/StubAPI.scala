@@ -165,7 +165,6 @@ class StubAPI(
         item <- extractDataResponse[Long](json)
       } yield item
   
-  
   def deleteContentByStubId(id: Long): ApiResponseFt[Option[String]] =
     for {
       res <- ApiResponseFt.Async.Right(deleteRequest(s"stubs/$id"))
