@@ -62,4 +62,4 @@ SSM_COMMAND=$(ssm ssh --profile workflow -t workflow-frontend,workflow,$STAGE --
 echo "📠 ESTABLISHING CONNECTION"
 
 echo "$SSM_COMMAND"
-eval $SSM_COMMAND $VERBOSE -L 5002:${DATASTORE_ELB}:80 -N ${BACKGROUND}
+eval $SSM_COMMAND $VERBOSE -L 9095:${DATASTORE_ELB}:80 -N ${BACKGROUND}
