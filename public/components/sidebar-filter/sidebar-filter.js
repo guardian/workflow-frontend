@@ -146,8 +146,8 @@ angular.module('wfSidebarFilter', ['wfFiltersService'])
                     // We change the selected date to an empty string so that if a deadline
                     // has been chosen from the date dropdown previously it will no longer be
                     // displayed here.
-                    if ($scope.filter.namespace === 'selectedDate' && typeof filter.value === 'string') {
-                      $scope.select.selectedDate = '';
+                    if ($scope.filter.namespace === 'deadline' && typeof filter.value === 'string') {
+                      $scope.select.deadline = '';
                     }
 
                     $scope.$emit('filtersChanged.' + $scope.filter.namespace, $scope.selectedFilters);

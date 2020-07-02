@@ -108,7 +108,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
         },
         {
             title: 'Deadline',
-            namespace: 'selectedDate',
+            namespace: 'deadline',
             listIsOpen: false,
             filterOptions: [
                 { caption: 'Today', value: 'today' },
@@ -127,26 +127,26 @@ var filterDefaults = function (statuses, wfFiltersService) {
             customLinkFunction: ['wfDateParser', '$scope', (wfDateParser, $scope) => {
 
                 $scope.dateOptions = wfDateParser.getDaysThisWeek();
-                const storedSelectedDate = wfFiltersService.get('selectedDate');
-                const selectedDate = storedSelectedDate ? storedSelectedDate : '';
+                const storedSelectedDate = wfFiltersService.get('deadline');
+                const deadline = storedSelectedDate ? storedSelectedDate : '';
 
-                // Can our selectedDate be parsed into a date?
-                const parsedDate = moment(selectedDate)
+                // Can our deadline be parsed into a date?
+                const parsedDate = moment(deadline)
                 if (parsedDate.isValid()) {
                     $scope.selectedFilters = ['customDate']
                 }
 
                 $scope.select = { // Angular weirdness
-                    selectedDate: new Date(selectedDate)
+                    deadline: new Date(deadline)
                 };
 
                 $scope.deadlineSelectActive = function () {
-                    return moment($scope.select.selectedDate).isValid();
+                    return moment($scope.select.deadline).isValid();
                 };
 
-                $scope.$watch('select.selectedDate', function (newValue, oldValue) {
+                $scope.$watch('select.deadline', function (newValue, oldValue) {
                     if (newValue !== oldValue && newValue) {  // Prevents fire change event on init
-                        $scope.$emit('filtersChanged.selectedDate', $scope.select.selectedDate);
+                        $scope.$emit('filtersChanged.deadline', $scope.select.deadline);
                         if (newValue !== null) {
                             $scope.selectFilter('customDate');
                         } else {

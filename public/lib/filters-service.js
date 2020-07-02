@@ -49,8 +49,8 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                     $rootScope.$broadcast('getContent');
                 });
 
-                $rootScope.$on('filtersChanged.selectedDate', function(event, data) { // TODO: fix deadline/selectedDate namespacing
-                    self.update('selectedDate', data);
+                $rootScope.$on('filtersChanged.deadline', function (event, data) { 
+                    self.update('deadline', data);
                     $rootScope.$broadcast('getContent');
                 });
 
@@ -166,7 +166,7 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
 
                 var setUpFilters = function (params) {
 
-                    var selectedDate = params['selectedDate'];
+                    var deadline = params['deadline'];
 
                     self.filters = {
                         'status'       : params['status'],
@@ -174,7 +174,7 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                         'section'      : params['section'],
                         'content-type' : params['content-type'],
                         'atom-type'    : params['atom-type'],
-                        'selectedDate' : wfDateParser.parseQueryString(selectedDate),
+                        'deadline' : wfDateParser.parseQueryString(deadline),
                         'flags'        : params['flags'],
                         'prodOffice'   : params['prodOffice'],
                         'created'      : params['created'],
@@ -237,7 +237,7 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                     value = value.join(',');
                 }
 
-                if (key === 'selectedDate') {
+                if (key === 'deadline') {
                     var dateStr = wfDateParser.setQueryString(value);
                     this.filters[key] = dateStr;
                     doNotUpdateUrl || $location.search(key, dateStr);

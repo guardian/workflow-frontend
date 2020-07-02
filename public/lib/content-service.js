@@ -29,18 +29,18 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 /* what types of stub should be treated as atoms? */
                 getAtomTypes() {
                     return config.atomTypes.reduce((allowedTypes, type) => {
-                      allowedTypes[type] = true;
-                      return allowedTypes;
+                        allowedTypes[type] = true;
+                        return allowedTypes;
                     }, {});
                 }
 
                 getEditorUrl(editorId, atomType) {
 
-                  if (atomType === "media") {
-                    return config.mediaAtomMakerViewAtom + editorId;
-                  } else if (atomType === "chart") {
-                    return `${config.atomWorkshopViewAtom}/${atomType.toUpperCase()}/${editorId}/edit`;
-                  }
+                    if (atomType === "media") {
+                        return config.mediaAtomMakerViewAtom + editorId;
+                    } else if (atomType === "chart") {
+                        return `${config.atomWorkshopViewAtom}/${atomType.toUpperCase()}/${editorId}/edit`;
+                    }
                 };
 
                 /**
@@ -91,20 +91,20 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Also will create the stub if it doesn't have an id.
                  */
                 createInComposer(stub, statusOption) {
-                  return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template)
-                    .then( (response) => wfComposerService.parseComposerData(response, stub))
-                    .then((updatedStub) => {
+                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template)
+                        .then((response) => wfComposerService.parseComposerData(response, stub))
+                        .then((updatedStub) => {
 
-                        if (statusOption) {
-                            updatedStub['status'] = statusOption;
-                        }
+                            if (statusOption) {
+                                updatedStub['status'] = statusOption;
+                            }
 
-                        if (stub.id) {
-                            return this.updateStub(updatedStub);
-                        } else {
-                            return this.createStub(updatedStub);
-                        }
-                    });
+                            if (stub.id) {
+                                return this.updateStub(updatedStub);
+                            } else {
+                                return this.createStub(updatedStub);
+                            }
+                        });
                 }
 
                 /**
@@ -216,9 +216,9 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 getServerParams() {
                     var modelParams = wfFiltersService.getAll();
 
-                    var selectedDate = modelParams['selectedDate'];
+                    var deadline = modelParams['deadline'];
 
-                    var dateRange = wfDateParser.parseRangeFromString(selectedDate);
+                    var dateRange = wfDateParser.parseRangeFromString(deadline);
                     var createdRange = wfDateParser.parseRangeFromString(modelParams['created']);
                     var viewRange = wfDateParser.parseRangeFromString(modelParams['view']);
 
@@ -240,9 +240,9 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'assignee': modelParams['assignee'] || null,
                         'touched': modelParams['touched'] || null,
                         'assigneeEmail': modelParams['assigneeEmail'] || null,
-                        'incopy' : modelParams['incopy'] || null,
-                        'composerId' : modelParams['composerId'] || null,
-                        'editorId' : modelParams['editorId'] || null,
+                        'incopy': modelParams['incopy'] || null,
+                        'composerId': modelParams['composerId'] || null,
+                        'editorId': modelParams['editorId'] || null,
                         'trashed': modelParams['trashed'] || null,
                         'hasPrintInfo': modelParams['hasPrintInfo'] || null,
                     };
@@ -322,7 +322,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                 return wfContentService.get(this._paramsProvider())
                     .then(this._callback)
-                    .then( () => {
+                    .then(() => {
                         this._timer = $timeout(this.refresh.bind(this), POLLING_DELAY);
                     })
                     .catch((err) => {
