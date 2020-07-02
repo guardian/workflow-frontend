@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /**
  * This returned array represents the default configuration of the sidebar filters list.
  * This is used by the components/sidebar-filter/sidebar-filter.js directive.
@@ -126,23 +128,20 @@ var filterDefaults = function (statuses, wfFiltersService) {
 
                 $scope.dateOptions = wfDateParser.getDaysThisWeek();
                 const storedSelectedDate = wfFiltersService.get('selectedDate');
-                var selectedDate = storedSelectedDate ? storedSelectedDate : '';
+                const selectedDate = storedSelectedDate ? storedSelectedDate : '';
 
-                // ensure that the date from the URL is the same object as the
-                // one used in the Select drop-down, as its compared with ===
-                $scope.dateOptions.forEach(function (date) {
-                    if (date.isSame(selectedDate)) {
-                        selectedDate = date;
-                        $scope.selectedFilters = ['customDate'];
-                    }
-                });
+                // Can our selectedDate be parsed into a date?
+                const parsedDate = moment(selectedDate)
+                if (parsedDate.isValid()) {
+                    $scope.selectedFilters = ['customDate']
+                }
 
                 $scope.select = { // Angular weirdness
-                    selectedDate: selectedDate
+                    selectedDate: new Date(selectedDate)
                 };
 
                 $scope.deadlineSelectActive = function () {
-                    return $scope.select.selectedDate && typeof($scope.select.selectedDate) !== 'string' && $scope.selectedFilter === 'customDate';
+                    return moment($scope.select.selectedDate).isValid();
                 };
 
                 $scope.$watch('select.selectedDate', function (newValue, oldValue) {
@@ -173,7 +172,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
             listIsOpen: false,
             multi: false,
             filterOptions: [
-                { caption: 'Trashed', value: 'true'}
+                { caption: 'Trashed', value: 'true' }
             ]
         },
         {
