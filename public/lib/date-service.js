@@ -296,11 +296,15 @@ angular.module('wfDateService', ['wfLocationService'])
                 return '';
             }
 
-            if (dateFormat == 'long') {
+            if (dateFormat === 'long') {
                 dateFormat = 'dddd D MMMM YYYY, HH:mm z';
             }
 
-            if (dateFormat == 'ISO8601') {
+            if (dateFormat === 'date') {
+                dateFormat = 'dddd D MMMM YYYY';
+            }
+
+            if (dateFormat === 'ISO8601') {
                 return dateValue.toISOString();
             }
 

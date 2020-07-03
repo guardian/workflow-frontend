@@ -1,0 +1,96 @@
+/*doc
+---
+title: Autocomplete
+name: autocomplete
+category: basics
+---
+
+Autocomplete styles.
+
+## Usage
+   TODO: Add this
+*/
+
+
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete.editable--edit {
+  padding-right: 28px;
+}
+
+
+.autocomplete input {
+  border: 1px solid $c-grey-300;
+  padding: 3px 5px;
+  width: 100%;
+
+  &--textarea {
+      height: 80px;
+  }
+
+  &.ng-invalid {
+      border-color: $c-red;
+  }
+}
+
+.autocomplete__results,
+.autocomplete__results--backup
+{
+  // &:extend(.font-content);
+  box-sizing:border-box;
+  border-top-width: 1px;
+  background-color: white;
+  position: absolute;
+  z-index: 1;
+  font-size: 14px;
+  margin-top: -2px;
+  width: 100%;
+  /*
+  Remove until support for scrolling selected list items into view
+  */
+  // max-height: 300px;
+  overflow: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  top: 100%;
+  max-height: 320px;
+  margin-bottom: 40px;
+
+}
+
+.autocomplete__results--backup {
+  position: static;
+}
+
+.autocomplete__results li, 
+.autocomplete ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+.autocomplete__results li,
+.autocomplete__results--backup li {
+
+  &:hover,
+  &:focus,
+  &:active,
+  &.is-selected {
+      button {
+          background-color: $c-highlight-blue;
+          color: white;
+      }
+  }
+}
+
+.autocomplete__results button,
+.autocomplete__results--backup button { 
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+  color: $c-grey-700;
+  //  $color700Grey;
+  display: block;
+  padding: 10px;
+  text-align: left;
+  border: none;
+}

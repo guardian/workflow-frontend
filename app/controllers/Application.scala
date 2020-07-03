@@ -144,7 +144,8 @@ class Application(
         ("gaId", Json.fromString(config.googleTrackingId)),
         ("webPush", Json.obj(
           ("publicKey", Json.fromString(config.webPushPublicKey))
-        ))
+        )),
+        ("tagManagerUrl",Json.fromString(config.tagManagerUrl))
       )
 
       Ok(views.html.app(title, Some(user), jsonConfig, config.googleTrackingId, config.presenceClientLib))

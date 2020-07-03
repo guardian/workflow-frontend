@@ -17,8 +17,7 @@ var SETTING_OPEN_SECTION = 'openSection';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService) {
-
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService, wfTagApiService, wfFormatDateTime) {
     var hiddenClass = 'content-list-drawer--hidden';
 
     function buildComposerRestorerUrl (composerId) {
@@ -36,12 +35,15 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
         template: contentListDrawerTemplate,
         priority: 1001,
         scope: {
+            showBookTagPicker: '<',
+            editedLongPlannedPrintLocationDescription: '<',
             contentList: '=',
             legalValues: '=',
             statusValues: '='
         },
         controllerAs: 'contentListDrawerController',
         controller: function ($scope, $element) {
+
 
             var $parent = $element.parent();
             /**
@@ -141,7 +143,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
 
         link: function ($scope, elem, attrs, contentListDrawerController) {
-
             $scope.maxNoteLength = config.maxNoteLength;
             $scope.prodOffices = prodOfficeService.getProdOffices();
             $scope.supportedAtomTypes = config.atomTypes;
@@ -317,6 +318,13 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 updateField("workingTitle", workingTitle, $scope.contentItem.workingTitle);
             };
 
+            $scope.onBeforeSavePlannedPageNumber = function (plannedNewspaperPageNumber) {
+                const pageNumber = parseInt(plannedNewspaperPageNumber, 10)
+                if (pageNumber === NaN) {
+                    return;
+                }
+                updateField("plannedNewspaperPageNumber", pageNumber, $scope.contentItem.plannedNewspaperPageNumber)
+            }
 
             /**
              * Update the deadline manually using value from datepicker
@@ -325,10 +333,23 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 updateField("dueDate", $scope.currentDatePickerValue);
             };
 
+            $scope.updatePlannedPublicationDate = function () {
+                updateField("plannedNewspaperPublicationDate", wfFormatDateTime($scope.currentPublicationDatePickerValue,'YYYY-MM-DD'));
+            };
+
             $scope.updateCommissionedLength = function (newValue) {
-                updateField("commissionedLength", newValue);
-                if (newValue === "") return wfComposerService.deleteField($scope.contentItem.composerId, "commissionedLength");
-                else return wfComposerService.updateField($scope.contentItem.composerId, "commissionedLength", newValue)
+              updateField("commissionedLength", newValue);
+              if (newValue === "") {
+                return wfComposerService.deleteField(
+                  $scope.contentItem.composerId,
+                  "commissionedLength"
+                );
+              }
+              return wfComposerService.updateField(
+                $scope.contentItem.composerId,
+                "commissionedLength",
+                newValue
+              );
             };
 
             /**
@@ -338,6 +359,9 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 $scope.currentDatePickerValue = $scope.contentItem.item.due;
             };
 
+            $scope.revertPlannedPublicationDate = function () {
+                $scope.currentPublicationDatePickerValue = $scope.contentItem.plannedNewspaperPublicationDate;
+            }
 
             /**
              * Delete manually as no event or tracking yet
@@ -379,6 +403,49 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                     contentListDrawerController.updateAssigneeUserImage();
                 }
             });
+
+            $scope.setBookSections = function () {
+                var results = wfTagApiService.searchTags($scope.bookSectionQuery, 'newspaper book section');
+                results.then(function (response) {
+                const tags = (response && response.data) || []
+                    return tags.map(function (tag) {
+                        return { item: tag.data };
+                    });
+                }).then(function(candidateBookSections) {
+                    $scope.candidateBookSections = candidateBookSections;
+                });
+            };
+ 
+            $scope.pickBookSection = function (bookSectionTag) {
+                const getNewspaperBook = wfTagApiService.getHyperTag(bookSectionTag.parents[0]);
+                getNewspaperBook.then(function (book) {
+                    if (book.data.type !== 'Newspaper Book') {
+                        throw new Error('The parent for this newspaper book section is not a valid newspaper book.');
+                    }
+    
+                    const getPublication = wfTagApiService.getHyperTag(book.data.parents[0]);
+                    getPublication.then(function (publication) {
+                        if (publication.data.type !== 'Publication') {
+                            throw new Error('The parent for this newspaper book is not a valid publication.');
+                        }
+                        
+                        updateField("plannedBookId", book.data.id, $scope.plannedBookId)
+                        updateField("plannedBookSectionId", bookSectionTag.id, $scope.plannedBookSectionId)
+                        updateField("plannedPublicationId", publication.data.id, $scope.plannedPublicationId)
+                        $scope.showBookTagPicker = false;
+                        $scope.editedLongPlannedPrintLocationDescription = `${book.data.internalName} >> ${bookSectionTag.internalName}`
+                    });
+                });
+                
+                delete $scope.candidateBookSections;
+                delete $scope.bookSectionQuery;
+            };
+            $scope.toggleBookTagPicker = function (show) {
+                $scope.bookSectionQuery = undefined;
+                $scope.showBookTagPicker = show;
+            }
+            $scope.showBookTagPicker = false;
+
         }
     };
 }

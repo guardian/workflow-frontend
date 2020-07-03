@@ -25,7 +25,7 @@ object DateFormat {
   }
   implicit val localDateStartOfDayEncoder = new Encoder[LocalDate] {
     def apply(d: LocalDate): Json = {
-      val utc = d.toDateTimeAtStartOfDay.withZone(DateTimeZone.UTC)
+      val utc = d.toDateTimeAtStartOfDay(DateTimeZone.UTC).withZone(DateTimeZone.UTC)
       formatter.print(utc).asJson
     }
   }

@@ -51,7 +51,7 @@ function wfEditableDirectiveFactory() {
                 'ng-model': 'modelValue',
                 'ng-required': 'validateRequired',
                 'ng-minlength': 'validateMinlength',
-                'ng-maxlength': 'validateMaxlength'
+                'ng-maxlength': 'validateMaxlength',
             };
 
             if (tAttrs.wfEditableType === 'textarea') {

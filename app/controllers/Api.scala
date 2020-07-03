@@ -13,9 +13,10 @@ import lib.Responses._
 import models.EditorialSupportStaff._
 import models.api.{ApiError, ApiResponseFt}
 import models.{Flag, _}
-import org.joda.time.DateTime
 import play.api.Logging
 import play.api.libs.ws.WSClient
+import org.joda.time.{DateTime, LocalDate}
+import play.api.Logger
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -232,6 +233,57 @@ class Api(
         json <- readJsonFromRequestResponse(request.body)
         trashed <- extractDataResponse[Boolean](json)
         id <- stubsApi.putStubTrashed(stubId, trashed)
+      } yield id
+    )}
+  }
+
+  def putStubPlannedPublicationId(stubId: Long) = {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- readJsonFromRequestResponse(request.body)
+        plannedPublicationId <- extractDataResponse[Long](json)
+        id <- stubsApi.putStubPlannedPublicationId(stubId, plannedPublicationId)
+      } yield id
+    )}
+  }
+
+  def putStubPlannedBookId(stubId: Long) = {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- readJsonFromRequestResponse(request.body)
+        plannedBookId <- extractDataResponse[Long](json)
+        id <- stubsApi.putStubPlannedBookId(stubId, plannedBookId)
+      } yield id
+    )}
+  }
+  def putStubPlannedBookSectionId(stubId: Long) = {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- readJsonFromRequestResponse(request.body)
+        plannedBookSectionId <- extractDataResponse[Long](json)
+        id <- stubsApi.putStubPlannedBookSectionId(stubId, plannedBookSectionId)
+      } yield id
+    )}
+  }
+
+  def putStubPlannedNewspaperPageNumber(stubId: Long) = {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- readJsonFromRequestResponse(request.body)
+        plannedNewspaperPageNumber <- extractDataResponse[Int](json)
+        id <- stubsApi.putStubPlannedNewspaperPageNumber(stubId, plannedNewspaperPageNumber)
+      } yield id
+    )}
+  }
+  
+  def putStubPlannedNewspaperPublicationDate(stubId: Long) = 
+   {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- readJsonFromRequestResponse(request.body)
+        dateString <- extractDataResponse[String](json)
+        date = LocalDate.parse(dateString)
+        id <- stubsApi.putStubPlannedNewspaperPublicationDate(stubId, date)
       } yield id
     )}
   }

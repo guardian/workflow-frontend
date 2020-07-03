@@ -66,13 +66,14 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 cancelOn: '@wfCancelOn',
                 onCancel: '&wfOnCancel',
                 onUpdate: '&wfOnUpdate',
-                onSubmit: '&wfOnSubmit'
+                onSubmit: '&wfOnSubmit',
             },
             template: dateTimePickerTemplate,
 
             controller: function ($scope, $element) {
                 var idSuffix = pickerCount++;
-
+                const dateOnly =  $element.attr('wf-date-only')
+                $scope._config = dateOnly?{ minView: 'day' }:{};
                 this.textInputId = 'wfDateTimePickerText' + idSuffix;
                 this.dropDownButtonId = 'wfDateTimePickerButton' + idSuffix;
                 const dropDownId = 'wfDateTimePickerDropdown' + idSuffix;
@@ -90,9 +91,8 @@ angular.module('wfDateTimePicker', ['ui.bootstrap.datetimepicker', 'wfDateServic
                 });
 
                 this.onDatePicked = function (newValue) {
-                    $scope.dateValue = wfDateParser.parseDate(newValue);
-
-
+                    const newDate = wfDateParser.parseDate(newValue)
+                    $scope.dateValue = newDate;
                     // Delay running onUpdate so digest can run and update dateValue properly.
                     $timeout(function () {
                         $scope.onUpdate($scope.dateValue);
