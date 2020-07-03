@@ -258,8 +258,8 @@ const columnDefaults = [{
     sortField: 'printWordCount'
 },{
     name: 'publicationlocation',
-    prettyName: 'Publication location',
-    labelHTML: 'Publication location',
+    prettyName: 'Print location',
+    labelHTML: 'Print location',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'publicationLocation.html',
