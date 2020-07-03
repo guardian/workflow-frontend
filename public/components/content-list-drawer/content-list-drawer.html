@@ -412,7 +412,7 @@
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Publication Date</p>
-                            <p class="drawer__item-content">{{ (contentItem.actualNewspaperPublicationDate | wfLocaliseDateTime | wfFormatDateTime) || 'None'}}</p>
+                            <p class="drawer__item-content">{{ (contentItem.actualNewspaperPublicationDate | wfFormatDateTime:'date') || 'None'}}</p>
                             
                         </li>
                     </ul>
