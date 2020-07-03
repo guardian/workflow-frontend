@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /**
  * This returned array represents the default configuration of the sidebar filters list.
  * This is used by the components/sidebar-filter/sidebar-filter.js directive.
@@ -106,7 +108,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
         },
         {
             title: 'Deadline',
-            namespace: 'selectedDate',
+            namespace: 'deadline',
             listIsOpen: false,
             filterOptions: [
                 { caption: 'Today', value: 'today' },
@@ -125,29 +127,27 @@ var filterDefaults = function (statuses, wfFiltersService) {
             customLinkFunction: ['wfDateParser', '$scope', (wfDateParser, $scope) => {
 
                 $scope.dateOptions = wfDateParser.getDaysThisWeek();
-                const storedSelectedDate = wfFiltersService.get('selectedDate');
-                var selectedDate = storedSelectedDate ? storedSelectedDate : '';
+                const storedSelectedDate = wfFiltersService.get('deadline');
+                const deadline = storedSelectedDate ? storedSelectedDate : '';
 
-                // ensure that the date from the URL is the same object as the
-                // one used in the Select drop-down, as its compared with ===
-                $scope.dateOptions.forEach(function (date) {
-                    if (date.isSame(selectedDate)) {
-                        selectedDate = date;
-                        $scope.selectedFilters = ['customDate'];
-                    }
-                });
+                // Can our deadline be parsed into a date?
+                // If so, it's a custom date filter (rather than 'today', 'tomorrow' etc)
+                const parsedDate = moment(deadline)
+                if (parsedDate.isValid()) {
+                    $scope.selectedFilters = ['customDate']
+                }
 
                 $scope.select = { // Angular weirdness
-                    selectedDate: selectedDate
+                    deadline: new Date(deadline)
                 };
 
                 $scope.deadlineSelectActive = function () {
-                    return $scope.select.selectedDate && typeof($scope.select.selectedDate) !== 'string' && $scope.selectedFilter === 'customDate';
+                    return moment($scope.select.deadline).isValid();
                 };
 
-                $scope.$watch('select.selectedDate', function (newValue, oldValue) {
+                $scope.$watch('select.deadline', function (newValue, oldValue) {
                     if (newValue !== oldValue && newValue) {  // Prevents fire change event on init
-                        $scope.$emit('filtersChanged.selectedDate', $scope.select.selectedDate);
+                        $scope.$emit('filtersChanged.deadline', $scope.select.deadline);
                         if (newValue !== null) {
                             $scope.selectFilter('customDate');
                         } else {
@@ -173,7 +173,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
             listIsOpen: false,
             multi: false,
             filterOptions: [
-                { caption: 'Trashed', value: 'true'}
+                { caption: 'Trashed', value: 'true' }
             ]
         },
         {
