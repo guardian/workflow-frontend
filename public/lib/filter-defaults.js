@@ -131,6 +131,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 const deadline = storedSelectedDate ? storedSelectedDate : '';
 
                 // Can our deadline be parsed into a date?
+                // If so, it's a custom date filter (rather than 'today', 'tomorrow' etc)
                 const parsedDate = moment(deadline)
                 if (parsedDate.isValid()) {
                     $scope.selectedFilters = ['customDate']
