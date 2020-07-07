@@ -22,7 +22,7 @@ import commissionedLengthTemplate  from "components/content-list-item/templates/
 import needsLegalTemplate          from "components/content-list-item/templates/needsLegal.html";
 import lastModifiedTemplate        from "components/content-list-item/templates/last-modified.html";
 import lastModifiedByTemplate      from "components/content-list-item/templates/last-modified-by.html";
-import publicationLocationTemplate from "components/content-list-item/templates/publicationLocation.html";
+import printLocationTemplate       from "components/content-list-item/templates/printLocation.html";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
@@ -257,13 +257,13 @@ const columnDefaults = [{
     isSortable: true,
     sortField: 'printWordCount'
 },{
-    name: 'publicationlocation',
+    name: 'printlocation',
     prettyName: 'Print location',
     labelHTML: 'Print location',
     colspan: 1,
     title: '',
-    templateUrl: templateRoot + 'publicationLocation.html',
-    template: publicationLocationTemplate,
+    templateUrl: templateRoot + 'printLocation.html',
+    template: printLocationTemplate,
     active: true,
     isNew: true,
     isSortable: true,
