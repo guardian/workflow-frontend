@@ -99,7 +99,7 @@ google-auth-banner .alert {
             &--needsLegal,
             &--last-modified,
             &--last-modified-by,
-            &--publicationlocation {
+            &--printlocation {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 
@@ -173,7 +173,7 @@ google-auth-banner .alert {
                 width: 40px;
             }
 
-            &--publicationlocation {
+            &--printlocation {
                 width: 300px;
             }
 
