@@ -171,7 +171,7 @@
         &--optimisedForWeb,
         &--sensitive,
         &--legally-sensitive,
-        &--publicationlocation {
+        &--printlocation {
             @extend %fs-data-1;
             @extend %content-list__field-padding;
         }
@@ -475,7 +475,7 @@
         &--printwordcount,
         &--last-modified,
         &--last-modified-by,
-        &--publicationlocation {
+        &--printlocation {
             @extend %fs-data-1;
         }
 
