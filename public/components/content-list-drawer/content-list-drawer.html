@@ -401,20 +401,19 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Print Location</p>
                             <p class="drawer__item-content">{{ contentItem.longActualPrintLocationDescription }}</p>
-                            
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Newspaper Page Number</p>
-                            <p class="drawer__item-content">{{ contentItem.actualPageNumber || 'None' }}</p>                            
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-content"><em>Publication data has been filled from inDesign or Composer and can no longer be edited in Workflow.</em></p>                            
+                            <p class="drawer__item-content">{{ contentItem.actualNewspaperPageNumber || 'None' }}</p>                            
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Publication Date</p>
                             <p class="drawer__item-content">{{ (contentItem.actualNewspaperPublicationDate | wfFormatDateTime:'date') || 'None'}}</p>
-                            
                         </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-content"><em>Publication data has been filled from inDesign or Composer and can no longer be edited in Workflow.</em></p>
+                        </li>
+
                     </ul>
 
                     <!-- Planned Print Info -->
