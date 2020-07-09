@@ -109,7 +109,11 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
      * @returns Filtered list of sections
      */
     function getSectionsList (sections) {
-        return sections.filter(({selected})=>selected);
+        const filtered = sections.filter(({ selected }) => selected);
+        if (filtered.length === 0) {
+            return sections
+        }
+        return filtered
     }
 
     $scope.legalStates = legalStatesService.getLegalStates();
