@@ -128,17 +128,18 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
       if (!column) {
         return;
       }
-      
-      function invertSort(sortDirection){
-        return sortStates[(sortStates.indexOf(sortDirection) + 1) % sortStates.length];
-      }
 
+      //If same column invert score
       if(colName === $scope.sortColumn){
-        $scope.sortDirection = $scope.sortDirection.map(invertSort);
+        $scope.sortDirection = $scope.sortDirection.map(sortDirection => {
+            return sortStates[(sortStates.indexOf(sortDirection) + 1) % sortStates.length];
+        });
       }
+      //If new column and default sort order array matches length of sort fields
       else if(column.defaultSortOrder && column.defaultSortOrder.length === sortFields.length){
         $scope.sortDirection = column.defaultSortOrder;
       }
+      //Else create default sort
       else {
         $scope.sortDirection = sortFields.map(() => sortStates[0])
       }
