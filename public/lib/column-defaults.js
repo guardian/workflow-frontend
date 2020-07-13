@@ -35,7 +35,7 @@ import printLocationTemplate       from "components/content-list-item/templates/
  *      title: string, // title attribute contents for the column heading
  *      templateUrl: string // URL for the content-list-item template for this field
  *      isSortable: boolean = false // Can the column be sorted by clicking its header?
- *      sortField?: string // The field to sort on, if different from `name`. Can be an item path, e.g. `a.nested.field`
+ *      sortField?: string[] // The field(s) to sort on, if different from `name`. Can be an item path, e.g. `a.nested.field`
  *      defaultSortOrder?: 'asc' | 'desc' // The default sort order for the column on first click. Defaults to 'asc'
  *      flipSortIconDirection: boolean = false // Flip the direction of the sort chevron relative to the sort order. Defaults to 'desc' -> ▼
  * }
@@ -46,19 +46,19 @@ var templateRoot = '/assets/components/content-list-item/templates/';
 const chevronUp = '&#9660;'
 const chevronDown = '&#9650;'
 
-const createSortTemplate = (sortField, labelHTML, flipSortIconDirection = false) => {
+const createSortTemplate = (colName, sortField, labelHTML, flipSortIconDirection = false) => {
   // For some field types, the semantics of 'up' or 'down' differ; we use
   // flipSortIconDirection to switch them when needed.
   const descChevron = flipSortIconDirection ? chevronDown : chevronUp;
   const ascChevron = flipSortIconDirection ? chevronUp : chevronDown;
 
   return `
-    <div ng-click="toggleSortState('${sortField}')" class="content-list-head__heading-sort-by">
+    <div ng-click="toggleSortState('${colName}', [${sortField.map(field => `'${field}'`).join()}])" class="content-list-head__heading-sort-by">
       ${labelHTML}
       <span
         class="content-list-head__heading-sort-indicator"
-        ng-class="{invisible: !getSortDirection('${sortField}')}"
-        ng-switch="getSortDirection('${sortField}')">
+        ng-class="{invisible: !getSortDirection('${colName}')}"
+        ng-switch="getSortDirection('${colName}')">
         <span ng-switch-when="desc">${descChevron}</span>
         <span ng-switch-when="asc">${ascChevron}</span>
         <!-- We add a character here and use ng-visible above to prevent -->
@@ -71,7 +71,7 @@ const createSortTemplate = (sortField, labelHTML, flipSortIconDirection = false)
 
 export const getSortField = column => column
   && column.isSortable
-  && (column.sortField || column.name);
+  && (column.sortField || [column.name]);
 
 const columnDefaults = [{
     name: 'priority',
@@ -85,7 +85,8 @@ const columnDefaults = [{
     alwaysShown: true,
     isSortable: true,
     defaultSortOrder: 'desc',
-    flipSortIconDirection: true
+    flipSortIconDirection: true,
+    sortField: ['priority', 'title']
 },{
     name: 'content-type',
     prettyName: 'Content Type',
@@ -106,7 +107,7 @@ const columnDefaults = [{
     active: true,
     alwaysShown: true,
     isSortable: true,
-    sortField: 'workingTitle'
+    sortField: ['workingTitle']
 },{
     name: 'notes',
     prettyName: 'Notes',
@@ -117,7 +118,7 @@ const columnDefaults = [{
     template: notesTemplate,
     active: true,
     isSortable: true,
-    sortField: 'note'
+    sortField: ['note']
 },{
     name: 'comments',
     prettyName: 'Comments: On/Off',
@@ -223,7 +224,7 @@ const columnDefaults = [{
     template: sectionTemplate,
     active: true,
     isSortable: true,
-    sortField: 'item.section',
+    sortField: ['item.section'],
 },{
     name: 'status',
     prettyName: 'Status',
@@ -243,7 +244,7 @@ const columnDefaults = [{
     template: wordcountTemplate,
     active: true,
     isSortable: true,
-    sortField: 'wordCount'
+    sortField: ['wordCount']
 },{
     name: 'printwordcount',
     prettyName: 'Print wordcount',
@@ -255,7 +256,7 @@ const columnDefaults = [{
     active: true,
     isNew: true,
     isSortable: true,
-    sortField: 'printWordCount'
+    sortField: ['printWordCount']
 },{
     name: 'printlocation',
     prettyName: 'Print location',
@@ -267,7 +268,7 @@ const columnDefaults = [{
     active: true,
     isNew: true,
     isSortable: true,
-    sortField: 'printLocationSortString'
+    sortField: ['printLocationBookSection', 'printLocationPublicationDate', 'printLocationPageNumber']
 },{
     name: 'commissionedLength',
     prettyName: 'Commissioned Length',
@@ -297,7 +298,7 @@ const columnDefaults = [{
     template: publishedStateTemplate,
     active: true,
     isSortable: true,
-    sortField: 'lifecycleStateSortString'
+    sortField: ['lifecycleState', 'lifecycleStateSuplDate']
 },{
     name: 'needsLegal',
     prettyName: 'Needs Legal',
@@ -318,7 +319,7 @@ const columnDefaults = [{
     active: true,
     isNew: true,
     isSortable: true,
-    sortField: 'lastModified',
+    sortField: ['lastModified'],
     defaultSortOrder: 'desc'
 },{
     name: 'last-modified-by',
@@ -331,14 +332,14 @@ const columnDefaults = [{
     active: true,
     isNew: true,
     isSortable: true,
-    sortField: 'lastModifiedBy'
+    sortField: ['lastModifiedBy']
 }].map(col => {
   const _labelHTML = col.labelHTML === ''
     ? '&nbsp;'
     : col.labelHTML;
 
   const labelHTML = col.isSortable
-    ? createSortTemplate(getSortField(col), _labelHTML, col.flipSortIconDirection)
+    ? createSortTemplate(col.name, getSortField(col), _labelHTML, col.flipSortIconDirection)
     : _labelHTML;
 
   return {...col, active: true, labelHTML};
