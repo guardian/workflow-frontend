@@ -299,6 +299,7 @@ const columnDefaults = [{
     template: publishedStateTemplate,
     active: true,
     isSortable: true,
+    defaultSortOrder: ['asc', 'desc'],
     sortField: ['lifecycleState', 'lifecycleStateSuplDate']
 },{
     name: 'needsLegal',
