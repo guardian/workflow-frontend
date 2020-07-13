@@ -111,7 +111,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     };
 
     $scope.getSortDirection = columnName => {
-      return columnName === $scope.sortColumn ? $scope.sortDirection : undefined
+      return columnName === $scope.sortColumn ? $scope.sortDirection[0] : undefined
     }
 
     $scope.sortColumn = undefined;
@@ -128,13 +128,21 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
       if (!column) {
         return;
       }
+      
+      function invertSort(sortDirection){
+        return sortStates[(sortStates.indexOf(sortDirection) + 1) % sortStates.length];
+      }
 
-      // Reset the sort order if we're toggling a new field
-      const sortDirectionIndex = colName === $scope.sortColumn
-        ? (sortStates.indexOf($scope.sortDirection) + 1) % sortStates.length
-        : Math.max(sortStates.indexOf(column.defaultSortOrder), 0);
+      if(colName === $scope.sortColumn){
+        $scope.sortDirection = $scope.sortDirection.map(invertSort);
+      }
+      else if(column.defaultSortOrder && column.defaultSortOrder.length === sortFields.length){
+        $scope.sortDirection = column.defaultSortOrder;
+      }
+      else {
+        $scope.sortDirection = sortFields.map(() => sortStates[0])
+      }
 
-      $scope.sortDirection = sortStates[sortDirectionIndex];
       $scope.sortColumn = $scope.sortDirection ? colName : undefined;
       $scope.sortFields = $scope.sortDirection ? sortFields : undefined;
 
@@ -418,7 +426,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
        function createIteratee(sortColumn) {
             return item => {
                 const val = _.get(item, sortColumn) || undefined;
-                return typeof val === 'string' ? val.toLowerCase() : undefined;
+                return typeof val === 'string' ? val.toLowerCase() : val;
             }
         }
 

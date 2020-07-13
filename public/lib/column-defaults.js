@@ -36,7 +36,7 @@ import printLocationTemplate       from "components/content-list-item/templates/
  *      templateUrl: string // URL for the content-list-item template for this field
  *      isSortable: boolean = false // Can the column be sorted by clicking its header?
  *      sortField?: string[] // The field(s) to sort on, if different from `name`. Can be an item path, e.g. `a.nested.field`
- *      defaultSortOrder?: 'asc' | 'desc' // The default sort order for the column on first click. Defaults to 'asc'
+ *      defaultSortOrder?: ['asc' | 'desc'] // The default sort order for the column on first click. Defaults to 'asc'
  *      flipSortIconDirection: boolean = false // Flip the direction of the sort chevron relative to the sort order. Defaults to 'desc' -> ▼
  * }
  */
@@ -84,9 +84,9 @@ const columnDefaults = [{
     active: true,
     alwaysShown: true,
     isSortable: true,
-    defaultSortOrder: 'desc',
+    defaultSortOrder: ['desc', 'asc'],
     flipSortIconDirection: true,
-    sortField: ['priority', 'title']
+    sortField: ['priority', 'workingTitle']
 },{
     name: 'content-type',
     prettyName: 'Content Type',
@@ -213,7 +213,7 @@ const columnDefaults = [{
     template: deadlineTemplate,
     active: true,
     isSortable: true,
-    defaultSortOrder: 'desc'
+    defaultSortOrder: ['desc']
 },{
     name: 'section',
     prettyName: 'Section',
@@ -268,6 +268,7 @@ const columnDefaults = [{
     active: true,
     isNew: true,
     isSortable: true,
+    defaultSortOrder: ['desc', 'desc', 'asc'],
     sortField: ['printLocationBookSection', 'printLocationPublicationDate', 'printLocationPageNumber']
 },{
     name: 'commissionedLength',
@@ -320,7 +321,7 @@ const columnDefaults = [{
     isNew: true,
     isSortable: true,
     sortField: ['lastModified'],
-    defaultSortOrder: 'desc'
+    defaultSortOrder: ['desc']
 },{
     name: 'last-modified-by',
     prettyName: 'Last modified by',
