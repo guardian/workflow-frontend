@@ -111,30 +111,42 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
     };
 
     $scope.getSortDirection = columnName => {
-      return columnName === $scope.sortColumn ? $scope.sortDirection : undefined
+      return columnName === $scope.sortColumn ? $scope.sortDirection[0] : undefined
     }
 
     $scope.sortColumn = undefined;
+    $scope.sortFields = [];
     $scope.sortDirection = undefined;
     const defaultSortColName = 'priority';
     // If we'd prefer to allow people to remove the sort state entirely,
     // this list can be changed to ['desc', 'asc', undefined]
     const sortStates = ['asc', 'desc'];
 
-    $scope.toggleSortState = sortField => {
-      const column = $scope.columns.find(col => getSortField(col) === sortField);
+    $scope.toggleSortState = (colName, sortFields) => {
+      const column = $scope.columns.find(col => col.name === colName);
 
       if (!column) {
         return;
       }
 
-      // Reset the sort order if we're toggling a new field
-      const sortDirectionIndex = sortField === $scope.sortColumn
-        ? (sortStates.indexOf($scope.sortDirection) + 1) % sortStates.length
-        : Math.max(sortStates.indexOf(column.defaultSortOrder), 0);
+      //If same column invert score
+      if(colName === $scope.sortColumn){
+        $scope.sortDirection = $scope.sortDirection.map(sortDirection => {
+            return sortStates[(sortStates.indexOf(sortDirection) + 1) % sortStates.length];
+        });
+      }
+      //If new column and default sort order array matches length of sort fields
+      else if(column.defaultSortOrder && column.defaultSortOrder.length === sortFields.length){
+        $scope.sortDirection = column.defaultSortOrder;
+      }
+      //Else create default sort
+      else {
+        $scope.sortDirection = sortFields.map(() => sortStates[0])
+      }
 
-      $scope.sortDirection = sortStates[sortDirectionIndex];
-      $scope.sortColumn = $scope.sortDirection ? sortField : undefined;
+      $scope.sortColumn = $scope.sortDirection ? colName : undefined;
+      $scope.sortFields = $scope.sortDirection ? sortFields : undefined;
+
 
       applyNewContentState();
     };
@@ -287,7 +299,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         }
 
         const hydratedItems = (group.items || []).map(wfContentItemParser.parse);
-        const sortedGroupItems = this.sortGroupItems(hydratedItems || [], $scope.sortColumn, $scope.sortDirection);
+        const sortedGroupItems = this.sortGroupItems(hydratedItems || [], $scope.sortFields, $scope.sortDirection);
         const newItemsRemaining = sortedGroupItems.length < itemsRemaining
           ? itemsRemaining - sortedGroupItems.length
           : 0;
@@ -407,23 +419,19 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
     };
 
-    this.sortGroupItems = (items, sortColumn, sortDirection) => {
-      if (!$scope.sortColumn) {
+    this.sortGroupItems = (items, sortColumns, sortDirection) => {
+      if (!$scope.sortFields || $scope.sortFields.length < 1) {
         return items;
       }
 
-      const iteratee = item => {
-        const val = _.get(item, sortColumn) || '';
-        return typeof val === 'string' ? val.toLowerCase() : val;
-      }
+       function createIteratee(sortColumn) {
+            return item => {
+                const val = _.get(item, sortColumn);
+                return typeof val === 'string' ? val.toLowerCase() : val;
+            }
+        }
 
-      // Priority is a special case – on the server, we sort by priority -> title
-      // by default, so we add this secondary sort to reflect that behaviour.
-      if (sortColumn === 'priority') {
-        return _.orderBy(items, [iteratee, 'title'], [sortDirection, 'desc']);
-      }
-
-      return _.orderBy(items, iteratee, sortDirection);
+      return _.orderBy(items, sortColumns.map(column => createIteratee(column)), sortDirection);
     }
 
     $scope.$on('contentItem.update', ($event, msg) => {

@@ -96,6 +96,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.workingTitle = item.workingTitle || item.title;
 
             this.priority = item.priority;
+            this.prioritySortValue = item.priority !== undefined ? item.priority : 0;
 
             this.hasComments = !!(item.commentable);
             this.commentsTitle = this.hasComments ? 'on' : 'off';
@@ -143,7 +144,6 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.lifecycleStateKey  = lifecycleState.key;
             this.lifecycleStateSupl = lifecycleState.supl;
             this.lifecycleStateSuplDate = lifecycleState.suplDate;
-            this.lifecycleStateSortString = `${lifecycleState.display}-${lifecycleState.suplDate}`;
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -195,7 +195,9 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
                 : '';
               this.printLocationDisplayString = `${shortPrintLocationDescription}<br />${newspaperPageNumberStr} ${wfFormatDateTime(newspaperPublicationDate, 'DD MMMM')}`;
               // We use 8601 dates to make the date sortable.
-              this.printLocationSortString = `${shortPrintLocationDescription}-${newspaperPageNumberStr}-${wfFormatDateTime(newspaperPublicationDate, 'ISO8601')}`
+              this.printLocationBookSection = shortPrintLocationDescription;
+              this.printLocationPublicationDate =wfFormatDateTime(newspaperPublicationDate, 'ISO8601');
+              this.printLocationPageNumber = newspaperPageNumber !== undefined ? newspaperPageNumber : Number.MAX_VALUE;
               this.longPrintLocationDescription = longPrintLocationDescription;
               this.printLocationType = printLocationType;
             }
