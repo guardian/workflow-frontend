@@ -426,7 +426,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
 
        function createIteratee(sortColumn) {
             return item => {
-                const val = _.get(item, sortColumn) || undefined;
+                const val = _.get(item, sortColumn);
                 return typeof val === 'string' ? val.toLowerCase() : val;
             }
         }

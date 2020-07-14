@@ -86,7 +86,7 @@ const columnDefaults = [{
     isSortable: true,
     defaultSortOrder: ['desc', 'asc'],
     flipSortIconDirection: true,
-    sortField: ['priority', 'workingTitle']
+    sortField: ['prioritySortValue', 'workingTitle']
 },{
     name: 'content-type',
     prettyName: 'Content Type',
@@ -268,7 +268,7 @@ const columnDefaults = [{
     active: true,
     isNew: true,
     isSortable: true,
-    defaultSortOrder: ['desc', 'desc', 'asc'],
+    defaultSortOrder: ['asc', 'desc', 'asc'],
     sortField: ['printLocationBookSection', 'printLocationPublicationDate', 'printLocationPageNumber']
 },{
     name: 'commissionedLength',
