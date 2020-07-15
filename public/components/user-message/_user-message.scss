@@ -1,5 +1,10 @@
 .user-message__container {
     flex: 0 0 auto;
+    /**
+    * It's important that this is above .irrecoverable-error-overlay,
+    * which can be displayed alongside this container.
+    */
+    z-index: 10000;
 }
 
 .user-message {
