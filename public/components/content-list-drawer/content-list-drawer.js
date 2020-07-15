@@ -97,7 +97,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                         $scope.showBookTagPicker = false;
                         delete $scope.editedLongPlannedPrintLocationDescription;
                         delete $scope.candidateBookSections;
-                        delete $scope.bookSectionQuery;  
 
                         $scope.contentItem = contentItem;
                         $scope.plannedPublicationId
