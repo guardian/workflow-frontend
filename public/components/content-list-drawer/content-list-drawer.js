@@ -91,12 +91,21 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                     $scope.$apply(() => {
 
                         $contentListItemElement.after($element);
+                        delete $scope.bookSectionQuery;
+                        delete $scope.plannedBookId;
+                        delete $scope.plannedBookSectionId;
+                        $scope.showBookTagPicker = false;
+                        delete $scope.editedLongPlannedPrintLocationDescription;
+                        delete $scope.candidateBookSections;
+                        delete $scope.bookSectionQuery;  
 
                         $scope.contentItem = contentItem;
+                        $scope.plannedPublicationId
                         $scope.contentList.selectedItem = contentItem;
                         $scope.capiData = capiData;
 
                         $scope.currentDatePickerValue = $scope.contentItem.item.due ? $scope.contentItem.item.due : undefined;
+                        $scope.currentPublicationDatePickerValue = $scope.contentItem.plannedNewspaperPublicationDate ? $scope.contentItem.plannedNewspaperPublicationDate : undefined;
 
                         self.updateAssigneeUserImage();
                     });
