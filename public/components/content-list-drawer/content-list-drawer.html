@@ -426,7 +426,7 @@
                             <div class="drawer__item-printlocation">
                                 <span>Book section:</span>
                                 <button class="editable__edit-button" ng-hide="showBookTagPicker" ng-click="toggleBookTagPicker(true)">
-                                    <span class="editable__view-value">{{ (editedLongPlannedPrintLocationDescription || contentItem.longPlannedPrintLocationDescription) || 'Add planned print location' }}</span>
+                                    <span class="editable__printlocation">{{ (editedLongPlannedPrintLocationDescription || contentItem.longPlannedPrintLocationDescription) || 'Add planned print location' }}</span>
                                 </button>
                                 <div class="editable--edit editable--inline autocomplete" ng-show="showBookTagPicker">
                                     <input class="text-input fullwidth"
@@ -453,7 +453,7 @@
                             <div class="drawer__item-printlocation">
                                 <span>Page number:</span>
                                 <wf-editable class="editable--inline" ng-model="contentItem.plannedNewspaperPageNumber" wf-editable-on-update="onBeforeSavePlannedPageNumber(newValue)" wf-editable-input-type="number">
-                                    {{ contentItem.plannedNewspaperPageNumber || 'Add planned page number.' }}
+                                    <span class="editable__printlocation">{{ contentItem.plannedNewspaperPageNumber || 'Add planned page number.' }}</span>
                                 </wf-editable>
                             </div>
                             <div class="drawer__item-printlocation">
@@ -464,7 +464,7 @@
                                     ng-class="{ 'drawer__section-data-row--editable': contentItem.plannedNewspaperPublicationDate, 'drawer__section-data-row--editable-empty': !contentItem.plannedNewspaperPublicationDate, 'editable__edit-button': true }"
                                     title="{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || '' }}"
                                     >
-                                    <span class="editable__view-value">{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || 'Add planned publication date' }}</span>
+                                    <span class="editable__printlocation">{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || 'Add planned publication date' }}</span>
                                 </button>
                                 <form ng-show="publicationDateTimeEdit" ng-submit="publicationDateTimeEdit = false">
                                     <div class="form-group editable--inline">

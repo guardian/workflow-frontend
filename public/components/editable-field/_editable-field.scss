@@ -97,6 +97,15 @@
         white-space: nowrap;
     }
 
+    &__printlocation {
+        border-bottom: dashed 1px #333;
+        font-style: italic;
+
+        &--preserve-whitespace {
+            white-space: pre-line;
+        }
+    }
+
     &--inline {
         display: inline-block;
     }
