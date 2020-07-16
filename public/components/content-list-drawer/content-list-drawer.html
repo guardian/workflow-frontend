@@ -427,8 +427,8 @@
                                 <span>Book section:</span>
                                 <button class="editable__edit-button" ng-hide="showBookTagPicker" ng-click="toggleBookTagPicker(true)">
                                     <div class="editable__printlocation">
-                                        <span>{{ (editedLongPlannedPrintLocationDescription || contentItem.longPlannedPrintLocationDescription) || 'Add planned print location' }}</span>
-                                        <span class="drawer__item-bold" ng:show="editedLongPlannedPrintLocationDescription || contentItem.longPlannedPrintLocationDescription" class="editable__printlocation">(planned)</span>
+                                        <span>{{ (editedShortPlannedPrintLocationDescription || contentItem.shortPlannedPrintLocationDescription) || 'Add planned print location' }}</span>
+                                        <span class="drawer__item-bold" ng:show="editedShortPlannedPrintLocationDescription || contentItem.shortPlannedPrintLocationDescription" class="editable__printlocation">(planned)</span>
                                     </div>
                                 </button>
                                 <div class="editable--edit editable--inline autocomplete" ng-show="showBookTagPicker">
