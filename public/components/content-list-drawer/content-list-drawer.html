@@ -422,63 +422,64 @@
                     <ul class="drawer__column  drawer__column--wide drawer__column--with-overflow" ng-if="!contentItem.longActualPrintLocationDescription">
                        
                         <li class="drawer__item">
-                            <p class="drawer__item-title">Planned Print Location</p>
-                            <button class="drawer__item-content editable__edit-button editable__view-value" ng-hide="showBookTagPicker" ng-click="toggleBookTagPicker(true)">
-                                {{ (editedLongPlannedPrintLocationDescription || contentItem.longPlannedPrintLocationDescription) || 'Add planned print location' }}</button>
-                            <div class="editable--edit autocomplete" ng-show="showBookTagPicker">
-                                <input class="text-input fullwidth"
-                                       ng-model="$parent.bookSectionQuery"
-                                       placeholder="Enter a book section…"
-                                       name="bookSection"
-                                       autocomplete="off"
-                                       ui-filter-list="candidateBookSections"
-                                       ui-filter-list-on-filter="setBookSections()"
-                                       ui-filter-list-on-select="pickBookSection(selectedItem)"
-                                       >
-                                <ul class="autocomplete__results" ng:show="candidateBookSections">
-                                    <li ng-repeat="tag in candidateBookSections" ng:class="{'is-selected': tag.selected}">
-                                        <button ng-click="pickBookSection(tag.item)" >{{tag.item.internalName}}</button>
-                                    </li>
-                                </ul>
-                                <span class="editable__controls">
-                                    <button class="editable__control editable__control--cancel" ng-click="toggleBookTagPicker(false)" title="Cancel changes">
-                                        <i class="editable__control-icon editable__control-icon--cancel" wf-icon="cross"></i>
-                                    </button>
-                                </span>
-                            </div>
-                        </li>
-                        <li class="drawer__item">
-                            <span class="drawer__item-title">Planned Newspaper Page Number</span>
-                            <wf-editable class="drawer__item-content" ng-model="contentItem.plannedNewspaperPageNumber" wf-editable-on-update="onBeforeSavePlannedPageNumber(newValue)" wf-editable-input-type="number">
-                                {{ contentItem.plannedNewspaperPageNumber || 'Add planned page number.' }}
-                            </wf-editable>
-                        </li>
-                        <li class="drawer__item">
-                            <p class="drawer__item-title">Planned Publication Date</p>
-
-                            <button 
-                                ng-hide="publicationDateTimeEdit" 
-                                ng-click="publicationDateTimeEdit = true" 
-                                ng-class="{ 'drawer__section-data-row--editable': contentItem.plannedNewspaperPublicationDate, 'drawer__section-data-row--editable-empty': !contentItem.plannedNewspaperPublicationDate, 'editable__view-value': true, 'editable__edit-button': true }"
-                                title="{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || '' }}"
-                                >
-                                {{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || 'Add planned publication date' }}
-                            </button>
-                            <form ng-show="publicationDateTimeEdit" ng-submit="publicationDateTimeEdit = false">
-                                <div class="form-group">
-                                    <div 
-                                      wf-date-time-picker 
-                                      wf-update-on="enter" 
-                                      ng-model="$parent.currentPublicationDatePickerValue" 
-                                      wf-on-cancel="publicationDateTimeEdit = false; revertPlannedPublicationDate()" 
-                                      wf-cancel-on="blur" 
-                                      wf-on-submit="updatePlannedPublicationDate(); publicationDateTimeEdit = false;" 
-                                      wf-date-only="true"
-                                    ></div>
+                            <p class="drawer__item-title">Print Location</p>
+                            <div class="drawer__item-printlocation">
+                                <span>Book section:</span>
+                                <button class="editable__edit-button" ng-hide="showBookTagPicker" ng-click="toggleBookTagPicker(true)">
+                                    <span class="editable__view-value">{{ (editedLongPlannedPrintLocationDescription || contentItem.longPlannedPrintLocationDescription) || 'Add planned print location' }}</span>
+                                </button>
+                                <div class="editable--edit editable--inline autocomplete" ng-show="showBookTagPicker">
+                                    <input class="text-input fullwidth"
+                                        ng-model="$parent.bookSectionQuery"
+                                        placeholder="Enter a book section…"
+                                        name="bookSection"
+                                        autocomplete="off"
+                                        ui-filter-list="candidateBookSections"
+                                        ui-filter-list-on-filter="setBookSections()"
+                                        ui-filter-list-on-select="pickBookSection(selectedItem)"
+                                        >
+                                    <ul class="autocomplete__results" ng:show="candidateBookSections">
+                                        <li ng-repeat="tag in candidateBookSections" ng:class="{'is-selected': tag.selected}">
+                                            <button ng-click="pickBookSection(tag.item)" >{{tag.item.internalName}}</button>
+                                        </li>
+                                    </ul>
+                                    <span class="editable__controls">
+                                        <button class="editable__control editable__control--cancel" ng-click="toggleBookTagPicker(false)" title="Cancel changes">
+                                            <i class="editable__control-icon editable__control-icon--cancel" wf-icon="cross"></i>
+                                        </button>
+                                    </span>
                                 </div>
-                            </form>
-                            
-
+                            </div>
+                            <div class="drawer__item-printlocation">
+                                <span>Page number:</span>
+                                <wf-editable class="editable--inline" ng-model="contentItem.plannedNewspaperPageNumber" wf-editable-on-update="onBeforeSavePlannedPageNumber(newValue)" wf-editable-input-type="number">
+                                    {{ contentItem.plannedNewspaperPageNumber || 'Add planned page number.' }}
+                                </wf-editable>
+                            </div>
+                            <div class="drawer__item-printlocation">
+                                <span>Publication date:</span>
+                                <button 
+                                    ng-hide="publicationDateTimeEdit" 
+                                    ng-click="publicationDateTimeEdit = true" 
+                                    ng-class="{ 'drawer__section-data-row--editable': contentItem.plannedNewspaperPublicationDate, 'drawer__section-data-row--editable-empty': !contentItem.plannedNewspaperPublicationDate, 'editable__edit-button': true }"
+                                    title="{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || '' }}"
+                                    >
+                                    <span class="editable__view-value">{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || 'Add planned publication date' }}</span>
+                                </button>
+                                <form ng-show="publicationDateTimeEdit" ng-submit="publicationDateTimeEdit = false">
+                                    <div class="form-group editable--inline">
+                                        <div 
+                                        wf-date-time-picker 
+                                        wf-update-on="enter" 
+                                        ng-model="$parent.currentPublicationDatePickerValue" 
+                                        wf-on-cancel="publicationDateTimeEdit = false; revertPlannedPublicationDate()" 
+                                        wf-cancel-on="blur" 
+                                        wf-on-submit="updatePlannedPublicationDate(); publicationDateTimeEdit = false;" 
+                                        wf-date-only="true"
+                                        ></div>
+                                    </div>
+                                </form>
+                            </div>
                         </li>
                     </ul>
 
