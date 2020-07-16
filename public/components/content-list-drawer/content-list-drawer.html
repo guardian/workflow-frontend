@@ -403,9 +403,9 @@
                                 <span>Book section:</span>
                                 <span ng-if="contentItem.shortActualPrintLocationDescription">{{contentItem.shortActualPrintLocationDescription}}</span>
                                 <button ng-if="!contentItem.shortActualPrintLocationDescription" class="editable__edit-button" ng-hide="showBookTagPicker" ng-click="toggleBookTagPicker(true)">
-                                    <div class="editable__printlocation">
+                                    <div class="planned-print-location editable__view-value">
                                         <span>{{ (editedShortPlannedPrintLocationDescription || contentItem.shortPlannedPrintLocationDescription) || 'Add planned print location' }}</span>
-                                        <span class="drawer__item-bold" ng:show="editedShortPlannedPrintLocationDescription || contentItem.shortPlannedPrintLocationDescription" class="editable__printlocation">(planned)</span>
+                                        <span class="planned-print-location__brackets" ng:show="editedShortPlannedPrintLocationDescription || contentItem.shortPlannedPrintLocationDescription" class="editable__printlocation">(planned)</span>
                                     </div>
                                 </button>
                                 <div class="editable--edit editable--inline autocomplete" ng-show="showBookTagPicker">
@@ -433,9 +433,9 @@
                             <div class="drawer__item-printlocation">
                                 <span>Page number:</span>
                                 <span ng-if="contentItem.actualNewspaperPageNumber">{{contentItem.actualNewspaperPageNumber}}</span>
-                                <wf-editable ng-if="!contentItem.actualNewspaperPageNumber" class="editable--inline" ng-model="contentItem.plannedNewspaperPageNumber" wf-editable-on-update="onBeforeSavePlannedPageNumber(newValue)" wf-editable-input-type="number">
-                                    <span class="editable__printlocation">{{ contentItem.plannedNewspaperPageNumber || 'Add planned page number.' }}</span>
-                                    <span class="drawer__item-bold" ng:show="contentItem.plannedNewspaperPageNumber" class="editable__printlocation">(planned)</span>
+                                <wf-editable class="planned-print-location editable__view-value" ng-if="!contentItem.actualNewspaperPageNumber" class="editable--inline" ng-model="contentItem.plannedNewspaperPageNumber" wf-editable-on-update="onBeforeSavePlannedPageNumber(newValue)" wf-editable-input-type="number">
+                                    <span>{{ contentItem.plannedNewspaperPageNumber || 'Add planned page number.' }}</span>
+                                    <span class="planned-print-location__brackets" ng:show="contentItem.plannedNewspaperPageNumber" class="editable__printlocation">(planned)</span>
                                 </wf-editable>
                             </div>
                             <div class="drawer__item-printlocation">
@@ -447,9 +447,9 @@
                                     ng-class="{ 'drawer__section-data-row--editable': contentItem.plannedNewspaperPublicationDate, 'drawer__section-data-row--editable-empty': !contentItem.plannedNewspaperPublicationDate, 'editable__edit-button': true }"
                                     title="{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || '' }}"
                                     >
-                                    <div class="editable__printlocation">
+                                    <div class="planned-print-location editable__view-value">
                                         <span>{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || 'Add planned publication date' }}</span>
-                                        <span class="drawer__item-bold" ng:show="contentItem.plannedNewspaperPublicationDate" class="editable__printlocation">(planned)</span>
+                                        <span class="planned-print-location__brackets" ng:show="contentItem.plannedNewspaperPublicationDate" class="editable__printlocation">(planned)</span>
                                     </div>
                                 </button>
                                 <form ng-show="publicationDateTimeEdit" ng-submit="publicationDateTimeEdit = false">
