@@ -177,10 +177,13 @@
             display: inline-block;
           }
 
-
         &-printlocation {
             padding-bottom: 5px;
           }
+
+        &-bold {
+            font-weight: bold;
+        }
     }
 
     &__mainmedia {
