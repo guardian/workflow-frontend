@@ -4,6 +4,7 @@ import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import config.Config
 import play.api.libs.ws.WSClient
 import play.api.mvc._
+import play.api.{ Logging }
 import play.filters.headers.SecurityHeadersFilter
 
 import scala.concurrent.Future
@@ -14,7 +15,7 @@ class Login(
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
-) extends BaseController with PanDomainAuthActions {
+) extends BaseController with PanDomainAuthActions with Logging {
 
   def oauthCallback = Action.async { implicit request =>
     processOAuthCallback()
@@ -22,6 +23,7 @@ class Login(
 
   def status = AuthAction { request =>
     val user = request.user
+    logger.info(s"User ${user.email} successfully restablished session via login/status")
     Ok(views.html.loginStatus(user.toJson)).withHeaders(SecurityHeadersFilter.X_FRAME_OPTIONS_HEADER -> "SAMEORIGIN")
   }
 
