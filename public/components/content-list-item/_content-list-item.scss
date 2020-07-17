@@ -544,6 +544,11 @@
 
 .planned-print-location {
     color: $c-grey-600;
+    font-style: italic;
+
+    &__brackets {
+        color: black;
+    }
 }
 .actual-print-location {
     color: black;
