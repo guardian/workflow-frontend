@@ -433,9 +433,11 @@
                             <div class="drawer__item-printlocation">
                                 <span>Page number:</span>
                                 <span ng-if="contentItem.actualNewspaperPageNumber">{{contentItem.actualNewspaperPageNumber}}</span>
-                                <wf-editable class="planned-print-location editable__view-value" ng-if="!contentItem.actualNewspaperPageNumber" class="editable--inline" ng-model="contentItem.plannedNewspaperPageNumber" wf-editable-on-update="onBeforeSavePlannedPageNumber(newValue)" wf-editable-input-type="number">
-                                    <span>{{ contentItem.plannedNewspaperPageNumber || 'Add planned page number.' }}</span>
-                                    <span class="planned-print-location__brackets" ng:show="contentItem.plannedNewspaperPageNumber" class="editable__printlocation">(planned)</span>
+                                <wf-editable class="editable--inline" ng-if="!contentItem.actualNewspaperPageNumber" ng-model="contentItem.plannedNewspaperPageNumber" wf-editable-on-update="onBeforeSavePlannedPageNumber(newValue)" wf-editable-input-type="number">
+                                    <div class="planned-print-location editable__view-value">
+                                        <span>{{ contentItem.plannedNewspaperPageNumber || 'Add planned page number.' }}</span>
+                                        <span class="planned-print-location__brackets" ng:show="contentItem.plannedNewspaperPageNumber" class="editable__printlocation">(planned)</span>
+                                    </div>
                                 </wf-editable>
                             </div>
                             <div class="drawer__item-printlocation">
