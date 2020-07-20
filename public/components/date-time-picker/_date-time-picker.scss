@@ -7,6 +7,11 @@
     color: #666;
 }
 
+.date-time-picker__dropdown {
+  border-radius: 0;
+}
+
+
 // Error message should be exposed properly from date-time-picker via form.field.$error
 .date-time-picker {
 
