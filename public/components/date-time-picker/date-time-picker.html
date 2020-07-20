@@ -4,18 +4,17 @@
 </label>
 <span class="date-time-picker__help-text" ng-if="!label && helpText">{{ helpText == 'true' && 'e.g. today 3pm, tomorrow 15:00, tuesday next week 18:00, 2014-08-14' || helpText }}</span>
 <div class="date-time-picker__group input-group">
-
     <input class="date-time-picker__text-input form-control" type="text" placeholder="{{ placeholderText }}" wf-date-time-field id="{{dateTimePicker.textInputId}}" name="due" wf-on-cancel="onCancel()" wf-on-update="onUpdate()" wf-on-submit="onSubmit()" wf-update-on="{{updateOn}}" wf-cancel-on="{{cancelOn}}" ng-class="{'input-sm': small}">
-
     <div dropdown id="{{dateTimePicker.dropDownId}}" class="input-group-btn">
-
         <button type="button" id="{{dateTimePicker.dropDownButtonId}}" class="btn btn-default dropdown-toggle date-time-picker__dropdown" ng-class="{'btn-sm': small}">
-            <i class="glyphicon glyphicon-calendar"></i></button>
-
+            <i class="glyphicon glyphicon-calendar"></i>
+        </button>
         <ul class="dropdown-menu pull-right" role="menu">
             <datetimepicker class="date-time-picker__dropdown-picker" ng-model="datePickerValue" on-set-time="dateTimePicker.onDatePicked(newDate)" data-datetimepicker-config="_config"></datetimepicker>
         </ul>
-        </ul>
+        <button type="button" ng-click="onCancel()" class="btn btn-default" ng-class="{'btn-sm': small}">
+            <i class="glyphicon glyphicon-remove"></i>
+        </button>
     </div>
 </div>
 <span class="help-block" ng-class="{'small': small}">{{ dateValue | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime:'ddd D MMM YYYY HH:mm z' }}</span>
