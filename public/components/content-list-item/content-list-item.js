@@ -61,7 +61,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
                   this.editor = this.mediaAtomMaker;
               } else {
                 if (config.atomTypes.includes(item.contentType)) {
-                  this.atomWorkshop = `${config.atomWorkshopViewAtom}/${item.contentType.toUpperCase()}/${item.editorId}/edit`;
+                  this.atomWorkshop = `${config.atomWorkshopViewAtom}/${item.contentType}/${item.editorId}/edit`;
                   this.editor = this.atomWorkshop;
                 }
               }
