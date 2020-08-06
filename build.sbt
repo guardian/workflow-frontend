@@ -25,7 +25,7 @@ val commonSettings = Seq(
   version      := "0.1",
   fork in Test := false,
   resolvers ++= Seq(
-    "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+    "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/",
     "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
   ),
   scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings")
