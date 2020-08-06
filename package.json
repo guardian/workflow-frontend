@@ -56,7 +56,7 @@
     "karma-sinon": "^1.0.5",
     "karma-webpack": "^4.0.2",
     "keycode": "^2.2.0",
-    "lodash": "4.17.13",
+    "lodash": "4.17.19",
     "mocha": "^3.3.0",
     "moment": "^2.11.2",
     "moment-timezone": "0.5.14",
