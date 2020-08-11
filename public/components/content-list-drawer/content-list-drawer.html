@@ -469,6 +469,16 @@
                                 </form>
                             </div>
                         </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Last modified in print</p>
+                            <span class="drawer__item-content">{{ (contentItem.lastModified | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
+                            <span class="drawer__item-content" ng-show="contentItem.lastModifiedInPrintBy">by {{ contentItem.lastModifiedInPrintBy }}</span>
+                        </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Status in print</p>
+                            <span class="drawer__item-content" ng-show="contentItem.statusInPrint">{{ contentItem.statusInPrint }}</span>
+                        </li>
+
                     </ul>
 
             
