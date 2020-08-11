@@ -339,8 +339,8 @@ const columnDefaults = [{
     sortField: ['lastModifiedBy']
 },{
     name: 'last-modified-in-print-by',
-    prettyName: 'Last Modified By (print)',
-    labelHTML: 'Last Modified By (print)',
+    prettyName: 'Last modified by (print)',
+    labelHTML: 'Last modified by (print)',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'lastModifiedInPrintBy.html',
