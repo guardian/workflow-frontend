@@ -46,7 +46,9 @@ case class ExternalData(
                          actualNewspaperPublicationDate: Option[LocalDate] = None,
                          // Description enriched for use by WF front end client code.
                          shortActualPrintLocationDescription: Option[String] = None,
-                         longActualPrintLocationDescription: Option[String] = None) {
+                         longActualPrintLocationDescription: Option[String] = None,
+                         statusInPrint: Option[String] = None,
+                         lastModifiedInPrintBy: Option[String] = None) {
 }
 
 object ExternalData {
