@@ -157,6 +157,7 @@
         &--office,
         &--legal,
         &--status,
+        &--status-in-print,
         &--composer,
         &--media,
         &--preview,
@@ -235,11 +236,13 @@
         &--created,
         &--legal,
         &--last-modified,
-        &--last-modified-by {
+        &--last-modified-by,
+        &--last-modified-in-print-by {
             width: 100px;
         }
 
-        &--status {
+        &--status,
+        &--status-in-print {
             @include smallScreen {
                 width: 80px;
                 &--select {
@@ -264,14 +267,16 @@
         &--section,
         &--deadline,
         &--last-modified,
-        &--last-modified-by {
+        &--last-modified-by,
+        &--last-modified-in-print-by {
             @extend %fs-data-1;
         }
 
         &--deadline,
         &--created,
         &--last-modified,
-        &--last-modified-by {
+        &--last-modified-by,
+        &--last-modified-in-print-by {
             white-space: nowrap;
         }
 
@@ -458,6 +463,7 @@
         &--office,
         &--legal,
         &--status,
+        &--status-in-print,
         &--composer,
         &--preview,
         &--live,
@@ -475,6 +481,7 @@
         &--printwordcount,
         &--last-modified,
         &--last-modified-by,
+        &--last-modified-in-print-by,
         &--printlocation {
             @extend %fs-data-1;
         }
@@ -492,7 +499,8 @@
             display: inline;
         }
 
-        &--status {
+        &--status,
+        &--status-in-print {
             width: 125px;
 
             &--select {
