@@ -237,6 +237,18 @@ const columnDefaults = [{
     template: statusTemplate,
     active: true
 },{
+    name: 'status-in-print',
+    prettyName: 'Status in Print',
+    labelHTML: 'Status in Print',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'statusInPrint.html',
+    template: statusInPrintTemplate,
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: ['statusInPrint']
+},{
     name: 'wordcount',
     prettyName: 'Web wordcount',
     labelHTML: 'Web words',
@@ -349,18 +361,6 @@ const columnDefaults = [{
     isNew: true,
     isSortable: true,
     sortField: ['lastModifiedInPrintBy']
-},{
-    name: 'status-in-print',
-    prettyName: 'Status in Print',
-    labelHTML: 'Status in Print',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'statusInPrint.html',
-    template: statusInPrintTemplate,
-    active: true,
-    isNew: true,
-    isSortable: true,
-    sortField: ['statusInPrint']
 }].map(col => {
   const _labelHTML = col.labelHTML === ''
     ? '&nbsp;'
