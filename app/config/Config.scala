@@ -52,13 +52,19 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
     case _ => Set(atomWorkshopUrl)
   }
 
+  def baseUri(host: String) = s"https://$host"
+
   final def getStringSetFromConf(key: String): Set[String] = Try(
-    playConfig.get[String](key).split(",").map(_.trim).toSet
+    playConfig.get[String](key)
+      .split(",")
+      .map(_.trim)
+      .map(baseUri)
+      .toSet
   ).getOrElse(Set.empty)
 
   lazy val corsAllowedOrigins: Set[String] = getStringSetFromConf("security.cors.allowedOrigins")
 
-  lazy val corsAllowedDomains: Set[String] = composerUrls ++ mediaAtomMakerUrls ++ atomWorkshopUrls + corsAllowedOrigins
+  lazy val corsAllowedDomains: Set[String] = composerUrls ++ mediaAtomMakerUrls ++ atomWorkshopUrls
 
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
