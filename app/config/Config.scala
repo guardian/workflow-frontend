@@ -55,14 +55,14 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   def baseUri(host: String) = s"https://$host"
 
   final def getStringSetFromConf(key: String): Set[String] = Try(
-    playConfig.get[String](key)
+    playConfig
+      .get[String](key)
       .split(",")
       .map(_.trim)
-      .map(baseUri)
       .toSet
   ).getOrElse(Set.empty)
 
-  lazy val corsAllowedOrigins: Set[String] = getStringSetFromConf("security.cors.allowedOrigins")
+  lazy val corsAllowedOrigins: Set[String] = getStringSetFromConf("security.cors.allowedOrigins").map(baseUri)
 
   lazy val corsAllowedDomains: Set[String] = composerUrls ++ mediaAtomMakerUrls ++ atomWorkshopUrls
 
