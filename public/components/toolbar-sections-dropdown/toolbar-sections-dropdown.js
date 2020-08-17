@@ -111,6 +111,7 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
             $rootScope.$on('filtersChanged.desk', function ($event, deskId) {
 
                 if (deskId === -1) {
+                    console.log('FC.desk HERE')
                     $scope.$emit('filtersChanged.section', []);
                     $scope.sections = updateSections([]);
                     buttonTitle.innerHTML = updateNameTo($scope.sections);
@@ -123,7 +124,6 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
                             var selectedSectionNamesArray = $scope.sections
                                 .filter((el) => sectionsInThisDesk[0].sectionIds.indexOf(el.id) !== -1)
                                 .map((el) => el.name);
-
                             $scope.$emit('filtersChanged.section', selectedSectionNamesArray);
                         }
                     }
@@ -135,6 +135,7 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
              */
             $scope.checkboxUpdate = function () {
                 var selectedSections = buildSelectedSections();
+                console.log('checkboxupdate')
                 $scope.$emit('filtersChanged.section', selectedSections);
                 buttonTitle.innerHTML = updateNameTo($scope.sections);
             };

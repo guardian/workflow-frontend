@@ -36,6 +36,7 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
         $scope.$on('filtersChanged.fromPreferences', function() {
             $scope.selectedSections = buildSelectedSections();
+            console.log('fromPreferences')
             $scope.selectedDesk = updateSelectedDeskBasedOnSections($scope.selectedSections);
         });
 
@@ -76,8 +77,10 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
         $scope.$watch('selectedDesk', function () {
             if ($scope.selectedDesk && $scope.selectedDesk.id) {
+                console.log('FC.desk if')
                 $scope.$emit('filtersChanged.desk', $scope.selectedDesk.id);
             } else if ($scope.selectedDesk === null) { // 'All desks'
+                console.log('selectedDesk variable has changed')
                 $scope.$emit('filtersChanged.desk', -1);
             }
 
@@ -90,9 +93,11 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
         });
 
         $scope.$on('filtersChanged.section', function ($event, selectedSections) { // If selected sections are changed see if they constitute a desk or not
+            console.log('que')
             $scope.selectedDesk = updateSelectedDeskBasedOnSections(selectedSections);
         });
 
+        console.log('THIS HAPPENS FIRST!')
         $scope.selectedDesk = updateSelectedDeskBasedOnSections($scope.selectedSections.map((el) => el.name));
 
         // Today View ===========================

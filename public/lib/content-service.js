@@ -303,6 +303,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
 
             startPolling() {
+                console.log('once only again')
                 return this.refresh();
             }
 
@@ -320,6 +321,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
              * timer for the next subsequent poll.
              */
             refresh() {
+                console.log('refresh')
                 this.stopPolling();
 
                 const localSearch = this._paramsProvider()
@@ -338,6 +340,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         return this._callback(cb)
                     })
                     .then(() => {
+                        console.log('and again')
                         this._timer = $timeout(this.refresh.bind(this), POLLING_DELAY);
                     })
                     .catch((err) => {
