@@ -23,9 +23,7 @@ import needsLegalTemplate            from "components/content-list-item/template
 import lastModifiedTemplate          from "components/content-list-item/templates/last-modified.html";
 import lastModifiedByTemplate        from "components/content-list-item/templates/last-modified-by.html";
 import printLocationTemplate         from "components/content-list-item/templates/printLocation.html";
-import statusInPrintTemplate         from "components/content-list-item/templates/statusInPrint.html";
 import needsPictureDeskTemplate      from "components/content-list-item/templates/needsPictureDesk.html";
-import lastModifiedInPrintByTemplate from "components/content-list-item/templates/lastModifiedInPrintBy.html";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
