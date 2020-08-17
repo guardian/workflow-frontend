@@ -10,7 +10,9 @@ case object Status extends Enum[Status] with CirceEnum[Status] {
   case object ProductionEditor extends Status
   case object Subs extends Status
   case object Revise extends Status
+  case object Killed extends Status
   case object Final extends Status
+  case object Finalled extends Status
   case object Hold extends Status
 
   val values = findValues

@@ -39,6 +39,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             editedShortPlannedPrintLocationDescription: '<',
             contentList: '=',
             legalValues: '=',
+            pictureDeskValues: '=',
             statusValues: '='
         },
         controllerAs: 'contentListDrawerController',

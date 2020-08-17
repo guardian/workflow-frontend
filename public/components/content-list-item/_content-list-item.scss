@@ -167,7 +167,7 @@
         &--wordcount,
         &--printwordcount,
         &--commissionedLength,
-        &--needsLegal,
+        &--needs-legal,
         &--optimisedForWeb,
         &--sensitive,
         &--legally-sensitive,
@@ -218,7 +218,7 @@
             width: 30px;
         }
 
-        &--needsLegal {
+        &--needs-legal {
             width: 32px;
             white-space: nowrap; // Prevent inline-block icons from falling under one another
         }
@@ -345,7 +345,7 @@
             }
         }
 
-        &--needsLegal {
+        &--needs-legal {
             @include largeScreen {
                 width: auto;
             }
@@ -457,6 +457,7 @@
         &--headline,
         &--office,
         &--legal,
+        &--needs-picture-desk,
         &--status,
         &--composer,
         &--preview,
@@ -518,7 +519,7 @@
             }
         }
 
-        &--needsLegal {
+        &--needs-legal {
             @include largeScreen {
                 width: auto;
             }

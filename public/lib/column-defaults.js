@@ -1,28 +1,31 @@
-import priorityTemplate            from "components/content-list-item/templates/priority.html";
-import contentTypeTemplate         from "components/content-list-item/templates/content-type.html";
-import titleTemplate               from "components/content-list-item/templates/title.html";
-import commentsTemplate            from "components/content-list-item/templates/comments.html";
-import mainImageTemplate           from "components/content-list-item/templates/main-image.html";
-import incopyTemplate              from "components/content-list-item/templates/incopy.html";
-import optimisedForWebTemplate     from "components/content-list-item/templates/optimisedForWeb.html";
-import sensitiveTemplate           from "components/content-list-item/templates/sensitive.html";
-import legallySensitiveTemplate    from "components/content-list-item/templates/legallySensitive.html";
-import presenceTemplate            from "components/content-list-item/templates/presence.html";
-import assigneeTemplate            from "components/content-list-item/templates/assignee.html";
-import officeTemplate              from "components/content-list-item/templates/office.html";
-import deadlineTemplate            from "components/content-list-item/templates/deadline.html";
-import sectionTemplate             from "components/content-list-item/templates/section.html";
-import statusTemplate              from "components/content-list-item/templates/status.html";
-import notesTemplate               from "components/content-list-item/templates/notes.html";
-import linksTemplate               from "components/content-list-item/templates/links.html";
-import publishedStateTemplate      from "components/content-list-item/templates/published-state.html";
-import wordcountTemplate           from "components/content-list-item/templates/wordcount.html";
-import printWordcountTemplate      from "components/content-list-item/templates/printwordcount.html";
-import commissionedLengthTemplate  from "components/content-list-item/templates/commissionedLength.html";
-import needsLegalTemplate          from "components/content-list-item/templates/needsLegal.html";
-import lastModifiedTemplate        from "components/content-list-item/templates/last-modified.html";
-import lastModifiedByTemplate      from "components/content-list-item/templates/last-modified-by.html";
-import printLocationTemplate       from "components/content-list-item/templates/printLocation.html";
+import priorityTemplate              from "components/content-list-item/templates/priority.html";
+import contentTypeTemplate           from "components/content-list-item/templates/content-type.html";
+import titleTemplate                 from "components/content-list-item/templates/title.html";
+import commentsTemplate              from "components/content-list-item/templates/comments.html";
+import mainImageTemplate             from "components/content-list-item/templates/main-image.html";
+import incopyTemplate                from "components/content-list-item/templates/incopy.html";
+import optimisedForWebTemplate       from "components/content-list-item/templates/optimisedForWeb.html";
+import sensitiveTemplate             from "components/content-list-item/templates/sensitive.html";
+import legallySensitiveTemplate      from "components/content-list-item/templates/legallySensitive.html";
+import presenceTemplate              from "components/content-list-item/templates/presence.html";
+import assigneeTemplate              from "components/content-list-item/templates/assignee.html";
+import officeTemplate                from "components/content-list-item/templates/office.html";
+import deadlineTemplate              from "components/content-list-item/templates/deadline.html";
+import sectionTemplate               from "components/content-list-item/templates/section.html";
+import statusTemplate                from "components/content-list-item/templates/status.html";
+import notesTemplate                 from "components/content-list-item/templates/notes.html";
+import linksTemplate                 from "components/content-list-item/templates/links.html";
+import publishedStateTemplate        from "components/content-list-item/templates/published-state.html";
+import wordcountTemplate             from "components/content-list-item/templates/wordcount.html";
+import printWordcountTemplate        from "components/content-list-item/templates/printwordcount.html";
+import commissionedLengthTemplate    from "components/content-list-item/templates/commissionedLength.html";
+import needsLegalTemplate            from "components/content-list-item/templates/needsLegal.html";
+import lastModifiedTemplate          from "components/content-list-item/templates/last-modified.html";
+import lastModifiedByTemplate        from "components/content-list-item/templates/last-modified-by.html";
+import printLocationTemplate         from "components/content-list-item/templates/printLocation.html";
+import statusInPrintTemplate         from "components/content-list-item/templates/statusInPrint.html";
+import needsPictureDeskTemplate      from "components/content-list-item/templates/needsPictureDesk.html";
+import lastModifiedInPrintByTemplate from "components/content-list-item/templates/lastModifiedInPrintBy.html";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
@@ -310,6 +313,18 @@ const columnDefaults = [{
     templateUrl: templateRoot + 'needsLegal.html',
     template: needsLegalTemplate,
     active: true
+},{
+    name: 'needs-picture-desk',
+    prettyName: 'Needs Picture Desk',
+    labelHTML: '',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'needsPictureDesk.html',
+    template: needsPictureDeskTemplate,
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: ['needsPictureDesk']
 },{
     name: 'last-modified',
     prettyName: 'Last modified',

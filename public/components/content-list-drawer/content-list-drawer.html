@@ -506,6 +506,10 @@
                             <p class="drawer__item-title">Legal status</p>
                             <select ng-model="contentItem.needsLegal" ng-options="ls.value as ls.name for ls in legalValues" wf-content-item-update-action="needsLegal"></select>
                         </li>
+                        <li class="drawer__item">
+                            <p class="drawer__item-title">Picture Desk status</p>
+                            <select ng-model="contentItem.needsPictureDesk" ng-options="ls.value as ls.name for ls in pictureDeskValues" wf-content-item-update-action="needsPictureDesk"></select>
+                        </li>
                     </ul>
 
                 </div>

@@ -119,6 +119,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.statusValues = this.status === 'Stub' ? statusLabels : contentStatusValues;
             this.section = sections.filter((section) => section.name === item.section)[0]; // Get section object
             this.needsLegal = item.needsLegal;
+            this.needsPictureDesk = item.needsPictureDesk;
             this.note = item.note;
 
             this.commissioningDesks = getCommissioningDeskNames(item.commissioningDesks);
@@ -268,7 +269,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
  * Directive allowing the contentListItems to interact with the details drawer
  * @param $rootScope
  */
-var wfContentListItem = function ($rootScope, statuses, legalValues, sections, config) {
+var wfContentListItem = function ($rootScope, statuses, legalValues, pictureDeskValues, sections, config) {
     return {
         restrict: 'A',
         template: () => {
@@ -282,6 +283,7 @@ var wfContentListItem = function ($rootScope, statuses, legalValues, sections, c
         controller: ($scope) => {
             $scope.statusValues = statuses;
             $scope.legalValues = legalValues;
+            $scope.pictureDeskValues = pictureDeskValues;
             $scope.sections = sections;
             $scope.isSupportedAtomType = config.atomTypes.includes($scope.contentItem.contentType);
         },
