@@ -93,11 +93,11 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
         });
 
         $scope.$on('filtersChanged.section', function ($event, selectedSections) { // If selected sections are changed see if they constitute a desk or not
-            console.log('que')
+            console.log('que', $scope.selectedDesk)
             $scope.selectedDesk = updateSelectedDeskBasedOnSections(selectedSections);
         });
 
-        console.log('THIS HAPPENS FIRST!')
+        console.log('THIS HAPPENS FIRST!', $scope.selectedDesk)
         $scope.selectedDesk = updateSelectedDeskBasedOnSections($scope.selectedSections.map((el) => el.name));
 
         // Today View ===========================

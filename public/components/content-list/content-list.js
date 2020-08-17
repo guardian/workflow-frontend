@@ -275,7 +275,7 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, pr
     $scope.contentItemLoadingIncrement = INFINITE_SCROLL_ITEM_LOAD_INCREMENT;
 
     $scope.$on('getContent', () => {
-        console.log('This keeps getting called!')
+        console.log('This keeps getting called!', $scope.selectedDesk)
         $scope.contentItemsDisplayed = INFINITE_SCROLL_STARTING_ITEMS; // reset when filters are applied
         $scope.infiniteScrollDisabled = false;
     });

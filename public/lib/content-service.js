@@ -329,7 +329,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                 return wfContentService.get(localSearch)
                     .then((cb) => {
-                        const localSearchIsStale = localSearch !== this.currentSearch
+                        const localSearchIsStale = localSearch.text !== this.currentSearch.text
 
                         if (localSearchIsStale) {
                             // This means that, since getting results,
@@ -340,7 +340,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         return this._callback(cb)
                     })
                     .then(() => {
-                        console.log('and again')
                         this._timer = $timeout(this.refresh.bind(this), POLLING_DELAY);
                     })
                     .catch((err) => {
