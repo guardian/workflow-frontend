@@ -63,7 +63,7 @@ class AppComponents(context: Context)
   )
 
   final override lazy val corsConfig: CORSConfig = CORSConfig.fromConfiguration(context.initialConfiguration).copy(
-    allowedOrigins = Origins.Matching(Set(config.host) ++ config.corsAllowedDomains)
+    allowedOrigins = Origins.Matching(Set(config.host) ++ config.corsAllowedDomains ++ config.corsAllowedOrigins)
   )
 
   override lazy val httpFilters: Seq[EssentialFilter] = {

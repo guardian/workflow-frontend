@@ -11,7 +11,6 @@ import io.circe.parser.decode
 import io.circe.syntax._
 import org.joda.time.{DateTime, LocalDate}
 import DateFormat._ // Required for serialisation / deserialisation of DateTime
-
 import scala.collection.immutable
 
 case class ExternalData(
@@ -46,7 +45,9 @@ case class ExternalData(
                          actualNewspaperPublicationDate: Option[LocalDate] = None,
                          // Description enriched for use by WF front end client code.
                          shortActualPrintLocationDescription: Option[String] = None,
-                         longActualPrintLocationDescription: Option[String] = None) {
+                         longActualPrintLocationDescription: Option[String] = None,
+                         statusInPrint: Option[OctopusStatus] = None,
+                         lastModifiedInPrintBy: Option[String] = None) {
 }
 
 object ExternalData {

@@ -24,6 +24,8 @@ import lastModifiedTemplate          from "components/content-list-item/template
 import lastModifiedByTemplate        from "components/content-list-item/templates/last-modified-by.html";
 import printLocationTemplate         from "components/content-list-item/templates/printLocation.html";
 import needsPictureDeskTemplate      from "components/content-list-item/templates/needsPictureDesk.html";
+import statusInPrintTemplate         from "components/content-list-item/templates/statusInPrint.html";
+import lastModifiedInPrintByTemplate from "components/content-list-item/templates/lastModifiedInPrintBy.html";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
@@ -236,6 +238,18 @@ const columnDefaults = [{
     template: statusTemplate,
     active: true
 },{
+    name: 'status-in-print',
+    prettyName: 'Status in Print',
+    labelHTML: 'Status in Print',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'statusInPrint.html',
+    template: statusInPrintTemplate,
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: ['statusInPrint']
+},{
     name: 'wordcount',
     prettyName: 'Web wordcount',
     labelHTML: 'Web words',
@@ -348,6 +362,18 @@ const columnDefaults = [{
     isNew: true,
     isSortable: true,
     sortField: ['lastModifiedBy']
+},{
+    name: 'last-modified-in-print-by',
+    prettyName: 'Last modified by (print)',
+    labelHTML: 'Last modified by (print)',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'lastModifiedInPrintBy.html',
+    template: lastModifiedInPrintByTemplate,
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: ['lastModifiedInPrintBy']
 }].map(col => {
   const _labelHTML = col.labelHTML === ''
     ? '&nbsp;'

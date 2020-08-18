@@ -275,6 +275,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
              */
             constructor(paramsProvider) {
                 this._paramsProvider = paramsProvider;
+                this.currentSearch = undefined
 
                 this.init();
             }
@@ -320,8 +321,21 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
             refresh() {
                 this.stopPolling();
 
-                return wfContentService.get(this._paramsProvider())
-                    .then(this._callback)
+                const localSearch = this._paramsProvider()
+                this.currentSearch = localSearch
+
+                return wfContentService.get(localSearch)
+                    .then((cb) => {
+                        const localSearchIsStale = localSearch !== this.currentSearch
+
+                        if (localSearchIsStale) {
+                            // This means that, since getting results,
+                            // the search terms have changed, so we can ignore the response
+                            return
+                        }
+
+                        return this._callback(cb)
+                    })
                     .then(() => {
                         this._timer = $timeout(this.refresh.bind(this), POLLING_DELAY);
                     })

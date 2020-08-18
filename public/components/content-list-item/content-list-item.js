@@ -181,6 +181,9 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.plannedNewspaperPageNumber = item.plannedNewspaperPageNumber;
             this.plannedNewspaperPublicationDate = item.plannedNewspaperPublicationDate;
 
+            this.statusInPrint = item.statusInPrint;
+            this.lastModifiedInPrintBy = item.lastModifiedInPrintBy;
+
             // These are derived values used for display purposes.
             const {
               shortPrintLocationDescription,

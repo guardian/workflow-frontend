@@ -90,6 +90,7 @@ google-auth-banner .alert {
             &--section,
             &--legal,
             &--status,
+            &--status-in-print,
             &--notes,
             &--links,
             &--published-state,
@@ -100,6 +101,7 @@ google-auth-banner .alert {
             &--needs-picture-desk,
             &--last-modified,
             &--last-modified-by,
+            &--last-modified-in-print-by,
             &--printlocation {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
@@ -182,10 +184,8 @@ google-auth-banner .alert {
                 min-width: 200px;
             }
 
-            &--last-modified {
-                min-width: 100px;
-            }
-
+            &--last-modified,
+            &--last-modified-in-print-by,
             &--last-modified-by {
                 min-width: 110px;
             }
