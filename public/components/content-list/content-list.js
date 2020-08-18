@@ -29,13 +29,13 @@ import { getSortField } from '../../lib/column-defaults';
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService','wfTagApiService'])
     .service('wfContentItemParser', ['config', 'wfFormatDateTimeFilter', 'statusLabels', 'sections', wfContentItemParser])
     .filter('getPriorityString', wfGetPriorityStringFilter)
-    .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'legalValues', 'pictureDeskValues', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', 'wfFiltersService', wfContentListController])
+    .controller('wfContentListController', ['$rootScope', '$scope', '$anchorScroll', 'statuses', 'priorities', 'sections', 'wfContentService', 'wfContentPollingService', 'wfContentItemParser', 'wfPresenceService', 'wfColumnService', 'wfPreferencesService', 'wfFiltersService', wfContentListController])
     .directive('wfContentListLoader', ['$rootScope', wfLoader])
     .directive('wfContentItemUpdateAction', wfContentItemUpdateActionDirective)
     .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'pictureDeskValues', 'sections', 'config', wfContentListItem])
     .controller('wfCommissionedLengthCtrl', ['$scope', wfCommissionedLengthCtrl])
     .directive('uiFilterList', ['$q','$window', uiFilterList])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService', 'wfTagApiService', 'wfFormatDateTimeFilter', wfContentListDrawer])
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService', 'wfTagApiService', 'wfFormatDateTimeFilter', 'legalValues', 'pictureDeskValues', wfContentListDrawer])
     .directive("bindCompiledHtml", function($compile) {
         return {
             scope: {
@@ -90,7 +90,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 
 
-function wfContentListController($rootScope, $scope, $anchorScroll, statuses, legalValues, pictureDeskValues, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService, wfFiltersService) {
+function wfContentListController($rootScope, $scope, $anchorScroll, statuses, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService, wfFiltersService) {
     $scope.googleAuthBannerVisible = false;
     $rootScope.$on('wfGoogleApiService.userIsNotAuthorized', () => {
         $scope.googleAuthBannerVisible = true;
@@ -249,9 +249,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, le
         var prefix = 'content';
         $scope.$emit(prefix + ':edit', contentItem.item);
     };
-
-    this.legalValues = legalValues;
-    this.pictureDeskValues = pictureDeskValues;
 
     this.sections = sections;
 
