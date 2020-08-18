@@ -46,7 +46,7 @@ case class ExternalData(
                          // Description enriched for use by WF front end client code.
                          shortActualPrintLocationDescription: Option[String] = None,
                          longActualPrintLocationDescription: Option[String] = None,
-                         statusInPrint: Option[Status] = None,
+                         statusInPrint: Option[OctopusStatus] = None,
                          lastModifiedInPrintBy: Option[String] = None) {
 }
 
