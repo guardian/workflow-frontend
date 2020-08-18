@@ -227,6 +227,16 @@ class Api(
     )}
   }
 
+  def putStubPictureDesk(stubId: Long) = {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- readJsonFromRequestResponse(request.body)
+        status <- extractDataResponse[Option[Flag]](json)
+        id <- stubsApi.putStubPictureDesk(stubId, status)
+      } yield id
+    )}
+  }
+
   def putStubTrashed(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {

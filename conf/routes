@@ -36,6 +36,7 @@ PUT            /api/stubs/:stubId/assigneeEmail            controllers.Api.putSt
 PUT            /api/stubs/:stubId/dueDate                  controllers.Api.putStubDueDate(stubId: Long)
 PUT            /api/stubs/:stubId/note                     controllers.Api.putStubNote(stubId: Long)
 PUT            /api/stubs/:stubId/needsLegal               controllers.Api.putStubLegalStatus(stubId: Long)
+PUT            /api/stubs/:stubId/needsPictureDesk         controllers.Api.putStubPictureDesk(stubId: Long)
 PUT            /api/stubs/:stubId/prodOffice               controllers.Api.putStubProdOffice(stubId: Long)
 PUT            /api/stubs/:stubId/section                  controllers.Api.putStubSection(stubId: Long)
 PUT            /api/stubs/:stubId/workingTitle             controllers.Api.putStubWorkingTitle(stubId: Long)
