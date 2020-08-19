@@ -50,7 +50,7 @@ function wfIconDirective() {
             //   Needs to be created this way with explicit Namespace as Angular
             //   template creates HTML nodes rather than SVG.
             var iconElem = document.createElementNS(SVG_NS, 'svg');
-            iconElem.setAttribute('viewBox', '0 0 128 128');
+            iconElem.setAttribute('viewBox', '0 0 150 150');
 
             var useElem = iconElem.appendChild(document.createElementNS(SVG_NS, 'use'));
 
