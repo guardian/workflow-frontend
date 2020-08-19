@@ -68,6 +68,8 @@
         &--media,
         &--ophan,
         &--incopy,
+        &--needs-legal,
+        &--needs-picture-desk,
         &--optimisedForWeb,
         &--sensitive,
         &--legally-sensitive {
@@ -169,6 +171,7 @@
         &--printwordcount,
         &--commissionedLength,
         &--needs-legal,
+        &--needs-picture-desk,
         &--optimisedForWeb,
         &--sensitive,
         &--legally-sensitive,
@@ -219,7 +222,8 @@
             width: 30px;
         }
 
-        &--needs-legal {
+        &--needs-legal,
+        &--needs-picture-desk {
             width: 32px;
             white-space: nowrap; // Prevent inline-block icons from falling under one another
         }
@@ -350,7 +354,8 @@
             }
         }
 
-        &--needs-legal {
+        &--needs-legal,
+        &--needs-picture-desk {
             @include largeScreen {
                 width: auto;
             }
@@ -462,7 +467,6 @@
         &--headline,
         &--office,
         &--legal,
-        &--needs-picture-desk,
         &--status,
         &--status-in-print,
         &--composer,
@@ -527,7 +531,8 @@
             }
         }
 
-        &--needs-legal {
+        &--needs-legal,
+        &--needs-picture-desk {
             @include largeScreen {
                 width: auto;
             }

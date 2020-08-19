@@ -125,6 +125,12 @@ google-auth-banner .alert {
                 width: $content-list-icon-size;
             }
 
+            &--needs-legal,
+            &--needs-picture-desk {
+                padding: 10px 5px;
+                width: $content-list-icon-size;
+            }
+
             &--presence,
             &--assignee {
                 padding: 5px 5px 5px 0;
