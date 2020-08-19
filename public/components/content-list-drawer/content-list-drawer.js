@@ -17,7 +17,7 @@ var SETTING_OPEN_SECTION = 'openSection';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService, wfTagApiService, wfFormatDateTime) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService, wfTagApiService, wfFormatDateTime, legalValues, pictureDeskValues) {
     var hiddenClass = 'content-list-drawer--hidden';
 
     function buildComposerRestorerUrl (composerId) {
@@ -38,12 +38,13 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             showBookTagPicker: '<',
             editedShortPlannedPrintLocationDescription: '<',
             contentList: '=',
-            legalValues: '=',
             statusValues: '='
         },
         controllerAs: 'contentListDrawerController',
         controller: function ($scope, $element) {
 
+            $scope.legalValues = legalValues;
+            $scope.pictureDeskValues = pictureDeskValues;
 
             var $parent = $element.parent();
             /**
@@ -423,20 +424,20 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                     $scope.candidateBookSections = candidateBookSections;
                 });
             };
- 
+
             $scope.pickBookSection = function (bookSectionTag) {
                 const getNewspaperBook = wfTagApiService.getHyperTag(bookSectionTag.parents[0]);
                 getNewspaperBook.then(function (book) {
                     if (book.data.type !== 'Newspaper Book') {
                         throw new Error('The parent for this newspaper book section is not a valid newspaper book.');
                     }
-    
+
                     const getPublication = wfTagApiService.getHyperTag(book.data.parents[0]);
                     getPublication.then(function (publication) {
                         if (publication.data.type !== 'Publication') {
                             throw new Error('The parent for this newspaper book is not a valid publication.');
                         }
-                        
+
                         updateField("plannedBookId", book.data.id, $scope.plannedBookId)
                         updateField("plannedBookSectionId", bookSectionTag.id, $scope.plannedBookSectionId)
                         updateField("plannedPublicationId", publication.data.id, $scope.plannedPublicationId)
@@ -444,7 +445,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                         $scope.editedShortPlannedPrintLocationDescription = `${bookSectionTag.internalName}`
                     });
                 });
-                
+
                 delete $scope.candidateBookSections;
                 delete $scope.bookSectionQuery;
             };

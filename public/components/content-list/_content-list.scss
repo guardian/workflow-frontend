@@ -97,7 +97,8 @@ google-auth-banner .alert {
             &--wordcount,
             &--printwordcount,
             &--commissionedLength,
-            &--needsLegal,
+            &--needs-legal,
+            &--needs-picture-desk,
             &--last-modified,
             &--last-modified-by,
             &--last-modified-in-print-by,
@@ -120,6 +121,12 @@ google-auth-banner .alert {
             &--media,
             &--ophan,
             &--incopy {
+                padding: 10px 5px;
+                width: $content-list-icon-size;
+            }
+
+            &--needs-legal,
+            &--needs-picture-desk {
                 padding: 10px 5px;
                 width: $content-list-icon-size;
             }

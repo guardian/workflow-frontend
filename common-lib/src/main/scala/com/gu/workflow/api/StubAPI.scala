@@ -109,6 +109,13 @@ class StubAPI(
       item <- extractDataResponse[Long](json)
     } yield item
 
+  def putStubPictureDesk(id: Long, status: Option[Flag]): ApiResponseFt[Long] =
+    for {
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$id/needsPictureDesk", status.asJson))
+      json <- parseBody(res.body)
+      item <- extractDataResponse[Long](json)
+    } yield item
+
   def putStubPriority(id: Long, priority: Int): ApiResponseFt[Long] =
     for {
       res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$id/priority", priority.asJson))

@@ -68,6 +68,8 @@
         &--media,
         &--ophan,
         &--incopy,
+        &--needs-legal,
+        &--needs-picture-desk,
         &--optimisedForWeb,
         &--sensitive,
         &--legally-sensitive {
@@ -168,7 +170,8 @@
         &--wordcount,
         &--printwordcount,
         &--commissionedLength,
-        &--needsLegal,
+        &--needs-legal,
+        &--needs-picture-desk,
         &--optimisedForWeb,
         &--sensitive,
         &--legally-sensitive,
@@ -219,7 +222,8 @@
             width: 30px;
         }
 
-        &--needsLegal {
+        &--needs-legal,
+        &--needs-picture-desk {
             width: 32px;
             white-space: nowrap; // Prevent inline-block icons from falling under one another
         }
@@ -350,7 +354,8 @@
             }
         }
 
-        &--needsLegal {
+        &--needs-legal,
+        &--needs-picture-desk {
             @include largeScreen {
                 width: auto;
             }
@@ -526,7 +531,8 @@
             }
         }
 
-        &--needsLegal {
+        &--needs-legal,
+        &--needs-picture-desk {
             @include largeScreen {
                 width: auto;
             }

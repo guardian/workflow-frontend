@@ -23,6 +23,7 @@ import needsLegalTemplate            from "components/content-list-item/template
 import lastModifiedTemplate          from "components/content-list-item/templates/last-modified.html";
 import lastModifiedByTemplate        from "components/content-list-item/templates/last-modified-by.html";
 import printLocationTemplate         from "components/content-list-item/templates/printLocation.html";
+import needsPictureDeskTemplate      from "components/content-list-item/templates/needsPictureDesk.html";
 import statusInPrintTemplate         from "components/content-list-item/templates/statusInPrint.html";
 import lastModifiedInPrintByTemplate from "components/content-list-item/templates/lastModifiedInPrintBy.html";
 
@@ -324,6 +325,18 @@ const columnDefaults = [{
     templateUrl: templateRoot + 'needsLegal.html',
     template: needsLegalTemplate,
     active: true
+},{
+    name: 'needs-picture-desk',
+    prettyName: 'Needs Picture Desk',
+    labelHTML: '',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'needsPictureDesk.html',
+    template: needsPictureDeskTemplate,
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: ['needsPictureDesk']
 },{
     name: 'last-modified',
     prettyName: 'Last modified',

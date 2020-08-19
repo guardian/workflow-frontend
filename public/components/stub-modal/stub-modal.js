@@ -122,11 +122,11 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.$watch('stub.section', (newValue) => {
 
         if (newValue) {
-            wfPreferencesService.getPreference('preferedStub').then((data) => {
+            wfPreferencesService.getPreference('preferredStub').then((data) => {
                 data.section = newValue.name;
-                wfPreferencesService.setPreference('preferedStub', data);
+                wfPreferencesService.setPreference('preferredStub', data);
             }, () => {
-                wfPreferencesService.setPreference('preferedStub', {
+                wfPreferencesService.setPreference('preferredStub', {
                     section: newValue.name
                 });
             })
@@ -398,7 +398,7 @@ wfStubModal.run([
          * @param contentType
          * @returns {Promise}
          */
-        function setUpPreferedStub (contentType) {
+        function setUpPreferredStub (contentType) {
 
             function createStubData (contentType, sectionName) {
 
@@ -408,11 +408,12 @@ wfStubModal.run([
                     section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
                     priority: 0,
                     needsLegal: 'NA',
+                    needsPictureDesk: 'NA',
                     prodOffice: currentFilteredOffice() ||  guessCurrentOfficeFromTimezone()
                 };
             }
 
-            return wfPreferencesService.getPreference('preferedStub').then((data) => {
+            return wfPreferencesService.getPreference('preferredStub').then((data) => {
 
                 return createStubData(contentType, data.section);
             }, () => {
@@ -427,13 +428,13 @@ wfStubModal.run([
         });
 
         $rootScope.$on('stub:create', function (event, contentType) {
-            setUpPreferedStub(contentType).then((stub) => {
+            setUpPreferredStub(contentType).then((stub) => {
                 open(stub, 'create')
             });
         });
 
         $rootScope.$on('content:import', function () {
-            setUpPreferedStub(null).then((stub) => {
+            setUpPreferredStub(null).then((stub) => {
                 open(stub, 'import')
             });
         });

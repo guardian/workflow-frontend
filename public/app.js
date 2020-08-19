@@ -201,6 +201,11 @@ angular.module('workflow',
         { name: 'Needs checking', value: 'REQUIRED' },
         { name: 'Approved', value: 'COMPLETE'}
     ]})
+    .constant({ 'pictureDeskValues': [
+        { name: 'Not required', value: 'NA' },
+        { name: 'Needs checking', value: 'REQUIRED' },
+        { name: 'Approved', value: 'COMPLETE'}
+    ]})
 
     .run(function ($window, wfGoogleApiService) {
         wfGoogleApiService.load();
