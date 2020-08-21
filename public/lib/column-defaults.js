@@ -341,30 +341,6 @@ const columnDefaults = [{
     defaultSortOrder: ['asc', 'desc'],
     sortField: ['lifecycleState', 'lifecycleStateSuplDate']
 },{
-    name: 'needsLegal',
-    prettyName: 'Needs Legal',
-    labelHTML: '',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'needsLegal.html',
-    template: needsLegalTemplate,
-    active: true,
-    isSortable: true,
-    defaultSortOrder: ['desc', 'asc']
-},{
-    name: 'needs-picture-desk',
-    prettyName: 'Needs Picture Desk',
-    labelHTML: '',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'needsPictureDesk.html',
-    template: needsPictureDeskTemplate,
-    active: true,
-    isNew: true,
-    isSortable: true,
-    sortField: ['needsPictureDesk'],
-    defaultSortOrder: ['desc', 'asc']
-},{
     name: 'last-modified',
     prettyName: 'Last modified',
     labelHTML: 'Last modified',
