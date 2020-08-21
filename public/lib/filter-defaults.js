@@ -105,7 +105,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'Needs Legal', value: 'needsLegal' },
                 { caption: 'Legal approved', value: 'legalApproved' },
                 { caption: 'Needs Picture Desk', value: 'needsPictureDesk' },
-                { caption: 'Picture Desk approved', value: 'pictureDeskApproved' }
+                { caption: 'Picture Desk checked', value: 'pictureDeskApproved' }
             ]
         },
         {
