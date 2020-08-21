@@ -102,8 +102,10 @@ var filterDefaults = function (statuses, wfFiltersService) {
             listIsOpen: false,
             multi: true,
             filterOptions: [
-                { caption: 'Needs legal', value: 'needsLegal' },
-                { caption: 'Legal approved', value: 'approved' }
+                { caption: 'Needs Legal', value: 'needsLegal' },
+                { caption: 'Legal approved', value: 'legalApproved' },
+                { caption: 'Needs Picture Desk', value: 'needsPictureDesk' },
+                { caption: 'Picture Desk checked', value: 'pictureDeskChecked' }
             ]
         },
         {

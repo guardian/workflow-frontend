@@ -182,21 +182,24 @@ const columnDefaults = [{
     prettyName: 'Needs Legal',
     labelHTML: '',
     colspan: 1,
-    title: '',
+    title: 'Needs Legal',
     templateUrl: templateRoot + 'needsLegal.html',
     template: needsLegalTemplate,
-    active: true
+    active: true,
+    isSortable: true,
+    defaultSortOrder: ['desc']
 },{
     name: 'needs-picture-desk',
     prettyName: 'Needs Picture Desk',
     labelHTML: '',
     colspan: 1,
-    title: '',
+    title: 'Needs Picture Desk',
     templateUrl: templateRoot + 'needsPictureDesk.html',
     template: needsPictureDeskTemplate,
     active: true,
     isNew: true,
     isSortable: true,
+    defaultSortOrder: ['desc'],
     sortField: ['needsPictureDesk']
 },{
     name: 'presence',
