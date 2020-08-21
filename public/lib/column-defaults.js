@@ -178,6 +178,27 @@ const columnDefaults = [{
     template: legallySensitiveTemplate,
     active: false
 },{
+    name: 'needsLegal',
+    prettyName: 'Needs Legal',
+    labelHTML: '',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'needsLegal.html',
+    template: needsLegalTemplate,
+    active: true
+},{
+    name: 'needs-picture-desk',
+    prettyName: 'Needs Picture Desk',
+    labelHTML: '',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'needsPictureDesk.html',
+    template: needsPictureDeskTemplate,
+    active: true,
+    isNew: true,
+    isSortable: true,
+    sortField: ['needsPictureDesk']
+},{
     name: 'presence',
     prettyName: 'Presence',
     labelHTML: '<div ng-switch="presenceIsActive"><i class="content-list-head__heading-icon--presence" ng-switch-when="false" wf-icon="presence-unavailable"/><i class="content-list-head__heading-icon--presence" ng-switch-default wf-icon="presence"/></div>',
@@ -316,27 +337,6 @@ const columnDefaults = [{
     isSortable: true,
     defaultSortOrder: ['asc', 'desc'],
     sortField: ['lifecycleState', 'lifecycleStateSuplDate']
-},{
-    name: 'needsLegal',
-    prettyName: 'Needs Legal',
-    labelHTML: '',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'needsLegal.html',
-    template: needsLegalTemplate,
-    active: true
-},{
-    name: 'needs-picture-desk',
-    prettyName: 'Needs Picture Desk',
-    labelHTML: '',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'needsPictureDesk.html',
-    template: needsPictureDeskTemplate,
-    active: true,
-    isNew: true,
-    isSortable: true,
-    sortField: ['needsPictureDesk']
 },{
     name: 'last-modified',
     prettyName: 'Last modified',
