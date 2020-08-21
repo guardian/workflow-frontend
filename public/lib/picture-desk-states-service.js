@@ -10,7 +10,7 @@ define(['angular'], function (angular) {
                 return [
                     {name: 'Not required', value: 'NA'},
                     {name: 'Needs checking', value: 'REQUIRED'},
-                    {name: 'Approved', value: 'COMPLETE'}
+                    {name: 'Checked', value: 'COMPLETE'}
                 ]
             };
 
