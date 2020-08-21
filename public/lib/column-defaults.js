@@ -187,6 +187,7 @@ const columnDefaults = [{
     template: needsLegalTemplate,
     active: true,
     isSortable: true,
+    flipSortIconDirection: true,
     defaultSortOrder: ['desc']
 },{
     name: 'needs-picture-desk',
@@ -200,6 +201,7 @@ const columnDefaults = [{
     isNew: true,
     isSortable: true,
     defaultSortOrder: ['desc'],
+    flipSortIconDirection: true,
     sortField: ['needsPictureDesk']
 },{
     name: 'presence',
