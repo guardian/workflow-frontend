@@ -324,7 +324,9 @@ const columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'needsLegal.html',
     template: needsLegalTemplate,
-    active: true
+    active: true,
+    isSortable: true,
+    defaultSortOrder: ['desc', 'asc']
 },{
     name: 'needs-picture-desk',
     prettyName: 'Needs Picture Desk',
@@ -336,7 +338,8 @@ const columnDefaults = [{
     active: true,
     isNew: true,
     isSortable: true,
-    sortField: ['needsPictureDesk']
+    sortField: ['needsPictureDesk'],
+    defaultSortOrder: ['desc', 'asc']
 },{
     name: 'last-modified',
     prettyName: 'Last modified',
