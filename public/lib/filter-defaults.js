@@ -189,7 +189,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
             ]
         },
         {
-            title: 'MainMedia',
+            title: 'Main Media',
             namespace: 'hasMainMedia',
             listIsOpen: false,
             multi: false,
