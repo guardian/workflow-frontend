@@ -170,15 +170,6 @@ var filterDefaults = function (statuses, wfFiltersService) {
             ]
         },
         {
-            title: 'Trashed',
-            namespace: 'trashed',
-            listIsOpen: false,
-            multi: false,
-            filterOptions: [
-                { caption: 'Trashed', value: 'true' }
-            ]
-        },
-        {
             title: 'Print Info',
             namespace: 'hasPrintInfo',
             listIsOpen: false,
@@ -197,7 +188,16 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'Has Main Media', value: 'true' },
                 { caption: 'No Main Media', value: 'false' }
             ]
-        }
+        },
+        {
+            title: 'Trashed',
+            namespace: 'trashed',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'Trashed', value: 'true' }
+            ]
+        } // When adding filters, please keep Trashed at the bottom per Mariana / Mateusz request
     ].filter(notEmpty);
 };
 
