@@ -187,6 +187,16 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'Has print info', value: 'true' },
                 { caption: 'No print info', value: 'false' }
             ]
+        },
+        {
+            title: 'MainMedia',
+            namespace: 'hasMainMedia',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'Has Main Media', value: 'true' },
+                { caption: 'No Main Media', value: 'false' }
+            ]
         }
     ].filter(notEmpty);
 };
