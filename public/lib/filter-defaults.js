@@ -184,8 +184,8 @@ var filterDefaults = function (statuses, wfFiltersService) {
             listIsOpen: false,
             multi: false,
             filterOptions: [
-                { caption: 'Has print info', value: 'true' },
-                { caption: 'No print info', value: 'false' }
+                { caption: 'Has book info', value: 'true' },
+                { caption: 'No book info', value: 'false' }
             ]
         }
     ].filter(notEmpty);
