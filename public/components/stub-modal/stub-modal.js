@@ -10,16 +10,17 @@ import 'components/date-time-picker/date-time-picker';
 import 'lib/composer-service';
 import 'lib/content-service';
 import 'lib/legal-states-service';
+import 'lib/picture-desk-states-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
 
 const wfStubModal = angular.module('wfStubModal', [
-    'ui.bootstrap', 'legalStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
+    'ui.bootstrap', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
     .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
 
 function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode,
-     sections, statusLabels, legalStatesService, wfComposerService, wfProdOfficeService, wfContentService,
+     sections, statusLabels, legalStatesService, pictureDeskStatesService, wfComposerService, wfProdOfficeService, wfContentService,
      wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
 
     wfContentService.getTypes().then( (types) => {
@@ -117,6 +118,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     }
 
     $scope.legalStates = legalStatesService.getLegalStates();
+    $scope.pictureDeskStates = pictureDeskStatesService.getpictureDeskStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
 
     $scope.$watch('stub.section', (newValue) => {

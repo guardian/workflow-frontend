@@ -66,16 +66,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-    </div>
-    <div class="modal-body modal-body__header" ng-click="expanded = !expanded">
-        <a href="" class="modal-body__header-expander" ng-class="{'modal-body modal-body__header-expander--open': expanded}">
-            Advanced
-        </a>
-    </div>
-    <div class="modal-body modal-body__advanced" ng-class="{'modal-body__advanced--open' : expanded}">
-        <div class="form-group">
             <div wf-date-time-picker label="Production deadline" help-text="true" ng-model="stub.due"></div>
             <div class="form-horizontal clearfix">
                 <div class="form-group col-xs-8">
@@ -93,6 +83,12 @@
                     <label for="stub_legal">Legal</label>
                     <div>
                         <select id="stub_legal" name="needsLegal" ng-model="stub.needsLegal" ng-options="ls.value as ls.name for ls in legalStates"></select>
+                    </div>
+                </div>
+                <div class="form-group col-xs-5 pull-right">
+                    <label for="stub_picture_desk">Picture Desk</label>
+                    <div>
+                        <select id="stub_picture_desk" name="needsPictureDesk" ng-model="stub.needsPictureDesk" ng-options="pds.value as pds.name for pds in pictureDeskStates"></select>
                     </div>
                 </div>
             </div>
