@@ -327,7 +327,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                 return wfContentService.get(localSearch)
                     .then((cb) => {
-                        const localSearchIsStale = localSearch.text !== this.currentSearch.text
+                        const localSearchIsStale = localSearch !== this.currentSearch
 
                         if (localSearchIsStale) {
                             // This means that, since getting results,
