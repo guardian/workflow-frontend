@@ -31,7 +31,6 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
 
                 $rootScope.$on('filtersChanged.section', function(event, data) {
                     self.update('section', data);
-                    console.log('filtersChanged.section')
                     $rootScope.$broadcast('getContent');
                 });
 
@@ -143,7 +142,6 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
 
                 $rootScope.$on('filtersChanged.view', function(event, data) {
                     self.update('view', data);
-                    console.log('filtersChanged.view')
                     $rootScope.$broadcast('getContent');
                 });
 

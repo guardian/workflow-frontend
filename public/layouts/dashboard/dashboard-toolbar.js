@@ -11,6 +11,7 @@ import './dashboard-toolbar.html';
 angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPresenceService', 'wfProdOfficeService'])
     .directive('wfToolbarSectionsDropdown', ['wfFiltersService', '$rootScope', 'sectionsInDesks', wfToolbarSectionsDropdown])
     .controller('wfDashboardToolbarController', ['$scope', 'wfFiltersService', 'wfDateParser', 'wfProdOfficeService', 'desks', 'sections', 'sectionsInDesks', 'wfTitleService', function ($scope, wfFiltersService, wfDateParser, prodOfficeService,  desks, sections, sectionsInDesks, wfTitleService) {
+        $scope.selectedDesk = null
 
         // Prod Office ===========================
 
@@ -36,7 +37,6 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
         $scope.$on('filtersChanged.fromPreferences', function() {
             $scope.selectedSections = buildSelectedSections();
-            console.log('fromPreferences')
             $scope.selectedDesk = updateSelectedDeskBasedOnSections($scope.selectedSections);
         });
 
@@ -50,7 +50,6 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
          * @param selectedSections Array of sections eg: ["Environment", "Money", "News", "Technology"]
          */
         function updateSelectedDeskBasedOnSections (selectedSections) {
-
             if (selectedSections.length === 0) {
                 return null;
             }
@@ -75,12 +74,17 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
             selected: false
         }].concat(desks);
 
-        $scope.$watch('selectedDesk', function () {
+        $scope.$watch('selectedDesk', function (newVal, oldVal) {
+            // The listener will always get called on initialization, even if nothing has changed
+            // Avoid doing anything when this is the case
+            // https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$watch
+            if (newVal === oldVal) {
+                return
+            }
+
             if ($scope.selectedDesk && $scope.selectedDesk.id) {
-                console.log('FC.desk if')
                 $scope.$emit('filtersChanged.desk', $scope.selectedDesk.id);
             } else if ($scope.selectedDesk === null) { // 'All desks'
-                console.log('selectedDesk variable has changed')
                 $scope.$emit('filtersChanged.desk', -1);
             }
 
@@ -93,11 +97,9 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
         });
 
         $scope.$on('filtersChanged.section', function ($event, selectedSections) { // If selected sections are changed see if they constitute a desk or not
-            console.log('que', $scope.selectedDesk)
             $scope.selectedDesk = updateSelectedDeskBasedOnSections(selectedSections);
         });
 
-        console.log('THIS HAPPENS FIRST!', $scope.selectedDesk)
         $scope.selectedDesk = updateSelectedDeskBasedOnSections($scope.selectedSections.map((el) => el.name));
 
         // Today View ===========================
@@ -106,8 +108,15 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
         $scope.selectedView = wfFiltersService.get('view'); // All
 
-        $scope.$watch('selectedView', (newValue) => {
-            $scope.$emit('filtersChanged.view', newValue);
+        $scope.$watch('selectedView', (newVal, oldVal) => {
+            // The listener will always get called on initialization, even if nothing has changed
+            // Avoid doing anything when this is the case
+            // https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$watch
+            if (newVal === oldVal) {
+                return
+            }
+
+            $scope.$emit('filtersChanged.view', newVal);
         }, true);
 
         // Misc =================================

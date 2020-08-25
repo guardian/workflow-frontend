@@ -111,7 +111,6 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
             $rootScope.$on('filtersChanged.desk', function ($event, deskId) {
 
                 if (deskId === -1) {
-                    console.log('FC.desk HERE')
                     $scope.$emit('filtersChanged.section', []);
                     $scope.sections = updateSections([]);
                     buttonTitle.innerHTML = updateNameTo($scope.sections);
