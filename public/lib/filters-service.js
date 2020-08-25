@@ -49,7 +49,7 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                     $rootScope.$broadcast('getContent');
                 });
 
-                $rootScope.$on('filtersChanged.deadline', function (event, data) { 
+                $rootScope.$on('filtersChanged.deadline', function (event, data) {
                     self.update('deadline', data);
                     $rootScope.$broadcast('getContent');
                 });
