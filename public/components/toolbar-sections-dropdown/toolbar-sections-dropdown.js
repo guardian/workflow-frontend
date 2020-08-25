@@ -123,6 +123,7 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
                             var selectedSectionNamesArray = $scope.sections
                                 .filter((el) => sectionsInThisDesk[0].sectionIds.indexOf(el.id) !== -1)
                                 .map((el) => el.name);
+
                             $scope.$emit('filtersChanged.section', selectedSectionNamesArray);
                         }
                     }
@@ -134,7 +135,6 @@ var wfToolbarSectionsDropdown = function (wfFiltersService, $rootScope, sections
              */
             $scope.checkboxUpdate = function () {
                 var selectedSections = buildSelectedSections();
-                console.log('checkboxupdate')
                 $scope.$emit('filtersChanged.section', selectedSections);
                 buttonTitle.innerHTML = updateNameTo($scope.sections);
             };

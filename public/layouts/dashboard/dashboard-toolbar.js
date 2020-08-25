@@ -50,6 +50,7 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
          * @param selectedSections Array of sections eg: ["Environment", "Money", "News", "Technology"]
          */
         function updateSelectedDeskBasedOnSections (selectedSections) {
+
             if (selectedSections.length === 0) {
                 return null;
             }
