@@ -150,6 +150,11 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('filtersChanged.hasMainMedia', function(event, data) {
+                    self.update('hasMainMedia', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
             }
 
             init() {
@@ -169,27 +174,28 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                     var deadline = params['deadline'];
 
                     self.filters = {
-                        'status'       : params['status'],
-                        'state'        : params['state'],
-                        'section'      : params['section'],
-                        'content-type' : params['content-type'],
-                        'atom-type'    : params['atom-type'],
-                        'deadline' : wfDateParser.parseQueryString(deadline),
-                        'flags'        : params['flags'],
-                        'prodOffice'   : params['prodOffice'],
-                        'created'      : params['created'],
-                        'assignee'     : params['assignee'],
-                        'assigneeEmail': params['assigneeEmail'],
-                        'incopy'       : params['incopy'],
-                        'touched'      : params['touched'],
-                        'composerId'   : params['composerId'],
-                        'view'         : params['view'],
-                        'news-list'    : params['news-list'],
-                        'trashed'      : params['trashed'],
+                        'status'         : params['status'],
+                        'state'          : params['state'],
+                        'section'        : params['section'],
+                        'content-type'   : params['content-type'],
+                        'atom-type'      : params['atom-type'],
+                        'deadline'       : wfDateParser.parseQueryString(deadline),
+                        'flags'          : params['flags'],
+                        'prodOffice'     : params['prodOffice'],
+                        'created'        : params['created'],
+                        'assignee'       : params['assignee'],
+                        'assigneeEmail'  : params['assigneeEmail'],
+                        'incopy'         : params['incopy'],
+                        'touched'        : params['touched'],
+                        'composerId'     : params['composerId'],
+                        'view'           : params['view'],
+                        'news-list'      : params['news-list'],
+                        'trashed'        : params['trashed'],
                         'plan-start-date': params['plan-start-date'],
-                        'plan-end-date': params['plan-end-date'],
-                        'editorId'     :params['editorId'],
-                        'hasPrintInfo': params['hasPrintInfo']
+                        'plan-end-date'  : params['plan-end-date'],
+                        'editorId'       : params['editorId'],
+                        'hasPrintInfo'   : params['hasPrintInfo'],
+                        'hasMainMedia'   : params['hasMainMedia']
                     };
 
                     $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);
