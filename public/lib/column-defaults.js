@@ -25,7 +25,7 @@ import lastModifiedByTemplate        from "components/content-list-item/template
 import printLocationTemplate         from "components/content-list-item/templates/printLocation.html";
 import needsPictureDeskTemplate      from "components/content-list-item/templates/needsPictureDesk.html";
 import statusInPrintTemplate         from "components/content-list-item/templates/statusInPrint.html";
-import lastModifiedInPrintByTemplate from "components/content-list-item/templates/last-print-user.html";
+import lastPrintUserTemplate         from "components/content-list-item/templates/last-print-user.html";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
