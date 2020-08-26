@@ -128,7 +128,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.deadline = item.due;
             this.created = item.createdAt;
             this.lastModified = item.lastModified;
-            this.lastModifiedBy = item.lastModifiedBy;
+            this.lastUser = item.lastUser;
             this.firstPublished = item.timePublished;
 
             this.hasEmbargoedDate =
@@ -182,7 +182,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.plannedNewspaperPublicationDate = item.plannedNewspaperPublicationDate;
 
             this.statusInPrint = item.statusInPrint;
-            this.lastModifiedInPrintBy = item.lastModifiedInPrintBy;
+            this.lastPrintUser = item.lastPrintUser;
 
             // These are derived values used for display purposes.
             const {
