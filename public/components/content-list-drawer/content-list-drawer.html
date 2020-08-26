@@ -476,7 +476,7 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Last modified (print)</p>
                             <span class="drawer__item-content">{{ (contentItem.lastModified | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
-                            <span class="drawer__item-content" ng-show="contentItem.lastModifiedInPrintBy">by {{ contentItem.lastModifiedInPrintBy }}</span>
+                            <span class="drawer__item-content" ng-show="contentItem.lastPrintUser">by {{ contentItem.lastPrintUser }}</span>
                         </li>
                         <li class="drawer__item">
                             <p class="drawer__item-title">Status in print</p>
@@ -509,7 +509,7 @@
                         <li class="drawer__item">
                             <p class="drawer__item-title">Last modified</p>
                             <span class="drawer__item-content">{{ (contentItem.lastModified | wfLocaliseDateTime:$root.globalSettings.location | wfFormatDateTime) || "-" }}</span>
-                            <span class="drawer__item-content" ng-show="contentItem.lastModifiedBy">by {{ contentItem.lastModifiedBy }}</span>
+                            <span class="drawer__item-content" ng-show="contentItem.lastUser">by {{ contentItem.lastUser }}</span>
                         </li>
                         <li class="drawer__item" ng-if="contentItem.contentType !== 'media'">
                             <p class="drawer__item-title">InCopy</p>
