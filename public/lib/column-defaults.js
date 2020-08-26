@@ -357,8 +357,8 @@ const columnDefaults = [{
     defaultSortOrder: ['desc']
 },{
     name: 'last-modified-by',
-    prettyName: 'Last modified by',
-    labelHTML: 'Last modified by',
+    prettyName: 'Last user',
+    labelHTML: 'Last user',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'last-modified-by.html',
@@ -369,8 +369,8 @@ const columnDefaults = [{
     sortField: ['lastModifiedBy']
 },{
     name: 'last-modified-in-print-by',
-    prettyName: 'Last modified by (print)',
-    labelHTML: 'Last modified by (print)',
+    prettyName: 'Last print user',
+    labelHTML: 'Last print user',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'lastModifiedInPrintBy.html',
