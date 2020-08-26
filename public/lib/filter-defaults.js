@@ -175,8 +175,8 @@ var filterDefaults = function (statuses, wfFiltersService) {
             listIsOpen: false,
             multi: false,
             filterOptions: [
-                { caption: 'Has book info', value: 'true' },
-                { caption: 'No book info', value: 'false' }
+                { caption: 'Has page number', value: 'true' },
+                { caption: 'No page number', value: 'false' }
             ]
         },
         {
