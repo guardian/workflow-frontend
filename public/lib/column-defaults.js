@@ -356,29 +356,29 @@ const columnDefaults = [{
     sortField: ['lastModified'],
     defaultSortOrder: ['desc']
 },{
-    name: 'last-modified-by',
-    prettyName: 'Last modified by',
-    labelHTML: 'Last modified by',
+    name: 'last-user',
+    prettyName: 'Last user',
+    labelHTML: 'Last user',
     colspan: 1,
     title: '',
-    templateUrl: templateRoot + 'last-modified-by.html',
-    template: lastModifiedByTemplate,
+    templateUrl: templateRoot + 'last-user.html',
+    template: lastUserTemplate,
     active: true,
     isNew: true,
     isSortable: true,
-    sortField: ['lastModifiedBy']
+    sortField: ['lastUser']
 },{
-    name: 'last-modified-in-print-by',
-    prettyName: 'Last modified by (print)',
-    labelHTML: 'Last modified by (print)',
+    name: 'last-print-user',
+    prettyName: 'Last print user',
+    labelHTML: 'Last print user',
     colspan: 1,
     title: '',
-    templateUrl: templateRoot + 'lastModifiedInPrintBy.html',
-    template: lastModifiedInPrintByTemplate,
+    templateUrl: templateRoot + 'last-print-user.html',
+    template: lastPrintUserTemplate,
     active: true,
     isNew: true,
     isSortable: true,
-    sortField: ['lastModifiedInPrintBy']
+    sortField: ['lastPrintUser']
 }].map(col => {
   const _labelHTML = col.labelHTML === ''
     ? '&nbsp;'
