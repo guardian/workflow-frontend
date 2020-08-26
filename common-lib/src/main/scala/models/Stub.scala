@@ -16,7 +16,7 @@ import scala.collection.immutable
 case class ExternalData(
                          path: Option[String] = None,
                          lastModified: Option[DateTime] = None,
-                         lastModifiedBy: Option[String] = None,
+                         lastUser: Option[String] = None,
                          status: Status = Status.Writers,
                          published: Option[Boolean] = None,
                          timePublished: Option[DateTime] = None,
@@ -47,7 +47,7 @@ case class ExternalData(
                          shortActualPrintLocationDescription: Option[String] = None,
                          longActualPrintLocationDescription: Option[String] = None,
                          statusInPrint: Option[OctopusStatus] = None,
-                         lastModifiedInPrintBy: Option[String] = None) {
+                         lastPrintUser: Option[String] = None) {
 }
 
 object ExternalData {
