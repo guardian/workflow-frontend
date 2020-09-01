@@ -68,7 +68,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
                     var contentListHeading = '<tr class="content-list__group-heading-row content-list--sticky-row" ng-show="currentlySelectedStatusFilters.indexOf(group.title) != -1"><th class="content-list__group-heading" scope="rowgroup" colspan="{{ 9 + columns.length }}"><span class="content-list__group-heading-link">{{ group.title }} <span class="content-list__group-heading-count">{{ group.count || "0" }}</span></span></th></tr>';
 
-                    var contentListItemDirective = '<tr wf-content-list-item class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-repeat="contentItem in group.items track by contentItem.id" ';
+                    var contentListItemDirective = '<tr data-cy="content-list-item-{{contentItem.workingTitle}}" wf-content-list-item class="content-list-item content-list-item--{{contentItem.lifecycleStateKey}}" ng-repeat="contentItem in group.items track by contentItem.id" ';
 
                     var contentListItemClasses = 'ng-class="{\'content-list-item--selected\' : contentList.selectedItem === contentItem, \'content-list-item--trashed\': contentItem.item.trashed}"';
 
