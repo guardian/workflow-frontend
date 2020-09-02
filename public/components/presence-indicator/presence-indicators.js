@@ -20,12 +20,22 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
                     $scope.presences = _.map(
                         _.uniqBy(currentState, (s) => { return s.clientId.person.email; }),
                         (pr) => {
-                            var person = pr.clientId.person;
-                            return { indicatorText:
-                                (person.firstName.charAt(0) + person.lastName.charAt(0)).toUpperCase(),
+                            const person = pr.clientId.person;
+
+                            const presenceObject = {
+                                indicatorText:
+                                    (person.firstName.charAt(0) + person.lastName.charAt(0)).toUpperCase(),
                                 longText: [person.firstName, person.lastName].join(" "),
-                                email: person.email,
-                                status: "present" };
+                                email: person.email
+                            };
+
+                            if(currentState[0].location === "body") {
+                                // the user is actively editing the body
+                                return {...presenceObject, ...{status: "present"}};
+                            } else {
+                                // the user is not editing the body, has clicked 'Save and close'
+                                return {...presenceObject, ...{status: "idle"}};
+                            }
                         });
                 }
             }
