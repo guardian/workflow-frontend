@@ -29,8 +29,11 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
                                 email: person.email
                             };
 
-                            if(currentState[0].location === "body") {
-                                // the user is actively editing the body
+                            const currentLocation = currentState[0].location;
+
+                            const activeEditingLocations = ["body", "document"];
+
+                            if(activeEditingLocations.includes(currentLocation)) {
                                 return {...presenceObject, ...{status: "present"}};
                             } else {
                                 // the user is not editing the body, has clicked 'Save and close'
