@@ -41,8 +41,8 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
                             } else {
                                 // the user is not editing the body, has clicked 'Save and close'
                                 return {...presenceObject, ...{status: "idle",
-                                        longTitle: [presenceObject.longText, "editing furniture"].join(" - "),
-                                        shortTitle: [presenceObject.email, "editing furniture"].join(" - ")
+                                        longTitle: presenceObject.longText,
+                                        shortTitle: presenceObject.email
                                     }};
                             }
                         });

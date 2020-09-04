@@ -99,7 +99,7 @@ $iconAnimationEasingFunction: ease-in-out;
         }
     }
 
-    &:hover .content-list-item__presence--present {
+    &:hover .content-list-item__presence--present, .content-list-item__presence--idle {
         @for $i from 1 to $iconsToStack + 50 {
             // ensure all icons shown when expanded
             &:nth-of-type(#{$i+1}) {
@@ -122,7 +122,7 @@ $iconAnimationEasingFunction: ease-in-out;
     padding: 0;
     position: relative;
 
-    .content-list-item__presence--present {
+    .content-list-item__presence--present, .content-list-item__presence--idle {
         position: static;
         display: inline-block;
         .content-list-item__icon--presence {
