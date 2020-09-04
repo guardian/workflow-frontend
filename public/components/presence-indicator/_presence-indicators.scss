@@ -78,7 +78,7 @@ $iconAnimationEasingFunction: ease-in-out;
 
         @include transition(right $iconAnimationTransTime $iconAnimationEasingFunction);
 
-        .content-list-item__icon--presence, .content-list-item__icon--idle {
+        .content-list-item__icon--presence {
             @include transition(color $iconAnimationTransTime, background-color $iconAnimationTransTime $iconAnimationEasingFunction);
         }
 

@@ -29,7 +29,7 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
                                 email: person.email
                             };
 
-                            const currentLocation = currentState[0].location;
+                            const currentLocation = currentState.find(p => p.clientId === pr.clientId).location;
 
                             const activeEditingLocations = ["body", "document"];
 
