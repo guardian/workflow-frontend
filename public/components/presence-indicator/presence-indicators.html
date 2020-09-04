@@ -6,6 +6,6 @@
         ng-if="presence.status === 'present' || presence.status === 'idle'"
         ng-class="'content-list-item__presence--' + presence.status">
         <a class="content-list-item__icon--presence"
-           href="mailto:{{ presence.email }}" title="{{ inDrawer ? presence.email : presence.longText }}">{{ inDrawer ? presence.longText : presence.indicatorText }}</a>
+           href="mailto:{{ presence.email }}" title="{{ inDrawer ? presence.shorTtitle : presence.longTitle }}">{{ inDrawer ? presence.longText : presence.indicatorText }}</a>
     </li>
 </ul>

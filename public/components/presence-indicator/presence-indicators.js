@@ -34,10 +34,16 @@ function wfPresenceIndicatorsDirective ($rootScope, wfPresenceService,
                             const activeEditingLocations = ["body", "document"];
 
                             if(activeEditingLocations.includes(currentLocation)) {
-                                return {...presenceObject, ...{status: "present"}};
+                                return {...presenceObject, ...{ status: "present",
+                                        longTitle: [presenceObject.longText, "editing body"].join(" - "),
+                                        shortTitle: [presenceObject.email, "editing body"].join(" - "),
+                                    }};
                             } else {
                                 // the user is not editing the body, has clicked 'Save and close'
-                                return {...presenceObject, ...{status: "idle"}};
+                                return {...presenceObject, ...{status: "idle",
+                                        longTitle: [presenceObject.longText, "editing furniture"].join(" - "),
+                                        shortTitle: [presenceObject.email, "editing furniture"].join(" - ")
+                                    }};
                             }
                         });
                 }
