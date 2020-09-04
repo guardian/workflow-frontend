@@ -32,12 +32,12 @@ $iconAnimationEasingFunction: ease-in-out;
 
 
     &--present,
-    &--unknown {
+    &--unknown,
+    &--idle {
         @extend .content-list-item__presence;
     }
 
     &--idle {
-        @extend .content-list-item__presence;
         opacity: 50%;
     }
 
@@ -59,7 +59,8 @@ $iconAnimationEasingFunction: ease-in-out;
     right: $rightIconOffsetCompact;
 }
 
-.content-list--compact .content-list-item__presence-list:hover .content-list-item__presence--present, .content-list-item__presence--idle {
+.content-list--compact .content-list-item__presence-list:hover .content-list-item__presence--present,
+.content-list--compact .content-list-item__presence-list:hover .content-list-item__presence--idle {
     @for $i from 1 to $iconsToStack + 50 {
         &:nth-of-type(#{$i+1}) {
             right: ($i * $iconExpandIntervalDistanceCompact) + $rightIconOffsetCompact;
@@ -99,7 +100,7 @@ $iconAnimationEasingFunction: ease-in-out;
         }
     }
 
-    &:hover .content-list-item__presence--present, .content-list-item__presence--idle {
+    &:hover .content-list-item__presence--present, &:hover .content-list-item__presence--idle {
         @for $i from 1 to $iconsToStack + 50 {
             // ensure all icons shown when expanded
             &:nth-of-type(#{$i+1}) {
