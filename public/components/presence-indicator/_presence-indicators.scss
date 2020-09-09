@@ -37,10 +37,6 @@ $iconAnimationEasingFunction: ease-in-out;
         @extend .content-list-item__presence;
     }
 
-    &--idle {
-        opacity: 50%;
-    }
-
     &--unknown {
         background-color: lightgrey;
         color: white;
@@ -88,6 +84,26 @@ $iconAnimationEasingFunction: ease-in-out;
                 z-index: $i*-1;
             }
         }
+    }
+
+    .content-list-item__presence--idle  {
+        .content-list-item__icon--presence {
+            background-color: $c-presence-light-purple;
+        }
+        @for $i from 1 to 3 {
+            &:nth-of-type(#{$i+1}) {
+                right: ($i * -$stackOffset) + $rightIconOffset;
+                .content-list-item__icon--presence {
+                    background-color: lighten($c-presence-light-purple, $i*$stackColorLightenIncrement);
+                    color: rgba(255, 255, 255, 0);
+                }
+            }
+        }
+    }
+    .content-list-item__presence--present  {
+        .content-list-item__icon--presence {
+            background-color: $c-presence-purple;
+        }
 
         @for $i from 1 to 3 {
             &:nth-of-type(#{$i+1}) {
@@ -100,13 +116,27 @@ $iconAnimationEasingFunction: ease-in-out;
         }
     }
 
-    &:hover .content-list-item__presence--present, &:hover .content-list-item__presence--idle {
+    &:hover .content-list-item__presence--present {
         @for $i from 1 to $iconsToStack + 50 {
             // ensure all icons shown when expanded
             &:nth-of-type(#{$i+1}) {
                 right: ($i * $iconExpandIntervalDistance) + $rightIconOffset;
                 .content-list-item__icon--presence {
                     background-color: $c-presence-purple;
+                    color: rgba(255, 255, 255, 1);
+                    @include box-shadow(0px 0px 4px 1px #ffffff);
+                }
+            }
+        }
+    }
+
+    &:hover .content-list-item__presence--idle {
+        @for $i from 1 to $iconsToStack + 50 {
+            // ensure all icons shown when expanded
+            &:nth-of-type(#{$i+1}) {
+                right: ($i * $iconExpandIntervalDistance) + $rightIconOffset;
+                .content-list-item__icon--presence {
+                    background-color: $c-presence-light-purple;
                     color: rgba(255, 255, 255, 1);
                     @include box-shadow(0px 0px 4px 1px #ffffff);
                 }
@@ -127,6 +157,7 @@ $iconAnimationEasingFunction: ease-in-out;
         position: static;
         display: inline-block;
         .content-list-item__icon--presence {
+            background-color: $c-presence-purple;
             width: auto;
             height: auto;
             text-transform: none;
@@ -144,4 +175,16 @@ $iconAnimationEasingFunction: ease-in-out;
             }
         }
     }
+    .content-list-item__presence--idle {
+        .content-list-item__icon--presence {
+            background-color: $c-presence-light-purple;
+
+            &:hover {
+                background-color: #ffffff;
+                border: 1px solid $c-presence-light-purple;
+                color: $c-presence-light-purple;
+            }
+        }
+    }
+
 }
