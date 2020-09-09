@@ -27,14 +27,14 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
         if (str.length <= 3) { return str; }
         var initials = str.match(/\b(\w)/g).join('');
 
-        // If we have more than 3 initials choose the first 2 and the last
-        if (initials.length > 3) { initials = initials.slice(0,2) + initials.slice(-1); }
+        // If we have more than 2 initials choose the first 2
+        if (initials.length > 2) { initials = initials.slice(0, 2); }
 
         return initials;
     }
 
     function stripHtml(text) {
-        return typeof(text) === 'string' ? text.replace(/<[^>]+>/gm, '') : '';
+        return typeof (text) === 'string' ? text.replace(/<[^>]+>/gm, '') : '';
     }
 
     function getCommissioningDeskNames(commissioningDeskIdString) {
@@ -56,15 +56,15 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
                 this.composer = `${config.composerViewContent}/${item.composerId}`;
             }
             if (item.editorId) {
-              if (item.contentType === "media") {
-                  this.mediaAtomMaker = `${config.mediaAtomMakerViewAtom}${item.editorId}`;
-                  this.editor = this.mediaAtomMaker;
-              } else {
-                if (config.atomTypes.includes(item.contentType)) {
-                  this.atomWorkshop = `${config.atomWorkshopViewAtom}/${item.contentType}/${item.editorId}/edit`;
-                  this.editor = this.atomWorkshop;
+                if (item.contentType === "media") {
+                    this.mediaAtomMaker = `${config.mediaAtomMakerViewAtom}${item.editorId}`;
+                    this.editor = this.mediaAtomMaker;
+                } else {
+                    if (config.atomTypes.includes(item.contentType)) {
+                        this.atomWorkshop = `${config.atomWorkshopViewAtom}/${item.contentType}/${item.editorId}/edit`;
+                        this.editor = this.atomWorkshop;
+                    }
                 }
-              }
             }
             if (item.path) {
                 this.preview = getViewerURL(item.path);
@@ -132,17 +132,17 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.firstPublished = item.timePublished;
 
             this.hasEmbargoedDate =
-                    item.embargoedUntil &&
-                    new Date(item.embargoedUntil).getTime() > (new Date()).getTime();
+                item.embargoedUntil &&
+                new Date(item.embargoedUntil).getTime() > (new Date()).getTime();
 
             this.isTakenDown = item.takenDown;
             this.isPublished = item.published;
             this.isEmbargoed = this.hasEmbargoedDate || item.embargoedIndefinitely;
             this.isScheduled = Boolean(item.scheduledLaunchDate);
 
-            var lifecycleState      = this.lifecycleState(item);
-            this.lifecycleState     = lifecycleState.display;
-            this.lifecycleStateKey  = lifecycleState.key;
+            var lifecycleState = this.lifecycleState(item);
+            this.lifecycleState = lifecycleState.display;
+            this.lifecycleStateKey = lifecycleState.key;
             this.lifecycleStateSupl = lifecycleState.supl;
             this.lifecycleStateSuplDate = lifecycleState.suplDate;
 
@@ -153,7 +153,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.storyBundleId = item.storyBundleId;
             /* it may be linked with InCopy but owned by composer */
             this.linkedWithIncopy = (typeof item.storyBundleId === "string" &&
-                                     item.storyBundleId.length > 0);
+                item.storyBundleId.length > 0);
             this.incopyTitle = this.linkedWithIncopy ?
                 'Linked with InCopy Story Bundle ' + this.storyBundleId :
                 'Not linked with InCopy';
@@ -186,60 +186,60 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
 
             // These are derived values used for display purposes.
             const {
-              shortPrintLocationDescription,
-              newspaperPageNumber,
-              newspaperPublicationDate,
-              longPrintLocationDescription,
-              printLocationType
+                shortPrintLocationDescription,
+                newspaperPageNumber,
+                newspaperPublicationDate,
+                longPrintLocationDescription,
+                printLocationType
             } = this.getPrintValues(item);
 
             if (shortPrintLocationDescription) {
-              const newspaperPageNumberStr = newspaperPageNumber
-                ? `p. ${newspaperPageNumber}`
-                : '';
-              this.printLocationDisplayString = `${shortPrintLocationDescription}<br />${newspaperPageNumberStr} ${wfFormatDateTime(newspaperPublicationDate, 'DD MMMM')}`;
-              // We use 8601 dates to make the date sortable.
-              this.printLocationBookSection = shortPrintLocationDescription;
-              this.printLocationPublicationDate =wfFormatDateTime(newspaperPublicationDate, 'ISO8601');
-              this.printLocationPageNumber = newspaperPageNumber !== undefined ? newspaperPageNumber : Number.MAX_VALUE;
-              this.longPrintLocationDescription = longPrintLocationDescription;
-              this.printLocationType = printLocationType;
+                const newspaperPageNumberStr = newspaperPageNumber
+                    ? `p. ${newspaperPageNumber}`
+                    : '';
+                this.printLocationDisplayString = `${shortPrintLocationDescription}<br />${newspaperPageNumberStr} ${wfFormatDateTime(newspaperPublicationDate, 'DD MMMM')}`;
+                // We use 8601 dates to make the date sortable.
+                this.printLocationBookSection = shortPrintLocationDescription;
+                this.printLocationPublicationDate = wfFormatDateTime(newspaperPublicationDate, 'ISO8601');
+                this.printLocationPageNumber = newspaperPageNumber !== undefined ? newspaperPageNumber : Number.MAX_VALUE;
+                this.longPrintLocationDescription = longPrintLocationDescription;
+                this.printLocationType = printLocationType;
             }
 
             this.item = item;
         }
 
         getPrintValues(item) {
-          const printLocationType = this.getPrintLocationType(item);
-          if (printLocationType === 'actual') {
-            return {
-              longPrintLocationDescription: item.longActualPrintLocationDescription,
-              shortPrintLocationDescription: item.shortActualPrintLocationDescription,
-              newspaperPageNumber: item.actualNewspaperPageNumber,
-              newspaperPublicationDate: new Date(item.actualNewspaperPublicationDate),
-              printLocationType
+            const printLocationType = this.getPrintLocationType(item);
+            if (printLocationType === 'actual') {
+                return {
+                    longPrintLocationDescription: item.longActualPrintLocationDescription,
+                    shortPrintLocationDescription: item.shortActualPrintLocationDescription,
+                    newspaperPageNumber: item.actualNewspaperPageNumber,
+                    newspaperPublicationDate: new Date(item.actualNewspaperPublicationDate),
+                    printLocationType
+                }
             }
-          }
-          if (printLocationType === 'planned') {
-            return {
-                longPrintLocationDescription: item.longPlannedPrintLocationDescription,
-                shortPrintLocationDescription: item.shortPlannedPrintLocationDescription,
-                newspaperPageNumber: item.plannedNewspaperPageNumber,
-                newspaperPublicationDate: new Date(item.plannedNewspaperPublicationDate),
-                printLocationType
+            if (printLocationType === 'planned') {
+                return {
+                    longPrintLocationDescription: item.longPlannedPrintLocationDescription,
+                    shortPrintLocationDescription: item.shortPlannedPrintLocationDescription,
+                    newspaperPageNumber: item.plannedNewspaperPageNumber,
+                    newspaperPublicationDate: new Date(item.plannedNewspaperPublicationDate),
+                    printLocationType
+                }
             }
-          }
-          return {}; // For easy destructuring in the caller;
+            return {}; // For easy destructuring in the caller;
         }
 
         getPrintLocationType(item) {
-          if (item.shortActualPrintLocationDescription) {
-            return 'actual';
-          }
-          if (item.shortPlannedPrintLocationDescription) {
-            return 'planned';
-          }
-          return undefined;
+            if (item.shortActualPrintLocationDescription) {
+                return 'actual';
+            }
+            if (item.shortPlannedPrintLocationDescription) {
+                return 'planned';
+            }
+            return undefined;
         }
 
         lifecycleState(item) {
@@ -263,7 +263,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
         }
     }
 
-    this.parse = function(item) {
+    this.parse = function (item) {
         return new ContentItemView(item);
     };
 }
@@ -321,7 +321,7 @@ function wfContentItemUpdateActionDirective() {
             var oldModelValue;
 
             var $setter = ngModel.$setViewValue;
-            ngModel.$setViewValue = function() {
+            ngModel.$setViewValue = function () {
                 oldModelValue = ngModel.$modelValue;
                 $setter.apply(this, arguments);
             };
@@ -346,19 +346,19 @@ function wfContentItemUpdateActionDirective() {
     };
 }
 
-function wfGetPriorityStringFilter (priorities) {
+function wfGetPriorityStringFilter(priorities) {
     return function (priorityValue) {
         return (priorities.filter((priority) => priority.value === priorityValue)[0].name).toLowerCase();
     };
 }
 
-function wfCommissionedLengthCtrl ($scope) {
+function wfCommissionedLengthCtrl($scope) {
     $scope.$watch('contentItem.wordCount', function (newVal) {
         let commLen = $scope.contentItem.commissionedLength;
         let difference = $scope.contentItem.wordCount / commLen;
-        if(!newVal || !commLen || difference < 0.75) {
+        if (!newVal || !commLen || difference < 0.75) {
             $scope.lengthStatus = "low";
-        } else if(difference <= 1) {
+        } else if (difference <= 1) {
             $scope.lengthStatus = "near";
         } else {
             $scope.lengthStatus = "over";
