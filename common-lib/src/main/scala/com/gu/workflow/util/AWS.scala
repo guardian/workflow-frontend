@@ -1,7 +1,7 @@
 package com.gu.workflow.util
 
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.auth.{AWSCredentialsProviderChain, InstanceProfileCredentialsProvider}
+import com.amazonaws.auth.{AWSCredentialsProviderChain, DefaultAWSCredentialsProviderChain, InstanceProfileCredentialsProvider}
 import com.amazonaws.regions.{Region, Regions}
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import com.amazonaws.services.dynamodbv2.{AmazonDynamoDB, AmazonDynamoDBClientBuilder}
@@ -15,7 +15,7 @@ import scala.collection.JavaConverters._
 object AWS {
   lazy val credentialsProvider = new AWSCredentialsProviderChain(
     new ProfileCredentialsProvider("workflow"),
-    InstanceProfileCredentialsProvider.getInstance()
+    new DefaultAWSCredentialsProviderChain()
   )
 
   lazy val region: Region = Region getRegion Regions.EU_WEST_1
