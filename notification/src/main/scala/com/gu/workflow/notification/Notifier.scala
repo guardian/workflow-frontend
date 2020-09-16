@@ -70,6 +70,11 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
 
       (before, after) match {
         case (Some(statusBefore), Some(statusAfter)) if statusAfter != statusBefore =>
+          // The row has changed status
+          stubs.find(_._2.id.contains(id))
+
+        case (None, Some(_)) =>
+          // A new row has appeared
           stubs.find(_._2.id.contains(id))
 
         case _ =>
