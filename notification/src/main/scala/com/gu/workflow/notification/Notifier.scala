@@ -15,9 +15,7 @@ import scala.util.control.NonFatal
 class Notifier(stage: Stage, override val secret: String, subsApi: SubscriptionsAPI) extends SharedSecretAuth with Logging {
 
   private val appUrl = stage match {
-    // TODO MRB: put this back to https://workflow.local.dev-gutools.co.uk
-    //           by convincing the JVM that our local dev cert is totes legit
-    case Dev => "http://localhost:9090"
+    case Dev => "https://workflow.local.dev-gutools.co.uk"
     case stage => s"https://workflow.${stage.appDomain}"
   }
 
