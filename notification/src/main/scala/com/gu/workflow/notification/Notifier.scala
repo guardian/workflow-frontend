@@ -15,9 +15,7 @@ import scala.util.control.NonFatal
 class Notifier(stage: Stage, override val secret: String, subsApi: SubscriptionsAPI) extends SharedSecretAuth with Logging {
 
   private val appUrl = stage match {
-    // TODO MRB: put this back to https://workflow.local.dev-gutools.co.uk
-    //           by convincing the JVM that our local dev cert is totes legit
-    case Dev => "http://localhost:9090"
+    case Dev => "https://workflow.local.dev-gutools.co.uk"
     case stage => s"https://workflow.${stage.appDomain}"
   }
 
@@ -72,6 +70,11 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
 
       (before, after) match {
         case (Some(statusBefore), Some(statusAfter)) if statusAfter != statusBefore =>
+          // The row has changed status
+          stubs.find(_._2.id.contains(id))
+
+        case (None, Some(_)) =>
+          // A new row has appeared
           stubs.find(_._2.id.contains(id))
 
         case _ =>
