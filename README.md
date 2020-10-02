@@ -70,7 +70,7 @@ a single SBT session. Unfortunately you must run a new instance of SBT each time
 
 ### Deploy
 
-This project is setup for continuous deployment on `master`, if you suspect your
+This project is setup for continuous deployment on `main`, if you suspect your
 change has not deployed then look for the 
 `Editorial Tools::Workflow::Workflow Frontend` project in RiffRaff.
 
