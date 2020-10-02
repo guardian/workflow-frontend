@@ -49,7 +49,7 @@ You will need [ssm-scala](https://github.com/guardian/ssm-scala) installed for t
   * Set up workflow (aka workflow backend).
   * Check it is working:
   
-    curl -is http://localhost:9095/management/healthcheck
+    `curl -is http://localhost:9095/management/healthcheck`
 
 Open `/etc/gu/workflow-frontend.private.conf` and amend `api.url` as follows:
 
