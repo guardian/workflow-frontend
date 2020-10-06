@@ -7018,10 +7018,10 @@ range-parser@^1.2.0, range-parser@^1.2.1:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
 
-raven-js@1.1.22:
-  version "1.1.22"
-  resolved "https://registry.yarnpkg.com/raven-js/-/raven-js-1.1.22.tgz#1a9d13621c5ec4d02981e1e4654359dad4104c8a"
-  integrity sha1-Gp0TYhxexNApgeHkZUNZ2tQQTIo=
+raven-js@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/raven-js/-/raven-js-1.3.0.tgz#df788b6ea931d9e79725be4b0d899e6f711d8d69"
+  integrity sha1-33iLbqkx2eeXJb5LDYmeb3EdjWk=
 
 raw-body@2.4.0:
   version "2.4.0"
