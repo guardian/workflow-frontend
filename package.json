@@ -59,7 +59,7 @@
     "lodash": "4.17.19",
     "mocha": "^3.3.0",
     "moment": "^2.11.2",
-    "moment-timezone": "0.5.14",
+    "moment-timezone": "0.5.31",
     "ng-infinite-scroll": "1.2.0",
     "raven-js": "1.1.22",
     "sinon": "^2.1.0",
