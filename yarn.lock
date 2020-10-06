@@ -1187,15 +1187,22 @@ angular-mocks@1.5.11:
   resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.5.11.tgz#a0e1dd0ea55fd77ee7a757d75536c5e964c86f81"
   integrity sha1-oOHdDqVf137np1fXVTbF6WTIb4E=
 
-angular-ui-router@0.2.11:
-  version "0.2.11"
-  resolved "https://registry.yarnpkg.com/angular-ui-router/-/angular-ui-router-0.2.11.tgz#69d5c0f413d732b9f57aa8351346be2d6805ac63"
-  integrity sha1-adXA9BPXMrn1eqg1E0a+LWgFrGM=
+angular-ui-router@0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/angular-ui-router/-/angular-ui-router-0.4.3.tgz#6c29546fe50b8d2f74614dcb8660d6fc40d6e167"
+  integrity sha512-EGBG7G7ArFVkJPM+ZIgPKuMYuT16UQrr3zj3BEiXHKwxss867bGt3u7QD9g4BxR+K2qQOSWok6JGvgTWXAko3A==
+  dependencies:
+    angular "^1.0.8"
 
 angular@1.5.11:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.11.tgz#8c5ba7386f15965c9acf3429f6881553aada30d6"
   integrity sha1-jFunOG8VllyazzQp9ogVU6raMNY=
+
+angular@^1.0.8:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.1.tgz#5a9cd4a99a0a1c4aeeb913d9f4699e2458daf5c1"
+  integrity sha512-eiasF4uFXsmKD8qYpkKEi9rKVxMv0nIDZXsYrwzSbPIbjmTV05bx+18VDbRmMx7p+gL84T9Qw2NCpVe8w1QKHQ==
 
 angular@^1.6.3:
   version "1.8.0"
