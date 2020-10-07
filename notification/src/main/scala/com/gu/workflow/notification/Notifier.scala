@@ -34,8 +34,12 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
 
     val stubs = getStubs(sub.query)
 
-    val oldSeenIds: Option[Map[Long, Status]] = sub.runtime.map(_.seenIds)
-    val newSeenIds: Map[Long, Status] = stubs.flatMap { case(status, stub) => stub.id.map(_ -> status) }.toMap
+    val oldSeenIds: Option[Set[Long]] = sub.runtime.map(_.seenIds.keySet)
+
+    // Keep the Status in the notification map in case we want to switch back to sending a notification every time
+    // a stub changes Status within the subscribed view (at the moment it's just when a new stub appears)
+    val newSeenIdsWithStatus: Map[Long, Status] = stubs.flatMap { case(status, stub) => stub.id.map(_ -> status) }.toMap
+    val newSeenIds: Set[Long] = newSeenIdsWithStatus.keySet
 
     try {
       oldSeenIds match {
@@ -59,29 +63,13 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
           logger.info(s"No existing results for ${sub.query}. Now seen $newSeenIds. Not sending any notifications")
       }
     } finally {
-      subsApi.put(sub.copy(runtime = Some(SubscriptionRuntime(newSeenIds))))
+      subsApi.put(sub.copy(runtime = Some(SubscriptionRuntime(newSeenIdsWithStatus))))
     }
   }
 
-  private def calculateToNotify(allBefore: Map[Long, Status], allAfter: Map[Long, Status], stubs: List[(Status, Stub)]): List[(Status, Stub)] = {
-    val ids = (allBefore.keySet ++ allAfter.keySet).toList
-
-    ids.flatMap { id =>
-      val before = allBefore.get(id)
-      val after = allAfter.get(id)
-
-      (before, after) match {
-        case (Some(statusBefore), Some(statusAfter)) if statusAfter != statusBefore =>
-          // The row has changed status
-          stubs.find(_._2.id.contains(id))
-
-        case (None, Some(_)) =>
-          // A new row has appeared
-          stubs.find(_._2.id.contains(id))
-
-        case _ =>
-          None
-      }
+  private def calculateToNotify(idsBefore: Set[Long], idsAfter: Set[Long], stubs: List[(Status, Stub)]): List[(Status, Stub)] = {
+    idsAfter.diff(idsBefore).toList.flatMap { id =>
+      stubs.find(_._2.id.contains(id))
     }
   }
 
