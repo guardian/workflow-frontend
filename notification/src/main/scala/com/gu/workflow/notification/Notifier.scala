@@ -41,7 +41,9 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
       oldSeenIds match {
         case Some(existingSeenIds) =>
           val toNotify = calculateToNotify(existingSeenIds, newSeenIds, stubs)
-          logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds")
+
+          logger.info(s"Old: $existingSeenIds")
+          logger.info(s"New: $newSeenIds")
 
           if (toNotify.isEmpty) {
             logger.info("Not sending any notifications")
@@ -50,7 +52,7 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
           } else {
             logger.info(s"Sending notifications for ${toNotify.map(_._2.id)}")
 
-            notify(toNotify, sub, newSeenIds)
+            notify(toNotify, sub)
           }
 
         case None =>
@@ -113,13 +115,15 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
     }
   }
 
-  private def notify(stubs: List[(Status, Stub)], sub: Subscription, seenIds: Map[Long, Status]): Unit = {
+  private def notify(stubs: List[(Status, Stub)], sub: Subscription): Unit = {
     try {
       stubs.foreach { case (status, stub) =>
         // TODO MRB: atom edit URLs?
         val url = stub.composerId.map { id => s"$composerUrl/content/$id"}
         val body = stub.note.getOrElse("")
-        val update = SubscriptionUpdate(s"${stub.title} now in $status", body, url)
+
+        val message = sub.description.map(_ + s": ${stub.title}").getOrElse(s"${stub.title} now in $status")
+        val update = SubscriptionUpdate(message, body, url)
 
         subsApi.sendNotification(update, sub.endpoint)
       }
