@@ -34,7 +34,7 @@ case class SubscriptionRuntime(seenIds: Map[Long, Status])
 case class SubscriptionSchedule(enabled: Boolean)
 
 // The actual contents of a notification fired and sent to the service worker to actually display on the users machine
-case class SubscriptionUpdate(title: String, body: String, url: Option[String])
+case class SubscriptionUpdate(title: String, body: String, url: String)
 
 object Subscription {
   implicit val customConfig: Configuration = Configuration.default.withDefaults

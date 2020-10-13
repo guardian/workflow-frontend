@@ -1,6 +1,6 @@
 package com.gu.workflow.notification
 
-import java.net.HttpCookie
+import java.net.{HttpCookie, URLEncoder}
 
 import com.gu.workflow.api.SubscriptionsAPI
 import com.gu.workflow.lib.QueryString
@@ -17,11 +17,6 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
   private val appUrl = stage match {
     case Dev => "https://workflow.local.dev-gutools.co.uk"
     case stage => s"https://workflow.${stage.appDomain}"
-  }
-
-  private val composerUrl = stage match {
-    case Prod => "https://composer.gutools.co.uk"
-    case _ => "https://composer.code.dev-gutools.co.uk"
   }
 
   def run(): Unit = {
@@ -107,7 +102,7 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
     try {
       stubs.foreach { case (status, stub) =>
         // TODO MRB: atom edit URLs?
-        val url = stub.composerId.map { id => s"$composerUrl/content/$id"}
+        val url = buildDashboardUrl(sub.query)
 
         val title = sub.description.getOrElse(status.toString)
         val body = stub.title
@@ -121,5 +116,15 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
         logger.error(s"Error sending notification to ${sub.endpoint}. Removing subscription", e)
         subsApi.delete(Subscription.id(sub))
     }
+  }
+
+  private def buildDashboardUrl(query: Subscription.Query): String = {
+    val params = (query - "email").flatMap { case(key, values) =>
+      values.map { value =>
+        s"${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
+      }
+    }.mkString("&")
+
+    s"$appUrl/dashboard?$params"
   }
 }
