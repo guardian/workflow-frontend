@@ -5,7 +5,7 @@ import com.gu.pandomainauth.model.User
 import com.gu.workflow.api.{ApiUtils, SubscriptionsAPI}
 import config.Config
 import models.api.ApiResponseFt
-import models.{CreateSubscriptionRequest, Subscription, SubscriptionEndpoint, SubscriptionSchedule}
+import models.{Subscription, SubscriptionEndpoint, SubscriptionSchedule}
 import play.api.libs.ws.WSClient
 import play.api.mvc.{BaseController, ControllerComponents}
 
@@ -49,9 +49,10 @@ class Notifications(
 
     ApiResponseFt[String](for {
       json <- readJsonFromRequestResponse(request.body)
-      requestBody <- extractResponse[CreateSubscriptionRequest](json)(Subscription.createSubscriptionRequestDecoder)
+      browserDetails <- extractResponse[SubscriptionEndpoint](json)(Subscription.endpointDecoder)
 
-      sub = Subscription(request.user.email, userAgent, qs, Some(requestBody.description), requestBody.browserDetails,
+      description = Subscription.humanReadable(qs)
+      sub = Subscription(request.user.email, userAgent, qs, Some(description), browserDetails,
         schedule = SubscriptionSchedule(enabled = true), runtime = None)
 
       _ <- ApiResponseFt.Right(subsApi.put(sub))

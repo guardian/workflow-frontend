@@ -19,19 +19,13 @@ export function registerServiceWorker() {
 
 export function registerSubscription() {
     // TODO MRB: handle service worker not being registered yet (disable button?)
-    const description = window.prompt("Enter a description. This will appear in the body of the notification");
-
-    if(description !== null) {
-        return navigator.serviceWorker.getRegistration(serviceWorkerURL).then(({ pushManager }) => {
-            return getBrowserSubscription(pushManager).then((sub) => {
-                return saveSubscription(sub, window.location.search, description).then(() => true);
-            });
-        }).catch(err => {
-            console.error("Unable to register subscription", err);
+    return navigator.serviceWorker.getRegistration(serviceWorkerURL).then(({ pushManager }) => {
+        return getBrowserSubscription(pushManager).then((sub) => {
+            return saveSubscription(sub, window.location.search).then(() => true);
         });
-    }
-
-    return Promise.resolve(false);
+    }).catch(err => {
+        console.error("Unable to register subscription", err);
+    });
 }
 
 function getBrowserSubscription(pushManager) {
@@ -51,13 +45,10 @@ function getBrowserSubscription(pushManager) {
     });
 }
 
-function saveSubscription(sub, query, description) {
+function saveSubscription(sub, query) {
     return fetch("/api/notifications" + query, {
         method: "POST",
-        body: JSON.stringify({
-            browserDetails: sub,
-            description
-        }),
+        body: JSON.stringify(sub),
         headers: { "Content-Type": "application/json" },
         credentials: "include"
     }).then(( { status }) => {
