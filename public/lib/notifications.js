@@ -21,7 +21,7 @@ export function registerSubscription() {
     // TODO MRB: handle service worker not being registered yet (disable button?)
     return navigator.serviceWorker.getRegistration(serviceWorkerURL).then(({ pushManager }) => {
         return getBrowserSubscription(pushManager).then((sub) => {
-            return saveSubscription(sub, window.location.search);
+            return saveSubscription(sub, window.location.search).then(() => true);
         });
     }).catch(err => {
         console.error("Unable to register subscription", err);

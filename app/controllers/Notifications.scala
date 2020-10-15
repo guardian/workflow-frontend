@@ -17,7 +17,6 @@ class Notifications(
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
 ) extends BaseController with PanDomainAuthActions with ApiUtils {
-  import Subscription.endpointDecoder
 
   private val subsApi = new SubscriptionsAPI(config.stage, config.webPushPublicKey, config.webPushPrivateKey)
 
@@ -50,9 +49,10 @@ class Notifications(
 
     ApiResponseFt[String](for {
       json <- readJsonFromRequestResponse(request.body)
+      browserDetails <- extractResponse[SubscriptionEndpoint](json)(Subscription.endpointDecoder)
 
-      endpoint <- extractResponse[SubscriptionEndpoint](json)
-      sub = Subscription(request.user.email, userAgent, qs, endpoint,
+      description = Subscription.humanReadable(qs)
+      sub = Subscription(request.user.email, userAgent, qs, Some(description), browserDetails,
         schedule = SubscriptionSchedule(enabled = true), runtime = None)
 
       _ <- ApiResponseFt.Right(subsApi.put(sub))

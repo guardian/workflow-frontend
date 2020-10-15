@@ -20,14 +20,21 @@ case class SubscriptionEndpoint(endpoint: String, keys: SubscriptionKeys)
 //   None            -> we have not seen any content under the given query yet so don't fire notifications
 //   Some(Map.empty) -> we last saw no content matching the query
 //   Some(content)   -> the content we saw last and the status it was in (ie do a diff and fire notifications)
-case class Subscription(email: String, userAgent: String, query: Subscription.Query, endpoint: SubscriptionEndpoint,
-                        schedule: SubscriptionSchedule, runtime: Option[SubscriptionRuntime])
+case class Subscription(
+  email: String,
+  userAgent: String,
+  query: Subscription.Query,
+  description: Option[String],
+  endpoint: SubscriptionEndpoint,
+  schedule: SubscriptionSchedule,
+  runtime: Option[SubscriptionRuntime]
+)
 
 case class SubscriptionRuntime(seenIds: Map[Long, Status])
 case class SubscriptionSchedule(enabled: Boolean)
 
 // The actual contents of a notification fired and sent to the service worker to actually display on the users machine
-case class SubscriptionUpdate(title: String, body: String, url: Option[String])
+case class SubscriptionUpdate(title: String, body: String, url: String)
 
 object Subscription {
   implicit val customConfig: Configuration = Configuration.default.withDefaults

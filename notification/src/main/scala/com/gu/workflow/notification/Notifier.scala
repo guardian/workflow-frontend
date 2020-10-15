@@ -1,6 +1,6 @@
 package com.gu.workflow.notification
 
-import java.net.HttpCookie
+import java.net.{HttpCookie, URLEncoder}
 
 import com.gu.workflow.api.SubscriptionsAPI
 import com.gu.workflow.lib.QueryString
@@ -19,11 +19,6 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
     case stage => s"https://workflow.${stage.appDomain}"
   }
 
-  private val composerUrl = stage match {
-    case Prod => "https://composer.gutools.co.uk"
-    case _ => "https://composer.code.dev-gutools.co.uk"
-  }
-
   def run(): Unit = {
     logger.info("I am the Workflow notifier!")
     subsApi.getAll().foreach(processSubscription)
@@ -34,14 +29,20 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
 
     val stubs = getStubs(sub.query)
 
-    val oldSeenIds: Option[Map[Long, Status]] = sub.runtime.map(_.seenIds)
-    val newSeenIds: Map[Long, Status] = stubs.flatMap { case(status, stub) => stub.id.map(_ -> status) }.toMap
+    val oldSeenIds: Option[Set[Long]] = sub.runtime.map(_.seenIds.keySet)
+
+    // Keep the Status in the notification map in case we want to switch back to sending a notification every time
+    // a stub changes Status within the subscribed view (at the moment it's just when a new stub appears)
+    val newSeenIdsWithStatus: Map[Long, Status] = stubs.flatMap { case(status, stub) => stub.id.map(_ -> status) }.toMap
+    val newSeenIds: Set[Long] = newSeenIdsWithStatus.keySet
 
     try {
       oldSeenIds match {
         case Some(existingSeenIds) =>
           val toNotify = calculateToNotify(existingSeenIds, newSeenIds, stubs)
-          logger.info(s"Previously seen $existingSeenIds. Now seen $newSeenIds")
+
+          logger.info(s"Old: $existingSeenIds")
+          logger.info(s"New: $newSeenIds")
 
           if (toNotify.isEmpty) {
             logger.info("Not sending any notifications")
@@ -50,36 +51,20 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
           } else {
             logger.info(s"Sending notifications for ${toNotify.map(_._2.id)}")
 
-            notify(toNotify, sub, newSeenIds)
+            notify(toNotify, sub)
           }
 
         case None =>
           logger.info(s"No existing results for ${sub.query}. Now seen $newSeenIds. Not sending any notifications")
       }
     } finally {
-      subsApi.put(sub.copy(runtime = Some(SubscriptionRuntime(newSeenIds))))
+      subsApi.put(sub.copy(runtime = Some(SubscriptionRuntime(newSeenIdsWithStatus))))
     }
   }
 
-  private def calculateToNotify(allBefore: Map[Long, Status], allAfter: Map[Long, Status], stubs: List[(Status, Stub)]): List[(Status, Stub)] = {
-    val ids = (allBefore.keySet ++ allAfter.keySet).toList
-
-    ids.flatMap { id =>
-      val before = allBefore.get(id)
-      val after = allAfter.get(id)
-
-      (before, after) match {
-        case (Some(statusBefore), Some(statusAfter)) if statusAfter != statusBefore =>
-          // The row has changed status
-          stubs.find(_._2.id.contains(id))
-
-        case (None, Some(_)) =>
-          // A new row has appeared
-          stubs.find(_._2.id.contains(id))
-
-        case _ =>
-          None
-      }
+  private def calculateToNotify(idsBefore: Set[Long], idsAfter: Set[Long], stubs: List[(Status, Stub)]): List[(Status, Stub)] = {
+    idsAfter.diff(idsBefore).toList.flatMap { id =>
+      stubs.find(_._2.id.contains(id))
     }
   }
 
@@ -113,13 +98,16 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
     }
   }
 
-  private def notify(stubs: List[(Status, Stub)], sub: Subscription, seenIds: Map[Long, Status]): Unit = {
+  private def notify(stubs: List[(Status, Stub)], sub: Subscription): Unit = {
     try {
       stubs.foreach { case (status, stub) =>
         // TODO MRB: atom edit URLs?
-        val url = stub.composerId.map { id => s"$composerUrl/content/$id"}
-        val body = stub.note.getOrElse("")
-        val update = SubscriptionUpdate(s"${stub.title} now in $status", body, url)
+        val url = buildDashboardUrl(sub.query)
+
+        val title = sub.description.getOrElse(status.toString)
+        val body = stub.title
+
+        val update = SubscriptionUpdate(title, body, url)
 
         subsApi.sendNotification(update, sub.endpoint)
       }
@@ -128,5 +116,15 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
         logger.error(s"Error sending notification to ${sub.endpoint}. Removing subscription", e)
         subsApi.delete(Subscription.id(sub))
     }
+  }
+
+  private def buildDashboardUrl(query: Subscription.Query): String = {
+    val params = (query - "email").flatMap { case(key, values) =>
+      values.map { value =>
+        s"${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
+      }
+    }.mkString("&")
+
+    s"$appUrl/dashboard?$params"
   }
 }

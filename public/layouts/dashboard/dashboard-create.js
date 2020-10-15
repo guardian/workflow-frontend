@@ -25,8 +25,8 @@ angular
         $scope.registerSubscription = () => {
             $scope.subscriptionStatus = "Subscribing...";
 
-            registerSubscription().then(() => {
-                $scope.subscriptionStatus = "Subscribed!";
+            registerSubscription().then((result) => {
+                $scope.subscriptionStatus = result ? "Subscribed!" : null;
             }).catch((err) => {
                 $scope.subscriptionStatus = null;
             });
