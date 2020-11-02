@@ -105,7 +105,7 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val capiKey: String = playConfig.get[String]("capi.key")
 
-  lazy val pandaSystem: String = playConfig.getOptional[String]("capi.key").getOrElse("workflow")
+  lazy val pandaSystem: String = "workflow"
   lazy val pandaBucketName: String = "pan-domain-auth-settings"
   lazy val pandaSettingsFile: String = s"$domain.settings"
 
