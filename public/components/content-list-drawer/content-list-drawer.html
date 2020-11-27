@@ -619,7 +619,8 @@
             <div class="drawer__toolbar-item drawer__toolbar-item--spacer">
                 &nbsp;
             </div>
-            <span class="drawer__toolbar-item drawer__toolbar-item--action">
+            <!-- if the content doesn't have a Composer page, it won't be accessible in Restorer -->
+            <span ng:if="!composerRestorerUrl.includes('null')" class="drawer__toolbar-item drawer__toolbar-item--action">
                 <a href="{{ composerRestorerUrl }}" target="_blank" class="drawer__item-content" title="View versions">
                     <i class="drawer__icon drawer__toolbar-icon" wf-icon="view-versions"></i>
                     View versions
