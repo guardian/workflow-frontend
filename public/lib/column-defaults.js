@@ -26,6 +26,7 @@ import printLocationTemplate         from "components/content-list-item/template
 import needsPictureDeskTemplate      from "components/content-list-item/templates/needsPictureDesk.html";
 import statusInPrintTemplate         from "components/content-list-item/templates/statusInPrint.html";
 import lastModifiedInPrintByTemplate from "components/content-list-item/templates/lastModifiedInPrintBy.html";
+import pinboardTemplate              from "components/content-list-item/templates/pinboard.html";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
@@ -122,6 +123,16 @@ const columnDefaults = [{
     active: true,
     isSortable: true,
     sortField: ['note']
+},{
+    name: 'pinboard',
+    prettyName: 'Pinboard',
+    labelHTML: 'Pinboard',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'pinboard.html',
+    template: pinboardTemplate,
+    active: true,
+    isSortable: true,
 },{
     name: 'comments',
     prettyName: 'Comments: On/Off',
