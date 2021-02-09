@@ -30,16 +30,18 @@ function wfPresenceIndicatorsDirective($rootScope, wfPresenceService,
                                 email: person.email
                             };
 
-                            const currentLocation = currentState.find(p => p.clientId === pr.clientId).location;
+                            const location = currentState.find(p => p.clientId === pr.clientId).location;
+                            const locations = currentState.find(p => p.clientId === pr.clientId).locations || [];
 
-                            const activeEditingLocations = ["body", "document"];
+                            const currentLocations = location ? [...locations, location] : locations
+                            const activeEditingLocations = ["body", "document", "furniture"];
 
-                            if (activeEditingLocations.includes(currentLocation) || $scope.dontDisplayIdle) {
+                            if (activeEditingLocations.some((l) => currentLocations.includes(l)) || $scope.dontDisplayIdle) {
                                 return {
                                     ...presenceObject, ...{
                                         status: "present",
-                                        longTitle: [presenceObject.longText, "editing body"].join(" - "),
-                                        shortTitle: [presenceObject.email, "editing body"].join(" - "),
+                                        longTitle: [presenceObject.longText, "editing"].join(" - "),
+                                        shortTitle: [presenceObject.email, "editing"].join(" - "),
                                         iconPrecedence: 1
                                     }
                                 };
