@@ -29,7 +29,8 @@ function wfPresenceIndicatorsDirective($rootScope, wfPresenceService,
                                 longText: [person.firstName, person.lastName].join(" "),
                                 email: person.email
                             };
-                            const currentLocations = pr.location ? [...pr.locations, pr.location] : pr.locations
+                            const locations = pr.locations || [];
+                            const currentLocations = pr.location ? [...locations, pr.location] : locations;
                             const editingBodyLocations = ["body", "document"];
                             const editingFurnitureLocations = ["furniture"];
 
