@@ -56,8 +56,8 @@ function wfPresenceIndicatorsDirective($rootScope, wfPresenceService,
                                 return {
                                     ...presenceObject,
                                     status: "idle",
-                                    longTitle: presenceObject.longText,
-                                    shortTitle: presenceObject.email,
+                                    longTitle: [presenceObject.longText, "idle"].join(" - "),
+                                    shortTitle: [presenceObject.email, "idle"].join(" - "),
                                     iconPrecedence: 3
                                 };
                             }
