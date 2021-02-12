@@ -29,31 +29,36 @@ function wfPresenceIndicatorsDirective($rootScope, wfPresenceService,
                                 longText: [person.firstName, person.lastName].join(" "),
                                 email: person.email
                             };
+                            const locations = pr.locations || [];
+                            const currentLocations = pr.location ? [...locations, pr.location] : locations;
+                            const editingBodyLocations = ["body", "document"];
+                            const editingFurnitureLocations = ["furniture"];
 
-                            const location = currentState.find(p => p.clientId === pr.clientId).location;
-                            const locations = currentState.find(p => p.clientId === pr.clientId).locations || [];
-
-                            const currentLocations = location ? [...locations, location] : locations
-                            const activeEditingLocations = ["body", "document", "furniture"];
-
-                            if (activeEditingLocations.some((l) => currentLocations.includes(l)) || $scope.dontDisplayIdle) {
+                            if (editingBodyLocations.some((l) => currentLocations.includes(l)) || $scope.dontDisplayIdle) {
                                 return {
-                                    ...presenceObject, ...{
-                                        status: "present",
-                                        longTitle: [presenceObject.longText, "editing"].join(" - "),
-                                        shortTitle: [presenceObject.email, "editing"].join(" - "),
-                                        iconPrecedence: 1
-                                    }
+                                    ...presenceObject, 
+                                    status: "present",
+                                    longTitle: [presenceObject.longText, "editing body"].join(" - "),
+                                    shortTitle: [presenceObject.email, "editing body"].join(" - "),
+                                    iconPrecedence: 1
+                                };
+                            } else if(editingFurnitureLocations.some((l) => currentLocations.includes(l))) {
+                                // the user is not editing the body, has clicked 'Save and close'
+                                return {
+                                    ...presenceObject,
+                                    status: "furniture",
+                                    longTitle: [presenceObject.longText, "editing furniture"].join(" - "),
+                                    shortTitle: [presenceObject.email, "editing furniture"].join(" - "),
+                                    iconPrecedence: 2
                                 };
                             } else {
                                 // the user is not editing the body, has clicked 'Save and close'
                                 return {
-                                    ...presenceObject, ...{
-                                        status: "idle",
-                                        longTitle: presenceObject.longText,
-                                        shortTitle: presenceObject.email,
-                                        iconPrecedence: 2
-                                    }
+                                    ...presenceObject,
+                                    status: "idle",
+                                    longTitle: presenceObject.longText,
+                                    shortTitle: presenceObject.email,
+                                    iconPrecedence: 3
                                 };
                             }
                         }).sortBy(function (pr) { return pr.iconPrecedence });
