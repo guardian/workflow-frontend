@@ -3,7 +3,6 @@
     <span ng-show="(!presences.length || presences.length === 1 && presences[0].status === 'free') && inDrawer" class="drawer__section-data-row drawer__section-data-row--coming-soon">Nobody</span>
 
     <li ng-repeat="presence in presences track by presence.email"
-        ng-if="presence.status === 'present' || presence.status === 'furniture'"
         ng-class="'content-list-item__presence--' + presence.status">
         <a class="content-list-item__icon--presence"
            href="mailto:{{ presence.email }}" title="{{ inDrawer ? presence.shortTitle : presence.longTitle }}">{{ inDrawer ? presence.longText : presence.indicatorText }}</a>
