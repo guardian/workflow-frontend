@@ -64,7 +64,7 @@
     "raven-js": "1.1.22",
     "sinon": "^2.1.0",
     "sugar": "1.4.1",
-    "ua-parser-js": "0.7.12",
+    "ua-parser-js": "0.7.23",
     "uuid-v4.js": "1.0.2",
     "webpack-merge": "^4.2.2",
     "whatwg-fetch": "^2.0.3"
