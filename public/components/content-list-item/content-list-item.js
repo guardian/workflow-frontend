@@ -289,6 +289,14 @@ var wfContentListItem = function ($rootScope, statuses, legalValues, pictureDesk
             $scope.pictureDeskValues = pictureDeskValues;
             $scope.sections = sections;
             $scope.isSupportedAtomType = config.atomTypes.includes($scope.contentItem.contentType);
+
+            const gridHost = window && window.location && window.location.host &&
+              window.location.host.toLowerCase().replace("workflow", "media").replace("code", "test");
+
+            $scope.pinboardInGridLink = `https://${gridHost}/search?pinboardComposerID=${
+              $scope.contentItem.links.composer &&
+              $scope.contentItem.links.composer.substring($scope.contentItem.links.composer.lastIndexOf('/') + 1)
+            }`
         },
         link: function ($scope, elem) {
 
