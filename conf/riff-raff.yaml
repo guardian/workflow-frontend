@@ -11,7 +11,7 @@ deployments:
     parameters:
       amiTags:
         AmigoStage: PROD
-        Recipe: editorial-tools-xenial-java8
+        Recipe: editorial-tools-bionic-java8
         BuiltBy: amigo
       cloudFormationStackName: Workflow-Frontend
       prependStackToCloudFormationStackName: false
