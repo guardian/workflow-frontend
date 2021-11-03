@@ -16,6 +16,7 @@ import org.slf4j.{LoggerFactory, Logger => SLFLogger}
 import play.api.libs.json.Json
 
 import scala.util.Try
+import scala.collection.JavaConverters._
 
 object LogConfig extends AwsInstanceTags {
 
@@ -83,7 +84,9 @@ object LogConfig extends AwsInstanceTags {
         appender.start()
 
         rootLogger.addAppender(appender)
-        rootLogger.info("Configured Logback")
+
+        val status = appender.getStatusManager().getCopyOfStatusList().asScala.toList.map(status => s"${status.getLevel}: ${status.getMessage()}")
+        rootLogger.info(s"Configured Logback w/ status: ${status}")
       }
     } recover {
       case e => rootLogger.error("LogConfig Failed!", e)
