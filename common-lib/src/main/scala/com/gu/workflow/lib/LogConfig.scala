@@ -85,7 +85,7 @@ object LogConfig extends AwsInstanceTags {
 
         rootLogger.addAppender(appender)
 
-        val status = appender.getStatusManager().getCopyOfStatusList().asScala.toList.map(status => s"${status.getLevel}: ${status.getMessage()}")
+        val status = appender.getStatusManager().getCopyOfStatusList().asScala.toList.map(status => s"${status.getLevel}: ${status.getMessage()} ${status.getThrowable()}")
         rootLogger.info(s"Configured Logback w/ status: ${status}")
       }
     } recover {
