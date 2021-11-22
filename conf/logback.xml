@@ -1,5 +1,4 @@
 <configuration>
-    <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${application.home:-.}/logs/application.log</file>
 
@@ -20,7 +19,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%coloredLevel %logger{15} - %message%n%xException{5}</pattern>
+            <pattern>%logger{15} - %message%n%xException{5}</pattern>
         </encoder>
     </appender>
 
