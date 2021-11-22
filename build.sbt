@@ -87,7 +87,9 @@ lazy val root = playProject(application)
     riffRaffArtifactResources := Seq(
       riffRaffPackageType.value -> s"$application/${riffRaffPackageType.value.getName}",
       (packageBin in Universal in notificationLambda).value -> s"${(name in notificationLambda).value}/${(packageBin in Universal in notificationLambda).value.getName}",
-      baseDirectory.value / "conf" / "riff-raff.yaml" -> "riff-raff.yaml"
+      baseDirectory.value / "conf" / "riff-raff.yaml" -> "riff-raff.yaml",
+      baseDirectory.value / "fluentbit/td-agent-bit.conf" -> "workflow-frontend-fluentbit/td-agent-bit.conf",
+      baseDirectory.value / "fluentbit/parsers.conf" -> "workflow-frontend-fluentbit/parsers.conf"
     ),
     javaOptions in Universal ++= Seq(
       "-Dpidfile.path=/dev/null"
