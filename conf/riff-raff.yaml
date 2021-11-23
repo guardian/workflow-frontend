@@ -5,7 +5,7 @@ deployments:
     type: autoscaling
     parameters:
       bucket: workflow-dist
-    dependencies: [workflow-frontend-ami-update]
+    dependencies: [workflow-frontend-ami-update, workflow-frontend-fluentbit]
   workflow-frontend-ami-update:
     type: ami-cloudformation-parameter
     parameters:
@@ -23,3 +23,8 @@ deployments:
       prefixStack: false
       functionNames: [workflow-notification-]
       fileName: workflow-notification.zip
+  workflow-frontend-fluentbit:
+    type: aws-s3
+    parameters:
+      bucket: workflow-dist
+      cacheControl: private

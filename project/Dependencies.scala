@@ -38,7 +38,7 @@ object Dependencies {
     "org.scalamock" %% "scalamock" % "4.4.0" % Test
   )
 
-  val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "6.3")
+  val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "6.6")
 
   val circeVersion = "0.13.0"
 
