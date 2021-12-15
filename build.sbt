@@ -2,7 +2,7 @@ import play.sbt.PlayImport.PlayKeys._
 import Dependencies._
 import com.gu.riffraff.artifact.BuildInfo
 
-parallelExecution in Test := false
+Test / parallelExecution := false
 
 val scalaVersionNumber = "2.12.11"
 
@@ -20,10 +20,10 @@ val buildInfo = Seq(
 
 val commonSettings = Seq(
   scalaVersion := scalaVersionNumber,
-  scalaVersion in ThisBuild := scalaVersionNumber,
+  ThisBuild / scalaVersion := scalaVersionNumber,
   organization := "com.gu",
   version      := "0.1",
-  fork in Test := false,
+  Test / fork := false,
   resolvers ++= Seq(
     "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
   ),
@@ -70,15 +70,15 @@ lazy val root = playProject(application)
   .settings(libraryDependencies += filters)
   .settings(playDefaultPort := 9090)
   .settings(
-    packageName in Universal := application,
-    concurrentRestrictions in Universal := List(Tags.limit(Tags.All, 1)),
-    javaOptions in Universal ++= Seq(
+    Universal / packageName := application,
+    Universal / concurrentRestrictions := List(Tags.limit(Tags.All, 1)),
+    Universal / javaOptions ++= Seq(
       // Since play uses separate pidfile we have to provide it with a proper path
       // name of the pid file must be play.pid
       s"-Dpidfile.path=/var/run/${packageName.value}/play.pid"
     ),
     debianPackageDependencies := Seq("openjdk-8-jre-headless"),
-    riffRaffPackageType := (packageBin in Debian).value,
+    riffRaffPackageType := (Debian / packageBin).value,
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
     riffRaffUploadManifestBucket := Option("riffraff-builds"),
     riffRaffArtifactPublishPath := application,
@@ -86,12 +86,12 @@ lazy val root = playProject(application)
     riffRaffManifestProjectName := riffRaffPackageName.value,
     riffRaffArtifactResources := Seq(
       riffRaffPackageType.value -> s"$application/${riffRaffPackageType.value.getName}",
-      (packageBin in Universal in notificationLambda).value -> s"${(name in notificationLambda).value}/${(packageBin in Universal in notificationLambda).value.getName}",
+      (notificationLambda / Universal / packageBin).value -> s"${(notificationLambda / name).value}/${(notificationLambda / Universal / packageBin).value.getName}",
       baseDirectory.value / "conf" / "riff-raff.yaml" -> "riff-raff.yaml",
       baseDirectory.value / "fluentbit/td-agent-bit.conf" -> "workflow-frontend-fluentbit/td-agent-bit.conf",
       baseDirectory.value / "fluentbit/parsers.conf" -> "workflow-frontend-fluentbit/parsers.conf"
     ),
-    javaOptions in Universal ++= Seq(
+    Universal / javaOptions ++= Seq(
       "-Dpidfile.path=/dev/null"
     ),
     debianPackageDependencies := Seq("openjdk-8-jre-headless"),
@@ -100,16 +100,16 @@ lazy val root = playProject(application)
     packageDescription := """Workflow, part of the suite of Guardian CMS tools"""
   )
   .settings(
-    topLevelDirectory in Universal := Some(normalizedName.value),
-    name in Universal := normalizedName.value
+    Universal / topLevelDirectory := Some(normalizedName.value),
+    Universal / name := normalizedName.value
   )
 
 lazy val notificationLambda = project("notification")
   .enablePlugins(JavaAppPackaging)
   .settings(
     name := "workflow-notification",
-    topLevelDirectory in Universal := None,
-    packageName in Universal := normalizedName.value,
+    Universal / topLevelDirectory := None,
+    Universal / packageName := normalizedName.value,
     libraryDependencies ++= notificationDependencies
   )
   .dependsOn(commonLib % "compile->compile;test->test")
