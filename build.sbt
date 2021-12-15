@@ -81,7 +81,6 @@ lazy val root = playProject(application)
     riffRaffPackageType := (Debian / packageBin).value,
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
     riffRaffUploadManifestBucket := Option("riffraff-builds"),
-    riffRaffArtifactPublishPath := application,
     riffRaffPackageName := s"editorial-tools:workflow:$application",
     riffRaffManifestProjectName := riffRaffPackageName.value,
     riffRaffArtifactResources := Seq(
