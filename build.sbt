@@ -4,7 +4,7 @@ import com.gu.riffraff.artifact.BuildInfo
 
 Test / parallelExecution := false
 
-val scalaVersionNumber = "2.12.11"
+val scalaVersionNumber = "2.12.15"
 
 val buildInfo = Seq(
   buildInfoPackage := "build",
@@ -35,7 +35,10 @@ def project(path: String): Project = Project(path, file(path)).settings(commonSe
 def playProject(path: String): Project =
   Project(path, file("."))
     .enablePlugins(PlayScala, JDebPackaging, SystemdPlugin, BuildInfoPlugin)
-    .settings(libraryDependencies += ws)
+    .settings(
+      libraryDependencies += "com.typesafe.play" %% "play-ahc-ws" % "2.8.9", 
+      dependencyOverrides ++= jacksonDependencyOverrides
+    )
     .settings(commonSettings ++ buildInfo)
     .dependsOn(commonLib)
     .dependsOn(commonLib % "test->test")
@@ -43,7 +46,7 @@ def playProject(path: String): Project =
 lazy val commonLib = project("common-lib")
   .settings(
     libraryDependencies
-      ++= Seq("com.typesafe.play" %% "play" % "2.7.4", ws)
+      ++= Seq("com.typesafe.play" %% "play" % "2.8.11", "com.typesafe.play" %% "play-ahc-ws" % "2.8.9")
       ++ logbackDependencies
       ++ testDependencies
       ++ awsDependencies

@@ -23,11 +23,11 @@ object ClientMessageLoggable {
     val fieldsMap = scalaMap.asJava
     val output = log.message
     log.level match {
-      case "ERROR" => Logger.logger.error(appendEntries(fieldsMap),output)
-      case "WARN" => Logger.logger.warn(appendEntries(fieldsMap),output)
-      case "INFO" => Logger.logger.info(appendEntries(fieldsMap),output)
-      case "DEBUG" =>  Logger.logger.debug(appendEntries(fieldsMap),output)
-      case _ =>  Logger.logger.info(appendEntries(fieldsMap),output)
+      case "ERROR" => Logger("application").logger.error(appendEntries(fieldsMap),output)
+      case "WARN" => Logger("application").logger.warn(appendEntries(fieldsMap),output)
+      case "INFO" => Logger("application").logger.info(appendEntries(fieldsMap),output)
+      case "DEBUG" =>  Logger("application").logger.debug(appendEntries(fieldsMap),output)
+      case _ =>  Logger("application").logger.info(appendEntries(fieldsMap),output)
     }
   }
 }
