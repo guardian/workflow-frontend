@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  val awsVersion: String = "1.11.784"
+  val awsVersion: String = "1.12.129"
   val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
 
   val notificationDependencies = Seq(
@@ -17,8 +17,17 @@ object Dependencies {
     "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
     "com.amazonaws" % "aws-java-sdk-ec2" % awsVersion,
     "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
-    "com.gu" %% "content-api-client-aws" % "0.5"
+    "com.gu" %% "content-api-client-aws" % "0.7"
   )
+
+  val jacksonDependencyOverrides: Seq[ModuleID] = {
+    val version = "2.11.4"
+    Seq(
+        "com.fasterxml.jackson.core" % "jackson-core" % version,
+        "com.fasterxml.jackson.core" % "jackson-databind" % version,
+        "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % version
+    )
+  }
 
   val akkaDependencies = Seq(
     // akka-agent 2.5.X has deprecated Agents,
@@ -29,7 +38,7 @@ object Dependencies {
   )
 
   val authDependencies = Seq(
-    "com.gu" %% "pan-domain-auth-play_2-6" % "0.9.1",
+    "com.gu" %% "pan-domain-auth-play_2-8" % "1.0.4",
     "com.gu" %% "hmac-headers" % "1.1.2"
   )
 

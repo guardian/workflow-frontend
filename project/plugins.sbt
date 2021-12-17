@@ -9,7 +9,7 @@ libraryDependencies += "org.vafer" % "jdeb" % "1.8" artifacts (Artifact("jdeb", 
 addSbtPlugin("com.gu" % "sbt-riffraff-artifact" % "1.1.9")
 
 // Use the Play sbt plugin for Play projects
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.7.4")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.8.11")
 
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.9.0")
 

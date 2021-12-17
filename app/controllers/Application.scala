@@ -50,7 +50,7 @@ class Application(
   }
 
   def index = AuthAction { request =>
-    Redirect(routes.Application.dashboard())
+    Redirect(routes.Application.dashboard)
   }
 
   def dashboard = app("Workflow")
@@ -80,7 +80,7 @@ class Application(
   def updateEditorialSupport = AuthAction(parse.form(EditorialSupportStaff.form)) { implicit request =>
     editorialSupportTeams.updateStaff(request.body)
     // Get the browser to reload the page once we've sucessfully updated
-    Redirect(routes.Application.editorialSupport())
+    Redirect(routes.Application.editorialSupport)
   }
 
   // limited tag fields we want output into the DOM
