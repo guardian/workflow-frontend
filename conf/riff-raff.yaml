@@ -28,3 +28,4 @@ deployments:
     parameters:
       bucket: workflow-dist
       cacheControl: private
+      publicReadAcl: false
