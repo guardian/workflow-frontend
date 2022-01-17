@@ -1,8 +1,16 @@
 import play.sbt.PlayImport.PlayKeys._
+import sbt.Package.FixedTimestamp
 import Dependencies._
 import com.gu.riffraff.artifact.BuildInfo
 
 Test / parallelExecution := false
+
+// We need to keep the timestamps to allow caching headers to work as expected on assets.
+// The below should work, but some problem in one of the plugins (possibly the play plugin? or sbt-web?) causes
+// the option not to be passed correctly
+//   ThisBuild / packageTimestamp := Package.keepTimestamps
+// Setting as a packageOption seems to bypass that problem, wherever it lies
+ThisBuild / packageOptions += FixedTimestamp(Package.keepTimestamps)
 
 val scalaVersionNumber = "2.12.15"
 
