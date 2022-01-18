@@ -30,8 +30,10 @@ jobs:
               with:
                   java-version: "8"
                   distribution: "adopt"
+            
+            - run: node --version
 
             - name: Snyk monitor
-              run: snyk monitor --all-projects
+              run: snyk monitor --all-projects -d
               env:
                   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
