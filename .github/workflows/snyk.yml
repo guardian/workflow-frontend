@@ -10,6 +10,8 @@ on:
 
 jobs:
   security:
-    uses: guardian/workflow-frontend/.github/workflows/test.yml@add-snyk-workflow
+    uses: guardian/.github/.github/workflows/sbt-node-snyk.yml@add-generic-snyk-workflow
+    with:
+      DEBUG: "true"
     secrets:
        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
