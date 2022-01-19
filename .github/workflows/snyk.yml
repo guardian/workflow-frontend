@@ -1,14 +1,11 @@
-# This action runs every day at 6 AM and on every push
-# If the branch it's running on is main then it will run snyk monitor (reports vulnerabilities to snyk.io)
-# Otherwise it will run snyk test
 name: Snyk
 
 on:
     schedule:
         - cron: "0 6 * * *"
     push:
-        # branches:
-        #     - main
+        branches:
+            - main
     workflow_dispatch:
 
 jobs:
@@ -30,10 +27,8 @@ jobs:
               with:
                   java-version: "8"
                   distribution: "adopt"
-            
-            - run: node --version
 
             - name: Snyk monitor
-              run: snyk monitor --all-projects -d
+              run: snyk monitor --all-projects
               env:
                   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
