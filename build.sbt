@@ -36,9 +36,10 @@ def playProject(path: String): Project =
   Project(path, file("."))
     .enablePlugins(PlayScala, JDebPackaging, SystemdPlugin, BuildInfoPlugin)
     .settings(
-      libraryDependencies += "com.typesafe.play" %% "play-ahc-ws" % "2.8.9", 
+      libraryDependencies += "com.typesafe.play" %% "play-ahc-ws" % "2.8.9",
       //Necessary to override jackson-databind versions due to AWS and Play incompatibility
-      dependencyOverrides ++= jacksonDependencyOverrides
+      dependencyOverrides ++= jacksonDependencyOverrides,
+      pipelineStages := Seq(digest, gzip)
     )
     .settings(commonSettings ++ buildInfo)
     .dependsOn(commonLib)
