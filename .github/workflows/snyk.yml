@@ -1,12 +1,11 @@
+# This action runs snyk monitor on every push to main
 name: Snyk
 
 on:
-    schedule:
-        - cron: "0 6 * * *"
-    push:
-        branches:
-            - main
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   security:
@@ -14,5 +13,6 @@ jobs:
     with:
       DEBUG: true
       ORG: guardian
+      SKIP_NODE: false
     secrets:
        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
