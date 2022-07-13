@@ -38,7 +38,7 @@ object Dependencies {
   )
 
   val authDependencies = Seq(
-    "com.gu" %% "pan-domain-auth-play_2-8" % "1.0.4",
+    "com.gu" %% "pan-domain-auth-play_2-8" % "1.0.6",
     "com.gu" %% "hmac-headers" % "1.1.2"
   )
 

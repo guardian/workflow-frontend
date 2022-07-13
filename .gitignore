@@ -79,3 +79,4 @@ build/
 # OS X generated file storing custom attributes of a folder
 .DS_Store
 Brewfile.lock.json
+.bsp
