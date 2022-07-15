@@ -36,7 +36,7 @@
     "webpack-manifest-plugin": "^2.2.0"
   },
   "dependencies": {
-    "angular": "1.5.11",
+    "angular": "1.8.0",
     "angular-animate": "1.5.11",
     "angular-bootstrap-datetimepicker": "1.1.4",
     "angular-bootstrap-temporary": "0.11.0",
@@ -45,7 +45,7 @@
     "bootstrap": "3.4.1",
     "chai": "^3.5.0",
     "jquery": "3.5.0",
-    "jquery-ui": "1.12.1",
+    "jquery-ui": "1.13.0",
     "karma": "^1.6.0",
     "karma-angular": "^0.0.6",
     "karma-babel-preprocessor": "^6.0.1",
@@ -56,7 +56,7 @@
     "karma-sinon": "^1.0.5",
     "karma-webpack": "^4.0.2",
     "keycode": "^2.2.0",
-    "lodash": "4.17.19",
+    "lodash": "4.17.21",
     "mocha": "^3.3.0",
     "moment": "^2.11.2",
     "moment-timezone": "0.5.14",
@@ -64,7 +64,7 @@
     "raven-js": "1.1.22",
     "sinon": "^2.1.0",
     "sugar": "1.4.1",
-    "ua-parser-js": "0.7.12",
+    "ua-parser-js": "0.7.24",
     "uuid-v4.js": "1.0.2",
     "webpack-merge": "^4.2.2",
     "whatwg-fetch": "^2.0.3"
