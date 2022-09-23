@@ -1,5 +1,6 @@
 package controllers
 
+import com.gu.pandahmac.HMACAuthActions
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.pandomainauth.action.UserRequest
 import com.gu.workflow.api.{ApiUtils, SectionsAPI, StubAPI}
@@ -30,7 +31,12 @@ class Api(
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
-) extends BaseController with PanDomainAuthActions with SharedSecretAuth with Logging with ApiUtils {
+) extends BaseController
+  with PanDomainAuthActions
+  with SharedSecretAuth
+  with HMACAuthActions
+  with Logging
+  with ApiUtils {
 
   val contentAPI = new ContentAPI(capiPreviewRole = config.capiPreviewRole, apiRoot = config.capiPreviewIamUrl, ws = wsClient)
   val stubDecorator = new StubDecorator(contentAPI)
@@ -53,10 +59,10 @@ class Api(
     }
   }
 
-  def content = APIAuthAction.async(getContentBlock)
+  def content = HMACAuthAction.async(getContentBlock)
 
   def getContentByComposerId(composerId: String) = {
-      APIAuthAction.async { implicit request =>
+      HMACAuthAction.async { implicit request =>
         ApiResponseFt[Option[Stub]](for {
           item <- getResponse(stubsApi.getStubByComposerId(stubDecorator, composerId))
         } yield item
