@@ -89,6 +89,7 @@ lazy val root = playProject(application)
     riffRaffUploadManifestBucket := Option("riffraff-builds"),
     riffRaffPackageName := s"editorial-tools:workflow:$application",
     riffRaffManifestProjectName := riffRaffPackageName.value,
+    fileDescriptorLimit := Option("32768"),
     riffRaffArtifactResources := Seq(
       riffRaffPackageType.value -> s"$application/${riffRaffPackageType.value.getName}",
       (notificationLambda / Universal / packageBin).value -> s"${(notificationLambda / name).value}/${(notificationLambda / Universal / packageBin).value.getName}",
