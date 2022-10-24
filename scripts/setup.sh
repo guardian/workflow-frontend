@@ -14,13 +14,15 @@ preamble() {
       exit 1
   fi
 
-  if ! test -e "$NVM_DIR/nvm.sh"; then
-      echo -e "NVM not found. NVM is required to run this project"
-      echo -e "Install it from https://github.com/creationix/nvm#installation"
-      exit 1
-  else
+  if test -e "$NVM_DIR/nvm.sh"; then
       source "$NVM_DIR/nvm.sh"
       nvm install
+  elif command -v fnm >/dev/null; then
+      fnm use
+  # TODO use asdf? add detection and enable here
+  else
+      echo -e "No node version manager found. Consider installing fnm <https://github.com/Schniz/fnm> or asdf <???>"
+      exit 1
   fi
 }
 
