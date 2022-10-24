@@ -59,15 +59,15 @@ class Api(
     }
   }
 
-  def content = HMACAuthAction.async(getContentBlock)
+  def content = APIHMACAuthAction.async(getContentBlock)
 
   def getContentByComposerId(composerId: String) = {
-      HMACAuthAction.async { implicit request =>
-        ApiResponseFt[Option[Stub]](for {
-          item <- getResponse(stubsApi.getStubByComposerId(stubDecorator, composerId))
-        } yield item
-      )}
-    }
+    APIHMACAuthAction.async { implicit request =>
+      ApiResponseFt[Option[Stub]](for {
+        item <- getResponse(stubsApi.getStubByComposerId(stubDecorator, composerId))
+      } yield item
+    )}
+  }
 
   def getContentByEditorId(editorId: String) = {
     APIAuthAction.async { implicit request =>
