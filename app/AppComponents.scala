@@ -43,7 +43,7 @@ class AppComponents(context: Context)
   val adminController = new Admin(sectionsApi, desksApi, sectionsDeskMappingsApi, config, controllerComponents, wsClient, panDomainRefresher)
   val editorialSupportTeamsController = new EditorialSupportTeamsController(config, controllerComponents, wsClient, panDomainRefresher)
   val apiController = new Api(stubsApi, sectionsApi, editorialSupportTeamsController, config, controllerComponents, wsClient, panDomainRefresher)
-  val applicationController = new Application(editorialSupportTeamsController, sectionsApi, tagService, desksApi, sectionsDeskMappingsApi, config, controllerComponents, wsClient, panDomainRefresher)
+  val applicationController = new Application(editorialSupportTeamsController, sectionsApi, tagService, desksApi, sectionsDeskMappingsApi, config, controllerComponents, wsClient, panDomainRefresher, stubsApi)
 
   val notificationsController = new Notifications(config, controllerComponents, wsClient, panDomainRefresher)
 

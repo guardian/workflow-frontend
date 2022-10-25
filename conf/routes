@@ -7,6 +7,8 @@ GET            /                                           controllers.Applicati
 
 GET            /dashboard                                  controllers.Application.dashboard
 
+GET            /redirect/:stubId                           controllers.Application.redirect(stubId: Long)
+
 #static user pages
 GET            /editorialSupport                           controllers.Application.editorialSupport
 POST           /editorialSupport                           controllers.Application.updateEditorialSupport

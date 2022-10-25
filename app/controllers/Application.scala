@@ -1,13 +1,14 @@
- package controllers
+package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
-import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
+import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.{Priorities, StatusDatabase, TagService}
 import config.Config
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, parser}
 import lib.{AtomWorkshopConfig, ComposerConfig, MediaAtomMakerConfig}
+import models.api.ApiResponseFt
 import models.{Desk, EditorialSupportStaff, Section}
 import play.api.{Logger, Logging}
 import play.api.libs.ws.WSClient
@@ -25,7 +26,8 @@ class Application(
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
-  override val panDomainSettings: PanDomainAuthSettingsRefresher
+  override val panDomainSettings: PanDomainAuthSettingsRefresher,
+  stubsApi: StubAPI,
 ) extends BaseController with PanDomainAuthActions with Logging {
 
   def getSortedSections(): Future[List[Section]] = {
@@ -56,7 +58,7 @@ class Application(
   def dashboard = app("Workflow")
 
   def training = AuthAction { request =>
-      Ok(views.html.training())
+    Ok(views.html.training())
   }
 
   def faqs = AuthAction { request =>
@@ -151,4 +153,21 @@ class Application(
       Ok(views.html.app(title, Some(user), jsonConfig, config.googleTrackingId, config.presenceClientLib))
     }
   }
+
+  def redirect(stubId: Long) = AuthAction.async { request =>
+    stubsApi.getStub(stubId).map{
+      case Some(stub) if stub.composerId.isDefined => Redirect(
+        url = s"${config.composerUrl}/content/${stub.composerId.get}",
+        queryStringParams = request.queryString // forward any query params
+      )
+      case _ => NotFound
+    }.asFuture.map{
+      case Left(err) => {
+        logger.error(s"could not get stub with id $stubId, for redirect. Error: $err")
+        InternalServerError
+      }
+      case Right(result) => result
+    }
+  }
+
 }
