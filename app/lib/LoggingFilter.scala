@@ -2,6 +2,7 @@ package lib
 
 import com.gu.workflow.util.LoggingContext
 import akka.stream.Materializer
+import com.gu.pandahmac.HMACHeaderNames
 import play.api.{Logger, Logging}
 import play.api.mvc._
 
@@ -12,11 +13,14 @@ class LoggingFilter(override val mat: Materializer) extends Filter with Logging 
     val ec = scala.concurrent.ExecutionContext.Implicits.global
 
     val startTime = System.currentTimeMillis
-    val headers = requestHeader.headers.getAll(LoggingContext.LOGGING_CONTEXT_HEADER)
-      .map(LoggingContext.fromHeader)
-      .fold(Map.empty[String, String])(_ ++ _)
 
-    LoggingContext.withContext(headers) {
+    val loggingContextMarkers = requestHeader.headers.getAll(LoggingContext.LOGGING_CONTEXT_HEADER)
+      .flatMap(LoggingContext.fromHeader)
+      .toMap
+    val pandaHmacServiceNameMarkers =
+      requestHeader.headers.get(HMACHeaderNames.serviceNameKey).map(HMACHeaderNames.serviceNameKey -> _).toMap
+
+    LoggingContext.withContext(loggingContextMarkers ++ pandaHmacServiceNameMarkers) {
       LoggingContext.withMDCExecutionContext(ec) { implicit ec =>
         // use an new implicit execution context that will stash the
         // current MDC, and then apply to all threads that are
