@@ -14,6 +14,7 @@ import deadlineTemplate              from "components/content-list-item/template
 import sectionTemplate               from "components/content-list-item/templates/section.html";
 import statusTemplate                from "components/content-list-item/templates/status.html";
 import notesTemplate                 from "components/content-list-item/templates/notes.html";
+import pinboardTemplate              from "components/content-list-item/templates/pinboard.html";
 import linksTemplate                 from "components/content-list-item/templates/links.html";
 import publishedStateTemplate        from "components/content-list-item/templates/published-state.html";
 import wordcountTemplate             from "components/content-list-item/templates/wordcount.html";
@@ -122,6 +123,17 @@ const columnDefaults = [{
     active: true,
     isSortable: true,
     sortField: ['note']
+},{
+    name: 'pinboard',
+    prettyName: 'Pinboard 📌',
+    labelHTML: 'Pinboard 📌',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'pinboard.html',
+    template: pinboardTemplate,
+    active: true,
+    isSortable: false,
+    isNew: true
 },{
     name: 'comments',
     prettyName: 'Comments: On/Off',
