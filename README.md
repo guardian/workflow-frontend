@@ -19,13 +19,16 @@ The Angular frontend and associated Scala API for Workflow.
  
 You will need `workflow` and `capi` (API Gateway invocation) credentials from Janus.
 
-In order to run, workflow-frontend needs to talk to the a workflow datastore and a preferences datastore.
+In order to run, workflow-frontend needs to talk to a workflow datastore and a preferences datastore.
 It can use either a local store, or CODE.
 
 ### Common installation steps
 
  1. Run the setup script `./scripts/setup.sh`
- 1. Download the DEV config: `./scripts/fetch-config.sh`
+ 2. Download the DEV config: `./scripts/fetch-config.sh`
+ 3. Open `/etc/gu/workflow-frontend.private.conf` and amend `api.url` as follows:
+
+    api.url="http://localhost:9095/api"
 
 If you encounter a `Module build failed` error due to Node Sass during set up, run `npm rebuild node-sass`.
 
@@ -50,10 +53,6 @@ You will need [ssm-scala](https://github.com/guardian/ssm-scala) installed for t
   * Check it is working:
   
     `curl -is http://localhost:9095/management/healthcheck`
-
-Open `/etc/gu/workflow-frontend.private.conf` and amend `api.url` as follows:
-
-    api.url="http://localhost:9095/api"
 
 ### Run
 
