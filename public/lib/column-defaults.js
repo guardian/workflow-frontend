@@ -131,7 +131,7 @@ const columnDefaults = [{
     title: '',
     templateUrl: templateRoot + 'pinboard.html',
     template: pinboardTemplate,
-    active: true,
+    active: false,
     isSortable: false,
     isNew: true
 },{
