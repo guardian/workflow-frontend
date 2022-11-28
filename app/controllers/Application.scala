@@ -1,6 +1,7 @@
 package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
+import com.gu.permissions.{PermissionDefinition, PermissionsProvider}
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.{Priorities, StatusDatabase, TagService}
 import config.Config
@@ -23,6 +24,7 @@ class Application(
   val tagService: TagService,
   val desksAPI: DesksAPI,
   val sectionDeskMappingsAPI: SectionDeskMappingsAPI,
+  val permissions: PermissionsProvider,
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
@@ -92,6 +94,8 @@ class Application(
     implicit val decoder: Decoder[LimitedTag] = deriveDecoder
   }
 
+  private val pinboardPermission = PermissionDefinition("pinboard", "pinboard")
+
   def app(title: String) = AuthAction.async { request =>
     for {
       statuses <- StatusDatabase.statuses
@@ -135,6 +139,8 @@ class Application(
         ("storyPackagesUrl", Json.fromString(config.storyPackagesUrl)),
         ("presenceUrl", Json.fromString(config.presenceUrl)),
         ("preferencesUrl", Json.fromString(config.preferencesUrl)),
+        ("pinboardLoaderUrl", Json.fromString(config.pinboardLoaderUrl)),
+        ("hasPinboardPermission", Json.fromBoolean(permissions.hasPermission(pinboardPermission, request.user.email))),
         ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
         ("incopyOpenUrl", Json.fromString(config.incopyOpenUrl)),
         ("incopyExportUrl", Json.fromString(config.incopyExportUrl)),

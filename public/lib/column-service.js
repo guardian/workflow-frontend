@@ -55,14 +55,15 @@ angular.module('wfColumnService', [])
                         return self.columns;
                     }
 
-                    this.getColumns().then((columns) => {
-                        if(columns.find(_ => _.name === "pinboard" && _.active)){
-                            const script = document.createElement('script');
-                            //FIXME wrap in permission check and build domain dynamically
-                            script.src = 'https://pinboard.local.dev-gutools.co.uk/pinboard.loader.js';
-                            document.head.appendChild(script);
-                        }
-                    });
+                    if (_wfConfig.hasPinboardPermission) {
+                        this.getColumns().then((columns) => {
+                            if(columns.find(_ => _.name === "pinboard" && _.active)){
+                                const script = document.createElement('script');
+                                script.src = _wfConfig.pinboardLoaderUrl;
+                                document.head.appendChild(script);
+                            }
+                        });
+                    }
                 }
 
                 getAvailableColumns() {

@@ -1,4 +1,5 @@
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
+import com.gu.permissions.{PermissionsConfig, PermissionsProvider}
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.TagService
 import com.gu.workflow.util.AWS
@@ -40,10 +41,13 @@ class AppComponents(context: Context)
   val stubsApi = new StubAPI(config.apiRoot, wsClient)
   val tagService = new TagService(config.tagManagerUrl, wsClient)
 
-  val adminController = new Admin(sectionsApi, desksApi, sectionsDeskMappingsApi, config, controllerComponents, wsClient, panDomainRefresher)
+  val permissions: PermissionsProvider =
+    PermissionsProvider(PermissionsConfig(stage =  if (config.isProd) "PROD" else "CODE", AWS.region.getName, AWS.credentialsProvider))
+
+  val adminController = new Admin(sectionsApi, desksApi, sectionsDeskMappingsApi, permissions, config, controllerComponents, wsClient, panDomainRefresher)
   val editorialSupportTeamsController = new EditorialSupportTeamsController(config, controllerComponents, wsClient, panDomainRefresher)
   val apiController = new Api(stubsApi, sectionsApi, editorialSupportTeamsController, config, controllerComponents, wsClient, panDomainRefresher)
-  val applicationController = new Application(editorialSupportTeamsController, sectionsApi, tagService, desksApi, sectionsDeskMappingsApi, config, controllerComponents, wsClient, panDomainRefresher, stubsApi)
+  val applicationController = new Application(editorialSupportTeamsController, sectionsApi, tagService, desksApi, sectionsDeskMappingsApi, permissions, config, controllerComponents, wsClient, panDomainRefresher, stubsApi)
 
   val notificationsController = new Notifications(config, controllerComponents, wsClient, panDomainRefresher)
 
