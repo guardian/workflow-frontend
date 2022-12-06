@@ -45,7 +45,7 @@
     "bootstrap": "3.4.1",
     "chai": "^3.5.0",
     "jquery": "3.5.0",
-    "jquery-ui": "1.12.1",
+    "jquery-ui": "1.13.2",
     "karma": "^6.4.1",
     "karma-angular": "^0.0.6",
     "karma-babel-preprocessor": "^8.0.2",
