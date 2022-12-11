@@ -126,7 +126,7 @@ const columnDefaults = [{
 },{
     name: 'pinboard',
     prettyName: 'Pinboard 📌',
-    labelHTML: 'Pinboard 📌',
+    labelHTML: '',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'pinboard.html',
