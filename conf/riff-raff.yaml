@@ -24,6 +24,5 @@ deployments:
   workflow-frontend-fluentbit:
     type: aws-s3
     parameters:
-      bucket: workflow-dist
       cacheControl: private
       publicReadAcl: false
