@@ -1,6 +1,7 @@
 package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
+import com.gu.permissions.PermissionsProvider
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import config.Config
 import io.circe.{Json, parser}
@@ -21,13 +22,14 @@ class Admin(
   sectionsAPI: SectionsAPI,
   desksAPI: DesksAPI,
   sectionDeskMappingsAPI: SectionDeskMappingsAPI,
+  permissions: PermissionsProvider,
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher
 ) extends BaseController with PanDomainAuthActions with I18nSupport with Logging {
 
-  private val PermissionFilter = new AdminPermissionFilter(config)
+  private val PermissionFilter = new AdminPermissionFilter(config, permissions)
 
   import play.api.data.Forms._
 

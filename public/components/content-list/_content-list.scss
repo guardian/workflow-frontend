@@ -92,6 +92,7 @@ google-auth-banner .alert {
             &--status,
             &--status-in-print,
             &--notes,
+            &--pinboard,
             &--links,
             &--published-state,
             &--wordcount,
@@ -350,7 +351,7 @@ google-auth-banner .alert {
 
     right: 15px;
     width: 180px;
-    z-index: 2;
+    z-index: 3;
 
     // _toolbar-sections-dropdown.scss:71
     background-color: #ffffff;
@@ -480,4 +481,8 @@ google-auth-banner .alert {
 .content-list__content-end-reset {
     margin: 0 0 0 6px;
     line-height: 1.42857143; // Bootstrap...
+}
+
+.content-list-head__heading--pinboard {
+    width: 62px;
 }

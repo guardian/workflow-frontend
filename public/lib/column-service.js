@@ -15,7 +15,7 @@ angular.module('wfColumnService', [])
 
                     var self = this;
 
-                    self.availableColums = columnDefaults;
+                    self.availableColums = columnDefaults.filter(col => col.name !== "pinboard" || _wfConfig.hasPinboardPermission);
                     self.contentItemTemplate;
 
                     self.preferencePromise = wfPreferencesService.getPreference('columnConfiguration').then(function resolve (data) {
@@ -54,6 +54,14 @@ angular.module('wfColumnService', [])
 
                         return self.columns;
                     }
+
+                    this.getColumns().then((columns) => {
+                        if(columns.find(_ => _.name === "pinboard" && _.active)){
+                            const script = document.createElement('script');
+                            script.src = _wfConfig.pinboardLoaderUrl;
+                            document.head.appendChild(script);
+                        }
+                    });
                 }
 
                 getAvailableColumns() {

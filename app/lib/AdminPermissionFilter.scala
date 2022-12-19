@@ -10,15 +10,13 @@ import play.api.mvc.{ActionFilter, Result, Results}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AdminPermissionFilter(config: Config)(implicit ec: ExecutionContext) extends ActionFilter[UserRequest] with Logging {
+class AdminPermissionFilter(
+                             config: Config,
+                             permissions: PermissionsProvider
+                           )(implicit ec: ExecutionContext) extends ActionFilter[UserRequest] with Logging {
   override protected def executionContext: ExecutionContext = ec
 
   private val adminPermission: PermissionDefinition = PermissionDefinition("workflow_admin", "workflow")
-
-  private val permissions: PermissionsProvider = {
-    val permissionsStage = if(config.isProd) { "PROD" } else { "CODE" }
-    PermissionsProvider(PermissionsConfig(permissionsStage, AWS.region.getName, AWS.credentialsProvider))
-  }
 
   override def filter[A](request:UserRequest[A]): Future[Option[Result]] = Future.successful {
     val email = request.user.email

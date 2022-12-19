@@ -11,6 +11,8 @@
     cursor: pointer;
     vertical-align: baseline;
 
+    background: white; //default, will be overridden for various reasons e.g. --embargoed
+
     &--selected {
         background-color: $c-grey-200;
     }
@@ -568,4 +570,8 @@
 }
 .planned-print-location, .actual-print-location {
     vertical-align: middle;
+}
+
+.content-list-item__field--pinboard {
+    width: 77px;
 }
