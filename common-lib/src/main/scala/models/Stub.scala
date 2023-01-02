@@ -47,7 +47,10 @@ case class ExternalData(
                          shortActualPrintLocationDescription: Option[String] = None,
                          longActualPrintLocationDescription: Option[String] = None,
                          statusInPrint: Option[OctopusStatus] = None,
-                         lastModifiedInPrintBy: Option[String] = None) {
+                         lastModifiedInPrintBy: Option[String] = None,
+                         rightsSyndicationAggregate: Boolean = false,
+                         rightsSubscriptionDatabases: Boolean = false,
+                         rightsDeveloperCommunity: Boolean = false) {
 }
 
 object ExternalData {
