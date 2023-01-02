@@ -103,7 +103,8 @@ google-auth-banner .alert {
             &--last-modified,
             &--last-modified-by,
             &--last-modified-in-print-by,
-            &--printlocation {
+            &--printlocation,
+            &--rights {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 
@@ -272,6 +273,17 @@ google-auth-banner .alert {
       }
 
     }
+
+  .content-list-item__field--rights {
+    .rights-field__input-label {
+      @extend %fs-data-1;
+      font-weight: normal;
+    }
+
+    .rights-field__input {
+      margin-right: 5px;
+    }
+  }
 
 }
 

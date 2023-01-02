@@ -27,6 +27,7 @@ import printLocationTemplate         from "components/content-list-item/template
 import needsPictureDeskTemplate      from "components/content-list-item/templates/needsPictureDesk.html";
 import statusInPrintTemplate         from "components/content-list-item/templates/statusInPrint.html";
 import lastModifiedInPrintByTemplate from "components/content-list-item/templates/lastModifiedInPrintBy.html";
+import contentRightsTemplate         from "components/content-list-item/templates/rights.html";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
@@ -123,6 +124,17 @@ const columnDefaults = [{
     active: true,
     isSortable: true,
     sortField: ['note']
+},{
+  name: 'rights',
+  prettyName: 'Content rights',
+  labelHTML: 'Content rights',
+  colspan: 2,
+  title: '',
+  template: contentRightsTemplate,
+  active: false,
+  isNew: true,
+  isSortable: true,
+  sortField: ['rightsSyndicationAggregate', 'rightsSubscriptionDatabases', 'rightsDeveloperCommunity']
 },{
     name: 'pinboard',
     prettyName: 'Pinboard 📌',

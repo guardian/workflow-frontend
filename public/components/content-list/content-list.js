@@ -25,6 +25,7 @@ import { wfContentListDrawer } from 'components/content-list-drawer/content-list
 import { wfLoader } from 'components/loader/loader';
 import { uiFilterList } from '../directives/ui-filter-list'
 import { getSortField } from '../../lib/column-defaults';
+import {uiEditRights} from "../directives/ui-edit-rights";
 
 angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOfficeService', 'wfPresenceService', 'wfEditableField', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService','wfTagApiService'])
     .service('wfContentItemParser', ['config', 'wfFormatDateTimeFilter', 'statusLabels', 'sections', wfContentItemParser])
@@ -36,6 +37,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .controller('wfCommissionedLengthCtrl', ['$scope', wfCommissionedLengthCtrl])
     .directive('uiFilterList', ['$q','$window', uiFilterList])
     .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService', 'wfTagApiService', 'wfFormatDateTimeFilter', 'legalValues', 'pictureDeskValues', wfContentListDrawer])
+    .directive('uiEditRights', ['wfComposerService', uiEditRights])
     .directive("bindCompiledHtml", function($compile) {
         return {
             scope: {
