@@ -190,6 +190,16 @@ var filterDefaults = function (statuses, wfFiltersService) {
             ]
         },
         {
+            title: 'Rights',
+            namespace: 'hasRightsData',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'Has rights data', value: 'true' },
+                { caption: 'No rights data', value: 'false' }
+            ]
+        },
+        {
             title: 'Trashed',
             namespace: 'trashed',
             listIsOpen: false,

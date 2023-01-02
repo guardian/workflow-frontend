@@ -1,4 +1,5 @@
 @import "layouts/global/mixins";
+@import "components/directives/ui-edit-rights";
 
  /**
  * Content-list styles.
@@ -197,6 +198,9 @@ google-auth-banner .alert {
             &--last-modified-by {
                 min-width: 110px;
             }
+            &--rights {
+                min-width: 300px;
+            }
         }
     }
 
@@ -275,16 +279,8 @@ google-auth-banner .alert {
     }
 
   .content-list-item__field--rights {
-    .rights-field__input-label {
-      @extend %fs-data-1;
-      font-weight: normal;
-    }
-
-    .rights-field__input {
-      margin-right: 5px;
-    }
+    width: 300px;
   }
-
 }
 
 // column-configurator

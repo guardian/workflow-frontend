@@ -1,0 +1,13 @@
+.ui-edit-rights {
+  @extend %fs-data-1;
+
+  .ui-edit-rights__label {
+    font-weight: normal;
+    cursor: pointer;
+  }
+
+  .ui-edit-rights__input {
+    margin-right: 5px;
+  }
+}
+
