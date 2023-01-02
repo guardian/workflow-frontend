@@ -126,8 +126,8 @@ const columnDefaults = [{
     sortField: ['note']
 },{
   name: 'rights',
-  prettyName: 'Content rights',
-  labelHTML: 'Content rights',
+  prettyName: 'Syndication',
+  labelHTML: 'Syndication',
   colspan: 2,
   title: '',
   template: contentRightsTemplate,

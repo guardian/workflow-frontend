@@ -190,7 +190,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
             ]
         },
         {
-            title: 'Rights',
+            title: 'Syndication',
             namespace: 'hasRightsData',
             listIsOpen: false,
             multi: false,
