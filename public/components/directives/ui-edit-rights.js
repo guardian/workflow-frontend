@@ -11,10 +11,10 @@ export const uiEditRights = (wfComposerService) => ({
           </span>
           <span ng-if="!hasRightsData()">
               <button class="btn btn-xs btn-info margin-right-small" ng-click="setAllRights(true); $event.stopPropagation()">
-                  Add all
+                  Add all rights
               </button>
-              <button class="btn btn-xs btn-info" ng-click="setAllRights(false); $event.stopPropagation()">
-                  Remove all
+              <button class="btn btn-xs btn-warning" ng-click="setAllRights(false); $event.stopPropagation()">
+                  Remove all rights
               </button>
           </span>
       </div>

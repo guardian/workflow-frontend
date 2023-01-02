@@ -128,7 +128,7 @@ const columnDefaults = [{
   name: 'rights',
   prettyName: 'Syndication',
   labelHTML: 'Syndication',
-  colspan: 2,
+  colspan: 1,
   title: '',
   template: contentRightsTemplate,
   active: false,

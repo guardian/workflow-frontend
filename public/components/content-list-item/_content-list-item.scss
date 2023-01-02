@@ -176,7 +176,8 @@
         &--optimisedForWeb,
         &--sensitive,
         &--legally-sensitive,
-        &--printlocation {
+        &--printlocation,
+        &--rights {
             @extend %fs-data-1;
             @extend %content-list__field-padding;
         }
@@ -360,10 +361,6 @@
             @include largeScreen {
                 width: auto;
             }
-        }
-
-        &--rights {
-          width: 200px;
         }
     }
 
