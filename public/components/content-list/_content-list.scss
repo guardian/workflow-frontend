@@ -200,7 +200,7 @@ google-auth-banner .alert {
             }
 
             &--rights {
-              min-width: 175px;
+              min-width: 125px;
             }
         }
     }
@@ -278,10 +278,6 @@ google-auth-banner .alert {
       }
 
     }
-
-  .content-list-item__field--rights {
-    width: 300px;
-  }
 }
 
 // column-configurator

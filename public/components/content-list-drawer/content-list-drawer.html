@@ -447,9 +447,9 @@
                             <div class="drawer__item-printlocation">
                                 <span>Publication date:</span>
                                 <span ng-if="contentItem.actualNewspaperPublicationDate">{{contentItem.actualNewspaperPublicationDate | wfFormatDateTime:'date'}}</span>
-                                <button
-                                    ng-hide="publicationDateTimeEdit || contentItem.actualNewspaperPublicationDate"
-                                    ng-click="publicationDateTimeEdit = true"
+                                <button 
+                                    ng-hide="publicationDateTimeEdit || contentItem.actualNewspaperPublicationDate" 
+                                    ng-click="publicationDateTimeEdit = true" 
                                     ng-class="{ 'drawer__section-data-row--editable': contentItem.plannedNewspaperPublicationDate, 'drawer__section-data-row--editable-empty': !contentItem.plannedNewspaperPublicationDate, 'editable__edit-button': true }"
                                     title="{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || '' }}"
                                     >
@@ -482,15 +482,10 @@
                             <p class="drawer__item-title">Status in print</p>
                             <span class="drawer__item-content" ng-show="contentItem.statusInPrint">{{ contentItem.statusInPrint }}</span>
                         </li>
-                        <li class="drawer__item">
-                          <p class="drawer__item-title">Rights</p>
-                          <span class="drawer__item-content">
-                            <ui-edit-rights content-item="contentItem" />
-                          </span>
-                        </li>
+
                     </ul>
 
-
+            
                     <ul class="drawer__column drawer__column--wide">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Office</p>
