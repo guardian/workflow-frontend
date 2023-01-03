@@ -73,10 +73,32 @@ export const uiEditRights = (wfComposerService) => ({
       })
     };
 
+    /**
+     * Because we go back to Composer to set this information, and then wait for Composer
+     * to report the new value via flexible-content-stream, sometimes workflow-frontend will
+     * update before Composer has a chance to report the new value.
+     *
+     * Our client cannot distinguish between these sorts of updates, so we lock these values
+     * once they're changed for a short duration after editing.
+     */
+    const lockRightsValuesForDuration = (shouldHaveRights) => {
+      const cancelWatch = scope.$watch("contentItem", contentItem => {
+        contentItem.item.rightsSyndicationAggregate = shouldHaveRights;
+        contentItem.item.rightsSubscriptionDatabases = shouldHaveRights;
+        contentItem.item.rightsDeveloperCommunity = shouldHaveRights;
+      });
+
+      // Lock rights data for one polling cycle.
+      setTimeout(cancelWatch, 5000);
+    }
+
     scope.setAllRights = (hasRights) => {
       scope.contentItem.item.rightsSyndicationAggregate = hasRights;
       scope.contentItem.item.rightsSubscriptionDatabases = hasRights;
       scope.contentItem.item.rightsDeveloperCommunity = hasRights;
+
+      lockRightsValuesForDuration(hasRights);
+
       scope.updateRights();
     }
   }
