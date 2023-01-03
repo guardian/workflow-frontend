@@ -6,15 +6,13 @@ export const uiEditRights = (wfComposerService) => ({
   template: `
     <div class="ui-edit-rights">
       <div ng-if="inline">
-          <span ng-if="hasRightsData()">
-              Reviewed
+          <span ng-if="hasAnyRights()">
+              Has rights
           </span>
-          <span ng-if="!hasRightsData()">
-              <button class="btn btn-xs btn-info margin-right-small" ng-click="setAllRights(true); $event.stopPropagation()">
+          <span ng-if="!hasAnyRights()">
+              No rights.
+              <button class="btn btn-xs btn-info" ng-click="setAllRights(true); $event.stopPropagation()">
                   Add all rights
-              </button>
-              <button class="btn btn-xs btn-warning" ng-click="setAllRights(false); $event.stopPropagation()">
-                  Remove all rights
               </button>
           </span>
       </div>
@@ -62,10 +60,10 @@ export const uiEditRights = (wfComposerService) => ({
 
     scope.toggleShowAllOptions = () => scope.showAllOptions = !scope.showAllOptions;
 
-    scope.hasRightsData = () =>
-        scope.contentItem.item.rightsSyndicationAggregate !== null &&
-        scope.contentItem.item.rightsSubscriptionDatabases !== null &&
-        scope.contentItem.item.rightsDeveloperCommunity !== null;
+    scope.hasAnyRights = () =>
+        scope.contentItem.item.rightsSyndicationAggregate ||
+        scope.contentItem.item.rightsSubscriptionDatabases  ||
+        scope.contentItem.item.rightsDeveloperCommunity;
 
     scope.updateRights = () => {
       wfComposerService.updateRights(scope.contentItem.composerId, {

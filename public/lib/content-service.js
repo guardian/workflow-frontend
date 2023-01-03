@@ -246,7 +246,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'trashed': modelParams['trashed'] || null,
                         'hasPrintInfo': modelParams['hasPrintInfo'] || null,
                         'hasMainMedia': modelParams['hasMainMedia'] || null,
-                        'hasRightsData': modelParams['hasRightsData'] || null,
+                        'hasAnyRights': modelParams['hasAnyRights'] || null,
                     };
 
                     return params;
