@@ -195,7 +195,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
             listIsOpen: false,
             multi: false,
             filterOptions: [
-                { caption: 'Has rights set', value: 'true' },
+                { caption: 'Has any rights set', value: 'true' },
                 { caption: 'No rights set', value: 'false' }
             ]
         },

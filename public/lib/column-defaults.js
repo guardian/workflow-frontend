@@ -132,7 +132,7 @@ const columnDefaults = [{
   title: '',
   template: contentRightsTemplate,
   active: false,
-  isNew: true,
+  isNew: false,
   isSortable: true,
   sortField: ['rightsSyndicationAggregate', 'rightsSubscriptionDatabases', 'rightsDeveloperCommunity']
 },{
