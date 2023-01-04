@@ -30,17 +30,6 @@ export const uiEditRights = (wfComposerService) => ({
           </label>
         </div>
         <div>
-          <label class="ui-edit-rights__label" for="rights-subscription-databases">
-            <input type="checkbox"
-                   id="rights-subscription-databases"
-                   class="ui-edit-rights__input"
-                   ng-model="contentItem.item.rightsSubscriptionDatabases"
-                   ng-click="$event.stopPropagation()"
-                   ng-change="updateRights()" />
-            <span>Subscription databases</span>
-          </label>
-        </div>
-        <div>
           <label class="ui-edit-rights__label" for="rights-developer-community">
             <input type="checkbox"
                    id="rights-developer-community"
@@ -49,6 +38,17 @@ export const uiEditRights = (wfComposerService) => ({
                    ng-click="$event.stopPropagation()"
                    ng-change="updateRights()" />
             <span>Developer community</span>
+          </label>
+        </div>
+        <div>
+          <label class="ui-edit-rights__label" for="rights-subscription-databases">
+            <input type="checkbox"
+                   id="rights-subscription-databases"
+                   class="ui-edit-rights__input"
+                   ng-model="contentItem.item.rightsSubscriptionDatabases"
+                   ng-click="$event.stopPropagation()"
+                   ng-change="updateRights()" />
+            <span>Subscription databases</span>
           </label>
         </div>
       </div>
