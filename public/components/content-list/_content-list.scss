@@ -1,4 +1,5 @@
 @import "layouts/global/mixins";
+@import "components/directives/ui-edit-rights";
 
  /**
  * Content-list styles.
@@ -103,7 +104,8 @@ google-auth-banner .alert {
             &--last-modified,
             &--last-modified-by,
             &--last-modified-in-print-by,
-            &--printlocation {
+            &--printlocation,
+            &--rights {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 
@@ -196,6 +198,10 @@ google-auth-banner .alert {
             &--last-modified-by {
                 min-width: 110px;
             }
+
+            &--rights {
+              min-width: 125px;
+            }
         }
     }
 
@@ -272,7 +278,6 @@ google-auth-banner .alert {
       }
 
     }
-
 }
 
 // column-configurator

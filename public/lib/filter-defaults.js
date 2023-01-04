@@ -190,6 +190,16 @@ var filterDefaults = function (statuses, wfFiltersService) {
             ]
         },
         {
+            title: 'Syndication',
+            namespace: 'hasAnyRights',
+            listIsOpen: false,
+            multi: false,
+            filterOptions: [
+                { caption: 'Has any rights set', value: 'true' },
+                { caption: 'No rights set', value: 'false' }
+            ]
+        },
+        {
             title: 'Trashed',
             namespace: 'trashed',
             listIsOpen: false,

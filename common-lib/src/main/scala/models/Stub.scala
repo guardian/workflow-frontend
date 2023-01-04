@@ -47,7 +47,10 @@ case class ExternalData(
                          shortActualPrintLocationDescription: Option[String] = None,
                          longActualPrintLocationDescription: Option[String] = None,
                          statusInPrint: Option[OctopusStatus] = None,
-                         lastModifiedInPrintBy: Option[String] = None) {
+                         lastModifiedInPrintBy: Option[String] = None,
+                         rightsSyndicationAggregate: Option[Boolean] = None,
+                         rightsSubscriptionDatabases: Option[Boolean] = None,
+                         rightsDeveloperCommunity: Option[Boolean] = None) {
 }
 
 object ExternalData {
@@ -82,7 +85,8 @@ case class Stub(id: Option[Long] = None,
                 plannedNewspaperPublicationDate: Option[LocalDate] = None,
                 // Description enriched for use by WF front end client code.
                 shortPlannedPrintLocationDescription: Option[String] = None,
-                longPlannedPrintLocationDescription: Option[String] = None)
+                longPlannedPrintLocationDescription: Option[String] = None,
+               )
 
 object Stub {
   implicit val customConfig: Configuration = Configuration.default.withDefaults

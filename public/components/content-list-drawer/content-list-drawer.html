@@ -482,10 +482,15 @@
                             <p class="drawer__item-title">Status in print</p>
                             <span class="drawer__item-content" ng-show="contentItem.statusInPrint">{{ contentItem.statusInPrint }}</span>
                         </li>
-
+                        <li class="drawer__item">
+                          <p class="drawer__item-title">Rights</p>
+                          <span class="drawer__item-content">
+                            <ui-edit-rights content-item="contentItem" />
+                          </span>
+                        </li>
                     </ul>
 
-            
+
                     <ul class="drawer__column drawer__column--wide">
                         <li class="drawer__item">
                             <p class="drawer__item-title">Office</p>

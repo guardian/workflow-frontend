@@ -136,4 +136,27 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         return request(req);
     };
 
+    /**
+     * Update rights information for the given piece.
+     * @param {string} composerId
+     * @param {{
+     *     developerCommunity: boolean,
+     *     subscriptionDatabases: boolean,
+     *     syndicationAggregate: boolean
+     * }} rightsData
+     * @returns Promise<Response>
+     */
+    this.updateRights = function (
+        composerId,
+        rightsData
+    ) {
+        let req = {
+          method: 'PUT',
+          url: `${composerContentFetch}${composerId}/rights`,
+          data: JSON.stringify(rightsData),
+          withCredentials: true
+        };
+
+        return request(req);
+    };
 }
