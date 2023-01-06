@@ -191,12 +191,14 @@ var filterDefaults = function (statuses, wfFiltersService) {
         },
         {
             title: 'Syndication',
-            namespace: 'hasAnyRights',
+            namespace: 'rights',
             listIsOpen: false,
             multi: false,
             filterOptions: [
-                { caption: 'Has any rights set', value: 'true' },
-                { caption: 'No rights set', value: 'false' }
+                { caption: 'Has any rights set', value: 'has-rights' },
+                { caption: 'No rights set', value: 'no-rights' },
+                { caption: 'Reviewed', value: 'reviewed' },
+                { caption: 'Needs review', value: 'not-reviewed' }
             ]
         },
         {

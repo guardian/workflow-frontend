@@ -155,8 +155,8 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                     $rootScope.$broadcast('getContent');
                 });
 
-                $rootScope.$on('filtersChanged.hasAnyRights', function(event, data) {
-                  self.update('hasAnyRights', data);
+                $rootScope.$on('filtersChanged.rights', function(event, data) {
+                  self.update('rights', data);
                   $rootScope.$broadcast('getContent');
                 });
             }
@@ -200,7 +200,7 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                         'editorId'       : params['editorId'],
                         'hasPrintInfo'   : params['hasPrintInfo'],
                         'hasMainMedia'   : params['hasMainMedia'],
-                        'hasAnyRights'   : params['hasAnyRights']
+                        'hasAnyRights'   : params['rights']
                     };
 
                     $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);
