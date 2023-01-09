@@ -291,8 +291,8 @@ class Api(
       } yield id
     )}
   }
-  
-  def putStubPlannedNewspaperPublicationDate(stubId: Long) = 
+
+  def putStubPlannedNewspaperPublicationDate(stubId: Long) =
    {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
@@ -302,6 +302,17 @@ class Api(
         id <- stubsApi.putStubPlannedNewspaperPublicationDate(stubId, date)
       } yield id
     )}
+  }
+
+  def putStubRightsReviewed(stubId: Long) = {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- readJsonFromRequestResponse(request.body)
+        rightsReviewed <- extractDataResponse[Boolean](json)
+        id <- stubsApi.putStubRightsReviewed(stubId, rightsReviewed)
+      } yield id
+      )
+    }
   }
 
   def deleteContent(composerId: String) = {

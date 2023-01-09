@@ -51,6 +51,16 @@ export const uiEditRights = (wfComposerService) => ({
             <span>Subscription databases</span>
           </label>
         </div>
+        <hr />
+        <label class="ui-edit-rights__label" for="rights-reviewed">
+          <input type="checkbox"
+                 id="rights-reviewed"
+                 class="ui-edit-rights__input"
+                 ng-model="contentItem.item.rightsReviewed"
+                 ng-click="$event.stopPropagation()"
+                 wf-content-item-update-action="rightsReviewed" />
+          <span>Rights have been reviewed</span>
+        </label>
       </div>
     </div>
   `,

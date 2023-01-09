@@ -136,42 +136,49 @@ class StubAPI(
       json <- parseBody(res.body)
       item <- extractDataResponse[Long](json)
     } yield item
-  
+
   def putStubPlannedPublicationId(stubId: Long, plannedPublicationId: Long): ApiResponseFt[Long] =
       for {
         res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/plannedPublicationId", plannedPublicationId.asJson))
         json <- parseBody(res.body)
         item <- extractDataResponse[Long](json)
       } yield item
-  
+
   def putStubPlannedBookId(stubId: Long, plannedBookId: Long): ApiResponseFt[Long] =
       for {
         res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/plannedBookId", plannedBookId.asJson))
         json <- parseBody(res.body)
         item <- extractDataResponse[Long](json)
       } yield item
-  
+
   def putStubPlannedBookSectionId(stubId: Long, plannedBookSectionId: Long): ApiResponseFt[Long] =
       for {
         res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/plannedBookSectionId", plannedBookSectionId.asJson))
         json <- parseBody(res.body)
         item <- extractDataResponse[Long](json)
       } yield item
-  
+
   def putStubPlannedNewspaperPageNumber(stubId: Long, plannedNewspaperPageNumber: Int): ApiResponseFt[Long] =
       for {
         res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/plannedNewspaperPageNumber", plannedNewspaperPageNumber.asJson))
         json <- parseBody(res.body)
         item <- extractDataResponse[Long](json)
       } yield item
-  
+
   def putStubPlannedNewspaperPublicationDate(stubId: Long, plannedNewspaperPublicationDate: LocalDate): ApiResponseFt[Long] =
       for {
         res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/plannedNewspaperPublicationDate", plannedNewspaperPublicationDate.asJson))
         json <- parseBody(res.body)
         item <- extractDataResponse[Long](json)
       } yield item
-  
+
+  def putStubRightsReviewed(stubId: Long, reviewed: Boolean): ApiResponseFt[Long] =
+    for {
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/rightsReviewed", reviewed.asJson))
+      json <- parseBody(res.body)
+      item <- extractDataResponse[Long](json)
+    } yield item
+
   def deleteContentByStubId(id: Long): ApiResponseFt[Option[String]] =
     for {
       res <- ApiResponseFt.Async.Right(deleteRequest(s"stubs/$id"))
