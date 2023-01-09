@@ -86,7 +86,7 @@ case class Stub(id: Option[Long] = None,
                 // Description enriched for use by WF front end client code.
                 shortPlannedPrintLocationDescription: Option[String] = None,
                 longPlannedPrintLocationDescription: Option[String] = None,
-                rightsReviewed: Option[Boolean] = None
+                rightsReviewed: Boolean = false
                )
 
 object Stub {
