@@ -288,12 +288,6 @@
             white-space: nowrap;
         }
 
-        &--byline {
-          [data-tag-id] {
-            font-weight: bold;
-          }
-        }
-
         &--notes {
             @extend %fs-data-1;
             padding: 2px 10px;
