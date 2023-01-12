@@ -50,7 +50,8 @@ case class ExternalData(
                          lastModifiedInPrintBy: Option[String] = None,
                          rightsSyndicationAggregate: Option[Boolean] = None,
                          rightsSubscriptionDatabases: Option[Boolean] = None,
-                         rightsDeveloperCommunity: Option[Boolean] = None) {
+                         rightsDeveloperCommunity: Option[Boolean] = None,
+                         byline: Option[String] = None) {
 }
 
 object ExternalData {

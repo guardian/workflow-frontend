@@ -177,7 +177,9 @@
         &--sensitive,
         &--legally-sensitive,
         &--printlocation,
-        &--rights {
+        &--rights,
+        &--byline
+        {
             @extend %fs-data-1;
             @extend %content-list__field-padding;
         }
