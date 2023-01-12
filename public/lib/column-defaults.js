@@ -1,6 +1,7 @@
 import priorityTemplate              from "components/content-list-item/templates/priority.html";
 import contentTypeTemplate           from "components/content-list-item/templates/content-type.html";
 import titleTemplate                 from "components/content-list-item/templates/title.html";
+import bylineTemplate                from "components/content-list-item/templates/byline.html";
 import commentsTemplate              from "components/content-list-item/templates/comments.html";
 import mainImageTemplate             from "components/content-list-item/templates/main-image.html";
 import incopyTemplate                from "components/content-list-item/templates/incopy.html";
@@ -113,6 +114,17 @@ const columnDefaults = [{
     alwaysShown: true,
     isSortable: true,
     sortField: ['workingTitle']
+},{
+    name: 'byline',
+    prettyName: 'Byline',
+    labelHTML: 'Byline',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'byline.html',
+    template: bylineTemplate,
+    active: false,
+    isNew: false,
+    sortField: ['byline']
 },{
     name: 'notes',
     prettyName: 'Notes',

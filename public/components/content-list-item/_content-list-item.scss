@@ -177,7 +177,9 @@
         &--sensitive,
         &--legally-sensitive,
         &--printlocation,
-        &--rights {
+        &--rights,
+        &--byline
+        {
             @extend %fs-data-1;
             @extend %content-list__field-padding;
         }
@@ -284,6 +286,12 @@
         &--last-modified-by,
         &--last-modified-in-print-by {
             white-space: nowrap;
+        }
+
+        &--byline {
+          [data-tag-id] {
+            font-weight: bold;
+          }
         }
 
         &--notes {

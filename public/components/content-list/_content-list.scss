@@ -105,7 +105,8 @@ google-auth-banner .alert {
             &--last-modified-by,
             &--last-modified-in-print-by,
             &--printlocation,
-            &--rights {
+            &--rights,
+            &--byline {
                 padding: 15px 10px 5px 5px;
                 @extend %fs-data-2;
 
@@ -200,6 +201,10 @@ google-auth-banner .alert {
             }
 
             &--rights {
+              min-width: 125px;
+            }
+
+            &--byline {
               min-width: 125px;
             }
         }
