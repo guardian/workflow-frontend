@@ -11,14 +11,14 @@ angular.module('wfGoogleApiService', [])
             }
 
             /**
-             * If the client had already authorised then authorize invisibly with immediate: true, else trigger auth pop up
+             * If the client had already authorised then authorize invisibly with prompt: none, else trigger auth pop up
              */
             load () {
 
-                var checkInterval = setInterval(() => {
+                // TODO correctly set the script load order
+                const checkInterval = setInterval(() => {
 
-                    if (!(typeof gapi === 'undefined') && !(typeof gapi.client === 'undefined')) {
-
+                    if (!(typeof google === 'undefined')) {
                         clearInterval(checkInterval);
                         this.authInvis(this.handleAuthResult);
                     }
@@ -39,27 +39,45 @@ angular.module('wfGoogleApiService', [])
                 }
             }
 
-            authInvis (callBack) {
+            expiresAt(tokenResponse) {
+                const expiry = new Date();
+                expiry.setSeconds(expiry.getSeconds() + tokenResponse.expires_in);
+                return expiry;
+            }
 
-                return gapi.auth.authorize({
-                    'client_id': this.client_id,
-                    'scope': this.scope,
-                    immediate: true
-                }, callBack);
+            authInvis (callBack) {
+                const client = google.accounts.oauth2.initTokenClient({
+                  client_id,
+                  scope,
+                  prompt: 'none',
+                  callback: (res) => {
+                    this.tokenResponse = res;
+                    this.tokenResponse.expiresAt = expiresAt(res);
+                    callBack(res);
+                  },
+                });
+
+                client.requestAccessToken();
             }
 
             authPrompt () {
+                const client = google.accounts.oauth2.initTokenClient({
+                  client_id,
+                  scope,
+                  prompt: 'none',
+                  callback: (res) => {
+                    this.tokenResponse = res;
+                    this.tokenResponse.expiresAt = expiresAt(res);
+                    this.handleAuthResult(res);
+                  },
+                });
 
-                gapi.auth.authorize({
-                    'client_id': this.client_id,
-                    'scope': this.scope,
-                    immediate: false
-                }, this.handleAuthResult);
+                client.requestAccessToken();
             }
 
             requestUserList (query) {
 
-                var req = {
+                const req = {
                     method: 'GET',
                     url: 'https://www.googleapis.com/admin/directory/v1/users',
                     params: {
@@ -68,7 +86,7 @@ angular.module('wfGoogleApiService', [])
                         viewType: 'domain_public'
                     },
                     headers: {
-                        'Authorization': 'Bearer ' + window.gapi.auth.getToken()['access_token']
+                        'Authorization': 'Bearer ' + this.tokenResponse.access_token
                     }
                 };
 
@@ -81,8 +99,8 @@ angular.module('wfGoogleApiService', [])
 
             _tokenIsExpired (t) {
                 return t && // token exists
-                    t['expires_at'] && // has expires property
-                    new Date(parseInt(t['expires_at'], 10)*1000) <= new Date(); // not already expired
+                    t.expiresAt && // we have calculated expiration property
+                    t.expiresAt <= new Date(); // expiry time is before noe
             }
 
             /**
@@ -99,7 +117,7 @@ angular.module('wfGoogleApiService', [])
 
                 return new Promise((resolve, reject) => {
 
-                    if (this._tokenIsExpired(gapi.auth.getToken())) {
+                    if (this._tokenIsExpired(this.tokenResponse)) {
 
                         // re-auth
                         this.authInvis((authResult) => {

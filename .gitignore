@@ -80,3 +80,4 @@ build/
 .DS_Store
 Brewfile.lock.json
 .bsp
+.bloop
