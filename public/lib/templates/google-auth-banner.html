@@ -1,0 +1,6 @@
+<div class="alert alert-info" ng-if="banner === 'unauthorized'">
+  To assign content to yourself or other people, you'll need to <button class="btn btn-xs btn-primary " ng-click="auth()">Authorise Workflow</button> access your Google contacts.
+</div>
+<div class="alert alert-info" ng-if="banner ==='popup'">
+  Authorizing Workflow failed. This usually happens if your browser blocks popups. Try enabling popups by using the option near the top of your screen, then <button class="btn btn-xs btn-primary " ng-click="auth()">try again</button>.
+</div>

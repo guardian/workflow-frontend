@@ -1,5 +1,7 @@
 import angular from 'angular';
 
+import googleAuthBannerTemplate from './templates/google-auth-banner.html';
+
 const gisStorageKey = 'gis-token-info';
 
 angular.module('wfGoogleApiService', [])
@@ -52,6 +54,10 @@ angular.module('wfGoogleApiService', [])
 
                     console.info('Client authorised via google');
                     $rootScope.$emit('wfGoogleApiService.userIsAuthorized');
+                } else if (authResult.error === 'popup_failed_to_open' || authResult.error === 'popup_closed') {
+
+                    console.error('Authorisation failed, due to popup failing to open. Notifying user');
+                    $rootScope.$emit('wfGoogleApiService.popupFailed');
                 } else {
 
                     console.info('Client not authorised, triggering auth popup');
@@ -76,6 +82,9 @@ angular.module('wfGoogleApiService', [])
                     this._storeToken();
                     callBack(res);
                   },
+                  error_callback: (type) => {
+                    callBack({ error: type });
+                  },
                 });
 
                 client.requestAccessToken();
@@ -91,6 +100,9 @@ angular.module('wfGoogleApiService', [])
                     this.accessTokenExpiresAt = this.expiresAt(res);
                     this._storeToken();
                     this._handleInitialAuth(res);
+                  },
+                  error_callback: (type) => {
+                    callBack({ error: type });
                   },
                 });
 
@@ -166,24 +178,25 @@ angular.module('wfGoogleApiService', [])
         return {
             restrict: 'E',
             scope: {},
-            template: '<div class="alert alert-info" ng-if="visible">To assign content to yourself or other people, you\'ll need to <button class="btn btn-xs btn-primary " ng-click="auth()">Authorise Workflow</button> access your Google contacts.</div>',
+            template: googleAuthBannerTemplate,
             link: ($scope, elem) => {
 
-                $scope.visible = false;
+                $scope.banner = null;
 
                 $scope.auth = function () {
-
                     wfGoogleApiService.authPrompt();
                 };
 
                 $rootScope.$on('wfGoogleApiService.userIsNotAuthorized', () => {
+                    $scope.banner = 'unauthorized';
+                });
 
-                    $scope.visible = true;
+                $rootScope.$on('wfGoogleApiService.popupFailed', () => {
+                    $scope.banner = 'popup';
                 });
 
                 $rootScope.$on('wfGoogleApiService.userIsAuthorized', () => {
-
-                    $scope.visible = false;
+                    $scope.banner = null;
                 });
             }
         }
