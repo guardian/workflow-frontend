@@ -1,5 +1,7 @@
 import angular from 'angular';
 
+const gisStorageKey = 'gis-token-info';
+
 angular.module('wfGoogleApiService', [])
     .service('wfGoogleApiService', ['$window', '$http', '$rootScope', function ($window, $http, $rootScope) {
 
@@ -15,18 +17,36 @@ angular.module('wfGoogleApiService', [])
              */
             load () {
 
+              try {
+                const tokenInfo = JSON.parse($window.localStorage.getItem(gisStorageKey));
+                this.accessTokenExpiresAt = new Date(tokenInfo.accessTokenExpiresAt);
+                this.accessToken = tokenInfo.accessToken;
+              } catch {}
+
+              if (!this.accessToken || this._tokenIsExpired()) {
                 // TODO correctly set the script load order
                 const checkInterval = setInterval(() => {
 
                     if (!(typeof google === 'undefined')) {
                         clearInterval(checkInterval);
-                        this.authInvis(this.handleAuthResult);
+                        this.authInvis(this._handleInitialAuth);
                     }
                 }, 500);
+              }
 
             }
 
-            handleAuthResult (authResult)  {
+            _storeToken() {
+              try {
+                const tokenInfo = {
+                  accessToken: this.accessToken,
+                  accessTokenExpiresAt: this.accessTokenExpiresAt.getTime(),
+                }
+                $window.localStorage.setItem(gisStorageKey, JSON.stringify(tokenInfo));
+              } catch {}
+            }
+
+            _handleInitialAuth (authResult)  {
 
                 if (authResult && !authResult.error) {
 
@@ -41,7 +61,7 @@ angular.module('wfGoogleApiService', [])
 
             expiresAt(tokenResponse) {
                 const expiry = new Date();
-                expiry.setSeconds(expiry.getSeconds() + tokenResponse.expires_in);
+                expiry.setTime(expiry.getTime() + (tokenResponse.expires_in * 1000));
                 return expiry;
             }
 
@@ -51,8 +71,9 @@ angular.module('wfGoogleApiService', [])
                   scope: this.scope,
                   prompt: 'none',
                   callback: (res) => {
-                    this.tokenResponse = res;
-                    this.tokenResponse.expiresAt = expiresAt(res);
+                    this.accessToken = res.access_token;
+                    this.accessTokenExpiresAt = this.expiresAt(res);
+                    this._storeToken();
                     callBack(res);
                   },
                 });
@@ -62,13 +83,14 @@ angular.module('wfGoogleApiService', [])
 
             authPrompt () {
                 const client = google.accounts.oauth2.initTokenClient({
-                  client_id,
-                  scope,
-                  prompt: 'none',
+                  client_id: this.client_id,
+                  scope: this.scope,
+                  prompt: '', // empty string The user will be prompted only the first time your app requests access.
                   callback: (res) => {
-                    this.tokenResponse = res;
-                    this.tokenResponse.expiresAt = expiresAt(res);
-                    this.handleAuthResult(res);
+                    this.accessToken = res.access_token;
+                    this.accessTokenExpiresAt = this.expiresAt(res);
+                    this._storeToken();
+                    this._handleInitialAuth(res);
                   },
                 });
 
@@ -86,7 +108,7 @@ angular.module('wfGoogleApiService', [])
                         viewType: 'domain_public'
                     },
                     headers: {
-                        'Authorization': 'Bearer ' + this.tokenResponse.access_token
+                        'Authorization': 'Bearer ' + this.accessToken
                     }
                 };
 
@@ -98,9 +120,9 @@ angular.module('wfGoogleApiService', [])
             }
 
             _tokenIsExpired (t) {
-                return t && // token exists
-                    t.expiresAt && // we have calculated expiration property
-                    t.expiresAt <= new Date(); // expiry time is before noe
+                return this.accessToken && // access token found and added to scope
+                    this.accessTokenExpiresAt && // we have calculated expiration property
+                    this.accessTokenExpiresAt <= new Date(); // expiry time is before now
             }
 
             /**
@@ -117,7 +139,7 @@ angular.module('wfGoogleApiService', [])
 
                 return new Promise((resolve, reject) => {
 
-                    if (this._tokenIsExpired(this.tokenResponse)) {
+                    if (this._tokenIsExpired()) {
 
                         // re-auth
                         this.authInvis((authResult) => {
