@@ -47,8 +47,8 @@ angular.module('wfGoogleApiService', [])
 
             authInvis (callBack) {
                 const client = google.accounts.oauth2.initTokenClient({
-                  client_id,
-                  scope,
+                  client_id: this.client_id,
+                  scope: this.scope,
                   prompt: 'none',
                   callback: (res) => {
                     this.tokenResponse = res;
