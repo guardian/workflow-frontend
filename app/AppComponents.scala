@@ -48,6 +48,7 @@ class AppComponents(context: Context)
   val editorialSupportTeamsController = new EditorialSupportTeamsController(config, controllerComponents, wsClient, panDomainRefresher)
   val apiController = new Api(stubsApi, sectionsApi, editorialSupportTeamsController, config, controllerComponents, wsClient, panDomainRefresher)
   val applicationController = new Application(editorialSupportTeamsController, sectionsApi, tagService, desksApi, sectionsDeskMappingsApi, permissions, config, controllerComponents, wsClient, panDomainRefresher, stubsApi)
+  val peopleServiceController = new PeopleService(config, controllerComponents, wsClient, panDomainRefresher, permissions)
 
   val notificationsController = new Notifications(config, controllerComponents, wsClient, panDomainRefresher)
 
@@ -59,6 +60,7 @@ class AppComponents(context: Context)
     notificationsController,
     loginController,
     apiController,
+    peopleServiceController,
     capiServiceController,
     adminController,
     supportController,
