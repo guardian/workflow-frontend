@@ -1,9 +1,7 @@
 
-<google-auth-banner></google-auth-banner>
-
 <wf-content-list-loader event="content.rendered"></wf-content-list-loader>
 
-<table class="content-list" ng-class="{ 'content-list--compact': compactView.visible, 'content-list--animations-enabled': animationsEnabled, 'content-list--presence-disabled': !presenceIsActive, 'content-list--auth-banner-visible': googleAuthBannerVisible}" infinite-scroll="moreContent()" infinite-scroll-distance="contentItemsLoadingThreshold" infinite-scroll-immediate-check="false" infinite-scroll-parent="true" infinite-scroll-disabled="infiniteScrollDisabled">
+<table class="content-list" ng-class="{ 'content-list--compact': compactView.visible, 'content-list--animations-enabled': animationsEnabled, 'content-list--presence-disabled': !presenceIsActive}" infinite-scroll="moreContent()" infinite-scroll-distance="contentItemsLoadingThreshold" infinite-scroll-immediate-check="false" infinite-scroll-parent="true" infinite-scroll-disabled="infiniteScrollDisabled">
     <thead class="content-list-head">
         <tr class="content-list-head__row content-list--sticky-row">
             <th class="content-list-head__heading--group content-list-head__heading--notifier" colspan="1">&nbsp;</th>
@@ -34,7 +32,7 @@
     </tbody>
 </table>
 
-<div class="column-configurator" ng-show="showColumnMenu" ng-class="{'column-configurator--auth-banner-visible': googleAuthBannerVisible}">
+<div class="column-configurator" ng-show="showColumnMenu">
     <ul class="column-configurator__list">
         <li class="column-configurator__list-item" ng-repeat="col in columns" ng-if="!col.alwaysShown">
             <label class="column-configurator__label" for="{{ col.name }}">

@@ -6,21 +6,27 @@
 
     <div class="form-control punters__autocomplete-field">
         <ul class="punters__token-list">
-            <li class="punters__token" ng-repeat="user in tokens" ng-click="removeToken($index);">
-                <span class="punters__autocomplete-item-name">{{ user.name.fullName }}</span>
-                <span class="punters__token-remove">x</span>
+            <li class="punters__token" ng-repeat="userEmail in tokens" ng-click="removeToken($index);">
+                <span class="punters__autocomplete-item-email">{{ userEmail }}</span>
+                <span class="punters__token-remove">🗑</span>
             </li>
-            <li class="punters__input-token" ng-show="!tokens || tokens && tokens.length === 0">
-                <input type="text" id="stub_assignee" name="assignee" value="" class="punters__text-input" ng-keydown="keyDown($event);">
+            <li class="punters__input-token" ng-show="!tokens || tokens.length === 0">
+                <input type="text" id="stub_assignee" name="assignee" value="" class="punters__text-input" autocomplete="off"
+                       ng-keydown="keyDown($event);"
+                       ng-model="searchText"
+                       ng-change="searchForUsers()"
+                >
             </li>
         </ul>
     </div>
 
     <ul class="punters__autocomplete-list" ng-show="foundUsers && foundUsers.length > 0">
-        <li class="punters__autocomplete-item" ng-repeat="user in foundUsers" ng-click="addToken(user);" ng-class="{'punters__autocomplete-item--selected': user.selected }">
-            <img class="punters__autocomplete-item-image" ng-src="{{ user.thumbnailPhotoUrl }}" height="24" alt=""/>
-            <span class="punters__autocomplete-item-name">{{ user.name.fullName }}</span>
-            <span class="punters__autocomplete-item-email">({{ user.primaryEmail }})</span>
+        <li class="punters__autocomplete-item"
+            ng-repeat="userEmail in foundUsers track by $index"
+            ng-click="addToken(userEmail);"
+            ng-class="{'punters__autocomplete-item--selected': selectedIndex === $index}"
+        >
+            <span class="punters__autocomplete-item-email">{{ userEmail }}</span>
         </li>
     </ul>
 

@@ -17,7 +17,7 @@ var SETTING_OPEN_SECTION = 'openSection';
  * @param contentService
  * @param prodOfficeService
  */
-export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, wfGoogleApiService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService, wfTagApiService, wfFormatDateTime, legalValues, pictureDeskValues) {
+export function wfContentListDrawer($rootScope, config, $timeout, $window, contentService, prodOfficeService, wfCapiContentService, wfCapiAtomService, wfAtomService, wfSettingsService, wfComposerService, wfTagApiService, wfFormatDateTime, legalValues, pictureDeskValues) {
     var hiddenClass = 'content-list-drawer--hidden';
 
     function buildComposerRestorerUrl (composerId) {
@@ -106,8 +106,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
 
                         $scope.currentDatePickerValue = $scope.contentItem.item.due ? $scope.contentItem.item.due : undefined;
                         $scope.currentPublicationDatePickerValue = $scope.contentItem.plannedNewspaperPublicationDate ? $scope.contentItem.plannedNewspaperPublicationDate : undefined;
-
-                        self.updateAssigneeUserImage();
                     });
 
                     return self.show();
@@ -135,19 +133,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 return this.isHidden() ? this.showContent(contentItem, $contentListItemElement, capiData) : this.hide();
             };
 
-            this.updateAssigneeUserImage = function () {
-
-                // Enhance assignee with Image
-                if ($scope.contentItem.assigneeEmail) {
-                    wfGoogleApiService.searchUsers($scope.contentItem.assigneeEmail).then((data) => {
-                        if (data && data.length) {
-                            $scope.assigneeImage = data[0].thumbnailPhotoUrl;
-                        }
-                    });
-                } else {
-                    $scope.assigneeImage = ' ';
-                }
-            }
         },
 
 
@@ -408,8 +393,6 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                     };
 
                     $scope.$emit('contentItem.update', msg);
-
-                    contentListDrawerController.updateAssigneeUserImage();
                 }
             });
 

@@ -36,7 +36,7 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
     .directive('wfContentListItem', ['$rootScope', 'statuses', 'legalValues', 'pictureDeskValues', 'sections', 'config', wfContentListItem])
     .controller('wfCommissionedLengthCtrl', ['$scope', wfCommissionedLengthCtrl])
     .directive('uiFilterList', ['$q','$window', uiFilterList])
-    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfGoogleApiService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService', 'wfTagApiService', 'wfFormatDateTimeFilter', 'legalValues', 'pictureDeskValues', wfContentListDrawer])
+    .directive('wfContentListDrawer', ['$rootScope', 'config', '$timeout', '$window', 'wfContentService', 'wfProdOfficeService', 'wfCapiContentService', 'wfCapiAtomService', 'wfAtomService', 'wfSettingsService', 'wfComposerService', 'wfTagApiService', 'wfFormatDateTimeFilter', 'legalValues', 'pictureDeskValues', wfContentListDrawer])
     .directive('uiEditRights', ['wfComposerService', uiEditRights])
     .directive("bindCompiledHtml", function($compile) {
         return {
@@ -93,13 +93,6 @@ angular.module('wfContentList', ['wfContentService', 'wfDateService', 'wfProdOff
 
 
 function wfContentListController($rootScope, $scope, $anchorScroll, statuses, priorities, sections, wfContentService, wfContentPollingService, wfContentItemParser, wfPresenceService, wfColumnService, wfPreferencesService, wfFiltersService) {
-    $scope.googleAuthBannerVisible = false;
-    $rootScope.$on('wfGoogleApiService.userIsNotAuthorized', () => {
-        $scope.googleAuthBannerVisible = true;
-    });
-    $rootScope.$on('wfGoogleApiService.userIsAuthorized', () => {
-        $scope.googleAuthBannerVisible = false;
-    });
 
     $scope.presenceIsActive = false;
     $rootScope.$on("presence.connection.error", () => $scope.presenceIsActive = false);
