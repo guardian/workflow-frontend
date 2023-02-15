@@ -60,6 +60,8 @@ GET            /api/priorities                             controllers.Api.prior
 
 GET            /api/editorialSupportTeams                  controllers.Api.editorialSupportTeams
 
+GET            /api/people                                 controllers.PeopleService.searchPeople(prefix: String)
+
 # CAPI
 GET            /capi/*path                                 controllers.CAPIService.previewCapiProxy(path)
 

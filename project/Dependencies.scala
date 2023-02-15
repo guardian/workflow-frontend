@@ -72,7 +72,7 @@ object Dependencies {
     "org.bouncycastle" % "bcprov-jdk15on" % "1.60"
   )
 
-  val permissionsClientVersion = "2.0"
+  val permissionsClientVersion = "2.15"
 
   val permissionsDependencies = Seq(
     "com.gu" %% "editorial-permissions-client" % permissionsClientVersion

@@ -3,7 +3,7 @@ import puntersTemplate from './punters.html';
 /**
  * Created by cfinch on 09/01/2015.
  */
-function punters ($rootScope, wfGoogleApiService) {
+function punters ($rootScope) {
 
     /**
      * Filter one array based on another
@@ -32,21 +32,13 @@ function punters ($rootScope, wfGoogleApiService) {
         link: function ($scope, $elem) {
 
             var field = $elem[0].querySelector('.punters__autocomplete-field'),
-                list = $elem[0].querySelector('.punters__autocomplete-list'),
                 input = $elem[0].querySelector('.punters__text-input'),
-                $input = angular.element(input),
-                selectedTokenIndex = 0;
+                $input = angular.element(input);
 
+            $scope.searchText = "";
+            $scope.selectedIndex = 0;
             $scope.tokens = [];
             $scope.foundUsers = [];
-
-            // On load, pre-fill a token if someone already assigned
-            if ($scope.stub.assigneeEmail) {
-
-                wfGoogleApiService.searchUsers($scope.stub.assigneeEmail).then((data) => {
-                    $scope.addToken(data[0], true);
-                });
-            }
 
             /**
              * Emulate focus and blur styles from inputs on div container for autocomplete
@@ -61,65 +53,25 @@ function punters ($rootScope, wfGoogleApiService) {
             })();
 
             /**
-             * Manage the selected state of the items according to the selected item index
-             * @param newIndex the index to update the selected item to.
-             */
-            function updateSelectedItem (newIndex) {
-
-                if ($scope.foundUsers && $scope.foundUsers.length > 0) {
-
-                    if ($scope.foundUsers[selectedTokenIndex] && $scope.foundUsers[selectedTokenIndex].selected) {
-                        delete $scope.foundUsers[selectedTokenIndex].selected;
-                    }
-                    selectedTokenIndex = newIndex;
-                    $scope.foundUsers[selectedTokenIndex].selected = true;
-
-                    keepInView();
-                }
-            }
-
-            /**
-             * Ensure the the list scrolls to keep the currently selected list item in view
-             */
-            function keepInView () {
-
-                var selectedEl = list.children[selectedTokenIndex];
-
-                if (selectedEl) {
-
-                    var height = selectedEl.offsetHeight,
-                        elOffset = height * (selectedTokenIndex + 1),
-                        viewBoundTop = list.scrollTop,
-                        viewBoundBot = viewBoundTop + list.offsetHeight;
-
-                    if (elOffset > viewBoundBot) { // Bring in to view
-                        list.scrollTop += height;
-                    } else if (elOffset <= viewBoundTop) { // Bring in to view
-                        list.scrollTop -= height;
-                    }
-                }
-            }
-
-            /**
              * Reset the autocomplete list for when it should be emptied
              */
             function resetAutocomplete () {
                 $scope.foundUsers = []; // Reset search
-                selectedTokenIndex = 0; // reset selected token
+                $scope.selectedIndex = 0; // reset selected token
             }
 
-            $scope.addToken = function (user, dontSendEvent) {
+            $scope.addToken = function (userEmail, dontSendEvent) {
 
                 if ($scope.tokens.length === 0) { // artificial limit to 1 token for time being
 
-                    $scope.tokens.push(user);
+                    $scope.tokens.push(userEmail);
                     $scope.foundUsers = filterList($scope.foundUsers, $scope.tokens);
 
                     // Update model
-                    $scope.stub.assigneeEmail = user.primaryEmail;
-                    $scope.stub.assignee = user.name.fullName;
+                    $scope.stub.assigneeEmail = userEmail;
+                    $scope.stub.assignee = userEmail?.substring(0,128); // TODO can we get rid of this field all together
 
-                    input.value = ""; // clear input when token is added
+                    $scope.searchText = ""; // clear input when token is added
                     resetAutocomplete();
 
                     if (!dontSendEvent) {
@@ -127,6 +79,11 @@ function punters ($rootScope, wfGoogleApiService) {
                     }
                 }
             };
+
+            // On load, pre-fill a token if someone already assigned
+            if ($scope.stub.assigneeEmail) {
+                $scope.addToken($scope.stub.assigneeEmail, true);
+            }
 
             $scope.removeToken = function ($index, dontSendEvent) {
                 $scope.tokens.splice($index, 1);
@@ -149,58 +106,44 @@ function punters ($rootScope, wfGoogleApiService) {
                 switch ($event.keyCode) {
                     case 40: // Down
                         $event.preventDefault();
-                        var nextToken = selectedTokenIndex + 1 <= $scope.foundUsers.length - 1 ? selectedTokenIndex + 1 : $scope.foundUsers.length - 1;
-                        updateSelectedItem(nextToken);
+                        if($scope.selectedIndex < $scope.foundUsers.length) {
+                            $scope.selectedIndex++;
+                        }
                         break;
 
                     case 38: // Up
                         $event.preventDefault();
-                        var nextToken = selectedTokenIndex - 1 >= 0 ? selectedTokenIndex - 1 : 0;
-                        updateSelectedItem(nextToken);
+                        if($scope.selectedIndex > 0) {
+                            $scope.selectedIndex--;
+                        }
                         break;
 
                     case 13: // Enter
                         $event.preventDefault();
-                        if ($scope.foundUsers.length && $scope.foundUsers[selectedTokenIndex]) {
-                            $scope.addToken($scope.foundUsers[selectedTokenIndex]);
-                            updateSelectedItem(selectedTokenIndex + 1);
+                        if ($scope.foundUsers.length && $scope.foundUsers[$scope.selectedIndex]) {
+                            $scope.addToken($scope.foundUsers[$scope.selectedIndex]);
                         }
                         break;
-
-                    case 8: // Backspace
-                        if (input.value.length === 0) { // no text to delete so delete tokens..
-                            if ($scope.tokens.length > 0) {
-                                $scope.tokens.pop();
-                            }
-                            resetAutocomplete();
-                        } else if (input.value.length === 1) { // remove the list
-                            resetAutocomplete();
-                        } else {
-                            searchForUsers();
-                        }
-                        break;
-
-                    default:
-                        searchForUsers();
                 }
+            };
 
-                function searchForUsers () {
+            $scope.searchForUsers = function() {
 
-                    var v = input.value.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); // Whitespace
+                const searchText = $scope.searchText.trim();
 
-                    if (v && v.length > 0) {
-                        wfGoogleApiService.searchUsers(v).then((data) => {
-                            if (data && data.length > 0) {
-                                $scope.foundUsers = filterList(data, $scope.tokens);
-                                if (selectedTokenIndex > $scope.foundUsers.length -1) {
-                                    selectedTokenIndex = 0;
-                                }
-                                updateSelectedItem(selectedTokenIndex);
+                if (searchText && searchText.length > 0) {
+                    fetch(`/api/people?prefix=${encodeURI(searchText)}`).then(_ => _.json()).then((data) => {
+                        if (data && data.length > 0) {
+                            $scope.foundUsers = data;
+                            //FIXME figure out why it takes so long to render this new `foundUsers` list
+                            if ($scope.selectedIndex > $scope.foundUsers.length - 1) {
+                                $scope.selectedIndex = $scope.foundUsers.length - 1;
                             }
-                        });
-                    } else {
-                        resetAutocomplete();
-                    }
+                        }
+                    });
+                } else {
+                    // TODO check if we need to clear $scope.tokens
+                    resetAutocomplete();
                 }
             };
 
@@ -208,14 +151,10 @@ function punters ($rootScope, wfGoogleApiService) {
 
                 input.focus();
 
-                input.value = "";
+                $scope.searchText = "";
                 resetAutocomplete();
 
-                wfGoogleApiService.searchUsers(_wfConfig.user.email).then((data) => { // dirty...
-                    if (data && data.length > 0) {
-                        $scope.addToken(data[0]);
-                    }
-                });
+                $scope.addToken(_wfConfig.user.email);
             };
         }
     };

@@ -13,21 +13,6 @@ $compact-display-td-padding: 2px 5px;
 $textualIconSize: 22px;
 $tableHeaderRowHeight: 48px;
 
-// Google auth banner is run through bootstrap,
-// with padding, it is 52px
-$googleAuthBannerHeight: 52px;
-
-google-auth-banner .alert {
-    position: sticky;
-    top: 0;
-
-    // reset bootstrap styles
-    margin: 0;
-    z-index: 3;
-    border: none;
-    border-radius: 0;
-}
-
 // Global padding for cells
 %content-list__field-padding {
     padding: 10px 5px;
@@ -65,14 +50,6 @@ google-auth-banner .alert {
         &.content-list__group-heading {
             top: $tableHeaderRowHeight;
             z-index: 2;
-        }
-    }
-
-    &--auth-banner-visible &--sticky-row th {
-        top: $googleAuthBannerHeight;
-
-        &.content-list__group-heading {
-            top: $tableHeaderRowHeight + $googleAuthBannerHeight;
         }
     }
 
@@ -345,7 +322,6 @@ google-auth-banner .alert {
 .column-configurator {
     $columnConfiguratorBorder: 1px;
     $columnConfiguratorTopOffset: $tableHeaderRowHeight + $topToolbarHeight + $columnConfiguratorBorder;
-    $columnConfiguratorTopOffsetWithAuth: $columnConfiguratorTopOffset + $googleAuthBannerHeight;
 
     position: fixed;
     top: $columnConfiguratorTopOffset;
@@ -353,11 +329,6 @@ google-auth-banner .alert {
     max-height: calc(100vh - #{$columnConfiguratorTopOffset});
     overflow-x: hidden;
     overflow-y: scroll;
-
-    &--auth-banner-visible {
-        top: $columnConfiguratorTopOffsetWithAuth;
-        max-height: calc(100vh - #{$columnConfiguratorTopOffsetWithAuth});
-    }
 
     right: 15px;
     width: 180px;

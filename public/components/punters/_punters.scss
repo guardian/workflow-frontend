@@ -61,11 +61,6 @@
     &:hover {
         background-color: $c-grey-400;
     }
-
-    .punters__autocomplete-item-name {
-        display: inline;
-        @extend %fs-data-1;
-    }
 }
 
 .punters__token-remove {
@@ -92,7 +87,6 @@
 
 .punters__autocomplete-item {
     width: 100%;
-    height: 42px;
     border-bottom: 1px solid $c-grey-500;
     white-space: nowrap;
     overflow: hidden;
@@ -112,25 +106,8 @@
     }
 }
 
-.punters__autocomplete-item-image {
-    float: left;
-    height: 38px;
-    width: 38px;
-    background-color: $c-grey-300;
-    margin-right: 2px;
-    @include border-radius(50px);
-}
-
-.punters__autocomplete-item-name {
-    display: block;
-    height: 21px;
-    @extend %fs-data-3;
-    margin-right: 2px;
-}
-
 .punters__autocomplete-item-email {
-    display: block;
-    height: 21px;
-    @extend %fs-data-1;
-    color: $c-grey-600;
+    display: inline-block;
+    @extend %fs-data-3;
+    padding: 3px;
 }

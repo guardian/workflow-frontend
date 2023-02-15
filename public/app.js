@@ -25,7 +25,6 @@ import 'lib/filters-service';
 import 'lib/column-service';
 import 'lib/preferences-service';
 import 'lib/analytics';
-import 'lib/google-api';
 import 'lib/polling-service';
 import 'lib/title-service';
 import 'lib/logger';
@@ -57,7 +56,6 @@ angular.module('workflow',
         'wfColumnService',
         'wfPreferencesService',
         'wfAnalyticsServiceMod',
-        'wfGoogleApiService',
         'infinite-scroll',
         'wfTitleService',
         'logger',
@@ -207,9 +205,6 @@ angular.module('workflow',
         { name: 'Checked', value: 'COMPLETE'}
     ]})
 
-    .run(function ($window, wfGoogleApiService) {
-        wfGoogleApiService.load();
-    })
     .run(['wfAnalyticsService', function(){}]);
 
 registerServiceWorker();

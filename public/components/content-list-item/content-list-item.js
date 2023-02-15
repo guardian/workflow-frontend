@@ -24,6 +24,17 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
     }
 
     function toInitials(str) {
+        if(str.includes("@")){
+            return str
+                .split("@")[0]
+                .toLowerCase()
+                .replace(".casual", "")
+                .replace(".freelancer", "")
+                .split(".")
+                .map(_ => _.substring(0,1).toUpperCase())
+                .join("");
+        }
+
         if (str.length <= 3) { return str; }
         var initials = str.match(/\b(\w)/g).join('');
 

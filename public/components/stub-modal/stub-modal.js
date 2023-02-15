@@ -17,7 +17,7 @@ import { punters } from 'components/punters/punters';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
-    .directive('punters', ['$rootScope', 'wfGoogleApiService', punters]);
+    .directive('punters', ['$rootScope', punters]);
 
 function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode,
      sections, statusLabels, legalStatesService, pictureDeskStatesService, wfComposerService, wfProdOfficeService, wfContentService,
@@ -43,12 +43,12 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         $scope.templates = sortedTemplates.map(({ title, dateCreated }) => {
             // TODO MRB: Ideally Composer would give us back an opaque ID.
             // It's like this for now so we can roll Composer and Workflow
-            // forward and back independently. 
+            // forward and back independently.
             return {
                 id: `${title}_${dateCreated}`,
                 display: `${title} - ${moment(dateCreated).format("Do MMMM YYYY")}`
             }
-            
+
         });
     }).finally(() => {
         $scope.loadingTemplates = false;

@@ -86,7 +86,7 @@
                                 {{ capiData.mainMediaAltText || "None" }}
                             </span>
                         </li>
-     
+
                         <li class="drawer__item">
                             <span class="drawer__item-title">Trail picture</span>
                             <div ng-if="capiData.trailImageUrl" class="drawer__image-container">
@@ -188,7 +188,7 @@
                                 <select ng-click="$event.stopPropagation()" ng-model="contentItem.section" ng-options="section.name for section in contentList.sections" wf-content-item-update-action="section"></select>
                             </li>
                         </ul>
-    
+
                         <ul class="drawer__column">
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Content type</p>
@@ -196,20 +196,20 @@
                                     {{ contentItem.contentTypeTitle || '-' }}
                                 </span>
                             </li>
-    
+
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Headline (YT title)</p>
                                 <span class="drawer__item-content">
                                     {{ capiData.title || '-' }}
                                 </span>
                             </li>
-    
+
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Standfirst</p>
                                 <span class="drawer__item-content" ng-bind-html="capiData.description | wfTrustedHtml">
                                 </span>
                             </li>
-    
+
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Trail text</p>
                                 <span class="drawer__item-content">
@@ -217,7 +217,7 @@
                                 </span>
                             </li>
                         </ul>
-    
+
                         <ul class="drawer__column">
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Video source</p>
@@ -225,21 +225,21 @@
                                     {{ capiData.source || '-' }}
                                 </span>
                             </li>
-    
+
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Video category</p>
                                 <span class="drawer__item-content">
                                     {{ capiData.category || '-' }}
                                 </span>
                             </li>
-    
+
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Expiry date</p>
                                 <span class="drawer__item-content">
                                     {{ capiData.friendlyExpiryDate || '-' }}
                                 </span>
                             </li>
-    
+
                             <!-- Remove this when YT data is added -->
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Keywords</p>
@@ -247,12 +247,12 @@
                                     {{ capiData.keywords || '-' }}
                                 </span>
                             </li>
-    
+
                         </ul>
-    
+
                         </ul>
-    
-    
+
+
                         <!--TODO: Add helpful Youtube data-->
                         <!--<ul class="drawer__column">
                             <li class="drawer__item">
@@ -261,23 +261,23 @@
                                     {{ capiData.metadata.categoryId || '-' }}
                                 </span>
                             </li>
-    
+
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Youtube channel ID</p>
                                 <span class="drawer__item-content">
                                     {{ capiData.metadata.channelId || '-' }}
                                 </span>
                             </li>
-    
+
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Keywords</p>
                                 <span class="drawer__item-content">
                                     {{ capiData.keywords || '-' }}
                                 </span>
                             </li>
-    
+
                         </ul>-->
-    
+
                         <ul class="drawer__column drawer__column--wide" >
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Video preview</p>
@@ -292,7 +292,7 @@
                                 <span class="drawer__item-content--warning" ng-show="!capiData.commissioningDesks.length">None</span>
                             </li>
                         </ul>
-    
+
                     </div>
                     <!--DEFAULT ATOM DRAWER-->
                     <div class="drawer__inner" ng-class="{'drawer__inner--closed' : openSection !== 'furniture'}" ng-switch-default>
@@ -327,16 +327,16 @@
                                     {{ contentItem.contentTypeTitle || '-' }}
                                 </span>
                             </li>
-    
+
                             <li class="drawer__item">
                                 <p class="drawer__item-title">Title</p>
                                 <span class="drawer__item-content">
                                     {{ capiData.title || '-' }}
                                 </span>
                             </li>
-    
+
                         </ul>
-    
+
                     </div>
 
                 </div>
@@ -447,9 +447,9 @@
                             <div class="drawer__item-printlocation">
                                 <span>Publication date:</span>
                                 <span ng-if="contentItem.actualNewspaperPublicationDate">{{contentItem.actualNewspaperPublicationDate | wfFormatDateTime:'date'}}</span>
-                                <button 
-                                    ng-hide="publicationDateTimeEdit || contentItem.actualNewspaperPublicationDate" 
-                                    ng-click="publicationDateTimeEdit = true" 
+                                <button
+                                    ng-hide="publicationDateTimeEdit || contentItem.actualNewspaperPublicationDate"
+                                    ng-click="publicationDateTimeEdit = true"
                                     ng-class="{ 'drawer__section-data-row--editable': contentItem.plannedNewspaperPublicationDate, 'drawer__section-data-row--editable-empty': !contentItem.plannedNewspaperPublicationDate, 'editable__edit-button': true }"
                                     title="{{ (contentItem.plannedNewspaperPublicationDate | wfFormatDateTime:'date') || '' }}"
                                     >
@@ -460,13 +460,13 @@
                                 </button>
                                 <form ng-show="publicationDateTimeEdit" ng-submit="publicationDateTimeEdit = false">
                                     <div class="form-group editable--inline">
-                                        <div 
-                                        wf-date-time-picker 
-                                        wf-update-on="enter" 
-                                        ng-model="$parent.currentPublicationDatePickerValue" 
-                                        wf-on-cancel="publicationDateTimeEdit = false; revertPlannedPublicationDate()" 
-                                        wf-cancel-on="blur" 
-                                        wf-on-submit="updatePlannedPublicationDate(); publicationDateTimeEdit = false;" 
+                                        <div
+                                        wf-date-time-picker
+                                        wf-update-on="enter"
+                                        ng-model="$parent.currentPublicationDatePickerValue"
+                                        wf-on-cancel="publicationDateTimeEdit = false; revertPlannedPublicationDate()"
+                                        wf-cancel-on="blur"
+                                        wf-on-submit="updatePlannedPublicationDate(); publicationDateTimeEdit = false;"
                                         wf-date-only="true"
                                         ></div>
                                     </div>
@@ -499,7 +499,6 @@
                         <li class="drawer__item" ng-switch="!!editingAssignee">
                             <div ng-switch-when="false">
                                 <p class="drawer__item-title">Assigned to</p>
-                                <img class="drawer__user-image" ng-if="assigneeImage.length > 1" ng-class="{ 'drawer__user-image--placeholder': !assigneeImage }" ng-src="{{ assigneeImage }}" height="38" width="38" alt="contentItem.item.assignee"/>
                                 <span class="drawer__section-data-row--editable drawer__user-name" ng-click="toggleAssigneeEditing();" onbeforesave="onBeforeSaveAssignee($data)">{{ contentItem.assignee || "None" }}</span>
                             </div>
                             <div ng-switch-when="true">
@@ -573,7 +572,7 @@
                     </ul>
 
                 </div>
-                
+
             </div>
 
             <div class="drawer__section" ng-class="{'drawer__section--closed' : openSection !== 'atoms'}" ng-if="!supportedAtomTypes.includes(contentItem.contentType)">
@@ -632,8 +631,8 @@
                 </a>
             </span>
             <span ng-hide="contentItem.linkedWithIncopy" class="drawer__toolbar-item drawer__toolbar-item--action">
-                <a 
-                    href="{{ indesignExportUrl }}" 
+                <a
+                    href="{{ indesignExportUrl }}"
                     title="Send to InDesign"
                     class="drawer__item-content" >
                     <i class="drawer__icon drawer__toolbar-icon" wf-icon="indesign"></i>
@@ -641,7 +640,7 @@
                 </a>
             </span>
             <span class="drawer__toolbar-item drawer__toolbar-item--action">
-                <a 
+                <a
                     href="{{ contentItem.linkedWithIncopy ?
                         buildUrl({ 'storyBundleId': contentItem.storyBundleId }, incopyOpenUrlTemplate) :
                         buildUrl({ 'composerId': contentItem.composerId }, incopyExportUrlTemplate)
