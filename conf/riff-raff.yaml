@@ -10,7 +10,7 @@ deployments:
     parameters:
       amiTags:
         AmigoStage: PROD
-        Recipe: editorial-tools-focal-java8
+        Recipe: editorial-tools-focal-java8-ARM
         BuiltBy: amigo
       cloudFormationStackName: Workflow-Frontend
       prependStackToCloudFormationStackName: false
