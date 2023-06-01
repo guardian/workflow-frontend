@@ -26,9 +26,6 @@ It can use either a local store, or CODE.
 
  1. Run the setup script `./scripts/setup.sh`
  2. Download the DEV config: `./scripts/fetch-config.sh`
- 3. Open `/etc/gu/workflow-frontend.private.conf` and amend `api.url` as follows:
-
-    api.url="http://localhost:9095/api"
 
 If you encounter a `Module build failed` error due to Node Sass during set up, run `npm rebuild node-sass`.
 
@@ -56,7 +53,7 @@ You will need [ssm-scala](https://github.com/guardian/ssm-scala) installed for t
 
 ### Run
 
-To run workflow-frontend, run the start stript `./scripts/start.sh`. Then navigate to https://workflow.local.dev-gutools.co.uk
+To run workflow-frontend, run the start script `./scripts/start.sh`. Then navigate to https://workflow.local.dev-gutools.co.uk
 
 The lambda that sends notifications does not run automatically locally. You can invoke it:
 

@@ -21,4 +21,4 @@ fi
 
 yarn build-dev &
 # shellcheck disable=SC2086
-sbt $EXTRA_SBT_ARGS run
+sbt $EXTRA_SBT_ARGS "-Dconfig.file=$HOME/.gu/workflow-frontend-application.local.conf" run
