@@ -139,8 +139,6 @@ class Application(
         ("storyPackagesUrl", Json.fromString(config.storyPackagesUrl)),
         ("presenceUrl", Json.fromString(config.presenceUrl)),
         ("preferencesUrl", Json.fromString(config.preferencesUrl)),
-        ("pinboardLoaderUrl", Json.fromString(config.pinboardLoaderUrl)),
-        ("hasPinboardPermission", Json.fromBoolean(permissions.hasPermission(pinboardPermission, request.user.email))),
         ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
         ("incopyOpenUrl", Json.fromString(config.incopyOpenUrl)),
         ("incopyExportUrl", Json.fromString(config.incopyExportUrl)),
@@ -156,7 +154,16 @@ class Application(
         ("tagManagerUrl",Json.fromString(config.tagManagerUrl))
       )
 
-      Ok(views.html.app(title, Some(user), jsonConfig, config.googleTrackingId, config.presenceClientLib))
+      val hasPinboardPermission = permissions.hasPermission(pinboardPermission, request.user.email)
+
+      Ok(views.html.app(
+        title,
+        Some(user),
+        config = jsonConfig,
+        gaId = config.googleTrackingId,
+        presenceClientLib = config.presenceClientLib,
+        maybePinboardLoaderUrl = if(hasPinboardPermission) Some(config.pinboardLoaderUrl) else None
+      ))
     }
   }
 

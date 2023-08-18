@@ -1,4 +1,11 @@
-@(title: String, user: Option[com.gu.pandomainauth.model.User], config: io.circe.Json, gaId: String, presenceClientLib: String)
+@(
+  title: String,
+  user: Option[com.gu.pandomainauth.model.User],
+  config: io.circe.Json,
+  gaId: String,
+  presenceClientLib: String,
+  maybePinboardLoaderUrl: Option[String]
+)
 
 @layout(title, user, config) {
   <div class="main" ui-view>
@@ -23,5 +30,8 @@
               m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
     </script>
+  }
+  @maybePinboardLoaderUrl.map { pinboardLoaderUrl =>
+    <script async src="@pinboardLoaderUrl"></script>
   }
 }
