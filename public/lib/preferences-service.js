@@ -6,7 +6,7 @@ angular.module('wfPreferencesService', [])
     .factory('wfPreferencesService', ['$rootScope', '$http', '$log', '$window',
         function($rootScope, $http, $log, $window) {
 
-            var TIMEOUT = 5000;
+            var TIMEOUT = 10000;
 
             class PreferencesService {
 
