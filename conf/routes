@@ -102,3 +102,8 @@ GET            /management/healthcheck                     controllers.Managemen
 
 # Map static resources from the /public folder to the /assets URL path
 GET            /assets/*file                               controllers.Assets.versioned(path="/public", file: Asset)
+
+# editorial-preferences proxy (to help with latency)
+GET            /preferences/:userId/:app                        controllers.PreferencesProxy.userPref(userId: String, app: String)
+PUT            /preferences/:userId/:app/:prefKey               controllers.PreferencesProxy.setPreference(userId: String, app: String, prefKey: String)
+GET            /preferences/:userId/:app/:prefKey               controllers.PreferencesProxy.getPreference(userId: String, app: String, prefKey: String)

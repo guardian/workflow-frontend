@@ -138,7 +138,6 @@ class Application(
         ("viewerUrl", Json.fromString(config.viewerUrl)),
         ("storyPackagesUrl", Json.fromString(config.storyPackagesUrl)),
         ("presenceUrl", Json.fromString(config.presenceUrl)),
-        ("preferencesUrl", Json.fromString(config.preferencesUrl)),
         ("user", parser.parse(user.toJson).getOrElse(Json.Null)),
         ("incopyOpenUrl", Json.fromString(config.incopyOpenUrl)),
         ("incopyExportUrl", Json.fromString(config.incopyExportUrl)),

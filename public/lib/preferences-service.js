@@ -39,7 +39,7 @@ angular.module('wfPreferencesService', [])
                  * @returns {string}
                  */
                 url(user, prefKey) {
-                    return _wfConfig.preferencesUrl + '/' + user + '/workflow' + (prefKey ? '/' + prefKey : '');
+                    return '/preferences/' + user + '/workflow' + (prefKey ? '/' + prefKey : '');
                 }
 
                 /**

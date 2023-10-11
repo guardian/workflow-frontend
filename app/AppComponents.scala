@@ -52,6 +52,8 @@ class AppComponents(context: Context)
 
   val notificationsController = new Notifications(config, controllerComponents, wsClient, panDomainRefresher)
 
+  val preferencesProxyController = new PreferencesProxy(config, controllerComponents, wsClient, panDomainRefresher)
+
   val supportController = new Support(config, controllerComponents, wsClient, panDomainRefresher)
 
   override val router = new Routes(
@@ -65,7 +67,8 @@ class AppComponents(context: Context)
     adminController,
     supportController,
     managementController,
-    assets
+    assets,
+    preferencesProxyController
   )
 
   final override lazy val corsConfig: CORSConfig = CORSConfig.fromConfiguration(context.initialConfiguration).copy(
