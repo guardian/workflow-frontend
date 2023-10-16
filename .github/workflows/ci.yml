@@ -61,9 +61,9 @@ jobs:
                   configPath: conf/riff-raff.yaml
                   contentDirectories: |
                       workflow-frontend:
-                        - workflow-frontend/target/workflow-frontend_0.1_all.deb
+                        - target/workflow-frontend_0.1_all.deb
                       workflow-frontend-fluentbit:
                         - fluentbit/parsers.conf
                         - fluentbit/td-agent-bit.conf
-                      workflow-notification:
-                        - notification/target/workflow-notification.zip
+                    #   workflow-notification:
+                    #     - notification/target/workflow-notification.zip
