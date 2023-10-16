@@ -58,7 +58,7 @@ jobs:
               with:
                   projectName: Editorial Tools::Workflow::Workflow Frontend
                   buildNumber: ${{ env.BUILD_NUMBER }}
-                  configPath: riff-raff.yaml
+                  configPath: conf/riff-raff.yaml
                   contentDirectories: |
                       workflow-frontend:
                         - workflow-frontend/target/workflow-frontend_0.1_all.deb
