@@ -52,10 +52,12 @@ jobs:
             - name: Build and Test project
               run: |
                   sbt clean compile test Debian/packageBin
-            - name: Notification Lambda
-              working-directory: ./notification
-              run: |
-                sbt clean compile test Universal/packageBin
+                  cd notification && sbt clean compile test Universal/packageBin
+
+            # - name: Notification Lambda
+            #   working-directory: ./notification
+            #   run: |
+            #     sbt clean compile test Universal/packageBin
 
 
             - uses: guardian/actions-riff-raff@v2
