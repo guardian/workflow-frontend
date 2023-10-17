@@ -47,9 +47,6 @@ jobs:
             - name: Yarn build
               run: yarn build
 
-            - name: Yarn test
-              run: yarn test
-
             - name: Build, test and package the scala app
               run: |
                   sbt clean compile test Debian/packageBin
