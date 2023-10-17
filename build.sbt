@@ -2,7 +2,6 @@ import play.sbt.PlayImport.PlayKeys._
 import Dependencies._
 import sbtbuildinfo.BuildInfo
 import scala.sys.env
-// import com.gu.riffraff.artifact.BuildInfo
 
 Test / parallelExecution := false
 
@@ -82,19 +81,6 @@ lazy val root = playProject(application)
       s"-Dpidfile.path=/var/run/${packageName.value}/play.pid"
     ),
     debianPackageDependencies := Seq("openjdk-8-jre-headless"),
-    // riffRaffPackageType := (Debian / packageBin).value,
-    // riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
-    // riffRaffUploadManifestBucket := Option("riffraff-builds"),
-    // riffRaffPackageName := s"editorial-tools:workflow:$application",
-    // riffRaffManifestProjectName := riffRaffPackageName.value,
-    // fileDescriptorLimit := Option("32768"),
-    // riffRaffArtifactResources := Seq(
-    //   riffRaffPackageType.value -> s"$application/${riffRaffPackageType.value.getName}",
-    //   (notificationLambda / Universal / packageBin).value -> s"${(notificationLambda / name).value}/${(notificationLambda / Universal / packageBin).value.getName}",
-    //   baseDirectory.value / "conf" / "riff-raff.yaml" -> "riff-raff.yaml",
-    //   baseDirectory.value / "fluentbit/td-agent-bit.conf" -> "workflow-frontend-fluentbit/td-agent-bit.conf",
-    //   baseDirectory.value / "fluentbit/parsers.conf" -> "workflow-frontend-fluentbit/parsers.conf"
-    // ),
     Universal / javaOptions ++= Seq(
       "-Dpidfile.path=/dev/null"
     ),
