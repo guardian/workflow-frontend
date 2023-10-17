@@ -41,17 +41,20 @@ jobs:
               with:
                 node-version-file: '.nvmrc'
 
-            - name: Install dependencies, build & run tests
-              run: |
-                  set -e
-                  yarn install --frozen-lockfile
-                  yarn build
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
 
-            - name: Build and Test project
+            - name: Yarn build
+              run: yarn build
+
+            - name: Yarn test
+              run: yarn test
+
+            - name: Build, test and package the scala app
               run: |
                   sbt clean compile test Debian/packageBin
 
-            - name: Notification Lambda
+            - name: Build and package the notification Lambda
               run: |
                   sbt "project notification" clean compile Universal/packageBin
 
