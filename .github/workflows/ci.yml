@@ -52,12 +52,9 @@ jobs:
             - name: Build and Test project
               run: |
                   sbt clean compile test Debian/packageBin
-                  cd notification && sbt clean compile test Universal/packageBin
-
-            # - name: Notification Lambda
-            #   working-directory: ./notification
-            #   run: |
-            #     sbt clean compile test Universal/packageBin
+            - name: Notification Lambda
+              run: |
+                  sbt project notification clean compile Universal/packageBin
 
 
             - uses: guardian/actions-riff-raff@v2
@@ -72,4 +69,4 @@ jobs:
                         - fluentbit/parsers.conf
                         - fluentbit/td-agent-bit.conf
                       workflow-notification:
-                        - notification/target/workflow-notification.zip
+                        - notification/target/universal/workflow-notification.zip
