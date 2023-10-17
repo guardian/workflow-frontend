@@ -54,7 +54,7 @@ jobs:
                   sbt clean compile test Debian/packageBin
             - name: Notification Lambda
               run: |
-                  sbt "project/notification" clean compile Universal/packageBin
+                  sbt "project notification" clean compile Universal/packageBin
 
 
             - uses: guardian/actions-riff-raff@v2
