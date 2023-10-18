@@ -44,6 +44,9 @@ jobs:
             - name: Install JS dependencies
               run: yarn install --frozen-lockfile
 
+            - name: test JS
+              run: yarn test
+
             - name: JS build
               run: yarn build
 
