@@ -6,6 +6,7 @@
     "build-dev": "webpack --config ./conf/webpack.conf.js --watch",
     "build": "webpack --config ./conf/webpack.prod.conf.js",
     "test": "karma start",
+    "test-watch": "yarn test --no-single-run",
     "lint": "eslint ./public/**/**/*.js"
   },
   "devDependencies": {
