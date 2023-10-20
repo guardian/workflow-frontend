@@ -69,11 +69,12 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
 
-  lazy val preferencesUrl: String = s"https://preferences.$domain/preferences"
+  lazy val preferencesHost: String = s"preferences.$domain"
+  lazy val preferencesUrl: String = s"https://$preferencesHost/preferences"
 
-  lazy val pinboardLoaderUrl: String = s"https://pinboard.${stage.appDomain}/pinboard.loader.js"
+  lazy val pinboardLoaderUrl: String = s"https://pinboard.$domain/pinboard.loader.js"
 
-  lazy val tagManagerUrl: String = s"https://tagmanager.${stage.appDomain}"
+  lazy val tagManagerUrl: String = s"https://tagmanager.$domain"
 
   lazy val capiPreviewIamUrl: String = playConfig.get[String]("capi.preview.iamUrl")
   lazy val capiPreviewRole: String = playConfig.get[String]("capi.preview.role")
