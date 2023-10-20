@@ -19,21 +19,22 @@ class PreferencesProxy(
 
   private def proxyRequest(relativePath: String) = APIAuthAction.async { request =>
     val url = s"${config.preferencesUrl}/$relativePath"
-    val headers = request.headers.toSimpleMap + (
-      "Host" -> config.preferencesHost,
-      "Cache-Control" -> "private, no-cache, no-store, must-revalidate, max-age=0", // do not cache whatsoever
+    val requestHeaders = request.headers.toSimpleMap + (
+      "Host" -> config.preferencesHost
     )
     wsClient.url(url)
-      .withHttpHeaders(headers.toSeq: _*)
+      .withHttpHeaders(requestHeaders.toSeq: _*)
       .execute(request.method)
       .map { response =>
-        new Status(response.status)(response.body).withHeaders(response.headers.mapValues(_.head).toSeq: _*)
+        val responseHeaders = response.headers.mapValues(_.head) + (
+          "Cache-Control" -> "private, no-cache, no-store, must-revalidate, max-age=0", // do not cache whatsoever
+        )
+        new Status(response.status)(response.body).withHeaders(responseHeaders.toSeq: _*)
       }
       .recover {
         case _ if config.isDev =>
           TemporaryRedirect( // this ensures PUT doesn't get transformed to GET, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections#temporary_redirections
-            if (config.isDev) url.replaceAll(Dev.appDomain, Code.appDomain)
-            else url
+            url.replaceAll(Dev.appDomain, Code.appDomain)
           )
         case e =>
           logger.error(s"Error proxying request to $url", e)
