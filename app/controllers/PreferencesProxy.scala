@@ -4,7 +4,7 @@ import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.workflow.util.{Code, Dev}
 import config.Config
 import play.api.Logging
-import play.api.libs.ws.WSClient
+import play.api.libs.ws.{EmptyBody, InMemoryBody, WSClient}
 import play.api.mvc.{BaseController, ControllerComponents}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,13 +17,20 @@ class PreferencesProxy(
   override val panDomainSettings: PanDomainAuthSettingsRefresher
 ) extends BaseController with PanDomainAuthActions with Logging {
 
-  private def proxyRequest(relativePath: String) = APIAuthAction.async { request =>
+  private def proxyRequest(relativePath: String) = APIAuthAction(parse.byteString).async { request =>
     val url = s"${config.preferencesUrl}/$relativePath"
     val requestHeaders = request.headers.toSimpleMap + (
       "Host" -> config.preferencesHost
     )
+    val requestBody = if (request.hasBody) {
+      InMemoryBody(request.body)
+    } else {
+      EmptyBody
+    }
     wsClient.url(url)
       .withHttpHeaders(requestHeaders.toSeq: _*)
+      .withBody(requestBody)
+      .withFollowRedirects(false) // ensure browser handles all redirects NOT this proxy
       .execute(request.method)
       .map { response =>
         val responseHeaders = response.headers.mapValues(_.head) + (
