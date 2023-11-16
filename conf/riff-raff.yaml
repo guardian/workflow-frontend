@@ -4,13 +4,13 @@ deployments:
   workflow-frontend:
     type: autoscaling
     parameters:
-    dependencies: [workflow-frontend-ami-update, workflow-frontend-fluentbit]
+    dependencies: [workflow-frontend-ami-update]
   workflow-frontend-ami-update:
     type: ami-cloudformation-parameter
     parameters:
       amiTags:
         AmigoStage: PROD
-        Recipe: editorial-tools-focal-java8-ARM
+        Recipe: editorial-tools-focal-java8-ARM-WITH-cdk-base
         BuiltBy: amigo
       cloudFormationStackName: Workflow-Frontend
       prependStackToCloudFormationStackName: false
@@ -21,8 +21,3 @@ deployments:
       prefixStack: false
       functionNames: [workflow-notification-]
       fileName: workflow-notification.zip
-  workflow-frontend-fluentbit:
-    type: aws-s3
-    parameters:
-      cacheControl: private
-      publicReadAcl: false
