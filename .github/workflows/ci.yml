@@ -66,8 +66,5 @@ jobs:
                   contentDirectories: |
                       workflow-frontend:
                         - target/workflow-frontend_0.1_all.deb
-                      workflow-frontend-fluentbit:
-                        - fluentbit/parsers.conf
-                        - fluentbit/td-agent-bit.conf
                       workflow-notification:
                         - notification/target/universal/workflow-notification.zip
