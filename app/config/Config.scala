@@ -42,14 +42,9 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
     case _ => Set(composerUrl, s"https://composer-secondary.$domain")
   }
 
-  private lazy val mediaAtomMakerUrls: Set[String] = stage match {
-    case Code => Set(mediaAtomMakerUrl, s"https://video.${Dev.appDomain}") // allow MAM in DEV to call Workflow CODE
-    case _ => Set(mediaAtomMakerUrl)
-  }
-
-  private lazy val atomWorkshopUrls: Set[String] = stage match {
-    case Code => Set(s"https://atomworkshop.${Dev.appDomain}", atomWorkshopUrl) // allow MAM in DEV to call Workflow CODE
-    case _ => Set(atomWorkshopUrl)
+  private def allowDevServiceToCallWorkflowCode(subDomain: String) = stage match {
+    case Code => Some(s"https://${subDomain}.${Dev.appDomain}")
+    case _ => None
   }
 
   def baseUri(host: String) = s"https://$host"
@@ -64,7 +59,10 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val corsAllowedOrigins: Set[String] = getStringSetFromConf("security.cors.allowedOrigins").map(baseUri)
 
-  lazy val corsAllowedDomains: Set[String] = composerUrls ++ mediaAtomMakerUrls ++ atomWorkshopUrls
+  lazy val corsAllowedDomains: Set[String] = composerUrls +
+    mediaAtomMakerUrl ++ allowDevServiceToCallWorkflowCode("video") +
+    atomWorkshopUrl ++ allowDevServiceToCallWorkflowCode("atomworkshop") +
+    s"https://recipes.$domain" ++ allowDevServiceToCallWorkflowCode("recipes")
 
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
