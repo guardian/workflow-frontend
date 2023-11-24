@@ -22,7 +22,7 @@ val commonSettings = Seq(
   version      := "0.1",
   Test / fork := false,
   resolvers ++= Seq(
-    "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
+    "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
   ),
   scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings")
 )
