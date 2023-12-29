@@ -9,6 +9,7 @@ import 'components/date-time-picker/date-time-picker';
 
 import 'lib/composer-service';
 import 'lib/content-service';
+import 'lib/article-format-service';
 import 'lib/legal-states-service';
 import 'lib/picture-desk-states-service';
 import 'lib/filters-service';
@@ -16,11 +17,11 @@ import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
 
 const wfStubModal = angular.module('wfStubModal', [
-    'ui.bootstrap', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
+    'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
     .directive('punters', ['$rootScope', punters]);
 
 function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode,
-     sections, statusLabels, legalStatesService, pictureDeskStatesService, wfComposerService, wfProdOfficeService, wfContentService,
+     sections, statusLabels, articleFormatService, legalStatesService, pictureDeskStatesService, wfComposerService, wfProdOfficeService, wfContentService,
      wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
 
     wfContentService.getTypes().then( (types) => {
@@ -101,6 +102,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         })($scope.stub.section);
     }
 
+
+
     $scope.stub.status = 'Writers';
 
     /**
@@ -117,7 +120,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         return filtered
     }
 
+    $scope.articleFormats = articleFormatService.getArticleFormats();
+    console.log("articleFormats", $scope.articleFormats)
     $scope.legalStates = legalStatesService.getLegalStates();
+    console.log("legalStates", $scope.legalStates)
     $scope.pictureDeskStates = pictureDeskStatesService.getpictureDeskStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
 
@@ -400,11 +406,13 @@ wfStubModal.run([
          * @param contentType
          * @returns {Promise}
          */
+        //will need to add for kt
         function setUpPreferredStub (contentType) {
 
-            function createStubData (contentType, sectionName) {
+            function createStubData (contentType, sectionName, defaultArticleFormat) {
 
                 return {
+                    articleFormat: 'Standard Article',
                     contentType: contentType === "atom" ? defaultAtomType : contentType,
                     // Only send through a section if one is found in the prefs
                     section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],

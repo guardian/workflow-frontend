@@ -17,6 +17,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 getTypes() {
                     return Promise.resolve({
                         "article": "Article",
+                        "keyTakeaways": "Key Takeaways",
                         "liveblog": "Live blog",
                         "gallery": "Gallery",
                         "interactive": "Interactive",

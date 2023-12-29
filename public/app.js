@@ -194,6 +194,10 @@ angular.module('workflow',
     .constant({ 'desks': _wfConfig.desks })
     .constant({ 'priorities': _wfConfig.priorities })
     .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
+    .constant({ 'articleFormatValues': [
+        {name: 'Standard Article', value: 'Standard Article'},
+        {name: 'Key takeaways', value: 'Key takeaways'},
+    ]})
     .constant({ 'legalValues': [
         { name: 'Not required', value: 'NA' },
         { name: 'Needs checking', value: 'REQUIRED' },
