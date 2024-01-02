@@ -406,13 +406,25 @@ wfStubModal.run([
          * @param contentType
          * @returns {Promise}
          */
-        //will need to add for kt
+
         function setUpPreferredStub (contentType) {
 
-            function createStubData (contentType, sectionName, defaultArticleFormat) {
+            function createStubData (contentType, sectionName) {
+
+                let chosenArticleFormat = ""
+                switch (contentType) {
+                    case "article":
+                        chosenArticleFormat = "Standard Article"
+                        break;
+                    case "keyTakeaways":
+                        chosenArticleFormat = "Key takeaways"
+                        break;
+                    default:
+                        break;
+                }
 
                 return {
-                    articleFormat: 'Standard Article',
+                    articleFormat: chosenArticleFormat,
                     contentType: contentType === "atom" ? defaultAtomType : contentType,
                     // Only send through a section if one is found in the prefs
                     section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
