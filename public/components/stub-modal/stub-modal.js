@@ -28,6 +28,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         $scope.contentName =
             (wfContentService.getAtomTypes())[stub.contentType] ?
             "Atom" : (types[stub.contentType] || "News item");
+            
+        $scope.stubFormat = ''
+        if (stub.contentType === 'article') {$scope.stubFormat = "Standard Article"}
+        else if (stub.contentType === 'keyTakeaways') {$scope.stubFormat = "Key takeaways"}
 
         $scope.modalTitle = ({
             'create': `Create ${$scope.contentName}`,
