@@ -92,7 +92,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Also will create the stub if it doesn't have an id.
                  */
                 createInComposer(stub, statusOption) {
-                    console.log("stub here", stub)
                     return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template, stub.contentType)
                         .then((response) => wfComposerService.parseComposerData(response, stub))
                         .then((updatedStub) => {

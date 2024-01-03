@@ -83,7 +83,6 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
 
 
     this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat) {
-        console.log("selected article format: ", articleFormat)
         var selectedDisplayHint = articleFormat === 'keyTakeaways' ?  articleFormat : undefined;
         
         var params = {
@@ -92,7 +91,6 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
             'productionOffice': prodOffice,
             'displayHint': selectedDisplayHint
         };
-        console.log("params: ", params)
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
         
