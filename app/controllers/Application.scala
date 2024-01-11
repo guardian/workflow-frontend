@@ -8,12 +8,13 @@ import config.Config
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, parser}
-import lib.{AtomWorkshopConfig, ComposerConfig, MediaAtomMakerConfig}
+import lib.{AtomWorkshopConfig, ComposerConfig, MediaAtomMakerConfig, FeatureSwitches, ExampleSwitch}
 import models.api.ApiResponseFt
 import models.{Desk, EditorialSupportStaff, Section}
 import play.api.{Logger, Logging}
 import play.api.libs.ws.WSClient
 import play.api.mvc._
+import play.api.libs.json
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -154,6 +155,15 @@ class Application(
       )
 
       val hasPinboardPermission = permissions.hasPermission(pinboardPermission, request.user.email)
+      
+      val featureSwitches = new FeatureSwitches(
+      List(ExampleSwitch)
+      )
+      val featureSwitchesWithClientValues = featureSwitches.getClientSwitchValues(featureSwitches.getFeatureSwitchCookies(request.cookies.get))
+      // val featureSwitchesJson = json.stringify(json.toJson(featureSwitches.getFeatureSwitchesToStringify(featureSwitchesWithClientValues)))
+      val featureSwitchesJson = featureSwitches.getFeatureSwitchesToStringify(featureSwitchesWithClientValues).asJson.spaces2
+
+
 
       Ok(views.html.app(
         title,
@@ -161,7 +171,8 @@ class Application(
         config = jsonConfig,
         gaId = config.googleTrackingId,
         presenceClientLib = config.presenceClientLib,
-        maybePinboardLoaderUrl = if(hasPinboardPermission) Some(config.pinboardLoaderUrl) else None
+        maybePinboardLoaderUrl = if(hasPinboardPermission) Some(config.pinboardLoaderUrl) else None,
+        featureSwitchesJson
       ))
     }
   }
