@@ -1,0 +1,39 @@
+.feature-switch-toggle {
+  position: relative;
+  display: flex;
+  width: 100%;
+  margin-top: 10px;
+  padding: 6px 5px 6px 15px;
+  border: 0;
+  border-top: 1px solid #dcdcdc;
+  text-align: left;
+  @extend %fs-data-2;
+  &:focus, &:active {
+    outline: none;
+  }
+}
+
+.feature-switch-toggle__icon {
+  display: block;
+  margin-left: auto;
+  height: 16px;
+  width: 16px;
+  cursor: pointer;
+  background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 1px,
+          $c-grey-400 1px,
+          $c-grey-400 2px
+  );
+
+  &--active {
+      background: repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              $c-grey-400 2px,
+              $c-grey-400 4px
+      );
+  }
+}

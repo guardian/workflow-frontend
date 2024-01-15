@@ -8,6 +8,10 @@
         </div>
     </button>
 
+    <div ng-if="showFeatureSwitch">
+        <wf-feature-switches></wf-feature-switches>
+    </div>
+
     <ul class="dashboard-toolbar__dropdown dropdown-toolbar__list list-unstyled content-type-list--hidden" ng-class="{'content-type-list--hidden' : !showDropdown }">
         <li class="dropdown-toolbar__item" ng-click="resetFilters()">
             <label class="dropdown-toolbar__item-label">

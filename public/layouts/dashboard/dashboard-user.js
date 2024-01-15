@@ -2,9 +2,10 @@ import angular from 'angular';
 
 import 'lib/user';
 import './dashboard-user.html';
+import 'components/feature-switches/feature-switches';
 
 angular
-    .module('wfDashboardUser', ['wfUser'])
+    .module('wfDashboardUser', ['wfUser', 'wfFeatureSwitches'])
     .controller('wfDashboardUserController', ['$scope', '$window', 'wfUser', 'wfFiltersService', function ($scope, $window, user, wfFiltersService) {
         $scope.displayName = user.displayName;
         $scope.logout = function(dialogText) {

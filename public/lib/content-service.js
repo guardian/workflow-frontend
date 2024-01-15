@@ -7,14 +7,29 @@ import './http-session-service';
 import './user';
 import './visibility-service';
 
-angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'config',
-        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, wfAtomWorkshopService, config) {
+angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService'])
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService', 'config',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, wfAtomWorkshopService, wfPreferencesService, config) {
 
             const httpRequest = wfHttpSessionService.request;
 
             class ContentService {
-                getTypes() {
+
+                provideStandardFormats(){                            console.log("there")
+
+                    return Promise.resolve({
+                        "article": "Article",
+                        "liveblog": "Live blog",
+                        "gallery": "Gallery",
+                        "interactive": "Interactive",
+                        "picture": "Picture",
+                        "audio": "Audio"
+                    }); 
+                }
+
+                provideStandardAndNewFormats(){             
+                            console.log("here")
+
                     return Promise.resolve({
                         "article": "Article",
                         "keyTakeaways": "Key Takeaways",
@@ -24,8 +39,19 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         "picture": "Picture",
                         "audio": "Audio",
                         "atom": "Video/Atom"
-                    });
-                };
+                    })} 
+            
+
+                getTypes() {
+
+                    return wfPreferencesService.getPreference('featureSwitch').then((isSwitchActive) => {
+                        console.log("switch pref", isSwitchActive);
+                        
+                        return isSwitchActive === true ? this.provideStandardAndNewFormats() : this.provideStandardFormats()})
+
+                }
+
+        
 
                 /* what types of stub should be treated as atoms? */
                 getAtomTypes() {

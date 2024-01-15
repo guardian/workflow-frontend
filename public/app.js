@@ -9,7 +9,6 @@ import { registerServiceWorker } from './lib/notifications';
 
 import 'components/sentry/sentry';
 import 'components/user-message/user-message';
-
 import 'components/content-list/content-list';
 import 'components/icons/icons';
 
@@ -209,7 +208,16 @@ angular.module('workflow',
         { name: 'Checked', value: 'COMPLETE'}
     ]})
 
-    .run(['wfAnalyticsService', function(){}]);
+    .run(['wfAnalyticsService', function(){}])
+    .run(['$document', '$rootScope', function ($document, $rootScope) {
+        $document.on('keydown', function(event) {
+            if (event.shiftKey && event.keyCode === 123) {            
+              $rootScope.$apply(function() {
+                $rootScope.showFeatureSwitch = !$rootScope.showFeatureSwitch;
+            })}
+        });
+    }]);
+
 
 registerServiceWorker();
 
