@@ -8,7 +8,7 @@ import scala.concurrent.Future
 
 object StatusDatabase {
 
-  val store: Agent[List[Status]] = Agent(Status.values.toList)
+  private val store: Agent[List[Status]] = Agent(Status.values.toList)
 
   def statuses: Future[List[Status]] = store.future()
 
