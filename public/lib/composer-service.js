@@ -83,7 +83,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
 
 
     this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat) {
-        var selectedDisplayHint = articleFormat === 'keyTakeaways' ?  articleFormat : undefined;
+        var selectedDisplayHint = articleFormat === 'Key Takeaways' ?  'keyTakeaways' : undefined;
         
         var params = {
             'type': type === 'keyTakeaways' ? 'article' : type,
