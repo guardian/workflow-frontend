@@ -50,7 +50,6 @@ lazy val commonLib = project("common-lib")
       ++ logbackDependencies
       ++ testDependencies
       ++ awsDependencies
-      ++ akkaDependencies
       ++ jsonDependencies
       ++ webPushDependencies
       ++ cacheDependencies
@@ -65,7 +64,6 @@ lazy val root = playProject(application)
     libraryDependencies
       ++= awsDependencies
       ++ authDependencies
-      ++ akkaDependencies
       ++ testDependencies
       ++ jsonDependencies
       ++ permissionsDependencies

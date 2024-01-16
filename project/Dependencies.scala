@@ -27,15 +27,7 @@ object Dependencies {
         "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % version
     )
   }
-
-  val akkaDependencies = Seq(
-    // akka-agent 2.5.X has deprecated Agents,
-    // so use the latest version that still has it
-    // TODO move to latest version of akka-agent
-    "com.typesafe.akka" %% "akka-agent" % "2.4.20",
-    "com.typesafe.akka" %% "akka-slf4j" % "2.4.20"
-  )
-
+  
   val authDependencies = Seq(
     "com.gu" %% "pan-domain-auth-play_2-8" % "1.0.6",
     "com.gu" %% "hmac-headers" % "1.1.2",
