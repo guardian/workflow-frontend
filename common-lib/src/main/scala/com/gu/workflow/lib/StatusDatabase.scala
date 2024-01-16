@@ -10,7 +10,7 @@ object StatusDatabase {
 
   private val store: Agent[List[Status]] = Agent(Status.values.toList)
 
-  def statuses: Future[List[Status]] = store.future()
+  def statuses: List[Status] = store.get()
 
   def find(name: String): Option[Status] = store.get().find(_.entryName.toUpperCase == name.toUpperCase)
 }
