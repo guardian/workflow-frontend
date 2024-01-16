@@ -108,7 +108,7 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
         val body = stub.title
 
         val update = SubscriptionUpdate(title, body, url)
-
+        logger.info(s"Sending notification about ${stub.title} (${stub.composerId}) to ${sub.email}")
         subsApi.sendNotification(update, sub.endpoint)
       }
     } catch {
