@@ -15,8 +15,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
             class ContentService {
 
-                provideStandardFormats(){                            console.log("there")
-
+                provideStandardFormats(){
                     return Promise.resolve({
                         "article": "Article",
                         "liveblog": "Live blog",
@@ -28,8 +27,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                 }
 
                 provideStandardAndNewFormats(){             
-                            console.log("here")
-
                     return Promise.resolve({
                         "article": "Article",
                         "keyTakeaways": "Key Takeaways",
@@ -40,18 +37,11 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         "audio": "Audio",
                         "atom": "Video/Atom"
                     })} 
-            
 
                 getTypes() {
-
                     return wfPreferencesService.getPreference('featureSwitch').then((isSwitchActive) => {
-                        console.log("switch pref", isSwitchActive);
-                        
                         return isSwitchActive === true ? this.provideStandardAndNewFormats() : this.provideStandardFormats()})
-
                 }
-
-        
 
                 /* what types of stub should be treated as atoms? */
                 getAtomTypes() {

@@ -125,9 +125,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     }
 
     $scope.articleFormats = articleFormatService.getArticleFormats();
-    console.log("articleFormats", $scope.articleFormats)
     $scope.legalStates = legalStatesService.getLegalStates();
-    console.log("legalStates", $scope.legalStates)
     $scope.pictureDeskStates = pictureDeskStatesService.getpictureDeskStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
 
