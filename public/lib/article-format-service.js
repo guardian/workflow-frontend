@@ -3,21 +3,16 @@ define(['angular'], function (angular) {
 
     var articleFormatService = angular.module('articleFormatService', []);
 
-    articleFormatService.factory('articleFormatService',
-        [function () {
-
+    articleFormatService.factory('articleFormatService',[function () {
             function getArticleFormats() {
                 return [
                     {name: 'Standard Article', value: 'Standard Article'},
                     {name: 'Key Takeaways', value: 'Key Takeaways'},
                 ]
             };
-
-            return {
+        return {
                 getArticleFormats: getArticleFormats
             };
-
         }]);
-
     return articleFormatService;
 });

@@ -22,7 +22,8 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         "gallery": "Gallery",
                         "interactive": "Interactive",
                         "picture": "Picture",
-                        "audio": "Audio"
+                        "audio": "Audio",
+                        "atom": "Video/Atom"
                     }); 
                 }
 

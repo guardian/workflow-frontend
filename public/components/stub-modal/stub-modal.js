@@ -34,6 +34,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         else if (stub.contentType === 'keyTakeaways') {$scope.stubFormat = "Key Takeaways"}
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
+            console.log("stubformat", $scope.stubFormat)
         })
         
         $scope.modalTitle = ({
@@ -108,8 +109,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             return sect;
         })($scope.stub.section);
     }
-
-
 
     $scope.stub.status = 'Writers';
 
@@ -263,6 +262,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
+        console.log("stub", stub)
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {
                 stub.contentType = $scope.stub.contentType.toLowerCase();
@@ -411,11 +411,9 @@ wfStubModal.run([
          * @param contentType
          * @returns {Promise}
          */
-
         function setUpPreferredStub (contentType) {
 
             function createStubData (contentType, sectionName) {
-
                 let chosenArticleFormat = ""
                 switch (contentType) {
                     case "article":
