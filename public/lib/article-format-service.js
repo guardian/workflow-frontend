@@ -9,7 +9,7 @@ define(['angular'], function (angular) {
             function getArticleFormats() {
                 return [
                     {name: 'Standard Article', value: 'Standard Article'},
-                    {name: 'Key takeaways', value: 'Key takeaways'},
+                    {name: 'Key Takeaways', value: 'Key Takeaways'},
                 ]
             };
 

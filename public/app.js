@@ -195,7 +195,7 @@ angular.module('workflow',
     .constant({ 'sectionsInDesks': _wfConfig.sectionsInDesks })
     .constant({ 'articleFormatValues': [
         {name: 'Standard Article', value: 'Standard Article'},
-        {name: 'Key takeaways', value: 'Key takeaways'},
+        {name: 'Key Takeaways', value: 'Key Takeaways'},
     ]})
     .constant({ 'legalValues': [
         { name: 'Not required', value: 'NA' },
