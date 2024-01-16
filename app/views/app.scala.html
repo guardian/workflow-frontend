@@ -4,8 +4,7 @@
   config: io.circe.Json,
   gaId: String,
   presenceClientLib: String,
-  maybePinboardLoaderUrl: Option[String],
-  featureSwitches: String
+  maybePinboardLoaderUrl: Option[String]
 )
 
 @layout(title, user, config) {
@@ -21,7 +20,6 @@
       </div>
 
   </div>
-  <script>this._clientConfig = {featureSwitches: @Html(featureSwitches)}</script>
 
   <script src="@routes.Assets.versioned("build/app.bundle.js")"></script>
   <script src="@presenceClientLib"></script>
