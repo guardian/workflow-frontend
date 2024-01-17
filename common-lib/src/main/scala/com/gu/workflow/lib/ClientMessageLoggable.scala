@@ -16,7 +16,7 @@ object ClientLog {
 
 }
 object ClientMessageLoggable {
-  def logClientMessage(log: ClientLog) {
+  def logClientMessage(log: ClientLog): Unit = {
     val scalaMap = Map("client_timestamp" -> log.timestamp) ++
       log.fields.getOrElse(Map.empty)
 
