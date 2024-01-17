@@ -58,7 +58,7 @@ class ContentAPI(
             .downField("tag")
             .downField("internalName")
               .as[Option[String]]
-              .right
+              .toOption
               .get
         case Left(e) =>
           logger.warn("Unable to communicate with CAPI", e)

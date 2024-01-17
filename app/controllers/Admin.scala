@@ -71,7 +71,7 @@ class Admin(
     }.getOrElse(Future(sectionListFromDB))
   }
 
-  def index() = (AuthAction andThen PermissionFilter) {
+  def index = (AuthAction andThen PermissionFilter) {
     Redirect("/admin/desks-and-sections")
   }
 
@@ -241,7 +241,7 @@ class Admin(
     val tagIdsFuture: Future[List[String]] = selectedSectionIdOption match {
       case Some(selectedSectionId) =>
         val tagIdsFt: Future[Either[ApiError, List[String]]] = sectionsAPI.getTagsForSectionFt(selectedSectionId).asFuture
-        tagIdsFt.map(_.right.get)
+        tagIdsFt.map(_.toOption.get)
       case None => Future.successful(List())
     }
     for {
@@ -250,7 +250,7 @@ class Admin(
       tagIds <- tagIdsFuture
       selectedSectionOption <- selectedSectionOptionFt
     } yield {
-      val capiKeyJson: Json = parser.parse(s"""{"CAPI_API_KEY": ${config.capiKey}}""").right.get
+      val capiKeyJson: Json = parser.parse(s"""{"CAPI_API_KEY": ${config.capiKey}}""").toOption.get
       Ok(
         views.html.admin.sectionsAndTags(
           capiKeyJson,
@@ -264,7 +264,7 @@ class Admin(
     }
   }
 
-  def addSectionTag() = (AuthAction andThen PermissionFilter) { implicit request =>
+  def addSectionTag = (AuthAction andThen PermissionFilter) { implicit request =>
     addSectionTagForm.bindFromRequest().fold(
       formWithErrors => {
         BadRequest("failed to execute controllers.admin.addSectionTag()")
@@ -276,7 +276,7 @@ class Admin(
     )
   }
 
-  def removeSectionTag() = (AuthAction andThen PermissionFilter) { implicit request =>
+  def removeSectionTag = (AuthAction andThen PermissionFilter) { implicit request =>
     removeSectionTagForm.bindFromRequest().fold(
       formWithErrors => {
         BadRequest("failed to execute controllers.admin.removeSectionTag()")

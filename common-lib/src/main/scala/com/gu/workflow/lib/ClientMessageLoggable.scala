@@ -4,7 +4,7 @@ import net.logstash.logback.marker.Markers._
 import play.api.Logger
 import play.api.libs.json.{Json, Reads}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class ClientLog( message: String,
                       level: String,

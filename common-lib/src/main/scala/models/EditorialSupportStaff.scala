@@ -37,7 +37,7 @@ object EditorialSupportStaff {
     Item.fromJSON(staff.asJson.toString())
 
   def fromItem(item: Item): EditorialSupportStaff =
-    decode[EditorialSupportStaff](item.toJSON).right.get
+    decode[EditorialSupportStaff](item.toJSON).toOption.get
 
   def groupByTeams(staff: List[EditorialSupportStaff]): List[EditorialSupportTeam] = {
     staff.foldLeft(Map.empty[String, List[EditorialSupportStaff]]) { (teams, member) =>

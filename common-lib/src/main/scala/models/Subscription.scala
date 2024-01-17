@@ -95,5 +95,5 @@ object Subscription {
       .withString("id", id(sub))
 
   def fromItem(item: Item): Subscription =
-    decode[Subscription](item.toJSON).right.get
+    decode[Subscription](item.toJSON).toOption.get
 }

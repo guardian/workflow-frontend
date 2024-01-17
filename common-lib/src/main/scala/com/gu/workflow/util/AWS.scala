@@ -10,7 +10,7 @@ import com.amazonaws.services.ec2.{AmazonEC2, AmazonEC2ClientBuilder}
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import com.amazonaws.util.EC2MetadataUtils
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object AWS {
   lazy val credentialsProvider = new AWSCredentialsProviderChain(
