@@ -33,7 +33,7 @@ def playProject(path: String): Project =
   Project(path, file("."))
     .enablePlugins(PlayScala, JDebPackaging, SystemdPlugin, BuildInfoPlugin)
     .settings(
-      libraryDependencies += "com.typesafe.play" %% "play-ahc-ws" % "2.8.9",
+      libraryDependencies += "com.typesafe.play" %% "play-ahc-ws" % "2.8.21",
       //Necessary to override jackson-databind versions due to AWS and Play incompatibility
       dependencyOverrides ++= jacksonDependencyOverrides,
       pipelineStages := Seq(digest, gzip)
@@ -45,8 +45,7 @@ def playProject(path: String): Project =
 lazy val commonLib = project("common-lib")
   .settings(
     libraryDependencies
-      //Necessary to have a mix of play library versions due to scala-java8-compat incompatibility
-      ++= Seq("com.typesafe.play" %% "play" % "2.8.11", "com.typesafe.play" %% "play-ahc-ws" % "2.8.9")
+      ++= Seq("com.typesafe.play" %% "play" % "2.8.21", "com.typesafe.play" %% "play-ahc-ws" % "2.8.21")
       ++ logbackDependencies
       ++ testDependencies
       ++ awsDependencies
