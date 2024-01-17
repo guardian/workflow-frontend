@@ -56,7 +56,7 @@ object Dependencies {
   )
 
   val cacheDependencies = Seq(
-    "com.github.cb372" %% "scalacache-caffeine" % "0.28.0"
+    "com.github.blemale" %% "scaffeine" % "5.2.1"
   )
 
   val cryptoDependencies = Seq(
