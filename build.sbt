@@ -77,11 +77,10 @@ lazy val root = playProject(application)
       // name of the pid file must be play.pid
       s"-Dpidfile.path=/var/run/${packageName.value}/play.pid"
     ),
-    debianPackageDependencies := Seq("openjdk-8-jre-headless"),
     Universal / javaOptions ++= Seq(
       "-Dpidfile.path=/dev/null"
     ),
-    debianPackageDependencies := Seq("openjdk-8-jre-headless"),
+    debianPackageDependencies := Seq("java11-runtime-headless"),
     maintainer := "Digital CMS <digitalcms.dev@guardian.co.uk>",
     packageSummary := "workflow-frontend",
     packageDescription := """Workflow, part of the suite of Guardian CMS tools"""
