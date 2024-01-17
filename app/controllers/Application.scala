@@ -98,7 +98,6 @@ class Application(
 
   def app(title: String) = AuthAction.async { request =>
     for {
-      statuses <- StatusDatabase.statuses
       sections <-  getSortedSections()
       desks <- getSortedDesks()
       sectionsInDesks <- getSectionsInDesks()
@@ -112,6 +111,7 @@ class Application(
       )
     }
     yield {
+      val statuses = StatusDatabase.statuses
       val user = request.user
 
       val jsonConfig = Json.obj(

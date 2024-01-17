@@ -330,10 +330,8 @@ class Api(
   }
 
   def statusus = {
-    APIAuthAction.async { implicit req =>
-      for(statuses <- StatusDatabase.statuses) yield {
-        Ok(renderJsonResponse(statuses).asJson.noSpaces)
-      }
+    APIAuthAction { implicit req =>
+      Ok(renderJsonResponse(StatusDatabase.statuses).asJson.noSpaces)
     }
   }
 
