@@ -27,11 +27,11 @@ object Dependencies {
         "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % version
     )
   }
-  
+
   val authDependencies = Seq(
-    "com.gu" %% "pan-domain-auth-play_2-8" % "1.0.6",
-    "com.gu" %% "hmac-headers" % "1.1.2",
-    "com.gu" %% "panda-hmac-play_2-8" % "2.0.1"
+    "com.gu" %% "pan-domain-auth-play_2-8" % "3.0.1",
+    "com.gu" %% "hmac-headers" % "2.0.0",
+    "com.gu" %% "panda-hmac-play_2-8" % "3.0.1"
   )
 
   val testDependencies = Seq(
@@ -56,7 +56,7 @@ object Dependencies {
   )
 
   val cacheDependencies = Seq(
-    "com.github.cb372" %% "scalacache-caffeine" % "0.9.3"
+    "com.github.cb372" %% "scalacache-caffeine" % "0.28.0"
   )
 
   val cryptoDependencies = Seq(
