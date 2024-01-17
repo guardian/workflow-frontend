@@ -5,7 +5,7 @@ import scala.sys.env
 
 Test / parallelExecution := false
 
-val scalaVersionNumber = "2.12.15"
+val scalaVersionNumber = "2.13.12"
 
 val buildInfo = Seq(
   buildInfoPackage := "build",
