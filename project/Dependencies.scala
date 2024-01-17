@@ -8,7 +8,8 @@ object Dependencies {
     scalaTest,
     "com.lihaoyi" %% "requests" % "0.5.1",
     "org.bouncycastle" % "bcprov-jdk15on" % "1.65",
-    "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
+    "com.amazonaws" % "aws-lambda-java-core" % "1.2.1",
+    "org.slf4j" % "slf4j-simple" % "1.7.32"
   )
 
   val awsDependencies = Seq(
