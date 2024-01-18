@@ -1,7 +1,7 @@
 package lib
 
 import com.gu.workflow.util.LoggingContext
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import com.gu.pandahmac.HMACHeaderNames
 import play.api.{Logger, Logging}
 import play.api.mvc._

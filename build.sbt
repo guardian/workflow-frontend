@@ -33,7 +33,7 @@ def playProject(path: String): Project =
   Project(path, file("."))
     .enablePlugins(PlayScala, JDebPackaging, SystemdPlugin, BuildInfoPlugin)
     .settings(
-      libraryDependencies += "com.typesafe.play" %% "play-ahc-ws" % "2.9.1",
+      libraryDependencies += "org.playframework" %% "play-ahc-ws" % "3.0.1",
       pipelineStages := Seq(digest, gzip)
     )
     .settings(commonSettings ++ buildInfo)
@@ -43,7 +43,7 @@ def playProject(path: String): Project =
 lazy val commonLib = project("common-lib")
   .settings(
     libraryDependencies
-      ++= Seq("com.typesafe.play" %% "play" % "2.9.1", "com.typesafe.play" %% "play-ahc-ws" % "2.9.1")
+      ++= Seq("org.playframework" %% "play" % "3.0.1", "org.playframework" %% "play-ahc-ws" % "3.0.1")
       ++ logbackDependencies
       ++ testDependencies
       ++ awsDependencies
