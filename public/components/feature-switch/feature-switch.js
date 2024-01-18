@@ -22,14 +22,11 @@ function wfFeatureSwitchDirective() {
 
 function wfFeatureSwitchController ($scope, wfPreferencesService) {
 
-    // function checkPreference(){
     wfPreferencesService.getPreference('featureSwitch').then((data) => { $scope.featureSwitch = data;})
-    // }
-
-    // checkPreference();
 
     $scope.toggleFeatureSwitch = () => {
         const newValue = !$scope.featureSwitch;
-        wfPreferencesService.setPreference('featureSwitch', newValue).then(window.location.reload());
+        wfPreferencesService.setPreference('featureSwitch', newValue).then(setTimeout(()=> {window.location.reload()}, 500)
+       );
      }
 }
