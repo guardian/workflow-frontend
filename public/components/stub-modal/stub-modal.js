@@ -34,7 +34,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         else if (stub.contentType === 'keyTakeaways') {$scope.stubFormat = "Key Takeaways"}
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
-            console.log("stubformat", $scope.stubFormat)
         })
         
         $scope.modalTitle = ({
