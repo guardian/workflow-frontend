@@ -40,8 +40,12 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     })} 
 
                 getTypes() {
-                    return wfPreferencesService.getPreference('featureSwitch').then((isSwitchActive) => {
-                        return isSwitchActive === true ? this.provideStandardAndNewFormats() : this.provideStandardFormats()})
+                    return wfPreferencesService.getPreference('featureSwitch')
+                    .then((isSwitchActive) => {
+                        return isSwitchActive === true ? 
+                            this.provideStandardAndNewFormats() : 
+                            this.provideStandardFormats()})
+                    .catch(() => {console.log(err); this.provideStandardFormats()})
                 }
 
                 /* what types of stub should be treated as atoms? */
