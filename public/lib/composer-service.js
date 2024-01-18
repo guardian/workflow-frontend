@@ -82,11 +82,14 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
     this.parseComposerData = parseComposerData;
 
 
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat) {
+        var selectedDisplayHint = articleFormat === 'Key Takeaways' ?  'keyTakeaways' : undefined;
+        
         var params = {
-            'type': type,
+            'type': type === 'keyTakeaways' ? 'article' : type,
             'tracking': commissioningDesks,
-            'productionOffice': prodOffice
+            'productionOffice': prodOffice,
+            'displayHint': selectedDisplayHint
         };
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;

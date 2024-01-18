@@ -9,6 +9,7 @@ import 'components/date-time-picker/date-time-picker';
 
 import 'lib/composer-service';
 import 'lib/content-service';
+import 'lib/article-format-service';
 import 'lib/legal-states-service';
 import 'lib/picture-desk-states-service';
 import 'lib/filters-service';
@@ -16,18 +17,25 @@ import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
 
 const wfStubModal = angular.module('wfStubModal', [
-    'ui.bootstrap', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
+    'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
     .directive('punters', ['$rootScope', punters]);
 
 function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode,
-     sections, statusLabels, legalStatesService, pictureDeskStatesService, wfComposerService, wfProdOfficeService, wfContentService,
+     sections, statusLabels, articleFormatService, legalStatesService, pictureDeskStatesService, wfComposerService, wfProdOfficeService, wfContentService,
      wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
 
     wfContentService.getTypes().then( (types) => {
         $scope.contentName =
             (wfContentService.getAtomTypes())[stub.contentType] ?
             "Atom" : (types[stub.contentType] || "News item");
-
+            
+        $scope.stubFormat = ''
+        if (stub.contentType === 'article') {$scope.stubFormat = "Standard Article"}
+        else if (stub.contentType === 'keyTakeaways') {$scope.stubFormat = "Key Takeaways"}
+        $scope.$watch('stub.articleFormat', (newValue) => {
+            $scope.stubFormat = newValue;
+        })
+        
         $scope.modalTitle = ({
             'create': `Create ${$scope.contentName}`,
             'edit': `Edit ${$scope.contentName}`,
@@ -117,6 +125,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         return filtered
     }
 
+    $scope.articleFormats = articleFormatService.getArticleFormats();
     $scope.legalStates = legalStatesService.getLegalStates();
     $scope.pictureDeskStates = pictureDeskStatesService.getpictureDeskStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
@@ -252,6 +261,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
+        console.log("stub", stub)
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {
                 stub.contentType = $scope.stub.contentType.toLowerCase();
@@ -403,8 +413,20 @@ wfStubModal.run([
         function setUpPreferredStub (contentType) {
 
             function createStubData (contentType, sectionName) {
+                let chosenArticleFormat = ""
+                switch (contentType) {
+                    case "article":
+                        chosenArticleFormat = "Standard Article"
+                        break;
+                    case "keyTakeaways":
+                        chosenArticleFormat = "Key Takeaways"
+                        break;
+                    default:
+                        break;
+                }
 
                 return {
+                    articleFormat: chosenArticleFormat,
                     contentType: contentType === "atom" ? defaultAtomType : contentType,
                     // Only send through a section if one is found in the prefs
                     section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
