@@ -35,6 +35,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
         })
+
+        wfPreferencesService.getPreference('featureSwitch').then((data) => { $scope.showFormatDropdown = data;})
         
         $scope.modalTitle = ({
             'create': `Create ${$scope.contentName}`,
