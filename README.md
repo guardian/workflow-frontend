@@ -6,6 +6,8 @@ There are two repos, frontend and backend.
 
 This repo contains the *frontend* app for workflow.
 
+Configuration for workflow-frontend is stored in S3. For the location of the configuration files, see the editorial-tools-platform repository (private).
+
 The backend of workflow is kept in a separate open-source repo [here](https://github.com/guardian/workflow).
 
 ## workflow-frontend
