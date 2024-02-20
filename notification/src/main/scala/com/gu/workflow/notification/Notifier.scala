@@ -83,7 +83,7 @@ class Notifier(stage: Stage, override val secret: String, subsApi: Subscriptions
 
     parser.parse(responseText) match {
       case Right(json) =>
-        val content = json.as[ContentResponse].right.get
+        val content = json.as[ContentResponse].toOption.get
         val allStubs = content.content.toList
 
         allStubs.flatMap { case(status, stubs) =>

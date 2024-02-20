@@ -58,7 +58,7 @@ case class FutureO[+A](future: Future[Option[A]]) extends AnyVal {
 
 case class ApiResponseFt[A] private (underlying: Future[Either[ApiError, A]]) extends Logging {
 
-  def map[B](f: A => B)(implicit ec: ExecutionContext): ApiResponseFt[B] = ApiResponseFt(underlying.map(ft => ft.right.map(a => f(a))))
+  def map[B](f: A => B)(implicit ec: ExecutionContext): ApiResponseFt[B] = ApiResponseFt(underlying.map(ft => ft.map(a => f(a))))
 
   def flatMap[B](f: A => ApiResponseFt[B])(implicit ec: ExecutionContext): ApiResponseFt[B] = ApiResponseFt {
     asFuture.flatMap {

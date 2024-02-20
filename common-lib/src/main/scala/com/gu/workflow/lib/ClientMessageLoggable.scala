@@ -4,7 +4,7 @@ import net.logstash.logback.marker.Markers._
 import play.api.Logger
 import play.api.libs.json.{Json, Reads}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class ClientLog( message: String,
                       level: String,
@@ -16,7 +16,7 @@ object ClientLog {
 
 }
 object ClientMessageLoggable {
-  def logClientMessage(log: ClientLog) {
+  def logClientMessage(log: ClientLog): Unit = {
     val scalaMap = Map("client_timestamp" -> log.timestamp) ++
       log.fields.getOrElse(Map.empty)
 

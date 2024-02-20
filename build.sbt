@@ -5,7 +5,7 @@ import scala.sys.env
 
 Test / parallelExecution := false
 
-val scalaVersionNumber = "2.12.15"
+val scalaVersionNumber = "2.13.12"
 
 val buildInfo = Seq(
   buildInfoPackage := "build",
@@ -33,9 +33,7 @@ def playProject(path: String): Project =
   Project(path, file("."))
     .enablePlugins(PlayScala, JDebPackaging, SystemdPlugin, BuildInfoPlugin)
     .settings(
-      libraryDependencies += "com.typesafe.play" %% "play-ahc-ws" % "2.8.9",
-      //Necessary to override jackson-databind versions due to AWS and Play incompatibility
-      dependencyOverrides ++= jacksonDependencyOverrides,
+      libraryDependencies += "org.playframework" %% "play-ahc-ws" % "3.0.1",
       pipelineStages := Seq(digest, gzip)
     )
     .settings(commonSettings ++ buildInfo)
@@ -45,8 +43,7 @@ def playProject(path: String): Project =
 lazy val commonLib = project("common-lib")
   .settings(
     libraryDependencies
-      //Necessary to have a mix of play library versions due to scala-java8-compat incompatibility
-      ++= Seq("com.typesafe.play" %% "play" % "2.8.11", "com.typesafe.play" %% "play-ahc-ws" % "2.8.9")
+      ++= Seq("org.playframework" %% "play" % "3.0.1", "org.playframework" %% "play-ahc-ws" % "3.0.1")
       ++ logbackDependencies
       ++ testDependencies
       ++ awsDependencies
@@ -78,11 +75,10 @@ lazy val root = playProject(application)
       // name of the pid file must be play.pid
       s"-Dpidfile.path=/var/run/${packageName.value}/play.pid"
     ),
-    debianPackageDependencies := Seq("openjdk-8-jre-headless"),
     Universal / javaOptions ++= Seq(
       "-Dpidfile.path=/dev/null"
     ),
-    debianPackageDependencies := Seq("openjdk-8-jre-headless"),
+    debianPackageDependencies := Seq("java11-runtime-headless"),
     maintainer := "Digital CMS <digitalcms.dev@guardian.co.uk>",
     packageSummary := "workflow-frontend",
     packageDescription := """Workflow, part of the suite of Guardian CMS tools"""

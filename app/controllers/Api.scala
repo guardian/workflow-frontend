@@ -95,7 +95,7 @@ class Api(
   }
 
 
-  def createContent() = {
+  def createContent = {
     APIAuthAction.async { request =>
       ApiResponseFt[models.api.ContentUpdate](for {
         json <- readJsonFromRequestResponse(request.body)

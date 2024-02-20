@@ -7,7 +7,7 @@ import models.{EditorialSupportStaff, StaffUpdate}
 import play.api.libs.ws.WSClient
 import play.api.mvc.{BaseController, ControllerComponents}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class EditorialSupportTeamsController(
   override val config: Config,

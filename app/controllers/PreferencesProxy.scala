@@ -33,7 +33,7 @@ class PreferencesProxy(
       .withFollowRedirects(false) // ensure browser handles all redirects NOT this proxy
       .execute(request.method)
       .map { response =>
-        val responseHeaders = response.headers.mapValues(_.head) + (
+        val responseHeaders = response.headers.view.mapValues(_.head).toMap + (
           "Cache-Control" -> "private, no-cache, no-store, must-revalidate, max-age=0", // do not cache whatsoever
         )
         new Status(response.status)(response.body).withHeaders(responseHeaders.toSeq: _*)

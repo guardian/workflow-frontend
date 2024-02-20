@@ -11,5 +11,5 @@ class Response(val response: CloseableHttpResponse) {
 
   def header(name: String) = response.getFirstHeader(name).getValue
 
-  def disconnect() { response.close() }
+  def disconnect(): Unit = { response.close() }
 }

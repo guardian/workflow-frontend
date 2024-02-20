@@ -7,7 +7,7 @@ import org.joda.time.DateTime
 
 object TestData {
 
-  val randomSeed = Config.randomSeed.getOrElse(scala.util.Random.nextLong)
+  val randomSeed = Config.randomSeed.getOrElse(scala.util.Random.nextLong())
 
   private val random = new scala.util.Random(randomSeed)
 
@@ -35,11 +35,11 @@ object TestData {
 
   def opt[A](a: A): Option[A] = if(chooseBool) Some(a) else None
 
-  def chooseId: String = random.nextDouble.toString
+  def chooseId: String = random.nextDouble().toString
 
-  def chooseInt: Int = random.nextInt
+  def chooseInt: Int = random.nextInt()
 
-  def chooseLong: Long = random.nextLong
+  def chooseLong: Long = random.nextLong()
 
   def randomStub: Stub = generateRandomStub()
 
@@ -106,7 +106,7 @@ object TestData {
       due = opt(chooseDate),
       assignee = opt(chooseItem(email)),
       assigneeEmail = opt(chooseItem(email)),
-      composerId = Some(random.nextDouble.toString),
+      composerId = Some(random.nextDouble().toString),
       contentType = chooseItem(contentTypes),
       priority = chooseItem(priority),
       needsLegal = chooseItem(needsLegal),

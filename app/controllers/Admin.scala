@@ -71,7 +71,7 @@ class Admin(
     }.getOrElse(Future(sectionListFromDB))
   }
 
-  def index() = (AuthAction andThen PermissionFilter) {
+  def index = (AuthAction andThen PermissionFilter) {
     Redirect("/admin/desks-and-sections")
   }
 
@@ -134,7 +134,7 @@ class Admin(
   )
 
   def assignSectionToDesk = (AuthAction andThen PermissionFilter).async { implicit request =>
-    assignSectionToDeskForm.bindFromRequest.fold(
+    assignSectionToDeskForm.bindFromRequest().fold(
       formWithErrors => Future(BadRequest("failed to update section assignments")),
       sectionAssignment => {
         sectionDeskMappingsAPI.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
@@ -154,7 +154,7 @@ class Admin(
    */
 
   def addSection = (AuthAction andThen PermissionFilter).async { implicit request =>
-    addSectionForm.bindFromRequest.fold(
+    addSectionForm.bindFromRequest().fold(
       formWithErrors => Future(BadRequest("failed to add section")),
       section => {
         sectionsAPI.upsertSection(section).asFuture.map {
@@ -168,7 +168,7 @@ class Admin(
   }
 
   def removeSection = (AuthAction andThen PermissionFilter).async { implicit request =>
-    addSectionForm.bindFromRequest.fold(
+    addSectionForm.bindFromRequest().fold(
       formWithErrors => Future(BadRequest("failed to remove section")),
       section => {
         for {
@@ -184,7 +184,7 @@ class Admin(
    */
 
   def addDesk = (AuthAction andThen PermissionFilter).async { implicit request =>
-    addDeskForm.bindFromRequest.fold(
+    addDeskForm.bindFromRequest().fold(
       formWithErrors => Future(BadRequest(s"failed to add desk ${formWithErrors.errors}")),
       desk => {
         desksAPI.upsertDesk(desk).asFuture.map {
@@ -198,7 +198,7 @@ class Admin(
   }
 
   def removeDesk = (AuthAction andThen PermissionFilter).async { implicit request =>
-    addDeskForm.bindFromRequest.fold(
+    addDeskForm.bindFromRequest().fold(
       formWithErrors => Future(BadRequest("failed to remove desk")),
       desk => {
         for {
@@ -241,7 +241,7 @@ class Admin(
     val tagIdsFuture: Future[List[String]] = selectedSectionIdOption match {
       case Some(selectedSectionId) =>
         val tagIdsFt: Future[Either[ApiError, List[String]]] = sectionsAPI.getTagsForSectionFt(selectedSectionId).asFuture
-        tagIdsFt.map(_.right.get)
+        tagIdsFt.map(_.toOption.get)
       case None => Future.successful(List())
     }
     for {
@@ -250,7 +250,7 @@ class Admin(
       tagIds <- tagIdsFuture
       selectedSectionOption <- selectedSectionOptionFt
     } yield {
-      val capiKeyJson: Json = parser.parse(s"""{"CAPI_API_KEY": ${config.capiKey}}""").right.get
+      val capiKeyJson: Json = parser.parse(s"""{"CAPI_API_KEY": ${config.capiKey}}""").toOption.get
       Ok(
         views.html.admin.sectionsAndTags(
           capiKeyJson,
@@ -264,8 +264,8 @@ class Admin(
     }
   }
 
-  def addSectionTag() = (AuthAction andThen PermissionFilter) { implicit request =>
-    addSectionTagForm.bindFromRequest.fold(
+  def addSectionTag = (AuthAction andThen PermissionFilter) { implicit request =>
+    addSectionTagForm.bindFromRequest().fold(
       formWithErrors => {
         BadRequest("failed to execute controllers.admin.addSectionTag()")
       },
@@ -276,8 +276,8 @@ class Admin(
     )
   }
 
-  def removeSectionTag() = (AuthAction andThen PermissionFilter) { implicit request =>
-    removeSectionTagForm.bindFromRequest.fold(
+  def removeSectionTag = (AuthAction andThen PermissionFilter) { implicit request =>
+    removeSectionTagForm.bindFromRequest().fold(
       formWithErrors => {
         BadRequest("failed to execute controllers.admin.removeSectionTag()")
       },

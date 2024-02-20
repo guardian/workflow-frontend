@@ -4,7 +4,7 @@ import org.slf4j.MDC
 import play.Logger
 import play.api.Logging
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 

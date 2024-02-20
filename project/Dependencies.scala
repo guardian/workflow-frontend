@@ -20,19 +20,10 @@ object Dependencies {
     "com.gu" %% "content-api-client-aws" % "0.7"
   )
 
-  val jacksonDependencyOverrides: Seq[ModuleID] = {
-    val version = "2.11.4"
-    Seq(
-        "com.fasterxml.jackson.core" % "jackson-core" % version,
-        "com.fasterxml.jackson.core" % "jackson-databind" % version,
-        "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % version
-    )
-  }
-  
   val authDependencies = Seq(
-    "com.gu" %% "pan-domain-auth-play_2-8" % "1.0.6",
-    "com.gu" %% "hmac-headers" % "1.1.2",
-    "com.gu" %% "panda-hmac-play_2-8" % "2.0.1"
+    "com.gu" %% "pan-domain-auth-play_3-0" % "3.0.1",
+    "com.gu" %% "hmac-headers" % "2.0.0",
+    "com.gu" %% "panda-hmac-play_3-0" % "3.0.1"
   )
 
   val testDependencies = Seq(
@@ -57,7 +48,7 @@ object Dependencies {
   )
 
   val cacheDependencies = Seq(
-    "com.github.cb372" %% "scalacache-caffeine" % "0.9.3"
+    "com.github.blemale" %% "scaffeine" % "5.2.1"
   )
 
   val cryptoDependencies = Seq(

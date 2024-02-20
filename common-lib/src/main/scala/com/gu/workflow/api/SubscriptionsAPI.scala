@@ -9,7 +9,7 @@ import models.{Subscription, SubscriptionEndpoint, SubscriptionUpdate}
 import nl.martijndwars.webpush.{Notification, PushService}
 import play.api.Logging
 import org.bouncycastle.jce.provider.BouncyCastleProvider
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class SubscriptionsAPI(stage: Stage, webPushPublicKey: String, webPushPrivateKey: String) extends Dynamo with Logging {
   private val tableName = stage match {
