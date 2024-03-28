@@ -209,7 +209,7 @@ angular.module('workflow',
         $document.on('keydown', function(event) {
             if (event.shiftKey && event.keyCode === 123) {            
               $rootScope.$apply(function() {
-                $rootScope.showFeatureSwitch = !$rootScope.showFeatureSwitch;
+                $rootScope.showFeatureSwitches = !$rootScope.showFeatureSwitches;
             })}
         });
     }]);

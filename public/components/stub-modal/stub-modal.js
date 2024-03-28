@@ -30,13 +30,18 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             "Atom" : (types[stub.contentType] || "News item");
             
         $scope.stubFormat = ''
-        if (stub.contentType === 'article') {$scope.stubFormat = "Standard Article"}
-        else if (stub.contentType === 'keyTakeaways') {$scope.stubFormat = "Key Takeaways"}
+        if (stub.contentType === 'article') {
+            $scope.stubFormat = "Standard Article"
+        } else if (stub.contentType === 'keyTakeaways') {
+            $scope.stubFormat = "Key Takeaways"
+        } else if (stub.contentType === 'qAndA') {
+            $scope.stubFormat = "Q and A"
+        } 
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
         })
 
-        wfPreferencesService.getPreference('featureSwitch').then((data) => { $scope.showFormatDropdown = data;})
+        wfPreferencesService.getPreference('featureSwitches').then((data) => { $scope.showFormatDropdown = data;})
         
         $scope.modalTitle = ({
             'create': `Create ${$scope.contentName}`,
@@ -422,6 +427,9 @@ wfStubModal.run([
                         break;
                     case "keyTakeaways":
                         chosenArticleFormat = "Key Takeaways"
+                        break;
+                    case "qAndA":
+                        chosenArticleFormat = "Q and A"
                         break;
                     default:
                         break;

@@ -15,35 +15,34 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
             class ContentService {
 
-                provideStandardFormats(){
-                    return Promise.resolve({
-                        "article": "Article",
+                provideFormats(featureSwitches){
+                    let articleFormats = {
+                        "article": "Article"
+                    }
+                    if (featureSwitches && featureSwitches.keyTakeawaysSwitch){
+                        articleFormats.keyTakeaways = "Key Takeaways"
+                    }
+                    if (featureSwitches && featureSwitches.qAndASwitch){
+                        articleFormats.qAndA = "Q and A"
+                    }
+                    const nonArticleFormats = {
                         "liveblog": "Live blog",
                         "gallery": "Gallery",
                         "interactive": "Interactive",
                         "picture": "Picture",
                         "audio": "Audio",
                         "atom": "Video/Atom"
-                    }); 
+                    }
+                    // Assembling the object this way preserves the existing order in the UI
+                    return Promise.resolve({...articleFormats, ...nonArticleFormats}); 
                 }
 
-                provideStandardAndNewFormats(){             
-                    return Promise.resolve({
-                        "article": "Article",
-                        "keyTakeaways": "Key Takeaways",
-                        "liveblog": "Live blog",
-                        "gallery": "Gallery",
-                        "interactive": "Interactive",
-                        "picture": "Picture",
-                        "audio": "Audio",
-                        "atom": "Video/Atom"
-                    })} 
-
                 getTypes() {
-                    return wfPreferencesService.getPreference('featureSwitch')
-                    .then((isSwitchActive) => {
-                        return isSwitchActive === true ? this.provideStandardAndNewFormats() : this.provideStandardFormats()})
-                    .catch((err) => {return this.provideStandardFormats()})
+                    return wfPreferencesService.getPreference('featureSwitches')
+                    .then((featureSwitches) => {
+                        return this.provideFormats(featureSwitches)
+                    })
+                    .catch((err) => {return this.provideFormats()})
                 }
 
                 /* what types of stub should be treated as atoms? */
