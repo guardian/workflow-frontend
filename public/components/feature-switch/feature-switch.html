@@ -1,7 +1,8 @@
-<button class="feature-switch-toggle" ng-click="toggleFeatureSwitch()" title="Toggle key takeaways creation">
-  Toggle key takeaways creation
-  <div
-    class="feature-switch-toggle__icon"
-    ng-class="{'feature-switch-toggle__icon--active': featureSwitch.visible }"
-  ></div>
-</button>
+<table class="feature-switch">
+  <tr><th>Feature switch</th><th>Active</th></tr>
+  <tr ng-repeat="switch in featureSwitchEntries">
+    <td>{{readableNames[switch[0]]}}</td>
+    <td><input type="checkbox" ng-model="switch[1]" ng-click="updateFeatureSwitchPreference(switch[0], switch[1])"></td>
+  </tr>
+  </table>
+</table>

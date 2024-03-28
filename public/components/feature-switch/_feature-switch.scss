@@ -1,39 +1,32 @@
-.feature-switch-toggle {
+.feature-switch {
   position: relative;
   display: flex;
-  width: 100%;
-  margin-top: 10px;
-  padding: 6px 5px 6px 15px;
   border: 0;
-  border-top: 1px solid #dcdcdc;
   text-align: left;
   @extend %fs-data-2;
   &:focus, &:active {
     outline: none;
   }
+  position: absolute;
+  top: 50px;
+  right: 1px;
+  background: white;
+  z-index: 100;
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+  font-size: 1.5rem;
+  outline: 1px solid gold;
 }
 
-.feature-switch-toggle__icon {
-  display: block;
-  margin-left: auto;
-  height: 16px;
-  width: 16px;
-  cursor: pointer;
-  background: repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 1px,
-          $c-grey-400 1px,
-          $c-grey-400 2px
-  );
+.feature-switch td, .feature-switch th {
+  padding: 8px;
+  padding-right: 16px;
+  border: 1px solid #bdbdbd;
+}
 
-  &--active {
-      background: repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 2px,
-              $c-grey-400 2px,
-              $c-grey-400 4px
-      );
-  }
+.feature-switch input {
+  transform: scale(1.5);
+}
+
+.feature-switch input:hover {
+  cursor: pointer;
 }

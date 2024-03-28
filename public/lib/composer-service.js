@@ -81,12 +81,33 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
     this.getComposerContent = getComposerContent;
     this.parseComposerData = parseComposerData;
 
+    const getDisplayHint = (articleFormat) => {
+        switch (articleFormat){
+            case "Key Takeaways":
+                return "keyTakeaways"
+            case "Q and A": 
+                return "qAndA"
+            default:
+                return undefined
+        }
+    }
+    
+    const getType = (type) => {
+        switch (type){
+            case 'keyTakeaways':
+                return 'article'
+            case 'qAndA':
+                return 'article'
+            default:
+                return 'type'
+        }
+    }
 
     this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat) {
-        var selectedDisplayHint = articleFormat === 'Key Takeaways' ?  'keyTakeaways' : undefined;
+        var selectedDisplayHint = getDisplayHint(articleFormat);
         
         var params = {
-            'type': type === 'keyTakeaways' ? 'article' : type,
+            'type': type === getType(type),
             'tracking': commissioningDesks,
             'productionOffice': prodOffice,
             'displayHint': selectedDisplayHint
