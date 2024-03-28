@@ -1,4 +1,4 @@
-.feature-switch {
+.feature-switches {
   position: relative;
   display: flex;
   border: 0;
@@ -17,16 +17,16 @@
   outline: 1px solid gold;
 }
 
-.feature-switch td, .feature-switch th {
+.feature-switches td, .feature-switches th {
   padding: 8px;
   padding-right: 16px;
   border: 1px solid #bdbdbd;
 }
 
-.feature-switch input {
+.feature-switches input {
   transform: scale(1.5);
 }
 
-.feature-switch input:hover {
+.feature-switches input:hover {
   cursor: pointer;
 }

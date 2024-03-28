@@ -16,7 +16,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
             class ContentService {
 
                 provideFormats(featureSwitches){
-                    console.log(featureSwitches)
                     let articleFormats = {
                         "article": "Article"
                     }

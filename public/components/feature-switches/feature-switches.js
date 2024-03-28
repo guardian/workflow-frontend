@@ -5,18 +5,18 @@
  */
 
 import angular from 'angular';
-import featureSwitch from './feature-switch.html';
+import featureSwitches from './feature-switches.html';
 import _ from 'lodash';
 
-angular.module('wfFeatureSwitch', ['wfPreferencesService', 'wfIcons'])
-    .directive('wfFeatureSwitch', [wfFeatureSwitchDirective]);
+angular.module('wfFeatureSwitches', ['wfPreferencesService', 'wfIcons'])
+    .directive('wfFeatureSwitches', [wfFeatureSwitchesDirective]);
 
-function wfFeatureSwitchDirective() {
+function wfFeatureSwitchesDirective() {
     return {
         restrict: 'E',
         scope: true,
-        template: featureSwitch,
-        controller: ['$scope', 'wfPreferencesService', wfFeatureSwitchController],
+        template: featureSwitches,
+        controller: ['$scope', 'wfPreferencesService', wfFeatureSwitchesController],
         controllerAs: 'ctrl',
     };
 }
@@ -27,11 +27,13 @@ export const QAndAFeatureSwitchKey = "qAndASwitch";
 
 class FeatureSwitches {
     constructor(switches, entries) {
-      this.switches = switches
-      this.entries = entries;
+        // this.switches should be a single object with the type { [key]: value }
+        this.switches = switches
+        this.entries = entries;
     }
 
     update(incomingSwitches) {
+        // Update the switches with a partial set
         this.switches = {...this.switches, ...incomingSwitches}
         this.entries.length = 0;
         Object.entries(this.switches).forEach(featureSwitch => {
@@ -40,7 +42,7 @@ class FeatureSwitches {
     }
 }
 
-function wfFeatureSwitchController ($scope, wfPreferencesService) {
+function wfFeatureSwitchesController ($scope, wfPreferencesService) {
     const featureSwitchKeys = [KeyTakeawayFeatureSwitchKey, QAndAFeatureSwitchKey];
     $scope.readableNames = {
         [KeyTakeawayFeatureSwitchKey]: "Show Key Takeaways",
@@ -53,34 +55,32 @@ function wfFeatureSwitchController ($scope, wfPreferencesService) {
         return switches;
     }
 
+    // Feature switches are provided to the directive as an array of entries because it's simpler to iterate through in ng-repeat
     $scope.featureSwitchEntries = Object.entries(getDefaultFeatureSwitchValues())
 
     const featureSwitches = new FeatureSwitches(getDefaultFeatureSwitchValues(), $scope.featureSwitchEntries)
 
     const updateLocalFeatureSwitchValues = (featureSwitchResult) => {
-        try {
-            const incomingFeatureSwitches = featureSwitchResult;
-            if (_.isObject(incomingFeatureSwitches)){
-                featureSwitches.update(incomingFeatureSwitches);
-                $scope.$apply()
-            }
-        } catch (e) {
-            console.error(`Feature switch JSON is malformed, can't parse. Error message: ${e.message}`);
+        const incomingFeatureSwitches = featureSwitchResult;
+        if (_.isObject(incomingFeatureSwitches)){
+            featureSwitches.update(incomingFeatureSwitches);
+            $scope.$apply()
+        } else {
+            // It is useful to discard invalid values in the feature switch record 
+            console.error(`Feature switch values were unexpectedly not an object. Resetting feature switches.`);
             featureSwitches.update(getDefaultFeatureSwitchValues())
         }
     }
 
-    wfPreferencesService.getPreference('featureSwitches').then((result) => { 
-        if (result){
-            updateLocalFeatureSwitchValues(result)
+    wfPreferencesService.getPreference('featureSwitches').then((gotPreferences) => { 
+        if (gotPreferences){
+            updateLocalFeatureSwitchValues(gotPreferences)
         }
     })
     
     $scope.updateFeatureSwitchPreference = (key, value) => {
             featureSwitches.update({[key]: value});
-            console.log(featureSwitches.switches)
             wfPreferencesService.setPreference('featureSwitches', featureSwitches.switches)
                 .then(setTimeout(() => {window.location.reload()}, 500));
-        
     }
 }
