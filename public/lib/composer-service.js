@@ -99,7 +99,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
             case 'qAndA':
                 return 'article'
             default:
-                return 'type'
+                return type
         }
     }
 
@@ -107,7 +107,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         var selectedDisplayHint = getDisplayHint(articleFormat);
         
         var params = {
-            'type': type === getType(type),
+            'type': getType(type),
             'tracking': commissioningDesks,
             'productionOffice': prodOffice,
             'displayHint': selectedDisplayHint
