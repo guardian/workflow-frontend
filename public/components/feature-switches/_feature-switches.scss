@@ -1,0 +1,33 @@
+.feature-switches {
+  position: relative;
+  display: flex;
+  border: 0;
+  text-align: left;
+  @extend %fs-data-2;
+  &:focus, &:active {
+    outline: none;
+  }
+  position: absolute;
+  top: 50px;
+  right: 1px;
+  background: white;
+  z-index: 100;
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+  font-size: 1.5rem;
+  outline: 1px solid gold;
+}
+
+.feature-switches td, .feature-switches th {
+  padding: 8px;
+  padding-right: 16px;
+  border: 1px solid #bdbdbd;
+}
+
+.feature-switches input {
+  transform: scale(1.5);
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
