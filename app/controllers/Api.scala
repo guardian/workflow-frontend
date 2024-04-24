@@ -3,6 +3,7 @@ package controllers
 import com.gu.pandahmac.HMACAuthActions
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.pandomainauth.action.UserRequest
+import com.gu.permissions.PermissionsProvider
 import com.gu.workflow.api.{ApiUtils, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.DBToAPIResponse.getResponse
 import com.gu.workflow.lib.{ContentAPI, Priorities, StatusDatabase}
@@ -30,7 +31,8 @@ class Api(
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
-  override val panDomainSettings: PanDomainAuthSettingsRefresher
+  override val panDomainSettings: PanDomainAuthSettingsRefresher,
+  override val permissions: PermissionsProvider,
 ) extends BaseController
   with PanDomainAuthActions
   with SharedSecretAuth

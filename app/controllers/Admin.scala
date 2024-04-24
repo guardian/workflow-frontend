@@ -22,7 +22,7 @@ class Admin(
   sectionsAPI: SectionsAPI,
   desksAPI: DesksAPI,
   sectionDeskMappingsAPI: SectionDeskMappingsAPI,
-  permissions: PermissionsProvider,
+  override val permissions: PermissionsProvider,
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,

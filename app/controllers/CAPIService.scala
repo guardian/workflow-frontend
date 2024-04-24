@@ -1,6 +1,7 @@
 package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
+import com.gu.permissions.PermissionsProvider
 import com.gu.workflow.lib.ContentAPI
 import config.Config
 import play.api.libs.ws.WSClient
@@ -10,7 +11,8 @@ class CAPIService(
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
-  override val panDomainSettings: PanDomainAuthSettingsRefresher
+  override val panDomainSettings: PanDomainAuthSettingsRefresher,
+  override val permissions: PermissionsProvider,
 ) extends BaseController with PanDomainAuthActions {
 
   private val contentApi = new ContentAPI(config.capiPreviewRole, config.capiPreviewIamUrl, wsClient)
