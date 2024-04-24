@@ -24,7 +24,7 @@ class Application(
   val tagService: TagService,
   val desksAPI: DesksAPI,
   val sectionDeskMappingsAPI: SectionDeskMappingsAPI,
-  val permissions: PermissionsProvider,
+  override val permissions: PermissionsProvider,
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,

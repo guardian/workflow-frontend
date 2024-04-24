@@ -1,10 +1,11 @@
 package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
+import com.gu.permissions.PermissionsProvider
 import config.Config
 import play.api.libs.ws.WSClient
 import play.api.mvc._
-import play.api.{ Logging }
+import play.api.Logging
 import play.filters.headers.SecurityHeadersFilter
 
 import scala.concurrent.Future
@@ -14,7 +15,8 @@ class Login(
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
-  override val panDomainSettings: PanDomainAuthSettingsRefresher
+  override val panDomainSettings: PanDomainAuthSettingsRefresher,
+  override val permissions: PermissionsProvider,
 ) extends BaseController with PanDomainAuthActions with Logging {
 
   def oauthCallback = Action.async { implicit request =>

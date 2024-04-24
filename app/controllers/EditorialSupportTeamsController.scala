@@ -1,6 +1,7 @@
 package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
+import com.gu.permissions.PermissionsProvider
 import com.gu.workflow.util.Dynamo
 import config.Config
 import models.{EditorialSupportStaff, StaffUpdate}
@@ -13,7 +14,8 @@ class EditorialSupportTeamsController(
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
-  override val panDomainSettings: PanDomainAuthSettingsRefresher
+  override val panDomainSettings: PanDomainAuthSettingsRefresher,
+  override val permissions: PermissionsProvider
 ) extends BaseController with PanDomainAuthActions with Dynamo {
 
   private val editorialSupportTable = dynamoDb.getTable(config.editorialSupportDynamoTable)

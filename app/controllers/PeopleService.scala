@@ -14,7 +14,7 @@ class PeopleService(
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
   override val panDomainSettings: PanDomainAuthSettingsRefresher,
-  val permissions: PermissionsProvider,
+  override val permissions: PermissionsProvider,
 ) extends BaseController with PanDomainAuthActions {
 
   @volatile private var emailsPartsCache: Set[(String, Array[String])] = Set.empty

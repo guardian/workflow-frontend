@@ -5,6 +5,7 @@ import com.gu.permissions.{PermissionDefinition, PermissionsConfig, PermissionsP
 import com.gu.workflow.util.AWS
 import config.Config
 import io.circe.Json
+import lib.Permissions.adminPermission
 import play.api.Logging
 import play.api.mvc.{ActionFilter, Result, Results}
 
@@ -16,7 +17,6 @@ class AdminPermissionFilter(
                            )(implicit ec: ExecutionContext) extends ActionFilter[UserRequest] with Logging {
   override protected def executionContext: ExecutionContext = ec
 
-  private val adminPermission: PermissionDefinition = PermissionDefinition("workflow_admin", "workflow")
 
   override def filter[A](request:UserRequest[A]): Future[Option[Result]] = Future.successful {
     val email = request.user.email

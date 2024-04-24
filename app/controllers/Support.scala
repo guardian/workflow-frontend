@@ -1,6 +1,7 @@
 package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
+import com.gu.permissions.PermissionsProvider
 import com.gu.workflow.lib.{ClientLog, ClientMessageLoggable}
 import config.Config
 import play.api.Logging
@@ -11,7 +12,8 @@ class Support(
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
-  override val panDomainSettings: PanDomainAuthSettingsRefresher
+  override val panDomainSettings: PanDomainAuthSettingsRefresher,
+  override val permissions: PermissionsProvider,
 ) extends BaseController with PanDomainAuthActions with Logging {
   def sendLog: Action[AnyContent] = APIAuthAction { implicit request =>
     (for {

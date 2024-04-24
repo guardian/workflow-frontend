@@ -2,6 +2,7 @@ package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.pandomainauth.model.User
+import com.gu.permissions.PermissionsProvider
 import com.gu.workflow.api.{ApiUtils, SubscriptionsAPI}
 import config.Config
 import models.api.ApiResponseFt
@@ -15,7 +16,8 @@ class Notifications(
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
-  override val panDomainSettings: PanDomainAuthSettingsRefresher
+  override val panDomainSettings: PanDomainAuthSettingsRefresher,
+  override val permissions: PermissionsProvider,
 ) extends BaseController with PanDomainAuthActions with ApiUtils {
 
   private val subsApi = new SubscriptionsAPI(config.stage, config.webPushPublicKey, config.webPushPrivateKey)

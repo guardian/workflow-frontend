@@ -1,6 +1,7 @@
 package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
+import com.gu.permissions.PermissionsProvider
 import com.gu.workflow.util.{Code, Dev}
 import config.Config
 import play.api.Logging
@@ -14,7 +15,8 @@ class PreferencesProxy(
   override val config: Config,
   override val controllerComponents: ControllerComponents,
   override val wsClient: WSClient,
-  override val panDomainSettings: PanDomainAuthSettingsRefresher
+  override val panDomainSettings: PanDomainAuthSettingsRefresher,
+  override val permissions: PermissionsProvider,
 ) extends BaseController with PanDomainAuthActions with Logging {
 
   private def proxyRequest(relativePath: String) = APIAuthAction(parse.byteString).async { request =>
