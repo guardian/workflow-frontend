@@ -22,9 +22,6 @@ function wfFeatureSwitchesDirective() {
 }
 
 
-export const KeyTakeawayFeatureSwitchKey = "keyTakeawaysSwitch";
-export const QAndAFeatureSwitchKey = "qAndASwitch";
-
 class FeatureSwitches {
     constructor(switches, entries) {
         // this.switches should be a single object with the type { [key]: value }
@@ -43,11 +40,8 @@ class FeatureSwitches {
 }
 
 function wfFeatureSwitchesController ($scope, wfPreferencesService) {
-    const featureSwitchKeys = [KeyTakeawayFeatureSwitchKey, QAndAFeatureSwitchKey];
-    $scope.readableNames = {
-        [KeyTakeawayFeatureSwitchKey]: "Show Key Takeaways",
-        [QAndAFeatureSwitchKey]: "Show Q and A Explainer",
-    }
+    const featureSwitchKeys = [];
+    $scope.readableNames = {}
 
     const getDefaultFeatureSwitchValues = () => {
         const switches = {};

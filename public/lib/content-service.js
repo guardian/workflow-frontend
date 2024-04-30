@@ -16,15 +16,12 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
             class ContentService {
 
                 provideFormats(featureSwitches){
-                    let articleFormats = {
-                        "article": "Article"
+                    const articleFormats = {
+                        "article": "Article",
+                        "keyTakeaways": "Key Takeaways",
+                        "qAndA": "Q and A Explainer"
                     }
-                    if (featureSwitches && featureSwitches.keyTakeawaysSwitch){
-                        articleFormats.keyTakeaways = "Key Takeaways"
-                    }
-                    if (featureSwitches && featureSwitches.qAndASwitch){
-                        articleFormats.qAndA = "Q and A"
-                    }
+
                     const nonArticleFormats = {
                         "liveblog": "Live blog",
                         "gallery": "Gallery",
