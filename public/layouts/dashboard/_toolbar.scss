@@ -244,6 +244,8 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 }
 
 .dashboard-toolbar__dropdown--create {
+    margin-right: 15px;
+
     .dashboard-toolbar__dropdown-dropdown-button {
         border-left: $dashboard-toolbar-separator;
         background-color: $c-composer-blue;
