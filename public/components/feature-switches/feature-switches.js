@@ -46,7 +46,7 @@ function wfFeatureSwitchesController ($scope, wfPreferencesService) {
     const featureSwitchKeys = [KeyTakeawayFeatureSwitchKey, QAndAFeatureSwitchKey];
     $scope.readableNames = {
         [KeyTakeawayFeatureSwitchKey]: "Show Key Takeaways",
-        [QAndAFeatureSwitchKey]: "Show Q and As",
+        [QAndAFeatureSwitchKey]: "Show Q and A Explainer",
     }
 
     const getDefaultFeatureSwitchValues = () => {
