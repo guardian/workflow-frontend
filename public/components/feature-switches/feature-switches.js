@@ -22,9 +22,6 @@ function wfFeatureSwitchesDirective() {
 }
 
 
-export const KeyTakeawayFeatureSwitchKey = "keyTakeawaysSwitch";
-export const QAndAFeatureSwitchKey = "qAndASwitch";
-
 class FeatureSwitches {
     constructor(switches, entries) {
         // this.switches should be a single object with the type { [key]: value }
@@ -43,11 +40,8 @@ class FeatureSwitches {
 }
 
 function wfFeatureSwitchesController ($scope, wfPreferencesService) {
-    const featureSwitchKeys = [KeyTakeawayFeatureSwitchKey, QAndAFeatureSwitchKey];
-    $scope.readableNames = {
-        [KeyTakeawayFeatureSwitchKey]: "Show Key Takeaways",
-        [QAndAFeatureSwitchKey]: "Show Q and As",
-    }
+    const featureSwitchKeys = [];
+    $scope.readableNames = {}
 
     const getDefaultFeatureSwitchValues = () => {
         const switches = {};
@@ -56,7 +50,7 @@ function wfFeatureSwitchesController ($scope, wfPreferencesService) {
     }
 
     // Feature switches are provided to the directive as an array of entries because it's simpler to iterate through in ng-repeat
-    $scope.featureSwitchEntries = Object.entries(getDefaultFeatureSwitchValues())
+    $scope.featureSwitchEntries = Object.entries(getDefaultFeatureSwitchValues()).filter(featureSwitch => featureSwitchKeys.includes(featureSwitch[0]))
 
     const featureSwitches = new FeatureSwitches(getDefaultFeatureSwitchValues(), $scope.featureSwitchEntries)
 

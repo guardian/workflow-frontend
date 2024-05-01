@@ -35,7 +35,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         } else if (stub.contentType === 'keyTakeaways') {
             $scope.stubFormat = "Key Takeaways"
         } else if (stub.contentType === 'qAndA') {
-            $scope.stubFormat = "Q and A"
+            $scope.stubFormat = "Q and A Explainer"
         } 
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
@@ -429,7 +429,7 @@ wfStubModal.run([
                         chosenArticleFormat = "Key Takeaways"
                         break;
                     case "qAndA":
-                        chosenArticleFormat = "Q and A"
+                        chosenArticleFormat = "Q and A Explainer"
                         break;
                     default:
                         break;
