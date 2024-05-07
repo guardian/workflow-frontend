@@ -4,6 +4,7 @@
   <div class="login-page">
     @for(msg <- message) {
       <p class="login-page__login-error">@msg</p>
+      <p>Please contact Central Production if you require permission to use Workflow.</p>
     }
     <form action="@routes.Application.index" method="get">
       <button class="login-page__login-button" type="submit">Log in</button>

@@ -24,17 +24,18 @@ trait PanDomainAuthActions extends AuthActions with Results with Logging {
 
   override def validateUser(authedUser: AuthenticatedUser): Boolean = {
     val isValid = (authedUser.user.emailDomain == "guardian.co.uk") &&
-      (authedUser.multiFactor || (config.no2faUser.length > 0 && config.no2faUser == authedUser.user.email))
+      (authedUser.multiFactor || (config.no2faUser.nonEmpty && config.no2faUser == authedUser.user.email))
+
+    val hasAnyWorkflowPermission = hasAtLeastAccessPermission(authedUser.user.email)
 
     if (!isValid) {
       logger.warn(s"User ${authedUser.user.email} failed validation")
-    } else if (hasAtLeastAccessPermission(authedUser.user.email)) {
-      logger.info(s"User ${authedUser.user.email} access permission check passed")
-    } else {
-      logger.warn(s"User ${authedUser.user.email} access permission check denied")
+    }
+    if (!hasAnyWorkflowPermission) {
+      logger.warn(s"User ${authedUser.user.email} lacks any permission for workflow")
     }
 
-    isValid
+    isValid && hasAnyWorkflowPermission
   }
 
   override def authCallbackUrl: String = config.host + "/oauthCallback"
