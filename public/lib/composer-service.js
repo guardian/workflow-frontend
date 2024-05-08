@@ -85,7 +85,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         switch (articleFormat){
             case "Key Takeaways":
                 return "keyTakeaways"
-            case "Q and A Explainer":
+            case "Q&A Explainer":
                 return "qAndA"
             default:
                 return undefined
