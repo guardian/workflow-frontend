@@ -19,7 +19,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     const articleFormats = {
                         "article": "Article",
                         "keyTakeaways": "Key Takeaways",
-                        "qAndA": "Q and A Explainer"
+                        "qAndA": "Q&A Explainer"
                     }
 
                     const nonArticleFormats = {
