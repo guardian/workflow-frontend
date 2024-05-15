@@ -55,7 +55,7 @@
     "karma-webpack": "^4.0.2",
     "keycode": "^2.2.0",
     "lodash": "4.17.21",
-    "mocha": "^6.2.2",
+    "mocha": "^10.4.0",
     "moment": "^2.11.2",
     "moment-timezone": "0.5.45",
     "ng-infinite-scroll": "1.2.0",
