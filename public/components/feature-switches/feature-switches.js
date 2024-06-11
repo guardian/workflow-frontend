@@ -56,8 +56,6 @@ function wfFeatureSwitchesController ($scope, wfPreferencesService) {
 
     // Feature switches are provided to the directive as an array of entries because it's simpler to iterate through in ng-repeat
     $scope.featureSwitchEntries = Object.entries(getDefaultFeatureSwitchValues()).filter(featureSwitch => featureSwitchKeys.includes(featureSwitch[0]))
-    // $scope.featureSwitchEntries = Object.entries(getDefaultFeatureSwitchValues())
-    console.log("entries", $scope.featureSwitchEntries)
 
     const featureSwitches = new FeatureSwitches(getDefaultFeatureSwitchValues(), $scope.featureSwitchEntries)
 
