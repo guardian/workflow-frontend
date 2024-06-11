@@ -10,7 +10,7 @@ define(['angular'], function (angular) {
                     {name: 'Key Takeaways', value: 'Key Takeaways'},
                     {name: 'Q&A Explainer', value: 'Q&A Explainer'},
                     {name: 'Timeline', value: 'Timeline'},
-                    {name: 'Mini Profile', value: 'Mini Profile'},
+                    {name: 'Mini Profiles', value: 'Mini Profiles'},
                 ]
             };
         return {

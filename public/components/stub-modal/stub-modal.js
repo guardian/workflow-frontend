@@ -38,8 +38,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $scope.stubFormat = "Q&A Explainer"
         } else if (stub.contentType === 'timeline') {
             $scope.stubFormat = "Timeline"
-        } else if (stub.contentType === 'miniProfile') {
-            $scope.stubFormat = "Mini Profile"
+        } else if (stub.contentType === 'miniProfiles') {
+            $scope.stubFormat = "Mini Profiles"
         } 
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
@@ -438,8 +438,8 @@ wfStubModal.run([
                     case "timeline":
                         chosenArticleFormat = "Timeline"
                         break;
-                    case "miniProfile":
-                        chosenArticleFormat = "Mini Profile"
+                    case "miniProfiles":
+                        chosenArticleFormat = "Mini Profiles"
                         break;
                     default:
                         break;

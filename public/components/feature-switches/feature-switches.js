@@ -22,7 +22,7 @@ function wfFeatureSwitchesDirective() {
 }
 
 export const timelineFeatureSwitchKey = 'timeline';
-export const miniProfileFeatureSwitchKey = 'miniProfile';
+export const miniProfilesFeatureSwitchKey = 'miniProfiles';
 
 class FeatureSwitches {
     constructor(switches, entries) {
@@ -42,17 +42,15 @@ class FeatureSwitches {
 }
 
 function wfFeatureSwitchesController ($scope, wfPreferencesService) {
-    const featureSwitchKeys = [timelineFeatureSwitchKey, miniProfileFeatureSwitchKey];
+    const featureSwitchKeys = [timelineFeatureSwitchKey, miniProfilesFeatureSwitchKey];
     $scope.readableNames = {
         [timelineFeatureSwitchKey]: 'Timeline',
-        [miniProfileFeatureSwitchKey]: 'Mini Profile',
+        [miniProfilesFeatureSwitchKey]: 'Mini Profiles',
     }
 
     const getDefaultFeatureSwitchValues = () => {
         const switches = {};
-        console.log('featureSwitchKeys', featureSwitchKeys)
         featureSwitchKeys.forEach(key => switches[key] = false);
-        console.log("switches here", switches)
         return switches;
     }
 
