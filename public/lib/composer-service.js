@@ -87,6 +87,10 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
                 return "keyTakeaways"
             case "Q&A Explainer":
                 return "qAndA"
+            case "Timeline":
+                return "timeline"
+            case "Mini Profile":
+                return "miniProfile"
             default:
                 return undefined
         }
@@ -98,6 +102,10 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
                 return 'article'
             case 'qAndA':
                 return 'article'
+            case "Timeline":
+                return "timeline"
+            case "Mini Profile":
+                return "miniProfile"
             default:
                 return type
         }

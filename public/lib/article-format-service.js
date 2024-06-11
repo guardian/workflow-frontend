@@ -9,6 +9,8 @@ define(['angular'], function (angular) {
                     {name: 'Standard Article', value: 'Standard Article'},
                     {name: 'Key Takeaways', value: 'Key Takeaways'},
                     {name: 'Q&A Explainer', value: 'Q&A Explainer'},
+                    {name: 'Timeline', value: 'Timeline'},
+                    {name: 'Mini Profile', value: 'Mini Profile'},
                 ]
             };
         return {

@@ -16,10 +16,25 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
             class ContentService {
 
                 provideFormats(featureSwitches){
-                    const articleFormats = {
+                    // const articleFormats = {
+                    //     "article": "Article",
+                    //     "keyTakeaways": "Key Takeaways",
+                    //     "qAndA": "Q&A Explainer",
+                    //     "timeline": "Timeline",
+                    //     "miniProfile": "Mini Profile"
+                    // }
+                    console.log("featureSwitches now", featureSwitches)
+
+                    let articleFormats = {
                         "article": "Article",
                         "keyTakeaways": "Key Takeaways",
                         "qAndA": "Q&A Explainer"
+                    }
+                    if (featureSwitches && featureSwitches.timelineSwitch){
+                        articleFormats.timeline = "Timeline"
+                    }
+                    if (featureSwitches && featureSwitches.miniProfileSwitch){
+                        articleFormats.miniProfile = "Mini Profile"
                     }
 
                     const nonArticleFormats = {
