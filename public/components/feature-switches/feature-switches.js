@@ -45,7 +45,7 @@ function wfFeatureSwitchesController ($scope, wfPreferencesService) {
     const featureSwitchKeys = [timelineFeatureSwitchKey, miniProfilesFeatureSwitchKey];
     $scope.readableNames = {
         [timelineFeatureSwitchKey]: 'Timeline',
-        [miniProfilesFeatureSwitchKey]: 'Mini Profiles',
+        [miniProfilesFeatureSwitchKey]: 'Mini profiles',
     }
 
     const getDefaultFeatureSwitchValues = () => {
