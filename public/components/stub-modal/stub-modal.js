@@ -39,7 +39,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         } else if (stub.contentType === 'timeline') {
             $scope.stubFormat = "Timeline"
         } else if (stub.contentType === 'miniProfiles') {
-            $scope.stubFormat = "Mini Profiles"
+            $scope.stubFormat = "Mini profiles"
         } 
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
@@ -137,6 +137,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     }
 
     $scope.articleFormats = articleFormatService.getArticleFormats();
+    console.log("articleFormats", $scope.articleFormats)
     $scope.legalStates = legalStatesService.getLegalStates();
     $scope.pictureDeskStates = pictureDeskStatesService.getpictureDeskStates();
     $scope.prodOffices = wfProdOfficeService.getProdOffices();
@@ -439,7 +440,7 @@ wfStubModal.run([
                         chosenArticleFormat = "Timeline"
                         break;
                     case "miniProfiles":
-                        chosenArticleFormat = "Mini Profiles"
+                        chosenArticleFormat = "Mini profiles"
                         break;
                     default:
                         break;

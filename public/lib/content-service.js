@@ -25,7 +25,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         articleFormats.timeline = "Timeline"
                     }
                     if (featureSwitches && featureSwitches.miniProfiles){
-                        articleFormats.miniProfiles = "Mini Profiles"
+                        articleFormats.miniProfiles = "Mini profiles"
                     }
 
                     const nonArticleFormats = {
