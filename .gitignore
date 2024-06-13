@@ -13,6 +13,8 @@ dist
 /.project
 /RUNNING_PID
 /.settings
+.vscode
+.metals
 conf/local.conf
 conf/application.local.conf
 conf/application.devtoprod.conf
