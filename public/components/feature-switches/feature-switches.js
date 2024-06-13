@@ -21,6 +21,8 @@ function wfFeatureSwitchesDirective() {
     };
 }
 
+export const timelineFeatureSwitchKey = 'timeline';
+export const miniProfilesFeatureSwitchKey = 'miniProfiles';
 
 class FeatureSwitches {
     constructor(switches, entries) {
@@ -40,8 +42,11 @@ class FeatureSwitches {
 }
 
 function wfFeatureSwitchesController ($scope, wfPreferencesService) {
-    const featureSwitchKeys = [];
-    $scope.readableNames = {}
+    const featureSwitchKeys = [timelineFeatureSwitchKey, miniProfilesFeatureSwitchKey];
+    $scope.readableNames = {
+        [timelineFeatureSwitchKey]: 'Timeline',
+        [miniProfilesFeatureSwitchKey]: 'Mini profiles',
+    }
 
     const getDefaultFeatureSwitchValues = () => {
         const switches = {};
@@ -54,10 +59,16 @@ function wfFeatureSwitchesController ($scope, wfPreferencesService) {
 
     const featureSwitches = new FeatureSwitches(getDefaultFeatureSwitchValues(), $scope.featureSwitchEntries)
 
-    const updateLocalFeatureSwitchValues = (featureSwitchResult) => {
-        const incomingFeatureSwitches = featureSwitchResult;
-        if (_.isObject(incomingFeatureSwitches)){
-            featureSwitches.update(incomingFeatureSwitches);
+    const updateLocalFeatureSwitchValues = (featureSwitchResult) => {   
+        const filteredIncomingFeatureSwitchResult = Object.keys(featureSwitchResult)
+        .filter(key => featureSwitchKeys.includes(key))
+        .reduce((filteredResult, key) => {
+            filteredResult[key] = featureSwitchResult[key];
+            return filteredResult;
+        }, {});
+        
+        if (_.isObject(filteredIncomingFeatureSwitchResult)){
+            featureSwitches.update(filteredIncomingFeatureSwitchResult);
             $scope.$apply()
         } else {
             // It is useful to discard invalid values in the feature switch record 
