@@ -21,7 +21,6 @@ function wfFeatureSwitchesDirective() {
     };
 }
 
-export const timelineFeatureSwitchKey = 'timeline';
 export const miniProfilesFeatureSwitchKey = 'miniProfiles';
 
 class FeatureSwitches {
@@ -42,9 +41,8 @@ class FeatureSwitches {
 }
 
 function wfFeatureSwitchesController ($scope, wfPreferencesService) {
-    const featureSwitchKeys = [timelineFeatureSwitchKey, miniProfilesFeatureSwitchKey];
+    const featureSwitchKeys = [miniProfilesFeatureSwitchKey];
     $scope.readableNames = {
-        [timelineFeatureSwitchKey]: 'Timeline',
         [miniProfilesFeatureSwitchKey]: 'Mini profiles',
     }
 
