@@ -11,10 +11,8 @@ define(['angular'], function (angular) {
                     {name: 'Standard Article', value: 'Standard Article'},
                     {name: 'Key Takeaways', value: 'Key Takeaways'},
                     {name: 'Q&A Explainer', value: 'Q&A Explainer'},
+                    {name: 'Timeline', value: 'Timeline'},
                 ]
-                if (featureSwitches && featureSwitches.timeline){
-                    articleFormats.push({name: 'Timeline', value: 'Timeline'})
-                }
                 if (featureSwitches && featureSwitches.miniProfiles){
                     articleFormats.push({name: 'Mini profiles', value: 'Mini profiles'})
                 }
