@@ -8,7 +8,7 @@ import { getEnvironment } from './environment';
 import { registerServiceWorker } from './lib/notifications';
 
 import { react2angular } from './react/react2angular.tsx';
-import { TestReactComponent } from './react/TestReactComponent.tsx';
+import { TopToolbarTitle } from './react/TopToolbarTitle.tsx';
 
 import 'components/sentry/sentry';
 import 'components/user-message/user-message';
@@ -77,9 +77,6 @@ angular.module('workflow',
             return RegExp($compileProvider.aHrefSanitizationWhitelist().source +
                    "|^\\s*" + url.match("^.*?:")[0])
         }
-
-        console.log(TestReactComponent)
-        console.log(react2angular)
 
         $compileProvider.aHrefSanitizationWhitelist(
             sanitizeUrl(_wfConfig.incopyOpenUrl)
@@ -209,9 +206,8 @@ angular.module('workflow',
         { name: 'Not required', value: 'NA' },
         { name: 'Needs checking', value: 'REQUIRED' },
         { name: 'Checked', value: 'COMPLETE'}
-    ]}).component('testReactComponent', react2angular(TestReactComponent,[
-        'name',
-        'book'
+    ]}).component('topToolbarTitle', react2angular(TopToolbarTitle,[
+        'title',
     ]))
 
     .run(['wfAnalyticsService', function(){}])

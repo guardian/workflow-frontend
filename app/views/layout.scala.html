@@ -16,14 +16,9 @@
 <body class="main-container">
 
   <header class="top-toolbar">
-      <div class="top-toolbar__title">
-          <div class="top-toolbar__letter">
-              <span class="top-toolbar__letter-text">W</span>
-          </div>
-          <h1 class="top-toolbar__page-title">
-              <span class="top-toolbar__page-title-text">@title</span>
-          </h1>
-      </div>
+
+    <top-toolbar-title title="'@title'" style="display: contents;"></top-toolbar-title>
+
 
       <div class="top-toolbar__view-toolbar" ui-view="view-toolbar"></div>
       <div class="top-toolbar__create" ui-view="view-create"></div>
