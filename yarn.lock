@@ -1301,6 +1301,18 @@
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
+"@types/angular-resource@1.5.5":
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/@types/angular-resource/-/angular-resource-1.5.5.tgz#c6feef64471e351bdee2fc4a94d7f99bb4208c04"
+  integrity sha512-IrK1wFiowvnvJ1h+uCl1gSbWZlRNQXMkxoB6xMZS9NcmpsvO5MmkG3hNzlt+fR/h11RyJ2g3ihklUJvjj481JQ==
+  dependencies:
+    "@types/angular" "*"
+
+"@types/angular@*", "@types/angular@^1.6.39", "@types/angular@^1.7.0":
+  version "1.8.9"
+  resolved "https://registry.yarnpkg.com/@types/angular/-/angular-1.8.9.tgz#d1ae3e87a67f72342d55ff26e611df83df0fb176"
+  integrity sha512-Z0HukqZkx0fotsV3QO00yqU9NzcQI+tMcrum+8MvfB4ePqCawZctF/gz6QiuII+T1ax+LitNoPx/eICTgnF4sg==
+
 "@types/cookie@^0.4.1":
   version "0.4.1"
   resolved "https://registry.npmjs.org/@types/cookie/-/cookie-0.4.1.tgz"
@@ -1317,6 +1329,11 @@
   version "7.0.15"
   resolved "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.15.tgz"
   integrity sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==
+
+"@types/lodash@^4.14.85":
+  version "4.17.7"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.7.tgz#2f776bcb53adc9e13b2c0dfd493dfcbd7de43612"
+  integrity sha512-8wTvZawATi/lsmNu10/j2hk1KEP0IvjubqPE3cu1Xz7xfXXt5oCq3SNUz4fMIP4XGF9Ky+Ue2tBA3hcS7LSBlA==
 
 "@types/node@*", "@types/node@>=10.0.0":
   version "20.12.12"
@@ -1640,7 +1657,7 @@ angular@1.5.11:
   resolved "https://registry.npmjs.org/angular/-/angular-1.5.11.tgz"
   integrity sha512-09DBOVVWo6rOQfdCBKGfEL0ZZIhf6P3fbeP3BU+ty5FU50DPiavVeDn8hQ4wXE8o4vKEEpzY1aRcRHJMCixWYA==
 
-angular@^1.6.3:
+angular@>=1.5.0, angular@^1.6.3:
   version "1.8.3"
   resolved "https://registry.npmjs.org/angular/-/angular-1.8.3.tgz"
   integrity sha512-5qjkWIQQVsHj4Sb5TcEs4WZWpFeVFHXwxEBHUhrny41D8UrBAd6T/6nPPAsLngJCReIOqi95W3mxdveveutpZw==
@@ -4714,7 +4731,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.npmjs.org/lodash.uniq/-/lodash.uniq-4.5.0.tgz"
   integrity sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==
 
-lodash@4.17.21, "lodash@>=3.5 <5", lodash@^4.17.15, lodash@^4.17.21:
+lodash@4.17.21, "lodash@>=3.5 <5", lodash@^4.17.15, lodash@^4.17.21, lodash@^4.17.4:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -5134,6 +5151,16 @@ ng-infinite-scroll@1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/ng-infinite-scroll/-/ng-infinite-scroll-1.2.0.tgz"
   integrity sha512-dj/K27XlPrmuMBvJSJ8iemsUxVnlamfkdrru+4Y0daDUXgW/trFMlEPvIHqCWmKd4vH8NTOaIuy9BYhnwni1oQ==
+
+ngcomponent@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/ngcomponent/-/ngcomponent-4.1.0.tgz#793e379138f552ea0cd2c767ad0aa7057678e228"
+  integrity sha512-cGL3iVoqMWTpCfaIwgRKhdaGqiy2Z+CCG0cVfjlBvdqE8saj8xap9B4OTf+qwObxLVZmDTJPDgx3bN6Q/lZ7BQ==
+  dependencies:
+    "@types/angular" "^1.6.39"
+    "@types/lodash" "^4.14.85"
+    angular ">=1.5.0"
+    lodash "^4.17.4"
 
 nice-try@^1.0.4:
   version "1.0.5"
