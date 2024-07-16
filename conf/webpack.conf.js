@@ -4,6 +4,7 @@ const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = {
     mode:'development',
@@ -29,6 +30,11 @@ module.exports = {
                 },
                 exclude: /node_modules/,
                 use: { loader: 'babel-loader' }
+            },
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader?transpileOnly=true',
+                exclude: /node_modules/
             },
             {
               test: /\.(html|svg)$/,
@@ -59,7 +65,7 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.js', '.jsx', '.json', '.scss', '.css'],
+        extensions: ['.js', '.jsx', '.json', '.scss', '.css', '.ts', '.tsx'],
         alias: {
             lib: path.join(__dirname, '..', 'public', 'lib'),
             components: path.join(__dirname, '..', 'public', 'components'),
@@ -69,6 +75,11 @@ module.exports = {
 
     plugins: [
         new MiniCssExtractPlugin(),
-        new ManifestPlugin()
+        new ManifestPlugin(),
+        new ForkTsCheckerWebpackPlugin({
+            compilerOptions: {
+                noEmit: true
+            }
+        })
     ]
 };

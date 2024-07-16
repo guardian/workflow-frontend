@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "module": "commonjs",
+        "target": "es2017",
+        "jsx": "react-jsx",
+        "jsxImportSource": "@emotion/react",
+        "alwaysStrict": true,
+        "allowJs": true,
+        "sourceMap": true,
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": "./public",
+        "resolveJsonModule": true
+    },
+    "include": [
+        "public/**/*",
+    ]
+}
