@@ -11,37 +11,6 @@
     border-bottom: 1px solid $c-grey-400;
 
     z-index: 2;
-
-    &__title {
-        @extend %f-title;
-        font-size: 18px;
-        width: $dashboardSidebarWidth;
-        min-width: $dashboardSidebarWidth;
-        background-color: $c-grey-350;
-        margin: 0;
-        line-height: 50px;
-        border-right: 1px solid $c-grey-400;
-        display: flex;
-    }
-
-    &__letter,
-    &__page-title {
-        display: inline-block;
-        text-align: center;
-        line-height: 55px;
-    }
-
-    &__letter {
-        border-right: 1px solid $c-grey-300;
-        padding: 0 10px;
-        font-size: 20px;
-        flex: 0 0 50px;
-    }
-    &__page-title {
-        flex: 1 1 auto;
-        font-size: 18px;
-        margin: 0px;
-    }
 }
 
 .top-toolbar__view-toolbar {
