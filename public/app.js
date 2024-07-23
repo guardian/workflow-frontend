@@ -7,6 +7,9 @@ import angular from 'angular';
 import { getEnvironment } from './environment';
 import { registerServiceWorker } from './lib/notifications';
 
+import { react2angular } from './react/react2angular.tsx';
+import { TopToolbarTitle } from './react/TopToolbarTitle.tsx';
+
 import 'components/sentry/sentry';
 import 'components/user-message/user-message';
 import 'components/content-list/content-list';
@@ -36,6 +39,7 @@ import 'ng-infinite-scroll';
 
 // App-wide Styles
 import './main.scss';
+
 
 angular.module('workflow',
     [
@@ -202,7 +206,9 @@ angular.module('workflow',
         { name: 'Not required', value: 'NA' },
         { name: 'Needs checking', value: 'REQUIRED' },
         { name: 'Checked', value: 'COMPLETE'}
-    ]})
+    ]}).component('topToolbarTitle', react2angular(TopToolbarTitle,[
+        'title',
+    ]))
 
     .run(['wfAnalyticsService', function(){}])
     .run(['$document', '$rootScope', function ($document, $rootScope) {
