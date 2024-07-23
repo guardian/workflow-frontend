@@ -16,7 +16,7 @@ const titleStyle = css({
   height: '100%',
   width: dashboardSidebarWidth,
   minWidth: dashboardSidebarWidth,
-  fontSize: 18,
+  fontSize: '18px',
   margin: 0,
   display: "flex",
   backgroundColor: palette.GREY[350],
@@ -34,7 +34,7 @@ const titleStyle = css({
   "& >h1": {
     ...titlePartCommon,
     flex: "1 1 auto",
-    fontSize: 18,
+    fontSize: '18px',
     margin: 0,
   },
 });
