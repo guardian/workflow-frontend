@@ -83,6 +83,10 @@
     visibility: hidden;
 }
 
+.commissioning-desk-margin, .section-margin, .format-dropdown {
+    margin-bottom: 15px;
+}
+
 .feedback-link, .feedback-link:hover, .feedback-link:visited, .feedback-link:focus {
     color: black;
     text-decoration: underline;
@@ -101,4 +105,3 @@
 .commissioned-length-suggestion {
     margin-right: 3px;
 }
-
