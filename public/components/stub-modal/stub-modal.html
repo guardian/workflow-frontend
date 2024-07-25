@@ -13,7 +13,7 @@
             <input type="text" ng-model="formData.importUrl" ng-change="importUrlChanged()" id="import_url" name="import_url" class="form-control" required  wf-focus focus-me="{{ mode === 'import' }}">
         </div>
         <div class="form-horizontal clearfix">
-                <div ng-if="(showFormatDropdown && (stubFormat === 'Standard Article' || stubFormat === 'Key Takeaways' || stubFormat === 'Q&A Explainer' || stubFormat === 'Timeline' || stubFormat === 'Mini profiles'))">
+                <div class="format-dropdown" ng-if="(showFormatDropdown && (stubFormat === 'Standard Article' || stubFormat === 'Key Takeaways' || stubFormat === 'Q&A Explainer' || stubFormat === 'Timeline' || stubFormat === 'Mini profiles'))">
                 <label for="stub_format">Format</label>
                     <div>
                         <select id="stub_format" name="articleFormat" ng-model="stub.articleFormat" ng-options="f.value as f.name for f in articleFormats"></select>
@@ -43,12 +43,11 @@
             </div>
             <div class="form-group pull-left col-xs-8" ng-if="mode !== 'import' && contentName !== 'Atom'">
                 <label for="stub_cdesk">Commissioning info</label>
-
                 <div ng-if="cdesks.length > 0">
-                    <select id="stub_cdesk" name="cdesk" ng-model="stub.commissioningDesks" ng-options="cdesk.id.toString() as cdesk.externalName for cdesk in cdesks"></select>
+                    <select class="commissioning-desk-margin" id="stub_cdesk" name="cdesk" ng-model="stub.commissioningDesks" ng-options="cdesk.id.toString() as cdesk.externalName for cdesk in cdesks"></select>
                 </div>
                 <div ng-if="cdesks.length === 0">
-                    <p class="help-block">Selecting commissioning info is temporarily unavailable</p>
+                    <p class="commissioning-desk-margin">Selecting commissioning info is temporarily unavailable</p>
                 </div>
                 <label for="commissionedLength">Commissioned Length</label>
                 <a class="feedback-link"  href="https://docs.google.com/forms/d/e/1FAIpQLSeZje55T3OnErlTI_8iGuyZERjDy2Pybh8fdPmbnjy1PNFDAw/viewform" target="_blank">
@@ -77,7 +76,7 @@
             <div class="form-group pull-right col-xs-5">
                 <label for="stub_section">Section *</label>
                 <div>
-                    <select id="stub_section" name="section" ng-model="stub.section" ng-options="section.name for section in sections" required>
+                    <select class="section-margin" id="stub_section" name="section" ng-model="stub.section" ng-options="section.name for section in sections" required>
                     </select>
                 </div>
                 <div ng-if="contentName === 'Article'">
