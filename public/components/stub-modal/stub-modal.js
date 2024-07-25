@@ -253,6 +253,13 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
     };
 
+    $scope.commissionedLengthSuggestions = [
+        350,
+        600,
+        900,
+        1200,
+    ]
+
     $scope.submit = function (form) {
         if (form.$invalid)
             return;  // Form is not ready to submit
