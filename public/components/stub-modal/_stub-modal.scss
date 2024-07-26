@@ -83,6 +83,17 @@
     visibility: hidden;
 }
 
+.feedback-link, .feedback-link:hover, .feedback-link:visited, .feedback-link:focus {
+    color: black;
+    text-decoration: underline;
+}
+
+.feedback-title {
+    font-weight: normal;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
 .commissioned-length-buttons {
     margin-bottom: 4px;
 }
