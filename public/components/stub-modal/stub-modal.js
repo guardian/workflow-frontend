@@ -261,11 +261,11 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     ]
 
     $scope.resetCommissionedLength = () => {
-        $scope.stub.commissionedLength = "";
+        $scope.stub.commissionedLength = null;
     }
 
-    $scope.resetIsBreakingNews = () => {
-        $scope.stub.isBreakingNews = false;
+    $scope.resetMissingCommissionedLengthReason = () => {
+        $scope.stub.missingCommissionedLengthReason = null;
     }
 
     $scope.submit = function (form) {

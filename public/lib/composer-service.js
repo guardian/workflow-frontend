@@ -111,14 +111,15 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         }
     }
 
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, missingCommissionedLengthReason) {
         var selectedDisplayHint = getDisplayHint(articleFormat);
         
         var params = {
             'type': getType(type),
             'tracking': commissioningDesks,
             'productionOffice': prodOffice,
-            'displayHint': selectedDisplayHint
+            'displayHint': selectedDisplayHint,
+            'missingCommissionedLengthReason': missingCommissionedLengthReason
         };
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
