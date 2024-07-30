@@ -260,6 +260,14 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         1200,
     ]
 
+    $scope.resetCommissionedLength = () => {
+        $scope.stub.commissionedLength = null;
+    }
+
+    $scope.resetMissingCommissionedLengthReason = () => {
+        $scope.stub.missingCommissionedLengthReason = null;
+    }
+
     $scope.submit = function (form) {
         if (form.$invalid)
             return;  // Form is not ready to submit

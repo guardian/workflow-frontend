@@ -55,10 +55,19 @@
                 </a>
                 <div class="commissioned-length-buttons">
                     <button
+                        class="btn btn-default btn-sm"
+                        ng-model="stub.missingCommissionedLengthReason"
+                        btn-radio="'BreakingNews'"
+                        ng-click="resetCommissionedLength()"
+                    >
+                        Breaking News
+                    </button>
+                    <button
                         ng:repeat="commissionedLengthSuggestion in commissionedLengthSuggestions"
                         class="btn btn-default btn-sm commissioned-length-suggestion"
                         ng-model="stub.commissionedLength"
                         btn-radio="commissionedLengthSuggestion"
+                        ng-click="resetMissingCommissionedLengthReason()"
                     >
                         {{ commissionedLengthSuggestion }}
                     </button>
@@ -70,6 +79,7 @@
                       type="number"
                       ng-model="stub.commissionedLength"
                       placeholder="Choose a custom commissioned length"
+                      ng-change="resetMissingCommissionedLengthReason()"
                   />
                 </div>
             </div>
