@@ -254,7 +254,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     };
 
     $scope.commissionedLengthSuggestions = [
-        350,
+        400,
         600,
         900,
         1200,
