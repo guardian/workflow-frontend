@@ -43,7 +43,10 @@ def playProject(path: String): Project =
 lazy val commonLib = project("common-lib")
   .settings(
     libraryDependencies
-      ++= Seq("org.playframework" %% "play" % "3.0.1", "org.playframework" %% "play-ahc-ws" % "3.0.1")
+      ++= Seq(
+        "org.playframework" %% "play" % "3.0.1", "org.playframework" %% "play-ahc-ws" % "3.0.1",
+        "com.fasterxml.jackson.core" % "jackson-core" % "2.15.0"
+      )
       ++ logbackDependencies
       ++ testDependencies
       ++ awsDependencies
