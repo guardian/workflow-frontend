@@ -54,12 +54,27 @@ module.exports = {
             },
             {
                 test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?$/,
-                loader: "url-loader?mimetype=application/font-woff&limit=10000"
+                use: [
+                    {
+                        loader: "url-loader",
+                        options: {
+                            limit: 10000,
+                            mimetype: "application/font-woff"
+                        }
+                    }
+                ]
             },
             {
                 test: /\.(ttf|eot|gif|png|svg)(\?v=[0-9].[0-9].[0-9])?$/,
                 exclude: /icons\.svg$/,
-                loader: "file-loader?name=[name].[ext]"
+                use: [
+                    {
+                        loader: "file-loader",
+                        options: {
+                            name: '[name].[ext]'
+                        }
+                    }
+                ]
             }
         ]
     },
