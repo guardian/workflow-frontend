@@ -3,15 +3,14 @@
 @import "layouts/global/mixins";
 
 .content-list-item {
-    .content-list-item__icon--inactive {
-      cursor: default;
-    }
-
     border-bottom: 1px solid $c-grey-200;
     cursor: pointer;
     vertical-align: baseline;
-
     background: white; //default, will be overridden for various reasons e.g. --embargoed
+
+    .content-list-item__icon--inactive {
+      cursor: default;
+    }
 
     &--selected {
         background-color: $c-grey-200;

@@ -1,10 +1,9 @@
 /* global module:false, __dirname:false */
 
 const path = require('path');
-const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ManifestPlugin = require('webpack-manifest-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const {WebpackManifestPlugin} = require("webpack-manifest-plugin");
 
 module.exports = {
     mode:'development',
@@ -78,7 +77,6 @@ module.exports = {
             }
         ]
     },
-
     resolve: {
         extensions: ['.js', '.jsx', '.json', '.scss', '.css', '.ts', '.tsx'],
         alias: {
@@ -87,14 +85,12 @@ module.exports = {
             layouts: path.join(__dirname, '..', 'public', 'layouts'),
         }
     },
-
     plugins: [
         new MiniCssExtractPlugin(),
-        new ManifestPlugin(),
-        new ForkTsCheckerWebpackPlugin({
-            compilerOptions: {
-                noEmit: true
-            }
-        })
-    ]
+        new WebpackManifestPlugin({}),
+        new ForkTsCheckerWebpackPlugin()
+    ],
+    stats: {
+        children: true
+    }
 };
