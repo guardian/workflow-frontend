@@ -21,8 +21,6 @@ function wfFeatureSwitchesDirective() {
     };
 }
 
-export const miniProfilesFeatureSwitchKey = 'miniProfiles';
-
 class FeatureSwitches {
     constructor(switches, entries) {
         // this.switches should be a single object with the type { [key]: value }
@@ -41,10 +39,8 @@ class FeatureSwitches {
 }
 
 function wfFeatureSwitchesController ($scope, wfPreferencesService) {
-    const featureSwitchKeys = [miniProfilesFeatureSwitchKey];
-    $scope.readableNames = {
-        [miniProfilesFeatureSwitchKey]: 'Mini profiles',
-    }
+    const featureSwitchKeys = [];
+    $scope.readableNames = {}
 
     const getDefaultFeatureSwitchValues = () => {
         const switches = {};

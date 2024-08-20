@@ -21,9 +21,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         "keyTakeaways": "Key Takeaways",
                         "qAndA": "Q&A Explainer",
                         "timeline": "Timeline",
-                    }
-                    if (featureSwitches && featureSwitches.miniProfiles){
-                        articleFormats.miniProfiles = "Mini profiles"
+                        "miniProfiles": "Mini profiles"
                     }
 
                     const nonArticleFormats = {
