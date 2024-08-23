@@ -38,7 +38,9 @@ class PreferencesProxy(
         val responseHeaders = response.headers.view.mapValues(_.head).toMap + (
           "Cache-Control" -> "private, no-cache, no-store, must-revalidate, max-age=0", // do not cache whatsoever
         )
-        new Status(response.status)(response.body).withHeaders(responseHeaders.toSeq: _*)
+        new Status(response.status)(response.bodyAsBytes)
+          .withHeaders(responseHeaders.removed("Content-Type").toSeq: _*)
+          .as(responseHeaders.getOrElse("Content-Type", "application/octet-stream"))
       }
       .recover {
         case _ if config.isDev =>
