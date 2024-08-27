@@ -1,6 +1,6 @@
-@import "components/sidebar-filter/sidebar-filter";
-@import "components/location-picker/location-picker";
-@import "components/compactor-toggle/compactor-toggle";
+@import "components/sidebar-filter/_sidebar-filter.scss";
+@import "components/location-picker/_location-picker.scss";
+@import "components/compactor-toggle/_compactor-toggle.scss";
 
 .sidebar {
     min-width: $dashboardSidebarWidth;

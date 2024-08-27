@@ -2,15 +2,15 @@
  * Dashboard layout styles.
  */
 @import "layouts/global/vars";
-@import "components/content-list/content-list";
-@import "components/content-list-item/content-list-item";
-@import "components/presence-indicator/presence-indicators";
-@import "components/content-list-drawer/content-list-drawer";
-@import "components/editable-field/editable-field";
-@import "components/stub-modal/stub-modal";
-@import "components/punters/punters";
-@import "components/loader/loader";
-@import "components/feature-switches/feature-switches";
+@import "components/content-list/_content-list.scss";
+@import "components/content-list-item/_content-list-item.scss";
+@import "components/presence-indicator/_presence-indicators.scss";
+@import "components/content-list-drawer/_content-list-drawer.scss";
+@import "components/editable-field/_editable-field.scss";
+@import "components/stub-modal/_stub-modal.scss";
+@import "components/punters/_punters.scss";
+@import "components/loader/_loader.scss";
+@import "components/feature-switches/_feature-switches.scss";
 
 @import "sidebar";
 @import "toolbar";

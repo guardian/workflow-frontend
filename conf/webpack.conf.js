@@ -45,11 +45,21 @@ module.exports = {
                 resolve: {
                     extensions: ['scss', 'css']
                 },
-                use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { sourceMap: true } }, {
-                    loader: 'sass-loader', options: {
-                        sourceMap: true,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: true
+                        }
+                    },
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap: true,
+                        }
                     }
-                }],
+                ],
             },
             {
                 test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?$/,
@@ -87,7 +97,7 @@ module.exports = {
     },
     plugins: [
         new MiniCssExtractPlugin(),
-        new WebpackManifestPlugin({}),
+        new WebpackManifestPlugin(),
         new ForkTsCheckerWebpackPlugin()
     ],
     stats: {
