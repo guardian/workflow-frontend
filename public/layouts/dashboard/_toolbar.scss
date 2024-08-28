@@ -195,21 +195,19 @@ $dashboard-toolbar-separator: 1px solid $c-grey-400;
 }
 
 .dashboard-toolbar__dropdown {
-    .dashboard-toolbar__dropdown-dropdown-button {
-        border-right: $dashboard-toolbar-separator;
-        overflow: hidden;
-    }
-
     z-index: 1;
     width: calc(100% + 2px); // Menu takes width of parent, +2 accounts for border of parent
     top : 100%;
     left: -1px; // centers menu wrt parent+parent border
     background-color: $c-bluegrey;
-
-
     padding: 0;
     flex: 2 0 240px;
     max-width: 200px;
+
+    .dashboard-toolbar__dropdown-dropdown-button {
+        border-right: $dashboard-toolbar-separator;
+        overflow: hidden;
+    }
 }
 
 .dashboard-toolbar__dropdown--slim {

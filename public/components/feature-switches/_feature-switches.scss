@@ -1,12 +1,7 @@
 .feature-switches {
-  position: relative;
   display: flex;
   border: 0;
   text-align: left;
-  @extend %fs-data-2;
-  &:focus, &:active {
-    outline: none;
-  }
   position: absolute;
   top: 50px;
   right: 1px;
@@ -15,6 +10,10 @@
   box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
   font-size: 1.5rem;
   outline: 1px solid gold;
+  @extend %fs-data-2;
+  &:focus, &:active {
+    outline: none;
+  }
 }
 
 .feature-switches td, .feature-switches th {
