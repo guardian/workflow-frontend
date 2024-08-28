@@ -78,6 +78,9 @@
     "webpack-merge": "^4.2.2",
     "whatwg-fetch": "^2.0.3"
   },
+  "resolutions": {
+    "braces": "3.0.3"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/guardian/workflow-frontend.git"
