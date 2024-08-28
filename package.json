@@ -52,7 +52,7 @@
     "jquery": "3.5.0",
     "jquery-ui": "1.13.3",
     "jsdom": "^21.1.2",
-    "karma": "^6.4.1",
+    "karma": "6.4.4",
     "karma-angular": "^0.0.6",
     "karma-babel-preprocessor": "^8.0.2",
     "karma-chai": "^0.1.0",
@@ -77,6 +77,9 @@
     "uuid-v4.js": "1.0.2",
     "webpack-merge": "^4.2.2",
     "whatwg-fetch": "^2.0.3"
+  },
+  "resolutions": {
+    "ws": "8.17.1"
   },
   "repository": {
     "type": "git",
