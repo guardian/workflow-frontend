@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  val awsVersion: String = "1.12.129"
+  val awsVersion: String = "1.12.767"
   val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
 
   val notificationDependencies = Seq(
@@ -33,18 +33,18 @@ object Dependencies {
 
   val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "6.6")
 
-  val circeVersion = "0.13.0"
+  val circeVersion = "0.14.9"
 
   val jsonDependencies = Seq(
     "io.circe" %% "circe-core" % circeVersion,
     "io.circe" %% "circe-generic" % circeVersion,
     "io.circe" %% "circe-parser" % circeVersion,
-    "io.circe" %% "circe-generic-extras" % circeVersion,
-    "com.beachape" %% "enumeratum-circe" % "1.6.0"
+    "io.circe" %% "circe-generic-extras" % "0.14.4",
+    "com.beachape" %% "enumeratum-circe" % "1.7.4"
   )
 
   val webPushDependencies = Seq(
-    "nl.martijndwars" % "web-push" % "5.1.0"
+    "nl.martijndwars" % "web-push" % "5.1.1"
   )
 
   val cacheDependencies = Seq(
@@ -52,7 +52,7 @@ object Dependencies {
   )
 
   val cryptoDependencies = Seq(
-    "org.bouncycastle" % "bcprov-jdk15on" % "1.60"
+    "org.bouncycastle" % "bcprov-jdk18on" % "1.78.1"
   )
 
   val permissionsClientVersion = "3.0.0"
