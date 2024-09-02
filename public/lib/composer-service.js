@@ -118,7 +118,8 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
             'type': getType(type),
             'tracking': commissioningDesks,
             'productionOffice': prodOffice,
-            'displayHint': selectedDisplayHint
+            'displayHint': selectedDisplayHint,
+            'originatingSystem': 'workflow'
         };
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
