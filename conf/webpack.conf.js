@@ -92,8 +92,10 @@ module.exports = {
         new MiniCssExtractPlugin(),
         new WebpackManifestPlugin(),
         new ForkTsCheckerWebpackPlugin({
-            compilerOptions: {
-                noEmit: true
+            typescript: {
+                compilerOptions: {
+                    noEmit: true
+                }
             }
         })
     ]
