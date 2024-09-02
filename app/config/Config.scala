@@ -77,9 +77,6 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val capiPreviewIamUrl: String = playConfig.get[String]("capi.preview.iamUrl")
   lazy val capiPreviewRole: String = playConfig.get[String]("capi.preview.role")
 
-  lazy val webPushPublicKey: String = playConfig.get[String]("webpush.publicKey")
-  lazy val webPushPrivateKey: String = playConfig.get[String]("webpush.privateKey")
-
   lazy val sharedSecret: String = playConfig.get[String]("api.sharedsecret")
 
   lazy val incopyOpenUrl: String = "gnm://openinincopy/storybundle/${storyBundleId}/checkout/readwrite"

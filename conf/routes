@@ -12,8 +12,6 @@ GET            /redirect/:stubId                           controllers.Applicati
 #static user pages
 GET            /editorialSupport                           controllers.Application.editorialSupport
 POST           /editorialSupport                           controllers.Application.updateEditorialSupport
-GET            /subscriptions                              controllers.Notifications.subscriptions
-POST           /subscriptions                              controllers.Notifications.updateSubscription
 GET            /faqs                                       controllers.Application.faqs
 GET            /troubleshooting                            controllers.Application.troubleshooting
 GET            /training                                   controllers.Application.training
@@ -67,11 +65,6 @@ GET            /capi/*path                                 controllers.CAPIServi
 
 # Atoms
 GET            /api/atom/:editorId                         controllers.Api.getContentByEditorId(editorId: String)
-
-# Notifications
-# This endpoint is POSTed to via our service worker with no access to a csrf token
-+nocsrf
-POST           /api/notifications                          controllers.Notifications.addSubscription
 
 # Admin
 GET            /admin                                      controllers.Admin.index

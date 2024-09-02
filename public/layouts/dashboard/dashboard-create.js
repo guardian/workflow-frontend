@@ -1,13 +1,12 @@
 import angular from 'angular';
 
 import 'lib/content-service';
-import { subscriptionsSupported, registerSubscription } from '../../lib/notifications';
 
 import './dashboard-create.html';
 
 angular
     .module('wfDashboardCreate', ['wfContentService'])
-    .controller('wfDashboardCreateController', ['$scope', '$rootScope', 'wfContentService', function ($scope, $rootScope, contentService) {
+    .controller('wfDashboardCreateController', ['$scope', 'wfContentService', function ($scope, contentService) {
         contentService.getTypes().then( (types) => {
             $scope.options = types;
         });
@@ -18,24 +17,6 @@ angular
         $scope.importContent = function() {
             $scope.$emit('content:import');
         };
-
-        $scope.subscriptionsSupported = subscriptionsSupported();
-        $scope.subscriptionStatus = null;
-
-        $scope.registerSubscription = () => {
-            $scope.subscriptionStatus = "Subscribing...";
-
-            registerSubscription().then((result) => {
-                $scope.subscriptionStatus = result ? "Subscribed!" : null;
-            }).catch((err) => {
-                $scope.subscriptionStatus = null;
-            });
-        };
-
-        // Mild hack to allow subscribing again if the filters change.
-        $rootScope.$on("getContent", () => {
-            $scope.subscriptionStatus = null;
-        });
     }])
     .directive('wfDropdownToggle', ['$document', function($document){
         return {
