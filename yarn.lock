@@ -1685,14 +1685,9 @@ angular-ui-router@0.2.11:
   resolved "https://registry.npmjs.org/angular-ui-router/-/angular-ui-router-0.2.11.tgz"
   integrity sha512-jmsIsFl03/pLqoWQp90qclreAYd27SXEEyGn69EZ4FZvFG+ZjAVI39QXe2fX5OYOLjQasgDMxI//emK0YaeE0w==
 
-angular@1.5.11:
-  version "1.5.11"
-  resolved "https://registry.npmjs.org/angular/-/angular-1.5.11.tgz"
-  integrity sha512-09DBOVVWo6rOQfdCBKGfEL0ZZIhf6P3fbeP3BU+ty5FU50DPiavVeDn8hQ4wXE8o4vKEEpzY1aRcRHJMCixWYA==
-
-angular@>=1.5.0, angular@^1.6.3:
+angular@1.8.3, angular@>=1.5.0, angular@^1.6.3:
   version "1.8.3"
-  resolved "https://registry.npmjs.org/angular/-/angular-1.8.3.tgz"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.3.tgz#851ad75d5163c105a7e329555ef70c90aa706894"
   integrity sha512-5qjkWIQQVsHj4Sb5TcEs4WZWpFeVFHXwxEBHUhrny41D8UrBAd6T/6nPPAsLngJCReIOqi95W3mxdveveutpZw==
 
 ansi-colors@^4.1.1, ansi-colors@^4.1.3:
