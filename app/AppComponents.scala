@@ -50,8 +50,6 @@ class AppComponents(context: Context)
   val applicationController = new Application(editorialSupportTeamsController, sectionsApi, tagService, desksApi, sectionsDeskMappingsApi, permissions, config, controllerComponents, wsClient, panDomainRefresher, stubsApi)
   val peopleServiceController = new PeopleService(config, controllerComponents, wsClient, panDomainRefresher, permissions)
 
-  val notificationsController = new Notifications(config, controllerComponents, wsClient, panDomainRefresher, permissions)
-
   val preferencesProxyController = new PreferencesProxy(config, controllerComponents, wsClient, panDomainRefresher, permissions)
 
   val supportController = new Support(config, controllerComponents, wsClient, panDomainRefresher, permissions)
@@ -59,7 +57,6 @@ class AppComponents(context: Context)
   override val router = new Routes(
     httpErrorHandler,
     applicationController,
-    notificationsController,
     loginController,
     apiController,
     peopleServiceController,

@@ -147,9 +147,6 @@ class Application(
         ("atomTypes", config.atomTypes.asJson),
         ("sessionId", Json.fromString(config.sessionId)),
         ("gaId", Json.fromString(config.googleTrackingId)),
-        ("webPush", Json.obj(
-          ("publicKey", Json.fromString(config.webPushPublicKey))
-        )),
         ("tagManagerUrl",Json.fromString(config.tagManagerUrl))
       )
 

@@ -5,7 +5,6 @@
 import angular from 'angular';
 
 import { getEnvironment } from './environment';
-import { registerServiceWorker } from './lib/notifications';
 
 import { react2angular } from './react/react2angular.tsx';
 import { TopToolbarTitle } from './react/TopToolbarTitle.tsx';
@@ -220,8 +219,6 @@ angular.module('workflow',
         });
     }]);
 
-
-registerServiceWorker();
 
 // Bootstrap App
 angular.element(document).ready(function () {
