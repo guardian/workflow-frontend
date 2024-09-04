@@ -4,14 +4,6 @@ object Dependencies {
   val awsVersion: String = "1.12.767"
   val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
 
-  val notificationDependencies = Seq(
-    scalaTest,
-    "com.lihaoyi" %% "requests" % "0.5.1",
-    "org.bouncycastle" % "bcprov-jdk15on" % "1.65",
-    "com.amazonaws" % "aws-lambda-java-core" % "1.2.1",
-    "org.slf4j" % "slf4j-simple" % "1.7.32"
-  )
-
   val awsDependencies = Seq(
     "com.amazonaws" % "aws-java-sdk-dynamodb" % awsVersion,
     "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
@@ -41,10 +33,6 @@ object Dependencies {
     "io.circe" %% "circe-parser" % circeVersion,
     "io.circe" %% "circe-generic-extras" % "0.14.4",
     "com.beachape" %% "enumeratum-circe" % "1.7.4"
-  )
-
-  val webPushDependencies = Seq(
-    "nl.martijndwars" % "web-push" % "5.1.1"
   )
 
   val cacheDependencies = Seq(

@@ -51,7 +51,6 @@ lazy val commonLib = project("common-lib")
       ++ testDependencies
       ++ awsDependencies
       ++ jsonDependencies
-      ++ webPushDependencies
       ++ cacheDependencies
       ++ cryptoDependencies
   )
@@ -91,13 +90,4 @@ lazy val root = playProject(application)
     Universal / name := normalizedName.value
   )
 
-lazy val notificationLambda = project("notification")
-  .enablePlugins(JavaAppPackaging)
-  .settings(
-    name := "workflow-notification",
-    Universal / topLevelDirectory := None,
-    Universal / packageName := normalizedName.value,
-    libraryDependencies ++= notificationDependencies
-  )
-  .dependsOn(commonLib % "compile->compile;test->test")
 
