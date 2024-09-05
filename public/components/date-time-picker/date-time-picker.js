@@ -17,7 +17,7 @@
 // 3rd party dependencies
 import angular from 'angular';
 import moment from 'moment';
-import 'angularjs-bootstrap-datetimepicker';
+import 'angular-bootstrap-datetimepicker';
 
 // local dependencies
 import 'lib/date-service';
