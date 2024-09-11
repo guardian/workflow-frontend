@@ -1657,10 +1657,10 @@ alphanum-sort@^1.0.1, alphanum-sort@^1.0.2:
   resolved "https://registry.npmjs.org/alphanum-sort/-/alphanum-sort-1.0.2.tgz"
   integrity sha512-0FcBfdcmaumGPQ0qPn7Q5qTgz/ooXgIyp1rf8ik5bGX8mpE2YHjC0P/eyQvxu1GURYQgq9ozf2mteQ5ZD9YiyQ==
 
-angular-animate@1.5.11:
-  version "1.5.11"
-  resolved "https://registry.npmjs.org/angular-animate/-/angular-animate-1.5.11.tgz"
-  integrity sha512-onbcfyND0O42P15qtVvby2f3A2XlsKG2VzAhCjGCZoR9cow9s60fpVlnf8/Xx8wlqjukx/rd65QbxwPAnqSCyg==
+angular-animate@1.6.10:
+  version "1.6.10"
+  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.6.10.tgz#c520f6d341370e34e0a62060c99bcf47b7d7db8c"
+  integrity sha512-RU9ZJbTspq0W0x675H5k1DeSgKbAFfp2aiYoNGdlD+wQNKvwwMR5ho+EkDKkx9zE02a5goe8Z6EhhYPQSff9dA==
 
 angular-bootstrap-datetimepicker@1.1.4:
   version "1.1.4"
@@ -1685,10 +1685,10 @@ angular-ui-router@0.2.11:
   resolved "https://registry.npmjs.org/angular-ui-router/-/angular-ui-router-0.2.11.tgz"
   integrity sha512-jmsIsFl03/pLqoWQp90qclreAYd27SXEEyGn69EZ4FZvFG+ZjAVI39QXe2fX5OYOLjQasgDMxI//emK0YaeE0w==
 
-angular@1.5.11:
-  version "1.5.11"
-  resolved "https://registry.npmjs.org/angular/-/angular-1.5.11.tgz"
-  integrity sha512-09DBOVVWo6rOQfdCBKGfEL0ZZIhf6P3fbeP3BU+ty5FU50DPiavVeDn8hQ4wXE8o4vKEEpzY1aRcRHJMCixWYA==
+angular@1.6.10:
+  version "1.6.10"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.6.10.tgz#eed3080a34d29d0f681ff119b18ce294e3f74826"
+  integrity sha512-PCZ5/hVdvPQiYyH0VwsPjrErPHRcITnaXxhksceOXgtJeesKHLA7KDu4X/yvcAi+1zdGgGF+9pDxkJvghXI9Wg==
 
 angular@>=1.5.0, angular@^1.6.3:
   version "1.8.3"
