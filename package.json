@@ -25,7 +25,7 @@
     "file-loader": "^6.0.0",
     "fork-ts-checker-webpack-plugin": "^9.0.2",
     "html-loader": "^1.1.0",
-    "jsdom": "^21.1.2",
+    "jsdom": "^24.0.0",
     "karma": "^6.4.1",
     "karma-angular": "^0.0.6",
     "karma-babel-preprocessor": "^8.0.2",
