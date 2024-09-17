@@ -56,7 +56,7 @@
     "angular-bootstrap-datetimepicker": "1.1.4",
     "angular-bootstrap-temporary": "0.11.0",
     "angular-mocks": "1.5.11",
-    "angular-ui-router": "0.2.11",
+    "angular-ui-router": "0.3.2",
     "bootstrap": "3.4.1",
     "chai": "^3.5.0",
     "jquery": "3.5.0",
