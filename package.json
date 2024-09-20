@@ -19,13 +19,13 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "babel-plugin-transform-object-assign": "^6.22.0",
-    "css-loader": "^0.28.0",
+    "css-loader": "^1.0.0",
     "eslint": "^7.6.0",
     "eslint-plugin-angular": "^3.1.1",
     "file-loader": "^6.0.0",
     "fork-ts-checker-webpack-plugin": "^9.0.2",
     "html-loader": "^1.1.0",
-    "jsdom": "^21.1.2",
+    "jsdom": "^24.0.0",
     "karma": "^6.4.1",
     "karma-angular": "^0.0.6",
     "karma-babel-preprocessor": "^8.0.2",
@@ -42,7 +42,7 @@
     "terser-webpack-plugin": "^3.0.2",
     "typescript": "^4.6.2",
     "ts-loader": "^9.5.1",
-    "url-loader": "^0.5.7",
+    "url-loader": "^4.1.1",
     "webpack": "5.94.0",
     "webpack-cli": "^5.1.4",
     "webpack-manifest-plugin": "^5.0.0"
@@ -71,12 +71,15 @@
     "raven-js": "1.1.22",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "sinon": "^2.1.0",
+    "sinon": "^19.0.2",
     "sugar": "1.4.1",
     "ua-parser-js": "0.7.33",
     "uuid-v4.js": "1.0.2",
     "webpack-merge": "^4.2.2",
     "whatwg-fetch": "^2.0.3"
+  },
+  "resolutions": {
+    "braces": "3.0.3"
   },
   "repository": {
     "type": "git",
