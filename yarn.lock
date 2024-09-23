@@ -1657,15 +1657,10 @@ ajv@^8.0.1:
     require-from-string "^2.0.2"
     uri-js "^4.4.1"
 
-alphanum-sort@^1.0.1, alphanum-sort@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/alphanum-sort/-/alphanum-sort-1.0.2.tgz"
-  integrity sha512-0FcBfdcmaumGPQ0qPn7Q5qTgz/ooXgIyp1rf8ik5bGX8mpE2YHjC0P/eyQvxu1GURYQgq9ozf2mteQ5ZD9YiyQ==
-
-angular-animate@1.6.10:
-  version "1.6.10"
-  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.6.10.tgz#c520f6d341370e34e0a62060c99bcf47b7d7db8c"
-  integrity sha512-RU9ZJbTspq0W0x675H5k1DeSgKbAFfp2aiYoNGdlD+wQNKvwwMR5ho+EkDKkx9zE02a5goe8Z6EhhYPQSff9dA==
+angular-animate@1.5.11:
+  version "1.5.11"
+  resolved "https://registry.npmjs.org/angular-animate/-/angular-animate-1.5.11.tgz"
+  integrity sha512-onbcfyND0O42P15qtVvby2f3A2XlsKG2VzAhCjGCZoR9cow9s60fpVlnf8/Xx8wlqjukx/rd65QbxwPAnqSCyg==
 
 angular-bootstrap-datetimepicker@1.1.4:
   version "1.1.4"
@@ -1685,19 +1680,17 @@ angular-mocks@1.5.11:
   resolved "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.5.11.tgz"
   integrity sha512-eDVhiwiHlMEK6W47sIkiZh4We35Lqskg+G5rSTpUBPndwd2XM/uwuW+eklzOZhx+ODaFLuMsxeLY1h9rA3utIA==
 
-angular-ui-router@0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/angular-ui-router/-/angular-ui-router-0.3.2.tgz#c27e0496309c99218d5655985b164a096ab520a9"
-  integrity sha512-FXtC3D7z7SNtSIdMDXCVO+v4Q6jPABneDvRu6NyOeeZlo09mQFqVCjhKqJWnf94ZlNSmyOXoFSqKD5tL2JTFEg==
-  dependencies:
-    angular "^1.0.8"
+angular-ui-router@0.2.11:
+  version "0.2.11"
+  resolved "https://registry.npmjs.org/angular-ui-router/-/angular-ui-router-0.2.11.tgz"
+  integrity sha512-jmsIsFl03/pLqoWQp90qclreAYd27SXEEyGn69EZ4FZvFG+ZjAVI39QXe2fX5OYOLjQasgDMxI//emK0YaeE0w==
 
-angular@1.6.10:
-  version "1.6.10"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.6.10.tgz#eed3080a34d29d0f681ff119b18ce294e3f74826"
-  integrity sha512-PCZ5/hVdvPQiYyH0VwsPjrErPHRcITnaXxhksceOXgtJeesKHLA7KDu4X/yvcAi+1zdGgGF+9pDxkJvghXI9Wg==
+angular@1.5.11:
+  version "1.5.11"
+  resolved "https://registry.npmjs.org/angular/-/angular-1.5.11.tgz"
+  integrity sha512-09DBOVVWo6rOQfdCBKGfEL0ZZIhf6P3fbeP3BU+ty5FU50DPiavVeDn8hQ4wXE8o4vKEEpzY1aRcRHJMCixWYA==
 
-angular@>=1.5.0, angular@^1.0.8, angular@^1.6.3:
+angular@>=1.5.0, angular@^1.6.3:
   version "1.8.3"
   resolved "https://registry.npmjs.org/angular/-/angular-1.8.3.tgz"
   integrity sha512-5qjkWIQQVsHj4Sb5TcEs4WZWpFeVFHXwxEBHUhrny41D8UrBAd6T/6nPPAsLngJCReIOqi95W3mxdveveutpZw==

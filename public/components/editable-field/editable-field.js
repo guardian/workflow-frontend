@@ -165,6 +165,9 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
                 $attrs.$addClass('editable__text-field--textarea');
             }
 
+            // resets / sets the ng-model-options (prevents default behaviour)
+            ngModel.$options = ngModel.$options || {};
+
             function commit() {
                 var newValue = ngModel.$viewValue,
                     oldValue = ngModel.$modelValue;
