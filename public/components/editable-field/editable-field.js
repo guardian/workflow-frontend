@@ -49,6 +49,7 @@ function wfEditableDirectiveFactory() {
             nodeAttrs = {
                 'wf-editable-field': '',
                 'ng-model': 'modelValue',
+                'ng-model-options': '{ updateOnDefault: false }',
                 'ng-required': 'validateRequired',
                 'ng-minlength': 'validateMinlength',
                 'ng-maxlength': 'validateMaxlength',
