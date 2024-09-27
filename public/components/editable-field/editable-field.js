@@ -49,7 +49,6 @@ function wfEditableDirectiveFactory() {
             nodeAttrs = {
                 'wf-editable-field': '',
                 'ng-model': 'modelValue',
-                'ng-model-options': '{ updateOnDefault: false }',
                 'ng-required': 'validateRequired',
                 'ng-minlength': 'validateMinlength',
                 'ng-maxlength': 'validateMaxlength',
@@ -165,6 +164,9 @@ function wfEditableTextFieldDirectiveFactory($timeout) {
             if ($scope.editableType === 'textarea') {
                 $attrs.$addClass('editable__text-field--textarea');
             }
+
+            // resets / sets the ng-model-options (prevents default behaviour)
+            ngModel.$options = ngModel.$options || {};
 
             function commit() {
                 var newValue = ngModel.$viewValue,
