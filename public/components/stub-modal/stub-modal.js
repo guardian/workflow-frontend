@@ -15,6 +15,7 @@ import 'lib/picture-desk-states-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
+import { generateErrorMessages } from '../../lib/stub-form-validation.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
@@ -158,6 +159,11 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     $scope.validImport = false;
     $scope.wfComposerState;
+
+    $scope.warningMessages = undefined
+    $scope.$watch('stub', (newStub) => {
+        $scope.warningMessages = generateErrorMessages(newStub)
+    }, true)
 
     /* when a request is made to import an item from another tool,
      * e.g. composer or an atom editor, then we will check to see if
