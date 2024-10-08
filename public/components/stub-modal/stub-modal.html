@@ -49,7 +49,7 @@
                 <div ng-if="cdesks.length === 0">
                     <p class="commissioning-desk-margin">Selecting commissioning info is temporarily unavailable</p>
                 </div>
-                <label for="commissionedLength">Commissioned Length *</label>
+                <label for="commissionedLength">Commissioned Length <span ng-if="isCommissionedLengthRequired()">*</span></label>
                 <a class="feedback-link"  href="https://docs.google.com/forms/d/e/1FAIpQLSeZje55T3OnErlTI_8iGuyZERjDy2Pybh8fdPmbnjy1PNFDAw/viewform" target="_blank">
                     <span class="feedback-title" title="Send Feedback">Send Feedback</span>
                 </a>
@@ -65,13 +65,22 @@
                     </button>
                 </div>
                 <div>
-                  <input
-                      class="form-control"
-                      name="commissionedLength"
-                      type="number"
-                      string-to-number
-                      ng-model="stub.commissionedLength"
-                      placeholder="Choose a custom commissioned length"
+                  <input ng-if="isCommissionedLengthRequired()"
+                    class="form-control"
+                    name="commissionedLength"
+                    type="number"
+                    string-to-number
+                    ng-model="stub.commissionedLength"
+                    placeholder="Choose a custom commissioned length"
+                    required
+                  />
+                  <input ng-if="!isCommissionedLengthRequired()"
+                    class="form-control"
+                    name="commissionedLength"
+                    type="number"
+                    string-to-number
+                    ng-model="stub.commissionedLength"
+                    placeholder="Choose a custom commissioned length"
                   />
                 </div>
             </div>
@@ -142,13 +151,11 @@
         <div class="pull-left">
             <button type="button" class="btn btn-default pull-left" data-dismiss="modal" ng-click="delete()" ng-if="stub.id">Delete</button>
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-            <span ng-if="warningMessages">
-                
-                <span  ng-repeat="message in warningMessages">{{ message }} </span>
-                
-            </span>
         </div>
         <div class="pull-right">
+            <span ng-if="warningMessages">
+                <span ng-repeat="message in warningMessages">{{ message }} </span>
+            </span>
             <button type="button" class="btn btn-default" id="testing-create-stub" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'">
                 Save stub
             </button>
