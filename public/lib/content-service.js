@@ -113,6 +113,21 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         .then((response) => wfComposerService.parseComposerData(response, stub))
                         .then((updatedStub) => {
 
+                            // log uses of the missingCommissionedLengthReason option
+                            if (stub.missingCommissionedLengthReason) {
+                                const data = {
+                                    message: `Draft created without commissionedLength: ${stub.missingCommissionedLengthReason}`,
+                                    missingCommissionedLengthReason: stub.missingCommissionedLengthReason,
+                                    composerId: updatedStub.composerId ?? null,
+                                    prodOffice: updatedStub.prodOffice,
+                                    contentType: updatedStub.contentType,
+                                    section: updatedStub.section?.name,
+                                    title: updatedStub.title,
+                                }
+                                $log.info(JSON.stringify(data))
+                            }
+
+
                             if (statusOption) {
                                 updatedStub['status'] = statusOption;
                             }
