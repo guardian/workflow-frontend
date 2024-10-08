@@ -55,17 +55,28 @@
                 </a>
                 <div class="commissioned-length-buttons">
                     <button
+                        class="btn btn-default btn-sm"
+                        ng-model="stub.missingCommissionedLengthReason"
+                        btn-radio="'BreakingNews'"
+                        ng-click="resetCommissionedLength()"
+                    >
+                        Breaking News
+                    </button>
+                    <button
                         ng:repeat="commissionedLengthSuggestion in commissionedLengthSuggestions"
                         class="btn btn-default btn-sm commissioned-length-suggestion"
                         ng-model="stub.commissionedLength"
                         btn-radio="commissionedLengthSuggestion"
-                        ng-click="sendTelemetry(commissionedLengthSuggestion)"
+                        ng-click="
+                            resetMissingCommissionedLengthReason();
+                            sendTelemetry(commissionedLengthSuggestion);
+                        "
                     >
                         {{ commissionedLengthSuggestion }}
                     </button>
                 </div>
                 <div>
-                  <input ng-if="isCommissionedLengthRequired()"
+                  <input
                     class="form-control"
                     name="commissionedLength"
                     min="0"
@@ -74,17 +85,8 @@
                     string-to-number
                     ng-model="stub.commissionedLength"
                     placeholder="Choose a custom commissioned length"
-                    required
-                  />
-                  <input ng-if="!isCommissionedLengthRequired()"
-                    class="form-control"
-                    name="commissionedLength"
-                    min="0"
-                    step="50"
-                    type="number"
-                    string-to-number
-                    ng-model="stub.commissionedLength"
-                    placeholder="Choose a custom commissioned length"
+                    ng-change="resetMissingCommissionedLengthReason()"
+                    ng-required="requiredAttrForCommissionedLength()"
                   />
                 </div>
             </div>

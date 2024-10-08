@@ -10,6 +10,7 @@ export type ContentType =
 export type Stub = {
   contentType: ContentType;
   commissionedLength?: number;
+  missingCommissionedLengthReason?: string | null | undefined;
 };
 
 /*
