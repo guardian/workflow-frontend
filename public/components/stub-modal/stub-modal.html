@@ -68,6 +68,8 @@
                   <input ng-if="isCommissionedLengthRequired()"
                     class="form-control"
                     name="commissionedLength"
+                    min="0"
+                    step="50"
                     type="number"
                     string-to-number
                     ng-model="stub.commissionedLength"
@@ -77,6 +79,8 @@
                   <input ng-if="!isCommissionedLengthRequired()"
                     class="form-control"
                     name="commissionedLength"
+                    min="0"
+                    step="50"
                     type="number"
                     string-to-number
                     ng-model="stub.commissionedLength"
@@ -159,7 +163,12 @@
             <button type="button" class="btn btn-default" id="testing-create-stub" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'">
                 Save stub
             </button>
-            <button type="button" class="btn btn-primary" id="testing-create-in-composer" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status !== 'Stub' && contentName !== 'Atom'">
+            <button  type="button" 
+                class="btn btn-primary" 
+                ng-class="{ 'disabled': disabled || stubForm.$invalid }" 
+                id="testing-create-in-composer" 
+                ng-click="submit(stubForm)" 
+                ng-show="stub.status !== 'Stub' && contentName !== 'Atom'">
                 Create new
             </button>
             <button type="button" class="btn btn-primary" id="testing-create-atom" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="contentName === 'Atom' && stub.status !== 'Stub'">

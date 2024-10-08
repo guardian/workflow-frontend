@@ -279,7 +279,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     }
 
     $scope.submit = function (form) {
+        const formElement = document.querySelector('form[name=stubForm]')
         if (form.$invalid) {
+            formElement?.reportValidity()
             return;  // Form is not ready to submit
         }
         if ($scope.actionSuccess) { // Form has already been submitted successfully
