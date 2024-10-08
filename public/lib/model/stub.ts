@@ -5,7 +5,11 @@ export type ContentType =
   | "interactive"
   | "picture"
   | "video"
-  | "audio";
+  | "audio"
+  | "keyTakeaways"
+  | "qAndA"
+  | "timeline"
+  | "miniProfiles";
 
 export type Stub = {
   contentType: ContentType;
