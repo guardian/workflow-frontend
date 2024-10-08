@@ -167,6 +167,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     $scope.isCommissionedLengthRequired = () => isCommissionedLengthRequired($scope.stub.contentType)
 
+    $scope.requiredAttrForCommissionedLength = () => isCommissionedLengthRequired($scope.stub.contentType) && !$scope.stub.missingCommissionedLengthReason ? 'true' : null
+
     /* when a request is made to import an item from another tool,
      * e.g. composer or an atom editor, then we will check to see if
      * it is already being tracked by Workflow. If, this function will
@@ -261,6 +263,14 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
     };
 
+    $scope.resetCommissionedLength = () => {
+        $scope.stub.commissionedLength = null;
+    }
+
+    $scope.resetMissingCommissionedLengthReason = () => {
+        $scope.stub.missingCommissionedLengthReason = null;
+    }
+
     $scope.commissionedLengthSuggestions = [
         400,
         650,
@@ -270,6 +280,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     $scope.submit = function (form) {
         const formElement = document.querySelector('form[name=stubForm]')
+        console.log($scope.stub)
         if (form.$invalid) {
             formElement?.reportValidity()
             return;  // Form is not ready to submit
