@@ -59,6 +59,7 @@
                         ng-model="stub.missingCommissionedLengthReason"
                         btn-radio="'BreakingNews'"
                         ng-click="resetCommissionedLength()"
+                        type="button"
                     >
                         Breaking News
                     </button>
@@ -67,6 +68,7 @@
                         class="btn btn-default btn-sm commissioned-length-suggestion"
                         ng-model="stub.commissionedLength"
                         btn-radio="commissionedLengthSuggestion"
+                        type="button"
                         ng-click="
                             resetMissingCommissionedLengthReason();
                             sendTelemetry(commissionedLengthSuggestion);
