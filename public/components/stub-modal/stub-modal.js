@@ -166,7 +166,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         $scope.warningMessages = generateErrorMessages(newStub)
     }, true)
 
-    $scope.isCommissionedLengthRequired = () => doesContentTypeRequireCommissionedLength($scope.stub.contentType)
+    $scope.isCommissionedLengthRequired = () => doesContentTypeRequireCommissionedLength($scope.stub.contentType);
 
     $scope.requiredAttrForCommissionedLength = () => doesContentTypeRequireCommissionedLength($scope.stub.contentType) && !$scope.stub.missingCommissionedLengthReason ? 'true' : null
 

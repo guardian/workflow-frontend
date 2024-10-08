@@ -5,7 +5,22 @@ const MESSAGING = {
 };
 
 const doesContentTypeRequireCommissionedLength = (contentType: ContentType) => {
-  return ["interactive", "article"].includes(contentType);
+  switch (contentType) {
+    case "liveblog":
+    case "gallery":
+    case "picture":
+    case "video":
+    case "audio":
+      return false;
+    case "article":
+    case "interactive":
+    case "keyTakeaways":
+    case "qAndA":
+    case "timeline":
+    case "miniProfiles":
+    default:
+      return true;
+  }
 };
 
 const stubIsMissingRequiredLength = (stub: Stub) =>
