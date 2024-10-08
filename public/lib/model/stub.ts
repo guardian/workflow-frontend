@@ -11,35 +11,18 @@ export type ContentType =
   | "timeline"
   | "miniProfiles";
 
+type FlagValue = "NA" | "REQUIRED" | "COMPLETE";
+
 export type Stub = {
+  title?: string;
+  articleFormat?: string;
   contentType: ContentType;
   commissionedLength?: number;
   missingCommissionedLengthReason?: string | null | undefined;
+  needsLegal?: FlagValue;
+  needsPictureDesk?: FlagValue;
+  priority?: number;
+  prodOffice?: string;
+  note?: string;
 };
 
-/*
-TO DO - model the rest of the Stub
-{
-    "articleFormat": "Standard Article",
-    "contentType": "article",
-    "section": {
-        "name": "Cities",
-        "selected": false,
-        "id": 1,
-        "$$hashKey": "object:59"
-    },
-    "priority": 0,
-    "needsLegal": "NA",
-    "needsPictureDesk": "NA",
-    "prodOffice": "UK",
-    "status": "Writers",
-    "title": "for",
-    "template": {
-        "id": "Comments test_2015-04-17T15:10:53.356",
-        "display": "Comments test - 17th April 2015",
-        "$$hashKey": "object:1736"
-    },
-    "due": "2024-10-08T00:05:00.000Z"
-}
-
-*/
