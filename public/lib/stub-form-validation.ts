@@ -14,8 +14,7 @@ const generateErrorMessages = (stub: Stub): string[] | undefined => {
     errors.push("A commissioned length is required");
   }
 
-  console.log(errors)
   return errors.length > 0 ? errors : undefined;
 };
 
-export { generateErrorMessages };
+export { generateErrorMessages, isCommissionedLengthRequired };

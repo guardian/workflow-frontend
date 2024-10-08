@@ -15,7 +15,7 @@ import 'lib/picture-desk-states-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
-import { generateErrorMessages } from '../../lib/stub-form-validation.ts';
+import { generateErrorMessages, isCommissionedLengthRequired } from '../../lib/stub-form-validation.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
@@ -165,6 +165,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         $scope.warningMessages = generateErrorMessages(newStub)
     }, true)
 
+    $scope.isCommissionedLengthRequired = () => isCommissionedLengthRequired($scope.stub.contentType)
+
     /* when a request is made to import an item from another tool,
      * e.g. composer or an atom editor, then we will check to see if
      * it is already being tracked by Workflow. If, this function will
@@ -267,13 +269,16 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     ]
 
     $scope.submit = function (form) {
-        if (form.$invalid)
+        if (form.$invalid) {
             return;  // Form is not ready to submit
+        }
         if ($scope.actionSuccess) { // Form has already been submitted successfully
-            if ($scope.composerUrl)
+            if ($scope.composerUrl) {
                 window.open($scope.composerUrl, "_blank");
-            if ($scope.editorUrl)
+            }
+            if ($scope.editorUrl) {
                 window.open($scope.editorUrl, "_blank");
+            }
             $scope.cancel()
         }
         else {
@@ -285,7 +290,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
-        console.log("stub", stub)
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {
                 stub.contentType = $scope.stub.contentType.toLowerCase();
