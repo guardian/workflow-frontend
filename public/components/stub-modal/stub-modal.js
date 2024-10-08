@@ -15,7 +15,7 @@ import 'lib/picture-desk-states-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
 import { punters } from 'components/punters/punters';
-import { generateErrorMessages, isCommissionedLengthRequired } from '../../lib/stub-form-validation.ts';
+import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNativeFormFeedback } from '../../lib/stub-form-validation.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
@@ -165,9 +165,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         $scope.warningMessages = generateErrorMessages(newStub)
     }, true)
 
-    $scope.isCommissionedLengthRequired = () => isCommissionedLengthRequired($scope.stub.contentType)
+    $scope.isCommissionedLengthRequired = () => doesContentTypeRequireCommissionedLength($scope.stub.contentType)
 
-    $scope.requiredAttrForCommissionedLength = () => isCommissionedLengthRequired($scope.stub.contentType) && !$scope.stub.missingCommissionedLengthReason ? 'true' : null
+    $scope.requiredAttrForCommissionedLength = () => doesContentTypeRequireCommissionedLength($scope.stub.contentType) && !$scope.stub.missingCommissionedLengthReason ? 'true' : null
 
     /* when a request is made to import an item from another tool,
      * e.g. composer or an atom editor, then we will check to see if
@@ -279,10 +279,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     ]
 
     $scope.submit = function (form) {
-        const formElement = document.querySelector('form[name=stubForm]')
-        console.log($scope.stub)
         if (form.$invalid) {
-            formElement?.reportValidity()
+            useNativeFormFeedback($scope.stub)
             return;  // Form is not ready to submit
         }
         if ($scope.actionSuccess) { // Form has already been submitted successfully
