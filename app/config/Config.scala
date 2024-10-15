@@ -36,7 +36,7 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val mediaAtomMakerUrl: String = s"https://video.$domain"
   lazy val atomWorkshopUrl: String = s"https://atomworkshop.$domain"
-  lazy val telemetryUrl: String = s"https://telemetry.$domain"
+  lazy val telemetryUrl: String = s"https://user-telemetry.$domain"
 
   private lazy val composerUrls: Set[String] = stage match {
     case Dev => Set(composerUrl) // Composer secondary does not exist in DEV
