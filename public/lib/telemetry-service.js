@@ -12,7 +12,7 @@ angular
         }
         sendTelemetryEvent = (type, tags, value = true) =>
             this.telemetrySender?.addEvent({
-                app: "composer",
+                app: "workflow",
                 stage: _wfConfig.stage,
                 eventTime: new Date().toISOString(),
                 type,
