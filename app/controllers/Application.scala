@@ -147,7 +147,9 @@ class Application(
         ("atomTypes", config.atomTypes.asJson),
         ("sessionId", Json.fromString(config.sessionId)),
         ("gaId", Json.fromString(config.googleTrackingId)),
-        ("tagManagerUrl",Json.fromString(config.tagManagerUrl))
+        ("tagManagerUrl", Json.fromString(config.tagManagerUrl)),
+        ("stage", Json.fromString(config.stage.toString)),
+        ("telemetryUrl", Json.fromString(config.telemetryUrl))
       )
 
       val hasPinboardPermission = permissions.hasPermission(pinboardPermission, request.user.email)
