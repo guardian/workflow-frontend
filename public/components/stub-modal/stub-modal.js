@@ -518,7 +518,7 @@ wfStubModal.run([
                 return '' + value;
             });
             ngModel.$formatters.push(function(value) {
-                return parseFloat(value, 10);
+                return parseFloat(value);
             });
         }
     };
