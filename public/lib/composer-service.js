@@ -111,7 +111,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         }
     }
 
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, missingCommissionedLengthReason) {
         var selectedDisplayHint = getDisplayHint(articleFormat);
         
         var params = {
@@ -123,6 +123,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         };
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
+        if(missingCommissionedLengthReason) params['missingCommissionedLengthReason'] = missingCommissionedLengthReason;
         
         if(template) {
             params['template'] = template.id;
