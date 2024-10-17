@@ -262,7 +262,12 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     ]
 
     $scope.sendTelemetry = (value) => {
-        wfTelemetryService.sendTelemetryEvent("WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED", { contentId: stub.id }, value)
+        const commissioningDesk = $scope.cdesks.find(desk  => desk.id.toString() === stub.commissioningDesks)?.externalName;
+        wfTelemetryService.sendTelemetryEvent(
+            "WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED",
+            { contentId: stub.id, productionOffice: stub.prodOffice, commissioningDesk },
+            value
+        )
     }
 
     $scope.submit = function (form) {
