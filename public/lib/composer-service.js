@@ -111,7 +111,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         }
     }
 
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority) {
         var selectedDisplayHint = getDisplayHint(articleFormat);
         
         var params = {
@@ -119,7 +119,8 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
             'tracking': commissioningDesks,
             'productionOffice': prodOffice,
             'displayHint': selectedDisplayHint,
-            'originatingSystem': 'workflow'
+            'originatingSystem': 'workflow',
+            'priority': priority
         };
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
