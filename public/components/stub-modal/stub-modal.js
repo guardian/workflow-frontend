@@ -14,15 +14,16 @@ import 'lib/legal-states-service';
 import 'lib/picture-desk-states-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
+import 'lib/telemetry-service';
 import { punters } from 'components/punters/punters';
 
 const wfStubModal = angular.module('wfStubModal', [
-    'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
+    'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService', 'wfTelemetryService'])
     .directive('punters', ['$rootScope', punters]);
 
 function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode,
      sections, statusLabels, articleFormatService, legalStatesService, pictureDeskStatesService, wfComposerService, wfProdOfficeService, wfContentService,
-     wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
+     wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService, wfTelemetryService) {
 
     wfContentService.getTypes().then( (types) => {
         $scope.contentName =
@@ -259,6 +260,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         900,
         1200,
     ]
+
+    $scope.sendTelemetry = (value) => {
+        wfTelemetryService.sendTelemetryEvent("WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED", { contentId: stub.id }, value)
+    }
 
     $scope.submit = function (form) {
         if (form.$invalid)
