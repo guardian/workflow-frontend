@@ -1,9 +1,10 @@
 import angular from 'angular';
+import './telemetry-service';
 
-angular.module('wfComposerService', [])
-    .service('wfComposerService', ['$http', '$q', 'config', '$log', 'wfHttpSessionService', wfComposerService]);
+angular.module('wfComposerService', ['wfTelemetryService'])
+    .service('wfComposerService', ['$http', '$q', 'config', '$log', 'wfHttpSessionService', 'wfTelemetryService', wfComposerService]);
 
-function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
+function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTelemetryService) {
 
     const request = wfHttpSessionService.request;
 
@@ -111,7 +112,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         }
     }
 
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority) {
         var selectedDisplayHint = getDisplayHint(articleFormat);
         
         var params = {
@@ -127,6 +128,31 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         if(template) {
             params['template'] = template.id;
         }
+
+        const commissioningDeskExternalName = _wfConfig.commissioningDesks
+            .find(desk  => desk.id.toString() === commissioningDesks)?.externalName;
+
+        const getPriorityName = (priority) => {
+            switch (priority){
+                case 0:
+                    return 'Normal'
+                case 1:
+                    return 'Urgent'
+                case 2:
+                    return 'Very Urgent'
+                default:
+                    return 'Unknown'
+            }
+        }
+
+        wfTelemetryService.sendTelemetryEvent("WORKFLOW_CREATE_IN_COMPOSER_TRIGGERED", {
+            contentType: getType(type),
+            displayHint: selectedDisplayHint,
+            commissionedLength,
+            productionOffice: prodOffice,
+            commissioningDesk: commissioningDeskExternalName,
+            priority: getPriorityName(priority),
+        })
 
         return request({
             method: 'POST',
