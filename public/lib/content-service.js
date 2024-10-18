@@ -6,11 +6,10 @@ import './atom-workshop-service'
 import './http-session-service';
 import './user';
 import './visibility-service';
-import './telemetry-service';
 
-angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService', 'wfTelemetryService'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService', 'config', 'wfTelemetryService',
-        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, wfAtomWorkshopService, wfPreferencesService, config, wfTelemetryService) {
+angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService'])
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService', 'config',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, wfAtomWorkshopService, wfPreferencesService, config) {
 
             const httpRequest = wfHttpSessionService.request;
 
@@ -110,15 +109,13 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Also will create the stub if it doesn't have an id.
                  */
                 createInComposer(stub, statusOption) {
-                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template, stub.articleFormat)
+                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template, stub.articleFormat, stub.priority)
                         .then((response) => wfComposerService.parseComposerData(response, stub))
                         .then((updatedStub) => {
 
                             if (statusOption) {
                                 updatedStub['status'] = statusOption;
                             }
-
-                            wfTelemetryService.sendTelemetryEvent("WORKFLOW_CREATE_IN_COMPOSER_TRIGGERED", { contentId: stub.id })
 
                             if (stub.id) {
                                 return this.updateStub(updatedStub);
