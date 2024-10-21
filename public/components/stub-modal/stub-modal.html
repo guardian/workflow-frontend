@@ -173,9 +173,10 @@
             <button type="button" class="btn btn-default" id="testing-create-stub" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'">
                 Save stub
             </button>
-            <button  type="button" 
+            <button
+                type="button"
                 class="btn btn-primary" 
-                ng-class="{ 'disabled': disabled || stubForm.$invalid }" 
+                ng-class="{ 'disabled': disabled || stubForm.$invalid || warningMessages.length > 0 }"
                 id="testing-create-in-composer" 
                 ng-click="submit(stubForm)" 
                 ng-show="stub.status !== 'Stub' && contentName !== 'Atom'">

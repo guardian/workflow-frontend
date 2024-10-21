@@ -2,6 +2,7 @@ import { ContentType, Stub } from "./model/stub";
 
 const MESSAGING = {
   commissionLengthRequired: "A commissioned length is required",
+  commissionLengthMinimum: "Commissioned length must be greater than zero"
 };
 
 const doesContentTypeRequireCommissionedLength = (contentType: ContentType) => {
@@ -28,10 +29,18 @@ const stubIsMissingRequiredLength = (stub: Stub) =>
   !stub.commissionedLength &&
   !stub.missingCommissionedLengthReason;
 
+const stubHasInvalidCommissionedLength = (stub: Stub) =>
+    doesContentTypeRequireCommissionedLength(stub.contentType) &&
+    stub.commissionedLength &&
+    stub.commissionedLength <= 0;
+
 const generateErrorMessages = (stub: Stub): string[] | undefined => {
   const errors: string[] = [];
   if (stubIsMissingRequiredLength(stub)) {
     errors.push(MESSAGING.commissionLengthRequired);
+  }
+  if(stubHasInvalidCommissionedLength(stub)) {
+    errors.push(MESSAGING.commissionLengthMinimum);
   }
   return errors.length > 0 ? errors : undefined;
 };
@@ -48,9 +57,13 @@ const useNativeFormFeedback = (stub: Stub) => {
     "input[name=commissionedLength]"
   );
   if (commissionedLengthInput) {
-    if (stubIsMissingRequiredLength(stub)) {
+     if (stubIsMissingRequiredLength(stub)) {
       commissionedLengthInput.setCustomValidity(
         MESSAGING.commissionLengthRequired
+      );
+    } else if(stubHasInvalidCommissionedLength(stub)) {
+      commissionedLengthInput.setCustomValidity(
+        MESSAGING.commissionLengthMinimum
       );
     } else {
       commissionedLengthInput.setCustomValidity("");
