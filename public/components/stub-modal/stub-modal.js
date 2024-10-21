@@ -279,11 +279,17 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         1200,
     ]
 
-    $scope.sendTelemetry = (value) => {
+    $scope.sendTelemetry = (value, missingCommissionedLengthReason = null) => {
         const commissioningDesk = $scope.cdesks.find(desk  => desk.id.toString() === stub.commissioningDesks)?.externalName;
+        const tags = {
+            contentId: stub.id,
+            productionOffice: stub.prodOffice,
+            commissioningDesk
+        }
+        if (missingCommissionedLengthReason) tags['missingCommissionedLengthReason'] = missingCommissionedLengthReason;
         wfTelemetryService.sendTelemetryEvent(
             "WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED",
-            { contentId: stub.id, productionOffice: stub.prodOffice, commissioningDesk },
+            tags,
             value
         )
     }

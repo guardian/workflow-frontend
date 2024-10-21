@@ -60,7 +60,10 @@
                             class="btn btn-default btn-sm"
                             ng-model="stub.missingCommissionedLengthReason"
                             btn-radio="'BreakingNews'"
-                            ng-click="resetCommissionedLength()"
+                            ng-click="
+                                resetCommissionedLength();
+                                sendTelemetry(0, 'BreakingNews');
+                            "
                             type="button"
                         >
                             Breaking News
