@@ -146,14 +146,16 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
             }
         }
 
-        wfTelemetryService.sendTelemetryEvent("WORKFLOW_CREATE_IN_COMPOSER_TRIGGERED", {
+        const tags = {
             contentType: getType(type),
             displayHint: selectedDisplayHint,
             commissionedLength,
             productionOffice: prodOffice,
             commissioningDesk: commissioningDeskExternalName,
             priority: getPriorityName(priority),
-        })
+        }
+        if(missingCommissionedLengthReason) tags.missingCommissionedLengthReason = missingCommissionedLengthReason;
+        wfTelemetryService.sendTelemetryEvent("WORKFLOW_CREATE_IN_COMPOSER_TRIGGERED", tags);
 
         return request({
             method: 'POST',
