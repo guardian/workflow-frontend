@@ -57,18 +57,6 @@
                     </a>
                     <div class="commissioned-length-buttons">
                         <button
-                            class="btn btn-default btn-sm"
-                            ng-model="stub.missingCommissionedLengthReason"
-                            btn-radio="'BreakingNews'"
-                            ng-click="
-                                resetCommissionedLength();
-                                sendTelemetry(0, 'BreakingNews');
-                            "
-                            type="button"
-                        >
-                            Breaking News
-                        </button>
-                        <button
                             ng:repeat="commissionedLengthSuggestion in commissionedLengthSuggestions"
                             class="btn btn-default btn-sm commissioned-length-suggestion"
                             ng-model="stub.commissionedLength"
@@ -80,6 +68,18 @@
                             "
                         >
                             {{ commissionedLengthSuggestion }}
+                        </button>
+                        <button
+                            class="btn btn-default btn-sm breaking-news"
+                            ng-model="stub.missingCommissionedLengthReason"
+                            btn-radio="'BreakingNews'"
+                            ng-click="
+                                resetCommissionedLength();
+                                sendTelemetry(0, 'BreakingNews');
+                            "
+                            type="button"
+                        >
+                            Breaking News
                         </button>
                     </div>
                     <div>
