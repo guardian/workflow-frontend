@@ -148,13 +148,13 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
 
         const tags = {
             contentType: getType(type),
-            displayHint: selectedDisplayHint,
-            commissionedLength,
             productionOffice: prodOffice,
-            commissioningDesk: commissioningDeskExternalName,
             priority: getPriorityName(priority),
         }
-        if(missingCommissionedLengthReason) tags.missingCommissionedLengthReason = missingCommissionedLengthReason;
+        if(selectedDisplayHint !== null && selectedDisplayHint !== undefined) tags.displayHint = selectedDisplayHint;
+        if(commissionedLength !== null && commissionedLength !== undefined) tags.commissionedLength = commissionedLength.toString();
+        if(commissioningDeskExternalName !== null && commissioningDeskExternalName !== undefined) tags.commissioningDesk = commissioningDeskExternalName;
+        if(missingCommissionedLengthReason !== null && missingCommissionedLengthReason !== undefined) tags.missingCommissionedLengthReason = missingCommissionedLengthReason;
         wfTelemetryService.sendTelemetryEvent("WORKFLOW_CREATE_IN_COMPOSER_TRIGGERED", tags);
 
         return request({
