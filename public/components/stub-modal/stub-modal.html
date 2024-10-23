@@ -49,31 +49,54 @@
                 <div ng-if="cdesks.length === 0">
                     <p class="commissioning-desk-margin">Selecting commissioning info is temporarily unavailable</p>
                 </div>
-                <label for="commissionedLength">Commissioned Length</label>
-                <a class="feedback-link"  href="https://docs.google.com/forms/d/e/1FAIpQLSeZje55T3OnErlTI_8iGuyZERjDy2Pybh8fdPmbnjy1PNFDAw/viewform" target="_blank">
-                    <span class="feedback-title" title="Send Feedback">Send Feedback</span>
-                </a>
-                <div class="commissioned-length-buttons">
-                    <button
-                        ng:repeat="commissionedLengthSuggestion in commissionedLengthSuggestions"
-                        class="btn btn-default btn-sm commissioned-length-suggestion"
-                        ng-model="stub.commissionedLength"
-                        btn-radio="commissionedLengthSuggestion"
-                        ng-click="sendTelemetry(commissionedLengthSuggestion)"
-                    >
-                        {{ commissionedLengthSuggestion }}
-                    </button>
-                </div>
-                <div>
-                  <input
-                      class="form-control"
-                      name="commissionedLength"
-                      type="number"
-                      string-to-number
-                      ng-model="stub.commissionedLength"
-                      placeholder="Choose a custom commissioned length"
-                  />
-                </div>
+
+                <section style="display: contents;" ng-if="isCommissionedLengthRequired()" >
+                    <label for="commissionedLength">Commissioned Length <span ng-if="isCommissionedLengthRequired()">*</span></label>
+                    <a class="feedback-link"  href="https://docs.google.com/forms/d/e/1FAIpQLSeZje55T3OnErlTI_8iGuyZERjDy2Pybh8fdPmbnjy1PNFDAw/viewform" target="_blank">
+                        <span class="feedback-title" title="Send Feedback">Send Feedback</span>
+                    </a>
+                    <div class="commissioned-length-buttons">
+                        <button
+                            ng:repeat="commissionedLengthSuggestion in commissionedLengthSuggestions"
+                            class="btn btn-default btn-sm commissioned-length-suggestion"
+                            ng-model="stub.commissionedLength"
+                            btn-radio="commissionedLengthSuggestion"
+                            type="button"
+                            ng-click="
+                                resetMissingCommissionedLengthReason();
+                                sendTelemetry(commissionedLengthSuggestion);
+                            "
+                        >
+                            {{ commissionedLengthSuggestion }}
+                        </button>
+                        <button
+                            class="btn btn-default btn-sm breaking-news"
+                            ng-model="stub.missingCommissionedLengthReason"
+                            btn-radio="'BreakingNews'"
+                            ng-click="
+                                resetCommissionedLength();
+                                sendTelemetry(0, 'BreakingNews');
+                            "
+                            type="button"
+                        >
+                            Breaking News
+                        </button>
+                    </div>
+                    <div>
+                        <input
+                            class="form-control"
+                            name="commissionedLength"
+                            min="0"
+                            step="50"
+                            type="number"
+                            string-to-number
+                            ng-model="stub.commissionedLength"
+                            placeholder="Choose a custom commissioned length"
+                            ng-change="resetMissingCommissionedLengthReason()"
+                            ng-required="requiredAttrForCommissionedLength()"
+                        />
+                    </div>
+                </section>
             </div>
             <div class="form-group pull-right col-xs-5">
                 <label for="stub_section">Section *</label>
@@ -144,10 +167,19 @@
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         </div>
         <div class="pull-right">
+            <span ng-if="warningMessages">
+                <span ng-repeat="message in warningMessages">{{ message }} </span>
+            </span>
             <button type="button" class="btn btn-default" id="testing-create-stub" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'">
                 Save stub
             </button>
-            <button type="button" class="btn btn-primary" id="testing-create-in-composer" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status !== 'Stub' && contentName !== 'Atom'">
+            <button
+                type="button"
+                class="btn btn-primary" 
+                ng-class="{ 'disabled': disabled || stubForm.$invalid || warningMessages.length > 0 }"
+                id="testing-create-in-composer" 
+                ng-click="submit(stubForm)" 
+                ng-show="stub.status !== 'Stub' && contentName !== 'Atom'">
                 Create new
             </button>
             <button type="button" class="btn btn-primary" id="testing-create-atom" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="contentName === 'Atom' && stub.status !== 'Stub'">

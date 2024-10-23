@@ -109,9 +109,24 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Also will create the stub if it doesn't have an id.
                  */
                 createInComposer(stub, statusOption) {
-                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template, stub.articleFormat, stub.priority)
+                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template, stub.articleFormat, stub.priority, stub.missingCommissionedLengthReason)
                         .then((response) => wfComposerService.parseComposerData(response, stub))
                         .then((updatedStub) => {
+
+                            // log uses of the missingCommissionedLengthReason option
+                            if (stub.missingCommissionedLengthReason) {
+                                const data = {
+                                    message: `Draft created without commissionedLength: ${stub.missingCommissionedLengthReason}`,
+                                    missingCommissionedLengthReason: stub.missingCommissionedLengthReason,
+                                    composerId: updatedStub.composerId ?? null,
+                                    prodOffice: updatedStub.prodOffice,
+                                    contentType: updatedStub.contentType,
+                                    section: updatedStub.section?.name,
+                                    title: updatedStub.title,
+                                }
+                                $log.info(JSON.stringify(data))
+                            }
+
 
                             if (statusOption) {
                                 updatedStub['status'] = statusOption;

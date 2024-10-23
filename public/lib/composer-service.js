@@ -112,7 +112,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         }
     }
 
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority, missingCommissionedLengthReason) {
         var selectedDisplayHint = getDisplayHint(articleFormat);
         
         var params = {
@@ -124,7 +124,8 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         };
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
-        
+        if(missingCommissionedLengthReason) params['missingCommissionedLengthReason'] = missingCommissionedLengthReason;
+
         if(template) {
             params['template'] = template.id;
         }
@@ -145,14 +146,16 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
             }
         }
 
-        wfTelemetryService.sendTelemetryEvent("WORKFLOW_CREATE_IN_COMPOSER_TRIGGERED", {
+        const tags = {
             contentType: getType(type),
             displayHint: selectedDisplayHint,
             commissionedLength,
             productionOffice: prodOffice,
             commissioningDesk: commissioningDeskExternalName,
             priority: getPriorityName(priority),
-        })
+        }
+        if(missingCommissionedLengthReason) tags.missingCommissionedLengthReason = missingCommissionedLengthReason;
+        wfTelemetryService.sendTelemetryEvent("WORKFLOW_CREATE_IN_COMPOSER_TRIGGERED", tags);
 
         return request({
             method: 'POST',
