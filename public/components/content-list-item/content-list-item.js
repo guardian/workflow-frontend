@@ -369,15 +369,19 @@ function wfGetPriorityStringFilter (priorities) {
 }
 
 function wfCommissionedLengthCtrl ($scope) {
-    $scope.$watch('contentItem.wordCount', function (newVal) {
-        let commLen = $scope.contentItem.commissionedLength;
-        let difference = $scope.contentItem.wordCount / commLen;
+    $scope.$watch('contentItem.wordCount', function (newVal) {   
+        const commLen = $scope.contentItem.commissionedLength;
+        const wordCount = $scope.contentItem.wordCount
+        const difference = wordCount / commLen;
+
         if(!newVal || !commLen || difference < 0.75) {
             $scope.lengthStatus = "low";
         } else if(difference <= 1) {
             $scope.lengthStatus = "near";
-        } else {
+        } else if (wordCount - commLen < 50) {
             $scope.lengthStatus = "over";
+        } else {
+            $scope.lengthStatus = "alert";
         }
     });
 }
