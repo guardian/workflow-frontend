@@ -393,7 +393,7 @@ function wfCommissionedLengthCtrl ($scope) {
 
         if (!commLen) {
             $scope.lengthStatus = "none";
-        } else if(!newVal || difference < 0.75) {
+        } else if(!newVal || difference < 0.85) {
             $scope.lengthStatus = "low";
         } else if(difference <= 1) {
             $scope.lengthStatus = "near";
