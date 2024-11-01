@@ -356,7 +356,8 @@ const columnDefaults = [{
     templateUrl: templateRoot + 'commissionedLength.html',
     template: commissionedLengthTemplate,
     active: true,
-    isSortable: true
+    isSortable: true,
+    sortField: ['missingCommissionedLengthReason', 'commissionedLength']
 },{
     name: 'links',
     prettyName: 'Open in...',
