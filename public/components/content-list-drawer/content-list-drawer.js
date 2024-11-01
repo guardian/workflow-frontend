@@ -338,7 +338,13 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                   $scope.contentItem.composerId,
                   "commissionedLength"
                 );
+              } else if ($scope.contentItem.missingCommissionedLengthReason !== null) {
+                  wfComposerService.deleteField(
+                      $scope.contentItem.composerId,
+                      "missingCommissionedLengthReason"
+                  );
               }
+
               return wfComposerService.updateField(
                 $scope.contentItem.composerId,
                 "commissionedLength",
