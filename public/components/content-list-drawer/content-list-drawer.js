@@ -332,23 +332,20 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             };
 
             $scope.updateCommissionedLength = function (newValue) {
-              updateField("commissionedLength", newValue);
-              if (newValue === "") {
-                return wfComposerService.deleteField(
-                  $scope.contentItem.composerId,
-                  "commissionedLength"
-                );
-              } else if ($scope.contentItem.missingCommissionedLengthReason !== null) {
+              // Don't allow commissioned length to be unset
+              if(newValue === "") return;
+              if ($scope.contentItem.missingCommissionedLengthReason !== null && $scope.contentItem.missingCommissionedLengthReason !== undefined) {
+                  updateField("missingCommissionedLengthReason", null);
                   wfComposerService.deleteField(
                       $scope.contentItem.composerId,
                       "missingCommissionedLengthReason"
                   );
               }
-
-              return wfComposerService.updateField(
-                $scope.contentItem.composerId,
-                "commissionedLength",
-                newValue
+              updateField("commissionedLength", newValue);
+              wfComposerService.updateField(
+                  $scope.contentItem.composerId,
+                  "commissionedLength",
+                  newValue
               );
             };
 
