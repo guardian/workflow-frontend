@@ -3,6 +3,6 @@
     ng-attr-title="{{'Commissioned word count (' + lengthStatus + ' in comparison to web words)'}}">
     <span ng-class="'content-list-item__field--commissionedLength-status-'+ lengthStatus"
           ng-show="contentItem.contentType == 'article'">
-        {{ contentItem.commissionedLength }}
+        {{ contentItem.commissionedLength || formatReason(contentItem.missingCommissionedLengthReason) }}
     </span>
 </td>

@@ -346,6 +346,14 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
               );
             };
 
+            $scope.formatReason = (missingCommissionedLengthReason) => {
+                const reasons = {
+                    "BreakingNews": "Breaking News",
+                }
+
+                return reasons[missingCommissionedLengthReason] || missingCommissionedLengthReason;
+            }
+
             /**
              * Revert deadline to previous state
              */

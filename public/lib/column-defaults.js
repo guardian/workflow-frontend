@@ -350,7 +350,7 @@ const columnDefaults = [{
 },{
     name: 'commissionedLength',
     prettyName: 'Commissioned Length',
-    labelHTML: 'Commission',
+    labelHTML: 'Commissioned Length',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'commissionedLength.html',

@@ -49,7 +49,8 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         revision: (d) => deepSearch(d, ['contentChangeDetails', 'data', 'revision']),
         lastModified: (d) => new Date(deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'date']) || undefined),
         lastModifiedBy: (d) => deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'user', 'firstName']) + ' ' + deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'user', 'lastName']),
-        commissionedLength: (d) => deepSearch(d, ['preview', 'data', 'fields', 'commissionedLength', 'data']) || undefined
+        commissionedLength: (d) => deepSearch(d, ['preview', 'data', 'fields', 'commissionedLength', 'data']) || undefined,
+        missingCommissionedLengthReason: (d) => deepSearch(d, ['preview', 'data', 'fields', 'missingCommissionedLengthReason', 'data']) || undefined
     };
 
 
