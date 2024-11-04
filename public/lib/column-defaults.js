@@ -312,6 +312,17 @@ const columnDefaults = [{
     isSortable: true,
     sortField: ['statusInPrint']
 },{
+    name: 'commissionedLength',
+    prettyName: 'Commissioned Length',
+    labelHTML: 'Commissioned Length',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'commissionedLength.html',
+    template: commissionedLengthTemplate,
+    active: true,
+    isSortable: true,
+    sortField: ['missingCommissionedLengthReason', 'commissionedLength']
+},{
     name: 'wordcount',
     prettyName: 'Web wordcount',
     labelHTML: 'Web words',
@@ -347,17 +358,6 @@ const columnDefaults = [{
     isSortable: true,
     defaultSortOrder: ['asc', 'desc', 'asc'],
     sortField: ['printLocationBookSection', 'printLocationPublicationDate', 'printLocationPageNumber']
-},{
-    name: 'commissionedLength',
-    prettyName: 'Commissioned Length',
-    labelHTML: 'Commissioned Length',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'commissionedLength.html',
-    template: commissionedLengthTemplate,
-    active: true,
-    isSortable: true,
-    sortField: ['missingCommissionedLengthReason', 'commissionedLength']
 },{
     name: 'links',
     prettyName: 'Open in...',
