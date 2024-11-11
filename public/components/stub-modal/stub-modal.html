@@ -175,7 +175,8 @@
             </button>
             <button
                 type="button"
-                class="btn btn-primary" 
+                class="btn btn-primary"
+                ng-disabled="disabled || stubForm.$invalid || warningMessages.length > 0"
                 ng-class="{ 'disabled': disabled || stubForm.$invalid || warningMessages.length > 0 }"
                 id="testing-create-in-composer" 
                 ng-click="submit(stubForm)" 
