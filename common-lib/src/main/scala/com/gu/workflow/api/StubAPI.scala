@@ -200,6 +200,13 @@ class StubAPI(
       item <- extractDataResponse[Long](json)
     } yield item
 
+  def updateContentMissingCommissionedLengthReason(stubId: Long, missingCommissionedLengthReason: Option[String]): ApiResponseFt[Long] =
+    for {
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/missingCommissionedLengthReason", missingCommissionedLengthReason.asJson))
+      json <- parseBody(res.body)
+      item <- extractDataResponse[Long](json)
+    } yield item
+
   def updateContentStatusByComposerId(composerId: String, status: String): ApiResponseFt[String] =
     for {
       res <- ApiResponseFt.Async.Right(putRequest(s"content/$composerId/status", status.asJson))

@@ -335,17 +335,35 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
               // Don't allow commissioned length to be unset
               if(newValue === "") return;
               if ($scope.contentItem.missingCommissionedLengthReason !== null && $scope.contentItem.missingCommissionedLengthReason !== undefined) {
+                  // workflow stub
                   updateField("missingCommissionedLengthReason", null);
+                  // composer preview
                   wfComposerService.deleteField(
                       $scope.contentItem.composerId,
-                      "missingCommissionedLengthReason"
+                      "missingCommissionedLengthReason",
+                      false
+                  );
+                  // composer live
+                  wfComposerService.deleteField(
+                      $scope.contentItem.composerId,
+                      "missingCommissionedLengthReason",
+                      true
                   );
               }
+              // workflow stub
               updateField("commissionedLength", newValue);
+              // composer preview
               wfComposerService.updateField(
                   $scope.contentItem.composerId,
                   "commissionedLength",
                   newValue
+              );
+              // composer live
+              wfComposerService.updateField(
+                  $scope.contentItem.composerId,
+                  "commissionedLength",
+                  newValue,
+                  true
               );
             };
 

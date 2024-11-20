@@ -179,10 +179,21 @@ class Api(
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
-        status <- extractDataResponse[Option[Int]](json)
-        id <- stubsApi.updateContentCommissionedLength(stubId, status)
+        commissionedLength <- extractDataResponse[Option[Int]](json)
+        id <- stubsApi.updateContentCommissionedLength(stubId, commissionedLength)
       } yield id
       )}
+  }
+
+  def putStubMissingCommissionedLengthReason(stubId: Long) = {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- readJsonFromRequestResponse(request.body)
+        missingCommissionedLengthReason <- extractDataResponse[Option[String]](json)
+        id <- stubsApi.updateContentMissingCommissionedLengthReason(stubId, missingCommissionedLengthReason)
+      } yield id
+      )
+    }
   }
 
   def putStubStatusByComposerId(composerId: String) = {
