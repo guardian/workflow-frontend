@@ -43,7 +43,7 @@ object Dependencies {
     "org.bouncycastle" % "bcprov-jdk18on" % "1.78.1"
   )
 
-  val permissionsClientVersion = "3.0.0"
+  val permissionsClientVersion = "4.0.0-PREVIEW.pflogmarkers-for-client-casuals.2024-11-20T1111.6351c7ed"
 
   val permissionsDependencies = Seq(
     "com.gu" %% "editorial-permissions-client" % permissionsClientVersion
