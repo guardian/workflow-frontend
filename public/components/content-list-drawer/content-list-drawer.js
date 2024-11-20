@@ -320,6 +320,23 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 updateField("plannedNewspaperPageNumber", pageNumber, $scope.contentItem.plannedNewspaperPageNumber)
             }
 
+            $scope.updateOffice = (office) => {
+                // preview
+                wfComposerService.updateSetting(
+                    $scope.contentItem.composerId,
+                    "productionOffice",
+                    office,
+                )
+
+                // live
+                wfComposerService.updateSetting(
+                    $scope.contentItem.composerId,
+                    "productionOffice",
+                    office,
+                    true
+                )
+            };
+
             /**
              * Update the deadline manually using value from datepicker
              */

@@ -20,6 +20,16 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         }
     }
 
+    function composerUpdateSettingUrl(settingName, contentId) {
+        function liveOrPreview(isPreview) {
+            return `${composerContentFetch}${contentId}/${isPreview ? "preview" : "live"}/settings/${settingName}`
+        }
+        return {
+            preview: liveOrPreview(true),
+            live:    liveOrPreview(false)
+        }
+    }
+
     // budget composer url parser - just gets the portion after the last '/'
     function parseComposerId(url) {
         return url.substring(url.lastIndexOf('/') + 1);
@@ -177,6 +187,18 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
 
     this.updateField = function (composerId, fieldName, value, live = false) {
         let urls = composerUpdateFieldUrl(fieldName, composerId);
+        let url = live ? urls.live : urls.preview;
+        let req = {
+            method: 'PUT',
+            url: url,
+            data: `"${value}"`,
+            withCredentials: true
+        };
+        return request(req);
+    };
+
+    this.updateSetting = function (composerId, settingName, value, live = false) {
+        let urls = composerUpdateSettingUrl(settingName, composerId);
         let url = live ? urls.live : urls.preview;
         let req = {
             method: 'PUT',
