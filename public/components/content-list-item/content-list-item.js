@@ -101,6 +101,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.wordCount = item.wordCount;
             this.printWordCount = item.printWordCount;
             this.commissionedLength = item.commissionedLength;
+            this.missingCommissionedLengthReason = item.missingCommissionedLengthReason;
 
             this.headline = item.headline;
             this.standfirst = stripHtml(item.standfirst);
@@ -380,6 +381,14 @@ function wfCommissionedLengthCtrl ($scope) {
             $scope.lengthStatus = "over";
         }
     });
+
+    $scope.formatReason = (missingCommissionedLengthReason) => {
+        const reasons = {
+            "BreakingNews": "Breaking News",
+        }
+
+        return reasons[missingCommissionedLengthReason] || missingCommissionedLengthReason;
+    }
 }
 
 export { wfContentListItem, wfContentItemParser, wfContentItemUpdateActionDirective, wfGetPriorityStringFilter, wfCommissionedLengthCtrl };

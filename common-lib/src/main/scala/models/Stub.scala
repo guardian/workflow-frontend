@@ -38,6 +38,7 @@ case class ExternalData(
                          hasMainMedia: Option[Boolean] = None,
                          commentable: Option[Boolean] = None,
                          commissionedLength: Option[Int] = None,
+                         missingCommissionedLengthReason: Option[String] = None,
                          actualPublicationId: Option[Long] = None,
                          actualBookId: Option[Long] = None,
                          actualBookSectionId: Option[Long] = None,
