@@ -321,18 +321,21 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             }
 
             $scope.updateOffice = (office) => {
+                // because the australian prodOffice is 'AUS' in composer and 'AU' in workflow                
+                const composerOffice = office.toUpperCase() === 'AU' ? 'AUS' : office;
+
                 // preview
                 wfComposerService.updateSetting(
                     $scope.contentItem.composerId,
                     "productionOffice",
-                    office,
+                    composerOffice,
                 )
 
                 // live
                 wfComposerService.updateSetting(
                     $scope.contentItem.composerId,
                     "productionOffice",
-                    office,
+                    composerOffice,
                     true
                 )
             };
