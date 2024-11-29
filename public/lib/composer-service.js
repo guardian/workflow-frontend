@@ -103,6 +103,8 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
                 return "timeline"
             case "Mini profiles":
                 return "miniProfiles"
+            case "Multi-byline":
+                return "multiByline"
             default:
                 return undefined
         }
@@ -111,12 +113,10 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
     const getType = (type) => {
         switch (type){
             case 'keyTakeaways':
-                return 'article'
             case 'qAndA':
-                return 'article'
             case "timeline":
-                return "article"
             case "miniProfiles":
+            case "multiByline":
                 return "article"
             default:
                 return type

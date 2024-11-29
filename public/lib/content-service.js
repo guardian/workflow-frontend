@@ -24,6 +24,10 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         "miniProfiles": "Mini profiles"
                     }
 
+                    if (featureSwitches && featureSwitches.multiByline){
+                        articleFormats.multiByline = "Multi-byline"
+                    }
+
                     const nonArticleFormats = {
                         "liveblog": "Live blog",
                         "gallery": "Gallery",

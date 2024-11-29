@@ -21,6 +21,8 @@ function wfFeatureSwitchesDirective() {
     };
 }
 
+export const multiBylineFeatureSwitchKey = 'multiByline';
+
 class FeatureSwitches {
     constructor(switches, entries) {
         // this.switches should be a single object with the type { [key]: value }
@@ -39,8 +41,10 @@ class FeatureSwitches {
 }
 
 function wfFeatureSwitchesController ($scope, wfPreferencesService) {
-    const featureSwitchKeys = [];
-    $scope.readableNames = {}
+    const featureSwitchKeys = [multiBylineFeatureSwitchKey];
+    $scope.readableNames = {
+        [multiBylineFeatureSwitchKey]: 'Multi-byline',
+    }
 
     const getDefaultFeatureSwitchValues = () => {
         const switches = {};
