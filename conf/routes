@@ -49,6 +49,8 @@ PUT            /api/stubs/:stubId/plannedBookSectionId     controllers.Api.putSt
 PUT            /api/stubs/:stubId/plannedNewspaperPageNumber          controllers.Api.putStubPlannedNewspaperPageNumber(stubId: Long)
 PUT            /api/stubs/:stubId/plannedNewspaperPublicationDate     controllers.Api.putStubPlannedNewspaperPublicationDate(stubId: Long)
 PUT            /api/stubs/:stubId/rightsReviewed           controllers.Api.putStubRightsReviewed(stubId: Long)
+PUT            /api/stubs/:stubId/commissionedLength       controllers.Api.putStubCommissionedLength(stubId: Long)
+PUT            /api/stubs/:stubId/missingCommissionedLengthReason controllers.Api.putStubMissingCommissionedLengthReason(stubId: Long)
 DELETE         /api/stubs/:stubId                          controllers.Api.deleteStub(stubId: Long)
 
 GET            /api/statuses                               controllers.Api.statusus

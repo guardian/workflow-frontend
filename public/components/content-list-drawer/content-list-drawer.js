@@ -320,6 +320,26 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
                 updateField("plannedNewspaperPageNumber", pageNumber, $scope.contentItem.plannedNewspaperPageNumber)
             }
 
+            $scope.updateOffice = (office) => {
+                // because the australian prodOffice is 'AUS' in composer and 'AU' in workflow                
+                const composerOffice = office.toUpperCase() === 'AU' ? 'AUS' : office;
+
+                // preview
+                wfComposerService.updateSetting(
+                    $scope.contentItem.composerId,
+                    "productionOffice",
+                    composerOffice,
+                )
+
+                // live
+                wfComposerService.updateSetting(
+                    $scope.contentItem.composerId,
+                    "productionOffice",
+                    composerOffice,
+                    true
+                )
+            };
+
             /**
              * Update the deadline manually using value from datepicker
              */
@@ -332,19 +352,48 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             };
 
             $scope.updateCommissionedLength = function (newValue) {
-              updateField("commissionedLength", newValue);
-              if (newValue === "") {
-                return wfComposerService.deleteField(
-                  $scope.contentItem.composerId,
-                  "commissionedLength"
-                );
+              // Don't allow commissioned length to be unset
+              if(newValue === "") return;
+              if ($scope.contentItem.missingCommissionedLengthReason !== null && $scope.contentItem.missingCommissionedLengthReason !== undefined) {
+                  // workflow stub
+                  updateField("missingCommissionedLengthReason", null);
+                  // composer preview
+                  wfComposerService.deleteField(
+                      $scope.contentItem.composerId,
+                      "missingCommissionedLengthReason",
+                      false
+                  );
+                  // composer live
+                  wfComposerService.deleteField(
+                      $scope.contentItem.composerId,
+                      "missingCommissionedLengthReason",
+                      true
+                  );
               }
-              return wfComposerService.updateField(
-                $scope.contentItem.composerId,
-                "commissionedLength",
-                newValue
+              // workflow stub
+              updateField("commissionedLength", newValue);
+              // composer preview
+              wfComposerService.updateField(
+                  $scope.contentItem.composerId,
+                  "commissionedLength",
+                  newValue
+              );
+              // composer live
+              wfComposerService.updateField(
+                  $scope.contentItem.composerId,
+                  "commissionedLength",
+                  newValue,
+                  true
               );
             };
+
+            $scope.formatReason = (missingCommissionedLengthReason) => {
+                const reasons = {
+                    "BreakingNews": "Breaking News",
+                }
+
+                return reasons[missingCommissionedLengthReason] || missingCommissionedLengthReason;
+            }
 
             /**
              * Revert deadline to previous state

@@ -140,7 +140,7 @@
                             wf-editable-input-type="number"
                             ng-model="contentItem.commissionedLength"
                             wf-editable-on-update="updateCommissionedLength(newValue)"
-                            wf-editable-maxlength="5">{{contentItem.commissionedLength || "Add" }}
+                            wf-editable-maxlength="5">{{contentItem.commissionedLength || formatReason(contentItem.missingCommissionedLengthReason) || "Add" }}
                             </wf-editable>
                         </li>
                         <li class="drawer__item">

@@ -294,6 +294,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         )
     }
 
+    $scope.setPriorityToVeryUrgent = () => {
+        $scope.stub.priority = 2;
+    }
+
     $scope.submit = function (form) {
         if (form.$invalid) {
             useNativeFormFeedback($scope.stub)
