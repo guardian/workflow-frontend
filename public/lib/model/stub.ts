@@ -9,7 +9,8 @@ export type ContentType =
   | "keyTakeaways"
   | "qAndA"
   | "timeline"
-  | "miniProfiles";
+  | "miniProfiles"
+  | "multiByline";
 
 type FlagValue = "NA" | "REQUIRED" | "COMPLETE";
 

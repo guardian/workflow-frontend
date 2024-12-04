@@ -19,6 +19,7 @@ const doesContentTypeRequireCommissionedLength = (contentType: ContentType) => {
     case "qAndA":
     case "timeline":
     case "miniProfiles":
+    case "multiByline":
     default:
       return true;
   }

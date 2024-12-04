@@ -42,7 +42,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $scope.stubFormat = "Timeline"
         } else if (stub.contentType === 'miniProfiles') {
             $scope.stubFormat = "Mini profiles"
-        } 
+        } else if (stub.contentType === 'multiByline') {
+            $scope.stubFormat = "Multi-byline"
+        }
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
         })
@@ -488,6 +490,9 @@ wfStubModal.run([
                         break;
                     case "miniProfiles":
                         chosenArticleFormat = "Mini profiles"
+                        break;
+                    case "multiByline":
+                        chosenArticleFormat = "Multi-byline"
                         break;
                     default:
                         break;

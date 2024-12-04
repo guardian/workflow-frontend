@@ -14,6 +14,9 @@ define(['angular'], function (angular) {
                     {name: 'Timeline', value: 'Timeline'},
                     {name: 'Mini profiles', value: 'Mini profiles'},
                 ]
+                if (featureSwitches && featureSwitches.multiByline){
+                    articleFormats.push({name: 'Multi-byline', value: 'Multi-byline'})
+                }
                 return articleFormats                    
             };
         return {
