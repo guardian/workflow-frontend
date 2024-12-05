@@ -1,3 +1,4 @@
+import { getContentLengthCategory, getCommissionedLengthTitle } from "./word-count-helpers.ts";
 
 const OPHAN_PATH = 'https://dashboard.ophan.co.uk/summary?path=/',
     LIVE_PATH = 'http://www.theguardian.com/';
@@ -369,17 +370,12 @@ function wfGetPriorityStringFilter (priorities) {
     };
 }
 
+
 function wfCommissionedLengthCtrl ($scope) {
-    $scope.$watch('contentItem.wordCount', function (newVal) {
-        let commLen = $scope.contentItem.commissionedLength;
-        let difference = $scope.contentItem.wordCount / commLen;
-        if(!newVal || !commLen || difference < 0.75) {
-            $scope.lengthStatus = "low";
-        } else if(difference <= 1) {
-            $scope.lengthStatus = "near";
-        } else {
-            $scope.lengthStatus = "over";
-        }
+    $scope.$watch('contentItem.wordCount', function (newWordCount) {   
+        const commissionedLength = $scope.contentItem.commissionedLength;
+        $scope.lengthStatus = getContentLengthCategory(commissionedLength, newWordCount);
+        $scope.commissionedLengthTitle = getCommissionedLengthTitle(commissionedLength, newWordCount)
     });
 
     $scope.formatReason = (missingCommissionedLengthReason) => {
