@@ -367,13 +367,11 @@
 
     .content-list-item__field--commissionedLength {
         &-status {
-            &-low {
-            }
             &-near {
                 color: green;
             }
             &-over {
-                color: red;
+                color: green;
             }
             &-alert {
                 color: red;
