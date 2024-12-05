@@ -1,3 +1,4 @@
+import { getContentLengthCategory, getCommissionedLengthTitle } from "./word-count-helpers.ts";
 
 const OPHAN_PATH = 'https://dashboard.ophan.co.uk/summary?path=/',
     LIVE_PATH = 'http://www.theguardian.com/';
@@ -370,40 +371,11 @@ function wfGetPriorityStringFilter (priorities) {
 }
 
 
-const LENGTH_DESCRIPTIONS = {
-    none: 'unset',
-    low: 'low',
-    near:'near',
-    over: 'over',
-    alert: 'over'
-}
-
-function getCommissionedLengthTitle (lengthStatus) {
-    const description = LENGTH_DESCRIPTIONS[lengthStatus] ?? LENGTH_DESCRIPTIONS.low;
-    if (lengthStatus === 'none') {
-        return `Commissioned word count(not defined)`
-    }
-    return `Commissioned word count(${description} in commparison to web words)`
-}
-
 function wfCommissionedLengthCtrl ($scope) {
-    $scope.$watch('contentItem.wordCount', function (newVal) {   
-        const commLen = $scope.contentItem.commissionedLength;
-        const wordCount = $scope.contentItem.wordCount
-        const difference = wordCount / commLen;
-
-        if (!commLen) {
-            $scope.lengthStatus = "none";
-        } else if(!newVal || difference < 0.85) {
-            $scope.lengthStatus = "low";
-        } else if(difference <= 1) {
-            $scope.lengthStatus = "near";
-        } else if (wordCount - commLen < 50) {
-            $scope.lengthStatus = "over";
-        } else {
-            $scope.lengthStatus = "alert";
-        }
-        $scope.commissionedLengthTitle = getCommissionedLengthTitle($scope.lengthStatus)
+    $scope.$watch('contentItem.wordCount', function (newWordCount) {   
+        const commissionedLength = $scope.contentItem.commissionedLength;
+        $scope.lengthStatus = getContentLengthCategory(commissionedLength, newWordCount);
+        $scope.commissionedLengthTitle = getCommissionedLengthTitle(commissionedLength, newWordCount)
     });
 
     $scope.formatReason = (missingCommissionedLengthReason) => {
