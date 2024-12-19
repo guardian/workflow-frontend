@@ -64,7 +64,7 @@
                             type="button"
                             ng-click="
                                 resetMissingCommissionedLengthReason();
-                                sendTelemetry(commissionedLengthSuggestion);
+                                sendTelemetryForSuggestion(commissionedLengthSuggestion);
                             "
                         >
                             {{ commissionedLengthSuggestion }}
@@ -75,7 +75,7 @@
                             btn-radio="'BreakingNews'"
                             ng-click="
                                 resetCommissionedLength();
-                                sendTelemetry(0, 'BreakingNews');
+                                sendTelemetryForSuggestion(0, 'BreakingNews');
                                 setPriorityToVeryUrgent(2)
                             "
                             type="button"
@@ -192,7 +192,15 @@
 
     <div class="modal-footer" ng-if="mode === 'import'" ng-hide="actionInProgress">
         <button type="button" class="btn btn-default pull-left" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" id="testing-import-from-composer" ng-click="ok()" ng-disabled="stubForm.$invalid || !validImport">
+        <button
+                type="submit"
+                class="btn btn-primary"
+                id="testing-import-from-composer"
+                ng-click="
+                    ok();
+                    sendTelemetryForImport();
+                "
+                ng-disabled="stubForm.$invalid || !validImport">
             Import <span ng-show="importHandler">from {{importHandler.name}}</span>
         </button>
     </div>
