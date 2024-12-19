@@ -306,7 +306,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             contentId: stub.composerId,
             productionOffice: stub.prodOffice,
             commissioningDesk: stub.section?.name,
-            commissionedLength: stub.commissionedLength
+            commissionedLength: stub.commissionedLength,
+            contentType: stub.contentType
         }
         if(wfTelemetryService !== null && wfTelemetryService !== undefined) {
             wfTelemetryService.sendTelemetryEvent(
