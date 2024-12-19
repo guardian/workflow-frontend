@@ -281,7 +281,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         1200,
     ]
 
-    $scope.sendTelemetry = (value, missingCommissionedLengthReason = null) => {
+    $scope.sendTelemetryForSuggestion = (value, missingCommissionedLengthReason = null) => {
         const commissioningDesk = $scope.cdesks.find(desk  => desk.id.toString() === stub.commissioningDesks)?.externalName;
         const tags = {
             contentId: stub.id,
@@ -289,11 +289,33 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             commissioningDesk
         }
         if (missingCommissionedLengthReason) tags['missingCommissionedLengthReason'] = missingCommissionedLengthReason;
-        wfTelemetryService.sendTelemetryEvent(
-            "WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED",
-            tags,
-            value
-        )
+        if(wfTelemetryService !== null && wfTelemetryService !== undefined) {
+            wfTelemetryService.sendTelemetryEvent(
+                "WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED",
+                tags,
+                value
+            )
+        }
+    }
+
+    $scope.sendTelemetryForImport = (contentName) => {
+        if(contentName === 'Atom') {
+            return;
+        }
+        const tags = {
+            contentId: stub.composerId,
+            productionOffice: stub.prodOffice,
+            commissioningDesk: stub.section?.name,
+            commissionedLength: stub.commissionedLength,
+            contentType: stub.contentType
+        }
+        if(wfTelemetryService !== null && wfTelemetryService !== undefined) {
+            wfTelemetryService.sendTelemetryEvent(
+                "WORKFLOW_CONTENT_IMPORTED_FROM_COMPOSER",
+                tags,
+                true
+            )
+        }
     }
 
     $scope.setPriorityToVeryUrgent = () => {
