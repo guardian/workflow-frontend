@@ -192,12 +192,29 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             .then((response) => wfComposerService.parseComposerData(response, $scope.stub))
             .then((contentItem) => {
                 const composerId = contentItem.composerId;
+                // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
+                const prodOffice = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
+                const commissioningDesk = $scope.cdesks.find(desk  => desk.id.toString() === stub.commissioningDesks)?.externalName;
+
+                if(wfTelemetryService !== null && wfTelemetryService !== undefined) {
+                    const tags = {
+                        contentId: composerId,
+                        productionOffice: prodOffice,
+                        commissioningDesk,
+                        commissionedLength: contentItem?.commissionedLength
+                    }
+
+                    wfTelemetryService.sendTelemetryEvent(
+                        "WORKFLOW_CONTENT_IMPORTED_FROM_COMPOSER",
+                        tags,
+                        true
+                    )
+                }
 
                 if(composerId) {
                     $scope.composerUrl = config.composerViewContent + '/' + composerId;
                     $scope.stub.title = contentItem.headline;
-                    // slice needed because the australian prodOffice is 'AUS' in composer and 'AU' in workflow
-                    $scope.stub.prodOffice  = contentItem.composerProdOffice ? contentItem.composerProdOffice.slice(0,2) : 'UK';
+                    $scope.stub.prodOffice  = prodOffice;
 
                     wfContentService.getById(composerId).then(
                         (res) => importHandleExisting(res.data.data),
@@ -289,11 +306,13 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             commissioningDesk
         }
         if (missingCommissionedLengthReason) tags['missingCommissionedLengthReason'] = missingCommissionedLengthReason;
-        wfTelemetryService.sendTelemetryEvent(
-            "WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED",
-            tags,
-            value
-        )
+        if(wfTelemetryService !== null && wfTelemetryService !== undefined) {
+            wfTelemetryService.sendTelemetryEvent(
+                "WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED",
+                tags,
+                value
+            )
+        }
     }
 
     $scope.setPriorityToVeryUrgent = () => {
