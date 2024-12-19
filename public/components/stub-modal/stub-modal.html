@@ -198,7 +198,7 @@
                 id="testing-import-from-composer"
                 ng-click="
                     ok();
-                    sendTelemetryForImport();
+                    sendTelemetryForImport(contentName);
                 "
                 ng-disabled="stubForm.$invalid || !validImport">
             Import <span ng-show="importHandler">from {{importHandler.name}}</span>

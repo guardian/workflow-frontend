@@ -298,7 +298,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
     }
 
-    $scope.sendTelemetryForImport = () => {
+    $scope.sendTelemetryForImport = (contentName) => {
+        if(contentName === 'Atom') {
+            return;
+        }
         const tags = {
             contentId: stub.composerId,
             productionOffice: stub.prodOffice,
