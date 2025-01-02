@@ -343,6 +343,28 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
     };
 
+    $scope.updateCommissionedLengthInComposer = function() {
+        const commissionedLength = $scope.stub.commissionedLength;
+        const missingCommissionedLengthReason = $scope.stub.missingCommissionedLengthReason;
+
+        // one request for preview, one for live
+        if(commissionedLength === null) {
+            wfComposerService.deleteField(stub.composerId, 'commissionedLength');
+            wfComposerService.deleteField(stub.composerId, 'commissionedLength', true);
+        } else {
+            wfComposerService.updateField(stub.composerId, 'commissionedLength', commissionedLength);
+            wfComposerService.updateField(stub.composerId, 'commissionedLength', commissionedLength, true);
+        }
+
+        if(missingCommissionedLengthReason === null) {
+            wfComposerService.deleteField(stub.composerId, 'missingCommissionedLengthReason');
+            wfComposerService.deleteField(stub.composerId, 'missingCommissionedLengthReason', true);
+        } else {
+            wfComposerService.updateField(stub.composerId, 'missingCommissionedLengthReason', missingCommissionedLengthReason);
+            wfComposerService.updateField(stub.composerId, 'missingCommissionedLengthReason', missingCommissionedLengthReason, true);
+        }
+    }
+
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = $scope.stub;
         function createItemPromise() {
