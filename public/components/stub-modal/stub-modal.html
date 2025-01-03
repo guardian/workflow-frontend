@@ -198,7 +198,7 @@
                 id="testing-import-from-composer"
                 ng-click="
                     ok();
-                    updateCommissionedLengthInComposer(stubForm.commissionedLength);
+                    updateCommissionedLengthInComposer();
                     sendTelemetryForImport(contentName);
                 "
                 ng-disabled="stubForm.$invalid || !validImport">

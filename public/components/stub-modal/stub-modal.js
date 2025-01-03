@@ -348,7 +348,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         const missingCommissionedLengthReason = $scope.stub.missingCommissionedLengthReason;
 
         // one request for preview, one for live
-        if(commissionedLength === null) {
+        if(commissionedLength === null || commissionedLength === undefined) {
             wfComposerService.deleteField(stub.composerId, 'commissionedLength');
             wfComposerService.deleteField(stub.composerId, 'commissionedLength', true);
         } else {
@@ -356,7 +356,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             wfComposerService.updateField(stub.composerId, 'commissionedLength', commissionedLength, true);
         }
 
-        if(missingCommissionedLengthReason === null) {
+        if(missingCommissionedLengthReason === null || missingCommissionedLengthReason === undefined) {
             wfComposerService.deleteField(stub.composerId, 'missingCommissionedLengthReason');
             wfComposerService.deleteField(stub.composerId, 'missingCommissionedLengthReason', true);
         } else {
