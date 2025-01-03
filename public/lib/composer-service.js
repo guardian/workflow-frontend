@@ -198,6 +198,13 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         return request(req);
     };
 
+    this.updateFieldInPreviewAndLive = function (composerId, fieldName, value) {
+        return Promise.all([
+            this.updateField(composerId, fieldName, value, false),
+            this.updateField(composerId, fieldName, value, true)
+        ]);
+    }
+
     this.updateSetting = function (composerId, settingName, value, live = false) {
         let urls = composerUpdateSettingUrl(settingName, composerId);
         let url = live ? urls.live : urls.preview;
@@ -210,6 +217,13 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         return request(req);
     };
 
+    this.updateSettingInPreviewAndLive = function (composerId, settingName, value) {
+        return Promise.all([
+            this.updateSetting(composerId, settingName, value, false),
+            this.updateSetting(composerId, settingName, value, true)
+        ]);
+    }
+
     this.deleteField = function (composerId, fieldName, live = false) {
         let urls = composerUpdateFieldUrl(fieldName, composerId);
         let url = live ? urls.live : urls.preview;
@@ -220,6 +234,13 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         };
         return request(req);
     };
+
+    this.deleteFieldInPreviewAndLive = function (composerId, fieldName) {
+        return Promise.all([
+            this.deleteField(composerId, fieldName, false),
+            this.deleteField(composerId, fieldName, true)
+        ]);
+    }
 
     /**
      * Update rights information for the given piece.

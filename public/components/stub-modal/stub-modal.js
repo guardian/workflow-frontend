@@ -347,21 +347,16 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         const commissionedLength = $scope.stub.commissionedLength;
         const missingCommissionedLengthReason = $scope.stub.missingCommissionedLengthReason;
 
-        // one request for preview, one for live
         if(commissionedLength === null || commissionedLength === undefined) {
-            wfComposerService.deleteField(stub.composerId, 'commissionedLength');
-            wfComposerService.deleteField(stub.composerId, 'commissionedLength', true);
+            wfComposerService.deleteFieldInPreviewAndLive(stub.composerId, 'commissionedLength');
         } else {
-            wfComposerService.updateField(stub.composerId, 'commissionedLength', commissionedLength);
-            wfComposerService.updateField(stub.composerId, 'commissionedLength', commissionedLength, true);
+            wfComposerService.updateFieldInPreviewAndLive(stub.composerId, 'commissionedLength', commissionedLength);
         }
 
         if(missingCommissionedLengthReason === null || missingCommissionedLengthReason === undefined) {
-            wfComposerService.deleteField(stub.composerId, 'missingCommissionedLengthReason');
-            wfComposerService.deleteField(stub.composerId, 'missingCommissionedLengthReason', true);
+            wfComposerService.deleteFieldInPreviewAndLive(stub.composerId, 'missingCommissionedLengthReason');
         } else {
-            wfComposerService.updateField(stub.composerId, 'missingCommissionedLengthReason', missingCommissionedLengthReason);
-            wfComposerService.updateField(stub.composerId, 'missingCommissionedLengthReason', missingCommissionedLengthReason, true);
+            wfComposerService.updateFieldInPreviewAndLive(stub.composerId, 'missingCommissionedLengthReason', missingCommissionedLengthReason);
         }
     }
 
