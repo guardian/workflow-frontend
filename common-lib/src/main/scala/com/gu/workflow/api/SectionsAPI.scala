@@ -38,14 +38,14 @@ class SectionsAPI(
 
   // Sections Tags Mapping
 
-  def insertSectionTag(sectionId: Long, tagId: String): Unit =
+  def insertSectionTag(sectionId: Long, tagId: String): ApiResponseFt[Int] =
     for {
       res <- ApiResponseFt.Async.Right(buildRequest(s"sectionTagMapping/$sectionId/${URLEncoder.encode(tagId, "UTF-8")}").put(""))
       json <- parseBody(res.body)
       insertRes <- extractDataResponse[Int](json)
     } yield insertRes
 
-  def removeSectionTag(sectionId: Long, tagId: String): Unit =
+  def removeSectionTag(sectionId: Long, tagId: String): ApiResponseFt[Int] =
     for {
       res <- ApiResponseFt.Async.Right(deleteRequest(s"sectionTagMapping/$sectionId/${URLEncoder.encode(tagId, "UTF-8")}"))
       json <- parseBody(res.body)
