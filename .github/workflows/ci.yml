@@ -10,9 +10,12 @@ jobs:
     build:
         runs-on: ubuntu-20.04
 
-        permissions: # required by aws-actions/configure-aws-credentials
+        permissions:
+            # Allow GitHub to request an OIDC JWT ID token, for exchange with AWS Security Token Service (STS)
+            # See https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#updating-your-github-actions-workflow
             id-token: write
             contents: read
+            pull-requests: write
 
         steps:
             # Seed the build number with last number from TeamCity.
@@ -29,12 +32,6 @@ jobs:
                   distribution: "corretto"
                   java-version: "11"
                   cache: "sbt"
-
-            - name: AWS Auth
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                  role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
-                  aws-region: eu-west-1
 
             - name: Install Node
               uses: actions/setup-node@v3
@@ -54,9 +51,11 @@ jobs:
               run: |
                   sbt clean compile test Debian/packageBin
 
-            - uses: guardian/actions-riff-raff@v2
+            - uses: guardian/actions-riff-raff@v4
               with:
                   projectName: Editorial Tools::Workflow::Workflow Frontend
+                  roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
+                  githubToken: ${{ secrets.GITHUB_TOKEN }}
                   buildNumber: ${{ env.BUILD_NUMBER }}
                   configPath: conf/riff-raff.yaml
                   contentDirectories: |
