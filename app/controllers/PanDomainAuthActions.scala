@@ -2,10 +2,10 @@ package controllers
 
 import com.gu.pandomainauth.action.AuthActions
 import com.gu.pandomainauth.model.AuthenticatedUser
-import com.gu.permissions.{PermissionDefinition, PermissionsProvider}
+import com.gu.permissions.PermissionsProvider
 import config.Config
 import lib.Permissions.{accessPermission, adminPermission}
-import play.api.{Logger, Logging}
+import play.api.Logging
 import play.api.mvc._
 
 trait PanDomainAuthActions extends AuthActions with Results with Logging {

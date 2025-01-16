@@ -9,9 +9,8 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, parser}
 import lib.{AtomWorkshopConfig, ComposerConfig, MediaAtomMakerConfig}
-import models.api.ApiResponseFt
 import models.{Desk, EditorialSupportStaff, Section}
-import play.api.{Logger, Logging}
+import play.api.Logging
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
@@ -53,21 +52,21 @@ class Application(
     }
   }
 
-  def index = AuthAction { request =>
+  def index = AuthAction { case request@_ =>
     Redirect(routes.Application.dashboard)
   }
 
   def dashboard = app("Workflow")
 
-  def training = AuthAction { request =>
+  def training = AuthAction { case request@_ =>
     Ok(views.html.training())
   }
 
-  def faqs = AuthAction { request =>
+  def faqs = AuthAction { case request@_ =>
     Ok(views.html.faqs())
   }
 
-  def troubleshooting = Action { request =>
+  def troubleshooting = Action { case request@_ =>
     Ok(views.html.troubleshooting())
   }
 

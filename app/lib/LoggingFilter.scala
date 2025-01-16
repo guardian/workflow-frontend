@@ -3,7 +3,7 @@ package lib
 import com.gu.workflow.util.LoggingContext
 import org.apache.pekko.stream.Materializer
 import com.gu.pandahmac.HMACHeaderNames
-import play.api.{Logger, Logging}
+import play.api.Logging
 import play.api.mvc._
 
 import scala.concurrent.Future

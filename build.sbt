@@ -30,7 +30,9 @@ val commonSettings = Seq(
     "-language:higherKinds",
     "-Xfatal-warnings",
     "-Wunused",
+    "-Wvalue-discard",
     "-Wnonunit-statement",
+    "-Wconf:site=views\\.html.*&cat=unused:silent,site=controllers.ReverseAssets.versioned&cat=other-pure-statement:silent,any:warning-verbose",
     "-unchecked"
   )
 )

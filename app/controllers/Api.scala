@@ -18,7 +18,6 @@ import models.{Flag, _}
 import play.api.Logging
 import play.api.libs.ws.WSClient
 import org.joda.time.{DateTime, LocalDate}
-import play.api.Logger
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -64,7 +63,7 @@ class Api(
   def content = APIHMACAuthAction.async(getContentBlock)
 
   def getContentByComposerId(composerId: String) = {
-    APIHMACAuthAction.async { implicit request =>
+    APIHMACAuthAction.async {
       ApiResponseFt[Option[Stub]](for {
         item <- getResponse(stubsApi.getStubByComposerId(stubDecorator, composerId))
       } yield item
@@ -72,7 +71,7 @@ class Api(
   }
 
   def getContentByEditorId(editorId: String) = {
-    APIAuthAction.async { implicit request =>
+    APIAuthAction.async {
       ApiResponseFt[Option[Stub]](for {
         item <- getResponse(stubsApi.getStubByEditorId(editorId))
       } yield item
@@ -330,20 +329,20 @@ class Api(
 
   def deleteContent(composerId: String) = {
     APIAuthAction {
-      stubsApi.deleteStubs(Seq(composerId)).fold(err =>
-        logger.error(s"failed to delete content with composer id: $composerId"), identity)
+      stubsApi.deleteStubs(Seq(composerId)).fold({case err@_ =>
+        logger.error(s"failed to delete content with composer id: $composerId")}, identity): Unit
       NoContent
     }
   }
 
   def deleteStub(stubId: Long) = APIAuthAction {
-    stubsApi.deleteContentByStubId(stubId).fold(err =>
-    logger.error(s"failed to delete content with stub id: $stubId"), identity)
+    stubsApi.deleteContentByStubId(stubId).fold({case err@_ =>
+    logger.error(s"failed to delete content with stub id: $stubId")}, identity): Unit
     NoContent
   }
 
   def statusus = {
-    APIAuthAction { implicit req =>
+    APIAuthAction {
       Ok(renderJsonResponse(StatusDatabase.statuses).asJson.noSpaces)
     }
   }

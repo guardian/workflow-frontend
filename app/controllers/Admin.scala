@@ -134,7 +134,7 @@ class Admin(
 
   def assignSectionToDesk = (AuthAction andThen PermissionFilter).async { implicit request =>
     assignSectionToDeskForm.bindFromRequest().fold(
-      formWithErrors => Future(BadRequest("failed to update section assignments")),
+      {case formWithErrors@_ => Future(BadRequest("failed to update section assignments"))},
       sectionAssignment => {
         sectionDeskMappingsAPI.assignSectionsToDesk(sectionAssignment.desk, sectionAssignment.sections.map(id => id.toLong))
           .asFuture
@@ -154,7 +154,7 @@ class Admin(
 
   def addSection = (AuthAction andThen PermissionFilter).async { implicit request =>
     addSectionForm.bindFromRequest().fold(
-      formWithErrors => Future(BadRequest("failed to add section")),
+      {case formWithErrors@_ => Future(BadRequest("failed to add section"))},
       section => {
         sectionsAPI.upsertSection(section).asFuture.map {
           case Right(_) => Redirect(routes.Admin.desksAndSections(None))
@@ -168,7 +168,7 @@ class Admin(
 
   def removeSection = (AuthAction andThen PermissionFilter).async { implicit request =>
     addSectionForm.bindFromRequest().fold(
-      formWithErrors => Future(BadRequest("failed to remove section")),
+      {case formWithErrors@_ => Future(BadRequest("failed to remove section"))},
       section => {
         for {
         _ <- sectionDeskMappingsAPI.removeSectionMapping(section.id).asFuture
@@ -198,7 +198,7 @@ class Admin(
 
   def removeDesk = (AuthAction andThen PermissionFilter).async { implicit request =>
     addDeskForm.bindFromRequest().fold(
-      formWithErrors => Future(BadRequest("failed to remove desk")),
+      {case formWithErrors@_ => Future(BadRequest("failed to remove desk"))},
       desk => {
         for {
           _ <- sectionDeskMappingsAPI.removeDeskMapping(desk.id).asFuture
@@ -264,11 +264,11 @@ class Admin(
 
   def addSectionTag = (AuthAction andThen PermissionFilter) { implicit request =>
     addSectionTagForm.bindFromRequest().fold(
-      formWithErrors => {
+      {case formWithErrors@_ => {
         BadRequest("failed to execute controllers.admin.addSectionTag()")
-      },
+      }},
       data => {
-        sectionsAPI.insertSectionTag(data.sectionId,data.tagId)
+        sectionsAPI.insertSectionTag(data.sectionId,data.tagId): Unit
         NoContent
       }
     )
@@ -276,11 +276,11 @@ class Admin(
 
   def removeSectionTag = (AuthAction andThen PermissionFilter) { implicit request =>
     removeSectionTagForm.bindFromRequest().fold(
-      formWithErrors => {
+      {case formWithErrors@_ => {
         BadRequest("failed to execute controllers.admin.removeSectionTag()")
-      },
+      }},
       data => {
-        sectionsAPI.removeSectionTag(data.sectionId,data.tagId)
+        sectionsAPI.removeSectionTag(data.sectionId,data.tagId): Unit
         NoContent
       }
     )

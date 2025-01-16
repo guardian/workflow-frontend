@@ -9,6 +9,7 @@ import play.api.libs.ws.{EmptyBody, InMemoryBody, WSClient}
 import play.api.mvc.{BaseController, ControllerComponents}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.annotation.unused
 
 /* Proxy for editorial-preferences, to help with latency since workflow-frontend sits behind CloudFront*/
 class PreferencesProxy(
@@ -55,5 +56,5 @@ class PreferencesProxy(
 
   def userPref(userId: String, app: String) = proxyRequest(s"$userId/$app")
   def setPreference(userId: String, app: String, prefKey: String) = proxyRequest(s"$userId/$app/$prefKey")
-  def getPreference(userId: String, app: String, prefKey: String) = proxyRequest(s"$userId/$prefKey")
+  def getPreference(userId: String, @unused app: String, prefKey: String) = proxyRequest(s"$userId/$prefKey")
 }
