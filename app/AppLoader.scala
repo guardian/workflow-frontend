@@ -1,4 +1,3 @@
-import config.Config
 import play.api.{Application, ApplicationLoader, LoggerConfigurator}
 
 class AppLoader extends ApplicationLoader {

@@ -1,6 +1,5 @@
 package models
 
-import cats.syntax.either._
 import enumeratum.EnumEntry.Uppercase
 import enumeratum._
 import io.circe.Decoder.Result

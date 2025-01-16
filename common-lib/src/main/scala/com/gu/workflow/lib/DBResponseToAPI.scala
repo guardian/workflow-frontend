@@ -2,7 +2,7 @@ package com.gu.workflow.lib
 
 import models.Stub
 import models.api._
-import play.api.{Logger, Logging}
+import play.api.Logging
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -23,7 +23,7 @@ object DBToAPIResponse extends Logging {
       case Left(s: UpdateRevisionTooLow) =>
         logger.error(s"ContentUpdateError - UpdateRevisionTooLow stubid: ${s.stubId} updateRevision: ${s.updateRevision}")
         ApiResponseFt.Left(ApiError.updateErrorRevisionTooLow(s))
-      case Left(c: ComposerIdsConflict) =>
+      case Left(_: ComposerIdsConflict) =>
         logger.error("ContentUpdateError - ComposerIdsConflict")
         ApiResponseFt.Left(ApiError.conflict)
       case Right(cu) => ApiResponseFt.Right(cu)

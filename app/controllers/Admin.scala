@@ -6,7 +6,6 @@ import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
 import config.Config
 import io.circe.{Json, parser}
 import lib.AdminPermissionFilter
-import models.api.ApiError
 import models._
 import models.api.ApiError
 import play.api.Logging
@@ -245,7 +244,6 @@ class Admin(
       case None => Future.successful(List())
     }
     for {
-      deskList <- getDesks()
       sectionListFromDB <- getSortedSections()
       tagIds <- tagIdsFuture
       selectedSectionOption <- selectedSectionOptionFt

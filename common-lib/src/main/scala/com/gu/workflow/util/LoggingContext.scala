@@ -1,7 +1,6 @@
 package com.gu.workflow.util
 
 import org.slf4j.MDC
-import play.Logger
 import play.api.Logging
 
 import scala.jdk.CollectionConverters._

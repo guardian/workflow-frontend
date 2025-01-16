@@ -3,10 +3,8 @@ package config
 import java.util.UUID
 
 import com.gu.workflow.util._
-import play.Logger
 import play.api.{Configuration, Logging}
 
-import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {

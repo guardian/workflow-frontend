@@ -4,7 +4,6 @@ import io.circe.Json
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
 
 trait WSUtils {
   def apiRoot: String

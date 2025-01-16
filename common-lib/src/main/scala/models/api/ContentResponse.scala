@@ -2,7 +2,7 @@ package models.api
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import models.{Status, Stub}
+import models.Stub
 
 case class ContentResponse(content: Map[String, List[Stub]], count: Map[String, Int])
 object ContentResponse {

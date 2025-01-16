@@ -4,7 +4,7 @@ import io.circe.generic.extras.Configuration
 import io.circe.{Decoder, Encoder, Json}
 import io.circe.generic.extras.semiauto.{deriveConfiguredDecoder, deriveConfiguredEncoder}
 import io.circe.syntax._
-import play.api.{Logger, Logging}
+import play.api.Logging
 import play.api.mvc.{Result, Results}
 
 import scala.concurrent.{ExecutionContext, Future}

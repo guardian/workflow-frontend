@@ -13,7 +13,7 @@ import play.api.libs.ws.{WSClient, WSResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class ContentAPI(
   capiPreviewRole: String,
@@ -51,7 +51,7 @@ class ContentAPI(
       .buildAsyncFuture[Long, Option[String]](getTagInternalNameUnderlying)
   }
 
-  def getTagInternalName(tagId: Long)(implicit ec: ExecutionContext): Future[Option[String]] =
+  def getTagInternalName(tagId: Long): Future[Option[String]] =
     tagCache.get(tagId)
 
   private def getTagInternalNameUnderlying(tagId: Long): Future[Option[String]] = {
