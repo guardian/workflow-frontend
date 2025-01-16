@@ -24,7 +24,15 @@ val commonSettings = Seq(
   resolvers ++= Seq(
     "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
   ),
-  scalacOptions ++= Seq("-feature", "-deprecation", "-language:higherKinds", "-Xfatal-warnings")
+  scalacOptions ++= Seq(
+    "-feature",
+    "-deprecation",
+    "-language:higherKinds",
+    "-Xfatal-warnings",
+    "-Wunused",
+    "-Wnonunit-statement",
+    "-unchecked"
+  )
 )
 
 def project(path: String): Project = Project(path, file(path)).settings(commonSettings)
