@@ -12,10 +12,12 @@ object Dependencies {
     "com.gu" %% "content-api-client-aws" % "0.7"
   )
 
+  val pandaVersion = "7.0.0"
+
   val authDependencies = Seq(
-    "com.gu" %% "pan-domain-auth-play_3-0" % "4.0.0",
+    "com.gu" %% "pan-domain-auth-play_3-0" % pandaVersion,
     "com.gu" %% "hmac-headers" % "2.0.0",
-    "com.gu" %% "panda-hmac-play_3-0" % "4.0.0"
+    "com.gu" %% "panda-hmac-play_3-0" % pandaVersion
   )
 
   val testDependencies = Seq(
