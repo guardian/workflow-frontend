@@ -1,7 +1,5 @@
 import { ComposerContentType, ContentType, SpecialArticleFormat, Stub } from "./stub";
 
-const STANDARD_ARTICLE_FORMAT_LABEL = "Standard Article";
-
 const specialFormats: SpecialArticleFormat[] = [
     { label: 'Key Takeaways', value: 'keyTakeaways' },
     { label: 'Q&A Explainer', value: 'qAndA' },
@@ -16,25 +14,6 @@ const setDisplayHintForFormat = (stub: Stub): Stub => {
         stub.displayHint = maybeMatchingFormat.value
     }
     return stub
-}
-
-/**
- * return "Standard Article" for normal articles, the label for special article formats
- * or empty string for non-article stubs
- */
-const getStubArticleFormat = (contentType: ContentType): string => {
-    const maybeMatchingFormat = specialFormats.find(format => format.value === contentType)
-    if (maybeMatchingFormat) {
-        return maybeMatchingFormat.label
-    }
-    if (contentType === 'article') {
-        return STANDARD_ARTICLE_FORMAT_LABEL
-    }
-    return ''
-}
-
-const isFormatLabel = (value: string): boolean => {
-    return value === STANDARD_ARTICLE_FORMAT_LABEL || specialFormats.some(format => format.label === value)
 }
 
 const getSpecialFormatFromLabel = (label: string): SpecialArticleFormat | undefined =>
@@ -55,4 +34,4 @@ const contentTypeToComposerContentType = (type: ContentType): ComposerContentTyp
     }
 }
 
-export { STANDARD_ARTICLE_FORMAT_LABEL, specialFormats, setDisplayHintForFormat, getSpecialFormatFromLabel, contentTypeToComposerContentType, getStubArticleFormat, isFormatLabel }
+export { specialFormats, setDisplayHintForFormat, getSpecialFormatFromLabel, contentTypeToComposerContentType }

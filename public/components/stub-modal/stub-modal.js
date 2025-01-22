@@ -17,7 +17,8 @@ import 'lib/prodoffice-service';
 import 'lib/telemetry-service';
 import { punters } from 'components/punters/punters';
 import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNativeFormFeedback } from '../../lib/stub-form-validation.ts';
-import { getStubArticleFormat, isFormatLabel, setDisplayHintForFormat } from 'lib/model/special-formats.ts';
+import { setDisplayHintForFormat } from 'lib/model/special-formats.ts';
+import { getArticleFormatLabel, isFormatLabel } from 'lib/model/format-helpers.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService', 'wfTelemetryService'])
@@ -32,7 +33,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             (wfContentService.getAtomTypes())[stub.contentType] ?
             "Atom" : (types[stub.contentType] || "News item");
             
-        $scope.stubFormat = getStubArticleFormat(stub.contentType);
+        $scope.stubFormat = getArticleFormatLabel(stub.contentType);
  
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
@@ -491,7 +492,7 @@ wfStubModal.run([
 
             function createStubData (contentType, sectionName) {
                 return {
-                    articleFormat: getStubArticleFormat(contentType),
+                    articleFormat: getArticleFormatLabel(contentType),
                     contentType: contentType === "atom" ? defaultAtomType : contentType,
                     // Only send through a section if one is found in the prefs
                     section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
