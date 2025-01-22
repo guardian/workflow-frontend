@@ -1,6 +1,6 @@
 import angular from 'angular';
 import './telemetry-service';
-import { getFormatFromLabel, contentTypeToComposerContentType } from './model/special-formats.ts';
+import { getSpecialFormatFromLabel, contentTypeToComposerContentType } from './model/special-formats.ts';
 
 angular.module('wfComposerService', ['wfTelemetryService'])
     .service('wfComposerService', ['$http', '$q', 'config', '$log', 'wfHttpSessionService', 'wfTelemetryService', wfComposerService]);
@@ -95,7 +95,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
     this.parseComposerData = parseComposerData;
     
     this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority, missingCommissionedLengthReason) {
-        var selectedDisplayHint = getFormatFromLabel(articleFormat)?.value;
+        var selectedDisplayHint = getSpecialFormatFromLabel(articleFormat)?.value;
         
         var params = {
             'type': contentTypeToComposerContentType(type),

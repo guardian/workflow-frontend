@@ -1,5 +1,7 @@
 import { ComposerContentType, ContentType, SpecialArticleFormat, Stub } from "./stub";
 
+const STANDARD_ARTICLE_FORMAT_LABEL = "Standard Article"; 
+
 const specialFormats: SpecialArticleFormat[] = [
     { label: 'Key Takeaways', value: 'keyTakeaways', iconId: 'keyTakeaways' },
     { label: 'Q&A Explainer', value: 'qAndA', iconId: 'qAndA' },
@@ -26,12 +28,16 @@ const getStubArticleFormat = (contentType:ContentType): string => {
         return maybeMatchingFormat.label
     }
     if (contentType === 'article') {
-        return "Standard Article"
+        return STANDARD_ARTICLE_FORMAT_LABEL
     }
     return ''
 }
 
-const getFormatFromLabel = (label: string): SpecialArticleFormat | undefined =>
+const isFormatLabel = (value:string):boolean => {
+    return value === STANDARD_ARTICLE_FORMAT_LABEL || specialFormats.some(format => format.label === value)
+}
+
+const getSpecialFormatFromLabel = (label: string): SpecialArticleFormat | undefined =>
     specialFormats.find(format => format.label === label)
 
 const contentTypeToComposerContentType = (type: ContentType): ComposerContentType => {
@@ -49,4 +55,4 @@ const contentTypeToComposerContentType = (type: ContentType): ComposerContentTyp
     }
 }
 
-export { specialFormats, setDisplayHintForFormat, getFormatFromLabel, contentTypeToComposerContentType, getStubArticleFormat }
+export { specialFormats, setDisplayHintForFormat, getSpecialFormatFromLabel, contentTypeToComposerContentType, getStubArticleFormat, isFormatLabel }

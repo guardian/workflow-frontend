@@ -17,7 +17,7 @@ import 'lib/prodoffice-service';
 import 'lib/telemetry-service';
 import { punters } from 'components/punters/punters';
 import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNativeFormFeedback } from '../../lib/stub-form-validation.ts';
-import { getStubArticleFormat, setDisplayHintForFormat } from 'lib/model/special-formats.ts';
+import { getStubArticleFormat, isFormatLabel, setDisplayHintForFormat } from 'lib/model/special-formats.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService', 'wfTelemetryService'])
@@ -46,6 +46,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             'import': 'Import Existing Content'
         })[mode];
     });
+
+    $scope.stubFormatIsCorrectlyPopulated = function() {     
+        return isFormatLabel($scope.stubFormat)
+    }
 
     $scope.loadingTemplates = true;
 
