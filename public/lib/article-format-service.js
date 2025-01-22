@@ -1,27 +1,14 @@
-define(['angular'], function (angular) {
-    'use strict';
+import angular from 'angular';
+import { provideArticleFormatsForDropDown } from './model/format-helpers.ts';
 
-    var articleFormatService = angular.module('articleFormatService', []);
 
-    articleFormatService.factory('articleFormatService',['wfPreferencesService', function (wfPreferencesService) {
-            function getArticleFormats() {
-                const featureSwitches = wfPreferencesService.preferences.featureSwitches;
-
-                const articleFormats =  [
-                    {name: 'Standard Article', value: 'Standard Article'},
-                    {name: 'Key Takeaways', value: 'Key Takeaways'},
-                    {name: 'Q&A Explainer', value: 'Q&A Explainer'},
-                    {name: 'Timeline', value: 'Timeline'},
-                    {name: 'Mini profiles', value: 'Mini profiles'},
-                ]
-                if (featureSwitches && featureSwitches.multiByline){
-                    articleFormats.push({name: 'Multi-byline', value: 'Multi-byline'})
-                }
-                return articleFormats                    
-            };
+angular.module('articleFormatService', [])
+    .factory('articleFormatService', ['wfPreferencesService', function (wfPreferencesService) {
+        function getArticleFormats() {
+            const featureSwitches = wfPreferencesService.preferences?.featureSwitches;
+            return provideArticleFormatsForDropDown(featureSwitches)
+        };
         return {
-                getArticleFormats: getArticleFormats
-            };
-        }]);
-    return articleFormatService;
-});
+            getArticleFormats: getArticleFormats
+        };
+    }]);

@@ -6,6 +6,7 @@ import './atom-workshop-service'
 import './http-session-service';
 import './user';
 import './visibility-service';
+import { provideFormats } from './model/format-helpers.ts'
 
 angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService'])
     .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService', 'config',
@@ -15,37 +16,12 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
             class ContentService {
 
-                provideFormats(featureSwitches){
-                    const articleFormats = {
-                        "article": "Article",
-                        "keyTakeaways": "Key Takeaways",
-                        "qAndA": "Q&A Explainer",
-                        "timeline": "Timeline",
-                        "miniProfiles": "Mini profiles"
-                    }
-
-                    if (featureSwitches && featureSwitches.multiByline){
-                        articleFormats.multiByline = "Multi-byline"
-                    }
-
-                    const nonArticleFormats = {
-                        "liveblog": "Live blog",
-                        "gallery": "Gallery",
-                        "interactive": "Interactive",
-                        "picture": "Picture",
-                        "audio": "Audio",
-                        "atom": "Video/Atom"
-                    }
-                    // Assembling the object this way preserves the existing order in the UI
-                    return Promise.resolve({...articleFormats, ...nonArticleFormats}); 
-                }
-
                 getTypes() {
                     return wfPreferencesService.getPreference('featureSwitches')
-                    .then((featureSwitches) => {
-                        return this.provideFormats(featureSwitches)
-                    })
-                    .catch((err) => {return this.provideFormats()})
+                        .then((featureSwitches) => {
+                            return provideFormats(featureSwitches)
+                        })
+                        .catch((err) => { return provideFormats() })
                 }
 
                 /* what types of stub should be treated as atoms? */
@@ -363,7 +339,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                 const localSearch = this._paramsProvider()
                 this.currentSearch = localSearch
-                
+
                 return wfContentService.get(localSearch)
                     .then((cb) => {
                         const localSearchIsStale = localSearch !== this.currentSearch

@@ -35,7 +35,6 @@ export type Stub = {
 export type SpecialArticleFormat = {
   label: string,
   value: SpecialFormatContentType,
-  iconId: string,
-  hidden?: boolean,
+  behindFeatureSwitch?: string,
 }
 

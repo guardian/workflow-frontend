@@ -1,13 +1,13 @@
 import { ComposerContentType, ContentType, SpecialArticleFormat, Stub } from "./stub";
 
-const STANDARD_ARTICLE_FORMAT_LABEL = "Standard Article"; 
+const STANDARD_ARTICLE_FORMAT_LABEL = "Standard Article";
 
 const specialFormats: SpecialArticleFormat[] = [
-    { label: 'Key Takeaways', value: 'keyTakeaways', iconId: 'keyTakeaways' },
-    { label: 'Q&A Explainer', value: 'qAndA', iconId: 'qAndA' },
-    { label: 'Timeline', value: 'timeline', iconId: 'timeline' },
-    { label: 'Mini profiles', value: 'miniProfiles', iconId: 'miniProfiles' },
-    { label: 'Multi-byline', value: 'multiByline', iconId: 'multiByline', hidden: true },
+    { label: 'Key Takeaways', value: 'keyTakeaways' },
+    { label: 'Q&A Explainer', value: 'qAndA' },
+    { label: 'Timeline', value: 'timeline' },
+    { label: 'Mini profiles', value: 'miniProfiles' },
+    { label: 'Multi-byline', value: 'multiByline', behindFeatureSwitch: 'multiByline' },
 ]
 
 const setDisplayHintForFormat = (stub: Stub): Stub => {
@@ -22,7 +22,7 @@ const setDisplayHintForFormat = (stub: Stub): Stub => {
  * return "Standard Article" for normal articles, the label for special article formats
  * or empty string for non-article stubs
  */
-const getStubArticleFormat = (contentType:ContentType): string => {
+const getStubArticleFormat = (contentType: ContentType): string => {
     const maybeMatchingFormat = specialFormats.find(format => format.value === contentType)
     if (maybeMatchingFormat) {
         return maybeMatchingFormat.label
@@ -33,7 +33,7 @@ const getStubArticleFormat = (contentType:ContentType): string => {
     return ''
 }
 
-const isFormatLabel = (value:string):boolean => {
+const isFormatLabel = (value: string): boolean => {
     return value === STANDARD_ARTICLE_FORMAT_LABEL || specialFormats.some(format => format.label === value)
 }
 
@@ -55,4 +55,4 @@ const contentTypeToComposerContentType = (type: ContentType): ComposerContentTyp
     }
 }
 
-export { specialFormats, setDisplayHintForFormat, getSpecialFormatFromLabel, contentTypeToComposerContentType, getStubArticleFormat, isFormatLabel }
+export { STANDARD_ARTICLE_FORMAT_LABEL, specialFormats, setDisplayHintForFormat, getSpecialFormatFromLabel, contentTypeToComposerContentType, getStubArticleFormat, isFormatLabel }
