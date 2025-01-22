@@ -284,6 +284,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'hasPrintInfo': modelParams['hasPrintInfo'] || null,
                         'hasMainMedia': modelParams['hasMainMedia'] || null,
                         'rights': modelParams['rights'] || null,
+                        'display-hint': modelParams["display-hint"],
                     };
 
                     return params;
@@ -362,7 +363,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
                 const localSearch = this._paramsProvider()
                 this.currentSearch = localSearch
-
+                
                 return wfContentService.get(localSearch)
                     .then((cb) => {
                         const localSearchIsStale = localSearch !== this.currentSearch

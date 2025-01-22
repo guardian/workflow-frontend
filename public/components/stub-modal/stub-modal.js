@@ -344,7 +344,20 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     };
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
-        const stub = $scope.stub;
+        const stub = {...$scope.stub};
+        
+        switch (stub.contentType){
+            case 'keyTakeaways':
+            case 'qAndA':
+            case "timeline":
+            case "miniProfiles":
+            case "multiByline":
+                stub.displayHint = stub.contentType
+                break;
+            default:
+                break;
+        }
+
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {
                 stub.contentType = $scope.stub.contentType.toLowerCase();
