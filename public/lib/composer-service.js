@@ -1,6 +1,6 @@
 import angular from 'angular';
 import './telemetry-service';
-import { getFormatFromLabel, contentTypeToComposerContentType } from './model/special-formats';
+import { getFormatFromLabel, contentTypeToComposerContentType } from './model/special-formats.ts';
 
 angular.module('wfComposerService', ['wfTelemetryService'])
     .service('wfComposerService', ['$http', '$q', 'config', '$log', 'wfHttpSessionService', 'wfTelemetryService', wfComposerService]);
