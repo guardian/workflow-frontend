@@ -17,6 +17,7 @@ import 'lib/prodoffice-service';
 import 'lib/telemetry-service';
 import { punters } from 'components/punters/punters';
 import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNativeFormFeedback } from '../../lib/stub-form-validation.ts';
+import { getStubArticleFormat, setDisplayHintForFormat } from 'lib/model/special-formats.js';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService', 'wfTelemetryService'])
@@ -31,20 +32,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             (wfContentService.getAtomTypes())[stub.contentType] ?
             "Atom" : (types[stub.contentType] || "News item");
             
-        $scope.stubFormat = ''
-        if (stub.contentType === 'article') {
-            $scope.stubFormat = "Standard Article"
-        } else if (stub.contentType === 'keyTakeaways') {
-            $scope.stubFormat = "Key Takeaways"
-        } else if (stub.contentType === 'qAndA') {
-            $scope.stubFormat = "Q&A Explainer"
-        } else if (stub.contentType === 'timeline') {
-            $scope.stubFormat = "Timeline"
-        } else if (stub.contentType === 'miniProfiles') {
-            $scope.stubFormat = "Mini profiles"
-        } else if (stub.contentType === 'multiByline') {
-            $scope.stubFormat = "Multi-byline"
-        }
+        $scope.stubFormat = getStubArticleFormat(stub.contentType);
+ 
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
         })
@@ -344,20 +333,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     };
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
-        const stub = {...$scope.stub};
+        const stub = setDisplayHintForFormat ($scope.stub);
         
-        switch (stub.contentType){
-            case 'keyTakeaways':
-            case 'qAndA':
-            case "timeline":
-            case "miniProfiles":
-            case "multiByline":
-                stub.displayHint = stub.contentType
-                break;
-            default:
-                break;
-        }
-
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {
                 stub.contentType = $scope.stub.contentType.toLowerCase();
@@ -509,32 +486,8 @@ wfStubModal.run([
         function setUpPreferredStub (contentType) {
 
             function createStubData (contentType, sectionName) {
-                let chosenArticleFormat = ""
-                switch (contentType) {
-                    case "article":
-                        chosenArticleFormat = "Standard Article"
-                        break;
-                    case "keyTakeaways":
-                        chosenArticleFormat = "Key Takeaways"
-                        break;
-                    case "qAndA":
-                        chosenArticleFormat = "Q&A Explainer"
-                        break;
-                    case "timeline":
-                        chosenArticleFormat = "Timeline"
-                        break;
-                    case "miniProfiles":
-                        chosenArticleFormat = "Mini profiles"
-                        break;
-                    case "multiByline":
-                        chosenArticleFormat = "Multi-byline"
-                        break;
-                    default:
-                        break;
-                }
-
                 return {
-                    articleFormat: chosenArticleFormat,
+                    articleFormat: getStubArticleFormat(contentType),
                     contentType: contentType === "atom" ? defaultAtomType : contentType,
                     // Only send through a section if one is found in the prefs
                     section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
