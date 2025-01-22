@@ -25,5 +25,6 @@ export type Stub = {
   priority?: number;
   prodOffice?: string;
   note?: string;
+  displayHint?: string;
 };
 
