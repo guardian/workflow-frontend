@@ -60,7 +60,7 @@ class Application(
   def dashboard = app("Workflow")
 
   def training = AuthAction { request =>
-    Ok(views.html.training())
+    Redirect("https://sites.google.com/a/guardian.co.uk/esd/web-tools/composer-workflow/workflow/how-to-use-workflow-quick-instructions")
   }
 
   def faqs = AuthAction { request =>
