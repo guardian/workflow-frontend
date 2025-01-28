@@ -200,7 +200,8 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                         'editorId'       : params['editorId'],
                         'hasPrintInfo'   : params['hasPrintInfo'],
                         'hasMainMedia'   : params['hasMainMedia'],
-                        'hasAnyRights'   : params['rights']
+                        'hasAnyRights'   : params['rights'],
+                        'display-hint'   : params['display-hint'],
                     };
 
                     $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);

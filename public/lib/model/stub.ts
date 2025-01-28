@@ -1,4 +1,4 @@
-export type ContentType =
+export type ComposerContentType =
   | "article"
   | "liveblog"
   | "gallery"
@@ -6,11 +6,15 @@ export type ContentType =
   | "picture"
   | "video"
   | "audio"
+
+export type SpecialFormatContentType =
   | "keyTakeaways"
   | "qAndA"
   | "timeline"
   | "miniProfiles"
   | "multiByline";
+
+export type ContentType = ComposerContentType | SpecialFormatContentType;
 
 type FlagValue = "NA" | "REQUIRED" | "COMPLETE";
 
@@ -25,5 +29,12 @@ export type Stub = {
   priority?: number;
   prodOffice?: string;
   note?: string;
+  displayHint?: string;
 };
+
+export type SpecialArticleFormat = {
+  label: string,
+  value: SpecialFormatContentType,
+  behindFeatureSwitch?: string,
+}
 

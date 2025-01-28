@@ -52,7 +52,8 @@ case class ExternalData(
                          rightsSyndicationAggregate: Option[Boolean] = None,
                          rightsSubscriptionDatabases: Option[Boolean] = None,
                          rightsDeveloperCommunity: Option[Boolean] = None,
-                         byline: Option[String] = None) {
+                         byline: Option[String] = None,
+                         displayHint: Option[String] = None) {
 }
 
 object ExternalData {

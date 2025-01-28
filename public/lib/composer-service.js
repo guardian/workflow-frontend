@@ -1,5 +1,6 @@
 import angular from 'angular';
 import './telemetry-service';
+import { getSpecialFormatFromLabel, contentTypeToComposerContentType } from './model/special-formats.ts';
 
 angular.module('wfComposerService', ['wfTelemetryService'])
     .service('wfComposerService', ['$http', '$q', 'config', '$log', 'wfHttpSessionService', 'wfTelemetryService', wfComposerService]);
@@ -92,42 +93,12 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
 
     this.getComposerContent = getComposerContent;
     this.parseComposerData = parseComposerData;
-
-    const getDisplayHint = (articleFormat) => {
-        switch (articleFormat){
-            case "Key Takeaways":
-                return "keyTakeaways"
-            case "Q&A Explainer":
-                return "qAndA"
-            case "Timeline":
-                return "timeline"
-            case "Mini profiles":
-                return "miniProfiles"
-            case "Multi-byline":
-                return "multiByline"
-            default:
-                return undefined
-        }
-    }
     
-    const getType = (type) => {
-        switch (type){
-            case 'keyTakeaways':
-            case 'qAndA':
-            case "timeline":
-            case "miniProfiles":
-            case "multiByline":
-                return "article"
-            default:
-                return type
-        }
-    }
-
     this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority, missingCommissionedLengthReason) {
-        var selectedDisplayHint = getDisplayHint(articleFormat);
+        var selectedDisplayHint = getSpecialFormatFromLabel(articleFormat)?.value;
         
         var params = {
-            'type': getType(type),
+            'type': contentTypeToComposerContentType(type),
             'tracking': commissioningDesks,
             'productionOffice': prodOffice,
             'displayHint': selectedDisplayHint,
@@ -158,7 +129,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         }
 
         const tags = {
-            contentType: getType(type),
+            contentType: contentTypeToComposerContentType(type),
             productionOffice: prodOffice,
             priority: getPriorityName(priority),
         }
