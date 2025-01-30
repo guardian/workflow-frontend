@@ -1,4 +1,5 @@
 import { getContentLengthCategory, getCommissionedLengthTitle } from "./word-count-helpers.ts";
+import _ from 'lodash';
 
 const OPHAN_PATH = 'https://dashboard.ophan.co.uk/summary?path=/',
     LIVE_PATH = 'http://www.theguardian.com/';
@@ -158,6 +159,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.lifecycleStateKey  = lifecycleState.key;
             this.lifecycleStateSupl = lifecycleState.supl;
             this.lifecycleStateSuplDate = lifecycleState.suplDate;
+            this.publishedStates = this.publishedStates(item);
 
             this.links = new ContentItemLinks(item);
             this.path = item.path;
@@ -255,24 +257,37 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
           return undefined;
         }
 
-        lifecycleState(item) {
-            // Highest priority at the top!
-
+        allLifecycleState(item) {
             var states = [
-                { "display": "Published", "key": "published", "active": item.published && !item.takenDown, "suplDate": item.timePublished },
+                { "display": "Published", "key": "published", "active": item.published && !item.takenDown, "suplDate": item.timePublished, "group": 1 },
                 {
-                    "display": "Embargoed",
+                    "display": item.embargoedIndefinitely ? "Publication prevented": "Embargoed",
                     "key": "embargoed",
                     "active": this.isEmbargoed,
-                    "supl": item.embargoedIndefinitely ? "Indefinitely" : undefined,
-                    "suplDate": this.hasEmbargoedDate ? item.embargoedUntil : undefined
+                    "suplDate": (!item.embargoedIndefinitely && this.hasEmbargoedDate) ? item.embargoedUntil : undefined,
+                    "group": 2
                 },
-                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "suplDate": item.scheduledLaunchDate },
-                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "suplDate": item.timeTakenDown },
-                { "display": "", "key": "draft", "active": true } // Base state
+                { "display": "Scheduled", "key": "scheduled", "active": this.isScheduled, "suplDate": item.scheduledLaunchDate, "group": 2 },
+                { "display": "Taken down", "key": "takendown", "active": item.takenDown, "suplDate": item.timeTakenDown, "group": 3 },
+                { "display": "", "key": "draft", "active": true, "group": 4 } // Base state
             ];
 
-            return states.filter((o) => { return o.active === true; })[0];
+            return states.filter((o) => { return o.active === true; });
+        }
+
+        lifecycleState(item) {
+            // Highest priority at the top!
+            const states = this.allLifecycleState(item);
+            return states[0];
+        }
+
+        publishedStates(item) {
+            // the group of states with the highest priority
+            const states = this.allLifecycleState(item);
+            const group = states[0].group;
+            return _.groupBy(states, "group")[group].map(state => {
+                return { display: state.display, suplDate: state.suplDate};
+            });
         }
     }
 
