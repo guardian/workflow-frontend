@@ -27,7 +27,7 @@ class AppComponents(context: Context)
   val panDomainRefresher = PanDomainAuthSettingsRefresher(
     domain = config.domain,
     system = config.pandaSystem,
-    S3BucketLoader.forAwsSdkV1(AWS.S3Client, "pan-domain-auth-settings")
+    S3BucketLoader.forAwsSdkV1(AWS.S3Client, config.pandaBucketName)
   )
 
   val permissions: PermissionsProvider =

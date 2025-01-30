@@ -107,7 +107,6 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val pandaSystem: String = "workflow"
   lazy val pandaBucketName: String = "pan-domain-auth-settings"
-  lazy val pandaSettingsFile: String = s"$domain.settings"
 
   lazy val loggingStreamName: Option[String] = playConfig.getOptional[String]("aws.kinesis.logging.streamName")
   lazy val loggingRole: Option[String] = playConfig.getOptional[String]("aws.kinesis.logging.stsRoleToAssume")
