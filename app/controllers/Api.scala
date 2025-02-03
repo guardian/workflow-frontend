@@ -165,6 +165,18 @@ class Api(
     )}
   }
 
+  def putStubDisplayHint(stubId: Long) = {
+    def getDisplayHintOpt(input: String): Option[String] = if(input.length > 0) Some(input) else None
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- readJsonFromRequestResponse(request.body)
+        displayHint <- extractDataResponse[String](json)
+        displayHintOpt = getDisplayHintOpt(displayHint)
+        id <- stubsApi.putStubDisplayHint(stubId, displayHintOpt)
+      } yield id
+    )}
+  }
+
   def putStubStatus(stubId: Long) = {
     APIAuthAction.async { request =>
       ApiResponseFt[Long](for {

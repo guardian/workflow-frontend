@@ -95,6 +95,13 @@ class StubAPI(
       item <- extractDataResponse[Long](json)
     } yield item
 
+  def putStubDisplayHint(id: Long, displayHint: Option[String]): ApiResponseFt[Long] =
+    for {
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$id/displayHint", displayHint.asJson))
+      json <- parseBody(res.body)
+      item <- extractDataResponse[Long](json)
+    } yield item
+
   def putStubTrashed(id: Long, trashed: Boolean): ApiResponseFt[Long] =
     for {
       res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$id/updateTrashed", trashed.asJson))

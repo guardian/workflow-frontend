@@ -126,6 +126,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
 
             this.contentType = item.contentType;
             this.contentTypeTitle = toTitleCase(item.contentType);
+            this.displayHintDescription = item.displayHint ?? 'No Display Hint';
             this.office = item.prodOffice;
             this.officeTitle = getFullOfficeString(item.prodOffice);
 
