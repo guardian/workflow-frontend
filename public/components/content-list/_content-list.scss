@@ -135,7 +135,8 @@ $tableHeaderRowHeight: 48px;
 
             &-icon {
                 &--presence,
-                &--assignee {
+                &--assignee,
+                &--headline-toggle {
                     display: inline-block;
                 }
 
@@ -148,6 +149,11 @@ $tableHeaderRowHeight: 48px;
                     width: $content-list-icon-size;
                     height: $content-list-icon-size;
                     margin-top: 3px;
+                }
+                &--headline-toggle {
+                    width: $content-list-icon-size;
+                    height: $content-list-icon-size;
+                    margin-right: 5px;
                 }
             }
 

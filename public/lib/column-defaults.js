@@ -75,6 +75,14 @@ const createSortTemplate = (colName, sortField, labelHTML, flipSortIconDirection
   `;
 };
 
+const createCustomHeadlineLabelHtml = () => {
+    return `
+        <i ng-click="toggleHeadlineDisplay(); $event.stopPropagation()"
+           title="Click to toggle Headlines"
+           class="content-list-head__heading-icon--headline-toggle" wf-icon="toggle"/>Working title / Headline
+    `;
+};
+
 export const getSortField = column => column
   && column.isSortable
   && (column.sortField || [column.name]);
@@ -105,7 +113,7 @@ const columnDefaults = [{
 },{
     name: 'titles',
     prettyName: 'Working title / Headline',
-    labelHTML: 'Working title / Headline',
+    labelHTML: createCustomHeadlineLabelHtml(),
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'title.html',
