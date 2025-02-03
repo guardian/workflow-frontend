@@ -117,10 +117,6 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, pr
     // this list can be changed to ['desc', 'asc', undefined]
     const sortStates = ['asc', 'desc'];
 
-    $scope.toggleHeadlineDisplay = () => {
-        $scope.showHeadline = !$scope.showHeadline;
-    }
-
     $scope.toggleSortState = (colName, sortFields) => {
       const column = $scope.columns.find(col => col.name === colName);
 
@@ -235,6 +231,10 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, pr
             }, true);
         }
     })(this);
+
+    $scope.toggleHeadlineDisplay = () => {
+        this.showHeadline = ! this.showHeadline;
+    }
 
     this.newItem = function () {
         $scope.$emit('stub:create');
