@@ -1,6 +1,6 @@
 import angular from 'angular';
 import './telemetry-service';
-import { getSpecialFormatFromLabel, contentTypeToComposerContentType } from './model/special-formats.ts';
+import { getSpecialFormatFromLabel, contentTypeToComposerContentType, specialFormats } from './model/special-formats.ts';
 
 angular.module('wfComposerService', ['wfTelemetryService'])
     .service('wfComposerService', ['$http', '$q', 'config', '$log', 'wfHttpSessionService', 'wfTelemetryService', wfComposerService]);
@@ -47,6 +47,10 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
     const composerParseMap = {
         composerId: (d) => d.id,
         contentType: (d) => d.type,
+        articleFormat: (d) => {
+            const displayHint = deepSearch(d, ['preview', 'data', 'settings', 'displayHint', 'data'])
+            return specialFormats.find(f => f.value === displayHint)?.label
+        },
         headline: (d) => deepSearch(d, ['preview', 'data', 'fields', 'headline', 'data']) || undefined,
         published: (d) => d.published,
         timePublished: (d) => new Date(deepSearch(d, ['contentChangeDetails', 'data', 'published', 'date']) || undefined),
@@ -61,7 +65,8 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         lastModified: (d) => new Date(deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'date']) || undefined),
         lastModifiedBy: (d) => deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'user', 'firstName']) + ' ' + deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'user', 'lastName']),
         commissionedLength: (d) => deepSearch(d, ['preview', 'data', 'fields', 'commissionedLength', 'data']) || undefined,
-        missingCommissionedLengthReason: (d) => deepSearch(d, ['preview', 'data', 'fields', 'missingCommissionedLengthReason', 'data']) || undefined
+        missingCommissionedLengthReason: (d) => deepSearch(d, ['preview', 'data', 'fields', 'missingCommissionedLengthReason', 'data']) || undefined,
+        displayHint: (d) => deepSearch(d, ['preview', 'data', 'settings', 'displayHint', 'data']) || undefined,
     };
 
 
