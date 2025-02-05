@@ -14,9 +14,9 @@
         </div>
         <div class="form-horizontal clearfix">
                 <div class="format-dropdown" ng-if="(showFormatDropdown && stubFormatIsCorrectlyPopulated())">
-                <label for="stub_format">Format</label>
+                    <label for="stub_format">Format</label>
                     <div>
-                        <select id="stub_format" name="articleFormat" ng-model="stub.articleFormat" ng-options="f.value as f.name for f in articleFormats"></select>
+                        <select ng-disabled="mode === 'import'" id="stub_format" name="articleFormat" ng-model="stub.articleFormat" ng-options="f.value as f.name for f in articleFormats"></select>
                     </div>
                 </div>
             <div class="form-group col-xs-8">
