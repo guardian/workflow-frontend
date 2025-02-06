@@ -190,6 +190,12 @@ $tableHeaderRowHeight: 48px;
             &--byline {
               min-width: 125px;
             }
+
+            &--titles {
+                &--secondary {
+                    color: grey;
+                }
+            }
         }
     }
 
