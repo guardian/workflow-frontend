@@ -79,7 +79,7 @@ const createCustomHeadlineLabelHtml = () => {
     return `
         <i ng-click="toggleHeadlineDisplay(); $event.stopPropagation()"
            title="Click to toggle Headlines"
-           class="content-list-head__heading-icon--headline-toggle" wf-icon="toggle"/>
+           class="content-list-head__heading-icon--headline-toggle" wf-icon="{{ getHeadlineDisplay()? 'toggle-right': 'toggle-left' }}"/>
         <span ng-class="{'content-list-head__heading--titles--secondary': getHeadlineDisplay()}">Working title</span> / <span ng-class="{ 'content-list-head__heading--titles--secondary': !getHeadlineDisplay()}">Headline</span>
     `;
 };
