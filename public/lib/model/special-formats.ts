@@ -5,7 +5,7 @@ const specialFormats: SpecialArticleFormat[] = [
     { label: 'Q&A Explainer', value: 'qAndA' },
     { label: 'Timeline', value: 'timeline' },
     { label: 'Mini profiles', value: 'miniProfiles' },
-    { label: 'Multi-byline', value: 'multiByline', behindFeatureSwitch: 'multiByline' },
+    { label: 'Multi-byline', value: 'multiByline' },
 ]
 
 const setDisplayHintForFormat = (stub: Stub): Stub => {
