@@ -80,5 +80,13 @@ const isFormatLabel = (value: string): boolean => {
     return value === STANDARD_ARTICLE_FORMAT_LABEL || specialFormats.some(format => format.label === value)
 }
 
+const provideSpecialFormatsForFilterList = (featureSwitches?: Record<string, boolean>) => {
+    return specialFormats.filter(format => !format.behindFeatureSwitch || featureSwitches[format.behindFeatureSwitch] === true)
+        .map(format => ({
+            caption: format.label,
+            value: format.value,
+            icon: format.value
+        }))
+}
 
-export { provideFormats, provideArticleFormatsForDropDown, getArticleFormatLabel, isFormatLabel }
+export { provideFormats, provideArticleFormatsForDropDown, getArticleFormatLabel, isFormatLabel, provideSpecialFormatsForFilterList }

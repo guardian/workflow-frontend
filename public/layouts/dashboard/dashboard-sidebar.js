@@ -10,11 +10,19 @@ import { filterDefaults } from 'lib/filter-defaults';
 import './dashboard-sidebar.html';
 
 angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wfLocationPicker', 'wfCompactorToggle'])
-    .controller('wfDashboardSidebarController', ['$scope', 'statuses', 'wfFiltersService', 'wfDateParser', function ($scope, statuses, wfFiltersService) {
+    .controller('wfDashboardSidebarController', ['$scope', 'statuses', 'wfFiltersService', 'wfPreferencesService', function ($scope, statuses, wfFiltersService, wfPreferencesService) {
 
         $scope.statuses = statuses;
 
-        $scope.filters = filterDefaults(statuses, wfFiltersService);
+        $scope.filters = filterDefaults(statuses, wfFiltersService)
+
+        wfPreferencesService.getPreference('featureSwitches')
+        .then((featureSwitches) => {
+            $scope.filters = filterDefaults(statuses, wfFiltersService, featureSwitches);
+        })
+        .catch((err) => { 
+            console.warn('failed to get featureSwitches', err) 
+        })
 
         function enableSidebar() {
             $scope.enabled = "active";
