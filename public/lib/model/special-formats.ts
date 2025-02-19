@@ -1,6 +1,6 @@
 import { ComposerContentType, ContentType, SpecialArticleFormat, Stub } from "./stub";
 
-const specialFormats: SpecialArticleFormat[] = [
+const specialFormats: Readonly<SpecialArticleFormat[]> = [
     { label: 'Key Takeaways', value: 'keyTakeaways' },
     { label: 'Q&A Explainer', value: 'qAndA' },
     { label: 'Timeline', value: 'timeline' },
@@ -34,4 +34,11 @@ const contentTypeToComposerContentType = (type: ContentType): ComposerContentTyp
     }
 }
 
-export { specialFormats, setDisplayHintForFormat, getSpecialFormatFromLabel, contentTypeToComposerContentType }
+const getContentFormat = (contentType: ComposerContentType, displayHint?: string): ContentType => {
+    if (!displayHint || !['article'].includes(contentType)) {
+        return contentType
+    }
+    return specialFormats.find(format => format.value === displayHint).value ?? contentType
+}
+
+export { specialFormats, setDisplayHintForFormat, getSpecialFormatFromLabel, contentTypeToComposerContentType, getContentFormat }
