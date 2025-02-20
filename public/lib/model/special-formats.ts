@@ -1,5 +1,6 @@
 import { ComposerContentType, ContentType, SpecialArticleFormat, Stub } from "./stub";
 
+// eslint-disable-next-line no-undef -- Need to set up typescript-eslint
 const specialFormats: Readonly<SpecialArticleFormat[]> = [
     { label: 'Key Takeaways', value: 'keyTakeaways' },
     { label: 'Q&A Explainer', value: 'qAndA' },
@@ -35,10 +36,12 @@ const contentTypeToComposerContentType = (type: ContentType): ComposerContentTyp
 }
 
 const getArticleFormat = (contentType: ComposerContentType, displayHint?: string): ContentType => {
+    // 'interactive' content can have displayHints as well as 'article' content, but we are not currently
+    // displaying those as "article formats"
     if (!displayHint || !['article'].includes(contentType)) {
         return contentType
     }
-    return specialFormats.find(format => format.value === displayHint).value ?? contentType
+    return specialFormats.find(format => format.value === displayHint)?.value ?? contentType
 }
 
 function toTitleCase(str:string) {
@@ -49,7 +52,7 @@ const getArticleFormatTitle = (contentType: ComposerContentType, displayHint?: s
     if (!displayHint || !['article'].includes(contentType)) {
         return toTitleCase(contentType)
     }
-    return specialFormats.find(format => format.value === displayHint).label ?? toTitleCase(contentType)
+    return specialFormats.find(format => format.value === displayHint)?.label ?? toTitleCase(contentType)
 }
 
 export { 
