@@ -34,11 +34,29 @@ const contentTypeToComposerContentType = (type: ContentType): ComposerContentTyp
     }
 }
 
-const getContentFormat = (contentType: ComposerContentType, displayHint?: string): ContentType => {
+const getArticleFormat = (contentType: ComposerContentType, displayHint?: string): ContentType => {
     if (!displayHint || !['article'].includes(contentType)) {
         return contentType
     }
     return specialFormats.find(format => format.value === displayHint).value ?? contentType
 }
 
-export { specialFormats, setDisplayHintForFormat, getSpecialFormatFromLabel, contentTypeToComposerContentType, getContentFormat }
+function toTitleCase(str:string) {
+    return str.replace(/\b\w/g, function (txt) { return txt.toUpperCase(); });
+}
+
+const getArticleFormatTitle = (contentType: ComposerContentType, displayHint?: string): string => {
+    if (!displayHint || !['article'].includes(contentType)) {
+        return toTitleCase(contentType)
+    }
+    return specialFormats.find(format => format.value === displayHint).label ?? toTitleCase(contentType)
+}
+
+export { 
+    specialFormats, 
+    setDisplayHintForFormat, 
+    getSpecialFormatFromLabel, 
+    contentTypeToComposerContentType, 
+    getArticleFormat, 
+    getArticleFormatTitle 
+}

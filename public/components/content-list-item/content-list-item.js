@@ -1,5 +1,5 @@
 import { getContentLengthCategory, getCommissionedLengthTitle } from "./word-count-helpers.ts";
-import { getContentFormat } from "../../lib/model/special-formats.ts"
+import { getArticleFormat, getArticleFormatTitle } from "../../lib/model/special-formats.ts"
 import _ from 'lodash';
 
 const OPHAN_PATH = 'https://dashboard.ophan.co.uk/summary?path=/',
@@ -127,8 +127,8 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
 
             this.contentType = item.contentType;
             this.contentTypeTitle = toTitleCase(item.contentType);
-            this.displayHintDescription = item.displayHint ?? 'No Display Hint';
-            this.formatIcon = getContentFormat(item.contentType, item.displayHint);
+            this.formatIcon = getArticleFormat(item.contentType, item.displayHint);
+            this.formatTitle = getArticleFormatTitle(item.contentType, item.displayHint);
             this.office = item.prodOffice;
             this.officeTitle = getFullOfficeString(item.prodOffice);
 
