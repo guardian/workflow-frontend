@@ -261,6 +261,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'hasMainMedia': modelParams['hasMainMedia'] || null,
                         'rights': modelParams['rights'] || null,
                         'display-hint': modelParams["display-hint"],
+                        'article-format': modelParams["article-format"],
                     };
 
                     return params;
