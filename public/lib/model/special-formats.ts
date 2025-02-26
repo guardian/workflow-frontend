@@ -1,4 +1,4 @@
-import { ComposerContentType, ContentType, ListElementArticleFormat, Stub } from "./stub";
+import { ComposerContentType, ContentType, DisplayHintArticleFormat, ListElementArticleFormat, ListElementContentType, Stub, NonListElementDisplayHint } from "./stub";
 
 // eslint-disable-next-line no-undef -- Need to set up typescript-eslint
 const listElementArticleFormats: Readonly<ListElementArticleFormat[]> = [
@@ -9,7 +9,12 @@ const listElementArticleFormats: Readonly<ListElementArticleFormat[]> = [
     { label: 'Multi-byline', value: 'multiByline' },
 ]
 
-const supportedNonListElementDisplayHints = [
+// In addition to the below, the following are valid display hints:
+// - 'column'. Deprecated: https://github.com/guardian/flexible-content/pull/3821)
+// - 'splash'. Deprecated: https://github.com/guardian/flexible-content/pull/3369)
+
+// eslint-disable-next-line no-undef -- Need to set up typescript-eslint
+const nonListElementDisplayHintsFormats: Readonly<DisplayHintArticleFormat[]> = [
     {
         value: 'immersive',
         label: 'Immersive',
@@ -50,13 +55,16 @@ const contentTypeToComposerContentType = (type: ContentType): ComposerContentTyp
     }
 }
 
-const getArticleFormat = (contentType: ComposerContentType, displayHint?: string): ContentType => {
-    // 'interactive' content can have displayHints as well as 'article' content, but we are not currently
-    // displaying those as "article formats"
+const findFormatByByDisplayHint = (displayHint: string): ListElementArticleFormat | DisplayHintArticleFormat | undefined => {
+    return [...nonListElementDisplayHintsFormats, ...listElementArticleFormats]
+        .find(format => format.value === displayHint)
+}
+
+const getArticleFormat = (contentType: ComposerContentType, displayHint?: string): ComposerContentType | ListElementContentType | NonListElementDisplayHint => {
     if (!displayHint || !['article', 'interactive'].includes(contentType)) {
         return contentType
     }
-    return [...listElementArticleFormats].find(format => format.value === displayHint)?.value ?? contentType
+    return findFormatByByDisplayHint(displayHint)?.value ?? contentType
 }
 
 function toTitleCase(str: string) {
@@ -68,9 +76,7 @@ const getArticleFormatTitle = (contentType: ComposerContentType, displayHint?: s
         return toTitleCase(contentType)
     }
 
-    return [...supportedNonListElementDisplayHints, ...listElementArticleFormats]
-        .find(format => format.value === displayHint)?.label ??
-        toTitleCase(contentType)
+    return findFormatByByDisplayHint(displayHint)?.label ?? toTitleCase(contentType)
 }
 
 export {

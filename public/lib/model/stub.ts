@@ -38,3 +38,10 @@ export type ListElementArticleFormat = {
   behindFeatureSwitch?: string,
 }
 
+
+export type NonListElementDisplayHint = 'immersive' | 'photoEssay' | 'numberedList';
+
+export type DisplayHintArticleFormat = {
+  label: string,
+  value: NonListElementDisplayHint,
+}
