@@ -1,4 +1,4 @@
-import { listElementArticleFormats } from './special-formats'
+import { listElementArticleFormats, nonListElementDisplayHintsFormats } from './special-formats'
 import { ContentType } from './stub'
 
 const STANDARD_ARTICLE_FORMAT_LABEL = "Standard Article";
@@ -89,4 +89,13 @@ const provideListElementFormatsForFilterList = (featureSwitches?: Record<string,
         }))
 }
 
-export { provideFormats, provideArticleFormatsForDropDown, getArticleFormatLabel, isFormatLabel, provideListElementFormatsForFilterList }
+const provideNonListElementDisplayHintFormatsForFilterList = () => {
+    return nonListElementDisplayHintsFormats
+        .map(format => ({
+            caption: format.label,
+            value: format.value,
+            icon: format.value
+        }))
+}
+
+export { provideFormats, provideArticleFormatsForDropDown, getArticleFormatLabel, isFormatLabel, provideListElementFormatsForFilterList, provideNonListElementDisplayHintFormatsForFilterList }

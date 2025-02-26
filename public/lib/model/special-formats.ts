@@ -81,6 +81,7 @@ const getArticleFormatTitle = (contentType: ComposerContentType, displayHint?: s
 
 export {
     listElementArticleFormats,
+    nonListElementDisplayHintsFormats,
     setDisplayHintForFormat,
     getListElementFormatFromLabel,
     contentTypeToComposerContentType,
