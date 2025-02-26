@@ -1,4 +1,4 @@
-import { specialFormats } from './special-formats'
+import { listElementArticleFormats } from './special-formats'
 import { ContentType } from './stub'
 
 const STANDARD_ARTICLE_FORMAT_LABEL = "Standard Article";
@@ -15,14 +15,14 @@ const nonArticleFormats = {
 
 /**
  * Returns an object mapping ContentType to user facings labels, excluding any
- * special formats that that behind a feature switch in the 'off' state.
+ * list elements formats that that behind a feature switch in the 'off' state.
  */
 const provideFormats = (featureSwitches?: Record<string, boolean>): Partial<Record<ContentType, string>> => {
     const articleFormats: Record<string, string> = {
         "article": STANDARD_ARTICLE_FORMAT_SHORT_LABEL,
     }
 
-    specialFormats.forEach(format => {
+    listElementArticleFormats.forEach(format => {
         if (format.behindFeatureSwitch) {
             if (featureSwitches?.[format.behindFeatureSwitch]) {
                 articleFormats[format.value] = format.label
@@ -45,7 +45,7 @@ const provideArticleFormatsForDropDown = (featureSwitches?: Record<string, boole
 
     const list = [STANDARD_ARTICLE_FORMAT_LABEL]
 
-    specialFormats.forEach(format => {
+    listElementArticleFormats.forEach(format => {
         if (format.behindFeatureSwitch) {
             if (featureSwitches && featureSwitches[format.behindFeatureSwitch]) {
                 list.push(format.label)
@@ -59,11 +59,11 @@ const provideArticleFormatsForDropDown = (featureSwitches?: Record<string, boole
 }
 
 /**
- * returns "Standard Article" for normal articles, the label for special article formats
+ * returns "Standard Article" for normal articles, the label for list element article formats
  * or empty string for non-article content types
  */
 const getArticleFormatLabel = (contentType: ContentType): string => {
-    const maybeMatchingFormat = specialFormats.find(format => format.value === contentType)
+    const maybeMatchingFormat = listElementArticleFormats.find(format => format.value === contentType)
     if (maybeMatchingFormat) {
         return maybeMatchingFormat.label
     }
@@ -74,14 +74,14 @@ const getArticleFormatLabel = (contentType: ContentType): string => {
 }
 
 /**
- * true if the value is the label of a special format or the "Standard Article" label
+ * true if the value is the label of a list element format or the "Standard Article" label
  */
 const isFormatLabel = (value: string): boolean => {
-    return value === STANDARD_ARTICLE_FORMAT_LABEL || specialFormats.some(format => format.label === value)
+    return value === STANDARD_ARTICLE_FORMAT_LABEL || listElementArticleFormats.some(format => format.label === value)
 }
 
-const provideSpecialFormatsForFilterList = (featureSwitches?: Record<string, boolean>) => {
-    return specialFormats.filter(format => !format.behindFeatureSwitch || featureSwitches[format.behindFeatureSwitch] === true)
+const provideListElementFormatsForFilterList = (featureSwitches?: Record<string, boolean>) => {
+    return listElementArticleFormats.filter(format => !format.behindFeatureSwitch || featureSwitches[format.behindFeatureSwitch] === true)
         .map(format => ({
             caption: format.label,
             value: format.value,
@@ -89,4 +89,4 @@ const provideSpecialFormatsForFilterList = (featureSwitches?: Record<string, boo
         }))
 }
 
-export { provideFormats, provideArticleFormatsForDropDown, getArticleFormatLabel, isFormatLabel, provideSpecialFormatsForFilterList }
+export { provideFormats, provideArticleFormatsForDropDown, getArticleFormatLabel, isFormatLabel, provideListElementFormatsForFilterList }

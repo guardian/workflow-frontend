@@ -1,6 +1,6 @@
 import angular from 'angular';
 import './telemetry-service';
-import { getSpecialFormatFromLabel, contentTypeToComposerContentType, specialFormats } from './model/special-formats.ts';
+import { getListElementFormatFromLabel, contentTypeToComposerContentType, listElementArticleFormats } from './model/special-formats.ts';
 
 angular.module('wfComposerService', ['wfTelemetryService'])
     .service('wfComposerService', ['$http', '$q', 'config', '$log', 'wfHttpSessionService', 'wfTelemetryService', wfComposerService]);
@@ -49,7 +49,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         contentType: (d) => d.type,
         articleFormat: (d) => {
             const displayHint = deepSearch(d, ['preview', 'data', 'settings', 'displayHint', 'data'])
-            return specialFormats.find(f => f.value === displayHint)?.label
+            return listElementArticleFormats.find(f => f.value === displayHint)?.label
         },
         headline: (d) => deepSearch(d, ['preview', 'data', 'fields', 'headline', 'data']) || undefined,
         published: (d) => d.published,
@@ -100,7 +100,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
     this.parseComposerData = parseComposerData;
     
     this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority, missingCommissionedLengthReason) {
-        var selectedDisplayHint = getSpecialFormatFromLabel(articleFormat)?.value;
+        var selectedDisplayHint = getListElementFormatFromLabel(articleFormat)?.value;
         
         var params = {
             'type': contentTypeToComposerContentType(type),
