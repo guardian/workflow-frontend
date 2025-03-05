@@ -81,7 +81,7 @@ const isFormatLabel = (value: string): boolean => {
 }
 
 const provideListElementFormatsForFilterList = (featureSwitches?: Record<string, boolean>) => {
-    return listElementArticleFormats.filter(format => !format.behindFeatureSwitch || featureSwitches[format.behindFeatureSwitch] === true)
+    return listElementArticleFormats.filter(format => !format.behindFeatureSwitch || featureSwitches?.[format.behindFeatureSwitch] === true)
         .map(format => ({
             caption: format.label,
             value: format.value,
