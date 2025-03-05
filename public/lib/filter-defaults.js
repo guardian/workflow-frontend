@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { provideSpecialFormatsForFilterList } from './model/format-helpers.ts'
+import { provideListElementFormatsForFilterList, provideNonListElementDisplayHintFormatsForFilterList } from './model/format-helpers.ts'
 
 /**
  * This returned array represents the default configuration of the sidebar filters list.
@@ -61,7 +61,8 @@ var filterDefaults = function (statuses, wfFiltersService, featureSwitches = {})
                 { caption: 'Picture', value: 'picture', icon: 'picture' },
                 { caption: 'Video', value: 'video,media', icon: 'video' },
                 { caption: 'Audio', value: 'audio', icon: 'audio' },
-                ...provideSpecialFormatsForFilterList(featureSwitches),
+                ...provideListElementFormatsForFilterList(featureSwitches),
+                ...provideNonListElementDisplayHintFormatsForFilterList(),
             ]
         },
         {

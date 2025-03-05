@@ -7,14 +7,14 @@ export type ComposerContentType =
   | "video"
   | "audio"
 
-export type SpecialFormatContentType =
+export type ListElementContentType =
   | "keyTakeaways"
   | "qAndA"
   | "timeline"
   | "miniProfiles"
   | "multiByline";
 
-export type ContentType = ComposerContentType | SpecialFormatContentType;
+export type ContentType = ComposerContentType | ListElementContentType;
 
 type FlagValue = "NA" | "REQUIRED" | "COMPLETE";
 
@@ -32,9 +32,16 @@ export type Stub = {
   displayHint?: string;
 };
 
-export type SpecialArticleFormat = {
+export type ListElementArticleFormat = {
   label: string,
-  value: SpecialFormatContentType,
+  value: ListElementContentType,
   behindFeatureSwitch?: string,
 }
 
+
+export type NonListElementDisplayHint = 'immersive' | 'photoEssay' | 'numberedList';
+
+export type DisplayHintArticleFormat = {
+  label: string,
+  value: NonListElementDisplayHint,
+}
