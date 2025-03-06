@@ -29,7 +29,10 @@ angular.module('wfDashboardToolbar', ['wfFiltersService', 'wfDateService', 'wfPr
 
         function buildSelectedSections () {
             var sectionsString = wfFiltersService.get('section');
-            var sectionsStringArray = sectionsString ? sectionsString.split(',') : [];
+            var sectionsStringArray =
+                (typeof sectionsString === "string")
+                ? sectionsString.split(',')
+                : [];
             return sections.filter((el) => sectionsStringArray.indexOf(el.name) !== -1);
         }
 
