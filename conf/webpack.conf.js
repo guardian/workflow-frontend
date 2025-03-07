@@ -13,7 +13,8 @@ module.exports = {
     },
     entry: {
         app: './public/app.js',
-        admin: './public/admin.js'
+        admin: './public/admin.js',
+        search: './public/search.ts'
     },
     output: {
         filename: '[name].bundle.js',
@@ -84,6 +85,8 @@ module.exports = {
             lib: path.join(__dirname, '..', 'public', 'lib'),
             components: path.join(__dirname, '..', 'public', 'components'),
             layouts: path.join(__dirname, '..', 'public', 'layouts'),
+            react: path.resolve(path.join(__dirname, '..', './node_modules/react')),
+            'react-dom': path.resolve(path.join(__dirname, '..','./node_modules/react-dom'))
         }
     },
 
