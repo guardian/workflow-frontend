@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
   val awsVersion: String = "1.12.767"
-  val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
+  val scalaTest = "org.scalatest" %% "scalatest" % "3.1.4" % "test"
 
   val awsDependencies = Seq(
     "com.amazonaws" % "aws-java-sdk-dynamodb" % awsVersion,
