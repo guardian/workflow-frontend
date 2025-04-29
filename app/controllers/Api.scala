@@ -160,7 +160,10 @@ class Api(
       ApiResponseFt[Long](for {
         json <- readJsonFromRequestResponse(request.body)
         prodOffice <- extractDataResponse[String](json)
-        id <- stubsApi.putStubProdOffice(stubId, prodOffice)
+        id <- {
+          logger.info(s"Put request received to update to prodOffice on stub $stubId - new value = $prodOffice")
+          stubsApi.putStubProdOffice(stubId, prodOffice)
+        }
       } yield id
     )}
   }
