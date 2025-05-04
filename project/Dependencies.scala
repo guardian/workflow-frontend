@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
   val awsVersion: String = "1.12.767"
-  val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
+  val scalaTest = "org.scalatest" %% "scalatest" % "3.1.4" % "test"
 
   val awsDependencies = Seq(
     "com.amazonaws" % "aws-java-sdk-dynamodb" % awsVersion,
@@ -22,19 +22,19 @@ object Dependencies {
 
   val testDependencies = Seq(
     scalaTest,
-    "org.scalamock" %% "scalamock" % "4.4.0" % Test
+    "org.scalamock" %% "scalamock" % "6.2.0" % Test
   )
 
   val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "6.6")
 
-  val circeVersion = "0.14.9"
+  val circeVersion = "0.14.10"
 
   val jsonDependencies = Seq(
     "io.circe" %% "circe-core" % circeVersion,
     "io.circe" %% "circe-generic" % circeVersion,
     "io.circe" %% "circe-parser" % circeVersion,
     "io.circe" %% "circe-generic-extras" % "0.14.4",
-    "com.beachape" %% "enumeratum-circe" % "1.7.4"
+    "com.beachape" %% "enumeratum-circe" % "1.7.5"
   )
 
   val cacheDependencies = Seq(
