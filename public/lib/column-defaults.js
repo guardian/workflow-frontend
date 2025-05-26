@@ -79,7 +79,7 @@ const createCustomHeadlineLabelHtml = () => {
     return `
         <i ng-click="toggleHeadlineDisplay(); $event.stopPropagation()"
            title="Click to toggle Headlines"
-           class="content-list-head__heading-icon--headline-toggle" wf-icon="{{ getHeadlineDisplay()? 'toggle-right': 'toggle-left' }}"/>
+           class="content-list-head__heading-icon--headline-toggle" wf-icon="{{ getHeadlineDisplay()? 'toggle-right': 'toggle-left' }}"></i>
         <span ng-class="{'content-list-head__heading--titles--secondary': getHeadlineDisplay()}">Working title</span> / <span ng-class="{ 'content-list-head__heading--titles--secondary': !getHeadlineDisplay()}">Headline</span>
     `;
 };
@@ -91,7 +91,7 @@ export const getSortField = column => column
 const columnDefaults = [{
     name: 'priority',
     prettyName: 'Priority',
-    labelHTML: '<i class="content-list-item__icon--priority" wf-icon="priority-neutral" />',
+    labelHTML: '<i class="content-list-item__icon--priority" wf-icon="priority-neutral"></i>',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'priority.html',
