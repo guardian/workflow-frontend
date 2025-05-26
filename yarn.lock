@@ -1669,10 +1669,10 @@ ajv@^8.0.1:
     require-from-string "^2.0.2"
     uri-js "^4.4.1"
 
-angular-animate@1.8.2:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.8.2.tgz#a3045e523ffb8d7fcbebd3cb68d1fdd474665ced"
-  integrity sha512-Jbr9+grNMs9Kj57xuBU3Ju3NOPAjS1+g2UAwwDv7su1lt0/PLDy+9zEwDiu8C8xJceoTbmBNKiWGPJGBdCQLlA==
+angular-animate@1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.8.3.tgz#f88db37325de256f9144d1242ce3158134a9d72a"
+  integrity sha512-/LtTKvy5sD6MZbV0v+nHgOIpnFF0mrUp+j5WIxVprVhcrJriYpuCZf4S7Owj1o76De/J0eRzANUozNJ6hVepnQ==
 
 angular-bootstrap-datetimepicker@1.1.4:
   version "1.1.4"
@@ -1687,10 +1687,10 @@ angular-bootstrap-temporary@0.11.0:
   resolved "https://registry.npmjs.org/angular-bootstrap-temporary/-/angular-bootstrap-temporary-0.11.0.tgz"
   integrity sha512-FSbxag9Jv8rlRk46+4l0x2aJ/3HBOaiBvVS+Rhiu1nEh2CIXz5EDq7c6OHnPrIdXS5KjIr64Zg3EgXP9bBACNQ==
 
-angular-mocks@1.8.2:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.8.2.tgz#dc022420b86978cf317a8447c116c0be73a853bf"
-  integrity sha512-I5L3P0l21HPdVsP4A4qWmENt4ePjjbkDFdAzOaM7QiibFySbt14DptPbt2IjeG4vFBr4vSLbhIz8Fk03DISl8Q==
+angular-mocks@1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.8.3.tgz#c0dd05e5c3fc014e07af6289b23f0e817d7a4724"
+  integrity sha512-vqsT6zwu80cZ8RY7qRQBZuy6Fq5X7/N5hkV9LzNT0c8b546rw4ErGK6muW1u2JnDKYa7+jJuaGM702bWir4HGw==
 
 angular-ui-router@1.0.30:
   version "1.0.30"
@@ -1699,14 +1699,9 @@ angular-ui-router@1.0.30:
   dependencies:
     "@uirouter/core" "6.0.8"
 
-angular@1.8.2:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.2.tgz#5983bbb5a9fa63e213cb7749199e0d352de3a2f1"
-  integrity sha512-IauMOej2xEe7/7Ennahkbb5qd/HFADiNuLSESz9Q27inmi32zB0lnAsFeLEWcox3Gd1F6YhNd1CP7/9IukJ0Gw==
-
-angular@>=1.5.0, angular@^1.6.3:
+angular@1.8.3, angular@>=1.5.0, angular@^1.6.3:
   version "1.8.3"
-  resolved "https://registry.npmjs.org/angular/-/angular-1.8.3.tgz"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.3.tgz#851ad75d5163c105a7e329555ef70c90aa706894"
   integrity sha512-5qjkWIQQVsHj4Sb5TcEs4WZWpFeVFHXwxEBHUhrny41D8UrBAd6T/6nPPAsLngJCReIOqi95W3mxdveveutpZw==
 
 ansi-colors@^4.1.1, ansi-colors@^4.1.3:
