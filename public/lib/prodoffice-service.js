@@ -1,52 +1,47 @@
-define(['angular'], function (angular) {
-    'use strict';
+import angular from 'angular';
 
-    var prodOfficeService = angular.module('wfProdOfficeService', ['wfLocationService']);
+angular.module('wfProdOfficeService', ['wfLocationService'])
+    .factory('wfProdOfficeService', ['$rootScope', 'wfLocationService', function ($rootScope, wfLocationService) {
+        /* mapping from city (as returned by getLocationKey()) to
+         * office */
+        var tz_office = {
+            "NYC": "US",
+            "SFO": "US",
+            "SYD": "AU",
+            "LON": "UK",
+            "default": "UK"
+        }
 
-    prodOfficeService.factory('wfProdOfficeService',
-        ['$rootScope', 'wfLocationService', function ($rootScope, wfLocationService) {
+        function timezoneToOffice(office) {
+            if (office && tz_office[office]) return tz_office[office]
+            else return tz_office["default"];
+        }
 
-            /* mapping from city (as returned by getLocationKey()) to
-             * office */
-            var tz_office = {
-                "NYC": "US",
-                "SFO": "US",
-                "SYD": "AU",
-                "LON": "UK",
-                "default": "UK"
-            }
+        var curDefaultOffice = timezoneToOffice(wfLocationService.getLocationKey());
 
-            function timezoneToOffice(office) {
-                if (office && tz_office[office]) return tz_office[office]
-                else return tz_office["default"];
-            }
+        function getDefaultOffice() {
+            return curDefaultOffice;
+        }
 
-            var curDefaultOffice = timezoneToOffice(wfLocationService.getLocationKey());
+        function getProdOffices() {
+            return [
+                {name: 'AU', value: 'AU'},
+                {name: 'UK', value: 'UK'},
+                {name: 'US', value: 'US'}
+            ]
+        };
 
-            function getDefaultOffice() {
-                return curDefaultOffice;
-            }
+        var prodOffices = {
+            timezoneToOffice: timezoneToOffice,
+            getProdOffices: getProdOffices,
+            getDefaultOffice: getDefaultOffice
+        };
 
-            function getProdOffices() {
-                return [
-                    {name: 'AU', value: 'AU'},
-                    {name: 'UK', value: 'UK'},
-                    {name: 'US', value: 'US'}
-                ]
-            };
+        $rootScope.$on('location:change', function (ev, newValue, oldValue) {
+            curDefaultOffice = timezoneToOffice(newValue);
+        })
 
-            var prodOffices = {
-                timezoneToOffice: timezoneToOffice,
-                getProdOffices: getProdOffices,
-                getDefaultOffice: getDefaultOffice
-            };
+        return prodOffices;
+    }]);
 
-            $rootScope.$on('location:change', function (ev, newValue, oldValue) {
-                curDefaultOffice = timezoneToOffice(newValue);
-            })
-
-            return prodOffices;
-        }]);
-
-    return prodOfficeService;
-});
+export default angular.module('wfProdOfficeService');
