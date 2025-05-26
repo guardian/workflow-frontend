@@ -141,9 +141,6 @@ angular.module('workflow',
             requireBase: false
         });
 
-        // Fix for AngularJS 1.6+ hash prefix change
-        $locationProvider.hashPrefix('');
-
         // Use a custom header for the csrf token.
         // `Csrf-Token` is what Play looks for by default.
         // See https://www.playframework.com/documentation/2.7.x/ScalaCsrf#Plays-CSRF-protection
