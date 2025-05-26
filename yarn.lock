@@ -1344,7 +1344,7 @@
   resolved "https://registry.npmjs.org/@socket.io/component-emitter/-/component-emitter-3.1.2.tgz"
   integrity sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==
 
-"@types/angular-resource@1.5.25":
+"@types/angular-resource@1.5.20":
   version "1.5.20"
   resolved "https://registry.yarnpkg.com/@types/angular-resource/-/angular-resource-1.5.20.tgz#d2ac34447b8e00dd083cd249bf39fcf866d65ca7"
   integrity sha512-51I1DsBrBRevdFe745+3/l25DTI9tDcVTFG3mz5ofIhS4QN2tI5HIQyaY+U6v+FRT6zBF2m1Rj7egFzop4IBZA==
