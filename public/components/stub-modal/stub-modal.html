@@ -105,7 +105,7 @@
                     <select class="section-margin" id="stub_section" name="section" ng-model="stub.section" ng-options="section.name for section in sections" required>
                     </select>
                 </div>
-                <div ng-if="contentName === 'Article'">
+                <div ng-if="['Article', 'Interactive'].includes(contentName)">
                     <label for="stub_template">Template</label>
                     <div ng-if="!loadingTemplates && templates.length === 0">
                         <p class="help-block">Cannot load templates. Try logging into Composer directly.</p>
