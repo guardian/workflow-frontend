@@ -1,24 +1,18 @@
-define(['angular'], function (angular) {
-    'use strict';
+import angular from 'angular';
 
-    var pictureDeskStatesService = angular.module('pictureDeskStatesService', []);
+angular.module('pictureDeskStatesService', [])
+    .factory('pictureDeskStatesService', [function () {
+        function getPictureDeskStatus() {
+            return [
+                {name: 'Not required', value: 'NA'},
+                {name: 'Needs checking', value: 'REQUIRED'},
+                {name: 'Checked', value: 'COMPLETE'}
+            ]
+        };
 
-    pictureDeskStatesService.factory('pictureDeskStatesService',
-        [function () {
+        return {
+            getpictureDeskStates: getPictureDeskStatus
+        };
+    }]);
 
-            function getPictureDeskStatus() {
-                return [
-                    {name: 'Not required', value: 'NA'},
-                    {name: 'Needs checking', value: 'REQUIRED'},
-                    {name: 'Checked', value: 'COMPLETE'}
-                ]
-            };
-
-            return {
-                getpictureDeskStates: getPictureDeskStatus
-            };
-
-        }]);
-
-    return pictureDeskStatesService;
-});
+export default angular.module('pictureDeskStatesService');
