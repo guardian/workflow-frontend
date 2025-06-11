@@ -1344,14 +1344,14 @@
   resolved "https://registry.npmjs.org/@socket.io/component-emitter/-/component-emitter-3.1.2.tgz"
   integrity sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==
 
-"@types/angular-resource@1.5.5":
-  version "1.5.5"
-  resolved "https://registry.yarnpkg.com/@types/angular-resource/-/angular-resource-1.5.5.tgz#c6feef64471e351bdee2fc4a94d7f99bb4208c04"
-  integrity sha512-IrK1wFiowvnvJ1h+uCl1gSbWZlRNQXMkxoB6xMZS9NcmpsvO5MmkG3hNzlt+fR/h11RyJ2g3ihklUJvjj481JQ==
+"@types/angular-resource@1.5.20":
+  version "1.5.20"
+  resolved "https://registry.yarnpkg.com/@types/angular-resource/-/angular-resource-1.5.20.tgz#d2ac34447b8e00dd083cd249bf39fcf866d65ca7"
+  integrity sha512-51I1DsBrBRevdFe745+3/l25DTI9tDcVTFG3mz5ofIhS4QN2tI5HIQyaY+U6v+FRT6zBF2m1Rj7egFzop4IBZA==
   dependencies:
     "@types/angular" "*"
 
-"@types/angular@*", "@types/angular@^1.6.39", "@types/angular@^1.7.0":
+"@types/angular@*", "@types/angular@^1.6.39", "@types/angular@^1.8.0":
   version "1.8.9"
   resolved "https://registry.yarnpkg.com/@types/angular/-/angular-1.8.9.tgz#d1ae3e87a67f72342d55ff26e611df83df0fb176"
   integrity sha512-Z0HukqZkx0fotsV3QO00yqU9NzcQI+tMcrum+8MvfB4ePqCawZctF/gz6QiuII+T1ax+LitNoPx/eICTgnF4sg==
@@ -1420,6 +1420,11 @@
   version "0.16.8"
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.8.tgz#ce5ace04cfeabe7ef87c0091e50752e36707deff"
   integrity sha512-WZLiwShhwLRmeV6zH+GkbOFT6Z6VklCItrDioxUnv+u4Ll+8vKeFySoFyK/0ctcRpOmwAicELfmys1sDc/Rw+A==
+
+"@uirouter/core@6.0.8":
+  version "6.0.8"
+  resolved "https://registry.yarnpkg.com/@uirouter/core/-/core-6.0.8.tgz#a1e919a4743be729751aafc4ce353d0dc0ffd26c"
+  integrity sha512-Gc/BAW47i4L54p8dqYCJJZuv2s3tqlXQ0fvl6Zp2xrblELPVfxmjnc0eurx3XwfQdaqm3T6uls6tQKkof/4QMw==
 
 "@webassemblyjs/ast@1.12.1", "@webassemblyjs/ast@^1.12.1":
   version "1.12.1"
@@ -1664,10 +1669,10 @@ ajv@^8.0.1:
     require-from-string "^2.0.2"
     uri-js "^4.4.1"
 
-angular-animate@1.5.11:
-  version "1.5.11"
-  resolved "https://registry.npmjs.org/angular-animate/-/angular-animate-1.5.11.tgz"
-  integrity sha512-onbcfyND0O42P15qtVvby2f3A2XlsKG2VzAhCjGCZoR9cow9s60fpVlnf8/Xx8wlqjukx/rd65QbxwPAnqSCyg==
+angular-animate@1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.8.3.tgz#f88db37325de256f9144d1242ce3158134a9d72a"
+  integrity sha512-/LtTKvy5sD6MZbV0v+nHgOIpnFF0mrUp+j5WIxVprVhcrJriYpuCZf4S7Owj1o76De/J0eRzANUozNJ6hVepnQ==
 
 angular-bootstrap-datetimepicker@1.1.4:
   version "1.1.4"
@@ -1682,24 +1687,21 @@ angular-bootstrap-temporary@0.11.0:
   resolved "https://registry.npmjs.org/angular-bootstrap-temporary/-/angular-bootstrap-temporary-0.11.0.tgz"
   integrity sha512-FSbxag9Jv8rlRk46+4l0x2aJ/3HBOaiBvVS+Rhiu1nEh2CIXz5EDq7c6OHnPrIdXS5KjIr64Zg3EgXP9bBACNQ==
 
-angular-mocks@1.5.11:
-  version "1.5.11"
-  resolved "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.5.11.tgz"
-  integrity sha512-eDVhiwiHlMEK6W47sIkiZh4We35Lqskg+G5rSTpUBPndwd2XM/uwuW+eklzOZhx+ODaFLuMsxeLY1h9rA3utIA==
-
-angular-ui-router@0.2.11:
-  version "0.2.11"
-  resolved "https://registry.npmjs.org/angular-ui-router/-/angular-ui-router-0.2.11.tgz"
-  integrity sha512-jmsIsFl03/pLqoWQp90qclreAYd27SXEEyGn69EZ4FZvFG+ZjAVI39QXe2fX5OYOLjQasgDMxI//emK0YaeE0w==
-
-angular@1.5.11:
-  version "1.5.11"
-  resolved "https://registry.npmjs.org/angular/-/angular-1.5.11.tgz"
-  integrity sha512-09DBOVVWo6rOQfdCBKGfEL0ZZIhf6P3fbeP3BU+ty5FU50DPiavVeDn8hQ4wXE8o4vKEEpzY1aRcRHJMCixWYA==
-
-angular@>=1.5.0, angular@^1.6.3:
+angular-mocks@1.8.3:
   version "1.8.3"
-  resolved "https://registry.npmjs.org/angular/-/angular-1.8.3.tgz"
+  resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.8.3.tgz#c0dd05e5c3fc014e07af6289b23f0e817d7a4724"
+  integrity sha512-vqsT6zwu80cZ8RY7qRQBZuy6Fq5X7/N5hkV9LzNT0c8b546rw4ErGK6muW1u2JnDKYa7+jJuaGM702bWir4HGw==
+
+angular-ui-router@1.0.30:
+  version "1.0.30"
+  resolved "https://registry.yarnpkg.com/angular-ui-router/-/angular-ui-router-1.0.30.tgz#de8a07fa1620fc5a979ee8448d0ded159792436f"
+  integrity sha512-8xMpxbOtCJbRnGR1fhbyZ5BhFXr3zs1L2ytXQiBACTJjot309QNFFCaWx0lDM2eVXp8qte4idigU9gwWdspmtQ==
+  dependencies:
+    "@uirouter/core" "6.0.8"
+
+angular@1.8.3, angular@>=1.5.0, angular@^1.6.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.3.tgz#851ad75d5163c105a7e329555ef70c90aa706894"
   integrity sha512-5qjkWIQQVsHj4Sb5TcEs4WZWpFeVFHXwxEBHUhrny41D8UrBAd6T/6nPPAsLngJCReIOqi95W3mxdveveutpZw==
 
 ansi-colors@^4.1.1, ansi-colors@^4.1.3:
