@@ -251,7 +251,7 @@ const columnDefaults = [{
 },{
     name: 'presence',
     prettyName: 'Presence',
-    labelHTML: '<div ng-switch="presenceIsActive"><i class="content-list-head__heading-icon--presence" ng-switch-when="false" wf-icon="presence-unavailable"/><i class="content-list-head__heading-icon--presence" ng-switch-default wf-icon="presence"/></div>',
+    labelHTML: '<div ng-switch="presenceIsActive"><i class="content-list-head__heading-icon--presence" ng-switch-when="false" wf-icon="presence-unavailable"></i><i class="content-list-head__heading-icon--presence" ng-switch-default wf-icon="presence"/></i></div>',
     colspan: 1,
     title: 'In use by',
     unavailableTitle: 'Presence is currently unavailable, reloading your browser might fix this.',
@@ -261,7 +261,7 @@ const columnDefaults = [{
 },{
     name: 'assignee',
     prettyName: 'Assignee',
-    labelHTML: '<i class="content-list-head__heading-icon--assignee" wf-icon="assigned-to"/>',
+    labelHTML: '<i class="content-list-head__heading-icon--assignee" wf-icon="assigned-to"></i>',
     colspan: 1,
     title: 'Assigned to',
     templateUrl: templateRoot + 'assignee.html',
