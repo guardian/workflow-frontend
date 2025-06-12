@@ -21,10 +21,13 @@ logger.factory('logger', ['$injector', function($injector) {
             fields: fields
         };
 
-        return $http({method: 'POST',
-               url: LOG_URL,
-               data: data
-              });
+        return $http({
+            method: 'POST',
+            url: LOG_URL,
+            data: data
+        }).catch(function onError() {
+            console.warn("/support/logger request failed")
+        });
     }
 
     return {
