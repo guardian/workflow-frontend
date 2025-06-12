@@ -122,6 +122,10 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
 
         const getPriorityName = (priority) => {
             switch (priority){
+                case -2:
+                    return 'Very Low'
+                case -1:
+                    return 'Low'
                 case 0:
                     return 'Normal'
                 case 1:
