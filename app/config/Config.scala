@@ -89,8 +89,6 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val storyPackagesUrl: String = s"https://packages.$domain"
 
-  lazy val googleTrackingId: String = playConfig.get[String]("google.tracking.id")
-
   lazy val no2faUser: String = "composer.test@guardian.co.uk"
 
   lazy val editorialSupportDynamoTable: String = stage match {
