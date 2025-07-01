@@ -4,7 +4,6 @@ deployments:
   workflow-frontend:
     type: autoscaling
     parameters:
-      asgMigrationInProgress: true
     dependencies: [workflow-frontend-ami-update]
   workflow-frontend-ami-update:
     type: ami-cloudformation-parameter
