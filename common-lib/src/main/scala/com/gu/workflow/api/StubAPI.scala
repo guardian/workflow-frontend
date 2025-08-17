@@ -9,6 +9,7 @@ import models.api._
 import models.{ContentItemIds, Flag, Stub}
 import org.joda.time.{DateTime, LocalDate}
 import play.api.libs.ws.WSClient
+import play.api.Logging
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -16,7 +17,7 @@ import scala.concurrent.Future
 class StubAPI(
   override val apiRoot: String,
   override val ws: WSClient
-) extends ApiUtils with WSUtils {
+) extends ApiUtils with WSUtils with Logging {
 
   def createStub(body: Json): ApiResponseFt[ContentUpdate] =
     for {
@@ -90,9 +91,15 @@ class StubAPI(
 
   def putStubProdOffice(id: Long, status: String): ApiResponseFt[Long] =
     for {
-      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$id/prodOffice", status.asJson))
+      res <- {
+        logger.info(s"Sending put request to update to prodOffice on stub $id - new value = $status")
+        ApiResponseFt.Async.Right(putRequest(s"stubs/$id/prodOffice", status.asJson))
+      }
       json <- parseBody(res.body)
-      item <- extractDataResponse[Long](json)
+      item <- {
+        logger.info(s"Respond to request to update to prodOffice on stub $id - new value = $status:\n $json")
+        extractDataResponse[Long](json)
+      }
     } yield item
 
   def putStubDisplayHint(id: Long, displayHint: Option[String]): ApiResponseFt[Long] =
