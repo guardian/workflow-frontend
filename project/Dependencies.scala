@@ -12,7 +12,7 @@ object Dependencies {
     "com.gu" %% "content-api-client-aws" % "0.7"
   )
 
-  val pandaVersion = "7.0.0"
+  val pandaVersion = "11.0.0-PREVIEW.sh-wsyupgrade-aws-sdk-to-2.2025-09-17T1358.a15b1789"
 
   val authDependencies = Seq(
     "com.gu" %% "pan-domain-auth-play_3-0" % pandaVersion,
