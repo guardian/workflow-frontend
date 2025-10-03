@@ -1,5 +1,4 @@
 import { render } from "react-dom"
-import React from "react";
 import { SearchApp } from "./search-app/SearchApp"
 import { WindowWithConfig } from "./search-app/config"
 
