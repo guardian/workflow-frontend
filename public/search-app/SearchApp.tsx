@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Report } from "./components/Report";
 import { Config } from "./config";
 
 
@@ -7,40 +8,16 @@ interface Props {
 }
 
 
-type StatusCategory = 'Writers' | 'Desk' | 'Production Editor' | 'Subs' | 'Revise' | 'Final' | 'Hold'
-
-type ApiResponse = {
-    count: Partial<Record<StatusCategory, number>> & { total: number };
-    content: Partial<Record<StatusCategory, unknown>>
-}
-
-const searchUrl = "/api/content"
-
-
-
-const Report = () => {
-
-    const [data, setData] = useState<ApiResponse | undefined>(undefined)
-
-    useEffect(() => {
-        fetch(searchUrl).then(response => response.json()).then(data => {
-            console.log('DATA',data)
-            setData(data)
-        })
-    }, [setData])
-
-    return (
-        <span>You are assigned {data?.count.total ?? '??'} pieces</span>
-    )
-
-}
-
 export const SearchApp: React.FunctionComponent<Props> = ({ config }) => {
-    return <div>
-        This is the search app.
+    console.log(config)
+    return <div style={{
+        maxWidth: 1200,
+        margin: '0 auto',
+    }}>
+        <h1>Search</h1>
         {config.user && (
             <p>hello, {config.user.firstName ?? config.user.email} </p>
         )}
-        <Report />
+        <Report statusCategories={config.statuses} />
     </div>
 }
