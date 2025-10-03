@@ -105,7 +105,7 @@
                     <select class="section-margin" id="stub_section" name="section" ng-model="stub.section" ng-options="section.name for section in sections" required>
                     </select>
                 </div>
-                <div ng-if="contentName === 'Article'">
+                <div ng-if="['Article', 'Interactive'].includes(contentName)">
                     <label for="stub_template">Template</label>
                     <div ng-if="!loadingTemplates && templates.length === 0">
                         <p class="help-block">Cannot load templates. Try logging into Composer directly.</p>
@@ -118,24 +118,26 @@
             </div>
             <div wf-date-time-picker label="Production deadline" help-text="true" ng-model="stub.due"></div>
             <div class="form-horizontal clearfix">
-                <div class="form-group col-xs-8">
+                <div class="form-group col-xs-9">
                     <label for="stub_priority">Priority</label>
 
                     <div>
                         <div class="btn-group">
+                            <button class="btn btn-default btn-sm" ng-model="stub.priority" ng-disabled="stub.missingCommissionedLengthReason === 'BreakingNews'" btn-radio="-2"><i class="stubModal__icon" wf-icon="priority-very-low"></i> Very Low</button>
+                            <button class="btn btn-default btn-sm" ng-model="stub.priority" ng-disabled="stub.missingCommissionedLengthReason === 'BreakingNews'" btn-radio="-1"><i class="stubModal__icon" wf-icon="priority-low"></i> Low</button>
                             <button class="btn btn-default btn-sm" ng-model="stub.priority" ng-disabled="stub.missingCommissionedLengthReason === 'BreakingNews'" btn-radio="0">Normal</button>
                             <button class="btn btn-default btn-sm" ng-model="stub.priority" ng-disabled="stub.missingCommissionedLengthReason === 'BreakingNews'" btn-radio="1"><i class="stubModal__icon" wf-icon="priority-urgent"></i> Urgent</button>
                             <button class="btn btn-default btn-sm" ng-model="stub.priority" btn-radio="2"><i class="stubModal__icon" wf-icon="priority-very-urgent"></i> Very Urgent</button>
                         </div>
                     </div>
                 </div>
-                <div class="form-group col-xs-5 pull-right">
+                <div class="form-group col-xs-4 pull-right">
                     <label for="stub_legal">Legal</label>
                     <div>
                         <select id="stub_legal" name="needsLegal" ng-model="stub.needsLegal" ng-options="ls.value as ls.name for ls in legalStates"></select>
                     </div>
                 </div>
-                <div class="form-group col-xs-5 pull-right">
+                <div class="form-group col-xs-4 pull-right">
                     <label for="stub_picture_desk">Picture Desk</label>
                     <div>
                         <select id="stub_picture_desk" name="needsPictureDesk" ng-model="stub.needsPictureDesk" ng-options="pds.value as pds.name for pds in pictureDeskStates"></select>
@@ -143,11 +145,11 @@
                 </div>
             </div>
             <div class="form-horizontal clearfix">
-                <div class="form-group col-xs-8">
+                <div class="form-group col-xs-9">
                     <label for="stub_note">Note</label>
                     <input type="text" ng-model="stub.note" id="stub_note" name="note" value="" class="form-control" maxlength="500">
                 </div>
-                <div class="form-group col-xs-5 pull-right">
+                <div class="form-group col-xs-4 pull-right">
                     <label>Production Office</label>
                     <div>
                         <select ng-model="stub.prodOffice"

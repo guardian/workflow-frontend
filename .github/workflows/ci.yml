@@ -8,7 +8,7 @@ on:
 
 jobs:
     build:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
 
         permissions:
             # Allow GitHub to request an OIDC JWT ID token, for exchange with AWS Security Token Service (STS)

@@ -1,24 +1,18 @@
-define(['angular'], function (angular) {
-    'use strict';
+import angular from 'angular';
 
-    var legalStatesService = angular.module('legalStatesService', []);
+angular.module('legalStatesService', [])
+    .factory('legalStatesService', [function () {
+        function getLegalStates() {
+            return [
+                {name: 'Not required', value: 'NA'},
+                {name: 'Needs checking', value: 'REQUIRED'},
+                {name: 'Approved', value: 'COMPLETE'}
+            ]
+        };
 
-    legalStatesService.factory('legalStatesService',
-        [function () {
+        return {
+            getLegalStates: getLegalStates
+        };
+    }]);
 
-            function getLegalStates() {
-                return [
-                    {name: 'Not required', value: 'NA'},
-                    {name: 'Needs checking', value: 'REQUIRED'},
-                    {name: 'Approved', value: 'COMPLETE'}
-                ]
-            };
-
-            return {
-                getLegalStates: getLegalStates
-            };
-
-        }]);
-
-    return legalStatesService;
-});
+export default angular.module('legalStatesService');
