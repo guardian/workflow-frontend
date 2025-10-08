@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
-    "@guardian/user-telemetry-client": "^1.1.0",
+    "@guardian/user-telemetry-client": "1.2.1",
     "@types/react": "^17.0.76",
     "@types/react-dom": "^17.0.9",
     "angular": "1.8.3",
