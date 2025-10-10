@@ -1,18 +1,20 @@
 package com.gu.workflow.util
 
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.auth.{AWSCredentialsProviderChain, DefaultAWSCredentialsProviderChain, InstanceProfileCredentialsProvider}
-import com.amazonaws.regions.{Region, Regions}
+import com.amazonaws.auth.{AWSCredentialsProviderChain, DefaultAWSCredentialsProviderChain}
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import com.amazonaws.services.dynamodbv2.{AmazonDynamoDB, AmazonDynamoDBClientBuilder}
 import com.amazonaws.services.ec2.model.{DescribeTagsRequest, Filter}
 import com.amazonaws.services.ec2.{AmazonEC2, AmazonEC2ClientBuilder}
-import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import com.amazonaws.util.EC2MetadataUtils
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
+import software.amazon.awssdk.services.s3.S3Client
 
 import scala.jdk.CollectionConverters._
 
 object AWS {
+  import com.amazonaws.regions.{Region, Regions}
+
   lazy val credentialsProvider = new AWSCredentialsProviderChain(
     new ProfileCredentialsProvider("workflow"),
     new DefaultAWSCredentialsProviderChain()
@@ -35,14 +37,16 @@ object AWS {
       .withRegion(region.getName)
       .build
   }
+}
 
-  lazy val S3Client: AmazonS3 = {
-    AmazonS3ClientBuilder
-      .standard()
-      .withCredentials(credentialsProvider)
-      .withRegion(region.getName)
-      .build()
-  }
+object AWSv2 {
+  import software.amazon.awssdk.regions.Region
+
+  lazy val credentialsProvider = DefaultCredentialsProvider.builder().profileName("workflow").build()
+
+  lazy val region = Region.EU_WEST_1
+
+  lazy val s3 = S3Client.builder().credentialsProvider(credentialsProvider).region(region).build()
 }
 
 trait Dynamo {
