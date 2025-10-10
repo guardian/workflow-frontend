@@ -14,7 +14,7 @@ object Dependencies {
     "com.gu" %% "content-api-client-aws" % "0.7"
   )
 
-  val pandaVersion = "12.0.0"
+  val pandaVersion = "13.0.0-PREVIEW.anallow-concurrent-auths.2025-10-10T1640.5d398d93"
 
   val authDependencies = Seq(
     "com.gu" %% "pan-domain-auth-play_3-0" % pandaVersion,
