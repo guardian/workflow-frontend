@@ -9,7 +9,7 @@ object Dependencies {
     "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
     "com.amazonaws" % "aws-java-sdk-ec2" % awsVersion,
     "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
-    "com.gu" %% "content-api-client-aws" % "0.7"
+    "com.gu" %% "content-api-client-aws" % "0.7.7-PREVIEW.vbupdate-aws-sdk-v2.2025-10-13T1851.2761fd0f"
   )
 
   val pandaVersion = "7.0.0"
