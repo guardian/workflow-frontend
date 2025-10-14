@@ -11,7 +11,7 @@ object Dependencies {
     "com.amazonaws" % "aws-java-sdk-ec2" % awsVersion,
     "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
     "software.amazon.awssdk" % "s3" % awsV2Version,
-    "com.gu" %% "content-api-client-aws" % "0.7"
+    "com.gu" %% "content-api-client-aws" % "0.7.6"
   )
 
   val pandaVersion = "12.0.0"
