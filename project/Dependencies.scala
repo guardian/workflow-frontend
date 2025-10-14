@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  val awsVersion: String = "1.12.767"
+  val awsVersion: String = "1.12.792"
   val awsV2Version: String = "2.35.4"
   val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
 
