@@ -11,14 +11,14 @@ object Dependencies {
     "com.amazonaws" % "aws-java-sdk-ec2" % awsVersion,
     "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
     "software.amazon.awssdk" % "s3" % awsV2Version,
-    "com.gu" %% "content-api-client-aws" % "0.7"
+    "com.gu" %% "content-api-client-aws" % "0.7.6"
   )
 
   val pandaVersion = "12.0.0"
 
   val authDependencies = Seq(
     "com.gu" %% "pan-domain-auth-play_3-0" % pandaVersion,
-    "com.gu" %% "hmac-headers" % "2.0.0",
+    "com.gu" %% "hmac-headers" % "2.0.1",
     "com.gu" %% "panda-hmac-play_3-0" % pandaVersion
   )
 
@@ -47,7 +47,7 @@ object Dependencies {
     "org.bouncycastle" % "bcprov-jdk18on" % "1.78.1"
   )
 
-  val permissionsClientVersion = "4.0.0"
+  val permissionsClientVersion = "5.0.0"
 
   val permissionsDependencies = Seq(
     "com.gu" %% "editorial-permissions-client" % permissionsClientVersion
