@@ -46,7 +46,7 @@ fi
 
 echo "📡 getting ELB name from AWS"
 
-DATASTORE_ELB=$(aws elb describe-load-balancers --load-balancer-names workflow-Datastor-11M4N9N3HTIJB --profile workflow --region eu-west-1 | jq .LoadBalancerDescriptions[].DNSName -r)
+DATASTORE_ELB=$(aws elb describe-load-balancers --load-balancer-names workflow-Datastor-WET6OKL4UUDS --profile workflow --region eu-west-1 | jq .LoadBalancerDescriptions[].DNSName -r)
 
 if [[ -z "$DATASTORE_ELB" ]];
 then
