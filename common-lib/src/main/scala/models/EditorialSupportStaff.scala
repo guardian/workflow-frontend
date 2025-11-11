@@ -1,12 +1,12 @@
 package models
 
-import com.amazonaws.services.dynamodbv2.document.Item
 import io.circe.generic.extras.{Configuration, semiauto => derivationWithDefaults}
 import io.circe.{Decoder, Encoder}
 import io.circe.syntax._
 import io.circe.parser.decode
 import play.api.data.Forms._
 import play.api.data._
+import software.amazon.awssdk.enhanced.dynamodb.document.EnhancedDocument
 
 case class EditorialSupportStaff(id: String, name: String, team: String, active: Boolean, description: Option[String])
 case class EditorialSupportTeam(name: String, staff: List[EditorialSupportStaff])
@@ -33,11 +33,11 @@ object EditorialSupportStaff {
     )(StaffUpdate.apply)(StaffUpdate.unapply)
   )
 
-  def toItem(staff: EditorialSupportStaff): Item =
-    Item.fromJSON(staff.asJson.toString())
+  def toItem(staff: EditorialSupportStaff): EnhancedDocument =
+    EnhancedDocument.builder.json(staff.asJson.toString()).build
 
-  def fromItem(item: Item): EditorialSupportStaff =
-    decode[EditorialSupportStaff](item.toJSON).toOption.get
+  def fromItem(item: EnhancedDocument): EditorialSupportStaff =
+    decode[EditorialSupportStaff](item.toJson).toOption.get
 
   def groupByTeams(staff: List[EditorialSupportStaff]): List[EditorialSupportTeam] = {
     staff.foldLeft(Map.empty[String, List[EditorialSupportStaff]]) { (teams, member) =>

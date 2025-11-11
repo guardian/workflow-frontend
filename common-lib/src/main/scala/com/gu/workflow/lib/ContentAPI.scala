@@ -1,8 +1,8 @@
 package com.gu.workflow.lib
 
 import java.net.URI
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.auth.{AWSCredentialsProviderChain, STSAssumeRoleSessionCredentialsProvider}
+import software.amazon.awssdk.auth.credentials.{AwsCredentialsProviderChain, ProfileCredentialsProvider}
+import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider
 import com.github.blemale.scaffeine.{AsyncLoadingCache, Scaffeine}
 import com.gu.contentapi.client.IAMSigner
 import com.gu.workflow.api.{ApiUtils, WSUtils}
@@ -10,6 +10,7 @@ import com.gu.workflow.util.AWS
 import io.circe.parser
 import play.api.Logging
 import play.api.libs.ws.{WSClient, WSResponse}
+import software.amazon.awssdk.services.sts.model.AssumeRoleRequest
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -22,14 +23,20 @@ class ContentAPI(
 ) extends ApiUtils with WSUtils with Logging {
 
   private val previewSigner = {
-    val capiPreviewCredentials = new AWSCredentialsProviderChain(
-      new ProfileCredentialsProvider("capi"),
-      new STSAssumeRoleSessionCredentialsProvider.Builder(capiPreviewRole, "capi").build()
+    val capiPreviewCredentials = AwsCredentialsProviderChain.of(
+      ProfileCredentialsProvider.builder.profileName("capi").build,
+      StsAssumeRoleCredentialsProvider.builder
+        .refreshRequest(
+          AssumeRoleRequest.builder
+            .roleArn(capiPreviewRole)
+            .roleSessionName("capi")
+            .build
+        ).build()
     )
 
     new IAMSigner(
       credentialsProvider = capiPreviewCredentials,
-      awsRegion = AWS.region.getName
+      awsRegion = AWS.region.toString
     )
   }
 

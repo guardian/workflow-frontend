@@ -1,40 +1,36 @@
 package com.gu.workflow.util
 
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.auth.{AWSCredentialsProviderChain, DefaultAWSCredentialsProviderChain}
-import com.amazonaws.services.dynamodbv2.document.DynamoDB
-import com.amazonaws.services.dynamodbv2.{AmazonDynamoDB, AmazonDynamoDBClientBuilder}
-import com.amazonaws.services.ec2.model.{DescribeTagsRequest, Filter}
-import com.amazonaws.services.ec2.{AmazonEC2, AmazonEC2ClientBuilder}
-import com.amazonaws.util.EC2MetadataUtils
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
+import software.amazon.awssdk.auth.credentials.{AwsCredentialsProviderChain, DefaultCredentialsProvider, ProfileCredentialsProvider}
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
+import software.amazon.awssdk.imds.Ec2MetadataClient
+import software.amazon.awssdk.services.ec2.Ec2Client
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.ec2.model.{DescribeTagsRequest, Filter}
 import software.amazon.awssdk.services.s3.S3Client
 
 import scala.jdk.CollectionConverters._
 
 object AWS {
-  import com.amazonaws.regions.{Region, Regions}
-
-  lazy val credentialsProvider = new AWSCredentialsProviderChain(
-    new ProfileCredentialsProvider("workflow"),
-    new DefaultAWSCredentialsProviderChain()
+  lazy val credentialsProvider = AwsCredentialsProviderChain.of(
+    ProfileCredentialsProvider.builder.profileName("workflow").build,
+    DefaultCredentialsProvider.builder.build
   )
 
-  lazy val region: Region = Region getRegion Regions.EU_WEST_1
+  lazy val region: Region = Region.EU_WEST_1
 
-  lazy val EC2Client: AmazonEC2 = {
-    AmazonEC2ClientBuilder
-      .standard
-      .withCredentials(credentialsProvider)
-      .withRegion(region.getName)
+  lazy val EC2Client: Ec2Client = {
+    Ec2Client.builder()
+      .credentialsProvider(credentialsProvider)
+      .region(region)
       .build
   }
 
-  lazy val DynamoDb: AmazonDynamoDB = {
-    AmazonDynamoDBClientBuilder
-      .standard
-      .withCredentials(credentialsProvider)
-      .withRegion(region.getName)
+  lazy val DynamoDb: DynamoDbClient = {
+    DynamoDbClient
+      .builder
+      .credentialsProvider(credentialsProvider)
+      .region(region)
       .build
   }
 }
@@ -50,22 +46,22 @@ object AWSv2 {
 }
 
 trait Dynamo {
-  lazy val dynamoDb = new DynamoDB(AWS.DynamoDb)
+  lazy val dynamoDb = DynamoDbEnhancedClient.builder.dynamoDbClient(AWS.DynamoDb).build
 }
 
 trait AwsInstanceTags {
-  lazy val instanceId = Option(EC2MetadataUtils.getInstanceId)
+  lazy val instanceId = Option(Ec2MetadataClient.create.get("instanceId").asString)
 
   def readTag(tagName: String): Option[String] = {
     instanceId.flatMap { id =>
       val tagsResult = AWS.EC2Client.describeTags(
-        new DescribeTagsRequest().withFilters(
-          new Filter("resource-type").withValues("instance"),
-          new Filter("resource-id").withValues(id),
-          new Filter("key").withValues(tagName)
-        )
+        DescribeTagsRequest.builder().filters(
+          Filter.builder.name("resource-type").values("instance").build,
+          Filter.builder.name("resource-id").values(id).build,
+          Filter.builder.name("key").values(tagName).build,
+        ).build
       )
-      tagsResult.getTags.asScala.find(_.getKey == tagName).map(_.getValue)
+      tagsResult.tags.asScala.find(_.key == tagName).map(_.value)
     }
   }
 }

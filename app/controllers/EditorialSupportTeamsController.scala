@@ -18,7 +18,7 @@ class EditorialSupportTeamsController(
   override val permissions: PermissionsProvider
 ) extends BaseController with PanDomainAuthActions with Dynamo {
 
-  private val editorialSupportTable = dynamoDb.getTable(config.editorialSupportDynamoTable)
+  private val editorialSupportTable = dynamoDb.table(config.editorialSupportDynamoTable)
 
   def listStaff(): List[EditorialSupportStaff] = {
     val items = editorialSupportTable.scan().asScala.toList

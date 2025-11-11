@@ -31,7 +31,7 @@ class AppComponents(context: Context)
   )
 
   val permissions: PermissionsProvider =
-    PermissionsProvider(PermissionsConfig(stage = if (config.isProd) "PROD" else "CODE", AWS.region.getName, AWS.credentialsProvider))
+    PermissionsProvider(PermissionsConfig(stage = if (config.isProd) "PROD" else "CODE", AWS.region.toString, AWS.credentialsProvider))
 
   val managementController = new Management(controllerComponents)
   val loginController = new Login(config, controllerComponents, wsClient, panDomainRefresher, permissions)
