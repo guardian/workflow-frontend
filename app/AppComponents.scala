@@ -2,7 +2,7 @@ import com.gu.pandomainauth.{PanDomainAuthSettingsRefresher, S3BucketLoader}
 import com.gu.permissions.{PermissionsConfig, PermissionsProvider}
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.TagService
-import com.gu.workflow.util.{AWS, AWSv2}
+import com.gu.workflow.util.AWS
 import config.Config
 import controllers._
 import lib.LoggingFilter

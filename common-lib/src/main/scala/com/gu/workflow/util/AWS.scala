@@ -53,7 +53,7 @@ trait Dynamo {
 }
 
 trait AwsInstanceTags {
-  lazy val instanceId = Try(Ec2MetadataClient.create.get("instanceId").asString).toOption
+  lazy val instanceId = Try(Ec2MetadataClient.create.get("/latest/meta-data/instance-id").asString).toOption
 
   def readTag(tagName: String): Option[String] = {
     instanceId.flatMap { id =>
