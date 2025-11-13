@@ -26,8 +26,8 @@ class EditorialSupportTeamsController(
       .build)
 
   def listStaff(): List[EditorialSupportStaff] = {
-    val items = editorialSupportTable.scan().asScala.toList
-    val staff = items.flatMap(_.items.asScala.toList).map(EditorialSupportStaff.fromItem)
+    val items = editorialSupportTable.scan().items().asScala.toList
+    val staff = items.map(EditorialSupportStaff.fromItem)
 
     staff.map {
       case s if s.name == "none" => s.copy(name = "")

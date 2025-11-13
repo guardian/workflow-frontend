@@ -32,7 +32,7 @@ class ContentAPI(
             .roleArn(capiPreviewRole)
             .roleSessionName("capi")
             .build
-        ).build()
+        ).build
     )
 
     new IAMSigner(
