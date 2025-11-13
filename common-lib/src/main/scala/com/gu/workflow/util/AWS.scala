@@ -8,8 +8,10 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.ec2.model.{DescribeTagsRequest, Filter}
 import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.sts.StsClient
 
 import scala.jdk.CollectionConverters._
+import scala.util.Try
 
 object AWS {
   lazy val credentialsProvider = AwsCredentialsProviderChain.of(
@@ -18,6 +20,13 @@ object AWS {
   )
 
   lazy val region: Region = Region.EU_WEST_1
+
+  lazy val STSClient: StsClient = {
+    StsClient.builder()
+      .credentialsProvider(credentialsProvider)
+      .region(region)
+      .build
+  }
 
   lazy val EC2Client: Ec2Client = {
     Ec2Client.builder()
@@ -50,7 +59,7 @@ trait Dynamo {
 }
 
 trait AwsInstanceTags {
-  lazy val instanceId = Option(Ec2MetadataClient.create.get("instanceId").asString)
+  lazy val instanceId = Try(Ec2MetadataClient.create.get("instanceId").asString).toOption
 
   def readTag(tagName: String): Option[String] = {
     instanceId.flatMap { id =>

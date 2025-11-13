@@ -26,6 +26,7 @@ class ContentAPI(
     val capiPreviewCredentials = AwsCredentialsProviderChain.of(
       ProfileCredentialsProvider.builder.profileName("capi").build,
       StsAssumeRoleCredentialsProvider.builder
+        .stsClient(AWS.STSClient)
         .refreshRequest(
           AssumeRoleRequest.builder
             .roleArn(capiPreviewRole)
