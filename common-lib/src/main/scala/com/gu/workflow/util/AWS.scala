@@ -14,22 +14,20 @@ import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 object AWS {
-  lazy val credentialsProvider = AwsCredentialsProviderChain.of(
-    ProfileCredentialsProvider.builder.profileName("workflow").build,
-    DefaultCredentialsProvider.builder.build
-  )
+  lazy val credentialsProvider: DefaultCredentialsProvider =
+    DefaultCredentialsProvider.builder.profileName("workflow").build
 
   lazy val region: Region = Region.EU_WEST_1
 
   lazy val STSClient: StsClient = {
-    StsClient.builder()
+    StsClient.builder
       .credentialsProvider(credentialsProvider)
       .region(region)
       .build
   }
 
   lazy val EC2Client: Ec2Client = {
-    Ec2Client.builder()
+    Ec2Client.builder
       .credentialsProvider(credentialsProvider)
       .region(region)
       .build
@@ -42,16 +40,12 @@ object AWS {
       .region(region)
       .build
   }
-}
 
-object AWSv2 {
-  import software.amazon.awssdk.regions.Region
-
-  lazy val credentialsProvider = DefaultCredentialsProvider.builder().profileName("workflow").build()
-
-  lazy val region = Region.EU_WEST_1
-
-  lazy val s3 = S3Client.builder().credentialsProvider(credentialsProvider).region(region).build()
+  lazy val S3: S3Client = S3Client
+    .builder
+    .credentialsProvider(credentialsProvider)
+    .region(region)
+    .build
 }
 
 trait Dynamo {
