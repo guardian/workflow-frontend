@@ -2,7 +2,7 @@ import com.gu.pandomainauth.{PanDomainAuthSettingsRefresher, S3BucketLoader}
 import com.gu.permissions.{PermissionsConfig, PermissionsProvider}
 import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI, StubAPI}
 import com.gu.workflow.lib.TagService
-import com.gu.workflow.util.{AWS, AWSv2}
+import com.gu.workflow.util.AWS
 import config.Config
 import controllers._
 import lib.LoggingFilter
@@ -27,11 +27,11 @@ class AppComponents(context: Context)
   val panDomainRefresher = PanDomainAuthSettingsRefresher(
     domain = config.domain,
     system = config.pandaSystem,
-    S3BucketLoader.forAwsSdkV2(AWSv2.s3, config.pandaBucketName)
+    S3BucketLoader.forAwsSdkV2(AWS.S3, config.pandaBucketName)
   )
 
   val permissions: PermissionsProvider =
-    PermissionsProvider(PermissionsConfig(stage = if (config.isProd) "PROD" else "CODE", AWS.region.getName, AWS.credentialsProvider))
+    PermissionsProvider(PermissionsConfig(stage = if (config.isProd) "PROD" else "CODE", AWS.region.toString, AWS.credentialsProvider))
 
   val managementController = new Management(controllerComponents)
   val loginController = new Login(config, controllerComponents, wsClient, panDomainRefresher, permissions)
