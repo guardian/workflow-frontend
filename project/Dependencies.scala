@@ -26,7 +26,7 @@ object Dependencies {
 
   val testDependencies = Seq(
     scalaTest,
-    "org.scalamock" %% "scalamock" % "4.4.0" % Test
+    "org.scalamock" %% "scalamock" % "7.5.2" % Test
   )
 
   val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "6.6")
