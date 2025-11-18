@@ -4,7 +4,7 @@ logLevel := Level.Warn
 // The Typesafe repository
 resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/"
 
-libraryDependencies += "org.vafer" % "jdeb" % "1.8" artifacts (Artifact("jdeb", "jar", "jar"))
+libraryDependencies += "org.vafer" % "jdeb" % "1.14" artifacts (Artifact("jdeb", "jar", "jar"))
 
 // Use the Play sbt plugin for Play projects
 addSbtPlugin("org.playframework" % "sbt-plugin" % "3.0.1")
