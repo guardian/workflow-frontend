@@ -30,7 +30,7 @@
 
         &--priority-low,
         &--priority-very-low {
-            transform: rotate(180deg);
+            transform: rotate(180deg) translateY(2px);
         }
 
         &--priority-low {

@@ -1,21 +1,27 @@
 import sbt._
 
 object Dependencies {
-  val awsVersion: String = "1.12.767"
+  val awsVersion: String = "2.38.5"
   val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
 
   val awsDependencies = Seq(
-    "com.amazonaws" % "aws-java-sdk-dynamodb" % awsVersion,
-    "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
-    "com.amazonaws" % "aws-java-sdk-ec2" % awsVersion,
-    "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
-    "com.gu" %% "content-api-client-aws" % "0.7"
+    "software.amazon.awssdk" % "dynamodb" % awsVersion,
+    "software.amazon.awssdk" % "dynamodb-enhanced" % awsVersion,
+    "software.amazon.awssdk" % "sts" % awsVersion,
+    "software.amazon.awssdk" % "ec2" % awsVersion,
+    "software.amazon.awssdk" % "cloudwatch" % awsVersion,
+    "software.amazon.awssdk" % "s3" % awsVersion,
+    "software.amazon.awssdk" % "imds" % awsVersion,
+    "com.gu" %% "content-api-client-aws" % "1.0.1",
+    "joda-time" % "joda-time" % "2.14.0"
   )
 
+  val pandaVersion = "12.0.0"
+
   val authDependencies = Seq(
-    "com.gu" %% "pan-domain-auth-play_3-0" % "4.0.0",
+    "com.gu" %% "pan-domain-auth-play_3-0" % pandaVersion,
     "com.gu" %% "hmac-headers" % "2.0.0",
-    "com.gu" %% "panda-hmac-play_3-0" % "4.0.0"
+    "com.gu" %% "panda-hmac-play_3-0" % pandaVersion
   )
 
   val testDependencies = Seq(
@@ -43,7 +49,7 @@ object Dependencies {
     "org.bouncycastle" % "bcprov-jdk18on" % "1.78.1"
   )
 
-  val permissionsClientVersion = "3.0.0"
+  val permissionsClientVersion = "5.0.0"
 
   val permissionsDependencies = Seq(
     "com.gu" %% "editorial-permissions-client" % permissionsClientVersion

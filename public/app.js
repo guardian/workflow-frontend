@@ -25,7 +25,6 @@ import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/column-service';
 import 'lib/preferences-service';
-import 'lib/analytics';
 import 'lib/polling-service';
 import 'lib/title-service';
 import 'lib/logger';
@@ -57,7 +56,6 @@ angular.module('workflow',
         'wfFiltersService',
         'wfColumnService',
         'wfPreferencesService',
-        'wfAnalyticsServiceMod',
         'infinite-scroll',
         'wfTitleService',
         'logger',
@@ -172,8 +170,7 @@ angular.module('workflow',
             'atomWorkshopNewAtom': _wfConfig.atomWorkshop.create,
             'atomWorkshopViewAtom': _wfConfig.atomWorkshop.view,
             'atomTypes': _wfConfig.atomTypes,
-            'sessionId': _wfConfig.sessionId,
-            'gaId': _wfConfig.googleTrackingId
+            'sessionId': _wfConfig.sessionId
         }
     )
     .constant({ 'statuses': _wfConfig.statuses })
@@ -208,8 +205,6 @@ angular.module('workflow',
     ]}).component('topToolbarTitle', react2angular(TopToolbarTitle,[
         'title',
     ]))
-
-    .run(['wfAnalyticsService', function(){}])
     .run(['$document', '$rootScope', function ($document, $rootScope) {
         $document.on('keydown', function(event) {
             if (event.shiftKey && event.keyCode === 123) {            

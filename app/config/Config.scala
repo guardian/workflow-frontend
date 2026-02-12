@@ -36,6 +36,7 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val mediaAtomMakerUrl: String = s"https://video.$domain"
   lazy val atomWorkshopUrl: String = s"https://atomworkshop.$domain"
+  lazy val telemetryUrl: String = s"https://user-telemetry.$domain"
 
   private lazy val composerUrls: Set[String] = stage match {
     case Dev => Set(composerUrl) // Composer secondary does not exist in DEV
@@ -62,7 +63,8 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val corsAllowedDomains: Set[String] = composerUrls +
     mediaAtomMakerUrl ++ allowDevServiceToCallWorkflowCode("video") +
     atomWorkshopUrl ++ allowDevServiceToCallWorkflowCode("atomworkshop") +
-    s"https://recipes.$domain" ++ allowDevServiceToCallWorkflowCode("recipes")
+    s"https://recipes.$domain" ++ allowDevServiceToCallWorkflowCode("recipes") +
+    telemetryUrl
 
   lazy val presenceUrl: String = s"wss://presence.$domain/socket"
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
@@ -87,8 +89,6 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val storyPackagesUrl: String = s"https://packages.$domain"
 
-  lazy val googleTrackingId: String = playConfig.get[String]("google.tracking.id")
-
   lazy val no2faUser: String = "composer.test@guardian.co.uk"
 
   lazy val editorialSupportDynamoTable: String = stage match {
@@ -105,7 +105,6 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val pandaSystem: String = "workflow"
   lazy val pandaBucketName: String = "pan-domain-auth-settings"
-  lazy val pandaSettingsFile: String = s"$domain.settings"
 
   lazy val loggingStreamName: Option[String] = playConfig.getOptional[String]("aws.kinesis.logging.streamName")
   lazy val loggingRole: Option[String] = playConfig.getOptional[String]("aws.kinesis.logging.stsRoleToAssume")

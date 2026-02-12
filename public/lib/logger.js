@@ -1,36 +1,36 @@
-define([
-'angular',
-'moment'],
-function(angular, moment) {
+import angular from 'angular';
+import moment from 'moment';
 
-    /*
-     * This decorator provides a simple wrapper around logging to make it easier
-     * to get information from the client.
-     */
-    var LOG_URL = "/support/logger";
+/*
+ * This decorator provides a simple wrapper around logging to make it easier
+ * to get information from the client.
+ */
+var LOG_URL = "/support/logger";
 
-    var logger = angular.module('logger', []);
+var logger = angular.module('logger', []);
 
-    logger.factory('logger', ['$injector', function($injector) {
+logger.factory('logger', ['$injector', function($injector) {
 
-        function send(message, level, fields) {
-            var $http = $injector.get('$http');
+    function send(message, level, fields) {
+        var $http = $injector.get('$http');
 
-            var data = {
-                timestamp: moment().format("YYYY-MM-DDTHH:mm:ss.SSSZZ"),
-                message: message,
-                level: level || "INFO",
-                fields: fields
-            };
-
-            return $http({method: 'POST',
-                   url: LOG_URL,
-                   data: data
-                  });
-        }
-
-        return {
-            log: send
+        var data = {
+            timestamp: moment().format("YYYY-MM-DDTHH:mm:ss.SSSZZ"),
+            message: message,
+            level: level || "INFO",
+            fields: fields
         };
-    }]);
-});
+
+        return $http({
+            method: 'POST',
+            url: LOG_URL,
+            data: data
+        }).catch(function onError() {
+            console.warn("/support/logger request failed")
+        });
+    }
+
+    return {
+        log: send
+    };
+}]);

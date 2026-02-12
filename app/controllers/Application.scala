@@ -60,7 +60,7 @@ class Application(
   def dashboard = app("Workflow")
 
   def training = AuthAction { request =>
-    Ok(views.html.training())
+    Redirect("https://sites.google.com/a/guardian.co.uk/esd/web-tools/composer-workflow/workflow/how-to-use-workflow-quick-instructions")
   }
 
   def faqs = AuthAction { request =>
@@ -146,8 +146,9 @@ class Application(
         ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
         ("atomTypes", config.atomTypes.asJson),
         ("sessionId", Json.fromString(config.sessionId)),
-        ("gaId", Json.fromString(config.googleTrackingId)),
-        ("tagManagerUrl",Json.fromString(config.tagManagerUrl))
+        ("tagManagerUrl", Json.fromString(config.tagManagerUrl)),
+        ("stage", Json.fromString(config.stage.toString)),
+        ("telemetryUrl", Json.fromString(config.telemetryUrl))
       )
 
       val hasPinboardPermission = permissions.hasPermission(pinboardPermission, request.user.email)
@@ -156,7 +157,6 @@ class Application(
         title,
         Some(user),
         config = jsonConfig,
-        gaId = config.googleTrackingId,
         presenceClientLib = config.presenceClientLib,
         maybePinboardLoaderUrl = if(hasPinboardPermission) Some(config.pinboardLoaderUrl) else None
       ))

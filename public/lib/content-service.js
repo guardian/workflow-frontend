@@ -6,6 +6,7 @@ import './atom-workshop-service'
 import './http-session-service';
 import './user';
 import './visibility-service';
+import { provideFormats } from './model/format-helpers.ts'
 
 angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService'])
     .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService', 'config',
@@ -15,33 +16,12 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
 
             class ContentService {
 
-                provideFormats(featureSwitches){
-                    const articleFormats = {
-                        "article": "Article",
-                        "keyTakeaways": "Key Takeaways",
-                        "qAndA": "Q&A Explainer",
-                        "timeline": "Timeline",
-                        "miniProfiles": "Mini profiles"
-                    }
-
-                    const nonArticleFormats = {
-                        "liveblog": "Live blog",
-                        "gallery": "Gallery",
-                        "interactive": "Interactive",
-                        "picture": "Picture",
-                        "audio": "Audio",
-                        "atom": "Video/Atom"
-                    }
-                    // Assembling the object this way preserves the existing order in the UI
-                    return Promise.resolve({...articleFormats, ...nonArticleFormats}); 
-                }
-
                 getTypes() {
                     return wfPreferencesService.getPreference('featureSwitches')
-                    .then((featureSwitches) => {
-                        return this.provideFormats(featureSwitches)
-                    })
-                    .catch((err) => {return this.provideFormats()})
+                        .then((featureSwitches) => {
+                            return provideFormats(featureSwitches)
+                        })
+                        .catch((err) => { return provideFormats() })
                 }
 
                 /* what types of stub should be treated as atoms? */
@@ -109,9 +89,24 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  * Also will create the stub if it doesn't have an id.
                  */
                 createInComposer(stub, statusOption) {
-                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template, stub.articleFormat)
+                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template, stub.articleFormat, stub.priority, stub.missingCommissionedLengthReason)
                         .then((response) => wfComposerService.parseComposerData(response, stub))
                         .then((updatedStub) => {
+
+                            // log uses of the missingCommissionedLengthReason option
+                            if (stub.missingCommissionedLengthReason) {
+                                const data = {
+                                    message: `Draft created without commissionedLength: ${stub.missingCommissionedLengthReason}`,
+                                    missingCommissionedLengthReason: stub.missingCommissionedLengthReason,
+                                    composerId: updatedStub.composerId ?? null,
+                                    prodOffice: updatedStub.prodOffice,
+                                    contentType: updatedStub.contentType,
+                                    section: updatedStub.section?.name,
+                                    title: updatedStub.title,
+                                }
+                                $log.info(JSON.stringify(data))
+                            }
+
 
                             if (statusOption) {
                                 updatedStub['status'] = statusOption;
@@ -265,6 +260,8 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                         'hasPrintInfo': modelParams['hasPrintInfo'] || null,
                         'hasMainMedia': modelParams['hasMainMedia'] || null,
                         'rights': modelParams['rights'] || null,
+                        'display-hint': modelParams["display-hint"],
+                        'article-format': modelParams["article-format"],
                     };
 
                     return params;

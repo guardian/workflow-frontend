@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { provideListElementFormatsForFilterList, provideNonListElementDisplayHintFormatsForFilterList } from './model/format-helpers.ts'
 
 /**
  * This returned array represents the default configuration of the sidebar filters list.
@@ -22,7 +23,7 @@ import moment from 'moment';
  * }
  */
 
-var filterDefaults = function (statuses, wfFiltersService) {
+var filterDefaults = function (statuses, wfFiltersService, featureSwitches = {}) {
 
     return [
         {
@@ -49,7 +50,7 @@ var filterDefaults = function (statuses, wfFiltersService) {
         },
         {
             title: 'Content type',
-            namespace: 'content-type',
+            namespace: 'article-format',
             listIsOpen: false,
             multi: true,
             filterOptions: [
@@ -59,7 +60,9 @@ var filterDefaults = function (statuses, wfFiltersService) {
                 { caption: 'Liveblog', value: 'liveblog', icon: 'liveblog' },
                 { caption: 'Picture', value: 'picture', icon: 'picture' },
                 { caption: 'Video', value: 'video,media', icon: 'video' },
-                { caption: 'Audio', value: 'audio', icon: 'audio' }
+                { caption: 'Audio', value: 'audio', icon: 'audio' },
+                ...provideListElementFormatsForFilterList(featureSwitches),
+                ...provideNonListElementDisplayHintFormatsForFilterList(),
             ]
         },
         {

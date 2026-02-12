@@ -1,9 +1,11 @@
 import angular from 'angular';
+import './telemetry-service';
+import { getListElementFormatFromLabel, contentTypeToComposerContentType, listElementArticleFormats } from './model/special-formats.ts';
 
-angular.module('wfComposerService', [])
-    .service('wfComposerService', ['$http', '$q', 'config', '$log', 'wfHttpSessionService', wfComposerService]);
+angular.module('wfComposerService', ['wfTelemetryService'])
+    .service('wfComposerService', ['$http', '$q', 'config', '$log', 'wfHttpSessionService', 'wfTelemetryService', wfComposerService]);
 
-function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
+function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTelemetryService) {
 
     const request = wfHttpSessionService.request;
 
@@ -12,6 +14,16 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
     function composerUpdateFieldUrl(fieldName, contentId) {
         function liveOrPreview(isPreview) {
             return `${composerContentFetch}${contentId}/${isPreview ? "preview" : "live"}/fields/${fieldName}`
+        }
+        return {
+            preview: liveOrPreview(true),
+            live:    liveOrPreview(false)
+        }
+    }
+
+    function composerUpdateSettingUrl(settingName, contentId) {
+        function liveOrPreview(isPreview) {
+            return `${composerContentFetch}${contentId}/${isPreview ? "preview" : "live"}/settings/${settingName}`
         }
         return {
             preview: liveOrPreview(true),
@@ -35,6 +47,10 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
     const composerParseMap = {
         composerId: (d) => d.id,
         contentType: (d) => d.type,
+        articleFormat: (d) => {
+            const displayHint = deepSearch(d, ['preview', 'data', 'settings', 'displayHint', 'data'])
+            return listElementArticleFormats.find(f => f.value === displayHint)?.label
+        },
         headline: (d) => deepSearch(d, ['preview', 'data', 'fields', 'headline', 'data']) || undefined,
         published: (d) => d.published,
         timePublished: (d) => new Date(deepSearch(d, ['contentChangeDetails', 'data', 'published', 'date']) || undefined),
@@ -48,7 +64,9 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         revision: (d) => deepSearch(d, ['contentChangeDetails', 'data', 'revision']),
         lastModified: (d) => new Date(deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'date']) || undefined),
         lastModifiedBy: (d) => deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'user', 'firstName']) + ' ' + deepSearch(d, ['contentChangeDetails', 'data', 'lastModified', 'user', 'lastName']),
-        commissionedLength: (d) => deepSearch(d, ['preview', 'data', 'fields', 'commissionedLength', 'data']) || undefined
+        commissionedLength: (d) => deepSearch(d, ['preview', 'data', 'fields', 'commissionedLength', 'data']) || undefined,
+        missingCommissionedLengthReason: (d) => deepSearch(d, ['preview', 'data', 'fields', 'missingCommissionedLengthReason', 'data']) || undefined,
+        displayHint: (d) => deepSearch(d, ['preview', 'data', 'settings', 'displayHint', 'data']) || undefined,
     };
 
 
@@ -80,42 +98,12 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
 
     this.getComposerContent = getComposerContent;
     this.parseComposerData = parseComposerData;
-
-    const getDisplayHint = (articleFormat) => {
-        switch (articleFormat){
-            case "Key Takeaways":
-                return "keyTakeaways"
-            case "Q&A Explainer":
-                return "qAndA"
-            case "Timeline":
-                return "timeline"
-            case "Mini profiles":
-                return "miniProfiles"
-            default:
-                return undefined
-        }
-    }
     
-    const getType = (type) => {
-        switch (type){
-            case 'keyTakeaways':
-                return 'article'
-            case 'qAndA':
-                return 'article'
-            case "timeline":
-                return "article"
-            case "miniProfiles":
-                return "article"
-            default:
-                return type
-        }
-    }
-
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat) {
-        var selectedDisplayHint = getDisplayHint(articleFormat);
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority, missingCommissionedLengthReason) {
+        var selectedDisplayHint = getListElementFormatFromLabel(articleFormat)?.value;
         
         var params = {
-            'type': getType(type),
+            'type': contentTypeToComposerContentType(type),
             'tracking': commissioningDesks,
             'productionOffice': prodOffice,
             'displayHint': selectedDisplayHint,
@@ -123,10 +111,42 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         };
 
         if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
-        
+        if(missingCommissionedLengthReason) params['missingCommissionedLengthReason'] = missingCommissionedLengthReason;
+
         if(template) {
             params['template'] = template.id;
         }
+
+        const commissioningDeskExternalName = _wfConfig.commissioningDesks
+            .find(desk  => desk.id.toString() === commissioningDesks)?.externalName;
+
+        const getPriorityName = (priority) => {
+            switch (priority){
+                case -2:
+                    return 'Very Low'
+                case -1:
+                    return 'Low'
+                case 0:
+                    return 'Normal'
+                case 1:
+                    return 'Urgent'
+                case 2:
+                    return 'Very Urgent'
+                default:
+                    return 'Unknown'
+            }
+        }
+
+        const tags = {
+            contentType: contentTypeToComposerContentType(type),
+            productionOffice: prodOffice,
+            priority: getPriorityName(priority),
+        }
+        if(selectedDisplayHint !== null && selectedDisplayHint !== undefined) tags.displayHint = selectedDisplayHint;
+        if(commissionedLength !== null && commissionedLength !== undefined) tags.commissionedLength = commissionedLength.toString();
+        if(commissioningDeskExternalName !== null && commissioningDeskExternalName !== undefined) tags.commissioningDesk = commissioningDeskExternalName;
+        if(missingCommissionedLengthReason !== null && missingCommissionedLengthReason !== undefined) tags.missingCommissionedLengthReason = missingCommissionedLengthReason;
+        wfTelemetryService.sendTelemetryEvent("WORKFLOW_CREATE_IN_COMPOSER_TRIGGERED", tags);
 
         return request({
             method: 'POST',
@@ -158,6 +178,32 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         return request(req);
     };
 
+    this.updateFieldInPreviewAndLive = function (composerId, fieldName, value) {
+        return Promise.all([
+            this.updateField(composerId, fieldName, value, false),
+            this.updateField(composerId, fieldName, value, true)
+        ]);
+    }
+
+    this.updateSetting = function (composerId, settingName, value, live = false) {
+        let urls = composerUpdateSettingUrl(settingName, composerId);
+        let url = live ? urls.live : urls.preview;
+        let req = {
+            method: 'PUT',
+            url: url,
+            data: `"${value}"`,
+            withCredentials: true
+        };
+        return request(req);
+    };
+
+    this.updateSettingInPreviewAndLive = function (composerId, settingName, value) {
+        return Promise.all([
+            this.updateSetting(composerId, settingName, value, false),
+            this.updateSetting(composerId, settingName, value, true)
+        ]);
+    }
+
     this.deleteField = function (composerId, fieldName, live = false) {
         let urls = composerUpdateFieldUrl(fieldName, composerId);
         let url = live ? urls.live : urls.preview;
@@ -168,6 +214,13 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService) {
         };
         return request(req);
     };
+
+    this.deleteFieldInPreviewAndLive = function (composerId, fieldName) {
+        return Promise.all([
+            this.deleteField(composerId, fieldName, false),
+            this.deleteField(composerId, fieldName, true)
+        ]);
+    }
 
     /**
      * Update rights information for the given piece.

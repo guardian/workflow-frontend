@@ -232,6 +232,11 @@ function wfContentListController($rootScope, $scope, $anchorScroll, statuses, pr
         }
     })(this);
 
+    $scope.toggleHeadlineDisplay = () => {
+        this.showHeadline = ! this.showHeadline;
+    }
+    $scope.getHeadlineDisplay = () => this.showHeadline;
+
     this.newItem = function () {
         $scope.$emit('stub:create');
     };

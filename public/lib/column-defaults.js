@@ -75,6 +75,15 @@ const createSortTemplate = (colName, sortField, labelHTML, flipSortIconDirection
   `;
 };
 
+const createCustomHeadlineLabelHtml = () => {
+    return `
+        <i ng-click="toggleHeadlineDisplay(); $event.stopPropagation()"
+           title="Click to toggle Headlines"
+           class="content-list-head__heading-icon--headline-toggle" wf-icon="{{ getHeadlineDisplay()? 'toggle-right': 'toggle-left' }}"></i>
+        <span ng-class="{'content-list-head__heading--titles--secondary': getHeadlineDisplay()}">Working title</span> / <span ng-class="{ 'content-list-head__heading--titles--secondary': !getHeadlineDisplay()}">Headline</span>
+    `;
+};
+
 export const getSortField = column => column
   && column.isSortable
   && (column.sortField || [column.name]);
@@ -82,7 +91,7 @@ export const getSortField = column => column
 const columnDefaults = [{
     name: 'priority',
     prettyName: 'Priority',
-    labelHTML: '<i class="content-list-item__icon--priority" wf-icon="priority-neutral" />',
+    labelHTML: '<i class="content-list-item__icon--priority" wf-icon="priority-neutral"></i>',
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'priority.html',
@@ -105,7 +114,7 @@ const columnDefaults = [{
 },{
     name: 'titles',
     prettyName: 'Working title / Headline',
-    labelHTML: 'Working title / Headline',
+    labelHTML: createCustomHeadlineLabelHtml(),
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'title.html',
@@ -242,7 +251,7 @@ const columnDefaults = [{
 },{
     name: 'presence',
     prettyName: 'Presence',
-    labelHTML: '<div ng-switch="presenceIsActive"><i class="content-list-head__heading-icon--presence" ng-switch-when="false" wf-icon="presence-unavailable"/><i class="content-list-head__heading-icon--presence" ng-switch-default wf-icon="presence"/></div>',
+    labelHTML: '<div ng-switch="presenceIsActive"><i class="content-list-head__heading-icon--presence" ng-switch-when="false" wf-icon="presence-unavailable"></i><i class="content-list-head__heading-icon--presence" ng-switch-default wf-icon="presence"/></i></div>',
     colspan: 1,
     title: 'In use by',
     unavailableTitle: 'Presence is currently unavailable, reloading your browser might fix this.',
@@ -252,7 +261,7 @@ const columnDefaults = [{
 },{
     name: 'assignee',
     prettyName: 'Assignee',
-    labelHTML: '<i class="content-list-head__heading-icon--assignee" wf-icon="assigned-to"/>',
+    labelHTML: '<i class="content-list-head__heading-icon--assignee" wf-icon="assigned-to"></i>',
     colspan: 1,
     title: 'Assigned to',
     templateUrl: templateRoot + 'assignee.html',
@@ -312,6 +321,17 @@ const columnDefaults = [{
     isSortable: true,
     sortField: ['statusInPrint']
 },{
+    name: 'commissionedLength',
+    prettyName: 'Commissioned Length',
+    labelHTML: 'Commissioned Length',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'commissionedLength.html',
+    template: commissionedLengthTemplate,
+    active: true,
+    isSortable: true,
+    sortField: ['missingCommissionedLengthReason', 'commissionedLength']
+},{
     name: 'wordcount',
     prettyName: 'Web wordcount',
     labelHTML: 'Web words',
@@ -347,16 +367,6 @@ const columnDefaults = [{
     isSortable: true,
     defaultSortOrder: ['asc', 'desc', 'asc'],
     sortField: ['printLocationBookSection', 'printLocationPublicationDate', 'printLocationPageNumber']
-},{
-    name: 'commissionedLength',
-    prettyName: 'Commissioned Length',
-    labelHTML: 'Commission',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'commissionedLength.html',
-    template: commissionedLengthTemplate,
-    active: true,
-    isSortable: true
 },{
     name: 'links',
     prettyName: 'Open in...',

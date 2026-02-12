@@ -39,8 +39,12 @@ class FeatureSwitches {
 }
 
 function wfFeatureSwitchesController ($scope, wfPreferencesService) {
-    const featureSwitchKeys = [];
-    $scope.readableNames = {}
+    const featureSwitchKeys = [
+        // e.g. 'multiByline'
+    ];
+    $scope.readableNames = {
+        // e.g. 'multiByline': 'Multi-byline',
+    }
 
     const getDefaultFeatureSwitchValues = () => {
         const switches = {};

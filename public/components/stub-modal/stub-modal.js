@@ -14,33 +14,27 @@ import 'lib/legal-states-service';
 import 'lib/picture-desk-states-service';
 import 'lib/filters-service';
 import 'lib/prodoffice-service';
+import 'lib/telemetry-service';
 import { punters } from 'components/punters/punters';
+import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNativeFormFeedback } from '../../lib/stub-form-validation.ts';
+import { setDisplayHintForFormat } from 'lib/model/special-formats.ts';
+import { getArticleFormatLabel, isFormatLabel } from 'lib/model/format-helpers.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
-    'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService'])
+    'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService', 'wfTelemetryService'])
     .directive('punters', ['$rootScope', punters]);
 
 function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, config, stub, mode,
      sections, statusLabels, articleFormatService, legalStatesService, pictureDeskStatesService, wfComposerService, wfProdOfficeService, wfContentService,
-     wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService) {
+     wfPreferencesService, wfFiltersService, sectionsInDesks, wfCapiAtomService, wfTelemetryService) {
 
     wfContentService.getTypes().then( (types) => {
         $scope.contentName =
             (wfContentService.getAtomTypes())[stub.contentType] ?
             "Atom" : (types[stub.contentType] || "News item");
             
-        $scope.stubFormat = ''
-        if (stub.contentType === 'article') {
-            $scope.stubFormat = "Standard Article"
-        } else if (stub.contentType === 'keyTakeaways') {
-            $scope.stubFormat = "Key Takeaways"
-        } else if (stub.contentType === 'qAndA') {
-            $scope.stubFormat = "Q&A Explainer"
-        } else if (stub.contentType === 'timeline') {
-            $scope.stubFormat = "Timeline"
-        } else if (stub.contentType === 'miniProfiles') {
-            $scope.stubFormat = "Mini profiles"
-        } 
+        $scope.stubFormat = getArticleFormatLabel(stub.contentType);
+ 
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
         })
@@ -53,6 +47,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             'import': 'Import Existing Content'
         })[mode];
     });
+
+    $scope.stubFormatIsCorrectlyPopulated = function() {     
+        return isFormatLabel($scope.stubFormat)
+    }
 
     $scope.loadingTemplates = true;
 
@@ -159,6 +157,15 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.validImport = false;
     $scope.wfComposerState;
 
+    $scope.warningMessages = undefined
+    $scope.$watch('stub', (newStub) => {
+        $scope.warningMessages = generateErrorMessages(newStub)
+    }, true)
+
+    $scope.isCommissionedLengthRequired = () => doesContentTypeRequireCommissionedLength($scope.stub.contentType);
+
+    $scope.requiredAttrForCommissionedLength = () => doesContentTypeRequireCommissionedLength($scope.stub.contentType) && !$scope.stub.missingCommissionedLengthReason ? 'true' : null
+
     /* when a request is made to import an item from another tool,
      * e.g. composer or an atom editor, then we will check to see if
      * it is already being tracked by Workflow. If, this function will
@@ -253,6 +260,14 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
     };
 
+    $scope.resetCommissionedLength = () => {
+        $scope.stub.commissionedLength = null;
+    }
+
+    $scope.resetMissingCommissionedLengthReason = () => {
+        $scope.stub.missingCommissionedLengthReason = null;
+    }
+
     $scope.commissionedLengthSuggestions = [
         400,
         650,
@@ -260,14 +275,59 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         1200,
     ]
 
+    $scope.sendTelemetryForSuggestion = (value, missingCommissionedLengthReason = null) => {
+        const commissioningDesk = $scope.cdesks.find(desk  => desk.id.toString() === stub.commissioningDesks)?.externalName;
+        const tags = {
+            contentId: stub.id,
+            productionOffice: stub.prodOffice,
+            commissioningDesk
+        }
+        if (missingCommissionedLengthReason) tags['missingCommissionedLengthReason'] = missingCommissionedLengthReason;
+        if(wfTelemetryService !== null && wfTelemetryService !== undefined) {
+            wfTelemetryService.sendTelemetryEvent(
+                "WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED",
+                tags,
+                value
+            )
+        }
+    }
+
+    $scope.sendTelemetryForImport = (contentName) => {
+        if(contentName === 'Atom') {
+            return;
+        }
+        const tags = {
+            contentId: stub.composerId,
+            productionOffice: stub.prodOffice,
+            commissioningDesk: stub.section?.name,
+            commissionedLength: stub.commissionedLength,
+            contentType: stub.contentType
+        }
+        if(wfTelemetryService !== null && wfTelemetryService !== undefined) {
+            wfTelemetryService.sendTelemetryEvent(
+                "WORKFLOW_CONTENT_IMPORTED_FROM_COMPOSER",
+                tags,
+                true
+            )
+        }
+    }
+
+    $scope.setPriorityToVeryUrgent = () => {
+        $scope.stub.priority = 2;
+    }
+
     $scope.submit = function (form) {
-        if (form.$invalid)
+        if (form.$invalid) {
+            useNativeFormFeedback($scope.stub)
             return;  // Form is not ready to submit
+        }
         if ($scope.actionSuccess) { // Form has already been submitted successfully
-            if ($scope.composerUrl)
+            if ($scope.composerUrl) {
                 window.open($scope.composerUrl, "_blank");
-            if ($scope.editorUrl)
+            }
+            if ($scope.editorUrl) {
                 window.open($scope.editorUrl, "_blank");
+            }
             $scope.cancel()
         }
         else {
@@ -277,9 +337,22 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
     };
 
+    $scope.updateCommissionedLengthInComposer = function() {
+        const commissionedLength = $scope.stub.commissionedLength;
+        const missingCommissionedLengthReason = $scope.stub.missingCommissionedLengthReason;
+
+        [null, undefined].includes(commissionedLength)
+            ? wfComposerService.deleteFieldInPreviewAndLive(stub.composerId, 'commissionedLength')
+            : wfComposerService.updateFieldInPreviewAndLive(stub.composerId, 'commissionedLength', commissionedLength);
+
+        [null, undefined].includes(missingCommissionedLengthReason)
+            ? wfComposerService.deleteFieldInPreviewAndLive(stub.composerId, 'missingCommissionedLengthReason')
+            : wfComposerService.updateFieldInPreviewAndLive(stub.composerId, 'missingCommissionedLengthReason', missingCommissionedLengthReason);
+    }
+
     $scope.ok = function (addToComposer, addToAtomEditor) {
-        const stub = $scope.stub;
-        console.log("stub", stub)
+        const stub = setDisplayHintForFormat ($scope.stub);
+        
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {
                 stub.contentType = $scope.stub.contentType.toLowerCase();
@@ -431,29 +504,8 @@ wfStubModal.run([
         function setUpPreferredStub (contentType) {
 
             function createStubData (contentType, sectionName) {
-                let chosenArticleFormat = ""
-                switch (contentType) {
-                    case "article":
-                        chosenArticleFormat = "Standard Article"
-                        break;
-                    case "keyTakeaways":
-                        chosenArticleFormat = "Key Takeaways"
-                        break;
-                    case "qAndA":
-                        chosenArticleFormat = "Q&A Explainer"
-                        break;
-                    case "timeline":
-                        chosenArticleFormat = "Timeline"
-                        break;
-                    case "miniProfiles":
-                        chosenArticleFormat = "Mini profiles"
-                        break;
-                    default:
-                        break;
-                }
-
                 return {
-                    articleFormat: chosenArticleFormat,
+                    articleFormat: getArticleFormatLabel(contentType),
                     contentType: contentType === "atom" ? defaultAtomType : contentType,
                     // Only send through a section if one is found in the prefs
                     section: sectionName === null ? sectionName : sections.filter((section) => section.name === sectionName)[0],
@@ -500,7 +552,7 @@ wfStubModal.run([
                     mode: () => mode
                 }
             });
-        };
+        }
     }]).directive('wfFocus', ['$timeout', function($timeout){
       return {
           restrict: "A",
@@ -510,4 +562,17 @@ wfStubModal.run([
               }
           }
       };
-    }]);
+    }]).directive('stringToNumber', function() {
+    return {
+        require: 'ngModel',
+        link: function(scope, element, attrs, ngModel) {
+            ngModel.$parsers.push(function(value) {
+                return '' + value;
+            });
+            ngModel.$formatters.push(function(value) {
+                return parseFloat(value);
+            });
+        }
+    };
+});
+

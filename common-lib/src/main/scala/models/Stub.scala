@@ -38,6 +38,7 @@ case class ExternalData(
                          hasMainMedia: Option[Boolean] = None,
                          commentable: Option[Boolean] = None,
                          commissionedLength: Option[Int] = None,
+                         missingCommissionedLengthReason: Option[String] = None,
                          actualPublicationId: Option[Long] = None,
                          actualBookId: Option[Long] = None,
                          actualBookSectionId: Option[Long] = None,
@@ -51,7 +52,8 @@ case class ExternalData(
                          rightsSyndicationAggregate: Option[Boolean] = None,
                          rightsSubscriptionDatabases: Option[Boolean] = None,
                          rightsDeveloperCommunity: Option[Boolean] = None,
-                         byline: Option[String] = None) {
+                         byline: Option[String] = None,
+                         displayHint: Option[String] = None) {
 }
 
 object ExternalData {

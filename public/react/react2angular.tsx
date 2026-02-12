@@ -18,7 +18,7 @@ import { render, unmountComponentAtNode } from 'react-dom'
  *   const AngularComponent = react2angular(ReactComponent, ['foo'])
  *   ```
  */
-export function react2angular<Props>(
+export function react2angular<Props extends Map<string, any>>(
     Class: React.ComponentType<Props>,
     bindingNames: (keyof Props)[],
     injectNames: string[] = []

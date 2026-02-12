@@ -24,6 +24,11 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                     $rootScope.$broadcast('getContent');
                 });
 
+                $rootScope.$on('filtersChanged.article-format', function(event, data) {
+                    self.update('article-format', data);
+                    $rootScope.$broadcast('getContent');
+                });
+
                 $rootScope.$on('filtersChanged.atom-type', function(event, data) {
                     self.update('atom-type', data);
                     $rootScope.$broadcast('getContent');
@@ -200,7 +205,9 @@ angular.module('wfFiltersService', ['wfDateService', 'wfTrustedHtml'])
                         'editorId'       : params['editorId'],
                         'hasPrintInfo'   : params['hasPrintInfo'],
                         'hasMainMedia'   : params['hasMainMedia'],
-                        'hasAnyRights'   : params['rights']
+                        'hasAnyRights'   : params['rights'],
+                        'display-hint'   : params['display-hint'],
+                        'article-format' : params['article-format'],
                     };
 
                     $rootScope.currentlySelectedStatusFilters = self.transformStatusList(self.filters['status']);

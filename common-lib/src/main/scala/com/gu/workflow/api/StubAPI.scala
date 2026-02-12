@@ -95,6 +95,13 @@ class StubAPI(
       item <- extractDataResponse[Long](json)
     } yield item
 
+  def putStubDisplayHint(id: Long, displayHint: Option[String]): ApiResponseFt[Long] =
+    for {
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$id/displayHint", displayHint.asJson))
+      json <- parseBody(res.body)
+      item <- extractDataResponse[Long](json)
+    } yield item
+
   def putStubTrashed(id: Long, trashed: Boolean): ApiResponseFt[Long] =
     for {
       res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$id/updateTrashed", trashed.asJson))
@@ -196,6 +203,13 @@ class StubAPI(
   def updateContentCommissionedLength(stubId: Long, commissionedLength: Option[Int]): ApiResponseFt[Long] =
     for {
       res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/commissionedLength", commissionedLength.asJson))
+      json <- parseBody(res.body)
+      item <- extractDataResponse[Long](json)
+    } yield item
+
+  def updateContentMissingCommissionedLengthReason(stubId: Long, missingCommissionedLengthReason: Option[String]): ApiResponseFt[Long] =
+    for {
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/missingCommissionedLengthReason", missingCommissionedLengthReason.asJson))
       json <- parseBody(res.body)
       item <- extractDataResponse[Long](json)
     } yield item
