@@ -46,7 +46,7 @@
     "ts-loader": "^9.5.1",
     "typescript": "^4.6.2",
     "url-loader": "^4.1.1",
-    "webpack": "5.94.0",
+    "webpack": "5.104.1",
     "webpack-cli": "^5.1.4",
     "webpack-manifest-plugin": "^5.0.0",
     "webpack-merge": "^4.2.2"
@@ -65,7 +65,7 @@
     "jquery": "3.5.0",
     "jquery-ui": "1.13.3",
     "keycode": "^2.2.0",
-    "lodash": "4.17.21",
+    "lodash": "4.17.23",
     "moment": "^2.11.2",
     "moment-timezone": "0.5.45",
     "ng-infinite-scroll": "1.2.0",
