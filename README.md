@@ -32,11 +32,12 @@ Frontend features:
 
 ### Prerequisites
 
-- **jenv** (Java version manager)
-- **nvm** or **fnm** (Node version manager)
+- Java 11
+- Node
+- sbt
 - AWS credentials: `workflow` and `capi` (API Gateway invocation) profiles from Janus
 
-Workflow Frontend needs to talk to a workflow datastore and a preferences datastore. It can use either a local backend or the CODE environment.
+Workflow Frontend needs to talk to  workflow [Datastore](https://github.com/guardian/workflow/blob/main/README.md#2-getting-started) and [Preferences](https://github.com/guardian/editorial-preferences). It can use either a local backend or the CODE environment.
 
 ### Setup
 
@@ -46,21 +47,17 @@ Workflow Frontend needs to talk to a workflow datastore and a preferences datast
    ./scripts/setup.sh
    ```
 
-   This installs Homebrew dependencies (awscli, yarn, gu-scala, dev-nginx, ssm), installs JS dependencies via Yarn, and configures a local nginx proxy mapping `workflow` to port 9090.
-
 2. Download the DEV config:
 
    ```sh
    ./scripts/fetch-config.sh
    ```
 
-   This downloads configuration from S3 to `~/.gu/workflow-frontend-application.local.conf`.
-
 If you encounter a `Module build failed` error due to Node Sass during setup, run `npm rebuild node-sass`.
 
 ### Connecting to a datastore
 
-#### CODE (recommended for most development)
+#### CODE 
 
 Create an SSH tunnel to a workflow-frontend CODE instance. You will need [ssm-scala](https://github.com/guardian/ssm-scala) installed.
 
@@ -82,38 +79,17 @@ curl -is http://localhost:9095/management/healthcheck
 ./scripts/start.sh
 ```
 
-This runs `yarn build-dev` (Webpack in watch mode) and `sbt run` concurrently. Navigate to https://workflow.local.dev-gutools.co.uk.
-
-Optional flags:
-- `--debug` — enable JVM remote debugging on port 5005
-- `--ship-logs` — enable local log shipping
-
-**Note:** When running locally, some functionality will not work:
-- CAPI integration
-- Presence indicators
-- "Assign to me"
-
 Certain features require running other services locally, e.g. run [atom-workshop](https://github.com/guardian/atom-workshop) locally to test creating Chart atoms through Workflow.
 
-### Testing
+Note: when running Workflow Frontend locally, some functionality will currently not work. 
 
-```sh
-yarn test          # single run
-yarn test-watch    # watch mode with auto-rebuild
-yarn lint          # ESLint on public/**/**/*.js
-```
-
-Backend tests are run via SBT:
-
-```sh
-sbt test
-```
+  * Connect to CAPI
+  * Presence 
+  * 'Assign to me'
 
 ### Deploying
 
 This project uses continuous deployment on the `main` branch. Merging to `main` triggers a build and deploy via RiffRaff. If you suspect your change hasn't deployed, look for the `Editorial Tools::Workflow::Workflow Frontend` project in RiffRaff.
-
-Deployment is to an auto-scaling group in `eu-west-1`, using an AMI built on Ubuntu 22.04 (Jammy) with Java 11.
 
 ### Admin Permissions
 
@@ -121,79 +97,13 @@ The `/admin` path allows management of desks and sections. Access is controlled 
 
 ## 3. How It Works
 
-### Tech stack
-
-| Layer | Technology |
-|-------|-----------|
-| Backend | Scala 2.13, Play Framework 3.0.x |
-| Frontend | AngularJS 1.8.3 (primary), React 17 (incremental migration) |
-| Styling | SCSS, Bootstrap 3.4.1, Emotion (React components) |
-| Build (Scala) | SBT |
-| Build (JS) | Webpack 5, TypeScript 4.6, Babel |
-| Testing (JS) | Karma, Mocha, Chai, Sinon |
-| Testing (Scala) | ScalaTest, ScalaMock |
-| Auth | Pan-Domain Auth (panda), HMAC headers |
-| Infrastructure | AWS (EC2 auto-scaling, DynamoDB, S3), RiffRaff |
-
 ### Architecture
 
-Workflow is split across two repositories:
-
-- **workflow-frontend** (this repo) — the user-facing web application and its Scala API layer.
-- **[workflow](https://github.com/guardian/workflow)** (backend) — the data layer and core business logic.
-
-Within this repo, the application has three main components:
-
-#### Scala API server (`app/`)
-
-A Play Framework application that serves the frontend HTML and exposes a REST API (60+ endpoints). Key controllers:
-
-- **Application** — serves the dashboard, editorial support, FAQ, and troubleshooting pages.
-- **Api** — the primary REST API for content and stub CRUD (list/create content, update stub properties like status, assignee, priority, due date, legal status, production office, etc.).
-- **Admin** — desk and section management (create, delete, assign sections to desks).
-- **CAPIService** — proxies requests to the Guardian Content API for preview.
-- **PeopleService** — user search for assignee lookups.
-- **Login** — Pan-Domain Auth OAuth flow.
-- **Management** — healthcheck endpoint.
-
-The server uses `AppLoader` → `AppComponents` for dependency injection (compile-time DI via Play's `BuiltInComponentsFromContext`).
-
-Configuration is assembled from files on the instance (`/etc/gu/*.conf`) and a local override file during development (`~/.gu/workflow-frontend-application.local.conf`). The app reads AWS instance tags to determine its stage (Dev, Code, or Prod) and derives service URLs accordingly.
-
-#### Frontend application (`public/`)
-
-A **hybrid AngularJS/React** single-page application:
-
-- **AngularJS 1.8.3** is the primary framework, using `angular-ui-router` for routing.
-- **React 17** components are being incrementally introduced (using `ngcomponent` for Angular↔React bridging and Emotion for styling).
-- **Services** (`public/lib/`) handle HTTP communication, polling, caching, date formatting, and integrations with Composer, CAPI, Tag Manager, and Atom services.
-- **Components** (`public/components/`) are reusable UI widgets: content list, stub modal, presence indicator, support teams, datetime pickers, etc.
-- **Layouts** (`public/layouts/`) contain the major page structures (dashboard, global chrome).
-
-Webpack produces two bundles:
-- `app.bundle.js` — the main application
-- `admin.bundle.js` — the admin interface
+The project hold the user interface for Workflow consisting of a AngularJS based client and Scala Play backend. The backend proxies requests to the [Workflow](https://github.com/guardian/workflow) Datastore app.
 
 #### Shared library (`common-lib/`)
 
-Scala code shared between this repo and the workflow backend. Contains API client interfaces (StubAPI, SectionsAPI, DesksAPI, etc.), models, and utility code.
-
-### Environment stages
-
-| Stage | URL | Purpose |
-|-------|-----|---------|
-| Dev | `https://workflow.local.dev-gutools.co.uk` | Local development |
-| Code | `https://workflow.code.dev-gutools.co.uk` | Staging / QA |
-| Prod | `https://workflow.gutools.co.uk` | Production |
-
-### CI/CD pipeline
-
-The CI build (`scripts/ci.sh`) has two steps:
-
-1. **Frontend build** — installs Node dependencies, runs `yarn build` (production Webpack build).
-2. **Backend build** — runs `sbt clean compile test riffRaffNotifyTeamcity`.
-
-On merge to `main`, RiffRaff deploys the artifact to an auto-scaling group using a CloudFormation stack (`Workflow-Frontend`).
+Scala code duplicated between this repo and the workflow backend. Contains API client interfaces and utility code.
 
 ## 4. Useful Links
 
