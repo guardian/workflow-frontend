@@ -97,7 +97,19 @@ The `/admin` path allows management of desks and sections. Access is controlled 
 
 ## 3. How It Works
 
-This project holds the user interface for Workflow, consisting of an AngularJS-based client and a Scala Play backend. The backend primarily proxies requests to the Datastore app — for more detail on the backend apps see the [Workflow](https://github.com/guardian/workflow) repository. Configuration for workflow-frontend is stored in S3. For the location of the configuration files, see the [editorial-tools-platform](https://github.com/guardian/editorial-tools-platform/) repository.
+This project holds the user interface for Workflow, consisting of an AngularJS based client and a Scala Play backend. 
+
+### AngularJS client
+
+The AngularJS client is located in the `public` directory, more detail can be found in the [README](./README.md).
+
+### Scala Play backend
+
+The Scala Play backend is responsible for serving the client assets. It also provides a REST API for interacting with Workflow data. This includes the CRUD capabilities for stubs, along with various admin functions. 
+
+The backend proxies client requests to the Datastore app. Requests are authenticated using [Panda auth](https://github.com/guardian/pan-domain-authentication) which are then direced to backend services using machine-to-machine authentication. For more detail on the backend apps see the [Workflow](https://github.com/guardian/workflow) repository.
+
+Configuration for workflow-frontend is stored in S3. For the location of the configuration files, see the [editorial-tools-platform](https://github.com/guardian/editorial-tools-platform/) repository.
 
 ### Presence
 
