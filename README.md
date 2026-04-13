@@ -26,7 +26,7 @@ Frontend features:
 - **Content/stub management** — create and update content stubs, including metadata such as section, legal status, commissioned length, production office, and planned publication details (newspaper book, page, and digital publication date).
 - **Admin interface** — manage editorial desks, sections, and section-to-desk mappings (restricted via the Permissions service).
 - **Editorial support teams** — manage and view the status of editorial support staff.
-- **Presence indicators** — see who else is viewing the same content in real time (via WebSocket).
+- **Presence indicators** — see who else is viewing the same content in real time.
 
 ## 2. Getting Started
 
@@ -107,21 +107,23 @@ Scala code duplicated between this repo and the workflow backend. Contains API c
 
 ## 4. Useful Links
 
-- [Workflow backend](https://github.com/guardian/workflow) — the data layer and core business logic for Workflow.
-- [Atom Workshop](https://github.com/guardian/atom-workshop) — used for creating atoms (e.g. charts) through Workflow.
-- [Pan-Domain Authentication](https://github.com/guardian/pan-domain-authentication) — the authentication library used across Guardian tools.
-- [ssm-scala](https://github.com/guardian/ssm-scala) — required for the SSH tunnel setup script.
-- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — solutions for common local development issues (e.g. AWS auth failures on guest WiFi).
+
+### Related projects
+
+- [Workflow backend](https://github.com/guardian/workflow) — The data layer and core business logic for Workflow.
+- [Presence](https://github.com/guardian/presence-indicator) — A real-time service showing which shows whiuch users are currently viewing or editing content.
+- [Composer](https://github.com/guardian/flexible-content) – The main content authoring tool, content is expected to be tracked in Workflow
+- [Atom Workshop](https://github.com/guardian/atom-workshop) – The tool used for authoring certain kinds of atoms, which may be tracked via Workflow
+- [Media Atom Maker](https://github.com/guardian/media-atom-maker) – The tool for authoring media atoms, which may be tracked via Workflow
+- [CAPI](https://github.com/guardian/content-api) – The main API for Guardian digital content. CAPI is called when displaying content detail in the UI
+- [Flexible Octopus Converter](https://github.com/guardian/flexible-octopus-converter) – Writes events to the Octopus Thrift stream, which Prole consumes
+- [Pan-Domain Authentication](https://github.com/guardian/pan-domain-authentication) — The authentication library used across Guardian tools
+- [editorial-tools-platform](https://github.com/guardian/editorial-tools-platform/) – Infrastructure and CloudFormation templates
+- [editorial-tools-support](https://github.com/guardian/editorial-tools-support/) – Runbooks and support documentation
 
 ## 5. Terminology
 
 - **Stub** — a content item being tracked in Workflow. A stub represents a story in production and carries metadata such as status, assignee, section, priority, and due date. A stub may or may not have a corresponding piece of content in Composer.
 - **Desk** — an editorial team or department (e.g. "News", "Sport"). Desks own sections and are used to filter the dashboard.
 - **Section** — an editorial section within a desk (e.g. "UK News", "Football"). Content is assigned to a section.
-- **Stage** — the deployment environment: Dev (local), Code (staging), or Prod (production).
-- **CAPI** — the Guardian Content API, used to fetch published/preview content metadata.
-- **Composer** — the Guardian's content editing tool. Workflow links to Composer for content creation and editing.
-- **Presence** — a real-time indicator showing which users are currently viewing or editing the same content, powered by WebSocket connections.
-- **Pan-Domain Auth (panda)** — the Guardian's cross-domain authentication system, providing SSO across editorial tools.
-- **RiffRaff** — the Guardian's deployment tool, used for continuous deployment from the `main` branch.
 - **Production Office** — the geographical office responsible for a piece of content (e.g. UK, US, AU).
