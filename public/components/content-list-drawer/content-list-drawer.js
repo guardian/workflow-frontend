@@ -339,7 +339,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             };
 
             $scope.updatePlannedPublicationDate = function () {
-                updateField("plannedNewspaperPublicationDate", wfFormatDateTime($scope.currentPublicationDatePickerValue,'YYYY-MM-DD'));
+                updateField("plannedNewspaperPublicationDate", wfFormatDateTime($scope.$parent.currentPublicationDatePickerValue,'YYYY-MM-DD'));
             };
 
             $scope.updateCommissionedLength = function (newValue) {
@@ -437,7 +437,7 @@ export function wfContentListDrawer($rootScope, config, $timeout, $window, conte
             });
 
             $scope.setBookSections = function () {
-                var results = wfTagApiService.searchTags($scope.bookSectionQuery, 'newspaper book section');
+                var results = wfTagApiService.searchTags($scope.$parent.bookSectionQuery, 'newspaper book section');
                 results.then(function (response) {
                 const tags = (response && response.data) || []
                     return tags.map(function (tag) {
