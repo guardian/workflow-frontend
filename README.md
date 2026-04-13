@@ -101,13 +101,13 @@ This project holds the user interface for Workflow, consisting of an AngularJS b
 
 ### AngularJS client
 
-The AngularJS client is located in the `public` directory, more detail can be found in the [README](./README.md).
+The AngularJS client is located in the `public` directory, more detail can be found in the [README](./public/README.md).
 
 ### Scala Play backend
 
 The Scala Play backend is responsible for serving the client assets. It also provides a REST API for interacting with Workflow data. This includes the CRUD capabilities for stubs, along with various admin functions. 
 
-The backend proxies client requests to the Datastore app. Requests are authenticated using [Panda auth](https://github.com/guardian/pan-domain-authentication) which are then direced to backend services using machine-to-machine authentication. For more detail on the backend apps see the [Workflow](https://github.com/guardian/workflow) repository.
+The backend proxies client requests to the Datastore app. Requests are authenticated using [Panda auth](https://github.com/guardian/pan-domain-authentication) which are then directed to backend services using machine-to-machine authentication. For more detail on the backend apps see the [Workflow](https://github.com/guardian/workflow) repository.
 
 Configuration for workflow-frontend is stored in S3. For the location of the configuration files, see the [editorial-tools-platform](https://github.com/guardian/editorial-tools-platform/) repository.
 
@@ -120,8 +120,8 @@ The client uses a WebSocket connection with [Presence](https://github.com/guardi
 ### Related projects
 
 - [Workflow backend](https://github.com/guardian/workflow) — The data layer and core business logic for Workflow.
-- [Presence](https://github.com/guardian/presence-indicator) — A real-time service showing which shows which users are currently viewing or editing content.
-- [Preferences](https://github.com/guardian/editorial-preferences) - A service to store and retrieve user preferences across editorial tools. Workflow frontend uses it to store a user's chosen filter options 
+- [Presence](https://github.com/guardian/presence-indicator) — A real-time service showing which users are currently viewing or editing content.
+- [Preferences](https://github.com/guardian/editorial-preferences) - A service to store and retrieve user preferences across editorial tools. Workflow frontend uses it to store a user's chosen filter options.
 - [Composer](https://github.com/guardian/flexible-content) – The main content authoring tool, content is expected to be tracked in Workflow
 - [Atom Workshop](https://github.com/guardian/atom-workshop) – The tool used for authoring certain kinds of atoms, which may be tracked via Workflow
 - [Media Atom Maker](https://github.com/guardian/media-atom-maker) – The tool for authoring media atoms, which may be tracked via Workflow
