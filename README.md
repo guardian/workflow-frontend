@@ -37,7 +37,7 @@ Frontend features:
 - sbt
 - AWS credentials: `workflow` and `capi` (API Gateway invocation) profiles from Janus
 
-Workflow Frontend needs to talk to  workflow [Datastore](https://github.com/guardian/workflow/blob/main/README.md#2-getting-started) and [Preferences](https://github.com/guardian/editorial-preferences). It can use either a local backend or the CODE environment.
+Workflow Frontend needs to talk to  [Workflow Datastore](https://github.com/guardian/workflow/blob/main/README.md#2-getting-started) and [Preferences](https://github.com/guardian/editorial-preferences). It can use either a local backend or the CODE environment.
 
 ### Setup
 
@@ -55,7 +55,7 @@ Workflow Frontend needs to talk to  workflow [Datastore](https://github.com/guar
 
 If you encounter a `Module build failed` error due to Node Sass during setup, run `npm rebuild node-sass`.
 
-### Connecting to a datastore
+### Connecting to Datastore
 
 #### CODE 
 
