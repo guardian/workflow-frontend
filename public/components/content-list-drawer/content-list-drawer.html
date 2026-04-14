@@ -414,7 +414,7 @@
                                 </button>
                                 <div class="editable--edit editable--inline autocomplete" ng-show="showBookTagPicker">
                                     <input class="text-input fullwidth"
-                                        ng-model="$parent.bookSectionQuery"
+                                        ng-model="bookSectionQuery"
                                         placeholder="Enter a book section…"
                                         name="bookSection"
                                         autocomplete="off"
@@ -463,7 +463,7 @@
                                         <div
                                         wf-date-time-picker
                                         wf-update-on="enter"
-                                        ng-model="$parent.currentPublicationDatePickerValue"
+                                        ng-model="currentPublicationDatePickerValue"
                                         wf-on-cancel="publicationDateTimeEdit = false; revertPlannedPublicationDate()"
                                         wf-cancel-on="blur"
                                         wf-on-submit="updatePlannedPublicationDate(); publicationDateTimeEdit = false;"
