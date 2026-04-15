@@ -45,7 +45,7 @@ function tagApiService($http, $q) {
   }
 
 
-  function searchTags(query, types, subType) {
+  function searchTags(query, types, subType, includeDeprecated) {
     if (query) {
       var wildcardQuery = query.replace(/^\\/, "*"); // using '\' as a wildcard character is a hangover from R2
 
@@ -60,6 +60,10 @@ function tagApiService($http, $q) {
 
       if (subType) {
         params.subType = subType;
+      }
+
+      if (!includeDeprecated) {
+        params.deprecated = "false"
       }
 
       return tags(params);
