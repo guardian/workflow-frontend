@@ -44,12 +44,6 @@ function tagApiService($http, $q) {
     return getTag(id)
   }
 
-  function getPublications() {
-    return tags({
-      type: "publication",
-      limit: 50,
-    })
-  }
 
   function searchTags(query, types, subType) {
     if (query) {
@@ -74,8 +68,6 @@ function tagApiService($http, $q) {
     }
   }
 
-  this.getPublication = getPublications;
   this.searchTags = searchTags;
-  this.getTag = getTag;
   this.getHyperTag = getHyperTag;
 }
