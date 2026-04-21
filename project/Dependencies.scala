@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
   val awsVersion: String = "2.42.31"
-  val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
+  val scalaTest = "org.scalatest" %% "scalatest" % "3.1.4" % "test"
 
   val awsDependencies = Seq(
     "software.amazon.awssdk" % "dynamodb" % awsVersion,
@@ -13,7 +13,7 @@ object Dependencies {
     "software.amazon.awssdk" % "s3" % awsVersion,
     "software.amazon.awssdk" % "imds" % awsVersion,
     "com.gu" %% "content-api-client-aws" % "1.0.1",
-    "joda-time" % "joda-time" % "2.14.0"
+    "joda-time" % "joda-time" % "2.14.1"
   )
 
   val pandaVersion = "12.0.0"
@@ -38,7 +38,7 @@ object Dependencies {
     "io.circe" %% "circe-generic" % circeVersion,
     "io.circe" %% "circe-parser" % circeVersion,
     "io.circe" %% "circe-generic-extras" % "0.14.4",
-    "com.beachape" %% "enumeratum-circe" % "1.7.4"
+    "com.beachape" %% "enumeratum-circe" % "1.7.5"
   )
 
   val cacheDependencies = Seq(
