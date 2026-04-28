@@ -98,8 +98,11 @@ angular.module('wfDateService', ['wfLocationService'])
                 parsed = input;
 
             } else {
+
                 // Parse input using sugar.js catering for natural language, ie: "next week"
                 parsed = moment(Date.create(input, getTimezoneLocaleForLocation(locationKey)));
+                console.log("Parsed valid Isvalid" ,parsed.isValid() ,parsed.parsingFlags())
+                console.log("Input value parsed", parsed)
             }
 
             if (!parsed.isValid()) {
