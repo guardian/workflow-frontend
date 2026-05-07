@@ -8,6 +8,7 @@ import { getEnvironment } from './environment';
 
 import { react2angular } from './react/react2angular.tsx';
 import { TopToolbarTitle } from './react/TopToolbarTitle.tsx';
+import { IntendedAudienceSignifier } from "@guardian/stand/intendedAudienceSignifier"
 
 import 'components/sentry/sentry';
 import 'components/user-message/user-message';
@@ -204,6 +205,11 @@ angular.module('workflow',
         { name: 'Checked', value: 'COMPLETE'}
     ]}).component('topToolbarTitle', react2angular(TopToolbarTitle,[
         'title',
+    ]))
+    .component('intendedAudienceSignifier', react2angular(IntendedAudienceSignifier,[
+        'source',
+        'intendedAudience', 
+        'theme',
     ]))
     .run(['$document', '$rootScope', function ($document, $rootScope) {
         $document.on('keydown', function(event) {

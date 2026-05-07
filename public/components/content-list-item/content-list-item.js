@@ -1,5 +1,6 @@
 import { getContentLengthCategory, getCommissionedLengthTitle } from "./word-count-helpers.ts";
 import { getArticleFormat, getArticleFormatTitle } from "../../lib/model/special-formats.ts"
+import { fixCasing } from "../../lib/model/intended-audience.ts"
 import _ from 'lodash';
 
 const OPHAN_PATH = 'https://dashboard.ophan.co.uk/summary?path=/',
@@ -202,7 +203,10 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.statusInPrint = item.statusInPrint;
             this.lastModifiedInPrintBy = item.lastModifiedInPrintBy;
 
-            this.intendedAudience = item.intendedAudience;
+            // TO DO - derive the article source (UK,US,AUS) from the tracking tag
+
+            // TO DO - there is a bug in the component that this function addresses, should remove when fixed
+            this.intendedAudience = fixCasing(item.intendedAudience);
 
             // These are derived values used for display purposes.
             const {

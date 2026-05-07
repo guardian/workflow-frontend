@@ -2,5 +2,15 @@
   class="content-list-item__field--notes"
   title="Intended Audience: {{ contentItem.intendedAudience || 'none' }}"
 >
-  {{ contentItem.intendedAudience }}
+  <intended-audience-signifier
+    ng-if="contentItem.intendedAudience"
+    source="'UK'"
+    intended-audience="contentItem.intendedAudience"
+  ></intended-audience-signifier>
+
+  <intended-audience-signifier
+    ng-if="!contentItem.intendedAudience"
+    source="'UK'"
+    intended-audience="'Don\'t know'"
+  ></intended-audience-signifier>
 </td>
