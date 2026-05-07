@@ -15,6 +15,7 @@ import deadlineTemplate              from "components/content-list-item/template
 import sectionTemplate               from "components/content-list-item/templates/section.html";
 import statusTemplate                from "components/content-list-item/templates/status.html";
 import notesTemplate                 from "components/content-list-item/templates/notes.html";
+import intendedAudienceTemplate      from "components/content-list-item/templates/intended-audience.html";
 import pinboardTemplate              from "components/content-list-item/templates/pinboard.html";
 import linksTemplate                 from "components/content-list-item/templates/links.html";
 import publishedStateTemplate        from "components/content-list-item/templates/published-state.html";
@@ -145,6 +146,17 @@ const columnDefaults = [{
     active: true,
     isSortable: true,
     sortField: ['note']
+},{
+    name: 'intended-audience',
+    prettyName: 'Intended Audience',
+    labelHTML: 'Intended Audience',
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'intended-audience.html',
+    template: intendedAudienceTemplate,
+    active: true,
+    isSortable: false,
+    // sortField: ['note']
 },{
   name: 'rights',
   prettyName: 'Syndication',
