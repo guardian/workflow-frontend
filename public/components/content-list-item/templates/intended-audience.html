@@ -3,14 +3,7 @@
   title="Intended Audience: {{ contentItem.intendedAudience || 'none' }}"
 >
   <intended-audience-signifier
-    ng-if="contentItem.intendedAudience"
-    source="'UK'"
+    source="contentItem.office"
     intended-audience="contentItem.intendedAudience"
-  ></intended-audience-signifier>
-
-  <intended-audience-signifier
-    ng-if="!contentItem.intendedAudience"
-    source="'UK'"
-    intended-audience="'Don\'t know'"
   ></intended-audience-signifier>
 </td>
