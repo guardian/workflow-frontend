@@ -85,6 +85,14 @@ const createCustomHeadlineLabelHtml = () => {
     `;
 };
 
+const intendedAudienceHelpText = "TBC" // TO DO - get text for tooltip
+const createCustomIntendedAudienceLabelHtml = (tooltipText) => {
+    return `
+        <span>Intended Audience</span> 
+        <i class="content-list-head__heading-icon--tooltip" wf-icon="tooltip" title="${tooltipText}"></i>
+    `
+}
+
 export const getSortField = column => column
   && column.isSortable
   && (column.sortField || [column.name]);
@@ -146,17 +154,6 @@ const columnDefaults = [{
     active: true,
     isSortable: true,
     sortField: ['note']
-},{
-    name: 'intended-audience',
-    prettyName: 'Intended Audience',
-    labelHTML: 'Intended Audience',
-    colspan: 1,
-    title: '',
-    templateUrl: templateRoot + 'intended-audience.html',
-    template: intendedAudienceTemplate,
-    active: true,
-    isSortable: false,
-    // sortField: ['note']
 },{
   name: 'rights',
   prettyName: 'Syndication',
@@ -289,6 +286,16 @@ const columnDefaults = [{
     template: officeTemplate,
     active: true,
     isSortable: true
+},{
+    name: 'intended-audience',
+    prettyName: 'Intended Audience',
+    labelHTML: createCustomIntendedAudienceLabelHtml(intendedAudienceHelpText),
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'intended-audience.html',
+    template: intendedAudienceTemplate,
+    active: true,
+    isSortable: false,
 },{
     name: 'deadline',
     prettyName: 'Deadline',

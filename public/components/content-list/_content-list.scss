@@ -63,6 +63,7 @@ $tableHeaderRowHeight: 48px;
             &--titles,
             &--group,
             &--office,
+            &--intended-audience,
             &--deadline,
             &--created,
             &--section,
@@ -136,7 +137,8 @@ $tableHeaderRowHeight: 48px;
             &-icon {
                 &--presence,
                 &--assignee,
-                &--headline-toggle {
+                &--headline-toggle, 
+                &--tooltip {
                     display: inline-block;
                 }
 
@@ -155,6 +157,15 @@ $tableHeaderRowHeight: 48px;
                     height: $content-list-icon-size;
                     margin-right: 5px;
                 }
+                &--tooltip {
+                    width: $content-list-icon-size;
+                    height: $content-list-icon-size;
+
+                    svg {
+                        fill: black;
+                    }
+                }
+                
             }
 
             &--notifier {
