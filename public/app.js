@@ -207,8 +207,9 @@ angular.module('workflow',
         'title',
     ]))
     .component('intendedAudienceSignifier', react2angular(IntendedAudienceWrapper,[
-        'source',
-        'intendedAudience', 
+        'commissioningDesks',
+        'intendedAudience',
+        'productionOffice', 
     ]))
     .run(['$document', '$rootScope', function ($document, $rootScope) {
         $document.on('keydown', function(event) {

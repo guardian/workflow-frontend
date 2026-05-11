@@ -201,9 +201,6 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
 
             this.statusInPrint = item.statusInPrint;
             this.lastModifiedInPrintBy = item.lastModifiedInPrintBy;
-
-            // TO DO - derive the article source (UK,US,AUS) from the tracking tag
-
             
             this.intendedAudience = item.intendedAudience;
 

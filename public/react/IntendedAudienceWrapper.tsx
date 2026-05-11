@@ -6,7 +6,8 @@ import {
 
 type Props = {
   intendedAudience?: string;
-  source?: string;
+  commissioningDesks?: string[];
+  productionOffice?: string;
 };
 
 const parseAudience = (
@@ -36,7 +37,7 @@ const parseAudience = (
   }
 };
 
-const parseSource = (
+const parseProductionOfficeToSource = (
   source?: string,
 ): IntendedAudienceSignifierProps["source"] => {
   if (!source) {
@@ -53,14 +54,40 @@ const parseSource = (
   }
 };
 
+const PREFIXES: IntendedAudienceSignifierProps["source"][] = [
+  "UK",
+  "AUS",
+  "US",
+];
+
+const deriveSourceFromCommissioningDesks = (
+  desks: string[],
+): IntendedAudienceSignifierProps["source"] | undefined => {
+  const deskWithPrefix = desks.find((deskName) =>
+    PREFIXES.some((prefix) => deskName.toUpperCase().startsWith(prefix)),
+  );
+
+  if (!deskWithPrefix) {
+    return undefined;
+  }
+
+  return PREFIXES.find((prefix) =>
+    deskWithPrefix.toUpperCase().startsWith(prefix),
+  );
+};
+
 export const IntendedAudienceWrapper: React.FunctionComponent<Props> = ({
   intendedAudience,
-  source,
+  productionOffice,
+  commissioningDesks = [],
 }: Props) => {
   return (
     <IntendedAudienceSignifier
       intendedAudience={parseAudience(intendedAudience)}
-      source={parseSource(source)}
+      source={
+        deriveSourceFromCommissioningDesks(commissioningDesks) ??
+        parseProductionOfficeToSource(productionOffice)
+      }
       theme={{
         svg: {
           width: "13px",
