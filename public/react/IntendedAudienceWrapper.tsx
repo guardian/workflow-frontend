@@ -4,9 +4,14 @@ import {
   type IntendedAudienceSignifierProps,
 } from "@guardian/stand/intendedAudienceSignifier";
 
+type SimplifiedTag = {
+    id: number;
+    externalName: string;
+  }
+
 type Props = {
   intendedAudience?: string;
-  commissioningDesks?: string[];
+  commissioningDesks?: SimplifiedTag[];
   productionOffice?: string;
 };
 
@@ -61,10 +66,10 @@ const PREFIXES: IntendedAudienceSignifierProps["source"][] = [
 ];
 
 const deriveSourceFromCommissioningDesks = (
-  desks: string[],
+  desks: SimplifiedTag[],
 ): IntendedAudienceSignifierProps["source"] | undefined => {
   const deskWithPrefix = desks.find((deskName) =>
-    PREFIXES.some((prefix) => deskName.toUpperCase().startsWith(prefix)),
+    PREFIXES.some((prefix) => deskName.externalName.toUpperCase().startsWith(prefix)),
   );
 
   if (!deskWithPrefix) {
@@ -72,7 +77,7 @@ const deriveSourceFromCommissioningDesks = (
   }
 
   return PREFIXES.find((prefix) =>
-    deskWithPrefix.toUpperCase().startsWith(prefix),
+    deskWithPrefix.externalName.toUpperCase().startsWith(prefix),
   );
 };
 
