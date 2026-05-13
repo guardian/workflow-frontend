@@ -5,9 +5,9 @@ import {
 } from "@guardian/stand/intendedAudienceSignifier";
 
 type SimplifiedTag = {
-    id: number;
-    externalName: string;
-  }
+  id: number;
+  externalName: string;
+};
 
 type Props = {
   intendedAudience?: string;
@@ -69,7 +69,9 @@ const deriveSourceFromCommissioningDesks = (
   desks: SimplifiedTag[],
 ): IntendedAudienceSignifierProps["source"] | undefined => {
   const deskWithPrefix = desks.find((deskName) =>
-    PREFIXES.some((prefix) => deskName.externalName.toUpperCase().startsWith(prefix)),
+    PREFIXES.some((prefix) =>
+      deskName.externalName.toUpperCase().startsWith(prefix),
+    ),
   );
 
   if (!deskWithPrefix) {
@@ -95,11 +97,11 @@ export const IntendedAudienceWrapper: React.FunctionComponent<Props> = ({
       }
       theme={{
         svg: {
-          width: "13px",
-          height: "10px",
+          width: "12px",
+          height: "12px",
         },
         typography: {
-          fontSize: "12px",
+          font: "normal 460 12px GuardianAgateSans1Web",
         },
       }}
     />
