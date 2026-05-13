@@ -45,7 +45,7 @@ function wfFeatureSwitchesController ($scope, wfPreferencesService) {
     ];
     $scope.readableNames = {
         // e.g. 'multiByline': 'Multi-byline',
-        'intendedAudienceColumn': 'show itended audience'
+        'intendedAudienceColumn': 'Show Intended Audience'
     }
 
     const getDefaultFeatureSwitchValues = () => {
