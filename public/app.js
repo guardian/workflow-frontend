@@ -213,7 +213,8 @@ angular.module('workflow',
     ]))
     .run(['$document', '$rootScope', function ($document, $rootScope) {
         $document.on('keydown', function(event) {
-            if (event.shiftKey && event.keyCode === 123) {            
+            if (event.shiftKey && event.keyCode === 123) {  // shift F12  
+              event.preventDefault() // in FireFox, shift F12 opens the devTools       
               $rootScope.$apply(function() {
                 $rootScope.showFeatureSwitches = !$rootScope.showFeatureSwitches;
             })}
