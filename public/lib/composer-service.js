@@ -99,7 +99,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
     this.getComposerContent = getComposerContent;
     this.parseComposerData = parseComposerData;
     
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority, missingCommissionedLengthReason) {
+    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority, missingCommissionedLengthReason, intendedAudience) {
         var selectedDisplayHint = getListElementFormatFromLabel(articleFormat)?.value;
         
         var params = {

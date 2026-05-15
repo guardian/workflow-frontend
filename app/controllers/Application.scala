@@ -88,7 +88,7 @@ class Application(
   }
 
   // limited tag fields we want output into the DOM
-  case class LimitedTag(id: Long, externalName: String)
+  case class LimitedTag(id: Long, externalName: String, path: Option[String])
   object LimitedTag {
     implicit val encoder: Encoder[LimitedTag] = deriveEncoder
     implicit val decoder: Decoder[LimitedTag] = deriveDecoder
@@ -151,8 +151,8 @@ class Application(
         ("incopyExportUrl", Json.fromString(config.incopyExportUrl)),
         ("indesignExportUrl", Json.fromString(config.indesignExportUrl)),
         ("composerRestorerUrl", Json.fromString(config.composerRestorerUrl)),
-        ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
-        ("audienceTags", audienceTags.map(t => LimitedTag(t.id, t.externalName)).asJson),
+        ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName, t.path)).asJson),
+        ("audienceTags", audienceTags.map(t => LimitedTag(t.id, t.externalName, t.path)).asJson),
         ("atomTypes", config.atomTypes.asJson),
         ("sessionId", Json.fromString(config.sessionId)),
         ("tagManagerUrl", Json.fromString(config.tagManagerUrl)),

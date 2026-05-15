@@ -50,6 +50,14 @@
                     <p class="commissioning-desk-margin">Selecting commissioning info is temporarily unavailable</p>
                 </div>
 
+                <label for="stub_intended_audience">Intended audience</label>
+                <div ng-if="audienceTags.length > 0">
+                    <select class="commissioning-desk-margin" id="stub_intended_audience" name="intended_audience" ng-model="stub.intendedAudience" ng-options="audienceTag.intendedAudience.toString() as audienceTag.externalName for audienceTag in audienceTags"></select>
+                </div>
+                <div ng-if="audienceTags.length === 0">
+                    <p class="commissioning-desk-margin">Selecting intended audience is temporarily unavailable</p>
+                </div>
+
                 <section style="display: contents;" ng-if="isCommissionedLengthRequired()" >
                     <label for="commissionedLength">Commissioned Length <span ng-if="isCommissionedLengthRequired()">*</span></label>
                     <a class="feedback-link"  href="https://docs.google.com/forms/d/e/1FAIpQLSeZje55T3OnErlTI_8iGuyZERjDy2Pybh8fdPmbnjy1PNFDAw/viewform" target="_blank">

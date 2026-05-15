@@ -19,6 +19,7 @@ import { punters } from 'components/punters/punters';
 import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNativeFormFeedback } from '../../lib/stub-form-validation.ts';
 import { setDisplayHintForFormat } from 'lib/model/special-formats.ts';
 import { getArticleFormatLabel, isFormatLabel } from 'lib/model/format-helpers.ts';
+import { parseLimitedTagsToAudienceTags } from 'lib/model/tags.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService', 'wfTelemetryService'])
@@ -96,6 +97,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.templates = [];
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
+    $scope.audienceTags = parseLimitedTagsToAudienceTags (_wfConfig.audienceTags);
     $scope.atomTypes = getAtomDropdownData();
 
     if(mode==='import') {
