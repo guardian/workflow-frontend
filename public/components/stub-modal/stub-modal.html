@@ -13,12 +13,12 @@
             <input type="text" ng-model="formData.importUrl" ng-change="importUrlChanged()" id="import_url" name="import_url" class="form-control" required  wf-focus focus-me="{{ mode === 'import' }}">
         </div>
         <div class="form-horizontal clearfix">
-                <div class="format-dropdown" ng-if="(showFormatDropdown && stubFormatIsCorrectlyPopulated())">
-                    <label for="stub_format">Format</label>
-                    <div>
-                        <select ng-disabled="mode === 'import'" id="stub_format" name="articleFormat" ng-model="stub.articleFormat" ng-options="f.value as f.name for f in articleFormats"></select>
-                    </div>
+            <div class="format-dropdown" ng-if="stubFormatIsCorrectlyPopulated()">
+                <label for="stub_format">Format</label>
+                <div>
+                    <select ng-disabled="mode === 'import'" id="stub_format" name="articleFormat" ng-model="stub.articleFormat" ng-options="f.value as f.name for f in articleFormats"></select>
                 </div>
+            </div>
             <div class="form-group col-xs-8">
                 <label for="stub_title">Working title *</label>
                 <input type="text" ng-model="stub.title" id="stub_title" name="title" class="form-control" required wf-focus focus-me="{{ !(mode === 'import') }}">
@@ -53,7 +53,7 @@
                             <p>Selecting commissioning info is temporarily unavailable</p>
                         </div>
                     </div>
-                    <div>
+                    <div ng-if="isIntendedAudienceEnabled">
                         <div class="label-and-icon">
                             <label for="stub_intended_audience">
                                 <span>Intended audience</span>
@@ -63,7 +63,7 @@
                         </div>
 
                         <div ng-if="audienceTags.length > 0">
-                            <select id="stub_intended_audience" name="intended_audience" ng-model="stub.intendedAudience" ng-options="audienceTag.intendedAudience.toString() as audienceTag.externalName for audienceTag in audienceTags"></select>
+                            <select id="stub_intended_audience" required name="intended_audience" ng-model="stub.intendedAudience" ng-options="audienceTag.intendedAudience.toString() as audienceTag.externalName for audienceTag in audienceTags"></select>
                         </div>
                         <div ng-if="audienceTags.length === 0">
                             <p>Selecting intended audience is temporarily unavailable</p>
@@ -191,8 +191,8 @@
             <button type="button" class="btn btn-default pull-left" data-dismiss="modal" ng-click="delete()" ng-if="stub.id">Delete</button>
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         </div>
-        <div class="pull-right">
-            <span ng-if="warningMessages">
+        <div class="pull-right submit-button-and-warnings">
+            <span ng-if="warningMessages" class="warning-message-stack">
                 <span ng-repeat="message in warningMessages">{{ message }} </span>
             </span>
             <button type="button" class="btn btn-default" id="testing-create-stub" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'">

@@ -40,7 +40,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $scope.stubFormat = newValue;
         })
 
-        wfPreferencesService.getPreference('featureSwitches').then((data) => { $scope.showFormatDropdown = data;})
+        wfPreferencesService.getPreference('featureSwitches').then((data) => { 
+            $scope.isIntendedAudienceEnabled = data.intendedAudienceColumn
+        ;})
         
         $scope.modalTitle = ({
             'create': `Create ${$scope.contentName}`,
@@ -176,8 +178,12 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.wfComposerState;
 
     $scope.warningMessages = undefined
+
+    $scope.$watch('isIntendedAudienceEnabled', () => {
+        $scope.warningMessages = generateErrorMessages($scope.stub, $scope.isIntendedAudienceEnabled)
+    }, true)
     $scope.$watch('stub', (newStub) => {
-        $scope.warningMessages = generateErrorMessages(newStub)
+        $scope.warningMessages = generateErrorMessages(newStub, $scope.isIntendedAudienceEnabled)
     }, true)
 
     $scope.isCommissionedLengthRequired = () => doesContentTypeRequireCommissionedLength($scope.stub.contentType);
@@ -300,7 +306,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             productionOffice: stub.prodOffice,
             commissioningDesk
         }
-        if (missingCommissionedLengthReason) tags['missingCommissionedLengthReason'] = missingCommissionedLengthReason;
+        if (missingCommissionedLengthReason) { tags['missingCommissionedLengthReason'] = missingCommissionedLengthReason; }
         if(wfTelemetryService !== null && wfTelemetryService !== undefined) {
             wfTelemetryService.sendTelemetryEvent(
                 "WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED",

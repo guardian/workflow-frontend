@@ -5,7 +5,7 @@ export type ComposerContentType =
   | "interactive"
   | "picture"
   | "video"
-  | "audio"
+  | "audio";
 
 export type ListElementContentType =
   | "keyTakeaways"
@@ -30,18 +30,21 @@ export type Stub = {
   prodOffice?: string;
   note?: string;
   displayHint?: string;
+  intendedAudience?: string;
 };
 
 export type ListElementArticleFormat = {
-  label: string,
-  value: ListElementContentType,
-  behindFeatureSwitch?: string,
-}
+  label: string;
+  value: ListElementContentType;
+  behindFeatureSwitch?: string;
+};
 
-
-export type NonListElementDisplayHint = 'immersive' | 'photoEssay' | 'numberedList';
+export type NonListElementDisplayHint =
+  | "immersive"
+  | "photoEssay"
+  | "numberedList";
 
 export type DisplayHintArticleFormat = {
-  label: string,
-  value: NonListElementDisplayHint,
-}
+  label: string;
+  value: NonListElementDisplayHint;
+};

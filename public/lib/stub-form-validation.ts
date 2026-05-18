@@ -2,7 +2,8 @@ import { ContentType, Stub } from "./model/stub";
 
 const MESSAGING = {
   commissionLengthRequired: "A commissioned length is required",
-  commissionLengthMinimum: "Commissioned length must be greater than zero"
+  commissionLengthMinimum: "Commissioned length must be greater than zero",
+  intendedAudienceRequired: "Intended audience is required",
 };
 
 const doesContentTypeRequireCommissionedLength = (contentType: ContentType) => {
@@ -31,16 +32,22 @@ const stubIsMissingRequiredLength = (stub: Stub) =>
   !stub.missingCommissionedLengthReason;
 
 const stubHasInvalidCommissionedLength = (stub: Stub) =>
-    doesContentTypeRequireCommissionedLength(stub.contentType) &&
-    stub.commissionedLength &&
-    stub.commissionedLength <= 0;
+  doesContentTypeRequireCommissionedLength(stub.contentType) &&
+  stub.commissionedLength &&
+  stub.commissionedLength <= 0;
 
-const generateErrorMessages = (stub: Stub): string[] | undefined => {
+const generateErrorMessages = (
+  stub: Stub,
+  requireIntendedAudience?: boolean,
+): string[] | undefined => {
   const errors: string[] = [];
+  if (requireIntendedAudience && !stub.intendedAudience) {
+    errors.push(MESSAGING.intendedAudienceRequired);
+  }
   if (stubIsMissingRequiredLength(stub)) {
     errors.push(MESSAGING.commissionLengthRequired);
   }
-  if(stubHasInvalidCommissionedLength(stub)) {
+  if (stubHasInvalidCommissionedLength(stub)) {
     errors.push(MESSAGING.commissionLengthMinimum);
   }
   return errors.length > 0 ? errors : undefined;
@@ -48,23 +55,23 @@ const generateErrorMessages = (stub: Stub): string[] | undefined => {
 
 const useNativeFormFeedback = (stub: Stub) => {
   const formElement = document.querySelector<HTMLFormElement>(
-    "form[name=stubForm]"
+    "form[name=stubForm]",
   );
   if (!formElement) {
     return;
   }
 
   const commissionedLengthInput = formElement.querySelector<HTMLInputElement>(
-    "input[name=commissionedLength]"
+    "input[name=commissionedLength]",
   );
   if (commissionedLengthInput) {
-     if (stubIsMissingRequiredLength(stub)) {
+    if (stubIsMissingRequiredLength(stub)) {
       commissionedLengthInput.setCustomValidity(
-        MESSAGING.commissionLengthRequired
+        MESSAGING.commissionLengthRequired,
       );
-    } else if(stubHasInvalidCommissionedLength(stub)) {
+    } else if (stubHasInvalidCommissionedLength(stub)) {
       commissionedLengthInput.setCustomValidity(
-        MESSAGING.commissionLengthMinimum
+        MESSAGING.commissionLengthMinimum,
       );
     } else {
       commissionedLengthInput.setCustomValidity("");

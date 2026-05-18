@@ -126,3 +126,12 @@
 .breaking-news {
     margin-left: -3px;
 }
+
+.warning-message-stack {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.submit-button-and-warnings {
+    display: flex;
+}
