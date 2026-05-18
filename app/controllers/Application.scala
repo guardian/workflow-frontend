@@ -109,14 +109,6 @@ class Application(
           "searchField" -> "path"
         ).toList
       )
-      audienceTags <- tagService.getTags(
-        Map(
-          "limit" -> "200",
-          "query" -> "tracking/audience/",
-          "type" -> "tracking",
-          "searchField" -> "path"
-        ).toList
-      )
     }
     yield {
       val statuses = StatusDatabase.statuses
@@ -152,7 +144,6 @@ class Application(
         ("indesignExportUrl", Json.fromString(config.indesignExportUrl)),
         ("composerRestorerUrl", Json.fromString(config.composerRestorerUrl)),
         ("commissioningDesks", commissioningDesks.map(t => LimitedTag(t.id, t.externalName)).asJson),
-        ("audienceTags", audienceTags.map(t => LimitedTag(t.id, t.externalName)).asJson),
         ("atomTypes", config.atomTypes.asJson),
         ("sessionId", Json.fromString(config.sessionId)),
         ("tagManagerUrl", Json.fromString(config.tagManagerUrl)),

@@ -1,15 +1,13 @@
-import angular from 'angular';
+import angular              from 'angular';
 
-import moment from 'moment';
-import { columnDefaults } from './column-defaults'
-import startTemplate from "components/content-list-item/content-list-item-start.html";
-import endTemplate from "components/content-list-item/content-list-item-end.html";
-
-const columnDefaultsWithoutIntendedAudience = columnDefaults.filter(column => column.name !== 'intended-audience')
+import moment               from 'moment';
+import { columnDefaults }   from './column-defaults'
+import startTemplate        from "components/content-list-item/content-list-item-start.html";
+import endTemplate          from "components/content-list-item/content-list-item-end.html";
 
 angular.module('wfColumnService', [])
     .factory('wfColumnService', ['wfPreferencesService',
-        function (wfPreferencesService) {
+        function(wfPreferencesService) {
 
             class ColumnService {
 
@@ -17,44 +15,39 @@ angular.module('wfColumnService', [])
 
                     var self = this;
 
-                    self.availableColums = columnDefaultsWithoutIntendedAudience;
+                    self.availableColums = columnDefaults;
                     self.contentItemTemplate;
 
-                    self.preferencePromise = wfPreferencesService.getPreference('featureSwitches').then(function resolve(featureSwitchesData) {
-                        return wfPreferencesService.getPreference('columnConfiguration').then(function resolve(columnsData) {
+                    self.preferencePromise = wfPreferencesService.getPreference('columnConfiguration').then(function resolve (data) {
 
-                            if (typeof columnsData[0] !== "string") {
-                                return reject();
-                            } else {
+                        if (typeof data[0] !== "string") {
 
-                                var shouldExcludeIntendedAudience = !featureSwitchesData.intendedAudienceColumn
-                                self.availableColums = shouldExcludeIntendedAudience ? columnDefaultsWithoutIntendedAudience : columnDefaults
+                            return reject();
+                        } else {
 
+                            self.columns = self.availableColums;
 
-                                self.columns = self.availableColums;
+                            self.columns.forEach((col) => { // set all to inactive
+                                col.active = false;
+                            });
 
-                                self.columns.forEach((col) => { // set all to inactive
-                                    col.active = false;
+                            data.forEach((colName) => { // activate preferences columns
+                                self.columns.some((availCol) => {
+                                    if (availCol.name == colName) {
+                                        availCol.active = true; // set active
+                                        return true;
+                                    } else {
+                                        return false;
+                                    }
                                 });
+                            });
 
-                                columnsData.forEach((colName) => { // activate preferences columns
-                                    self.columns.some((availCol) => {
-                                        if (availCol.name == colName) {
-                                            availCol.active = true; // set active
-                                            return true;
-                                        } else {
-                                            return false;
-                                        }
-                                    });
-                                });
+                            return self.columns;
+                        }
 
-                                return self.columns;
-                            }
+                    }, reject);
 
-                        }, reject);
-                    }, reject)
-
-                    function reject() {
+                    function reject () {
 
                         self.columns = self.availableColums;
                         self.setColumns(self.columns);
