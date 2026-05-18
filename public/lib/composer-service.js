@@ -17,7 +17,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         }
         return {
             preview: liveOrPreview(true),
-            live:    liveOrPreview(false)
+            live: liveOrPreview(false)
         }
     }
 
@@ -27,7 +27,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         }
         return {
             preview: liveOrPreview(true),
-            live:    liveOrPreview(false)
+            live: liveOrPreview(false)
         }
     }
 
@@ -75,7 +75,8 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         if (!response.data || !response.data.data || !response.data.data.id) {
             $log.error("Composer response missing id field. Response: " + JSON.stringify(response) + " \n Stub metadata: " + JSON.stringify(target))
             return Promise.reject({
-                message: "composer response did not contain id, response: " + JSON.stringify(response)})
+                message: "composer response did not contain id, response: " + JSON.stringify(response)
+            })
         } else {
             const data = response.data.data;
 
@@ -91,37 +92,55 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         return $http({
             method: 'GET',
             url: composerContentFetch + parseComposerId(url),
-            params: {'includePreview': 'true'},
+            params: { 'includePreview': 'true' },
             withCredentials: true
         });
     }
 
     this.getComposerContent = getComposerContent;
     this.parseComposerData = parseComposerData;
-    
-    this.create = function createInComposer(type, commissioningDesks, commissionedLength, prodOffice, template, articleFormat, priority, missingCommissionedLengthReason, intendedAudience) {
+
+    /**
+     * 
+     * @param {string} type ContentType
+     * @param {{id:number; externalName:string; path:string|undefined}|undefined} commissioningDeskTag 
+     * @param {number|null} commissionedLength 
+     * @param {"UK"|"AU"|"US"} prodOffice 
+     * @param {{id:string;display:string}} template 
+     * @param {string} articleFormat 
+     * @param {number} priority 
+     * @param {string|null} missingCommissionedLengthReason 
+     * @param {{id:number; externalName:string; path:string|undefined}|undefined} audienceTag
+     * @returns 
+     */
+    this.create = function createInComposer(
+        type,
+        commissioningDeskTag,
+        commissionedLength,
+        prodOffice,
+        template,
+        articleFormat,
+        priority,
+        missingCommissionedLengthReason,
+        audienceTag
+    ) {
         var selectedDisplayHint = getListElementFormatFromLabel(articleFormat)?.value;
-        
+        var trackingTagIds = [commissioningDeskTag?.id, audienceTag?.id].filter(Boolean).join(",")
+
         var params = {
             'type': contentTypeToComposerContentType(type),
-            'tracking': commissioningDesks,
+            'tracking': trackingTagIds,
             'productionOffice': prodOffice,
             'displayHint': selectedDisplayHint,
             'originatingSystem': 'workflow'
         };
 
-        if(commissionedLength) params['initialCommissionedLength'] = commissionedLength;
-        if(missingCommissionedLengthReason) params['missingCommissionedLengthReason'] = missingCommissionedLengthReason;
-
-        if(template) {
-            params['template'] = template.id;
-        }
-
-        const commissioningDeskExternalName = _wfConfig.commissioningDesks
-            .find(desk  => desk.id.toString() === commissioningDesks)?.externalName;
+        if (commissionedLength) { params.initialCommissionedLength = commissionedLength };
+        if (missingCommissionedLengthReason) { params.missingCommissionedLengthReason = missingCommissionedLengthReason };
+        if (template) { params.template = template.id; }
 
         const getPriorityName = (priority) => {
-            switch (priority){
+            switch (priority) {
                 case -2:
                     return 'Very Low'
                 case -1:
@@ -142,10 +161,11 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
             productionOffice: prodOffice,
             priority: getPriorityName(priority),
         }
-        if(selectedDisplayHint !== null && selectedDisplayHint !== undefined) tags.displayHint = selectedDisplayHint;
-        if(commissionedLength !== null && commissionedLength !== undefined) tags.commissionedLength = commissionedLength.toString();
-        if(commissioningDeskExternalName !== null && commissioningDeskExternalName !== undefined) tags.commissioningDesk = commissioningDeskExternalName;
-        if(missingCommissionedLengthReason !== null && missingCommissionedLengthReason !== undefined) tags.missingCommissionedLengthReason = missingCommissionedLengthReason;
+        if (selectedDisplayHint !== null && selectedDisplayHint !== undefined) { tags.displayHint = selectedDisplayHint; }
+        if (commissionedLength !== null && commissionedLength !== undefined) { tags.commissionedLength = commissionedLength.toString(); }
+        if (commissioningDeskTag) { tags.commissioningDesk = commissioningDeskTag.externalName; }
+        if (missingCommissionedLengthReason !== null && missingCommissionedLengthReason !== undefined) { tags.missingCommissionedLengthReason = missingCommissionedLengthReason; }
+        if (audienceTag) { tags.intendedAudience = audienceTag.externalName; }
         wfTelemetryService.sendTelemetryEvent("WORKFLOW_CREATE_IN_COMPOSER_TRIGGERED", tags);
 
         return request({
@@ -156,7 +176,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         });
     };
 
-    this.loadTemplates = function() {
+    this.loadTemplates = function () {
         return request({
             method: 'GET',
             url: config.composerTemplates,
@@ -237,10 +257,10 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         rightsData
     ) {
         let req = {
-          method: 'PUT',
-          url: `${composerContentFetch}${composerId}/rights`,
-          data: JSON.stringify(rightsData),
-          withCredentials: true
+            method: 'PUT',
+            url: `${composerContentFetch}${composerId}/rights`,
+            data: JSON.stringify(rightsData),
+            withCredentials: true
         };
 
         return request(req);

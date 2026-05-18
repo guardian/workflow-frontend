@@ -83,13 +83,41 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     });
                 }
 
+                getAudienceTagFromStub(stub) {
+                    if (!stub.intendedAudience) {
+                        return undefined
+                    }
+                    return _wfConfig.audienceTags.find(tag => tag.externalName.toUpperCase() === stub.intendedAudience.toUpperCase())
+                }
+
+                getCommissioningDeskTagFromStub(stub) {
+                    if (!stub.commissioningDesks) {
+                        return undefined
+                    }
+                    return _wfConfig.commissioningDesks.find(tag => tag.id.toString() === stub.commissioningDesks)
+                }
+
                 /**
                  * Creates a draft in Composer from a Stub. Effectively moving
                  * it to "Writers" status.
                  * Also will create the stub if it doesn't have an id.
                  */
                 createInComposer(stub, statusOption) {
-                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template, stub.articleFormat, stub.priority, stub.missingCommissionedLengthReason, stub.intendedAudience)
+
+                    const audienceTag = this.getAudienceTagFromStub(stub);
+                    const commissioningDeskTag = this.getCommissioningDeskTagFromStub(stub);
+
+                    return wfComposerService.create(
+                            stub.contentType, 
+                            commissioningDeskTag, 
+                            stub.commissionedLength, 
+                            stub.prodOffice, 
+                            stub.template, 
+                            stub.articleFormat, 
+                            stub.priority, 
+                            stub.missingCommissionedLengthReason, 
+                            audienceTag,
+                        )
                         .then((response) => wfComposerService.parseComposerData(response, stub))
                         .then((updatedStub) => {
 
