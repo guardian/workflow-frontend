@@ -83,8 +83,25 @@
     visibility: hidden;
 }
 
-.commissioning-desk-margin, .section-margin, .format-dropdown {
+.commissioning-and-audience, .section-margin, .format-dropdown {
     margin-bottom: 15px;
+}
+
+.commissioning-and-audience {
+    display: flex; 
+    gap: 15px; 
+    flex-wrap: wrap;
+}
+
+.label-and-icon {
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+}
+
+.label-and-icon i {
+    margin-bottom: 5px;
+    line-height: 1;
 }
 
 .feedback-link, .feedback-link:hover, .feedback-link:visited, .feedback-link:focus {

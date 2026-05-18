@@ -42,27 +42,40 @@
                 </div>
             </div>
             <div class="form-group pull-left col-xs-8" ng-if="contentName !== 'Atom' && !['Atom Workshop', 'Media Atom Maker'].includes(importHandler.name)">
-                <label for="stub_cdesk">Commissioning info</label>
-                <div ng-if="cdesks.length > 0">
-                    <select class="commissioning-desk-margin" id="stub_cdesk" name="cdesk" ng-model="stub.commissioningDesks" ng-options="cdesk.id.toString() as cdesk.externalName for cdesk in cdesks"></select>
-                </div>
-                <div ng-if="cdesks.length === 0">
-                    <p class="commissioning-desk-margin">Selecting commissioning info is temporarily unavailable</p>
-                </div>
+                
+                <section class="commissioning-and-audience">
+                    <div>
+                        <label for="stub_cdesk">Commissioning info</label>
+                        <div ng-if="cdesks.length > 0">
+                            <select id="stub_cdesk" name="cdesk" ng-model="stub.commissioningDesks" ng-options="cdesk.id.toString() as cdesk.externalName for cdesk in cdesks"></select>
+                        </div>
+                        <div ng-if="cdesks.length === 0">
+                            <p>Selecting commissioning info is temporarily unavailable</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="label-and-icon">
+                            <label for="stub_intended_audience">
+                                <span>Intended audience</span>
+                                <span>*</span>
+                            </label>
+                            <i class="content-list-head__heading-icon--tooltip" wf-icon="tooltip" title="TBC"></i>
+                        </div>
 
-                <label for="stub_intended_audience">Intended audience</label>
-                <div ng-if="audienceTags.length > 0">
-                    <select class="commissioning-desk-margin" id="stub_intended_audience" name="intended_audience" ng-model="stub.intendedAudience" ng-options="audienceTag.intendedAudience.toString() as audienceTag.externalName for audienceTag in audienceTags"></select>
-                </div>
-                <div ng-if="audienceTags.length === 0">
-                    <p class="commissioning-desk-margin">Selecting intended audience is temporarily unavailable</p>
-                </div>
+                        <div ng-if="audienceTags.length > 0">
+                            <select id="stub_intended_audience" name="intended_audience" ng-model="stub.intendedAudience" ng-options="audienceTag.intendedAudience.toString() as audienceTag.externalName for audienceTag in audienceTags"></select>
+                        </div>
+                        <div ng-if="audienceTags.length === 0">
+                            <p>Selecting intended audience is temporarily unavailable</p>
+                        </div>
+                    </div>
+                    <intended-audience-signifier
+                       production-office="stub.prodOffice"
+                       commissioning-desks="commissioningDeskTags"
+                       intended-audience="stub.intendedAudience"
+                   ></intended-audience-signifier>
+                </section>
 
-                 <intended-audience-signifier
-                    production-office="stub.prodOffice"
-                    commissioning-desks="commissioningDeskTags"
-                    intended-audience="stub.intendedAudience"
-                ></intended-audience-signifier>
 
                 <section style="display: contents;" ng-if="isCommissionedLengthRequired()" >
                     <label for="commissionedLength">Commissioned Length <span ng-if="isCommissionedLengthRequired()">*</span></label>
