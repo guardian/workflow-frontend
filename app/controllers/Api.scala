@@ -208,6 +208,17 @@ class Api(
     }
   }
 
+  def putStubIntendedAudience(stubId: Long) = {
+    APIAuthAction.async { request =>
+      ApiResponseFt[Long](for {
+        json <- readJsonFromRequestResponse(request.body)
+        intendedAudience <- extractDataResponse[Option[String]](json)
+        id <- stubsApi.updateIntendedAudience(stubId, intendedAudience)
+      } yield id
+      )
+    }
+  }
+
   def putStubStatusByComposerId(composerId: String) = {
     APIAuthAction.async { request =>
       ApiResponseFt[String](for {
