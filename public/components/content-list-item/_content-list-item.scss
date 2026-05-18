@@ -437,15 +437,12 @@
 
     .content-list-item__field--working-title,
     .content-list-item__field--headline,
-    .content-list-item__field--intended-audience,
     .content-list-item__field--notes {
         @include smallScreen {
             padding: 2px 4px;
         }
     }
 
-    .content-list-item__field--intended-audience,
-    .content-list-item__field--intended-audience,
     .content-list-item__field--notes {
         @include smallScreen {
             max-width: 90px;
@@ -574,8 +571,6 @@
 .actual-print-location {
     color: black;
 }
-
-.content-list-item__field--intended-audience,
 .planned-print-location, .actual-print-location {
     vertical-align: middle;
 }
