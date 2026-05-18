@@ -7,6 +7,7 @@ import {
 type SimplifiedTag = {
   id: number;
   externalName: string;
+  path?: string;
 };
 
 type Props = {

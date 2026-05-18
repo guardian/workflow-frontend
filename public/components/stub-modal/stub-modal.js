@@ -89,6 +89,17 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
       });
     }
 
+    function getCommissioningDeskTags () {
+        if (!stub.commissioningDesks) {
+            return []
+        }
+        // stub.commissioningDesks (string) represents a commma separated list of numerical tag id
+        // the form only allow one to be selected, but allow for multiple and take the first
+        const selectedTagId = stub.commissioningDesks.split(",").shift()
+        const match = _wfConfig.commissioningDesks.find(tag => tag.id.toString() === selectedTagId)
+        return match? [match]: []
+    }
+
     $scope.mode = mode;
 
     $scope.formData = {};
@@ -97,6 +108,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.templates = [];
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
+    $scope.commissioningDeskTags = getCommissioningDeskTags()
     $scope.audienceTags = parseLimitedTagsToAudienceTags (_wfConfig.audienceTags);
     $scope.atomTypes = getAtomDropdownData();
 
@@ -155,6 +167,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
 
     }, true);
+
+    $scope.$watch('stub.commissioningDesks', () => {
+        $scope.commissioningDeskTags = getCommissioningDeskTags()
+    })
 
     $scope.validImport = false;
     $scope.wfComposerState;
