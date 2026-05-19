@@ -15,6 +15,7 @@ import deadlineTemplate              from "components/content-list-item/template
 import sectionTemplate               from "components/content-list-item/templates/section.html";
 import statusTemplate                from "components/content-list-item/templates/status.html";
 import notesTemplate                 from "components/content-list-item/templates/notes.html";
+import intendedAudienceTemplate      from "components/content-list-item/templates/intended-audience.html";
 import pinboardTemplate              from "components/content-list-item/templates/pinboard.html";
 import linksTemplate                 from "components/content-list-item/templates/links.html";
 import publishedStateTemplate        from "components/content-list-item/templates/published-state.html";
@@ -83,6 +84,14 @@ const createCustomHeadlineLabelHtml = () => {
         <span ng-class="{'content-list-head__heading--titles--secondary': getHeadlineDisplay()}">Working title</span> / <span ng-class="{ 'content-list-head__heading--titles--secondary': !getHeadlineDisplay()}">Headline</span>
     `;
 };
+
+const intendedAudienceHelpText = "TBC" // TO DO - get text for tooltip
+const createCustomIntendedAudienceLabelHtml = (tooltipText) => {
+    return `
+        <span>Intended Audience</span> 
+        <i class="content-list-head__heading-icon--tooltip" wf-icon="tooltip" title="${tooltipText}"></i>
+    `
+}
 
 export const getSortField = column => column
   && column.isSortable
@@ -277,6 +286,16 @@ const columnDefaults = [{
     template: officeTemplate,
     active: true,
     isSortable: true
+},{
+    name: 'intended-audience',
+    prettyName: 'Intended Audience',
+    labelHTML: createCustomIntendedAudienceLabelHtml(intendedAudienceHelpText),
+    colspan: 1,
+    title: '',
+    templateUrl: templateRoot + 'intended-audience.html',
+    template: intendedAudienceTemplate,
+    active: true,
+    isSortable: false,
 },{
     name: 'deadline',
     prettyName: 'Deadline',

@@ -214,6 +214,13 @@ class StubAPI(
       item <- extractDataResponse[Long](json)
     } yield item
 
+  def updateIntendedAudience(stubId: Long, updateIntendedAudience: Option[String]): ApiResponseFt[Long] =
+    for {
+      res <- ApiResponseFt.Async.Right(putRequest(s"stubs/$stubId/intendedAudience", updateIntendedAudience.asJson))
+      json <- parseBody(res.body)
+      item <- extractDataResponse[Long](json)
+    } yield item
+
   def updateContentStatusByComposerId(composerId: String, status: String): ApiResponseFt[String] =
     for {
       res <- ApiResponseFt.Async.Right(putRequest(s"content/$composerId/status", status.asJson))

@@ -53,7 +53,8 @@ case class ExternalData(
                          rightsSubscriptionDatabases: Option[Boolean] = None,
                          rightsDeveloperCommunity: Option[Boolean] = None,
                          byline: Option[String] = None,
-                         displayHint: Option[String] = None) {
+                         displayHint: Option[String] = None,
+                         intendedAudience: Option[String] = None) {
 }
 
 object ExternalData {

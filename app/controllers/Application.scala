@@ -109,6 +109,14 @@ class Application(
           "searchField" -> "path"
         ).toList
       )
+      audienceTags <- tagService.getTags(
+        Map(
+          "limit" -> "200",
+          "query" -> "tracking/audience/",
+          "type" -> "tracking",
+          "searchField" -> "path"
+        ).toList
+      )
     }
     yield {
       val statuses = StatusDatabase.statuses

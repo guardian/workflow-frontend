@@ -7,6 +7,7 @@
 import angular from 'angular';
 import featureSwitches from './feature-switches.html';
 import _ from 'lodash';
+import { featureSwitchKeys, getDefaultFeatureSwitchValues } from "../../lib/feature-switches.ts"
 
 angular.module('wfFeatureSwitches', ['wfPreferencesService', 'wfIcons'])
     .directive('wfFeatureSwitches', [wfFeatureSwitchesDirective]);
@@ -39,17 +40,10 @@ class FeatureSwitches {
 }
 
 function wfFeatureSwitchesController ($scope, wfPreferencesService) {
-    const featureSwitchKeys = [
-        // e.g. 'multiByline'
-    ];
+
     $scope.readableNames = {
         // e.g. 'multiByline': 'Multi-byline',
-    }
-
-    const getDefaultFeatureSwitchValues = () => {
-        const switches = {};
-        featureSwitchKeys.forEach(key => switches[key] = false);
-        return switches;
+        'intendedAudienceColumn': 'Show Intended Audience'
     }
 
     // Feature switches are provided to the directive as an array of entries because it's simpler to iterate through in ng-repeat
