@@ -1,13 +1,15 @@
 /**
- * Directive to allow users to toggle the feature switch checkboxes.
+ * Directive to allow users to toggle the KT button.
  *
  * Stores the changed setting via the user preferences service.
  */
 
 import angular from 'angular';
 import featureSwitches from './feature-switches.html';
+import _ from 'lodash';
+import { featureSwitchKeys, getDefaultFeatureSwitchValues } from "../../lib/feature-switches.ts"
 
-angular.module('wfFeatureSwitches', ['wfPreferencesService', 'wfFeatureSwitchService', 'wfIcons'])
+angular.module('wfFeatureSwitches', ['wfPreferencesService', 'wfIcons'])
     .directive('wfFeatureSwitches', [wfFeatureSwitchesDirective]);
 
 function wfFeatureSwitchesDirective() {
@@ -15,18 +17,63 @@ function wfFeatureSwitchesDirective() {
         restrict: 'E',
         scope: true,
         template: featureSwitches,
-        controller: ['$scope', 'wfPreferencesService', 'wfFeatureSwitchService', wfFeatureSwitchesController],
+        controller: ['$scope', 'wfPreferencesService', wfFeatureSwitchesController],
         controllerAs: 'ctrl',
     };
 }
 
-function wfFeatureSwitchesController ($scope, wfPreferencesService, wfFeatureSwitchService) {
+class FeatureSwitches {
+    constructor(switches, entries) {
+        // this.switches should be a single object with the type { [key]: value }
+        this.switches = switches
+        this.entries = entries;
+    }
 
-    const featureSwitches = wfFeatureSwitchService.featureSwitches
-    $scope.readableNames = wfFeatureSwitchService.readableNames
-    
+    update(incomingSwitches) {
+        // Update the switches with a partial set
+        this.switches = {...this.switches, ...incomingSwitches}
+        this.entries.length = 0;
+        Object.entries(this.switches).forEach(featureSwitch => {
+            this.entries.push(featureSwitch)
+        })
+    }
+}
+
+function wfFeatureSwitchesController ($scope, wfPreferencesService) {
+
+    $scope.readableNames = {
+        // e.g. 'multiByline': 'Multi-byline',
+        'intendedAudienceColumn': 'Show Intended Audience'
+    }
+
     // Feature switches are provided to the directive as an array of entries because it's simpler to iterate through in ng-repeat
-    $scope.featureSwitchEntries = featureSwitches.entries
+    $scope.featureSwitchEntries = Object.entries(getDefaultFeatureSwitchValues()).filter(featureSwitch => featureSwitchKeys.includes(featureSwitch[0]))
+
+    const featureSwitches = new FeatureSwitches(getDefaultFeatureSwitchValues(), $scope.featureSwitchEntries)
+
+    const updateLocalFeatureSwitchValues = (featureSwitchResult) => {   
+        const filteredIncomingFeatureSwitchResult = Object.keys(featureSwitchResult)
+        .filter(key => featureSwitchKeys.includes(key))
+        .reduce((filteredResult, key) => {
+            filteredResult[key] = featureSwitchResult[key];
+            return filteredResult;
+        }, {});
+        
+        if (_.isObject(filteredIncomingFeatureSwitchResult)){
+            featureSwitches.update(filteredIncomingFeatureSwitchResult);
+            $scope.$apply()
+        } else {
+            // It is useful to discard invalid values in the feature switch record 
+            console.error(`Feature switch values were unexpectedly not an object. Resetting feature switches.`);
+            featureSwitches.update(getDefaultFeatureSwitchValues())
+        }
+    }
+
+    wfPreferencesService.getPreference('featureSwitches').then((gotPreferences) => { 
+        if (gotPreferences){
+            updateLocalFeatureSwitchValues(gotPreferences)
+        }
+    })
     
     $scope.updateFeatureSwitchPreference = (key, value) => {
             featureSwitches.update({[key]: value});

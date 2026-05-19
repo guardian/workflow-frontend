@@ -2,6 +2,7 @@ import angular from 'angular';
 
 import moment from 'moment';
 import { columnDefaults } from './column-defaults'
+import {getDefaultFeatureSwitchValues} from '../lib/feature-switches.ts'
 import startTemplate from "components/content-list-item/content-list-item-start.html";
 import endTemplate from "components/content-list-item/content-list-item-end.html";
 
@@ -9,13 +10,9 @@ const columnDefaultsWithoutIntendedAudience = columnDefaults.filter(column => co
 
 
 angular.module('wfColumnService', [])
-    .factory('wfColumnService', [
-        'wfPreferencesService',
-        'wfFeatureSwitchService',
-        function (
-            wfPreferencesService,
-            wfFeatureSwitchService,
-        ) {
+    .factory('wfColumnService', ['wfPreferencesService',
+        function (wfPreferencesService) {
+
             class ColumnService {
 
                 constructor() {
@@ -25,7 +22,7 @@ angular.module('wfColumnService', [])
                     self.availableColums = columnDefaultsWithoutIntendedAudience;
                     self.contentItemTemplate;
 
-                    self.preferencePromise =  wfFeatureSwitchService.getFeatureSwitchData().then(function resolve(featureSwitchesData) {
+                    self.preferencePromise = wfPreferencesService.getOptionalPreference('featureSwitches', getDefaultFeatureSwitchValues()).then(function resolve(featureSwitchesData) {
                         return wfPreferencesService.getPreference('columnConfiguration').then(function resolve(columnsData) {
 
                             if (typeof columnsData[0] !== "string") {
