@@ -8,7 +8,6 @@ import { getEnvironment } from './environment';
 
 import { react2angular } from './react/react2angular.tsx';
 import { TopToolbarTitle } from './react/TopToolbarTitle.tsx';
-import {IntendedAudienceWrapper} from './react/IntendedAudienceWrapper.tsx'
 
 import 'components/sentry/sentry';
 import 'components/user-message/user-message';
@@ -206,15 +205,9 @@ angular.module('workflow',
     ]}).component('topToolbarTitle', react2angular(TopToolbarTitle,[
         'title',
     ]))
-    .component('intendedAudienceSignifier', react2angular(IntendedAudienceWrapper,[
-        'commissioningDesks',
-        'intendedAudience',
-        'productionOffice', 
-    ]))
     .run(['$document', '$rootScope', function ($document, $rootScope) {
         $document.on('keydown', function(event) {
-            if (event.shiftKey && event.keyCode === 123) {  // shift F12  
-              event.preventDefault() // in FireFox, shift F12 opens the devTools       
+            if (event.shiftKey && event.keyCode === 123) {            
               $rootScope.$apply(function() {
                 $rootScope.showFeatureSwitches = !$rootScope.showFeatureSwitches;
             })}
