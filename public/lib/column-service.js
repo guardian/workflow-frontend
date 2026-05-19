@@ -4,6 +4,7 @@ import moment from 'moment';
 import { columnDefaults } from './column-defaults'
 import startTemplate from "components/content-list-item/content-list-item-start.html";
 import endTemplate from "components/content-list-item/content-list-item-end.html";
+import { getDefaultFeatureSwitchValues } from './feature-switches.ts';
 
 const columnDefaultsWithoutIntendedAudience = columnDefaults.filter(column => column.name !== 'intended-audience')
 
@@ -22,7 +23,7 @@ angular.module('wfColumnService', [])
                     self.contentItemTemplate;
 
                     self.preferencePromise = wfPreferencesService.getAllPreferences().then(function resolve(preferencesData) {
-                        var {columnConfiguration, featureSwitches = {}} = preferencesData;
+                        var { columnConfiguration, featureSwitches = getDefaultFeatureSwitchValues() } = preferencesData;
                         if (typeof columnConfiguration[0] !== "string") {
                             return reject();
                         } else {
