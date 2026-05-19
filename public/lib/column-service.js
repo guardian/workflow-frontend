@@ -2,7 +2,6 @@ import angular from 'angular';
 
 import moment from 'moment';
 import { columnDefaults } from './column-defaults'
-import {getDefaultFeatureSwitchValues} from '../lib/feature-switches.ts'
 import startTemplate from "components/content-list-item/content-list-item-start.html";
 import endTemplate from "components/content-list-item/content-list-item-end.html";
 
@@ -22,39 +21,35 @@ angular.module('wfColumnService', [])
                     self.availableColums = columnDefaultsWithoutIntendedAudience;
                     self.contentItemTemplate;
 
-                    self.preferencePromise = wfPreferencesService.getOptionalPreference('featureSwitches', getDefaultFeatureSwitchValues()).then(function resolve(featureSwitchesData) {
-                        return wfPreferencesService.getPreference('columnConfiguration').then(function resolve(columnsData) {
+                    self.preferencePromise = wfPreferencesService.getAllPreferences().then(function resolve(preferencesData) {
+                        var {columnConfiguration, featureSwitches = {}} = preferencesData;
+                        if (typeof columnConfiguration[0] !== "string") {
+                            return reject();
+                        } else {
+                            var shouldExcludeIntendedAudience = !featureSwitches.intendedAudienceColumn
+                            self.availableColums = shouldExcludeIntendedAudience ? columnDefaultsWithoutIntendedAudience : columnDefaults
+                            self.columns = self.availableColums;
 
-                            if (typeof columnsData[0] !== "string") {
-                                return reject();
-                            } else {
+                            self.columns.forEach((col) => { // set all to inactive
+                                col.active = false;
+                            });
 
-                                var shouldExcludeIntendedAudience = !featureSwitchesData.intendedAudienceColumn
-                                self.availableColums = shouldExcludeIntendedAudience ? columnDefaultsWithoutIntendedAudience : columnDefaults
-
-
-                                self.columns = self.availableColums;
-
-                                self.columns.forEach((col) => { // set all to inactive
-                                    col.active = false;
+                            columnConfiguration.forEach((colName) => { // activate preferences columns
+                                self.columns.some((availCol) => {
+                                    if (availCol.name == colName) {
+                                        availCol.active = true; // set active
+                                        return true;
+                                    } else {
+                                        return false;
+                                    }
                                 });
+                            });
 
-                                columnsData.forEach((colName) => { // activate preferences columns
-                                    self.columns.some((availCol) => {
-                                        if (availCol.name == colName) {
-                                            availCol.active = true; // set active
-                                            return true;
-                                        } else {
-                                            return false;
-                                        }
-                                    });
-                                });
+                            return self.columns;
+                        }
 
-                                return self.columns;
-                            }
+                    }, reject);
 
-                        }, reject);
-                    }, reject)
 
                     function reject() {
 

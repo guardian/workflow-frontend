@@ -145,33 +145,25 @@ angular.module('wfPreferencesService', [])
                     }
                 }
 
-                /**
-                 * Get a preference, or return a fallback if that preference is undefined. 
+                 /**
+                 * Gets all preferences. 
                  * 
                  * If preferences have already been fetched, resolve a promise with the preference
                  * requested, else return the promise of the request to the preferences app that will resolve
-                 * with the correct preference
+                 * with preferencea
                  * 
-                 * @param {string} name
-                 * @param {any} fallback
                  * @returns {Promise}
                  */
-                getOptionalPreference(name, fallback) {
-                    var self = this;
+                getAllPreferences() {
                     if (this.preferences) {
-                        if (this.preferences[name] !== undefined) {
-                            return Promise.resolve(this.preferences[name]);
-                        } else {
-                            $log.info('No preference set for: ' + name);
-                            return Promise.resolve(fallback);
-                        }
+                        return Promise.resolve(this.preferences);
                     } else {
-                        return this.prefsPromise.then(function resolve (data) {
-                            if (!!data && typeof data[name] !== "undefined") {
-                                return data[name];
+                        return this.prefsPromise.then(function resolve (preferences) {
+                            if (!!preferences) {
+                                return preferences;
                             } else {
-                                $log.info('No preference set for: ' + name);
-                                return Promise.resolve(fallback);
+                                $log.info('No preferences set');
+                                return Promise.reject()
                             }
                         }, function reject () {
                             return Promise.reject();
