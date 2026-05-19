@@ -110,7 +110,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
      * @param {string} articleFormat 
      * @param {number} priority 
      * @param {string|null} missingCommissionedLengthReason 
-     * @param {{id:number; externalName:string; path:string|undefined}|undefined} audienceTag
+     * @param {{id:number; externalName:string; path:string|undefined}[]} audienceTags
      * @returns 
      */
     this.create = function createInComposer(
@@ -122,10 +122,10 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         articleFormat,
         priority,
         missingCommissionedLengthReason,
-        audienceTag
+        audienceTags
     ) {
         var selectedDisplayHint = getListElementFormatFromLabel(articleFormat)?.value;
-        var trackingTagIds = [commissioningDeskTag?.id, audienceTag?.id].filter(Boolean).join(",")
+        var trackingTagIds = [commissioningDeskTag?.id, audienceTags.map(tag=>tag.id)].filter(Boolean).join(",")
 
         var params = {
             'type': contentTypeToComposerContentType(type),
@@ -165,7 +165,7 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         if (commissionedLength !== null && commissionedLength !== undefined) { tags.commissionedLength = commissionedLength.toString(); }
         if (commissioningDeskTag) { tags.commissioningDesk = commissioningDeskTag.externalName; }
         if (missingCommissionedLengthReason !== null && missingCommissionedLengthReason !== undefined) { tags.missingCommissionedLengthReason = missingCommissionedLengthReason; }
-        if (audienceTag) { tags.intendedAudience = audienceTag.externalName; }
+        if (audienceTags) { tags.intendedAudience = audienceTags.map(tag=>tag.externalName).join(); }
         wfTelemetryService.sendTelemetryEvent("WORKFLOW_CREATE_IN_COMPOSER_TRIGGERED", tags);
 
         return request({

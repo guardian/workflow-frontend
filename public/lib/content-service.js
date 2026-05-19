@@ -7,6 +7,7 @@ import './http-session-service';
 import './user';
 import './visibility-service';
 import { provideFormats } from './model/format-helpers.ts'
+import { findMatchingAudienceTags } from './model/intended-audience.ts'
 
 angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService'])
     .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService', 'config',
@@ -83,13 +84,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     });
                 }
 
-                getAudienceTagFromStub(stub) {
-                    if (!stub.intendedAudience) {
-                        return undefined
-                    }
-                    return _wfConfig.audienceTags.find(tag => tag.externalName.toUpperCase() === stub.intendedAudience.toUpperCase())
-                }
-
                 getCommissioningDeskTagFromStub(stub) {
                     if (!stub.commissioningDesks) {
                         return undefined
@@ -104,7 +98,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 createInComposer(stub, statusOption) {
 
-                    const audienceTag = this.getAudienceTagFromStub(stub);
+                    const audienceTags = findMatchingAudienceTags(stub.intendedAudience, _wfConfig.audienceTags);
                     const commissioningDeskTag = this.getCommissioningDeskTagFromStub(stub);
 
                     return wfComposerService.create(
@@ -116,7 +110,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                             stub.articleFormat, 
                             stub.priority, 
                             stub.missingCommissionedLengthReason, 
-                            audienceTag,
+                            audienceTags,
                         )
                         .then((response) => wfComposerService.parseComposerData(response, stub))
                         .then((updatedStub) => {

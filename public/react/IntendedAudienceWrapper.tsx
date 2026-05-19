@@ -3,15 +3,13 @@ import {
   IntendedAudienceSignifier,
   type IntendedAudienceSignifierProps,
 } from "@guardian/stand/intendedAudienceSignifier";
+import type { LimitedTag } from "../lib/model/tags";
 
-type SimplifiedTag = {
-  id: number;
-  externalName: string;
-};
+
 
 type Props = {
   intendedAudience?: string;
-  commissioningDesks?: Array<SimplifiedTag|undefined>;
+  commissioningDesks?: Array<LimitedTag|undefined>;
   productionOffice?: string;
 };
 
@@ -66,7 +64,7 @@ const PREFIXES: IntendedAudienceSignifierProps["source"][] = [
 ];
 
 const deriveSourceFromCommissioningDesks = (
-  desks: Array<SimplifiedTag|undefined>,
+  desks: Array<LimitedTag|undefined>,
 ): IntendedAudienceSignifierProps["source"] | undefined => {
 
   const deskWithPrefix = desks.find((deskTag) =>
@@ -84,6 +82,8 @@ const deriveSourceFromCommissioningDesks = (
   );
 };
 
+// TO DO - change how the props are derived - stub.intendedAudience should now be a comma-separated string of tokens
+// not an `IntendedAudience` as defined in Stand
 export const IntendedAudienceWrapper: React.FunctionComponent<Props> = ({
   intendedAudience,
   productionOffice,

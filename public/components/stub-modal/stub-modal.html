@@ -62,11 +62,17 @@
                             <i class="content-list-head__heading-icon--tooltip" wf-icon="tooltip" title="TBC"></i>
                         </div>
 
-                        <div ng-if="audienceTags.length > 0">
-                            <select id="stub_intended_audience" required name="intended_audience" ng-model="stub.intendedAudience" ng-options="audienceTag.intendedAudience.toString() as audienceTag.externalName for audienceTag in audienceTags"></select>
-                        </div>
-                        <div ng-if="audienceTags.length === 0">
-                            <p>Selecting intended audience is temporarily unavailable</p>
+                        <select 
+                            id="stub_intended_audience" 
+                            required 
+                            name="intended_audience" 
+                            ng-model="formData.audienceOption" 
+                            ng-options="audienceOption.value as audienceOption.displayName for audienceOption in audienceOptions"
+                        ></select>
+
+                        <div ng-if="!allAudienceTagsAreAvailable">
+                            <div>Selecting Intended Audience</div>
+                            <div>is temporarily unavailable</div>
                         </div>
                     </div>
                 </section>
