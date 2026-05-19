@@ -110,10 +110,16 @@ angular.module('wfPreferencesService', [])
                 }
 
                 /**
-                 * Get a preference. If preferences have already been set resolve a promise with the preference
+                 * Get a preference. 
+                 * 
+                 * If preferences have already been fetched, resolve a promise with the preference
                  * requested, else return the promise of the request to the preferences app that will resolve
                  * with the correct preference
-                 * @param name
+                 * 
+                 * The promise will reject if the preferences data fetched from the references app 
+                 * does not have key matching the preference name.
+                 * 
+                 * @param {string} name
                  * @returns {Promise}
                  */
                 getPreference(name) {
@@ -132,6 +138,40 @@ angular.module('wfPreferencesService', [])
                             } else {
                                 $log.info('No preference set for: ' + name);
                                 return Promise.reject();
+                            }
+                        }, function reject () {
+                            return Promise.reject();
+                        });
+                    }
+                }
+
+                /**
+                 * Get a preference, or return a fallback if that preference is undefined. 
+                 * 
+                 * If preferences have already been fetched, resolve a promise with the preference
+                 * requested, else return the promise of the request to the preferences app that will resolve
+                 * with the correct preference
+                 * 
+                 * @param {string} name
+                 * @param {any} fallback
+                 * @returns {Promise}
+                 */
+                getOptionalPreference(name, fallback) {
+                    var self = this;
+                    if (this.preferences) {
+                        if (this.preferences[name] !== undefined) {
+                            return Promise.resolve(this.preferences[name]);
+                        } else {
+                            $log.info('No preference set for: ' + name);
+                            return Promise.resolve(fallback);
+                        }
+                    } else {
+                        return this.prefsPromise.then(function resolve (data) {
+                            if (!!data && typeof data[name] !== "undefined") {
+                                return data[name];
+                            } else {
+                                $log.info('No preference set for: ' + name);
+                                return Promise.resolve(fallback);
                             }
                         }, function reject () {
                             return Promise.reject();

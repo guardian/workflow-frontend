@@ -10,13 +10,13 @@ import { filterDefaults } from 'lib/filter-defaults';
 import './dashboard-sidebar.html';
 
 angular.module('wfDashboardSidebar', ['wfFiltersService', 'wfSidebarFilter', 'wfLocationPicker', 'wfCompactorToggle'])
-    .controller('wfDashboardSidebarController', ['$scope', 'statuses', 'wfFiltersService', 'wfPreferencesService', function ($scope, statuses, wfFiltersService, wfPreferencesService) {
+    .controller('wfDashboardSidebarController', ['$scope', 'statuses', 'wfFiltersService', 'wfFeatureSwitchService', function ($scope, statuses, wfFiltersService, wfFeatureSwitchService) {
 
         $scope.statuses = statuses;
 
         $scope.filters = filterDefaults(statuses, wfFiltersService)
 
-        wfPreferencesService.getPreference('featureSwitches')
+        wfFeatureSwitchService.getFeatureSwitchData()
         .then((featureSwitches) => {
             $scope.filters = filterDefaults(statuses, wfFiltersService, featureSwitches);
         })
