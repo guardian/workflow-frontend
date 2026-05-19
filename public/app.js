@@ -25,6 +25,7 @@ import 'layouts/dashboard/dashboard-sidebar';
 import 'lib/date-service';
 import 'lib/filters-service';
 import 'lib/column-service';
+import 'lib/feature-switch-service';
 import 'lib/preferences-service';
 import 'lib/polling-service';
 import 'lib/title-service';
@@ -56,6 +57,7 @@ angular.module('workflow',
         'wfDateService',
         'wfFiltersService',
         'wfColumnService',
+        'wfFeatureSwitchService',
         'wfPreferencesService',
         'infinite-scroll',
         'wfTitleService',
