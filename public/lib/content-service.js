@@ -8,16 +8,16 @@ import './user';
 import './visibility-service';
 import { provideFormats } from './model/format-helpers.ts'
 
-angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfFeatureSwitchService'])
-    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfFeatureSwitchService', 'config',
-        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, wfAtomWorkshopService, wfFeatureSwitchService, config) {
+angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService'])
+    .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService', 'config',
+        function ($rootScope, $log, wfHttpSessionService, wfDateParser, wfFormatDateTimeFilter, wfFiltersService, wfComposerService, wfMediaAtomMakerService, wfAtomWorkshopService, wfPreferencesService, config) {
 
             const httpRequest = wfHttpSessionService.request;
 
             class ContentService {
 
                 getTypes() {
-                    return wfFeatureSwitchService.getFeatureSwitchData()
+                    return wfPreferencesService.getPreference('featureSwitches')
                         .then((featureSwitches) => {
                             return provideFormats(featureSwitches)
                         })
