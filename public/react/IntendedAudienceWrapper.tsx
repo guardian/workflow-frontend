@@ -11,7 +11,7 @@ type SimplifiedTag = {
 
 type Props = {
   intendedAudience?: string;
-  commissioningDesks?: SimplifiedTag[];
+  commissioningDesks?: Array<SimplifiedTag|undefined>;
   productionOffice?: string;
 };
 
@@ -66,11 +66,12 @@ const PREFIXES: IntendedAudienceSignifierProps["source"][] = [
 ];
 
 const deriveSourceFromCommissioningDesks = (
-  desks: SimplifiedTag[],
+  desks: Array<SimplifiedTag|undefined>,
 ): IntendedAudienceSignifierProps["source"] | undefined => {
-  const deskWithPrefix = desks.find((deskName) =>
+
+  const deskWithPrefix = desks.find((deskTag) =>
     PREFIXES.some((prefix) =>
-      deskName.externalName.toUpperCase().startsWith(prefix),
+      deskTag?.externalName.toUpperCase().startsWith(prefix),
     ),
   );
 
