@@ -1,43 +1,13 @@
-import React from "react";
 import {
   IntendedAudienceSignifier,
   type IntendedAudienceSignifierProps,
 } from "@guardian/stand/intendedAudienceSignifier";
-import type { LimitedTag } from "../lib/model/tags";
-
-
+import React from "react";
+import { isAudienceTagSlug } from "../lib/model/intended-audience";
 
 type Props = {
   intendedAudience?: string;
-  commissioningDesks?: Array<LimitedTag|undefined>;
   productionOffice?: string;
-};
-
-const parseAudience = (
-  intendedAudience?: string,
-): IntendedAudienceSignifierProps["intendedAudience"] => {
-  if (!intendedAudience) {
-    return "Don't know";
-  }
-
-  switch (intendedAudience.toUpperCase()) {
-    case "GLOBAL":
-      return "Global";
-    case "DOMESTIC FOR DOMESTIC":
-      return "Domestic for Domestic";
-    case "DOMESTIC FOR GLOBAL":
-      return "Domestic For Global";
-
-    case "UK":
-      return "UK";
-    case "US":
-      return "US";
-    case "AUS":
-      return "AUS";
-    case "DON'T KNOW":
-    default:
-      return "Don't know";
-  }
 };
 
 const parseProductionOfficeToSource = (
@@ -57,48 +27,70 @@ const parseProductionOfficeToSource = (
   }
 };
 
-const PREFIXES: IntendedAudienceSignifierProps["source"][] = [
-  "UK",
-  "AUS",
-  "US",
-];
-
-const deriveSourceFromCommissioningDesks = (
-  desks: Array<LimitedTag|undefined>,
-): IntendedAudienceSignifierProps["source"] | undefined => {
-
-  const deskWithPrefix = desks.find((deskTag) =>
-    PREFIXES.some((prefix) =>
-      deskTag?.externalName.toUpperCase().startsWith(prefix),
-    ),
-  );
-
-  if (!deskWithPrefix) {
-    return undefined;
+const slugsToSource = (
+  audienceTagTokens: string[],
+): IntendedAudienceSignifierProps["source"] => {
+  if (audienceTagTokens.includes("au")) {
+    return "AUS";
   }
-
-  return PREFIXES.find((prefix) =>
-    deskWithPrefix.externalName.toUpperCase().startsWith(prefix),
-  );
+  if (audienceTagTokens.includes("us")) {
+    return "US";
+  }
+  return "UK";
 };
 
-// TO DO - change how the props are derived - stub.intendedAudience should now be a comma-separated string of tokens
-// not an `IntendedAudience` as defined in Stand
+const slugsToIntendedAudience = (
+  audienceTagTokens: string[],
+): IntendedAudienceSignifierProps["intendedAudience"] => {
+  if (audienceTagTokens.length === 0) {
+    return "Don't know";
+  }
+  if (audienceTagTokens.includes("global")) {
+    return audienceTagTokens.length === 1 ? "Global" : "Domestic For Global";
+  }
+  return "Domestic for Domestic";
+};
+
+const deriveProps = (
+  stubIntendedAudience: string | undefined,
+  productionOffice: string | undefined,
+): {
+  source: IntendedAudienceSignifierProps["source"];
+  intendedAudience: IntendedAudienceSignifierProps["intendedAudience"];
+} => {
+  if (!stubIntendedAudience) {
+    return {
+      source: parseProductionOfficeToSource(productionOffice),
+      intendedAudience: "Don't know",
+    };
+  }
+
+  const audienceTagSlugs = stubIntendedAudience
+    .split(",")
+    .filter(isAudienceTagSlug);
+
+  return {
+    source: slugsToSource(audienceTagSlugs),
+    intendedAudience: slugsToIntendedAudience(audienceTagSlugs),
+  };
+};
+
 export const IntendedAudienceWrapper: React.FunctionComponent<Props> = ({
-  intendedAudience,
+  intendedAudience: stubIntendedAudience,
   productionOffice,
-  commissioningDesks = [],
 }: Props) => {
+  const { intendedAudience, source } = deriveProps(
+    stubIntendedAudience,
+    productionOffice,
+  );
+
   return (
     <IntendedAudienceSignifier
-      intendedAudience={parseAudience(intendedAudience)}
-      source={
-        deriveSourceFromCommissioningDesks(commissioningDesks) ??
-        parseProductionOfficeToSource(productionOffice)
-      }
+      intendedAudience={intendedAudience}
+      source={source}
       theme={{
         svg: {
-          width: "12px",
+          width: "16px",
           height: "12px",
         },
         typography: {

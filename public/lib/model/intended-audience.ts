@@ -11,6 +11,9 @@ type IntendedAudienceOptionValue =
 type AudienceTagSlug = "global" | "uk" | "au" | "us";
 const expectedAudienceSlugs = ["global", "uk", "au", "us"];
 
+export const isAudienceTagSlug = (text: string) =>
+  expectedAudienceSlugs.includes(text);
+
 export const intendedAudienceOptions: {
   displayName: string;
   value: IntendedAudienceOptionValue;
