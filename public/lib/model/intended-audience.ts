@@ -5,7 +5,8 @@ type IntendedAudienceOptionValue =
   | "domestic-for-domestic"
   | "domestic-for-global"
   | "global"
-  | "don-t-know";
+  | "don-t-know"
+  | null;
 
 type AudienceTagSlug = "global" | "uk" | "au" | "us";
 const expectedAudienceSlugs = ["global", "uk", "au", "us"];
@@ -14,6 +15,10 @@ export const intendedAudienceOptions: {
   displayName: string;
   value: IntendedAudienceOptionValue;
 }[] = [
+  {
+    displayName: "",
+    value: null,
+  },
   {
     displayName: "Don't know",
     value: "don-t-know",

@@ -38,10 +38,11 @@ const stubHasInvalidCommissionedLength = (stub: Stub) =>
 
 const generateErrorMessages = (
   stub: Stub,
+  intendedAudienceOption?: string,
   requireIntendedAudience?: boolean,
 ): string[] | undefined => {
   const errors: string[] = [];
-  if (requireIntendedAudience && !stub.intendedAudience) {
+  if (requireIntendedAudience && !intendedAudienceOption) {
     errors.push(MESSAGING.intendedAudienceRequired);
   }
   if (stubIsMissingRequiredLength(stub)) {

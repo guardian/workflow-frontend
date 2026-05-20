@@ -178,21 +178,17 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         $scope.commissioningDeskTags = getCommissioningDeskTags()
     })
 
-    $scope.$watch('formData.audienceOption', (value)=> {
-        $scope.stub.intendedAudience = getIntendedAudienceFromOptionValue(value, stub);
-    })
-
     $scope.validImport = false;
     $scope.wfComposerState;
 
     $scope.warningMessages = undefined
 
-    $scope.$watch('isIntendedAudienceEnabled', () => {
-        $scope.warningMessages = generateErrorMessages($scope.stub, $scope.isIntendedAudienceEnabled)
-    }, true)
-    $scope.$watch('stub', (newStub) => {
-        $scope.warningMessages = generateErrorMessages(newStub, $scope.isIntendedAudienceEnabled)
-    }, true)
+    function updateWarnings() {
+        $scope.warningMessages = generateErrorMessages($scope.stub, $scope.formData.audienceOption, $scope.isIntendedAudienceEnabled)
+    }
+    $scope.$watch('isIntendedAudienceEnabled', updateWarnings, true)
+    $scope.$watch('stub', updateWarnings, true)
+    $scope.$watch('formData.audienceOption', updateWarnings, true)
 
     $scope.isCommissionedLengthRequired = () => doesContentTypeRequireCommissionedLength($scope.stub.contentType);
 
@@ -384,7 +380,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = setDisplayHintForFormat ($scope.stub);
-        
+
+        // stub.intendedAudience is not rendered on the form, so does not need to be evaluated until submitting
+        stub.intendedAudience = getIntendedAudienceFromOptionValue($scope.formData.audienceOption, $scope.stub);
+
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {
                 stub.contentType = $scope.stub.contentType.toLowerCase();
