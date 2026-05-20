@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  val awsVersion: String = "2.42.31"
+  val awsVersion: String = "2.44.7"
   val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
 
   val awsDependencies = Seq(
@@ -46,7 +46,7 @@ object Dependencies {
   )
 
   val cryptoDependencies = Seq(
-    "org.bouncycastle" % "bcprov-jdk18on" % "1.78.1"
+    "org.bouncycastle" % "bcprov-jdk18on" % "1.84"
   )
 
   val permissionsClientVersion = "5.0.0"
