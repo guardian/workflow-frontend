@@ -11,7 +11,7 @@ type SimplifiedTag = {
 
 type Props = {
   intendedAudience?: string;
-  commissioningDesks?: Array<SimplifiedTag|undefined>;
+  commissioningDesks?: Array<SimplifiedTag | undefined>;
   productionOffice?: string;
 };
 
@@ -51,6 +51,7 @@ const parseProductionOfficeToSource = (
   switch (source?.toUpperCase()) {
     case "US":
       return "US";
+    case "AU":
     case "AUS":
       return "AUS";
     case "UK":
@@ -66,9 +67,8 @@ const PREFIXES: IntendedAudienceSignifierProps["source"][] = [
 ];
 
 const deriveSourceFromCommissioningDesks = (
-  desks: Array<SimplifiedTag|undefined>,
+  desks: Array<SimplifiedTag | undefined>,
 ): IntendedAudienceSignifierProps["source"] | undefined => {
-
   const deskWithPrefix = desks.find((deskTag) =>
     PREFIXES.some((prefix) =>
       deskTag?.externalName.toUpperCase().startsWith(prefix),
