@@ -1,0 +1,4 @@
+[tools]
+"github:guardian/devenv" = "20260522-111753"
+aws-cli = { version = "2.34.62", symlink_bins = true }
+sbt = "1.12.11"
