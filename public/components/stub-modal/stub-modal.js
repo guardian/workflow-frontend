@@ -91,17 +91,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
       });
     }
 
-    function getCommissioningDeskTags () {
-        if (!stub.commissioningDesks) {
-            return []
-        }
-        // stub.commissioningDesks (string) represents a commma separated list of numerical tag id
-        // the form only allow one to be selected, but allow for multiple and take the first
-        const selectedTagId = stub.commissioningDesks.split(",").shift()
-        const match = _wfConfig.commissioningDesks.find(tag => tag.id.toString() === selectedTagId)
-        return match? [match]: []
-    }
-
     $scope.mode = mode;
 
     $scope.audienceOptions = intendedAudienceOptions;
@@ -115,7 +104,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.templates = [];
     $scope.statuses = statusLabels;
     $scope.cdesks = _wfConfig.commissioningDesks;
-    $scope.commissioningDeskTags = getCommissioningDeskTags()
     $scope.atomTypes = getAtomDropdownData();
 
     if(mode==='import') {
@@ -173,10 +161,6 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         }
 
     }, true);
-
-    $scope.$watch('stub.commissioningDesks', () => {
-        $scope.commissioningDeskTags = getCommissioningDeskTags()
-    })
 
     $scope.validImport = false;
     $scope.wfComposerState;
@@ -310,7 +294,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             productionOffice: stub.prodOffice,
             commissioningDesk
         }
-        if (missingCommissionedLengthReason) { tags['missingCommissionedLengthReason'] = missingCommissionedLengthReason; }
+        if (missingCommissionedLengthReason) { tags.missingCommissionedLengthReason = missingCommissionedLengthReason; }
         if(wfTelemetryService !== null && wfTelemetryService !== undefined) {
             wfTelemetryService.sendTelemetryEvent(
                 "WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED",
