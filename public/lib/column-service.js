@@ -1,13 +1,17 @@
-import angular              from 'angular';
+import angular from 'angular';
 
-import moment               from 'moment';
-import { columnDefaults }   from './column-defaults'
-import startTemplate        from "components/content-list-item/content-list-item-start.html";
-import endTemplate          from "components/content-list-item/content-list-item-end.html";
+import moment from 'moment';
+import { columnDefaults } from './column-defaults'
+import startTemplate from "components/content-list-item/content-list-item-start.html";
+import endTemplate from "components/content-list-item/content-list-item-end.html";
+import { getDefaultFeatureSwitchValues } from './feature-switches.ts';
+
+const columnDefaultsWithoutIntendedAudience = columnDefaults.filter(column => column.name !== 'intended-audience')
+
 
 angular.module('wfColumnService', [])
     .factory('wfColumnService', ['wfPreferencesService',
-        function(wfPreferencesService) {
+        function (wfPreferencesService) {
 
             class ColumnService {
 
@@ -15,23 +19,23 @@ angular.module('wfColumnService', [])
 
                     var self = this;
 
-                    self.availableColums = columnDefaults;
+                    self.availableColums = columnDefaultsWithoutIntendedAudience;
                     self.contentItemTemplate;
 
-                    self.preferencePromise = wfPreferencesService.getPreference('columnConfiguration').then(function resolve (data) {
-
-                        if (typeof data[0] !== "string") {
-
+                    self.preferencePromise = wfPreferencesService.getAllPreferences().then(function resolve(preferencesData) {
+                        var { columnConfiguration, featureSwitches = getDefaultFeatureSwitchValues() } = preferencesData;
+                        if (typeof columnConfiguration[0] !== "string") {
                             return reject();
                         } else {
-
+                            var shouldExcludeIntendedAudience = !featureSwitches.intendedAudienceColumn
+                            self.availableColums = shouldExcludeIntendedAudience ? columnDefaultsWithoutIntendedAudience : columnDefaults
                             self.columns = self.availableColums;
 
                             self.columns.forEach((col) => { // set all to inactive
                                 col.active = false;
                             });
 
-                            data.forEach((colName) => { // activate preferences columns
+                            columnConfiguration.forEach((colName) => { // activate preferences columns
                                 self.columns.some((availCol) => {
                                     if (availCol.name == colName) {
                                         availCol.active = true; // set active
@@ -47,7 +51,8 @@ angular.module('wfColumnService', [])
 
                     }, reject);
 
-                    function reject () {
+
+                    function reject() {
 
                         self.columns = self.availableColums;
                         self.setColumns(self.columns);

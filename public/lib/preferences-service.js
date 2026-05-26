@@ -110,10 +110,16 @@ angular.module('wfPreferencesService', [])
                 }
 
                 /**
-                 * Get a preference. If preferences have already been set resolve a promise with the preference
+                 * Get a preference. 
+                 * 
+                 * If preferences have already been fetched, resolve a promise with the preference
                  * requested, else return the promise of the request to the preferences app that will resolve
                  * with the correct preference
-                 * @param name
+                 * 
+                 * The promise will reject if the preferences data fetched from the references app 
+                 * does not have key matching the preference name.
+                 * 
+                 * @param {string} name
                  * @returns {Promise}
                  */
                 getPreference(name) {
@@ -132,6 +138,32 @@ angular.module('wfPreferencesService', [])
                             } else {
                                 $log.info('No preference set for: ' + name);
                                 return Promise.reject();
+                            }
+                        }, function reject () {
+                            return Promise.reject();
+                        });
+                    }
+                }
+
+                 /**
+                 * Gets all preferences. 
+                 * 
+                 * If preferences have already been fetched, resolve a promise with the preference
+                 * requested, else return the promise of the request to the preferences app that will resolve
+                 * with preferences
+                 * 
+                 * @returns {Promise}
+                 */
+                getAllPreferences() {
+                    if (this.preferences) {
+                        return Promise.resolve(this.preferences);
+                    } else {
+                        return this.prefsPromise.then(function resolve (preferences) {
+                            if (!!preferences) {
+                                return preferences;
+                            } else {
+                                $log.info('No preferences set');
+                                return Promise.reject()
                             }
                         }, function reject () {
                             return Promise.reject();
