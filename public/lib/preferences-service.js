@@ -150,7 +150,7 @@ angular.module('wfPreferencesService', [])
                  * 
                  * If preferences have already been fetched, resolve a promise with the preference
                  * requested, else return the promise of the request to the preferences app that will resolve
-                 * with preferencea
+                 * with preferences
                  * 
                  * @returns {Promise}
                  */

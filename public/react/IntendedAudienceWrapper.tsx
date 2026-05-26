@@ -19,6 +19,7 @@ const parseProductionOfficeToSource = (
   switch (source?.toUpperCase()) {
     case "US":
       return "US";
+    case "AU":
     case "AUS":
       return "AUS";
     case "UK":
