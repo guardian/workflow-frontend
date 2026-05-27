@@ -13,12 +13,12 @@
             <input type="text" ng-model="formData.importUrl" ng-change="importUrlChanged()" id="import_url" name="import_url" class="form-control" required  wf-focus focus-me="{{ mode === 'import' }}">
         </div>
         <div class="form-horizontal clearfix">
-                <div class="format-dropdown" ng-if="(showFormatDropdown && stubFormatIsCorrectlyPopulated())">
-                    <label for="stub_format">Format</label>
-                    <div>
-                        <select ng-disabled="mode === 'import'" id="stub_format" name="articleFormat" ng-model="stub.articleFormat" ng-options="f.value as f.name for f in articleFormats"></select>
-                    </div>
+            <div class="format-dropdown" ng-if="stubFormatIsCorrectlyPopulated()">
+                <label for="stub_format">Format</label>
+                <div>
+                    <select ng-disabled="mode === 'import'" id="stub_format" name="articleFormat" ng-model="stub.articleFormat" ng-options="f.value as f.name for f in articleFormats"></select>
                 </div>
+            </div>
             <div class="form-group col-xs-8">
                 <label for="stub_title">Working title *</label>
                 <input type="text" ng-model="stub.title" id="stub_title" name="title" class="form-control" required wf-focus focus-me="{{ !(mode === 'import') }}">
@@ -42,13 +42,41 @@
                 </div>
             </div>
             <div class="form-group pull-left col-xs-8" ng-if="contentName !== 'Atom' && !['Atom Workshop', 'Media Atom Maker'].includes(importHandler.name)">
-                <label for="stub_cdesk">Commissioning info</label>
-                <div ng-if="cdesks.length > 0">
-                    <select class="commissioning-desk-margin" id="stub_cdesk" name="cdesk" ng-model="stub.commissioningDesks" ng-options="cdesk.id.toString() as cdesk.externalName for cdesk in cdesks"></select>
-                </div>
-                <div ng-if="cdesks.length === 0">
-                    <p class="commissioning-desk-margin">Selecting commissioning info is temporarily unavailable</p>
-                </div>
+                
+                <section class="commissioning-and-audience">
+                    <div>
+                        <label for="stub_cdesk">Commissioning info</label>
+                        <div ng-if="cdesks.length > 0">
+                            <select id="stub_cdesk" name="cdesk" ng-model="stub.commissioningDesks" ng-options="cdesk.id.toString() as cdesk.externalName for cdesk in cdesks"></select>
+                        </div>
+                        <div ng-if="cdesks.length === 0">
+                            <p>Selecting commissioning info is temporarily unavailable</p>
+                        </div>
+                    </div>
+                    <div ng-if="isIntendedAudienceEnabled">
+                        <div class="label-and-icon">
+                            <label for="stub_intended_audience">
+                                <span>Intended audience</span>
+                                <span>*</span>
+                            </label>
+                            <i class="content-list-head__heading-icon--tooltip" wf-icon="tooltip" title="TBC"></i>
+                        </div>
+
+                        <select 
+                            id="stub_intended_audience" 
+                            required 
+                            name="intended_audience" 
+                            ng-model="formData.audienceOption" 
+                            ng-options="audienceOption.value as audienceOption.displayName for audienceOption in audienceOptions"
+                        ></select>
+
+                        <div ng-if="!allAudienceTagsAreAvailable">
+                            <div>Selecting Intended Audience</div>
+                            <div>is temporarily unavailable</div>
+                        </div>
+                    </div>
+                </section>
+
 
                 <section style="display: contents;" ng-if="isCommissionedLengthRequired()" >
                     <label for="commissionedLength">Commissioned Length <span ng-if="isCommissionedLengthRequired()">*</span></label>
@@ -169,8 +197,8 @@
             <button type="button" class="btn btn-default pull-left" data-dismiss="modal" ng-click="delete()" ng-if="stub.id">Delete</button>
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
         </div>
-        <div class="pull-right">
-            <span ng-if="warningMessages">
+        <div class="pull-right submit-button-and-warnings">
+            <span ng-if="warningMessages" class="warning-message-stack">
                 <span ng-repeat="message in warningMessages">{{ message }} </span>
             </span>
             <button type="button" class="btn btn-default" id="testing-create-stub" ng-click="submit(stubForm)" ng-disabled="disabled || stubForm.$invalid " ng-show="stub.status === 'Stub'">

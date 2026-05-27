@@ -1,45 +1,13 @@
-import React from "react";
 import {
   IntendedAudienceSignifier,
   type IntendedAudienceSignifierProps,
 } from "@guardian/stand/intendedAudienceSignifier";
-
-type SimplifiedTag = {
-  id: number;
-  externalName: string;
-};
+import React from "react";
+import { isAudienceTagSlug } from "../lib/model/intended-audience";
 
 type Props = {
   intendedAudience?: string;
-  commissioningDesks?: Array<SimplifiedTag | undefined>;
   productionOffice?: string;
-};
-
-const parseAudience = (
-  intendedAudience?: string,
-): IntendedAudienceSignifierProps["intendedAudience"] => {
-  if (!intendedAudience) {
-    return "Don't know";
-  }
-
-  switch (intendedAudience.toUpperCase()) {
-    case "GLOBAL":
-      return "Global";
-    case "DOMESTIC FOR DOMESTIC":
-      return "Domestic for Domestic";
-    case "DOMESTIC FOR GLOBAL":
-      return "Domestic For Global";
-
-    case "UK":
-      return "UK";
-    case "US":
-      return "US";
-    case "AUS":
-      return "AUS";
-    case "DON'T KNOW":
-    default:
-      return "Don't know";
-  }
 };
 
 const parseProductionOfficeToSource = (
@@ -60,45 +28,70 @@ const parseProductionOfficeToSource = (
   }
 };
 
-const PREFIXES: IntendedAudienceSignifierProps["source"][] = [
-  "UK",
-  "AUS",
-  "US",
-];
+const slugsToSource = (
+  audienceTagTokens: string[],
+): IntendedAudienceSignifierProps["source"] => {
+  if (audienceTagTokens.includes("au")) {
+    return "AUS";
+  }
+  if (audienceTagTokens.includes("us")) {
+    return "US";
+  }
+  return "UK";
+};
 
-const deriveSourceFromCommissioningDesks = (
-  desks: Array<SimplifiedTag | undefined>,
-): IntendedAudienceSignifierProps["source"] | undefined => {
-  const deskWithPrefix = desks.find((deskTag) =>
-    PREFIXES.some((prefix) =>
-      deskTag?.externalName.toUpperCase().startsWith(prefix),
-    ),
-  );
+const slugsToIntendedAudience = (
+  audienceTagTokens: string[],
+): IntendedAudienceSignifierProps["intendedAudience"] => {
+  if (audienceTagTokens.length === 0) {
+    return "Don't know";
+  }
+  if (audienceTagTokens.includes("global")) {
+    return audienceTagTokens.length === 1 ? "Global" : "Domestic For Global";
+  }
+  return "Domestic for Domestic";
+};
 
-  if (!deskWithPrefix) {
-    return undefined;
+const deriveProps = (
+  stubIntendedAudience: string | undefined,
+  productionOffice: string | undefined,
+): {
+  source: IntendedAudienceSignifierProps["source"];
+  intendedAudience: IntendedAudienceSignifierProps["intendedAudience"];
+} => {
+  if (!stubIntendedAudience) {
+    return {
+      source: parseProductionOfficeToSource(productionOffice),
+      intendedAudience: "Don't know",
+    };
   }
 
-  return PREFIXES.find((prefix) =>
-    deskWithPrefix.externalName.toUpperCase().startsWith(prefix),
-  );
+  const audienceTagSlugs = stubIntendedAudience
+    .split(",")
+    .filter(isAudienceTagSlug);
+
+  return {
+    source: slugsToSource(audienceTagSlugs),
+    intendedAudience: slugsToIntendedAudience(audienceTagSlugs),
+  };
 };
 
 export const IntendedAudienceWrapper: React.FunctionComponent<Props> = ({
-  intendedAudience,
+  intendedAudience: stubIntendedAudience,
   productionOffice,
-  commissioningDesks = [],
 }: Props) => {
+  const { intendedAudience, source } = deriveProps(
+    stubIntendedAudience,
+    productionOffice,
+  );
+
   return (
     <IntendedAudienceSignifier
-      intendedAudience={parseAudience(intendedAudience)}
-      source={
-        deriveSourceFromCommissioningDesks(commissioningDesks) ??
-        parseProductionOfficeToSource(productionOffice)
-      }
+      intendedAudience={intendedAudience}
+      source={source}
       theme={{
         svg: {
-          width: "12px",
+          width: "16px",
           height: "12px",
         },
         typography: {

@@ -7,6 +7,7 @@ import './http-session-service';
 import './user';
 import './visibility-service';
 import { provideFormats } from './model/format-helpers.ts'
+import { findMatchingAudienceTags } from './model/intended-audience.ts'
 
 angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService'])
     .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService', 'config',
@@ -83,13 +84,34 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                     });
                 }
 
+                getCommissioningDeskTagFromStub(stub) {
+                    if (!stub.commissioningDesks) {
+                        return undefined
+                    }
+                    return _wfConfig.commissioningDesks.find(tag => tag.id.toString() === stub.commissioningDesks)
+                }
+
                 /**
                  * Creates a draft in Composer from a Stub. Effectively moving
                  * it to "Writers" status.
                  * Also will create the stub if it doesn't have an id.
                  */
                 createInComposer(stub, statusOption) {
-                    return wfComposerService.create(stub.contentType, stub.commissioningDesks, stub.commissionedLength, stub.prodOffice, stub.template, stub.articleFormat, stub.priority, stub.missingCommissionedLengthReason)
+
+                    const audienceTags = findMatchingAudienceTags(stub.intendedAudience, _wfConfig.audienceTags);
+                    const commissioningDeskTag = this.getCommissioningDeskTagFromStub(stub);
+
+                    return wfComposerService.create(
+                            stub.contentType, 
+                            commissioningDeskTag, 
+                            stub.commissionedLength, 
+                            stub.prodOffice, 
+                            stub.template, 
+                            stub.articleFormat, 
+                            stub.priority, 
+                            stub.missingCommissionedLengthReason, 
+                            audienceTags,
+                        )
                         .then((response) => wfComposerService.parseComposerData(response, stub))
                         .then((updatedStub) => {
 

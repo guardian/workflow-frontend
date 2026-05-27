@@ -207,7 +207,6 @@ angular.module('workflow',
         'title',
     ]))
     .component('intendedAudienceSignifier', react2angular(IntendedAudienceWrapper,[
-        'commissioningDesks',
         'intendedAudience',
         'productionOffice', 
     ]))

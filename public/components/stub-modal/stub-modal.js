@@ -19,6 +19,7 @@ import { punters } from 'components/punters/punters';
 import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNativeFormFeedback } from '../../lib/stub-form-validation.ts';
 import { setDisplayHintForFormat } from 'lib/model/special-formats.ts';
 import { getArticleFormatLabel, isFormatLabel } from 'lib/model/format-helpers.ts';
+import { intendedAudienceOptions, getIntendedAudienceFromOptionValue, areAllExpectedTagsAvailable } from 'lib/model/intended-audience.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService', 'wfTelemetryService'])
@@ -39,7 +40,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             $scope.stubFormat = newValue;
         })
 
-        wfPreferencesService.getPreference('featureSwitches').then((data) => { $scope.showFormatDropdown = data;})
+        wfPreferencesService.getPreference('featureSwitches').then((data) => { 
+            $scope.isIntendedAudienceEnabled = data.intendedAudienceColumn
+        ;})
         
         $scope.modalTitle = ({
             'create': `Create ${$scope.contentName}`,
@@ -90,7 +93,12 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     $scope.mode = mode;
 
-    $scope.formData = {};
+    $scope.audienceOptions = intendedAudienceOptions;
+    $scope.allAudienceTagsAreAvailable = areAllExpectedTagsAvailable(_wfConfig.audienceTags)
+
+    $scope.formData = {
+        audienceOption: intendedAudienceOptions[0].value,
+    };
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
     $scope.templates = [];
@@ -158,9 +166,13 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.wfComposerState;
 
     $scope.warningMessages = undefined
-    $scope.$watch('stub', (newStub) => {
-        $scope.warningMessages = generateErrorMessages(newStub)
-    }, true)
+
+    function updateWarnings() {
+        $scope.warningMessages = generateErrorMessages($scope.stub, $scope.formData.audienceOption, $scope.isIntendedAudienceEnabled)
+    }
+    $scope.$watch('isIntendedAudienceEnabled', updateWarnings, true)
+    $scope.$watch('stub', updateWarnings, true)
+    $scope.$watch('formData.audienceOption', updateWarnings, true)
 
     $scope.isCommissionedLengthRequired = () => doesContentTypeRequireCommissionedLength($scope.stub.contentType);
 
@@ -282,7 +294,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
             productionOffice: stub.prodOffice,
             commissioningDesk
         }
-        if (missingCommissionedLengthReason) tags['missingCommissionedLengthReason'] = missingCommissionedLengthReason;
+        if (missingCommissionedLengthReason) { tags.missingCommissionedLengthReason = missingCommissionedLengthReason; }
         if(wfTelemetryService !== null && wfTelemetryService !== undefined) {
             wfTelemetryService.sendTelemetryEvent(
                 "WORKFLOW_COMMISSIONED_LENGTH_SUGGESTION_PRESSED",
@@ -352,7 +364,10 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
         const stub = setDisplayHintForFormat ($scope.stub);
-        
+
+        // stub.intendedAudience is not rendered on the form, so does not need to be evaluated until submitting
+        stub.intendedAudience = getIntendedAudienceFromOptionValue($scope.formData.audienceOption, $scope.stub);
+
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {
                 stub.contentType = $scope.stub.contentType.toLowerCase();
