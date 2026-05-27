@@ -1,68 +1,64 @@
 import {
   IntendedAudienceSignifier,
   type IntendedAudienceSignifierProps,
-} from "@guardian/stand/intendedAudienceSignifier";
+} from "@guardian/stand/IntendedAudienceSignifier";
 import React from "react";
 import { isAudienceTagSlug } from "../lib/model/intended-audience";
 
 type Props = {
   intendedAudience?: string;
-  productionOffice?: string;
 };
 
-const parseProductionOfficeToSource = (
-  source?: string,
-): IntendedAudienceSignifierProps["source"] => {
-  if (!source) {
-    return "UK";
-  }
-  switch (source?.toUpperCase()) {
-    case "US":
-      return "US";
-    case "AU":
-    case "AUS":
-      return "AUS";
-    case "UK":
-    default:
-      return "UK";
-  }
-};
+type DomesticRegion = "UK" | "US" | "AUS";
 
-const slugsToSource = (
+const getHasGlobal = (audienceTagTokens: string[]): boolean =>
+  audienceTagTokens.includes("global");
+
+const getDomesticRegion = (
   audienceTagTokens: string[],
-): IntendedAudienceSignifierProps["source"] => {
+): DomesticRegion | undefined => {
   if (audienceTagTokens.includes("au")) {
     return "AUS";
   }
   if (audienceTagTokens.includes("us")) {
     return "US";
   }
-  return "UK";
+  if (audienceTagTokens.includes("uk")) {
+    return "UK";
+  }
+  return undefined;
 };
 
-const slugsToIntendedAudience = (
-  audienceTagTokens: string[],
-): IntendedAudienceSignifierProps["intendedAudience"] => {
-  if (audienceTagTokens.length === 0) {
-    return "Don't know";
+const slugsToSource = (
+  hasGlobal: boolean,
+  domesticRegion: DomesticRegion | undefined,
+): IntendedAudienceSignifierProps["source"] => {
+  if (domesticRegion) {
+    return domesticRegion;
   }
-  if (audienceTagTokens.includes("global")) {
-    return audienceTagTokens.length === 1 ? "Global" : "Domestic For Global";
+  return hasGlobal ? "global" : undefined;
+};
+
+const slugsToTarget = (
+  hasGlobal: boolean,
+  domesticRegion: DomesticRegion | undefined,
+): IntendedAudienceSignifierProps["target"] => {
+  if (hasGlobal) {
+    return "global";
   }
-  return "Domestic for Domestic";
+  return domesticRegion;
 };
 
 const deriveProps = (
   stubIntendedAudience: string | undefined,
-  productionOffice: string | undefined,
 ): {
   source: IntendedAudienceSignifierProps["source"];
-  intendedAudience: IntendedAudienceSignifierProps["intendedAudience"];
+  target: IntendedAudienceSignifierProps["target"];
 } => {
   if (!stubIntendedAudience) {
     return {
-      source: parseProductionOfficeToSource(productionOffice),
-      intendedAudience: "Don't know",
+      source: undefined,
+      target: undefined,
     };
   }
 
@@ -70,30 +66,25 @@ const deriveProps = (
     .split(",")
     .filter(isAudienceTagSlug);
 
+  const hasGlobal = getHasGlobal(audienceTagSlugs);
+  const domesticRegion = getDomesticRegion(audienceTagSlugs);
+
   return {
-    source: slugsToSource(audienceTagSlugs),
-    intendedAudience: slugsToIntendedAudience(audienceTagSlugs),
+    source: slugsToSource(hasGlobal, domesticRegion),
+    target: slugsToTarget(hasGlobal, domesticRegion),
   };
 };
 
 export const IntendedAudienceWrapper: React.FunctionComponent<Props> = ({
   intendedAudience: stubIntendedAudience,
-  productionOffice,
 }: Props) => {
-  const { intendedAudience, source } = deriveProps(
-    stubIntendedAudience,
-    productionOffice,
-  );
+  const { target, source } = deriveProps(stubIntendedAudience);
 
   return (
     <IntendedAudienceSignifier
-      intendedAudience={intendedAudience}
+      target={target}
       source={source}
       theme={{
-        svg: {
-          width: "16px",
-          height: "12px",
-        },
         typography: {
           font: "normal 460 12px GuardianAgateSans1Web",
         },
