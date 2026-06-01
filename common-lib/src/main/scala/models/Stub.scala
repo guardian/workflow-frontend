@@ -54,6 +54,7 @@ case class ExternalData(
                          rightsDeveloperCommunity: Option[Boolean] = None,
                          byline: Option[String] = None,
                          displayHint: Option[String] = None,
+                         trackingTags: Option[List[String]] = None,
                          intendedAudience: Option[String] = None) {
 }
 
