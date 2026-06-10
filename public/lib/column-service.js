@@ -23,7 +23,7 @@ angular.module('wfColumnService', [])
                     self.contentItemTemplate;
 
                     self.preferencePromise = wfPreferencesService.getAllPreferences().then(function resolve(preferencesData) {
-                        var { columnConfiguration, featureSwitches = getDefaultFeatureSwitchValues() } = preferencesData;
+                        var { columnConfiguration = [], featureSwitches = getDefaultFeatureSwitchValues() } = preferencesData;
                         if (typeof columnConfiguration[0] !== "string") {
                             return reject();
                         } else {
