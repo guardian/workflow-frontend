@@ -1,94 +1,41 @@
 import {
   IntendedAudienceSignifier,
+  mapTagsToSourceAndTarget,
   type IntendedAudienceSignifierProps,
 } from "@guardian/stand/IntendedAudienceSignifier";
 import React from "react";
-import { isAudienceTagSlug } from "../lib/model/intended-audience";
 
 type Props = {
   intendedAudience?: string;
 };
 
-type DomesticRegion = "UK" | "US" | "AUS";
-
-const getHasGlobal = (audienceTagTokens: string[]): boolean =>
-  audienceTagTokens.includes("global");
-
-const getDomesticRegion = (
-  audienceTagTokens: string[],
-): DomesticRegion | undefined => {
-  if (audienceTagTokens.includes("au")) {
-    return "AUS";
-  }
-  if (audienceTagTokens.includes("us")) {
-    return "US";
-  }
-  if (audienceTagTokens.includes("uk")) {
-    return "UK";
-  }
-  return undefined;
-};
-
-const slugsToSource = (
-  hasGlobal: boolean,
-  domesticRegion: DomesticRegion | undefined,
-): IntendedAudienceSignifierProps["source"] => {
-  if (domesticRegion) {
-    return domesticRegion;
-  }
-  return hasGlobal ? "global" : undefined;
-};
-
-const slugsToTarget = (
-  hasGlobal: boolean,
-  domesticRegion: DomesticRegion | undefined,
-): IntendedAudienceSignifierProps["target"] => {
-  if (hasGlobal) {
-    return "global";
-  }
-  return domesticRegion;
-};
-
-const deriveProps = (
-  stubIntendedAudience: string | undefined,
-): {
-  source: IntendedAudienceSignifierProps["source"];
-  target: IntendedAudienceSignifierProps["target"];
-} => {
-  if (!stubIntendedAudience) {
-    return {
-      source: undefined,
-      target: undefined,
-    };
+const getSourceAndTarget = (intendedAudience?: string) => {
+  if (!intendedAudience) {
+    return undefined;
   }
 
-  const audienceTagSlugs = stubIntendedAudience
-    .split(",")
-    .filter(isAudienceTagSlug);
+  // We intend to deprecate the stub.externalData.intendedAudience (Option[String], comma separated tag slugs) and use
+  // stub.externalData.trackingTags (Option[List[String]], array of tag paths)
 
-  const hasGlobal = getHasGlobal(audienceTagSlugs);
-  const domesticRegion = getDomesticRegion(audienceTagSlugs);
-
-  return {
-    source: slugsToSource(hasGlobal, domesticRegion),
-    target: slugsToTarget(hasGlobal, domesticRegion),
-  };
+  return mapTagsToSourceAndTarget(
+    intendedAudience
+      .split(",")
+      .map((slug) => ({ path: `tracking/audience/${slug}` })),
+  );
 };
 
 export const IntendedAudienceWrapper: React.FunctionComponent<Props> = ({
-  intendedAudience: stubIntendedAudience,
+  intendedAudience,
 }: Props) => {
-  const { target, source } = deriveProps(stubIntendedAudience);
+  const sourceAndTarget = getSourceAndTarget(intendedAudience);
+  if (!sourceAndTarget) {
+    return null; // do not render the "Don't know" signifier in the table
+  }
 
   return (
     <IntendedAudienceSignifier
-      target={target}
-      source={source}
-      theme={{
-        typography: {
-          font: "normal 460 12px GuardianAgateSans1Web",
-        },
-      }}
+      target={sourceAndTarget.target}
+      source={sourceAndTarget.source}
     />
   );
 };
