@@ -1,7 +1,6 @@
 import {
   IntendedAudienceSignifier,
-  mapTagsToSourceAndTarget,
-  type IntendedAudienceSignifierProps,
+  mapTagsToSourceAndTarget
 } from "@guardian/stand/IntendedAudienceSignifier";
 import React from "react";
 
