@@ -1,103 +1,40 @@
 import {
   IntendedAudienceSignifier,
-  type IntendedAudienceSignifierProps,
-} from "@guardian/stand/intendedAudienceSignifier";
+  mapTagsToSourceAndTarget
+} from "@guardian/stand/IntendedAudienceSignifier";
 import React from "react";
-import { isAudienceTagSlug } from "../lib/model/intended-audience";
 
 type Props = {
   intendedAudience?: string;
-  productionOffice?: string;
 };
 
-const parseProductionOfficeToSource = (
-  source?: string,
-): IntendedAudienceSignifierProps["source"] => {
-  if (!source) {
-    return "UK";
-  }
-  switch (source?.toUpperCase()) {
-    case "US":
-      return "US";
-    case "AU":
-    case "AUS":
-      return "AUS";
-    case "UK":
-    default:
-      return "UK";
-  }
-};
-
-const slugsToSource = (
-  audienceTagTokens: string[],
-): IntendedAudienceSignifierProps["source"] => {
-  if (audienceTagTokens.includes("au")) {
-    return "AUS";
-  }
-  if (audienceTagTokens.includes("us")) {
-    return "US";
-  }
-  return "UK";
-};
-
-const slugsToIntendedAudience = (
-  audienceTagTokens: string[],
-): IntendedAudienceSignifierProps["intendedAudience"] => {
-  if (audienceTagTokens.length === 0) {
-    return "Don't know";
-  }
-  if (audienceTagTokens.includes("global")) {
-    return audienceTagTokens.length === 1 ? "Global" : "Domestic For Global";
-  }
-  return "Domestic for Domestic";
-};
-
-const deriveProps = (
-  stubIntendedAudience: string | undefined,
-  productionOffice: string | undefined,
-): {
-  source: IntendedAudienceSignifierProps["source"];
-  intendedAudience: IntendedAudienceSignifierProps["intendedAudience"];
-} => {
-  if (!stubIntendedAudience) {
-    return {
-      source: parseProductionOfficeToSource(productionOffice),
-      intendedAudience: "Don't know",
-    };
+const getSourceAndTarget = (intendedAudience?: string) => {
+  if (!intendedAudience) {
+    return undefined;
   }
 
-  const audienceTagSlugs = stubIntendedAudience
-    .split(",")
-    .filter(isAudienceTagSlug);
+  // We intend to deprecate the stub.externalData.intendedAudience (Option[String], comma separated tag slugs) and use
+  // stub.externalData.trackingTags (Option[List[String]], array of tag paths)
 
-  return {
-    source: slugsToSource(audienceTagSlugs),
-    intendedAudience: slugsToIntendedAudience(audienceTagSlugs),
-  };
+  return mapTagsToSourceAndTarget(
+    intendedAudience
+      .split(",")
+      .map((slug) => ({ path: `tracking/audience/${slug}` })),
+  );
 };
 
 export const IntendedAudienceWrapper: React.FunctionComponent<Props> = ({
-  intendedAudience: stubIntendedAudience,
-  productionOffice,
+  intendedAudience,
 }: Props) => {
-  const { intendedAudience, source } = deriveProps(
-    stubIntendedAudience,
-    productionOffice,
-  );
+  const sourceAndTarget = getSourceAndTarget(intendedAudience);
+  if (!sourceAndTarget) {
+    return null; // do not render the "Don't know" signifier in the table
+  }
 
   return (
     <IntendedAudienceSignifier
-      intendedAudience={intendedAudience}
-      source={source}
-      theme={{
-        svg: {
-          width: "16px",
-          height: "12px",
-        },
-        typography: {
-          font: "normal 460 12px GuardianAgateSans1Web",
-        },
-      }}
+      target={sourceAndTarget.target}
+      source={sourceAndTarget.source}
     />
   );
 };
