@@ -1217,10 +1217,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@guardian/stand@^0.0.47":
-  version "0.0.47"
-  resolved "https://registry.yarnpkg.com/@guardian/stand/-/stand-0.0.47.tgz#a4d0de4de9cec4c7ed15d921262abef51170aa2f"
-  integrity sha512-mBwgHqWi1L9F+lVZWcqKCCRwe/LLwzu46UM+S6Q9eNdlRtCqk/NhwZ31OawuNnie0sR5fL4rdloZfnxNDEtVtQ==
+"@guardian/stand@^0.0.50":
+  version "0.0.50"
+  resolved "https://registry.yarnpkg.com/@guardian/stand/-/stand-0.0.50.tgz#2bef626b4742e26b953b5d4aa8867bbf65f47832"
+  integrity sha512-Ngilr3LbIKP5/Q7U7jZ0uejyMAQ1jHrd4SY7/AcaKHljISmvUreYejXm7h234LSmRLf/EbDYjmhmd0DLmEbuvQ==
 
 "@guardian/user-telemetry-client@1.2.1":
   version "1.2.1"
