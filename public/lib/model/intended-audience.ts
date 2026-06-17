@@ -2,9 +2,9 @@ import { Stub } from "./stub";
 import { LimitedTag } from "./tags";
 
 type IntendedAudienceOptionValue =
-  | "domestic-for-domestic"
-  | "domestic-for-global"
   | "global"
+  | "domestic-for-global"
+  | "domestic-for-domestic"
   | "don-t-know"
   | null;
 
@@ -20,20 +20,20 @@ export const intendedAudienceOptions: {
     value: null,
   },
   {
-    displayName: "Don't know",
-    value: "don-t-know",
-  },
-  {
-    displayName: "Domestic for Domestic",
-    value: "domestic-for-domestic",
+    displayName: "Global",
+    value: "global",
   },
   {
     displayName: "Domestic for Global",
     value: "domestic-for-global",
   },
   {
-    displayName: "Global",
-    value: "global",
+    displayName: "Domestic for Domestic",
+    value: "domestic-for-domestic",
+  },
+  {
+    displayName: "Don't know",
+    value: "don-t-know",
   },
 ];
 

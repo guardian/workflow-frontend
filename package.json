@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
-    "@guardian/stand": "^0.0.47",
+    "@guardian/stand": "^0.0.50",
     "@guardian/user-telemetry-client": "1.2.1",
     "@types/react": "^17.0.76",
     "@types/react-dom": "^17.0.9",
