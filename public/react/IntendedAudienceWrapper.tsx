@@ -17,7 +17,7 @@ const getSourceAndTarget = (intendedAudience?: string) => {
   // stub.externalData.trackingTags (Option[List[String]], array of tag paths)
 
   return mapTagsToSourceAndTarget(
-    intendedAudience
+    intendedAudience.toLowerCase()
       .split(",")
       .map((slug) => ({ path: `tracking/audience/${slug}` })),
   );
