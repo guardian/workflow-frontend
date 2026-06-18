@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  val awsVersion: String = "2.44.7"
+  val awsVersion: String = "2.46.13"
   val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
 
   val awsDependencies = Seq(
@@ -16,7 +16,7 @@ object Dependencies {
     "joda-time" % "joda-time" % "2.14.0"
   )
 
-  val pandaVersion = "19.0.0"
+  val pandaVersion = "20.0.0"
 
   val authDependencies = Seq(
     "com.gu" %% "pan-domain-auth-play_3-0" % pandaVersion,
@@ -49,7 +49,7 @@ object Dependencies {
     "org.bouncycastle" % "bcprov-jdk18on" % "1.84"
   )
 
-  val permissionsClientVersion = "5.0.0"
+  val permissionsClientVersion = "7.0.0"
 
   val permissionsDependencies = Seq(
     "com.gu" %% "editorial-permissions-client" % permissionsClientVersion
