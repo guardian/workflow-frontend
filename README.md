@@ -55,6 +55,26 @@ Workflow Frontend needs to talk to  [Workflow Datastore](https://github.com/guar
 
 If you encounter a `Module build failed` error due to Node Sass during setup, run `npm rebuild node-sass`.
 
+### Setup for local development container
+
+You may choose to work on the code within an isolated containerised environment. We added support for it using [devenv](https://github.com/guardian/devenv).
+
+1. Open the project with VSCode or IntelliJ.
+
+2. Switch to development container when prompted. You can also use the command "Dev Containers: Reopen in container" in VSCode.
+
+3. Launch into the user configuration for a fully personalized development environment, or the shared configuration for a standard project setup.
+
+4. Open a terminal within the IDE so that we can run command line in the container.
+
+5. Load the AWS credentials.
+
+6. Download the local container config:
+
+   ```sh
+   ./scripts/fetch-config.sh
+   ```
+
 ### Connecting to Datastore
 
 #### CODE 
