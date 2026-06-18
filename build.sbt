@@ -13,8 +13,6 @@ val buildInfo = Seq(
       "gitCommitId" -> env.getOrElse("GITHUB_SHA", "Unknown"),
 )
 
-
-
 val commonSettings = Seq(
   scalaVersion := scalaVersionNumber,
   ThisBuild / scalaVersion := scalaVersionNumber,
