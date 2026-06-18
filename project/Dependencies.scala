@@ -13,7 +13,7 @@ object Dependencies {
     "software.amazon.awssdk" % "s3" % awsVersion,
     "software.amazon.awssdk" % "imds" % awsVersion,
     "com.gu" %% "content-api-client-aws" % "1.0.1",
-    "joda-time" % "joda-time" % "2.14.0"
+    "joda-time" % "joda-time" % "2.14.2"
   )
 
   val pandaVersion = "20.0.0"
