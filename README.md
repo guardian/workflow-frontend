@@ -57,7 +57,7 @@ If you encounter a `Module build failed` error due to Node Sass during setup, ru
 
 ### Setup for local development container
 
-You may choose to work on the code within an isolated containerised environment. We added support for it using [devenv](https://github.com/guardian/devenv).
+You may choose to work on the code within an isolated containerised environment. We added support for it using [devenv](https://github.com/guardian/devenv). Note that `mise` is used for tool version management in the development container built by devenv. 
 
 1. Open the project with VSCode or IntelliJ.
 
