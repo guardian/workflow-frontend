@@ -44,14 +44,8 @@ function tagApiService($http, $q) {
     return getTag(id)
   }
 
-  function getPublications() {
-    return tags({
-      type: "publication",
-      limit: 50,
-    })
-  }
 
-  function searchTags(query, types, subType) {
+  function searchTags(query, types, subType, includeDeprecated) {
     if (query) {
       var wildcardQuery = query.replace(/^\\/, "*"); // using '\' as a wildcard character is a hangover from R2
 
@@ -68,14 +62,16 @@ function tagApiService($http, $q) {
         params.subType = subType;
       }
 
+      if (!includeDeprecated) {
+        params.deprecated = "false"
+      }
+
       return tags(params);
     } else {
       return $q.resolve();
     }
   }
 
-  this.getPublication = getPublications;
   this.searchTags = searchTags;
-  this.getTag = getTag;
   this.getHyperTag = getHyperTag;
 }
