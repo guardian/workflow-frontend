@@ -19,7 +19,7 @@ import { punters } from 'components/punters/punters';
 import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNativeFormFeedback } from '../../lib/stub-form-validation.ts';
 import { setDisplayHintForFormat } from 'lib/model/special-formats.ts';
 import { getArticleFormatLabel, isFormatLabel } from 'lib/model/format-helpers.ts';
-import { intendedAudienceOptions, getIntendedAudienceFromOptionValue, areAllExpectedTagsAvailable } from 'lib/model/intended-audience.ts';
+import { intendedAudienceOptions, getIntendedAudienceFromOptionValue, areAllExpectedTagsAvailable, intendedAudienceTooltip } from 'lib/model/intended-audience.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService', 'wfTelemetryService'])
@@ -286,6 +286,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         900,
         1200,
     ]
+
+    $scope.intendedAudienceTooltip = intendedAudienceTooltip
 
     $scope.sendTelemetryForSuggestion = (value, missingCommissionedLengthReason = null) => {
         const commissioningDesk = $scope.cdesks.find(desk  => desk.id.toString() === stub.commissioningDesks)?.externalName;

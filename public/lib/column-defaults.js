@@ -30,6 +30,7 @@ import needsPictureDeskTemplate      from "components/content-list-item/template
 import statusInPrintTemplate         from "components/content-list-item/templates/statusInPrint.html";
 import lastModifiedInPrintByTemplate from "components/content-list-item/templates/lastModifiedInPrintBy.html";
 import contentRightsTemplate         from "components/content-list-item/templates/rights.html";
+import { intendedAudienceTooltip } from "./model/intended-audience.ts";
 
 /**
  * This array represents the default ordering and display of the content-list-item columns for workflow.
@@ -85,11 +86,12 @@ const createCustomHeadlineLabelHtml = () => {
     `;
 };
 
-const intendedAudienceHelpText = "TBC" // TO DO - get text for tooltip
-const createCustomIntendedAudienceLabelHtml = (tooltipText) => {
+const createCustomIntendedAudienceLabelHtml = () => {
     return `
-        <span>Intended Audience</span> 
-        <i class="content-list-head__heading-icon--tooltip" wf-icon="tooltip" title="${tooltipText}"></i>
+        <span>Intended Audience</span>
+        <a href="${intendedAudienceTooltip.docUrl}" target="_blank" title="${intendedAudienceTooltip.text}"> 
+            <i class="content-list-head__heading-icon--tooltip" wf-icon="tooltip"></i>
+        </a>
     `
 }
 
@@ -289,7 +291,7 @@ const columnDefaults = [{
 },{
     name: 'intended-audience',
     prettyName: 'Intended Audience',
-    labelHTML: createCustomIntendedAudienceLabelHtml(intendedAudienceHelpText),
+    labelHTML: createCustomIntendedAudienceLabelHtml(),
     colspan: 1,
     title: '',
     templateUrl: templateRoot + 'intended-audience.html',
