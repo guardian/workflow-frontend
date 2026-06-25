@@ -19,7 +19,12 @@ import { punters } from 'components/punters/punters';
 import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNativeFormFeedback } from '../../lib/stub-form-validation.ts';
 import { setDisplayHintForFormat } from 'lib/model/special-formats.ts';
 import { getArticleFormatLabel, isFormatLabel } from 'lib/model/format-helpers.ts';
-import { intendedAudienceOptions, getIntendedAudienceFromOptionValue, areAllExpectedTagsAvailable, intendedAudienceTooltip } from 'lib/model/intended-audience.ts';
+import {
+    intendedAudienceOptions,
+    intendedAudienceTooltip,
+    areAllExpectedTagsAvailable,
+    getTrackingTagsFromAudienceOption,
+} from 'lib/model/intended-audience.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService', 'wfTelemetryService'])
@@ -365,10 +370,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     }
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
-        const stub = setDisplayHintForFormat ($scope.stub);
+        const stub = setDisplayHintForFormat($scope.stub);
 
-        // stub.intendedAudience is not rendered on the form, so does not need to be evaluated until submitting
-        stub.intendedAudience = getIntendedAudienceFromOptionValue($scope.formData.audienceOption, $scope.stub);
+        stub.trackingTags = getTrackingTagsFromAudienceOption($scope.stub, $scope.formData.audienceOption, _wfConfig.audienceTags);
 
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {

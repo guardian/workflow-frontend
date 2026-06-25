@@ -114,3 +114,17 @@ export const intendedAudienceTooltip = {
   docUrl:
     "https://docs.google.com/document/d/1_NMKSsWq5cGUNGr2JcDmwkGxXK82thTUp0xzt5BkjTQ/edit?tab=t.0#heading=h.lbvu212ng3qf",
 };
+
+export const getTrackingTagsFromAudienceOption = (
+  stub: Stub,
+  optionValue: IntendedAudienceOptionValue,
+  audienceTags: LimitedTag[],
+): string[] => {
+  const intendedAudience = getIntendedAudienceFromOptionValue(optionValue, stub);
+  return findMatchingAudienceTags(intendedAudience, audienceTags)
+    .map(tag => tag.path)
+    .filter(path => path !== undefined);
+}
+
+export const findTagsByPath = (paths: string[], audienceTags: LimitedTag[]): LimitedTag[] =>
+  audienceTags.filter(tag => tag.path && paths.includes(tag.path));

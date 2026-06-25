@@ -67,6 +67,10 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         commissionedLength: (d) => deepSearch(d, ['preview', 'data', 'fields', 'commissionedLength', 'data']) || undefined,
         missingCommissionedLengthReason: (d) => deepSearch(d, ['preview', 'data', 'fields', 'missingCommissionedLengthReason', 'data']) || undefined,
         displayHint: (d) => deepSearch(d, ['preview', 'data', 'settings', 'displayHint', 'data']) || undefined,
+        trackingTags: (d) => {
+            const trackingTags = deepSearch(d, ['preview', 'data', 'taxonomy', 'tracking', 'data']) || undefined
+            return trackingTags?.map(tag => tag.path);
+        },
     };
 
 
@@ -125,11 +129,11 @@ function wfComposerService($http, $q, config, $log, wfHttpSessionService, wfTele
         audienceTags
     ) {
         var selectedDisplayHint = getListElementFormatFromLabel(articleFormat)?.value;
-        var trackingTagIds = [commissioningDeskTag?.id, audienceTags.map(tag=>tag.id)].filter(Boolean).join(",")
+        var trackingTagIDs = [commissioningDeskTag?.id].concat(audienceTags.map(tag => tag.id)).filter(Boolean).join(",");
 
         var params = {
             'type': contentTypeToComposerContentType(type),
-            'tracking': trackingTagIds,
+            'tracking': trackingTagIDs,
             'productionOffice': prodOffice,
             'displayHint': selectedDisplayHint,
             'originatingSystem': 'workflow'
