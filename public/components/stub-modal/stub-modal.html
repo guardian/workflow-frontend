@@ -61,7 +61,7 @@
                             </label>
                             <i class="content-list-head__heading-icon--tooltip" wf-icon="tooltip" title="TBC"></i>
                         </div>
-
+                      <div ng-if="allAudienceTagsAreAvailable">
                         <select 
                             id="stub_intended_audience" 
                             required 
@@ -69,10 +69,9 @@
                             ng-model="formData.audienceOption" 
                             ng-options="audienceOption.value as audienceOption.displayName for audienceOption in audienceOptions"
                         ></select>
-
+                      </div>
                         <div ng-if="!allAudienceTagsAreAvailable">
-                            <div>Selecting Intended Audience</div>
-                            <div>is temporarily unavailable</div>
+                            <div>Selecting Intended Audience is temporarily unavailable</div>
                         </div>
                     </div>
                 </section>
