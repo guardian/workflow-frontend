@@ -110,3 +110,17 @@ export const findMatchingAudienceTags = (
 
   return tags;
 };
+
+export const getTrackingTagsFromAudienceOption = (
+  stub: Stub,
+  optionValue: IntendedAudienceOptionValue,
+  audienceTags: LimitedTag[],
+): string[] => {
+  const intendedAudience = getIntendedAudienceFromOptionValue(optionValue, stub);
+  return findMatchingAudienceTags(intendedAudience, audienceTags)
+    .map(tag => tag.path)
+    .filter(path => path !== undefined);
+}
+
+export const findTagsByPath = (paths: string[], audienceTags: LimitedTag[]): LimitedTag[] =>
+  audienceTags.filter(tag => tag.path && paths.includes(tag.path));

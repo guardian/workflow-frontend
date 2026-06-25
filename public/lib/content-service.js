@@ -7,7 +7,7 @@ import './http-session-service';
 import './user';
 import './visibility-service';
 import { provideFormats } from './model/format-helpers.ts'
-import { findMatchingAudienceTags } from './model/intended-audience.ts'
+import { findTagsByPath } from './model/intended-audience.ts'
 
 angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService', 'wfDateService', 'wfFiltersService', 'wfUser', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService'])
     .factory('wfContentService', ['$rootScope', '$log', 'wfHttpSessionService', 'wfDateParser', 'wfFormatDateTimeFilter', 'wfFiltersService', 'wfComposerService', 'wfMediaAtomMakerService', 'wfAtomWorkshopService', 'wfPreferencesService', 'config',
@@ -98,7 +98,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                  */
                 createInComposer(stub, statusOption) {
 
-                    const audienceTags = findMatchingAudienceTags(stub.intendedAudience, _wfConfig.audienceTags);
+                    const audienceTags = findTagsByPath(stub.trackingTags, _wfConfig.audienceTags);
                     const commissioningDeskTag = this.getCommissioningDeskTagFromStub(stub);
 
                     return wfComposerService.create(
@@ -109,7 +109,7 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                             stub.template, 
                             stub.articleFormat, 
                             stub.priority, 
-                            stub.missingCommissionedLengthReason, 
+                            stub.missingCommissionedLengthReason,
                             audienceTags,
                         )
                         .then((response) => wfComposerService.parseComposerData(response, stub))
@@ -128,7 +128,6 @@ angular.module('wfContentService', ['wfHttpSessionService', 'wfVisibilityService
                                 }
                                 $log.info(JSON.stringify(data))
                             }
-
 
                             if (statusOption) {
                                 updatedStub['status'] = statusOption;

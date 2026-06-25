@@ -202,7 +202,7 @@ function wfContentItemParser(config, wfFormatDateTime, statusLabels, sections) {
             this.statusInPrint = item.statusInPrint;
             this.lastModifiedInPrintBy = item.lastModifiedInPrintBy;
             
-            this.intendedAudience = item.intendedAudience;
+            this.trackingTags = item.trackingTags;
 
             // These are derived values used for display purposes.
             const {

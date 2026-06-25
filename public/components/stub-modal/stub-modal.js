@@ -20,10 +20,10 @@ import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNat
 import { setDisplayHintForFormat } from 'lib/model/special-formats.ts';
 import { getArticleFormatLabel, isFormatLabel } from 'lib/model/format-helpers.ts';
 import {
-  intendedAudienceOptions,
-  getIntendedAudienceFromOptionValue,
-  areAllExpectedTagsAvailable,
-  offlineDefault,
+    intendedAudienceOptions,
+    areAllExpectedTagsAvailable,
+    getTrackingTagsFromAudienceOption,
+    offlineDefault,
 } from 'lib/model/intended-audience.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
@@ -376,10 +376,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     }
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
-        const stub = setDisplayHintForFormat ($scope.stub);
+        const stub = setDisplayHintForFormat($scope.stub);
 
-        // stub.intendedAudience is not rendered on the form, so does not need to be evaluated until submitting
-        stub.intendedAudience = getIntendedAudienceFromOptionValue($scope.formData.audienceOption, $scope.stub);
+        stub.trackingTags = getTrackingTagsFromAudienceOption($scope.stub, $scope.formData.audienceOption, _wfConfig.audienceTags);
 
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {
