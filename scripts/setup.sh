@@ -19,6 +19,8 @@ preamble() {
       nvm install
   elif command -v fnm >/dev/null; then
       fnm use
+  elif command -v mise >/dev/null; then
+      mise install
   # TODO use asdf? add detection and enable here
   else
       echo -e "No node version manager found. Consider installing fnm <https://github.com/Schniz/fnm> or asdf <???>"
