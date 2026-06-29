@@ -21,6 +21,7 @@ import { setDisplayHintForFormat } from 'lib/model/special-formats.ts';
 import { getArticleFormatLabel, isFormatLabel } from 'lib/model/format-helpers.ts';
 import {
     intendedAudienceOptions,
+    intendedAudienceTooltip,
     areAllExpectedTagsAvailable,
     getTrackingTagsFromAudienceOption,
     offlineDefault,
@@ -299,6 +300,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         900,
         1200,
     ]
+
+    $scope.intendedAudienceTooltip = intendedAudienceTooltip
 
     $scope.sendTelemetryForSuggestion = (value, missingCommissionedLengthReason = null) => {
         const commissioningDesk = $scope.cdesks.find(desk  => desk.id.toString() === stub.commissioningDesks)?.externalName;

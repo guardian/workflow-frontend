@@ -111,6 +111,12 @@ export const findMatchingAudienceTags = (
   return tags;
 };
 
+export const intendedAudienceTooltip = {
+  text: "find out more about Intended audience",
+  docUrl:
+    "https://docs.google.com/document/d/1_NMKSsWq5cGUNGr2JcDmwkGxXK82thTUp0xzt5BkjTQ/edit?tab=t.0#heading=h.lbvu212ng3qf",
+};
+
 export const getTrackingTagsFromAudienceOption = (
   stub: Stub,
   optionValue: IntendedAudienceOptionValue,
