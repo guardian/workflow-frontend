@@ -11,6 +11,11 @@ type IntendedAudienceOptionValue =
 type AudienceTagSlug = "global" | "uk" | "au" | "us";
 const expectedAudienceSlugs = ["global", "uk", "au", "us"];
 
+export const offlineDefault = {
+  displayName: "Don't know",
+  value: "don-t-know" as IntendedAudienceOptionValue,
+}
+
 export const intendedAudienceOptions: {
   displayName: string;
   value: IntendedAudienceOptionValue;
@@ -31,10 +36,7 @@ export const intendedAudienceOptions: {
     displayName: "Domestic for Domestic",
     value: "domestic-for-domestic",
   },
-  {
-    displayName: "Don't know",
-    value: "don-t-know",
-  },
+  offlineDefault,
 ];
 
 const tagMatchesSlug = (slug: string) => (tag: LimitedTag) =>

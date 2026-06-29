@@ -24,6 +24,7 @@ import {
     intendedAudienceTooltip,
     areAllExpectedTagsAvailable,
     getTrackingTagsFromAudienceOption,
+    offlineDefault,
 } from 'lib/model/intended-audience.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
@@ -101,9 +102,17 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.audienceOptions = intendedAudienceOptions;
     $scope.allAudienceTagsAreAvailable = areAllExpectedTagsAvailable(_wfConfig.audienceTags)
 
-    $scope.formData = {
-        audienceOption: intendedAudienceOptions[0].value,
-    };
+    if ($scope.allAudienceTagsAreAvailable) {
+      $scope.formData = {
+          audienceOption: intendedAudienceOptions[0].value,
+      };
+    } else {
+      // if audience tags are unavailable we assume tag manager is offline, hide the drop-down
+      // menu and provide a default value. The value can be updated subsequently in Composer.
+      $scope.formData = {
+        audienceOption: offlineDefault.value,
+      };
+    }
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
     $scope.templates = [];
