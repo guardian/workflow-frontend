@@ -57,9 +57,11 @@ If you encounter a `Module build failed` error due to Node Sass during setup, ru
 
 ### Setup for local development container
 
-You may choose to work on the code within an isolated containerised environment. We added support for it using [devenv](https://github.com/guardian/devenv). Note that `mise` is used for tool version management in the development container built by devenv. 
+You may choose to work on the code within an isolated containerised environment, which requires an IDE that supports development container. We added support for it using [devenv](https://github.com/guardian/devenv). Note that `mise` is used for tool version management in the development container built by devenv. 
 
-1. Open the project with VSCode or IntelliJ.
+#### VScode
+
+1. Open the project with VSCode. You may reference [this doc](https://github.com/guardian/devenv/blob/main/docs/containerised-development/containerised-development-in-vscode.md) if you encounter any errors.
 
 2. Switch to development container when prompted. You can also use the command "Dev Containers: Reopen in container" in VSCode.
 
@@ -70,6 +72,22 @@ You may choose to work on the code within an isolated containerised environment.
 5. Load the AWS credentials.
 
 6. Download the local container config:
+
+   ```sh
+   ./scripts/fetch-config.sh
+   ```
+
+
+#### IntelliJ
+1. Follow [the "clone-outside-container section of this doc](https://github.com/guardian/devenv/blob/main/docs/containerised-development/containerised-development-in-intellij.md#clone-outside-container) to open the project in IntelliJ using development container. It requires a more recent version of IntelliJ (for example, 2026). If it returned an error that Docker wasn't running, you may change the settings in IntelliJ to look for the right socket location. 
+
+2. Open a terminal within the IDE so that we can run command line in the container.
+
+3. Run `mise reshim` to update the paths to run tools managed by mise.
+
+4. Load the AWS credentials.
+
+5. Download the local container config:
 
    ```sh
    ./scripts/fetch-config.sh
