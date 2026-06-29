@@ -6,24 +6,23 @@ type IntendedAudienceOptionValue =
   | "domestic-for-global"
   | "domestic-for-domestic"
   | "don-t-know"
-  | null;
-
-type AudienceTagSlug = "global" | "uk" | "au" | "us";
-const expectedAudienceSlugs = ["global", "uk", "au", "us"];
-
-export const offlineDefault = {
-  displayName: "Don't know",
-  value: "don-t-know" as IntendedAudienceOptionValue,
-}
-
+  | null; 
+  
+  type AudienceTagSlug = "global" | "uk" | "au" | "us";
+  const expectedAudienceSlugs = ["global", "uk", "au", "us"];
+  
+  export const offlineDefault = {
+    displayName: "Not set",
+    value: "don-t-know" as IntendedAudienceOptionValue,
+  }
+  
+// If choosing an option is made mandatory, the intendedAudienceOptions should start with a default null option 
+// so the user would have to explictly choose "Don't know" rather than it being the default.
 export const intendedAudienceOptions: {
   displayName: string;
   value: IntendedAudienceOptionValue;
 }[] = [
-  {
-    displayName: "",
-    value: null,
-  },
+  offlineDefault,
   {
     displayName: "Global",
     value: "global",
@@ -36,7 +35,6 @@ export const intendedAudienceOptions: {
     displayName: "Domestic for Domestic",
     value: "domestic-for-domestic",
   },
-  offlineDefault,
 ];
 
 const tagMatchesSlug = (slug: string) => (tag: LimitedTag) =>
