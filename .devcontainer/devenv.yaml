@@ -34,20 +34,20 @@ containerEnv:
 # Optional: IDE plugins - shared project plugins like language support
 plugins:
     vscode: [scala-lang.scala,scalameta.metals,dbaeumer.vscode-eslint,github.copilot-chat]
-    intellij: []
+    intellij: [GitHub.copilot]
 
 # Optional: Commands to run after container creation
 # Each command has a 'cmd' field and a 'workingDirectory' field
 # e.g.
 postCreateCommand:
     - cmd: "mise exec -- corepack enable"
-      workingDirectory: "/workspaces/workflow-frontend"
+      workingDirectory: "${containerWorkspaceFolder}"
       logLine: "Enabling-corepack"
     - cmd: "mise exec -- corepack install"
-      workingDirectory: "/workspaces/workflow-frontend"
+      workingDirectory: "${containerWorkspaceFolder}"
       logLine: "Installing-yarn"
     - cmd: "mise exec -- yarn install --immutable"
-      workingDirectory: "/workspaces/workflow-frontend"
+      workingDirectory: "${containerWorkspaceFolder}"
       logLine: "Installing-project-dependencies"
 postStartCommand:
     - cmd: "echo 'Container started successfully'"
