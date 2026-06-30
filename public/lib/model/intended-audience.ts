@@ -6,19 +6,23 @@ type IntendedAudienceOptionValue =
   | "domestic-for-global"
   | "domestic-for-domestic"
   | "don-t-know"
-  | null;
-
-type AudienceTagSlug = "global" | "uk" | "au" | "us";
-const expectedAudienceSlugs = ["global", "uk", "au", "us"];
-
+  | null; 
+  
+  type AudienceTagSlug = "global" | "uk" | "au" | "us";
+  const expectedAudienceSlugs = ["global", "uk", "au", "us"];
+  
+  export const offlineDefault = {
+    displayName: "Not set",
+    value: "don-t-know" as IntendedAudienceOptionValue,
+  }
+  
+// If choosing an option is made mandatory, the intendedAudienceOptions should start with a default null option 
+// so the user would have to explictly choose "Don't know" rather than it being the default.
 export const intendedAudienceOptions: {
   displayName: string;
   value: IntendedAudienceOptionValue;
 }[] = [
-  {
-    displayName: "",
-    value: null,
-  },
+  offlineDefault,
   {
     displayName: "Global",
     value: "global",
@@ -30,10 +34,6 @@ export const intendedAudienceOptions: {
   {
     displayName: "Domestic for Domestic",
     value: "domestic-for-domestic",
-  },
-  {
-    displayName: "Don't know",
-    value: "don-t-know",
   },
 ];
 
@@ -108,3 +108,23 @@ export const findMatchingAudienceTags = (
 
   return tags;
 };
+
+export const intendedAudienceTooltip = {
+  text: "find out more about Intended audience",
+  docUrl:
+    "https://docs.google.com/document/d/1_NMKSsWq5cGUNGr2JcDmwkGxXK82thTUp0xzt5BkjTQ/edit?tab=t.0#heading=h.lbvu212ng3qf",
+};
+
+export const getTrackingTagsFromAudienceOption = (
+  stub: Stub,
+  optionValue: IntendedAudienceOptionValue,
+  audienceTags: LimitedTag[],
+): string[] => {
+  const intendedAudience = getIntendedAudienceFromOptionValue(optionValue, stub);
+  return findMatchingAudienceTags(intendedAudience, audienceTags)
+    .map(tag => tag.path)
+    .filter(path => path !== undefined);
+}
+
+export const findTagsByPath = (paths: string[], audienceTags: LimitedTag[]): LimitedTag[] =>
+  audienceTags.filter(tag => tag.path && paths.includes(tag.path));

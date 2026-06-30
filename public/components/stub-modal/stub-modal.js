@@ -19,7 +19,13 @@ import { punters } from 'components/punters/punters';
 import { generateErrorMessages, doesContentTypeRequireCommissionedLength, useNativeFormFeedback } from '../../lib/stub-form-validation.ts';
 import { setDisplayHintForFormat } from 'lib/model/special-formats.ts';
 import { getArticleFormatLabel, isFormatLabel } from 'lib/model/format-helpers.ts';
-import { intendedAudienceOptions, getIntendedAudienceFromOptionValue, areAllExpectedTagsAvailable } from 'lib/model/intended-audience.ts';
+import {
+    intendedAudienceOptions,
+    intendedAudienceTooltip,
+    areAllExpectedTagsAvailable,
+    getTrackingTagsFromAudienceOption,
+    offlineDefault,
+} from 'lib/model/intended-audience.ts';
 
 const wfStubModal = angular.module('wfStubModal', [
     'ui.bootstrap', 'articleFormatService', 'legalStatesService', 'pictureDeskStatesService', 'wfComposerService', 'wfContentService', 'wfDateTimePicker', 'wfProdOfficeService', 'wfFiltersService', 'wfCapiAtomService', 'wfTelemetryService'])
@@ -96,9 +102,17 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.audienceOptions = intendedAudienceOptions;
     $scope.allAudienceTagsAreAvailable = areAllExpectedTagsAvailable(_wfConfig.audienceTags)
 
-    $scope.formData = {
-        audienceOption: intendedAudienceOptions[0].value,
-    };
+    if ($scope.allAudienceTagsAreAvailable) {
+      $scope.formData = {
+          audienceOption: intendedAudienceOptions[0].value,
+      };
+    } else {
+      // if audience tags are unavailable we assume tag manager is offline, hide the drop-down
+      // menu and provide a default value. The value can be updated subsequently in Composer.
+      $scope.formData = {
+        audienceOption: offlineDefault.value,
+      };
+    }
     $scope.disabled = !!stub.composerId;
     $scope.sections = getSectionsList(sections);
     $scope.templates = [];
@@ -287,6 +301,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
         1200,
     ]
 
+    $scope.intendedAudienceTooltip = intendedAudienceTooltip
+
     $scope.sendTelemetryForSuggestion = (value, missingCommissionedLengthReason = null) => {
         const commissioningDesk = $scope.cdesks.find(desk  => desk.id.toString() === stub.commissioningDesks)?.externalName;
         const tags = {
@@ -363,10 +379,9 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     }
 
     $scope.ok = function (addToComposer, addToAtomEditor) {
-        const stub = setDisplayHintForFormat ($scope.stub);
+        const stub = setDisplayHintForFormat($scope.stub);
 
-        // stub.intendedAudience is not rendered on the form, so does not need to be evaluated until submitting
-        stub.intendedAudience = getIntendedAudienceFromOptionValue($scope.formData.audienceOption, $scope.stub);
+        stub.trackingTags = getTrackingTagsFromAudienceOption($scope.stub, $scope.formData.audienceOption, _wfConfig.audienceTags);
 
         function createItemPromise() {
             if ($scope.contentName === 'Atom') {
