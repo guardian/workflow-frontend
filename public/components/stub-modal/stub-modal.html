@@ -57,7 +57,6 @@
                         <div class="label-and-icon">
                             <label for="stub_intended_audience">
                                 <span>Intended audience</span>
-                                <span>*</span>
                             </label>
                             <a title="{{ intendedAudienceTooltip.text }}" href="{{ intendedAudienceTooltip.docUrl }}" target="_blank">
                                 <i class="content-list-head__heading-icon--tooltip" wf-icon="tooltip"></i>
@@ -66,7 +65,6 @@
                       <div ng-if="allAudienceTagsAreAvailable">
                         <select 
                             id="stub_intended_audience" 
-                            required 
                             name="intended_audience" 
                             ng-model="formData.audienceOption" 
                             ng-options="audienceOption.value as audienceOption.displayName for audienceOption in audienceOptions"
