@@ -4,9 +4,6 @@ import moment from 'moment';
 import { columnDefaults } from './column-defaults'
 import startTemplate from "components/content-list-item/content-list-item-start.html";
 import endTemplate from "components/content-list-item/content-list-item-end.html";
-import { getDefaultFeatureSwitchValues } from './feature-switches.ts';
-
-const columnDefaultsWithoutIntendedAudience = columnDefaults.filter(column => column.name !== 'intended-audience')
 
 
 angular.module('wfColumnService', [])
@@ -19,16 +16,15 @@ angular.module('wfColumnService', [])
 
                     var self = this;
 
-                    self.availableColums = columnDefaultsWithoutIntendedAudience;
+                    self.availableColums = columnDefaults;
                     self.contentItemTemplate;
 
                     self.preferencePromise = wfPreferencesService.getAllPreferences().then(function resolve(preferencesData) {
-                        var { columnConfiguration = [], featureSwitches = getDefaultFeatureSwitchValues() } = preferencesData;
+                        var { columnConfiguration = [] } = preferencesData;
                         if (typeof columnConfiguration[0] !== "string") {
                             return reject();
                         } else {
-                            var shouldExcludeIntendedAudience = !featureSwitches.intendedAudienceColumn
-                            self.availableColums = shouldExcludeIntendedAudience ? columnDefaultsWithoutIntendedAudience : columnDefaults
+                            self.availableColums = columnDefaults
                             self.columns = self.availableColums;
 
                             self.columns.forEach((col) => { // set all to inactive

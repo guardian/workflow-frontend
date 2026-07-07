@@ -6,13 +6,7 @@ type FeatureSwitch = {
   description: string;
 };
 
-const featureSwitchList: FeatureSwitch[] = [
-  {
-    key: "intendedAudienceColumn",
-    defaultValue: true,
-    description: "Show Intended Audience",
-  },
-];
+const featureSwitchList: FeatureSwitch[] = [];
 
 export const featureSwitchKeys = featureSwitchList.map(
   (featureSwitch) => featureSwitch.key,
