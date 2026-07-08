@@ -44,11 +44,7 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
  
         $scope.$watch('stub.articleFormat', (newValue) => {
             $scope.stubFormat = newValue;
-        })
-
-        wfPreferencesService.getPreference('featureSwitches').then((data) => { 
-            $scope.isIntendedAudienceEnabled = data.intendedAudienceColumn
-        ;})
+        })        
         
         $scope.modalTitle = ({
             'create': `Create ${$scope.contentName}`,
@@ -182,9 +178,8 @@ function StubModalInstanceCtrl($rootScope, $scope, $modalInstance, $window, conf
     $scope.warningMessages = undefined
 
     function updateWarnings() {
-        $scope.warningMessages = generateErrorMessages($scope.stub, $scope.formData.audienceOption, $scope.isIntendedAudienceEnabled)
+        $scope.warningMessages = generateErrorMessages($scope.stub, $scope.formData.audienceOption)
     }
-    $scope.$watch('isIntendedAudienceEnabled', updateWarnings, true)
     $scope.$watch('stub', updateWarnings, true)
     $scope.$watch('formData.audienceOption', updateWarnings, true)
 
