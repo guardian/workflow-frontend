@@ -1,0 +1,90 @@
+export type PanDomainKeys = {
+    privateKeyPem: string;
+    privateKeyBase64: string;
+    publicKeyBase64: string;
+};
+
+export function pemToBase64(key: string): string {
+    return key
+        .replace(/-----BEGIN [^-]+-----/g, "")
+        .replace(/-----END [^-]+-----/g, "")
+        .replace(/\s+/g, "");
+}
+
+// Static RSA 4096-bit key pair for local/test use only.
+// These keys are not used in any real environment and are safe to commit.
+const STATIC_PRIVATE_KEY_PEM = `-----BEGIN PRIVATE KEY-----
+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
+0ft+UMBCRHD43pDmHOYqVdTgH/480PsV
+-----END PRIVATE KEY-----`;
+
+const STATIC_PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA0eefxdISEI+Bd6+ybhBm
+PQcBKFlIARSldCNQkqZNsClEY14R764halrsOCOlesS0WRfL8bxRQrHkphNQwx0K
+EG7qxWWd/nCJfCK4gCnLsuoKcPEj/J+37zs8DkkBPhFYKzAyfmeecB/eZ1iE2A6R
+o00LuHcMKn3eN/ON0rjGk4uNgMy0OHPNkW5bCYO3MD99iIV8WADwZo0Oghq4BWCw
+c5Wah8TV14XWPCVWAei6RUMzJt1Rrf+2FoG6Yg1iBDtxJ7BQoKdLBxVnR2UbN4Pp
+qbp5n5zVd8DjGZNTrU3oiF8jBU6tqfJXnoBhHpuXw8pLtH6/EmF7b6i2NBogCcS8
+gFOVgIi679EQRmbk+iCf5g3DAEn1H8aJgULKB2CCCxOdBMWBnVB0QYMrakRr9uca
+emsR8eGsYsm6w5cwDn/u1m2revgm2jQzPqtR35ufhk4MdEm5HAEPemBi/VrOFCRk
+5egwQ+GAr8IIb/uVhT+ZVzM+gihJRQ1uURKbjZXRgct/SndiYLlFvG/zVeKYV+Gl
+BUvB+Lyc4EKgzclM0KfCvZID2vERbl/v9/cRriVXPJzB/9q0wt9JH+4y0XzvDSt7
+Ku8aTMX2dgxk0MVoNVFevbjdX7GPUIZvmlKHH4yorCvLJtyjGoQTr5MY5QqX43Z2
+wlpjHKNW3OE1HVy6Dluug40CAwEAAQ==
+-----END PUBLIC KEY-----`;
+
+export function generatePanDomainKeys(): PanDomainKeys {
+    return {
+        privateKeyPem: STATIC_PRIVATE_KEY_PEM,
+        privateKeyBase64: pemToBase64(STATIC_PRIVATE_KEY_PEM),
+        publicKeyBase64: pemToBase64(STATIC_PUBLIC_KEY_PEM),
+    };
+}

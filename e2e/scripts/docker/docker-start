@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Inside Docker, localhost points at this container, not the host machine.
+export AWS_ENDPOINT_URL_S3="${AWS_ENDPOINT_URL_S3:-http://host.docker.internal:9002}"
+export AWS_PROFILE="${AWS_PROFILE:-composer}"
+export AWS_REGION="${AWS_REGION:-eu-west-1}"
+export AWS_SDK_LOAD_CONFIG=1
+
+AWS_ACCESS_KEY_ID_VALUE="${AWS_ACCESS_KEY_ID:-minioadmin}"
+AWS_SECRET_ACCESS_KEY_VALUE="${AWS_SECRET_ACCESS_KEY:-minioadmin}"
+AWS_SESSION_TOKEN_VALUE="${AWS_SESSION_TOKEN:-}"
+
+aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID_VALUE" --profile "$AWS_PROFILE"
+aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY_VALUE" --profile "$AWS_PROFILE"
+if [ -n "$AWS_SESSION_TOKEN_VALUE" ]; then
+	aws configure set aws_session_token "$AWS_SESSION_TOKEN_VALUE" --profile "$AWS_PROFILE"
+else
+	aws configure set aws_session_token "" --profile "$AWS_PROFILE"
+fi
+aws configure set region "$AWS_REGION" --profile "$AWS_PROFILE"
+aws configure set output json --profile "$AWS_PROFILE"
+
+# Force profile-backed auth even when AWS credential env vars are present.
+unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+# Work around sporadic Graal/JVMCI compilation assertion failures in this Docker runtime.
+# Prefer SBT_OPTS here so these JVM flags apply directly to the sbt JVM process.
+export SBT_OPTS="${SBT_OPTS:+$SBT_OPTS }-XX:+UnlockExperimentalVMOptions -XX:-UseJVMCICompiler -Dgraal.CompilationFailureAction=Silent"
+
+exec sbt -Dlocal=true run
