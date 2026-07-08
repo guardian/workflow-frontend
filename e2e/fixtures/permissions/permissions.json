@@ -1,0 +1,40 @@
+[
+    {
+        "permission": {
+            "name": "workflow_admin",
+            "app": "workflow",
+            "defaultValue": false
+        },
+        "overrides": [
+            {
+                "userId": "workflow.e2e.test@guardian.co.uk",
+                "active": true,
+                "isCasualNotOnShift": false
+            },
+            {
+                "userId": "no.workflow@guardian.co.uk",
+                "active": false,
+                "isCasualNotOnShift": false
+            }
+        ]
+    },
+    {
+        "permission": {
+            "name": "workflow_access",
+            "app": "workflow",
+            "defaultValue": false
+        },
+        "overrides": [
+            {
+                "userId": "workflow.e2e.test@guardian.co.uk",
+                "active": true,
+                "isCasualNotOnShift": false
+            },
+            {
+                "userId": "no.workflow@guardian.co.uk",
+                "active": false,
+                "isCasualNotOnShift": false
+            }            
+        ]
+    }
+]
