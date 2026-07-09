@@ -1,0 +1,5 @@
+[tools]
+aws-cli = { version = "2.34.62", symlink_bins = true }
+sbt = "1.12.11"
+java = "corretto-11.0.27.6.1"
+nodejs = "22.5.1"
