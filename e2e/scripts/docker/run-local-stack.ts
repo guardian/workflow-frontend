@@ -56,8 +56,7 @@ async function main() {
         // ]);
         // await page.goto(stack.baseUrl, { waitUntil: "domcontentloaded" });
         
-        console.log(`\nLocal stack started `);
-        // console.log(`\nLocal stack started at ${stack.baseUrl}`);
+        console.log(`\nLocal stack started at ${stack.baseUrl}`);
         // console.log("Opened a browser with a local auth cookie.");
         // console.log(
         //     `Mock flexible-content API: ${stack.mockApiUrl} ` +

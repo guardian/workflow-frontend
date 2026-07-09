@@ -13,7 +13,7 @@ type BuildDockerImageArgs = {
 };
 
 export type LocalStack = {
-    // baseUrl: string;
+    baseUrl: string;
     panDomainPrivateKey: string;
     /**
      * Base URL of the configurable mock flexible-content API, mapped to the
@@ -22,7 +22,7 @@ export type LocalStack = {
      */
     // mockApiUrl: string;
     minioContainer: any;
-    // restorerContainer: any;
+    workflowContainer: any;
     // mockContainer: any;
     network: any;
 };
@@ -113,13 +113,13 @@ export async function startLocalStack(
     const { streamLogs = false } = options;
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
-    // const restorerImageTag = `flexible-restorer-app-e2e:${runId}`;
+    const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     // const mockImageTag = `flexible-restorer-mock-api-e2e:${runId}`;
 
     const network = await new Network().start();
 
     let minioContainer;
-    // let restorerContainer;
+    let workflowContainer;
     // let mockContainer;
     const panDomainKeys = generatePanDomainKeys();
 
@@ -176,45 +176,45 @@ export async function startLocalStack(
 
         // const mockApiUrl = `http://${mockContainer.getHost()}:${mockContainer.getMappedPort(MOCK_API_PORT)}`;
 
-        // await buildDockerImage({
-        //     tag: restorerImageTag,
-        //     dockerfilePath: path.join(
-        //         projectRoot,
-        //         "images/restorer.Dockerfile",
-        //     ),
-        //     contextPath: projectRoot,
-        // });
+        await buildDockerImage({
+            tag: workflowImageTag,
+            dockerfilePath: path.join(
+                projectRoot,
+                "e2e/images/workflow-frontend.Dockerfile",
+            ),
+            contextPath: projectRoot,
+        });
 
-        // restorerContainer = await new GenericContainer(restorerImageTag)
-        //     .withNetwork(network)
-        //     .withEnvironment({
-        //         AWS_ENDPOINT_URL_S3: "http://minio:9000",
-        //         AWS_ACCESS_KEY_ID: MINIO_ROOT_USER,
-        //         AWS_SECRET_ACCESS_KEY: MINIO_ROOT_PASSWORD,
-        //         // Keep local mode enabled in case scripts are bypassed in future changes.
-        //         LOCAL: "true",
-        //     })
-        //     .withLogConsumer(createLogConsumer("restorer", streamLogs))
-        //     .withExposedPorts(9000)
-        //     .withStartupTimeout(10 * 60 * 1000)
-        //     .withWaitStrategy(Wait.forListeningPorts())
-        //     .start();
+        workflowContainer = await new GenericContainer(workflowImageTag)
+            .withNetwork(network)
+            .withEnvironment({
+                AWS_ENDPOINT_URL_S3: "http://minio:9000",
+                AWS_ACCESS_KEY_ID: MINIO_ROOT_USER,
+                AWS_SECRET_ACCESS_KEY: MINIO_ROOT_PASSWORD,
+                // Keep local mode enabled in case scripts are bypassed in future changes.
+                LOCAL: "true",
+            })
+            .withLogConsumer(createLogConsumer("workflow-frontend", streamLogs))
+            .withExposedPorts(9000)
+            .withStartupTimeout(10 * 60 * 1000)
+            .withWaitStrategy(Wait.forListeningPorts())
+            .start();
 
-        // const baseUrl = `http://${restorerContainer.getHost()}:${restorerContainer.getMappedPort(9000)}`;
+        const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(9000)}`;
 
         return {
-            // baseUrl,
+            baseUrl,
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
             // mockApiUrl,
             minioContainer,
-            // restorerContainer,
+            workflowContainer,
             // mockContainer,
             network,
         };
     } catch (error) {
-        // if (restorerContainer) {
-        //     await restorerContainer.stop();
-        // }
+        if (workflowContainer) {
+            await workflowContainer.stop();
+        }
         // if (mockContainer) {
         //     await mockContainer.stop();
         // }
