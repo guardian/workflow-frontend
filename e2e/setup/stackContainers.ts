@@ -20,10 +20,10 @@ export type LocalStack = {
      * host. POST to `${mockApiUrl}/__admin/state` to change what restore
      * destination/restore calls return at runtime.
      */
-    // mockApiUrl: string;
+    mockApiUrl: string;
     minioContainer: any;
     workflowContainer: any;
-    // mockContainer: any;
+    mockContainer: any;
     network: any;
 };
 
@@ -114,13 +114,13 @@ export async function startLocalStack(
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
-    // const mockImageTag = `flexible-restorer-mock-api-e2e:${runId}`;
+    const mockImageTag = `flexible-restorer-mock-api-e2e:${runId}`;
 
     const network = await new Network().start();
 
     let minioContainer;
     let workflowContainer;
-    // let mockContainer;
+    let mockContainer;
     const panDomainKeys = generatePanDomainKeys();
 
     try {
@@ -152,29 +152,29 @@ export async function startLocalStack(
             .withStartupTimeout(2 * 60 * 1000)
             .start();
 
-        // await buildDockerImage({
-        //     tag: mockImageTag,
-        //     dockerfilePath: path.join(
-        //         projectRoot,
-        //         "images/mock-flexible-api.Dockerfile",
-        //     ),
-        //     contextPath: projectRoot,
-        // });
+        await buildDockerImage({
+            tag: mockImageTag,
+            dockerfilePath: path.join(
+                projectRoot,
+                "e2e/images/mock-flexible-api.Dockerfile",
+            ),
+            contextPath: projectRoot,
+        });
 
-        // mockContainer = await new GenericContainer(mockImageTag)
-        //     .withNetwork(network)
-        //     .withNetworkAliases(...MOCK_API_HOSTNAMES)
-        //     .withLogConsumer(createLogConsumer("mock-api", streamLogs))
-        //     .withExposedPorts(MOCK_API_PORT)
-        //     .withWaitStrategy(
-        //         Wait.forHttp("/__admin/health", MOCK_API_PORT).forStatusCode(
-        //             200,
-        //         ),
-        //     )
-        //     .withStartupTimeout(2 * 60 * 1000)
-        //     .start();
+        mockContainer = await new GenericContainer(mockImageTag)
+            .withNetwork(network)
+            .withNetworkAliases(...MOCK_API_HOSTNAMES)
+            .withLogConsumer(createLogConsumer("mock-api", streamLogs))
+            .withExposedPorts(MOCK_API_PORT)
+            .withWaitStrategy(
+                Wait.forHttp("/__admin/health", MOCK_API_PORT).forStatusCode(
+                    200,
+                ),
+            )
+            .withStartupTimeout(2 * 60 * 1000)
+            .start();
 
-        // const mockApiUrl = `http://${mockContainer.getHost()}:${mockContainer.getMappedPort(MOCK_API_PORT)}`;
+        const mockApiUrl = `http://${mockContainer.getHost()}:${mockContainer.getMappedPort(MOCK_API_PORT)}`;
 
         await buildDockerImage({
             tag: workflowImageTag,
@@ -195,29 +195,29 @@ export async function startLocalStack(
                 LOCAL: "true",
             })
             .withLogConsumer(createLogConsumer("workflow-frontend", streamLogs))
-            .withExposedPorts(9000)
+            .withExposedPorts(9090)
             .withStartupTimeout(10 * 60 * 1000)
             .withWaitStrategy(Wait.forListeningPorts())
             .start();
 
-        const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(9000)}`;
+        const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(9090)}`;
 
         return {
             baseUrl,
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
-            // mockApiUrl,
+            mockApiUrl,
             minioContainer,
             workflowContainer,
-            // mockContainer,
+            mockContainer,
             network,
         };
     } catch (error) {
         if (workflowContainer) {
             await workflowContainer.stop();
         }
-        // if (mockContainer) {
-        //     await mockContainer.stop();
-        // }
+        if (mockContainer) {
+            await mockContainer.stop();
+        }
         if (minioContainer) {
             await minioContainer.stop();
         }
@@ -227,17 +227,17 @@ export async function startLocalStack(
 }
 
 export async function stopLocalStack({
-    // restorerContainer,
+    workflowContainer,
     minioContainer,
-    // mockContainer,
+    mockContainer,
     network,
 }: Partial<LocalStack> = {}): Promise<void> {
-    // if (restorerContainer) {
-    //     await restorerContainer.stop();
-    // }
-    // if (mockContainer) {
-    //     await mockContainer.stop();
-    // }
+    if (workflowContainer) {
+        await workflowContainer.stop();
+    }
+    if (mockContainer) {
+        await mockContainer.stop();
+    }
     if (minioContainer) {
         await minioContainer.stop();
     }

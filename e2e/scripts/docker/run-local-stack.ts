@@ -47,14 +47,14 @@ async function main() {
             handleSIGHUP: false,
         });
         const page = await browser.newPage();
-        // await page.context().addCookies([
-        //     {
-        //         name: "gutoolsAuth-assym",
-        //         value: cookieData,
-        //         url: stack.baseUrl,
-        //     },
-        // ]);
-        // await page.goto(stack.baseUrl, { waitUntil: "domcontentloaded" });
+        await page.context().addCookies([
+            {
+                name: "gutoolsAuth-assym",
+                value: cookieData,
+                url: stack.baseUrl,
+            },
+        ]);
+        await page.goto(stack.baseUrl, { waitUntil: "domcontentloaded" });
         
         console.log(`\nLocal stack started at ${stack.baseUrl}`);
         // console.log("Opened a browser with a local auth cookie.");

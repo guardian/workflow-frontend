@@ -62,6 +62,6 @@ RUN mise exec -- yarn build
 COPY . .
 RUN chmod +x /workflow-frontend/e2e/scripts/docker/docker-start
 
-EXPOSE 9000
+EXPOSE 9090
 
 CMD ["/workflow-frontend/e2e/scripts/docker/docker-start"]

@@ -7,7 +7,8 @@
     "build": "webpack --config ./conf/webpack.prod.conf.js",
     "test": "karma start",
     "test-watch": "yarn test --no-single-run",
-    "lint": "eslint ./public/**/**/*.js"
+    "lint": "eslint ./public/**/**/*.js",
+    "local:stack": "./e2e/scripts/docker/run-local-stack"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.5",
