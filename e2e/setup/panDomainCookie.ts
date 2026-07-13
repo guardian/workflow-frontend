@@ -6,23 +6,15 @@ import { base64ToPEM } from "@guardian/pan-domain-node/dist/src/utils";
  *
  * Each email here must correspond to a userId override in the permissions fixture
  * (`fixtures/permissions/permissions.json`), which is what grants or denies
- * `restorer_access` for that user. Adding a role here without a matching entry in
+ * `workflow_access` for that user. Adding a role here without a matching entry in
  * the fixture means the cookie's email won't resolve to the expected permissions.
  *
- * - `default`: `composer.application@guardian.co.uk` — has `restorer_access`.
- * - `NoRestoreAccess`: `no.restore@guardian.co.uk` — does NOT have `restorer_access`.
- * - `RestoreSingleStack`: `restore.single.stack@guardian.co.uk` — has `restore_content`
- *   but NOT `restore_content_to_any_stack`, so can only restore to the snapshot's own system.
- * - `RestorerAccessOnly`: `restorer.access.only@guardian.co.uk` — listed in the
- *   fixture with `restorer_access` granted but NOT `restore_content` (which the
- *   client resolves to its default of `false` when the user is not listed for
- *   it). Use it to exercise a signed-in user who cannot restore at all.
+ * - `default`: `workflow.e2e.test@guardian.co.uk` — has `workflow_access`.
+ * - `NoWorkflowAccess`: `no.workflow@guardian.co.uk` — does NOT have `workflow_access`.
  */
 export const roles = {
-    default: "composer.application@guardian.co.uk",
-    NoRestoreAccess: "no.restore@guardian.co.uk",
-    RestoreSingleStack: "restore.single.stack@guardian.co.uk",
-    RestorerAccessOnly: "restorer.access.only@guardian.co.uk",
+    default: "workflow.e2e.test@guardian.co.uk",
+    NoWorkflowAccess: "no.workflow@guardian.co.uk",
 } as const;
 
 export type Role = keyof typeof roles;
@@ -52,8 +44,8 @@ export function createPanDomainCookie(rawPrivateKey: string, role: Role = "defau
             firstName: "Playwright",
             lastName: "Tester",
             email: roles[role],
-            authenticatingSystem: "composer-restorer",
-            authenticatedIn: ["composer-restorer"],
+            authenticatingSystem: "workflow-frontend",
+            authenticatedIn: ["workflow-frontend"],
             expires: Date.now() + 60 * 60 * 1000,
             multifactor: true,
         },

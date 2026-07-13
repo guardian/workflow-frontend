@@ -57,11 +57,10 @@ async function main() {
         await page.goto(stack.baseUrl, { waitUntil: "domcontentloaded" });
         
         console.log(`\nLocal stack started at ${stack.baseUrl}`);
-        // console.log("Opened a browser with a local auth cookie.");
-        // console.log(
-        //     `Mock flexible-content API: ${stack.mockApiUrl} ` +
-        //         `(POST ${stack.mockApiUrl}/__admin/state to change responses).`,
-        // );
+        console.log("Opened a browser with a local auth cookie.");
+        console.log(
+            `Mock workflow datastore API: ${stack.mockApiUrl}`
+        );
 
         // When PICK_LOCATOR is set, open the Playwright Inspector against this
         // already-authenticated page. Use its "Pick locator" tool to grab

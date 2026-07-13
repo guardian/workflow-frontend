@@ -35,12 +35,8 @@ export type LocalStack = {
 // config/URL override required.
 const MOCK_API_PORT = 8080;
 const MOCK_API_HOSTNAMES = [
-    // primary stack (flexible)
-    "flexible-api.CODE.flexible.gudiscovery",
-    // secondary stack (flexible-secondary)
-    "apiv2.CODE.flexible-secondary.gudiscovery",
-    // local DEV stack ("Local Flexible Content")
-    "flexible-api.DEV.flexible.gudiscovery",
+    "workflow-backend.local.dev-gutools.co.uk",
+    "iam-preview.content.local.dev-guardianapis.com",
 ];
 
 function buildDockerImage({
@@ -114,7 +110,7 @@ export async function startLocalStack(
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
-    const mockImageTag = `flexible-restorer-mock-api-e2e:${runId}`;
+    const mockImageTag = `workflow-frontend-mock-api-e2e:${runId}`;
 
     const network = await new Network().start();
 
@@ -156,7 +152,7 @@ export async function startLocalStack(
             tag: mockImageTag,
             dockerfilePath: path.join(
                 projectRoot,
-                "e2e/images/mock-flexible-api.Dockerfile",
+                "e2e/images/mock-datastore.Dockerfile",
             ),
             contextPath: projectRoot,
         });
