@@ -22,6 +22,16 @@ fi
 aws configure set region "$AWS_REGION" --profile "$AWS_PROFILE"
 aws configure set output json --profile "$AWS_PROFILE"
 
+aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID_VALUE" --profile capi
+aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY_VALUE" --profile capi
+if [ -n "$AWS_SESSION_TOKEN_VALUE" ]; then
+	aws configure set aws_session_token "$AWS_SESSION_TOKEN_VALUE" --profile capi
+else
+	aws configure set aws_session_token "" --profile capi
+fi
+aws configure set region "$AWS_REGION" --profile capi
+aws configure set output json --profile capi
+
 # Force profile-backed auth even when AWS credential env vars are present.
 unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
 # Work around sporadic Graal/JVMCI compilation assertion failures in this Docker runtime.
