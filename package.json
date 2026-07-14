@@ -8,7 +8,9 @@
     "test": "karma start",
     "test-watch": "yarn test --no-single-run",
     "lint": "eslint ./public/**/**/*.js",
-    "local:stack": "./e2e/scripts/docker/run-local-stack"
+    "local:stack": "./e2e/scripts/docker/run-local-stack",
+    "bdd:gen": "bddgen",
+    "test:e2e": "./e2e/scripts/test-e2e"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.5",
