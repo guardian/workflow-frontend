@@ -1,7 +1,8 @@
-import { chromium } from "@playwright/test";
+import { chromium, Page } from "@playwright/test";
 import { createPanDomainCookie } from "../../setup/panDomainCookie";
 import { startLocalStack, stopLocalStack } from "../../setup/stackContainers";
 import { writeSharedStackInfo, clearSharedStackInfo } from "../../setup/sharedStack";
+import { mockComposer } from "../../setup/mockComposerApi/mockComposerApi";
 
 function waitForTerminationSignal(): Promise<void> {
     return new Promise((resolve) => {
@@ -29,11 +30,11 @@ async function main() {
 
         // Publish the running stack's connection details so `npm run test:e2e`
         // can reuse this stack instead of booting fresh containers each run.
-        // writeSharedStackInfo(projectRoot, {
-        //     baseUrl: stack.baseUrl,
-        //     panDomainPrivateKey: stack.panDomainPrivateKey,
-        //     mockApiUrl: stack.mockApiUrl,
-        // });
+        writeSharedStackInfo(projectRoot, {
+            baseUrl: stack.baseUrl,
+            panDomainPrivateKey: stack.panDomainPrivateKey,
+            mockApiUrl: stack.mockApiUrl,
+        });
 
         browser = await chromium.launch({
             headless: false,
@@ -47,6 +48,7 @@ async function main() {
             handleSIGHUP: false,
         });
         const page = await browser.newPage();
+        await mockComposer(page);
         await page.context().addCookies([
             {
                 name: "gutoolsAuth-assym",
