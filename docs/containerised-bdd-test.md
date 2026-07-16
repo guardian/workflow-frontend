@@ -21,7 +21,11 @@ graph TB
       S3-panda["Pandomain bucket"]
       S3-permission["Permission cache"]
     end
-    Datastore["Datastore API"]
+
+    subgraph repo2["workflow repository"]
+      Datastore["Datastore API"]
+      WorkflowDb["Workflow DB"]
+    end
     Capi["CAPI preview"]
     Preferences["Preferences"]
     Table-editorial-support["Editorial-support table"]
@@ -39,6 +43,8 @@ graph TB
     Workflow --> Capi
     Workflow --> Preferences
     Workflow --> Table-editorial-support
+
+    Datastore --> WorkflowDb
 
     classDef app fill:#0d47a1,stroke:#90caf9,color:#fff;
     classDef mocked fill:#FDDA0D;
