@@ -1,0 +1,378 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": {
+            "columnConfiguration": "[\"priority\",\"content-type\",\"titles\",\"byline\",\"notes\",\"rights\",\"pinboard\",\"comments\",\"main-image\",\"incopy\",\"optimisedForWeb\",\"sensitive\",\"legallySensitive\",\"needsLegal\",\"needs-picture-desk\",\"presence\",\"assignee\",\"office\",\"deadline\",\"section\",\"status\",\"status-in-print\",\"commissionedLength\",\"wordcount\",\"printwordcount\",\"printlocation\",\"links\",\"published-state\",\"last-modified\",\"last-modified-by\",\"last-modified-in-print-by\"]",
+            "compactView": "{\"visible\":false}",
+            "featureSwitches": "{\"intendedAudienceColumn\":true}",
+            "filters": "[{\"namespace\":\"status\",\"listIsOpen\":false},{\"listIsOpen\":true},{\"namespace\":\"content-type\",\"listIsOpen\":true},{\"namespace\":\"atom-type\",\"listIsOpen\":false},{\"namespace\":\"created\",\"listIsOpen\":true},{\"namespace\":\"state\",\"listIsOpen\":false},{\"namespace\":\"flags\",\"listIsOpen\":false},{\"namespace\":\"deadline\",\"listIsOpen\":true},{\"namespace\":\"incopy\",\"listIsOpen\":false},{\"namespace\":\"hasPrintInfo\",\"listIsOpen\":false},{\"namespace\":\"hasMainMedia\",\"listIsOpen\":false},{\"namespace\":\"rights\",\"listIsOpen\":false},{\"namespace\":\"trashed\",\"listIsOpen\":false},{\"namespace\":\"article-format\",\"listIsOpen\":false}]",
+            "location": "{}",
+            "ofwFieldNotYetSeen": "false",
+            "preferredStub": "{\"section\":\"Developer Blog\"}",
+            "showHeadline": "true"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/columnConfiguration"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": {
+            "columnConfiguration": "[\"priority\",\"content-type\",\"titles\",\"byline\",\"notes\",\"rights\",\"pinboard\",\"comments\",\"main-image\",\"incopy\",\"optimisedForWeb\",\"sensitive\",\"legallySensitive\",\"needsLegal\",\"needs-picture-desk\",\"presence\",\"assignee\",\"office\",\"deadline\",\"section\",\"status\",\"status-in-print\",\"commissionedLength\",\"wordcount\",\"printwordcount\",\"printlocation\",\"links\",\"published-state\",\"last-modified\",\"last-modified-by\",\"last-modified-in-print-by\"]"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/columnConfiguration",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.data.value"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": "sucessfully set {{jsonPath request.body '$.data.value'}} for user workflow.e2e.test@guardian.co.uk"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/compactView"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": {
+            "compactView": "{\"visible\":false}"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/compactView",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.data.value"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "body": "{\n\"status\": \"ok\",\n\"statusCode\": 200,\n\"data\": \"sucessfully set {{jsonPath request.body '$.data.value'}} for user workflow.e2e.test@guardian.co.uk\"\n}"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/featureSwitches"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": {
+            "featureSwitches": "{\"intendedAudienceColumn\":true}"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/featureSwitches",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.data.value"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": "sucessfully set {{jsonPath request.body '$.data.value'}} for user workflow.e2e.test@guardian.co.uk"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/filters"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": {
+            "filters": "[{\"namespace\":\"status\",\"listIsOpen\":false},{\"listIsOpen\":true},{\"namespace\":\"content-type\",\"listIsOpen\":true},{\"namespace\":\"atom-type\",\"listIsOpen\":false},{\"namespace\":\"created\",\"listIsOpen\":true},{\"namespace\":\"state\",\"listIsOpen\":false},{\"namespace\":\"flags\",\"listIsOpen\":false},{\"namespace\":\"deadline\",\"listIsOpen\":true},{\"namespace\":\"incopy\",\"listIsOpen\":false},{\"namespace\":\"hasPrintInfo\",\"listIsOpen\":false},{\"namespace\":\"hasMainMedia\",\"listIsOpen\":false},{\"namespace\":\"rights\",\"listIsOpen\":false},{\"namespace\":\"trashed\",\"listIsOpen\":false},{\"namespace\":\"article-format\",\"listIsOpen\":false}]"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/filters",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.data.value"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": "sucessfully set {{jsonPath request.body '$.data.value'}} for user workflow.e2e.test@guardian.co.uk"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/location"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": {
+            "location": "{}"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/location",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.data.value"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": "sucessfully set {{jsonPath request.body '$.data.value'}} for user workflow.e2e.test@guardian.co.uk"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/ofwFieldNotYetSeen"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": {
+            "ofwFieldNotYetSeen": "false"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/ofwFieldNotYetSeen",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.data.value"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": "sucessfully set {{jsonPath request.body '$.data.value'}} for user workflow.e2e.test@guardian.co.uk"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/preferredStub"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": {
+            "preferredStub": "{\"section\":\"Developer Blog\"}"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/preferredStub",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.data.value"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": "sucessfully set {{jsonPath request.body '$.data.value'}} for user workflow.e2e.test@guardian.co.uk"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/showHeadline"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": {
+            "showHeadline": "true"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPath": "/preferences/workflow.e2e.test@guardian.co.uk/workflow/showHeadline",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.data.value"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": "sucessfully set {{jsonPath request.body '$.data.value'}} for user workflow.e2e.test@guardian.co.uk"
+        }
+      }
+    }
+  ]
+}

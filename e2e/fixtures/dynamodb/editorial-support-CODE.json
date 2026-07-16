@@ -1,0 +1,34 @@
+{
+  "editorial-support-CODE": [
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "Fronts-UK Front" },
+          "active": { "BOOL": true },
+          "name": { "S": "Staff member 1" },
+          "team": { "S": "UK Front" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "Fronts-Puzzles" },
+          "active": { "BOOL": true },
+          "name": { "S": "Staff member 2" },
+          "team": { "S": "Puzzles" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "Fronts-Arts Front" },
+          "active": { "BOOL": true },
+          "name": { "S": "Staff member 3" },
+          "team": { "S": "Arts Front" }
+        }
+      }
+    }
+  ]
+}

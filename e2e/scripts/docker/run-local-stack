@@ -15,6 +15,24 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v git >/dev/null 2>&1; then
+  echo "Git CLI is required to check out the workflow backend repository" >&2
+  exit 1
+fi
+
+# Check out (or update) the guardian/workflow backend into a git-ignored folder
+# under target/. Reused across runs: shallow-clone once, then fast-forward pull.
+# The path is exported so run-local-stack.ts can consume it.
+WORKFLOW_BACKEND_DIR="${ROOT_DIR}/target/workflow-backend"
+if [ -d "${WORKFLOW_BACKEND_DIR}/.git" ]; then
+  echo "Updating workflow backend checkout in ${WORKFLOW_BACKEND_DIR}"
+  git -C "$WORKFLOW_BACKEND_DIR" pull --ff-only
+else
+  echo "Cloning guardian/workflow into ${WORKFLOW_BACKEND_DIR}"
+  git clone --depth 1 --branch ws/add-docker-image-for-e2e-setup https://github.com/guardian/workflow.git "$WORKFLOW_BACKEND_DIR"
+fi
+export WORKFLOW_BACKEND_DIR
+
 mise exec -- "$ROOT_DIR/node_modules/.bin/tsx" "$ROOT_DIR/e2e/scripts/docker/run-local-stack.ts" "$@" || {
   exit_code=$?
   # Exit code 130 means the process was interrupted by Ctrl+C (SIGINT), which is expected.
