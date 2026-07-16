@@ -1,4 +1,4 @@
-# Mock of the flexible-content (Composer) API used by the local stack.
+# Mock of external API used by the local stack.
 # Runs the TypeScript stub directly with tsx — the server only uses Node
 # built-ins, so no project dependencies need to be installed.
 FROM node:20-alpine
@@ -7,7 +7,7 @@ RUN npm install -g tsx@4.22.4
 
 WORKDIR /app
 
-COPY e2e/setup/mockWorkflowDatastore/server.ts ./server.ts
+COPY e2e/setup/mockApi/server.ts ./server.ts
 COPY e2e/fixtures/datastore-responses/section-list.json ./fixtures/section-list.json
 COPY e2e/fixtures/datastore-responses/desk-list.json ./fixtures/desk-list.json
 COPY e2e/fixtures/datastore-responses/section-desk-mapping.json ./fixtures/section-desk-mapping.json

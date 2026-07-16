@@ -29,11 +29,11 @@ async function main() {
 
         // Publish the running stack's connection details so `npm run test:e2e`
         // can reuse this stack instead of booting fresh containers each run.
-        // writeSharedStackInfo(projectRoot, {
-        //     baseUrl: stack.baseUrl,
-        //     panDomainPrivateKey: stack.panDomainPrivateKey,
-        //     mockApiUrl: stack.mockApiUrl,
-        // });
+        writeSharedStackInfo(projectRoot, {
+            baseUrl: stack.baseUrl,
+            panDomainPrivateKey: stack.panDomainPrivateKey,
+            mockApiUrl: stack.mockApiUrl,
+        });
 
         browser = await chromium.launch({
             headless: false,

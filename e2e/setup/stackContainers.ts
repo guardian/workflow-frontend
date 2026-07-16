@@ -24,6 +24,8 @@ export type LocalStack = {
     minioContainer: any;
     workflowContainer: any;
     mockContainer: any;
+    dbContainer: any;
+    datastoreContainer: any;
     network: any;
 };
 
@@ -35,7 +37,6 @@ export type LocalStack = {
 // config/URL override required.
 const MOCK_API_PORT = 8080;
 const MOCK_API_HOSTNAMES = [
-    "workflow-backend.local.dev-gutools.co.uk",
     "iam-preview.content.local.dev-guardianapis.com",
 ];
 
@@ -111,12 +112,15 @@ export async function startLocalStack(
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     const mockImageTag = `workflow-frontend-mock-api-e2e:${runId}`;
+    const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
 
     const network = await new Network().start();
 
     let minioContainer;
     let workflowContainer;
     let mockContainer;
+    let dbContainer;
+    let datastoreContainer;
     const panDomainKeys = generatePanDomainKeys();
 
     try {
@@ -152,7 +156,7 @@ export async function startLocalStack(
             tag: mockImageTag,
             dockerfilePath: path.join(
                 projectRoot,
-                "e2e/images/mock-datastore.Dockerfile",
+                "e2e/images/mock-api.Dockerfile",
             ),
             contextPath: projectRoot,
         });
@@ -171,6 +175,46 @@ export async function startLocalStack(
             .start();
 
         const mockApiUrl = `http://${mockContainer.getHost()}:${mockContainer.getMappedPort(MOCK_API_PORT)}`;
+
+        dbContainer = await new GenericContainer("postgres:17-alpine")
+            .withName("workflow-db-e2e")
+            .withNetwork(network)
+            .withNetworkAliases("workflow-db-e2e.local.dev-gutools.co.uk")
+            .withEnvironment({
+                POSTGRES_USER: "workflow",
+                POSTGRES_PASSWORD: "workflow",
+                POSTGRES_DB: "workflow",
+            })
+            .withLogConsumer(createLogConsumer("workflow-db", streamLogs))
+            .withExposedPorts(5432)
+            .withWaitStrategy(
+                Wait.forLogMessage(
+                    /database system is ready to accept connections/,
+                    2,
+                ),
+            )
+            .withStartupTimeout(2 * 60 * 1000)
+            .start();
+
+        await buildDockerImage({
+            tag: datastoreImageTag,
+            dockerfilePath: path.join(
+                projectRoot,
+                "e2e/images/datastore.Dockerfile",
+            ),
+            contextPath:
+                process.env.WORKFLOW_BACKEND_DIR ??
+                path.join(projectRoot, "target/workflow-backend"),
+        });
+
+        datastoreContainer = await new GenericContainer(datastoreImageTag)
+            .withNetwork(network)
+            .withNetworkAliases("workflow-backend.local.dev-gutools.co.uk")
+            .withLogConsumer(createLogConsumer("datastore", streamLogs))
+            .withExposedPorts(8080)
+            .withStartupTimeout(10 * 60 * 1000)
+            .withWaitStrategy(Wait.forListeningPorts())
+            .start();
 
         await buildDockerImage({
             tag: workflowImageTag,
@@ -205,11 +249,19 @@ export async function startLocalStack(
             minioContainer,
             workflowContainer,
             mockContainer,
+            dbContainer,
+            datastoreContainer,
             network,
         };
     } catch (error) {
         if (workflowContainer) {
             await workflowContainer.stop();
+        }
+        if (datastoreContainer) {
+            await datastoreContainer.stop();
+        }
+        if (dbContainer) {
+            await dbContainer.stop();
         }
         if (mockContainer) {
             await mockContainer.stop();
@@ -226,10 +278,18 @@ export async function stopLocalStack({
     workflowContainer,
     minioContainer,
     mockContainer,
+    dbContainer,
+    datastoreContainer,
     network,
 }: Partial<LocalStack> = {}): Promise<void> {
     if (workflowContainer) {
         await workflowContainer.stop();
+    }
+    if (datastoreContainer) {
+        await datastoreContainer.stop();
+    }
+    if (dbContainer) {
+        await dbContainer.stop();
     }
     if (mockContainer) {
         await mockContainer.stop();
