@@ -1,0 +1,74 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/global/6a58af5c8f084319b71e67c9"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "response": {
+            "status": "ok",
+            "userTier": "internal",
+            "total": 1,
+            "content": {
+              "id": "global/6a58af5c8f084319b71e67c9",
+              "type": "article",
+              "sectionId": "global",
+              "sectionName": "Global",
+              "webPublicationDate": "2026-07-17T13:31:19Z",
+              "webTitle": "",
+              "webUrl": "http://www.code.dev-theguardian.com/global/6a58af5c8f084319b71e67c9",
+              "apiUrl": "https://preview.content.code.dev-guardianapis.com/global/6a58af5c8f084319b71e67c9",
+              "fields": {
+                "wordcount": "0",
+                "internalComposerCode": "6a58af5c8f084319b71e67c9"
+              },
+              "tags": [],
+              "elements": [],
+              "blocks": {
+                "body": [
+                  {
+                    "id": "6a5a2a8f8f08ca7eae8c595c",
+                    "bodyHtml": "<!-- Invalid text element without \"text\" field -->",
+                    "bodyTextSummary": "",
+                    "attributes": {},
+                    "published": false,
+                    "createdDate": "2026-07-17T13:13:51Z",
+                    "lastModifiedDate": "2026-07-17T13:13:51Z",
+                    "contributors": [],
+                    "createdBy": {
+                      "email": "wai.sing.yiu@guardian.co.uk",
+                      "firstName": "Wai Sing",
+                      "lastName": "Yiu"
+                    },
+                    "lastModifiedBy": {
+                      "email": "wai.sing.yiu@guardian.co.uk",
+                      "firstName": "Wai Sing",
+                      "lastName": "Yiu"
+                    },
+                    "elements": [
+                      {
+                        "type": "text",
+                        "assets": [],
+                        "textTypeData": {}
+                      }
+                    ]
+                  }
+                ],
+                "totalBodyBlocks": 1
+              },
+              "isGone": false,
+              "isHosted": false
+            },
+            "packages": []
+          }
+        }
+      }
+    }
+  ]
+}

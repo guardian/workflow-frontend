@@ -1,7 +1,8 @@
-import { chromium } from "@playwright/test";
+import { chromium, Page } from "@playwright/test";
 import { createPanDomainCookie } from "../../setup/panDomainCookie";
 import { startLocalStack, stopLocalStack } from "../../setup/stackContainers";
 import { writeSharedStackInfo, clearSharedStackInfo } from "../../setup/sharedStack";
+import { mockComposer } from "../../setup/mockComposerApi/mockComposerApi";
 
 function waitForTerminationSignal(): Promise<void> {
     return new Promise((resolve) => {
@@ -47,6 +48,7 @@ async function main() {
             handleSIGHUP: false,
         });
         const page = await browser.newPage();
+        await mockComposer(page);
         await page.context().addCookies([
             {
                 name: "gutoolsAuth-assym",

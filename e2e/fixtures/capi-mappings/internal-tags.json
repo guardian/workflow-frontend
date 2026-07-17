@@ -1,0 +1,41 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/internal-code/tag/16594"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "response": {
+            "status": "ok",
+            "userTier": "internal",
+            "total": 0,
+            "startIndex": 0,
+            "pageSize": 10,
+            "currentPage": 1,
+            "pages": 0,
+            "orderBy": "newest",
+            "tag": {
+              "id": "theguardian/guardianmonthly",
+              "type": "newspaper-book",
+              "sectionId": "theguardian",
+              "sectionName": "From the Guardian",
+              "webTitle": "Guardian Monthly",
+              "webUrl": "http://www.code.dev-theguardian.com/theguardian/guardianmonthly",
+              "apiUrl": "http://content.code.dev-guardianapis.com/theguardian/guardianmonthly",
+              "references": [],
+              "internalName": "Guardian Monthly (Gdn)"
+            },
+            "results": [],
+            "leadContent": []
+          }
+        }
+      }
+    }
+  ]
+}
