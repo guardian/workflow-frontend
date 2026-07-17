@@ -23,8 +23,10 @@ export type LocalStack = {
     mockApiUrl: string;
     minioContainer: any;
     workflowContainer: any;
-    mockContainer: any;
+    mockCapiContainer: any;
+    mockPreferencesApiContainer: any;
     dbContainer: any;
+    dynamodbContainer: any;
     datastoreContainer: any;
     network: any;
 };
@@ -35,10 +37,9 @@ export type LocalStack = {
 // register those exact hostnames as network aliases on the mock container, so
 // the real hostnames resolve to the mock inside the Docker network — no
 // config/URL override required.
-const MOCK_API_PORT = 8080;
-const MOCK_API_HOSTNAMES = [
-    "iam-preview.content.local.dev-guardianapis.com",
-];
+const WIREMOCK_PORT = 80;
+const CAPI_HOSTNAME = "iam-preview.content.local.dev-guardianapis.com";
+const PREFERENCES_HOSTNAME = "preferences.local.dev-gutools.co.uk";
 
 function buildDockerImage({
     tag,
@@ -111,15 +112,19 @@ export async function startLocalStack(
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
-    const mockImageTag = `workflow-frontend-mock-api-e2e:${runId}`;
+    const mockCapiImageTag = `workflow-frontend-mock-capi-e2e:${runId}`;
+    const mockPreferencesImageTag = `workflow-frontend-mock-preferences-e2e:${runId}`;
+    const dynamodbImageTag = `workflow-frontend-dynamodb-e2e:${runId}`;
     const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
 
     const network = await new Network().start();
 
     let minioContainer;
     let workflowContainer;
-    let mockContainer;
+    let mockCapiContainer;
+    let mockPreferencesApiContainer;
     let dbContainer;
+    let dynamodbContainer;
     let datastoreContainer;
     const panDomainKeys = generatePanDomainKeys();
 
@@ -153,28 +158,50 @@ export async function startLocalStack(
             .start();
 
         await buildDockerImage({
-            tag: mockImageTag,
+            tag: mockCapiImageTag,
             dockerfilePath: path.join(
                 projectRoot,
-                "e2e/images/mock-api.Dockerfile",
+                "e2e/images/mock-capi.Dockerfile",
             ),
             contextPath: projectRoot,
         });
 
-        mockContainer = await new GenericContainer(mockImageTag)
+        mockCapiContainer = await new GenericContainer(mockCapiImageTag)
             .withNetwork(network)
-            .withNetworkAliases(...MOCK_API_HOSTNAMES)
-            .withLogConsumer(createLogConsumer("mock-api", streamLogs))
-            .withExposedPorts(MOCK_API_PORT)
+            .withNetworkAliases(CAPI_HOSTNAME)
+            .withLogConsumer(createLogConsumer("mock-capi", streamLogs))
+            .withExposedPorts(WIREMOCK_PORT)
             .withWaitStrategy(
-                Wait.forHttp("/__admin/health", MOCK_API_PORT).forStatusCode(
+                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
                     200,
                 ),
             )
             .withStartupTimeout(2 * 60 * 1000)
             .start();
 
-        const mockApiUrl = `http://${mockContainer.getHost()}:${mockContainer.getMappedPort(MOCK_API_PORT)}`;
+        const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_PORT)}`;
+
+        await buildDockerImage({
+            tag: mockPreferencesImageTag,
+            dockerfilePath: path.join(
+                projectRoot,
+                "e2e/images/mock-preferences.Dockerfile",
+            ),
+            contextPath: projectRoot,
+        });
+
+        mockPreferencesApiContainer = await new GenericContainer(mockPreferencesImageTag)
+            .withNetwork(network)
+            .withNetworkAliases(PREFERENCES_HOSTNAME)
+            .withLogConsumer(createLogConsumer("mock-preferences", streamLogs))
+            .withExposedPorts(WIREMOCK_PORT)
+            .withWaitStrategy(
+                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                    200,
+                ),
+            )
+            .withStartupTimeout(2 * 60 * 1000)
+            .start();
 
         dbContainer = await new GenericContainer("postgres:17-alpine")
             .withName("workflow-db-e2e")
@@ -192,6 +219,26 @@ export async function startLocalStack(
                     /database system is ready to accept connections/,
                     2,
                 ),
+            )
+            .withStartupTimeout(2 * 60 * 1000)
+            .start();
+
+        await buildDockerImage({
+            tag: dynamodbImageTag,
+            dockerfilePath: path.join(
+                projectRoot,
+                "e2e/images/dynamodb.Dockerfile",
+            ),
+            contextPath: projectRoot,
+        });
+
+        dynamodbContainer = await new GenericContainer(dynamodbImageTag)
+            .withNetwork(network)
+            .withNetworkAliases("workflow-e2e-dynamodb")
+            .withLogConsumer(createLogConsumer("dynamodb", streamLogs))
+            .withExposedPorts(8000)
+            .withWaitStrategy(
+                Wait.forLogMessage(/DynamoDB Local setup complete/, 1),
             )
             .withStartupTimeout(2 * 60 * 1000)
             .start();
@@ -229,6 +276,7 @@ export async function startLocalStack(
             .withNetwork(network)
             .withEnvironment({
                 AWS_ENDPOINT_URL_S3: "http://minio:9000",
+                AWS_ENDPOINT_URL_DYNAMODB: "http://workflow-e2e-dynamodb:8000",
                 AWS_ACCESS_KEY_ID: MINIO_ROOT_USER,
                 AWS_SECRET_ACCESS_KEY: MINIO_ROOT_PASSWORD,
                 // Keep local mode enabled in case scripts are bypassed in future changes.
@@ -245,11 +293,13 @@ export async function startLocalStack(
         return {
             baseUrl,
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
-            mockApiUrl,
+            mockApiUrl: mockCapiUrl,
             minioContainer,
             workflowContainer,
-            mockContainer,
+            mockCapiContainer: mockCapiContainer,
+            mockPreferencesApiContainer: mockPreferencesApiContainer,
             dbContainer,
+            dynamodbContainer,
             datastoreContainer,
             network,
         };
@@ -260,11 +310,17 @@ export async function startLocalStack(
         if (datastoreContainer) {
             await datastoreContainer.stop();
         }
+        if (dynamodbContainer) {
+            await dynamodbContainer.stop();
+        }
         if (dbContainer) {
             await dbContainer.stop();
         }
-        if (mockContainer) {
-            await mockContainer.stop();
+        if (mockPreferencesApiContainer) {
+            await mockPreferencesApiContainer.stop();
+        }
+        if (mockCapiContainer) {
+            await mockCapiContainer.stop();
         }
         if (minioContainer) {
             await minioContainer.stop();
@@ -277,8 +333,10 @@ export async function startLocalStack(
 export async function stopLocalStack({
     workflowContainer,
     minioContainer,
-    mockContainer,
+    mockCapiContainer,
+    mockPreferencesApiContainer,
     dbContainer,
+    dynamodbContainer,
     datastoreContainer,
     network,
 }: Partial<LocalStack> = {}): Promise<void> {
@@ -288,11 +346,17 @@ export async function stopLocalStack({
     if (datastoreContainer) {
         await datastoreContainer.stop();
     }
+    if (dynamodbContainer) {
+        await dynamodbContainer.stop();
+    }
     if (dbContainer) {
         await dbContainer.stop();
     }
-    if (mockContainer) {
-        await mockContainer.stop();
+    if (mockPreferencesApiContainer) {
+        await mockPreferencesApiContainer.stop();
+    }
+    if (mockCapiContainer) {
+        await mockCapiContainer.stop();
     }
     if (minioContainer) {
         await minioContainer.stop();

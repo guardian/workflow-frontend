@@ -70,7 +70,12 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
 
   lazy val preferencesHost: String = s"preferences.$domain"
-  lazy val preferencesUrl: String = s"https://$preferencesHost/preferences"
+  // In dev the preferences API is a local HTTP WireMock mock (see e2e/setup/stackContainers.ts);
+  // everywhere else it is the real editorial-preferences service over HTTPS.
+  lazy val preferencesUrl: String = {
+    val scheme = if (isDev) "http" else "https"
+    s"$scheme://$preferencesHost/preferences"
+  }
 
   lazy val pinboardLoaderUrl: String = s"https://pinboard.$domain/pinboard.loader.js"
 
