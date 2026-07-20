@@ -1,0 +1,272 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/hyper/tags",
+        "queryParameters": {
+          "query": { "equalTo": "G" },
+          "limit": { "equalTo": "50" },
+          "type": { "equalTo": "newspaper book section" }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "offset": 0,
+          "limit": 50,
+          "total": 5,
+          "data": [
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/43541",
+              "data": {
+                "id": 43541,
+                "type": "Newspaper Book Section",
+                "internalName": "Gdn: 100 Great British Woods and Forests (nbs)",
+                "externalName": "100 Great British Woods and Forests",
+                "slug": "100-great-british-woods-and-forests",
+                "section": { "id": 183, "name": "Travel", "pathPrefix": "travel", "sectionTagId": 8785, "slug": "travel" },
+                "parents": [
+                  { "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/43540", "data": null, "links": [] }
+                ],
+                "externalReferences": [],
+                "path": "theguardian/100-great-british-woods-and-forests/100-great-british-woods-and-forests",
+                "contributorInformation": null,
+                "deprecated": false
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/49885",
+              "data": {
+                "id": 49885,
+                "type": "Newspaper Book Section",
+                "internalName": "Gdn: 100 NHS Voices (nbs)",
+                "externalName": "100 NHS Voices",
+                "slug": "nhs-voices",
+                "section": { "id": 186, "name": "Society", "pathPrefix": "society", "sectionTagId": 8798, "slug": "society" },
+                "parents": [
+                  { "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/49884", "data": null, "links": [] }
+                ],
+                "externalReferences": [],
+                "path": "theguardian/nhs-voices/nhs-voices",
+                "contributorInformation": null,
+                "deprecated": false
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/34624",
+              "data": {
+                "id": 34624,
+                "type": "Newspaper Book Section",
+                "internalName": "Gdn: 10:10 update (nbs)",
+                "externalName": "10:10 update",
+                "slug": "10-10-update",
+                "section": { "id": 199, "name": "Environment", "pathPrefix": "environment", "sectionTagId": 9046, "slug": "environment" },
+                "parents": [
+                  { "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/34623", "data": null, "links": [] }
+                ],
+                "externalReferences": [],
+                "path": "theguardian/10-10-update/10-10-update",
+                "contributorInformation": null,
+                "deprecated": false
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/44402",
+              "data": {
+                "id": 44402,
+                "type": "Newspaper Book Section",
+                "internalName": "Gdn: A history of R'n'B & hip hop (nbs)",
+                "externalName": "A history of R'n'B & hip hop",
+                "slug": "a-history-of-rnb-and-hip-hop",
+                "section": { "id": 201, "name": "Music", "pathPrefix": "music", "sectionTagId": 9683, "slug": "music" },
+                "parents": [
+                  { "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/44401", "data": null, "links": [] }
+                ],
+                "externalReferences": [],
+                "path": "theguardian/a-history-of-rnb-and-hip-hop/a-history-of-rnb-and-hip-hop",
+                "contributorInformation": null,
+                "deprecated": false
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/44397",
+              "data": {
+                "id": 44397,
+                "type": "Newspaper Book Section",
+                "internalName": "Gdn: A history of dance music (nbs)",
+                "externalName": "A history of dance music",
+                "slug": "a-history-of-dance-music",
+                "section": { "id": 201, "name": "Music", "pathPrefix": "music", "sectionTagId": 9683, "slug": "music" },
+                "parents": [
+                  { "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/44389", "data": null, "links": [] }
+                ],
+                "externalReferences": [],
+                "path": "theguardian/a-history-of-dance-music/a-history-of-dance-music",
+                "contributorInformation": null,
+                "deprecated": false
+              },
+              "links": []
+            }
+          ],
+          "links": []
+        }
+      }
+    },
+    {
+      "request": { "method": "GET", "urlPath": "/hyper/tags/43540" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "data": {
+            "id": 43540,
+            "type": "Newspaper Book",
+            "internalName": "Gdn: 100 Great British Woods and Forests (nb)",
+            "externalName": "100 Great British Woods and Forests",
+            "slug": "100-great-british-woods-and-forests",
+            "section": { "id": 183, "name": "Travel", "pathPrefix": "travel", "sectionTagId": 8785, "slug": "travel" },
+            "parents": [
+              { "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/2", "data": null, "links": [] }
+            ],
+            "externalReferences": [],
+            "path": "theguardian/100-great-british-woods-and-forests",
+            "contributorInformation": null,
+            "deprecated": false
+          },
+          "links": []
+        }
+      }
+    },
+    {
+      "request": { "method": "GET", "urlPath": "/hyper/tags/49884" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "data": {
+            "id": 49884,
+            "type": "Newspaper Book",
+            "internalName": "Gdn: 100 NHS Voices (nb)",
+            "externalName": "100 NHS Voices",
+            "slug": "nhs-voices",
+            "section": { "id": 186, "name": "Society", "pathPrefix": "society", "sectionTagId": 8798, "slug": "society" },
+            "parents": [
+              { "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/2", "data": null, "links": [] }
+            ],
+            "externalReferences": [],
+            "path": "theguardian/nhs-voices",
+            "contributorInformation": null,
+            "deprecated": false
+          },
+          "links": []
+        }
+      }
+    },
+    {
+      "request": { "method": "GET", "urlPath": "/hyper/tags/34623" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "data": {
+            "id": 34623,
+            "type": "Newspaper Book",
+            "internalName": "Gdn: 10:10 update (nb)",
+            "externalName": "10:10 update",
+            "slug": "10-10-update",
+            "section": { "id": 199, "name": "Environment", "pathPrefix": "environment", "sectionTagId": 9046, "slug": "environment" },
+            "parents": [
+              { "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/2", "data": null, "links": [] }
+            ],
+            "externalReferences": [],
+            "path": "theguardian/10-10-update",
+            "contributorInformation": null,
+            "deprecated": false
+          },
+          "links": []
+        }
+      }
+    },
+    {
+      "request": { "method": "GET", "urlPath": "/hyper/tags/44401" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "data": {
+            "id": 44401,
+            "type": "Newspaper Book",
+            "internalName": "Gdn: A history of R'n'B & hip hop (nb)",
+            "externalName": "A history of R'n'B & hip hop",
+            "slug": "a-history-of-rnb-and-hip-hop",
+            "section": { "id": 201, "name": "Music", "pathPrefix": "music", "sectionTagId": 9683, "slug": "music" },
+            "parents": [
+              { "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/2", "data": null, "links": [] }
+            ],
+            "externalReferences": [],
+            "path": "theguardian/a-history-of-rnb-and-hip-hop",
+            "contributorInformation": null,
+            "deprecated": false
+          },
+          "links": []
+        }
+      }
+    },
+    {
+      "request": { "method": "GET", "urlPath": "/hyper/tags/44389" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "data": {
+            "id": 44389,
+            "type": "Newspaper Book",
+            "internalName": "Gdn: A history of dance music (nb)",
+            "externalName": "A history of dance music",
+            "slug": "a-history-of-dance-music",
+            "section": { "id": 201, "name": "Music", "pathPrefix": "music", "sectionTagId": 9683, "slug": "music" },
+            "parents": [
+              { "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/2", "data": null, "links": [] }
+            ],
+            "externalReferences": [],
+            "path": "theguardian/a-history-of-dance-music",
+            "contributorInformation": null,
+            "deprecated": false
+          },
+          "links": []
+        }
+      }
+    },
+    {
+      "request": { "method": "GET", "urlPath": "/hyper/tags/2" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "data": {
+            "id": 2,
+            "type": "Publication",
+            "internalName": "The Guardian publication",
+            "externalName": "The Guardian",
+            "slug": "theguardian",
+            "section": { "id": 205, "name": "From the Guardian", "pathPrefix": "theguardian", "sectionTagId": 9628, "slug": "theguardian" },
+            "parents": [],
+            "externalReferences": [],
+            "path": "theguardian/all",
+            "contributorInformation": null,
+            "deprecated": false
+          },
+          "links": []
+        }
+      }
+    }
+  ]
+}

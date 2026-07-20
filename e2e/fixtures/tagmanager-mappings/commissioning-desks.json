@@ -1,0 +1,263 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/hyper/tags",
+        "queryParameters": {
+          "query": { "equalTo": "tracking/commissioningdesk/" },
+          "type": { "equalTo": "tracking" },
+          "searchField": { "equalTo": "path" }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "offset": 0,
+          "limit": 150,
+          "total": 13,
+          "data": [
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73594",
+              "data": {
+                "id": 73594,
+                "type": "Tracking",
+                "internalName": "Australia Culture (desk)",
+                "externalName": "Australia Culture",
+                "slug": "australia-culture",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/australia-culture",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73597",
+              "data": {
+                "id": 73597,
+                "type": "Tracking",
+                "internalName": "Australia Data (desk)",
+                "externalName": "Australia Data",
+                "slug": "australia-data",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/australia-data",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73593",
+              "data": {
+                "id": 73593,
+                "type": "Tracking",
+                "internalName": "Australia Foreign (desk)",
+                "externalName": "Australia Foreign",
+                "slug": "australia-foreign",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/australia-foreign",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73600",
+              "data": {
+                "id": 73600,
+                "type": "Tracking",
+                "internalName": "Australia GSB (desk)",
+                "externalName": "Australia GSB",
+                "slug": "australia-gsb",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/australia-gsb",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73592",
+              "data": {
+                "id": 73592,
+                "type": "Tracking",
+                "internalName": "Australia News (desk)",
+                "externalName": "Australia News",
+                "slug": "australia-news",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/australia-news",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73595",
+              "data": {
+                "id": 73595,
+                "type": "Tracking",
+                "internalName": "Australia Opinion (desk)",
+                "externalName": "Australia Opinion",
+                "slug": "australia-opinion",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/australia-opinion",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73598",
+              "data": {
+                "id": 73598,
+                "type": "Tracking",
+                "internalName": "Australia Pictures (desk)",
+                "externalName": "Australia Pictures ",
+                "slug": "australia-pictures-",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/australia-pictures-",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73596",
+              "data": {
+                "id": 73596,
+                "type": "Tracking",
+                "internalName": "Australia Sport (desk)",
+                "externalName": "Australia Sport",
+                "slug": "australia-sport",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/australia-sport",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73599",
+              "data": {
+                "id": 73599,
+                "type": "Tracking",
+                "internalName": "Australia Video (desk)",
+                "externalName": "Australia Video",
+                "slug": "australia-video",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/australia-video",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73655",
+              "data": {
+                "id": 73655,
+                "type": "Tracking",
+                "internalName": "UK Culture",
+                "externalName": "UK Culture",
+                "slug": "uk-culture",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/uk-culture",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73651",
+              "data": {
+                "id": 73651,
+                "type": "Tracking",
+                "internalName": "UK Sport (commissioning)",
+                "externalName": "UK Sport",
+                "slug": "uk-sport",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/uk-sport",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73788",
+              "data": {
+                "id": 73788,
+                "type": "Tracking",
+                "internalName": "test-tracking",
+                "externalName": "test-tracking",
+                "slug": "test-tracking",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/test-tracking",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/73879",
+              "data": {
+                "id": 73879,
+                "type": "Tracking",
+                "internalName": "tracking-test",
+                "externalName": "tracking-test",
+                "slug": "tracking-test",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/commissioningdesk/tracking-test",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "commissioningdesk"
+              },
+              "links": []
+            }
+          ],
+          "links": []
+        }
+      }
+    }
+  ]
+}
