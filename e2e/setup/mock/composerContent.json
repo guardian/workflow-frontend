@@ -1,0 +1,543 @@
+{
+    "data": {
+        "id": "__CONTENT_ID__",
+        "type": "article",
+        "originatingSystem": "workflow",
+        "published": false,
+        "isGone": false,
+        "isHosted": false,
+        "scheduledLaunchDate": {
+            "uri": "/api/content/__CONTENT_ID__/scheduledLaunch"
+        },
+        "requestedScheduledLaunch": {
+            "uri": "/api/content/__CONTENT_ID__/requestedScheduledLaunch"
+        },
+        "expiry": {
+            "rights": {
+                "uri": "/api/content/__CONTENT_ID__/expiry/rights",
+                "data": {
+                    "expired": false
+                }
+            },
+            "commercial": {
+                "uri": "/api/content/__CONTENT_ID__/expiry/commercial",
+                "data": {
+                    "expired": false
+                }
+            }
+        },
+        "rights": {
+            "uri": "/api/content/__CONTENT_ID__/rights",
+            "data": {
+                "syndicationAggregate": false,
+                "subscriptionDatabases": false,
+                "developerCommunity": false
+            }
+        },
+        "contentChangeDetails": {
+            "uri": "/api/content/__CONTENT_ID__/changeDetails",
+            "data": {
+                "lastModified": {
+                    "date": 1784560240393,
+                    "user": {
+                        "email": "workflow.e2e.test@guardian.co.uk",
+                        "firstName": "Playwright",
+                        "lastName": "Tester"
+                    }
+                },
+                "created": {
+                    "date": 1784560240253,
+                    "user": {
+                        "email": "workflow.e2e.test@guardian.co.uk",
+                        "firstName": "Playwright",
+                        "lastName": "Tester"
+                    }
+                },
+                "lastMajorRevisionPublished": {
+                    "uri": "/api/content/__CONTENT_ID__/changeDetails/lastMajorRevisionPublished"
+                },
+                "revision": 1,
+                "minutesActive": {
+                    "uri": "/api/content/__CONTENT_ID__/contentChangeDetails/minutesActive",
+                    "data": 0
+                }
+            }
+        },
+        "identifiers": {
+            "path": {
+                "uri": "/api/content/__CONTENT_ID__/identifiers/path",
+                "data": "global/__CONTENT_ID__"
+            },
+            "pageId": {
+                "uri": "/api/content/__CONTENT_ID__/identifiers/pageId",
+                "data": "2484059"
+            },
+            "shortPath": {
+                "uri": "/api/content/__CONTENT_ID__/identifiers/shortPath",
+                "data": "p/4t5d5"
+            }
+        },
+        "aliasPaths": [],
+        "collaborators": [],
+        "toolSettings": {
+            "disableOctopusUpdates": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/disableOctopusUpdates",
+                "data": "false"
+            },
+            "suggestedEmbeds": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/suggestedEmbeds",
+                "data": "false"
+            },
+            "slugLinked": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/slugLinked",
+                "data": "true"
+            },
+            "seoChanged": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/seoChanged",
+                "data": "false"
+            },
+            "enableTechnicalElements": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/enableTechnicalElements",
+                "data": "false"
+            },
+            "seoOptimised": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/seoOptimised",
+                "data": "false"
+            },
+            "atomPoweredVideo": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/atomPoweredVideo",
+                "data": "false"
+            },
+            "republished": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/republished",
+                "data": "false"
+            },
+            "trailTextLinked": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/trailTextLinked",
+                "data": "true"
+            },
+            "includedSuggestedEmbeds": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/includedSuggestedEmbeds",
+                "data": ""
+            },
+            "pathLocked": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/pathLocked",
+                "data": "false"
+            },
+            "linkTextLinked": {
+                "uri": "/api/content/__CONTENT_ID__/toolSettings/linkTextLinked",
+                "data": "true"
+            }
+        },
+        "preview": {
+            "uri": "/api/content/__CONTENT_ID__/preview",
+            "data": {
+                "contentChangeDetails": {
+                    "uri": "/api/content/__CONTENT_ID__/changeDetails",
+                    "data": {
+                        "lastModified": {
+                            "date": 1784560240393,
+                            "user": {
+                                "email": "workflow.e2e.test@guardian.co.uk",
+                                "firstName": "Playwright",
+                                "lastName": "Tester"
+                            }
+                        },
+                        "created": {
+                            "date": 1784560240253,
+                            "user": {
+                                "email": "workflow.e2e.test@guardian.co.uk",
+                                "firstName": "Playwright",
+                                "lastName": "Tester"
+                            }
+                        },
+                        "lastMajorRevisionPublished": {
+                            "uri": "/api/content/__CONTENT_ID__/changeDetails/lastMajorRevisionPublished"
+                        },
+                        "revision": 1,
+                        "minutesActive": {
+                            "uri": "/api/content/__CONTENT_ID__/contentChangeDetails/minutesActive",
+                            "data": 0
+                        }
+                    }
+                },
+                "fields": {
+                    "commissionedLength": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/fields/commissionedLength",
+                        "data": "400"
+                    }
+                },
+                "thumbnail": {
+                    "uri": "/api/content/__CONTENT_ID__/preview/thumbnail"
+                },
+                "mainBlock": {
+                    "uri": "/api/content/__CONTENT_ID__/preview/mainblock"
+                },
+                "blocks": {
+                    "uri": "/api/content/__CONTENT_ID__/preview/blocks",
+                    "data": [],
+                    "links": [
+                        {
+                            "rel": "item",
+                            "href": "/api/content/__CONTENT_ID__/preview/blocks/{id}"
+                        }
+                    ]
+                },
+                "taxonomy": {
+                    "tags": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/tags",
+                        "data": [
+                            {
+                                "tag": {
+                                    "id": 26903,
+                                    "type": "Content Type",
+                                    "internalName": "Article (Content type)",
+                                    "externalName": "Article",
+                                    "slug": "article",
+                                    "section": {
+                                        "id": 281,
+                                        "name": "Global",
+                                        "pathPrefix": "global",
+                                        "slug": "global"
+                                    },
+                                    "path": "articles"
+                                },
+                                "isLead": false
+                            }
+                        ]
+                    },
+                    "contributors": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/contributors",
+                        "data": []
+                    },
+                    "publication": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/publication",
+                        "data": {
+                            "id": 4,
+                            "type": "Publication",
+                            "internalName": "guardian.co.uk publication",
+                            "externalName": "theguardian.com",
+                            "slug": "guardian",
+                            "section": {
+                                "id": 281,
+                                "name": "Global",
+                                "pathPrefix": "global",
+                                "slug": "global"
+                            },
+                            "path": "guardian/all"
+                        }
+                    },
+                    "newspaper": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/newspaper"
+                    },
+                    "references": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/references",
+                        "data": []
+                    },
+                    "tracking": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/tracking",
+                        "data": [
+                            {
+                                "id": 73655,
+                                "type": "Tracking",
+                                "subType": "commissioningdesk",
+                                "internalName": "UK Culture",
+                                "externalName": "UK Culture",
+                                "slug": "uk-culture",
+                                "section": {
+                                    "id": 281,
+                                    "name": "Global",
+                                    "pathPrefix": "global",
+                                    "slug": "global"
+                                },
+                                "path": "tracking/commissioningdesk/uk-culture"
+                            },
+                            {
+                                "id": 74281,
+                                "type": "Tracking",
+                                "subType": "audience",
+                                "internalName": "Global",
+                                "externalName": "Global",
+                                "slug": "global",
+                                "section": {
+                                    "id": 281,
+                                    "name": "Global",
+                                    "pathPrefix": "global",
+                                    "slug": "global"
+                                },
+                                "path": "tracking/audience/global"
+                            }
+                        ]
+                    }
+                },
+                "settings": {
+                    "relatedContentOff": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/settings/relatedContentOff",
+                        "data": "false"
+                    },
+                    "blockAds": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/settings/blockAds",
+                        "data": "false"
+                    },
+                    "tableOfContents": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/settings/tableOfContents",
+                        "data": "false"
+                    },
+                    "legallySensitive": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/settings/legallySensitive",
+                        "data": "false"
+                    },
+                    "hideReaderRevenue": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/settings/hideReaderRevenue",
+                        "data": "false"
+                    },
+                    "managedByComposer": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/settings/managedByComposer",
+                        "data": "true"
+                    },
+                    "usesPathManager": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/settings/usesPathManager",
+                        "data": "true"
+                    },
+                    "productionOffice": {
+                        "uri": "/api/content/__CONTENT_ID__/preview/settings/productionOffice",
+                        "data": "UK"
+                    }
+                }
+            },
+            "links": [
+                {
+                    "rel": "setting-item",
+                    "href": "/api/content/__CONTENT_ID__/preview/settings/{settingKey}"
+                },
+                {
+                    "rel": "field-item",
+                    "href": "/api/content/__CONTENT_ID__/preview/fields/{fieldKey}"
+                },
+                {
+                    "rel": "force-emit-content-update-event",
+                    "href": "/api/content/__CONTENT_ID__/preview/forceEmitContentUpdate"
+                }
+            ]
+        },
+        "live": {
+            "uri": "/api/content/__CONTENT_ID__/live",
+            "data": {
+                "contentChangeDetails": {
+                    "uri": "/api/content/__CONTENT_ID__/changeDetails",
+                    "data": {
+                        "lastModified": {
+                            "date": 1784560240403,
+                            "user": {
+                                "email": "workflow.e2e.test@guardian.co.uk",
+                                "firstName": "Playwright",
+                                "lastName": "Tester"
+                            }
+                        },
+                        "created": {
+                            "date": 1784560240253,
+                            "user": {
+                                "email": "workflow.e2e.test@guardian.co.uk",
+                                "firstName": "Playwright",
+                                "lastName": "Tester"
+                            }
+                        },
+                        "lastMajorRevisionPublished": {
+                            "uri": "/api/content/__CONTENT_ID__/changeDetails/lastMajorRevisionPublished"
+                        },
+                        "revision": 1,
+                        "minutesActive": {
+                            "uri": "/api/content/__CONTENT_ID__/contentChangeDetails/minutesActive",
+                            "data": 0
+                        }
+                    }
+                },
+                "fields": {
+                    "commissionedLength": {
+                        "uri": "/api/content/__CONTENT_ID__/live/fields/commissionedLength",
+                        "data": "400"
+                    }
+                },
+                "thumbnail": {
+                    "uri": "/api/content/__CONTENT_ID__/live/thumbnail"
+                },
+                "mainBlock": {
+                    "uri": "/api/content/__CONTENT_ID__/live/mainblock"
+                },
+                "blocks": {
+                    "uri": "/api/content/__CONTENT_ID__/live/blocks",
+                    "data": [],
+                    "links": [
+                        {
+                            "rel": "item",
+                            "href": "/api/content/__CONTENT_ID__/live/blocks/{id}"
+                        }
+                    ]
+                },
+                "taxonomy": {
+                    "tags": {
+                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/tags",
+                        "data": [
+                            {
+                                "tag": {
+                                    "id": 26903,
+                                    "type": "Content Type",
+                                    "internalName": "Article (Content type)",
+                                    "externalName": "Article",
+                                    "slug": "article",
+                                    "section": {
+                                        "id": 281,
+                                        "name": "Global",
+                                        "pathPrefix": "global",
+                                        "slug": "global"
+                                    },
+                                    "path": "articles"
+                                },
+                                "isLead": false
+                            }
+                        ]
+                    },
+                    "contributors": {
+                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/contributors",
+                        "data": []
+                    },
+                    "publication": {
+                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/publication",
+                        "data": {
+                            "id": 4,
+                            "type": "Publication",
+                            "internalName": "guardian.co.uk publication",
+                            "externalName": "theguardian.com",
+                            "slug": "guardian",
+                            "section": {
+                                "id": 281,
+                                "name": "Global",
+                                "pathPrefix": "global",
+                                "slug": "global"
+                            },
+                            "path": "guardian/all"
+                        }
+                    },
+                    "newspaper": {
+                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/newspaper"
+                    },
+                    "references": {
+                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/references",
+                        "data": []
+                    },
+                    "tracking": {
+                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/tracking",
+                        "data": [
+                            {
+                                "id": 73655,
+                                "type": "Tracking",
+                                "subType": "commissioningdesk",
+                                "internalName": "UK Culture",
+                                "externalName": "UK Culture",
+                                "slug": "uk-culture",
+                                "section": {
+                                    "id": 281,
+                                    "name": "Global",
+                                    "pathPrefix": "global",
+                                    "slug": "global"
+                                },
+                                "path": "tracking/commissioningdesk/uk-culture"
+                            },
+                            {
+                                "id": 74281,
+                                "type": "Tracking",
+                                "subType": "audience",
+                                "internalName": "Global",
+                                "externalName": "Global",
+                                "slug": "global",
+                                "section": {
+                                    "id": 281,
+                                    "name": "Global",
+                                    "pathPrefix": "global",
+                                    "slug": "global"
+                                },
+                                "path": "tracking/audience/global"
+                            }
+                        ]
+                    }
+                },
+                "settings": {
+                    "relatedContentOff": {
+                        "uri": "/api/content/__CONTENT_ID__/live/settings/relatedContentOff",
+                        "data": "false"
+                    },
+                    "blockAds": {
+                        "uri": "/api/content/__CONTENT_ID__/live/settings/blockAds",
+                        "data": "false"
+                    },
+                    "tableOfContents": {
+                        "uri": "/api/content/__CONTENT_ID__/live/settings/tableOfContents",
+                        "data": "false"
+                    },
+                    "legallySensitive": {
+                        "uri": "/api/content/__CONTENT_ID__/live/settings/legallySensitive",
+                        "data": "false"
+                    },
+                    "hideReaderRevenue": {
+                        "uri": "/api/content/__CONTENT_ID__/live/settings/hideReaderRevenue",
+                        "data": "false"
+                    },
+                    "managedByComposer": {
+                        "uri": "/api/content/__CONTENT_ID__/live/settings/managedByComposer",
+                        "data": "true"
+                    },
+                    "usesPathManager": {
+                        "uri": "/api/content/__CONTENT_ID__/live/settings/usesPathManager",
+                        "data": "true"
+                    },
+                    "productionOffice": {
+                        "uri": "/api/content/__CONTENT_ID__/live/settings/productionOffice",
+                        "data": "UK"
+                    }
+                }
+            },
+            "links": [
+                {
+                    "rel": "setting-item",
+                    "href": "/api/content/__CONTENT_ID__/live/settings/{settingKey}"
+                },
+                {
+                    "rel": "field-item",
+                    "href": "/api/content/__CONTENT_ID__/live/fields/{fieldKey}"
+                }
+            ]
+        },
+        "auxiliaryAtoms": [],
+        "backReferences": [],
+        "channels": {
+            "uri": "/api/content/__CONTENT_ID__/channels",
+            "data": {
+                "newsletters": {
+                    "channelState": "LinkedToWebPublication"
+                },
+                "editions": {
+                    "channelState": "LinkedToWebPublication"
+                },
+                "feast": {
+                    "channelState": "LinkedToWebPublication"
+                }
+            },
+            "links": [
+                {
+                    "rel": "update-content",
+                    "href": "/api/content/__CONTENT_ID__/channels/update"
+                }
+            ]
+        }
+    },
+    "links": [
+        {
+            "rel": "tool-setting-item",
+            "href": "/api/content/__CONTENT_ID__/toolSettings/{toolSettingKey}"
+        },
+        {
+            "rel": "identifier-item",
+            "href": "/api/content/__CONTENT_ID__/identifiers/{identifierKey}"
+        }
+    ]
+}

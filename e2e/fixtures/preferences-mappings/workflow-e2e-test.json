@@ -107,7 +107,11 @@
         "transformers": [
           "response-template"
         ],
-        "body": "{\n\"status\": \"ok\",\n\"statusCode\": 200,\n\"data\": \"sucessfully set {{jsonPath request.body '$.data.value'}} for user workflow.e2e.test@guardian.co.uk\"\n}"
+        "jsonBody": {
+          "status": "ok",
+          "statusCode": 200,
+          "data": "sucessfully set for user workflow.e2e.test@guardian.co.uk"
+        }
       }
     },
     {
@@ -326,7 +330,7 @@
         "jsonBody": {
           "status": "ok",
           "statusCode": 200,
-          "data": "sucessfully set {{jsonPath request.body '$.data.value'}} for user workflow.e2e.test@guardian.co.uk"
+          "data": "sucessfully set for user workflow.e2e.test@guardian.co.uk"
         }
       }
     },
