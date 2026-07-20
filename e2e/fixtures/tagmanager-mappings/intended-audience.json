@@ -1,0 +1,189 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/hyper/tags",
+        "queryParameters": {
+          "query": { "equalTo": "tracking/audience/" },
+          "type": { "equalTo": "tracking" },
+          "searchField": { "equalTo": "path" }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "offset": 0,
+          "limit": 150,
+          "total": 8,
+          "data": [
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/74282",
+              "data": {
+                "id": 74282,
+                "type": "Tracking",
+                "internalName": "Domestic For Domestic",
+                "externalName": "Domestic For Domestic",
+                "slug": "domestic-for-domestic",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/audience/domestic-for-domestic",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "audience",
+                "adBlockingLevel": "NONE",
+                "contributionBlockingLevel": "NONE"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/74283",
+              "data": {
+                "id": 74283,
+                "type": "Tracking",
+                "internalName": "Domestic For Global",
+                "externalName": "Domestic For Global",
+                "slug": "domestic-for-global",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/audience/domestic-for-global",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "audience",
+                "adBlockingLevel": "NONE",
+                "contributionBlockingLevel": "NONE"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/74284",
+              "data": {
+                "id": 74284,
+                "type": "Tracking",
+                "internalName": "Don't know",
+                "externalName": "Don't know",
+                "slug": "don-t-know",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/audience/don-t-know",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "audience",
+                "adBlockingLevel": "NONE",
+                "contributionBlockingLevel": "NONE"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/74281",
+              "data": {
+                "id": 74281,
+                "type": "Tracking",
+                "internalName": "Global",
+                "externalName": "Global",
+                "slug": "global",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/audience/global",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "audience",
+                "adBlockingLevel": "NONE",
+                "contributionBlockingLevel": "NONE"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/74280",
+              "data": {
+                "id": 74280,
+                "type": "Tracking",
+                "internalName": "Happy day",
+                "externalName": "Happy day",
+                "slug": "happy-day",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/audience/happy-day",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "audience",
+                "adBlockingLevel": "NONE",
+                "contributionBlockingLevel": "NONE"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/74290",
+              "data": {
+                "id": 74290,
+                "type": "Tracking",
+                "internalName": "au",
+                "externalName": "au",
+                "slug": "au",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/audience/au",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "audience",
+                "adBlockingLevel": "NONE",
+                "contributionBlockingLevel": "NONE"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/74291",
+              "data": {
+                "id": 74291,
+                "type": "Tracking",
+                "internalName": "uk",
+                "externalName": "uk",
+                "slug": "uk",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/audience/uk",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "audience",
+                "adBlockingLevel": "NONE",
+                "contributionBlockingLevel": "NONE"
+              },
+              "links": []
+            },
+            {
+              "uri": "https://tagmanager.code.dev-gutools.co.uk/hyper/tags/74292",
+              "data": {
+                "id": 74292,
+                "type": "Tracking",
+                "internalName": "us",
+                "externalName": "us",
+                "slug": "us",
+                "section": { "id": 281, "name": "Global", "pathPrefix": "global", "sectionTagId": 14821, "slug": "global" },
+                "parents": [],
+                "externalReferences": [],
+                "path": "tracking/audience/us",
+                "contributorInformation": null,
+                "deprecated": false,
+                "subType": "audience",
+                "adBlockingLevel": "NONE",
+                "contributionBlockingLevel": "NONE"
+              },
+              "links": []
+            }
+          ],
+          "links": []
+        }
+      }
+    }
+  ]
+}

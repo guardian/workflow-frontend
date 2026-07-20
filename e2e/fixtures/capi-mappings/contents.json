@@ -69,6 +69,50 @@
           }
         }
       }
+    },
+    {
+      "priority": 10,
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "^/(?!(search|atoms?)(/|$)).*"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": ["response-template"],
+        "jsonBody": {
+          "response": {
+            "status": "ok",
+            "userTier": "internal",
+            "total": 1,
+            "content": {
+              "id": "{{regexExtract request.path '/(.+)' group='1'}}",
+              "type": "article",
+              "sectionId": "{{request.pathSegments.[0]}}",
+              "sectionName": "{{request.pathSegments.[0]}}",
+              "webPublicationDate": "2026-01-01T00:00:00Z",
+              "webTitle": "Title for {{regexExtract request.path '/(.+)' group='1'}}",
+              "webUrl": "http://www.code.dev-theguardian.com/{{regexExtract request.path '/(.+)' group='1'}}",
+              "apiUrl": "https://preview.content.code.dev-guardianapis.com/{{regexExtract request.path '/(.+)' group='1'}}",
+              "fields": {
+                "wordcount": "0",
+                "internalComposerCode": "{{request.pathSegments.[1]}}"
+              },
+              "tags": [],
+              "elements": [],
+              "blocks": {
+                "body": [],
+                "totalBodyBlocks": 0
+              },
+              "isGone": false,
+              "isHosted": false
+            },
+            "packages": []
+          }
+        }
+      }
     }
   ]
 }

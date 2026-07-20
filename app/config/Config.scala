@@ -79,7 +79,13 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val pinboardLoaderUrl: String = s"https://pinboard.$domain/pinboard.loader.js"
 
-  lazy val tagManagerUrl: String = s"https://tagmanager.$domain"
+  lazy val tagManagerHost: String = s"tagmanager.$domain"
+  // In dev the tag-manager API is a local HTTP WireMock mock (see e2e/setup/stackContainers.ts);
+  // everywhere else it is the real tag-manager service over HTTPS.
+  lazy val tagManagerUrl: String = {
+    val scheme = if (isDev) "http" else "https"
+    s"$scheme://$tagManagerHost"
+  }
 
   lazy val capiPreviewIamUrl: String = playConfig.get[String]("capi.preview.iamUrl")
   lazy val capiPreviewRole: String = playConfig.get[String]("capi.preview.role")
