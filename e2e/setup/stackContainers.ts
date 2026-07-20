@@ -25,6 +25,7 @@ export type LocalStack = {
     workflowContainer: any;
     mockCapiContainer: any;
     mockPreferencesApiContainer: any;
+    mockTagManagerApiContainer: any;
     dbContainer: any;
     dynamodbContainer: any;
     datastoreContainer: any;
@@ -40,6 +41,7 @@ export type LocalStack = {
 const WIREMOCK_PORT = 80;
 const CAPI_HOSTNAME = "iam-preview.content.local.dev-guardianapis.com";
 const PREFERENCES_HOSTNAME = "preferences.local.dev-gutools.co.uk";
+const TAG_MANAGER_HOSTNAME = "tagmanager.local.dev-gutools.co.uk";
 
 function buildDockerImage({
     tag,
@@ -114,6 +116,7 @@ export async function startLocalStack(
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     const mockCapiImageTag = `workflow-frontend-mock-capi-e2e:${runId}`;
     const mockPreferencesImageTag = `workflow-frontend-mock-preferences-e2e:${runId}`;
+    const mockTagManagerImageTag = `workflow-frontend-mock-tagmanager-e2e:${runId}`;
     const dynamodbImageTag = `workflow-frontend-dynamodb-e2e:${runId}`;
     const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
 
@@ -123,6 +126,7 @@ export async function startLocalStack(
     let workflowContainer;
     let mockCapiContainer;
     let mockPreferencesApiContainer;
+    let mockTagManagerApiContainer;
     let dbContainer;
     let dynamodbContainer;
     let datastoreContainer;
@@ -194,6 +198,28 @@ export async function startLocalStack(
             .withNetwork(network)
             .withNetworkAliases(PREFERENCES_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-preferences", streamLogs))
+            .withExposedPorts(WIREMOCK_PORT)
+            .withWaitStrategy(
+                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                    200,
+                ),
+            )
+            .withStartupTimeout(2 * 60 * 1000)
+            .start();
+
+        await buildDockerImage({
+            tag: mockTagManagerImageTag,
+            dockerfilePath: path.join(
+                projectRoot,
+                "e2e/images/mock-tagmanager.Dockerfile",
+            ),
+            contextPath: projectRoot,
+        });
+
+        mockTagManagerApiContainer = await new GenericContainer(mockTagManagerImageTag)
+            .withNetwork(network)
+            .withNetworkAliases(TAG_MANAGER_HOSTNAME)
+            .withLogConsumer(createLogConsumer("mock-tagmanager", streamLogs))
             .withExposedPorts(WIREMOCK_PORT)
             .withWaitStrategy(
                 Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
@@ -298,6 +324,7 @@ export async function startLocalStack(
             workflowContainer,
             mockCapiContainer: mockCapiContainer,
             mockPreferencesApiContainer: mockPreferencesApiContainer,
+            mockTagManagerApiContainer: mockTagManagerApiContainer,
             dbContainer,
             dynamodbContainer,
             datastoreContainer,
@@ -315,6 +342,9 @@ export async function startLocalStack(
         }
         if (dbContainer) {
             await dbContainer.stop();
+        }
+        if (mockTagManagerApiContainer) {
+            await mockTagManagerApiContainer.stop();
         }
         if (mockPreferencesApiContainer) {
             await mockPreferencesApiContainer.stop();
@@ -335,6 +365,7 @@ export async function stopLocalStack({
     minioContainer,
     mockCapiContainer,
     mockPreferencesApiContainer,
+    mockTagManagerApiContainer,
     dbContainer,
     dynamodbContainer,
     datastoreContainer,
@@ -351,6 +382,9 @@ export async function stopLocalStack({
     }
     if (dbContainer) {
         await dbContainer.stop();
+    }
+    if (mockTagManagerApiContainer) {
+        await mockTagManagerApiContainer.stop();
     }
     if (mockPreferencesApiContainer) {
         await mockPreferencesApiContainer.stop();
