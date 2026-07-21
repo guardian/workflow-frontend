@@ -1,4 +1,4 @@
-import { Given, expect } from "./fixtures";
+import { Before, Given, expect } from "./fixtures";
 
 /**
  * Shared Background steps used by every feature.
@@ -19,4 +19,21 @@ Given("I am signed in through pan-domain auth", async ({ signIn }) => {
 
 Given("I have opened the workflow dashboard", async ({ page }) => {
     await page.goto("/dashboard", { waitUntil: "domcontentloaded" });
+});
+
+
+// --- Hook: install presence mocking before navigation --------------------
+
+Before({ tags: "@presence" }, async ({ presence }) => {
+    // Referencing the presence fixture installs the route mocks before the
+    // Background navigates to the dashboard.
+    void presence;
+});
+
+// --- Hook: install composer API mocking before navigation --------------------
+
+Before({ tags: "@composer" }, async ({ composerMock }) => {
+    // Referencing the composerMock fixture installs the route mocks before the
+    // Background navigates to the dashboard.
+    void composerMock;
 });

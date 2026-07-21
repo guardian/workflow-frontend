@@ -20,7 +20,7 @@ import type { Page } from "@playwright/test";
  */
 
 /** The current user, passed by the app to the presence client factory. */
-type PresencePerson = {
+export type PresencePerson = {
     firstName: string;
     lastName: string;
     email: string;
@@ -32,7 +32,7 @@ type PresencePerson = {
  * (and the optional singular `location`) drive the rendered status: "body" /
  * "document" => present, "furniture" => furniture, otherwise => idle.
  */
-type PresenceEntry = {
+export type PresenceEntry = {
     clientId: {
         person: PresencePerson;
     };
@@ -40,7 +40,7 @@ type PresenceEntry = {
     location?: PresenceLocation;
 };
 
-type PresenceLocation = "body" | "document" | "furniture" | "idle" | "invalid";
+export type PresenceLocation = "body" | "document" | "furniture" | "idle" | "invalid";
 
 /** A presence message pushed to a registered handler. */
 type PresenceMessage = {

@@ -37,10 +37,10 @@ So every Gherkin step needs a matching step definition, and a Playwright config 
    });
 
    Then('the content type list should be hidden', async ({ page }) => {
-     await expect(page.locator('.content-type-list--hidden')).toBeVisible();
+     await expect(page.getByTestId('content-type-list')).toBeHidden();
    });
    ```
-   - Map assertions to real DOM hooks from the evidence files (ids like `#testing-create-new`, `#testing-dashboard-create-dropdown-*`, state classes like `content-type-list--hidden`).
+   Follow the [Playwright best practices](https://playwright.dev/docs/best-practices) when writing the step bodies (see the section below).
    - Parameterise repeated steps with Cucumber expressions (`{string}`) instead of writing near-duplicate definitions.
 
 5. **Match the Background steps once.** The three standard Background steps (stack running / pan-domain auth / opened page) recur in every feature — implement them a single time in a shared steps file so all features reuse them.
@@ -52,9 +52,25 @@ So every Gherkin step needs a matching step definition, and a Playwright config 
    ```
    `bddgen` fails loudly on any step with no matching definition — use that to find gaps.
 
+## Playwright best practices for step bodies
+Apply these when translating a Gherkin step into Playwright code:
+
+- **Prefer user-facing locators.** Reach for `getByRole`, `getByLabel`, `getByText`, and `getByPlaceholder` first — they are resilient to DOM changes and assert accessibility. Only fall back to a stable test hook (`getByTestId`, or an evidence-backed `#id`/state class) when no user-facing attribute uniquely identifies the element. Avoid brittle CSS/XPath chains like `page.locator('button.buttonIcon.episode-actions-later')`.
+- **Chain and filter instead of complex selectors.** Narrow with `page.getByRole('listitem').filter({ hasText: 'Product 2' }).getByRole('button', { name: 'Add to cart' })` rather than one long selector string.
+- **Use web-first assertions and always `await` them.** Write `await expect(locator).toBeVisible()`, never `expect(await locator.isVisible()).toBe(true)`. Web-first assertions auto-wait and retry, so avoid manual waits/`isVisible()` checks. Never leave a floating promise — every Playwright call in a step must be awaited.
+- **Keep steps isolated.** A step must not depend on state leaked from another scenario; rely on the shared fixtures/Background for setup rather than ordering between scenarios. Test isolation keeps failures reproducible.
+- **Don't test third-party dependencies.** For calls to external services (e.g. CAPI, preferences), serve controlled data via the repo's WireMock/`e2e/fixtures/responses/` mappings or `page.route(...)`, instead of hitting live systems.
+- **Use soft assertions for grouped, non-blocking checks.** When a `Then` verifies several independent facts, `await expect.soft(...)` collects all failures in one run instead of stopping at the first.
+- **Map assertions to real DOM hooks.** Trace every selector to the scenario's `# Evidence:` files (ids like `#testing-create-new`, `#testing-dashboard-create-dropdown-*`, state classes like `content-type-list--hidden`, or accessible labels that actually exist).
+
+When a test fails, prefer the Playwright [trace viewer](https://playwright.dev/docs/trace-viewer) (`--trace on`, then `npm exec playwright show-report`) over screenshots to inspect the timeline, DOM snapshots, and network requests.
+
 ## Quality Checklist
 - Every step in the feature file resolves to exactly one definition; no "undefined step" errors from `bddgen`.
 - Setup steps reuse `e2e/setup/` helpers via fixtures, not ad-hoc duplication.
+- Locators prefer user-facing attributes (`getByRole`/`getByLabel`/`getByText`); test ids or evidence-backed ids/classes are used only where no user-facing hook fits.
+- Assertions are web-first (`await expect(locator).…`) with no manual `isVisible()` checks and no un-awaited Playwright calls.
+- External services are stubbed via fixtures/`page.route`, not called live.
 - Selectors/assertions trace back to the scenario's `# Evidence:` files (ids, classes, labels that actually exist).
 - Repeated steps are parameterised, not copy-pasted.
 - `./e2e/scripts/test-e2e <feature>` runs green for the target feature.
