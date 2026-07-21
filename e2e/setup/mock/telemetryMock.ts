@@ -86,7 +86,10 @@ export async function mockTelemetry(page: Page): Promise<TelemetryMock> {
         await route.fulfill({
             status: 200,
             headers: { ...cors, "content-type": "application/json" },
-            body: "[]",
+            body: JSON.stringify({
+                "status": "ok",
+                "message": "Mocked telemetry message"
+            }),
         });
     });
 
