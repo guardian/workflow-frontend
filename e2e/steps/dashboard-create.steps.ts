@@ -1,5 +1,6 @@
 import { Given, When, Then, expect } from "./fixtures";
 import type { Page, Locator } from "@playwright/test";
+import { mockComposer, type ComposerMock } from "../setup/mock/composerApiMock";
 
 // Locators scoped to the "Create new" dropdown (dashboard-user.html reuses the
 // same controller, so we anchor on the --create modifier class).
@@ -19,6 +20,8 @@ const contentTypeOptions = (page: Page): Locator =>
 const importOption = (page: Page): Locator =>
     page.locator("#testing-dashboard-create-dropdown-import");
 const stubModal = (page: Page): Locator => page.locator(".stubModal");
+const contentListColumn = (page: Page): Locator =>
+    page.locator(".content-list-column");
 
 const NON_ARTICLE_FORMATS = [
     "Live blog",
@@ -52,6 +55,10 @@ Given('I open the "Create new" dropdown', async ({ page }) => {
     await openDropdown(page);
 });
 
+Given("I am ready to intercept Composer API calls", async ({ page, world }) => {
+    world.composerMock = await mockComposer(page);
+});
+
 // --- Actions -------------------------------------------------------------
 
 When("I look at the dashboard toolbar", async ({ page }) => {
@@ -80,6 +87,26 @@ When("I choose a content type from the list", async ({ page }) => {
 
 When('I choose the "Import Content" option', async ({ page }) => {
     await importOption(page).click();
+});
+
+When("I choose {string} from the content type list", async ({ page }, contentTypeName: string) => {
+    await contentTypeList(page)
+        .locator("li.dropdown-toolbar__item")
+        .filter({ hasText: contentTypeName })
+        .click();
+});
+
+When("I fill in the stub form minimum required details", async ({ page, world }) => {
+    await expect(stubModal(page)).toBeVisible();
+    const title = `E2E test ${Date.now()}`;
+    world.lastTitle = title;
+    await stubModal(page).locator("#stub_title").fill(title);
+    await stubModal(page).locator("#stub_section").selectOption({ index: 1 });
+    // Fill commissioned length for content types that require it (field absent from DOM when not required).
+    const lengthInput = stubModal(page).locator("input[name=commissionedLength]");
+    if (await lengthInput.count() > 0) {
+        await lengthInput.fill("500");
+    }
 });
 
 When("I click elsewhere on the page", async ({ page }) => {
@@ -175,6 +202,107 @@ Then("the stub modal should open in import mode", async ({ page }) => {
         "Import Existing Content",
     );
     await expect(stubModal(page).locator("#import_url")).toBeVisible();
+});
+
+Then("the stub modal should open with the title {string}", async ({ page }, expectedTitle: string) => {
+    await expect(stubModal(page)).toBeVisible();
+    await expect(stubModal(page).locator(".modal-title")).toContainText(expectedTitle);
+});
+
+Then("the commissioned length field should be visible", async ({ page }) => {
+    await expect(stubModal(page).locator("input[name=commissionedLength]")).toBeVisible();
+});
+
+Then("the commissioned length field should not be visible", async ({ page }) => {
+    await expect(stubModal(page).locator("input[name=commissionedLength]")).toHaveCount(0);
+});
+
+Then("the template selector should be visible", async ({ page }) => {
+    await expect(stubModal(page).locator("#stub_template")).toBeVisible();
+});
+
+Then("the format dropdown should be visible", async ({ page }) => {
+    await expect(stubModal(page).locator("#stub_format")).toBeVisible();
+});
+
+Then("the atom type selector should be visible", async ({ page }) => {
+    await expect(stubModal(page).locator("#stub_content_type")).toBeVisible();
+});
+
+Then(
+    "the Composer API should have received a request for content type {string}",
+    async ({ world }, expectedType: string) => {
+        const mock = world.composerMock as ComposerMock;
+        await expect.poll(() => mock.requests.length, { timeout: 5000 }).toBeGreaterThan(0);
+        const lastRequest = mock.requests[mock.requests.length - 1];
+        const url = new URL(lastRequest.request.url());
+        expect(url.searchParams.get("type")).toBe(expectedType);
+    },
+);
+
+Then(
+    "the Composer API should have received a request with displayHint {string}",
+    async ({ world }, expectedDisplayHint: string) => {
+        const mock = world.composerMock as ComposerMock;
+        await expect.poll(() => mock.requests.length, { timeout: 5000 }).toBeGreaterThan(0);
+        const lastRequest = mock.requests[mock.requests.length - 1];
+        const url = new URL(lastRequest.request.url());
+        expect(url.searchParams.get("displayHint")).toBe(expectedDisplayHint);
+    },
+);
+
+// --- Creating a new piece from the stub modal ----------------------------
+
+Given(
+    "I have chosen a content type to open the stub modal in create mode",
+    async ({ page }) => {
+        // Intercept Composer before the modal opens so template loading (on
+        // open) and content creation (on submit) both resolve.
+        await mockComposer(page);
+        // Gallery has no commissioned-length requirement, so the form is valid
+        // once a title and section are provided (no warnings block submission).
+        await contentTypeList(page)
+            .locator("li.dropdown-toolbar__item", { hasText: "Gallery" })
+            .click();
+        await expect(stubModal(page)).toBeVisible();
+        await expect(stubModal(page).locator(".modal-title")).toContainText(
+            "Create",
+        );
+    },
+);
+
+When("I fill in the new piece's details", async ({ page, world }) => {
+    // A unique working title so the created row is unambiguous on the dashboard.
+    const title = `E2E new piece ${Date.now()}`;
+    world.newPieceTitle = title;
+
+    await stubModal(page).locator("#stub_title").fill(title);
+
+    // Pick the first real section (Angular prepends a blank option when the
+    // model is unset); the section field is required for the form to validate.
+    await stubModal(page).locator("#stub_section").selectOption({ index: 1 });
+});
+
+When("I submit the stub modal", async ({ page }) => {
+    await stubModal(page).locator("#testing-create-in-composer").click();
+});
+
+Then("the new piece should be created", async ({ page }) => {
+    // Successful creation swaps the form footer for the Composer confirmation.
+    await expect(stubModal(page).locator("#testing-view-in-composer")).toBeVisible();
+});
+
+Then("the dashboard content list should refresh", async ({ page }) => {
+    await expect(contentListColumn(page)).toBeVisible();
+});
+
+Then("I should see the new piece on the dashboard", async ({ page, world }) => {
+    // Dismiss the confirmation to reveal the refreshed dashboard behind it.
+    await stubModal(page).getByRole("button", { name: "Dismiss" }).click();
+    const title = world.newPieceTitle as string;
+    await expect(
+        page.locator(`[data-cy="content-list-item-${title}"]`),
+    ).toBeVisible();
 });
 
 // --- Feature-switch scenarios (pending) ----------------------------------

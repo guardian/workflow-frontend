@@ -5,7 +5,8 @@ import { expect } from "@playwright/test";
 import { createPanDomainCookie, type Role } from "../setup/panDomainCookie";
 import type { SharedStackInfo } from "../setup/sharedStack";
 import { ACTIVE_STACK_FILE } from "../globalSetup";
-import { installPresenceMock, type PresenceMock } from "./support/presenceMock";
+import { installPresenceMock, type PresenceMock } from "../setup/mock/presenceMock";
+import { mockTelemetry, type TelemetryMock } from "../setup/mock/telemetryMock";
 
 function readActiveStack(): SharedStackInfo {
     const filePath = path.join(process.cwd(), ACTIVE_STACK_FILE);
@@ -19,8 +20,10 @@ type StackFixtures = {
     signIn: (role?: Role) => Promise<void>;
     /** Per-scenario scratch space for sharing state between steps. */
     world: Record<string, unknown>;
-    /** Mocked presence WebSocket, installed before navigation. */
+    /** Mocked presence client, installed before navigation. */
     presence: PresenceMock;
+    /** Mocked telemetry service, capturing emitted events for assertions. */
+    telemetry: TelemetryMock;
 };
 
 export const test = base.extend<StackFixtures>({
@@ -32,6 +35,9 @@ export const test = base.extend<StackFixtures>({
     },
     presence: async ({ page }, use) => {
         await use(await installPresenceMock(page));
+    },
+    telemetry: async ({ page }, use) => {
+        await use(await mockTelemetry(page));
     },
     // Point every test at the stack started in global setup.
     baseURL: async ({ stack }, use) => {

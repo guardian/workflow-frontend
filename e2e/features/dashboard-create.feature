@@ -50,6 +50,17 @@ Feature: Create new content from the dashboard "Create new" dropdown
   # Evidence: public/layouts/dashboard/dashboard-create.js
   # Evidence: public/components/stub-modal/stub-modal.js
 
+  Scenario: Creating a new piece adds it to the dashboard content list
+    Given the "Create new" dropdown is open
+    And I have chosen a content type to open the stub modal in create mode
+    When I fill in the new piece's details
+    And I submit the stub modal
+    Then the new piece should be created
+    And the dashboard content list should refresh
+    And I should see the new piece on the dashboard
+  # Evidence: public/layouts/dashboard/dashboard-create.js
+  # Evidence: public/components/stub-modal/stub-modal.js
+
   Scenario: Choosing Import Content opens the stub modal in import mode
     Given the "Create new" dropdown is open
     When I choose the "Import Content" option
@@ -57,6 +68,101 @@ Feature: Create new content from the dashboard "Create new" dropdown
     And the stub modal should open in import mode
   # Evidence: public/layouts/dashboard/dashboard-create.js
   # Evidence: public/components/stub-modal/stub-modal.js
+
+  Scenario: Selecting "Article" shows the template selector and requires a commissioned length
+    Given the "Create new" dropdown is open
+    When I choose "Article" from the content type list
+    Then the stub modal should open with the title "Create Article"
+    And the commissioned length field should be visible
+    And the template selector should be visible
+  # Evidence: public/layouts/dashboard/dashboard-create.html
+  # Evidence: public/components/stub-modal/stub-modal.html
+  # Evidence: public/lib/stub-form-validation.ts
+
+  Scenario: Selecting "Interactive" shows the template selector and requires a commissioned length
+    Given the "Create new" dropdown is open
+    When I choose "Interactive" from the content type list
+    Then the stub modal should open with the title "Create Interactive"
+    And the commissioned length field should be visible
+    And the template selector should be visible
+  # Evidence: public/layouts/dashboard/dashboard-create.html
+  # Evidence: public/components/stub-modal/stub-modal.html
+  # Evidence: public/lib/stub-form-validation.ts
+
+  Scenario: Selecting a special article format shows the format dropdown and requires a commissioned length
+    Given the "Create new" dropdown is open
+    When I choose "Key Takeaways" from the content type list
+    Then the stub modal should open with the title "Create Key Takeaways"
+    And the format dropdown should be visible
+    And the commissioned length field should be visible
+  # Evidence: public/layouts/dashboard/dashboard-create.html
+  # Evidence: public/components/stub-modal/stub-modal.html
+  # Evidence: public/lib/model/special-formats.ts
+  # Evidence: public/lib/stub-form-validation.ts
+
+  Scenario Outline: Non-article content types do not require a commissioned length
+    Given the "Create new" dropdown is open
+    When I choose "<content type>" from the content type list
+    Then the stub modal should open in create mode
+    And the commissioned length field should not be visible
+
+    Examples:
+      | content type |
+      | Live blog    |
+      | Gallery      |
+      | Picture      |
+      | Audio        |
+  # Evidence: public/layouts/dashboard/dashboard-create.html
+  # Evidence: public/components/stub-modal/stub-modal.html
+  # Evidence: public/lib/stub-form-validation.ts
+
+  Scenario: Selecting "Video/Atom" shows the atom type selector
+    Given the "Create new" dropdown is open
+    When I choose "Video/Atom" from the content type list
+    Then the stub modal should open with the title "Create Atom"
+    And the atom type selector should be visible
+    And the commissioned length field should not be visible
+  # Evidence: public/layouts/dashboard/dashboard-create.html
+  # Evidence: public/components/stub-modal/stub-modal.html
+  # Evidence: public/components/stub-modal/stub-modal.js
+
+  Scenario Outline: Creating a standard content type sends the correct type to the Composer API
+    Given the "Create new" dropdown is open
+    And I am ready to intercept Composer API calls
+    When I choose "<content type>" from the content type list
+    And I fill in the stub form minimum required details
+    And I submit the stub modal
+    Then the Composer API should have received a request for content type "<composer type>"
+
+    Examples:
+      | content type | composer type |
+      | Article      | article       |
+      | Gallery      | gallery       |
+      | Live blog    | liveblog      |
+      | Interactive  | interactive   |
+      | Picture      | picture       |
+      | Audio        | audio         |
+  # Evidence: public/lib/composer-service.js
+  # Evidence: public/lib/model/special-formats.ts
+
+  Scenario Outline: Creating a special article format sends a displayHint to the Composer API
+    Given the "Create new" dropdown is open
+    And I am ready to intercept Composer API calls
+    When I choose "<content type>" from the content type list
+    And I fill in the stub form minimum required details
+    And I submit the stub modal
+    Then the Composer API should have received a request for content type "article"
+    And the Composer API should have received a request with displayHint "<display hint>"
+
+    Examples:
+      | content type  | display hint |
+      | Key Takeaways | keyTakeaways |
+      | Q&A Explainer | qAndA        |
+      | Timeline      | timeline     |
+      | Mini profiles | miniProfiles |
+      | Multi-byline  | multiByline  |
+  # Evidence: public/lib/composer-service.js
+  # Evidence: public/lib/model/special-formats.ts
 
   Scenario: Clicking outside the dropdown closes it
     Given the "Create new" dropdown is open
