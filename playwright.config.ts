@@ -12,7 +12,14 @@ export default defineConfig({
     // A single local stack is shared across the run, and the mock datastore has
     // mutable state, so keep tests serial for deterministic results.
     fullyParallel: false,
-    workers: 1,
+    // All workers share a single local stack (one restorer instance). Its
+    // destination lookups query each stack with a blocking 3s timeout, so too
+    // many concurrent requests can starve its thread pool and make reachable
+    // stacks look unavailable. Cap concurrency to keep the load it sees modest.
+    workers: 4,
+    // Retry once so an occasional load-induced flake (e.g. a destination lookup
+    // timing out under contention) doesn't fail the whole run.
+    retries: 1,
     reporter: "list",
     // Building the containers happens in global setup; individual tests are quick.
     timeout: 60 * 1000,
@@ -20,6 +27,7 @@ export default defineConfig({
     use: {
         // baseURL is supplied per-test by the `stack` fixture in e2e/steps/fixtures.ts.
         trace: "on-first-retry",
+        video: "on-first-retry",
         screenshot: "only-on-failure",
     },
 });
