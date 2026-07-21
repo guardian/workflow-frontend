@@ -5,10 +5,27 @@
 // the modal go on to persist a real stub in Workflow (same-origin POST
 // /api/stubs), which is what surfaces the new piece on the dashboard.
 
-import { Page } from "@playwright/test";
+import { Page, Request } from "@playwright/test";
 import { randomBytes } from "crypto";
 import fs from "fs";
 import path from "path";
+
+/** A telemetry request recorded by the mock. */
+export type CapturedComposerRequest = {
+    /** The underlying Playwright request (valid only during the test run). */
+    request: Request;
+    /** The Composer ID created due to this rquest */
+    composerId?: string;
+};
+
+/** Control surface returned by mockComposer for use in test assertions. */
+export type ComposerMock = {
+    /** Every content request intercepted so far, in arrival order. */
+    requests: CapturedComposerRequest[];
+    /** Reset the captured request list (e.g. between assertions). */
+    clear: () => void;
+};
+
 
 // Placeholder token standing in for the content id throughout the sample
 // document. Every occurrence is swapped for a freshly generated id on each
@@ -32,10 +49,10 @@ function randomContentId(): string {
 // commissioned length / production office taken from the incoming create
 // request (falling back to the sample defaults when the param is absent).
 function buildComposerContent(
+    id: string,
     initialCommissionedLength: string | null,
     productionOffice: string | null,
 ): unknown {
-    const id = randomContentId();
     const content = JSON.parse(
         COMPOSER_CONTENT_TEMPLATE.split(CONTENT_ID_PLACEHOLDER).join(id),
     );
@@ -59,7 +76,9 @@ function buildComposerContent(
     return content;
 }
 
-export async function mockComposer(page: Page): Promise<void> {
+export async function mockComposer(page: Page): Promise<ComposerMock> {
+    const requests: CapturedComposerRequest[] = [];
+    
     await page.route(/^https:\/\/composer\.[^/]+\/api\//, async (route) => {
         const request = route.request();
         const cors: Record<string, string> = {
@@ -78,10 +97,13 @@ export async function mockComposer(page: Page): Promise<void> {
             /\/api\/content(\?|$)/.test(request.url())
         ) {
             const params = new URL(request.url()).searchParams;
+            const id = randomContentId();
             const content = buildComposerContent(
+                id,
                 params.get("initialCommissionedLength"),
                 params.get("productionOffice"),
             );
+            requests.push({ request, composerId: id });
             await route.fulfill({
                 status: 200,
                 headers: { ...cors, "content-type": "application/json" },
@@ -96,4 +118,11 @@ export async function mockComposer(page: Page): Promise<void> {
             body: "[]",
         });
     });
+
+    return {
+        requests,
+        clear: () => {
+            requests.length = 0;
+        },
+    };
 }

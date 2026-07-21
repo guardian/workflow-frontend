@@ -39,7 +39,7 @@ async function main() {
         });
 
         browser = await chromium.launch({
-            headless: false,
+            headless: true,
             // Prevent Playwright from installing its own signal handlers that
             // force-kill the browser and call process.exit() on Ctrl+C. Those
             // handlers bypass the `finally` block below, leaving the Docker
