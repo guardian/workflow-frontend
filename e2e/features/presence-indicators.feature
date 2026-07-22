@@ -88,10 +88,10 @@ Feature: Presence indicators on a piece of content
 
   Scenario: Multiple people are ordered by activity
     Given the following colleagues are present on a piece of content:
-      | name        | activity          |
+      | name        | location          |
       | Ann Idle    | idle              |
-      | Bob Body    | editing body      |
-      | Cara Chrome | editing furniture |
+      | Bob Body    | body              |
+      | Cara Chrome | furniture         |
     When I view its presence indicators
     Then the presence icons should be ordered present, then furniture, then idle
   # Evidence: public/components/presence-indicator/presence-indicators.js

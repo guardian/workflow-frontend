@@ -1,6 +1,6 @@
 import { Given, When, Then, expect } from "./fixtures";
 import type { Page, Locator } from "@playwright/test";
-import { mockComposer, type ComposerMock } from "../setup/mock/composerApiMock";
+import type { ComposerMock } from "../setup/mock/composerApiMock";
 
 // Locators scoped to the "Create new" dropdown (dashboard-user.html reuses the
 // same controller, so we anchor on the --create modifier class).
@@ -53,10 +53,6 @@ Given('the "Create new" dropdown is open', async ({ page }) => {
 
 Given('I open the "Create new" dropdown', async ({ page }) => {
     await openDropdown(page);
-});
-
-Given("I am ready to intercept Composer API calls", async ({ page, world }) => {
-    world.composerMock = await mockComposer(page);
 });
 
 // --- Actions -------------------------------------------------------------
@@ -231,8 +227,8 @@ Then("the atom type selector should be visible", async ({ page }) => {
 
 Then(
     "the Composer API should have received a request for content type {string}",
-    async ({ world }, expectedType: string) => {
-        const mock = world.composerMock as ComposerMock;
+    async ({ composerMock }, expectedType: string) => {
+        const mock = composerMock as ComposerMock;
         await expect.poll(() => mock.requests.length, { timeout: 5000 }).toBeGreaterThan(0);
         const lastRequest = mock.requests[mock.requests.length - 1];
         const url = new URL(lastRequest.request.url());
@@ -242,8 +238,8 @@ Then(
 
 Then(
     "the Composer API should have received a request with displayHint {string}",
-    async ({ world }, expectedDisplayHint: string) => {
-        const mock = world.composerMock as ComposerMock;
+    async ({ composerMock }, expectedDisplayHint: string) => {
+        const mock = composerMock as ComposerMock;
         await expect.poll(() => mock.requests.length, { timeout: 5000 }).toBeGreaterThan(0);
         const lastRequest = mock.requests[mock.requests.length - 1];
         const url = new URL(lastRequest.request.url());
@@ -256,9 +252,8 @@ Then(
 Given(
     "I have chosen a content type to open the stub modal in create mode",
     async ({ page }) => {
-        // Intercept Composer before the modal opens so template loading (on
-        // open) and content creation (on submit) both resolve.
-        await mockComposer(page);
+        // The composerMock fixture has already installed the Composer intercept;
+        // template loading (on open) and content creation (on submit) both resolve.
         // Gallery has no commissioned-length requirement, so the form is valid
         // once a title and section are provided (no warnings block submission).
         await contentTypeList(page)
