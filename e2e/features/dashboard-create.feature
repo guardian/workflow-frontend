@@ -50,6 +50,7 @@ Feature: Create new content from the dashboard "Create new" dropdown
   # Evidence: public/layouts/dashboard/dashboard-create.js
   # Evidence: public/components/stub-modal/stub-modal.js
 
+  @composer
   Scenario: Creating a new piece adds it to the dashboard content list
     Given the "Create new" dropdown is open
     And I have chosen a content type to open the stub modal in create mode
@@ -126,9 +127,9 @@ Feature: Create new content from the dashboard "Create new" dropdown
   # Evidence: public/components/stub-modal/stub-modal.html
   # Evidence: public/components/stub-modal/stub-modal.js
 
+  @composer
   Scenario Outline: Creating a standard content type sends the correct type to the Composer API
     Given the "Create new" dropdown is open
-    And I am ready to intercept Composer API calls
     When I choose "<content type>" from the content type list
     And I fill in the stub form minimum required details
     And I submit the stub modal
@@ -145,9 +146,9 @@ Feature: Create new content from the dashboard "Create new" dropdown
   # Evidence: public/lib/composer-service.js
   # Evidence: public/lib/model/special-formats.ts
 
+  @composer
   Scenario Outline: Creating a special article format sends a displayHint to the Composer API
     Given the "Create new" dropdown is open
-    And I am ready to intercept Composer API calls
     When I choose "<content type>" from the content type list
     And I fill in the stub form minimum required details
     And I submit the stub modal

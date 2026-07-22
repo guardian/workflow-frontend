@@ -1,7 +1,9 @@
 import { Given, When, Then, Before, expect } from "./fixtures";
 import { DataTable } from "playwright-bdd";
 import type { Page, Locator } from "@playwright/test";
-import type { PresenceMock } from "../setup/mock/presenceMock";
+import type { PresenceMock, PresencePerson, PresenceEntry, PresenceLocation  } from "../setup/mock/presenceMock";
+import type { PersonWithLocation, World } from "./fixtures";
+
 
 /**
  * These steps drive the real presence indicators rendered on content-list rows.
@@ -18,56 +20,46 @@ const CONTENT = {
     liveblog: { stubId: 66082, composerId: "6a5b1c2d8f0800000000abcd" },
 } as const;
 
-type Activity = "editing body" | "document" | "editing furniture" | "idle";
-
-interface Person {
-    firstName: string;
-    lastName: string;
-    email: string;
-    activity: Activity;
-}
-
-const DEFAULT_PERSON = {
+const DEFAULT_PERSON: PresencePerson = {
     firstName: "Ada",
     lastName: "Byte",
     email: "ada.byte@guardian.co.uk",
 };
 
-function locationsFor(activity: Activity): string[] {
+function locationFrom(activity: string): PresenceLocation {
     switch (activity) {
-        case "editing body":
-            return ["body"];
+        case "body":
+            return "body";
         case "document":
-            return ["document"];
-        case "editing furniture":
-            return ["furniture"];
+            return "document";
+        case "furniture":
+            return "furniture";
         case "idle":
-            return [];
+            return "idle";
+        default:
+            return "invalid";
     }
 }
 
-function entriesFor(people: Person[]) {
-    return people.map((p) => ({
+function entriesFor(people: PersonWithLocation[]): PresenceEntry[] {
+    return people.map(({ person, location }) => ({
         clientId: {
-            person: {
-                firstName: p.firstName,
-                lastName: p.lastName,
-                email: p.email,
-            },
+            person: person,
         },
-        locations: locationsFor(p.activity),
+        locations: [location],
     }));
 }
-
-function nameToPerson(name: string): { firstName: string; lastName: string; email: string } {
+ 
+function nameToPerson(name: string, email ?: string): PresencePerson {
     const parts = name.trim().split(/\s+/);
     const firstName = parts[0];
     const lastName = parts.slice(1).join(" ");
-    const emailLocal = [firstName, lastName || firstName]
+    const emailLocal = email ?? [firstName, lastName || firstName]
         .join(".")
         .toLowerCase()
-        .replace(/\s+/g, ".");
-    return { firstName, lastName, email: `${emailLocal}@guardian.co.uk` };
+        .replace(/\s+/g, ".")
+        .concat("@guardian.co.uk");
+    return { firstName, lastName, email: emailLocal };
 }
 
 function initialsOf(person: { firstName: string; lastName: string }): string {
@@ -76,8 +68,8 @@ function initialsOf(person: { firstName: string; lastName: string }): string {
 
 // --- World helpers -------------------------------------------------------
 
-function getPeople(world: Record<string, unknown>): Person[] {
-    return (world.people as Person[] | undefined) ?? [];
+function getPeople(world: World): PersonWithLocation[] {
+    return world.people ?? [];
 }
 
 function setContent(
@@ -128,6 +120,7 @@ async function openDrawer(page: Page, stubId: number): Promise<void> {
     ).toBeVisible();
 }
 
+// locate the stub row and open its drawer, then push a presence update for the given mode
 async function view(
     page: Page,
     world: Record<string, unknown>,
@@ -143,14 +136,6 @@ async function view(
     await presence.pushStatus(world.composerId as string, entriesFor(getPeople(world)));
 }
 
-// --- Hook: install presence mocking before navigation --------------------
-
-Before({ tags: "@presence" }, async ({ presence }) => {
-    // Referencing the presence fixture installs the route mocks before the
-    // Background navigates to the dashboard.
-    void presence;
-});
-
 // --- Preconditions -------------------------------------------------------
 
 Given("a piece of content has no active presence", async ({ world }) => {
@@ -160,14 +145,14 @@ Given("a piece of content has no active presence", async ({ world }) => {
 
 Given("a colleague is editing the body of a piece of content", async ({ world }) => {
     setContent(world);
-    world.people = [{ ...DEFAULT_PERSON, activity: "editing body" }];
+    world.people = [{ person: DEFAULT_PERSON, location: "body" }];
 });
 
 Given(
     "a colleague is present on a piece of content at the document location",
     async ({ world }) => {
         setContent(world);
-        world.people = [{ ...DEFAULT_PERSON, activity: "document" }];
+        world.people = [{ person: DEFAULT_PERSON, location: "document" }];
     },
 );
 
@@ -175,7 +160,7 @@ Given(
     "a colleague is present on a piece of content editing only its furniture",
     async ({ world }) => {
         setContent(world);
-        world.people = [{ ...DEFAULT_PERSON, activity: "editing furniture" }];
+        world.people = [{ person: DEFAULT_PERSON, location: "furniture" }];
     },
 );
 
@@ -183,20 +168,20 @@ Given(
     "a colleague is present on a piece of content but not editing the body or furniture",
     async ({ world }) => {
         setContent(world);
-        world.people = [{ ...DEFAULT_PERSON, activity: "idle" }];
+        world.people = [{ person: DEFAULT_PERSON, location: "idle" }];
     },
 );
 
 Given("a colleague is idle on a live blog", async ({ world }) => {
     setContent(world, "liveblog");
-    world.people = [{ ...DEFAULT_PERSON, activity: "idle" }];
+    world.people = [{ person: DEFAULT_PERSON, location: "idle" }];
 });
 
 Given(
     "a colleague named {string} is present on a piece of content",
     async ({ world }, name: string) => {
         setContent(world);
-        world.people = [{ ...nameToPerson(name), activity: "editing body" }];
+        world.people = [{ person: nameToPerson(name), location: "body" }];
     },
 );
 
@@ -204,7 +189,7 @@ Given(
     "a colleague with email {string} is present on a piece of content",
     async ({ world }, email: string) => {
         setContent(world);
-        world.people = [{ ...DEFAULT_PERSON, email, activity: "editing body" }];
+        world.people = [{ person: { ...DEFAULT_PERSON, email }, location: "body" }];
     },
 );
 
@@ -212,7 +197,7 @@ Given(
     "a colleague named {string} with email {string} is editing the body of a piece of content",
     async ({ world }, name: string, email: string) => {
         setContent(world);
-        world.people = [{ ...nameToPerson(name), email, activity: "editing body" }];
+        world.people = [{ person: nameToPerson(name, email), location: "body" }];
     },
 );
 
@@ -221,8 +206,8 @@ Given(
     async ({ world }, table: DataTable) => {
         setContent(world);
         world.people = table.hashes().map((row) => ({
-            ...nameToPerson(row.name),
-            activity: row.activity as Activity,
+            person: nameToPerson(row.name),
+            location: locationFrom(row.location),
         }));
     },
 );
@@ -233,8 +218,8 @@ Given(
         setContent(world);
         // Two sessions for the same person (same email) — should be de-duped.
         world.people = [
-            { ...DEFAULT_PERSON, activity: "editing body" },
-            { ...DEFAULT_PERSON, activity: "idle" },
+            { person: DEFAULT_PERSON, location: "body" },
+            { person: DEFAULT_PERSON, location: "idle" },
         ];
     },
 );
@@ -273,11 +258,13 @@ When("I view its presence indicators", async ({ page, world, presence }) => {
 When(
     "a presence update arrives for that content",
     async ({ page, world, presence }) => {
-        const person: Person = {
-            firstName: "Liv",
-            lastName: "Update",
-            email: "liv.update@guardian.co.uk",
-            activity: "editing body",
+        const person: PersonWithLocation = {
+            person: {
+                firstName: "Liv",
+                lastName: "Update",
+                email: "liv.update@guardian.co.uk",
+            },
+            location: "body",
         };
         world.people = [person];
         await page.locator(`#stub-${world.stubId}`).waitFor({ state: "attached" });
@@ -288,11 +275,13 @@ When(
 When(
     "a presence update arrives for a different piece of content",
     async ({ presence }) => {
-        const person: Person = {
-            firstName: "Liv",
-            lastName: "Update",
-            email: "liv.update@guardian.co.uk",
-            activity: "editing body",
+        const person: PersonWithLocation = {
+            person: {
+                firstName: "Liv",
+                lastName: "Update",
+                email: "liv.update@guardian.co.uk",
+            },
+            location: "body",
         };
         await presence.pushStatus(CONTENT.other.composerId, entriesFor([person]));
     },
@@ -333,7 +322,7 @@ Then("I should see a presence icon marked as idle", async ({ page, world }) => {
 
 Then("the icon should show their initials", async ({ page, world }) => {
     const person = getPeople(world)[0];
-    await expect(iconByStatus(page, world, "present")).toHaveText(initialsOf(person));
+    await expect(iconByStatus(page, world, "present")).toHaveText(initialsOf(person.person));
 });
 
 Then("its title should describe them as editing body", async ({ page, world }) => {
