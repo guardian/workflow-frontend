@@ -16,6 +16,7 @@ modules:
   - docker-in-docker  # (disabled by default)
   - scala  # (disabled by default)
   - node  # (disabled by default)
+  - github-copilot
 
 # Optional: Ports to forward
 forwardPorts:
@@ -26,6 +27,9 @@ forwardPorts:
 # Optional: Mount directories from host to container
 # mounts:
 #     - "source=${localEnv:HOME}/.gu/workflow-frontend-application.local.docker.conf,target=/home/vscode/.gu/workflow-frontend-application.local.conf,readonly,type=bind,consistency=cached"
+features:
+  "ghcr.io/devcontainers/features/desktop-lite:1":
+    version: "latest"
 
 containerEnv:
   - name: DEVCONTAINER

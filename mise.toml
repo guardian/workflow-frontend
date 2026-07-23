@@ -1,5 +1,5 @@
 [tools]
-"github:guardian/devenv" = "20260522-111753"
+"github:guardian/devenv" = "20260721-123412"
 aws-cli = { version = "2.34.62", symlink_bins = true }
 sbt = "1.12.11"
 java = "corretto-11.0.27.6.1"
