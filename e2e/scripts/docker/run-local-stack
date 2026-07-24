@@ -29,7 +29,7 @@ if [ -d "${WORKFLOW_BACKEND_DIR}/.git" ]; then
   git -C "$WORKFLOW_BACKEND_DIR" pull --ff-only
 else
   echo "Cloning guardian/workflow into ${WORKFLOW_BACKEND_DIR}"
-  git clone --depth 1 --branch ws/add-docker-image-for-e2e-setup https://github.com/guardian/workflow.git "$WORKFLOW_BACKEND_DIR"
+  git clone --depth 1 --branch ws/add-docker-image-for-e2e-setup git@github.com:guardian/workflow.git "$WORKFLOW_BACKEND_DIR"
 fi
 export WORKFLOW_BACKEND_DIR
 
