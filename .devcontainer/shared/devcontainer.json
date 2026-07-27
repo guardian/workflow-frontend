@@ -33,9 +33,6 @@
       "version" : "latest",
       "moby" : false,
       "dockerDashComposeVersion" : "v2"
-    },
-    "ghcr.io/devcontainers/features/desktop-lite:1" : {
-      "version" : "latest"
     }
   },
   "mounts" : [

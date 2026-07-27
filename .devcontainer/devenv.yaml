@@ -27,9 +27,6 @@ forwardPorts:
 # Optional: Mount directories from host to container
 # mounts:
 #     - "source=${localEnv:HOME}/.gu/workflow-frontend-application.local.docker.conf,target=/home/vscode/.gu/workflow-frontend-application.local.conf,readonly,type=bind,consistency=cached"
-features:
-  "ghcr.io/devcontainers/features/desktop-lite:1":
-    version: "latest"
 
 containerEnv:
   - name: DEVCONTAINER
