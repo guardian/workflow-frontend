@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# Start an X server (Xvfb), a VNC server bound to it (x11vnc), and a noVNC web
+# client (websockify). Chromium on the host renders into display :0 over TCP
+# (port 6000); the same display is viewable at http://<host>:6080/vnc.html.
+set -euo pipefail
+
+DISPLAY_NUM="${DISPLAY_NUM:-0}"
+SCREEN_GEOMETRY="${SCREEN_GEOMETRY:-1920x1080x24}"
+
+# -listen tcp overrides Xvfb's default of refusing TCP connections; -ac
+# disables access control so the host's Chromium can connect without xauth.
+Xvfb ":${DISPLAY_NUM}" -screen 0 "${SCREEN_GEOMETRY}" -listen tcp -ac &
+xvfb_pid=$!
+
+# Wait for the X server to accept connections before attaching the VNC server.
+until xdpyinfo -display ":${DISPLAY_NUM}" >/dev/null 2>&1; do
+    if ! kill -0 "${xvfb_pid}" 2>/dev/null; then
+        echo "Xvfb failed to start" >&2
+        exit 1
+    fi
+    sleep 0.2
+done
+
+# Serve the X display over VNC. -forever keeps it up across client
+# disconnects; -shared allows multiple viewers; -nopw skips auth (test-only).
+x11vnc -display ":${DISPLAY_NUM}" -forever -shared -nopw -rfbport 5900 -bg \
+    -o /var/log/x11vnc.log
+
+echo "noVNC available on port 6080 (open /vnc.html)"
+exec websockify --web=/usr/share/novnc 6080 localhost:5900

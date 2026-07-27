@@ -27,7 +27,7 @@ async function main() {
     let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
 
     try {
-        stack = await startLocalStack(projectRoot, { streamLogs: true });
+        stack = await startLocalStack(projectRoot, { streamLogs: true, headed: true });
         const cookieData = createPanDomainCookie(stack.panDomainPrivateKey);
 
         // Publish the running stack's connection details so `npm run test:e2e`
@@ -36,10 +36,17 @@ async function main() {
             baseUrl: stack.baseUrl,
             panDomainPrivateKey: stack.panDomainPrivateKey,
             mockApiUrl: stack.mockApiUrl,
+            x11vncDisplayPort: stack.x11vncDisplayPort,
+            x11vncWebUrl: stack.novncUrl
         });
+        process.env.DISPLAY = process.env.DISPLAY ?? stack?.x11vncDisplayPort ?? "localhost:0";
+
+        console.log(`\nLocal stack started at ${stack.baseUrl}`);
+        console.log(`x11vnc display: ${stack.x11vncDisplayPort ?? ""}`)
+        console.log(`noVNC web client: ${stack.novncUrl ?? ""}`)
 
         browser = await chromium.launch({
-            headless: true,
+            headless: false,
             // Prevent Playwright from installing its own signal handlers that
             // force-kill the browser and call process.exit() on Ctrl+C. Those
             // handlers bypass the `finally` block below, leaving the Docker
@@ -62,7 +69,6 @@ async function main() {
         ]);
         await page.goto(stack.baseUrl, { waitUntil: "domcontentloaded" });
         
-        console.log(`\nLocal stack started at ${stack.baseUrl}`);
         console.log("Opened a browser with a local auth cookie.");
         console.log(
             `Mock workflow datastore API: ${stack.mockApiUrl}`

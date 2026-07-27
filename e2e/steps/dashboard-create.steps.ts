@@ -24,7 +24,7 @@ const createButton = (page: Page): Locator => page.locator("#testing-create-new"
 // The list starts with class content-type-list--hidden; ng-class re-adds it
 // whenever !showDropdown, so the class presence is the hidden/shown signal.
 const contentTypeList = (page: Page): Locator =>
-    page.locator(".dropdown-toolbar__list");
+    page.locator("#testing-create-new + .dropdown-toolbar__list");
 
 const contentTypeOptions = (page: Page): Locator =>
     contentTypeList(page).locator("li[ng-repeat] label.dropdown-toolbar__item-label");
@@ -44,7 +44,7 @@ const modal = (page: Page): Locator => page.locator(".stubModal .modal-content")
 const modalTitle = (page: Page): Locator => page.locator(".stubModal .modal-title");
 const importUrlField = (page: Page): Locator => page.locator("#import_url");
 const commissionedLengthField = (page: Page): Locator =>
-    page.locator("input[name=commissionedLength]");
+    page.locator("form[name=stubForm] input[name=commissionedLength]");
 const commissionedLengthSuggestion = (page: Page): Locator =>
     page.locator("button.commissioned-length-suggestion");
 const templateSelector = (page: Page): Locator => page.locator("#stub_template");
