@@ -27,12 +27,24 @@ async function globalSetup(_config: FullConfig) {
     if (shared) {
         connection = shared;
     } else {
-        ownedStack = await startLocalStack(projectRoot);
+        const headed = _config.projects.some(proj => !proj.use.headless);
+        ownedStack = await startLocalStack(projectRoot, { headed });
         connection = {
             baseUrl: ownedStack.baseUrl,
             panDomainPrivateKey: ownedStack.panDomainPrivateKey,
             mockApiUrl: ownedStack.mockApiUrl,
         };
+    }
+
+    // For headed runs, point Chromium at the in-container X server. The X11/VNC
+    // container binds display :0 to the fixed host port 6000, so DISPLAY is
+    // constant regardless of which stack (owned or shared) is in use. Worker
+    // processes are spawned after global setup and inherit this env var.
+    process.env.DISPLAY = process.env.DISPLAY ?? shared?.x11vncDisplayPort ?? "localhost:0";
+    if (ownedStack?.novncUrl) {
+        console.log(
+            `\nHeaded run: watch the browser at http://localhost:6080/vnc.html?autoconnect=1\n`,
+        );
     }
 
     const filePath = path.join(projectRoot, ACTIVE_STACK_FILE);

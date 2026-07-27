@@ -19,6 +19,7 @@ run_playwright() {
   if ! yarn node -e \
     "require('fs').accessSync(require('@playwright/test').chromium.executablePath())" \
     >/dev/null 2>&1; then
+    yarn playwright install-deps
     yarn playwright install chromium
   fi
   # Generate Playwright tests from the BDD feature files before running.

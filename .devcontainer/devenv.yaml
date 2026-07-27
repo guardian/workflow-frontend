@@ -21,6 +21,7 @@ modules:
 # Optional: Ports to forward
 forwardPorts:
   - 9090  # same port on host and container
+  - 6080  # web vnc to the x11vnc container for headed e2e tests
 #   - 8080  # same port on host and container
 #   - "8000:9000"  # hostPort:containerPort
 
