@@ -4,10 +4,10 @@ RUN apk add --no-cache aws-cli curl && \
     curl -fsSL https://dl.min.io/server/minio/release/linux-arm64/minio -o /usr/local/bin/minio && \
     chmod +x /usr/local/bin/minio
 
-COPY e2e/scripts/docker/start-minio-with-buckets /usr/local/bin/start-minio-with-buckets
-COPY e2e/fixtures/permissions/permissions.json /opt/minio-fixtures/permissions/permissions.json
-COPY e2e/fixtures/pan-domain-settings/local.dev-gutools.co.uk.settings /opt/minio-fixtures/pan-domain-settings/local.dev-gutools.co.uk.settings
-COPY e2e/fixtures/pan-domain-settings/local.dev-gutools.co.uk.settings.public /opt/minio-fixtures/pan-domain-settings/local.dev-gutools.co.uk.settings.public
+COPY scripts/docker/start-minio-with-buckets /usr/local/bin/start-minio-with-buckets
+COPY fixtures/permissions/permissions.json /opt/minio-fixtures/permissions/permissions.json
+COPY fixtures/pan-domain-settings/local.dev-gutools.co.uk.settings /opt/minio-fixtures/pan-domain-settings/local.dev-gutools.co.uk.settings
+COPY fixtures/pan-domain-settings/local.dev-gutools.co.uk.settings.public /opt/minio-fixtures/pan-domain-settings/local.dev-gutools.co.uk.settings.public
 
 RUN chmod +x /usr/local/bin/start-minio-with-buckets
 

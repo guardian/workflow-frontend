@@ -6,7 +6,7 @@ FROM wiremock/wiremock:3.13.2
 USER root
 
 # Bake in the stub mappings so the mock responds without runtime registration.
-COPY e2e/fixtures/preferences-mappings/ /home/wiremock/mappings/
+COPY fixtures/preferences-mappings/ /home/wiremock/mappings/
 
 EXPOSE 80
 

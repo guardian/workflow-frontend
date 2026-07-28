@@ -30,7 +30,7 @@ async function main() {
         stack = await startLocalStack(projectRoot, { streamLogs: true, headed: true });
         const cookieData = createPanDomainCookie(stack.panDomainPrivateKey);
 
-        // Publish the running stack's connection details so `npm run test:e2e`
+        // Publish the running stack's connection details so `playwright test`
         // can reuse this stack instead of booting fresh containers each run.
         writeSharedStackInfo(projectRoot, {
             baseUrl: stack.baseUrl,

@@ -16,7 +16,7 @@ RUN apt-get update \
         x11-utils \
     && rm -rf /var/lib/apt/lists/*
 
-COPY e2e/scripts/docker/start-x11vnc /usr/local/bin/start-x11vnc
+COPY scripts/docker/start-x11vnc /usr/local/bin/start-x11vnc
 RUN chmod +x /usr/local/bin/start-x11vnc
 
 # 6000: X11 for display :0 (Chromium connects here over TCP).

@@ -47,6 +47,7 @@ export type LocalStack = {
 // The container is only started when the option "headed" is set.
 const X11_TCP_PORT = 6000;
 const NOVNC_WEB_PORT = 6080;
+const VNC_TCP_PORT = 5900;
 
 // In local dev the restorer runs as the DEV identity, whose effective stage is
 // CODE, so it resolves each stack's real per-stage flexible-content API host
@@ -85,7 +86,7 @@ const DB_SEED_TABLES: { table: string; columns: string; file: string }[] = [
     },
 ];
 
-const DB_SEED_FIXTURES_DIR = "e2e/fixtures/db";
+const DB_SEED_FIXTURES_DIR = "fixtures/db";
 const DB_CONNECTION_URL =
     "postgresql://workflow:workflow@localhost:5432/workflow";
 
@@ -193,7 +194,7 @@ export interface StartLocalStackOptions {
 }
 
 export async function startLocalStack(
-    projectRoot: string,
+    e2eRoot: string,
     options: StartLocalStackOptions = {},
 ): Promise<LocalStack> {
     const { streamLogs = false } = options;
@@ -226,10 +227,10 @@ export async function startLocalStack(
             await buildDockerImage({
                 tag: x11vncImageTag,
                 dockerfilePath: path.join(
-                    projectRoot,
-                    "e2e/images/x11vnc.Dockerfile",
+                    e2eRoot,
+                    "images/x11vnc.Dockerfile",
                 ),
-                contextPath: projectRoot,
+                contextPath: e2eRoot,
             });
 
             x11vncContainer = await new GenericContainer(x11vncImageTag)
@@ -243,6 +244,7 @@ export async function startLocalStack(
                 .withExposedPorts(
                     { container: X11_TCP_PORT, host: X11_TCP_PORT },
                     { container: NOVNC_WEB_PORT, host: NOVNC_WEB_PORT },
+                    { container: VNC_TCP_PORT, host: VNC_TCP_PORT },
                 )
                 .withWaitStrategy(
                     Wait.forHttp("/", NOVNC_WEB_PORT).forStatusCode(200),
@@ -252,8 +254,8 @@ export async function startLocalStack(
         }
         await buildDockerImage({
             tag: minioImageTag,
-            dockerfilePath: path.join(projectRoot, "e2e/images/minio.Dockerfile"),
-            contextPath: projectRoot,
+            dockerfilePath: path.join(e2eRoot, "images/minio.Dockerfile"),
+            contextPath: e2eRoot,
         });
 
         minioContainer = await new GenericContainer(minioImageTag)
@@ -281,10 +283,10 @@ export async function startLocalStack(
         await buildDockerImage({
             tag: mockCapiImageTag,
             dockerfilePath: path.join(
-                projectRoot,
-                "e2e/images/mock-capi.Dockerfile",
+                e2eRoot,
+                "images/mock-capi.Dockerfile",
             ),
-            contextPath: projectRoot,
+            contextPath: e2eRoot,
         });
 
         mockCapiContainer = await new GenericContainer(mockCapiImageTag)
@@ -305,10 +307,10 @@ export async function startLocalStack(
         await buildDockerImage({
             tag: mockPreferencesImageTag,
             dockerfilePath: path.join(
-                projectRoot,
-                "e2e/images/mock-preferences.Dockerfile",
+                e2eRoot,
+                "images/mock-preferences.Dockerfile",
             ),
-            contextPath: projectRoot,
+            contextPath: e2eRoot,
         });
 
         mockPreferencesApiContainer = await new GenericContainer(mockPreferencesImageTag)
@@ -327,10 +329,10 @@ export async function startLocalStack(
         await buildDockerImage({
             tag: mockTagManagerImageTag,
             dockerfilePath: path.join(
-                projectRoot,
-                "e2e/images/mock-tagmanager.Dockerfile",
+                e2eRoot,
+                "images/mock-tagmanager.Dockerfile",
             ),
-            contextPath: projectRoot,
+            contextPath: e2eRoot,
         });
 
         mockTagManagerApiContainer = await new GenericContainer(mockTagManagerImageTag)
@@ -368,10 +370,10 @@ export async function startLocalStack(
         await buildDockerImage({
             tag: dynamodbImageTag,
             dockerfilePath: path.join(
-                projectRoot,
-                "e2e/images/dynamodb.Dockerfile",
+                e2eRoot,
+                "images/dynamodb.Dockerfile",
             ),
-            contextPath: projectRoot,
+            contextPath: e2eRoot,
         });
 
         dynamodbContainer = await new GenericContainer(dynamodbImageTag)
@@ -385,15 +387,16 @@ export async function startLocalStack(
             .withStartupTimeout(2 * 60 * 1000)
             .start();
 
+        console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR}`);
         await buildDockerImage({
             tag: datastoreImageTag,
             dockerfilePath: path.join(
-                projectRoot,
-                "e2e/images/datastore.Dockerfile",
+                e2eRoot,
+                "images/datastore.Dockerfile",
             ),
             contextPath:
                 process.env.WORKFLOW_BACKEND_DIR ??
-                path.join(projectRoot, "target/workflow-backend"),
+                path.join(e2eRoot, "target/workflow-backend"),
         });
 
         datastoreContainer = await new GenericContainer(datastoreImageTag)
@@ -410,10 +413,10 @@ export async function startLocalStack(
         await buildDockerImage({
             tag: workflowImageTag,
             dockerfilePath: path.join(
-                projectRoot,
-                "e2e/images/workflow-frontend.Dockerfile",
+                e2eRoot,
+                "images/workflow-frontend.Dockerfile",
             ),
-            contextPath: projectRoot,
+            contextPath: path.join(e2eRoot, ".."),
         });
 
         workflowContainer = await new GenericContainer(workflowImageTag)
@@ -438,7 +441,7 @@ export async function startLocalStack(
 
         // The Datastore applies its Play evolutions on boot, so the schema now
         // exists: load the section/desk test data into Postgres.
-        await seedDatabase(dbContainer, projectRoot);
+        await seedDatabase(dbContainer, e2eRoot);
 
         const novncUrl = x11vncContainer
             ? `http://${x11vncContainer.getHost()}:${x11vncContainer.getMappedPort(NOVNC_WEB_PORT)}`

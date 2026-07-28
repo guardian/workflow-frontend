@@ -1,14 +1,15 @@
-import { defineConfig } from "@playwright/test";
-import { defineBddConfig } from "playwright-bdd";
+import { defineConfig, devices } from "@playwright/test";
+import { cucumberReporter, defineBddConfig } from "playwright-bdd";
 
 const testDir = defineBddConfig({
-    features: "e2e/features/**/*.feature",
-    steps: "e2e/steps/**/*.ts",
+    features: "features/**/*.feature",
+    steps: "steps/**/*.ts",
 });
 
 export default defineConfig({
     testDir,
-    globalSetup: "./e2e/globalSetup.ts",
+    globalSetup: "./globalSetup.ts",
+    outputDir: 'target/test-results',
     // A single local stack is shared across the run, and the mock datastore has
     // mutable state, so keep tests serial for deterministic results.
     fullyParallel: false,
@@ -20,14 +21,26 @@ export default defineConfig({
     // Retry once so an occasional load-induced flake (e.g. a destination lookup
     // timing out under contention) doesn't fail the whole run.
     retries: 1,
-    reporter: "list",
     // Building the containers happens in global setup; individual tests are quick.
     timeout: 60 * 1000,
     expect: { timeout: 10 * 1000 },
     use: {
-        // baseURL is supplied per-test by the `stack` fixture in e2e/steps/fixtures.ts.
+        // baseURL is supplied per-test by the `stack` fixture in steps/fixtures.ts.
         trace: "on-first-retry",
         video: "on-first-retry",
         screenshot: "only-on-failure",
     },
+    reporter: process.env.CI ? 
+        [["github"]] :
+        [
+            ["list", { printFailuresInline: true }],
+            ["html", { outputFolder: "target/playwright-report", open: "never" }],
+        ],
+    /* Configure projects for major browsers */
+    projects: [
+        {
+        name: 'chromium',
+        use: { ...devices['Desktop Chrome'] },
+        },
+    ],
 });

@@ -5,8 +5,8 @@ USER root
 RUN yum install -y awscli && \
     yum clean all
 
-COPY e2e/scripts/docker/start-dynamodb /usr/local/bin/start-dynamodb
-COPY e2e/fixtures/dynamodb/editorial-support-CODE.json /opt/dynamodb-fixtures/editorial-support-CODE.json
+COPY scripts/docker/start-dynamodb /usr/local/bin/start-dynamodb
+COPY fixtures/dynamodb/editorial-support-CODE.json /opt/dynamodb-fixtures/editorial-support-CODE.json
 
 RUN chmod +x /usr/local/bin/start-dynamodb
 

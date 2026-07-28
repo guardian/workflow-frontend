@@ -59,9 +59,7 @@ COPY tsconfig.json karma.conf.js .babelrc ./
 RUN mise exec -- yarn build
 
 # Copy remaining runtime files (scripts, fixtures, nginx config, etc.).
-COPY --exclude=test-results/ . .
-# COPY --exclude=e2e/ . .
-# COPY e2e/scripts/ ./e2e/scripts/
+COPY --exclude=e2e/target/ . .
 RUN chmod +x /workflow-frontend/e2e/scripts/docker/docker-start
 
 EXPOSE 9090
