@@ -13,22 +13,22 @@ import { readSharedStackInfo, type SharedStackInfo } from "./setup/sharedStack";
  * fixtures (e2e/steps/fixtures.ts) can pick up the base URL and pan-domain
  * signing key without re-starting containers.
  */
-export const ACTIVE_STACK_FILE = "tmp/e2e-active-stack.json";
+export const ACTIVE_STACK_FILE = "target/tmp/e2e-active-stack.json";
 
 // Only the stack we start ourselves is torn down; a stack shared via
 // `npm run local:stack` is left running for the next test run.
 let ownedStack: LocalStack | undefined;
 
 async function globalSetup(_config: FullConfig) {
-    const projectRoot = process.cwd();
+    const e2eRoot = process.cwd();
 
     let connection: SharedStackInfo;
-    const shared = readSharedStackInfo(projectRoot);
+    const shared = readSharedStackInfo(e2eRoot);
     if (shared) {
         connection = shared;
     } else {
         const headed = _config.projects.some(proj => !proj.use.headless);
-        ownedStack = await startLocalStack(projectRoot, { headed });
+        ownedStack = await startLocalStack(e2eRoot, { headed });
         connection = {
             baseUrl: ownedStack.baseUrl,
             panDomainPrivateKey: ownedStack.panDomainPrivateKey,
@@ -47,7 +47,7 @@ async function globalSetup(_config: FullConfig) {
         );
     }
 
-    const filePath = path.join(projectRoot, ACTIVE_STACK_FILE);
+    const filePath = path.join(e2eRoot, ACTIVE_STACK_FILE);
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(filePath, JSON.stringify(connection, null, 2), "utf8");
 

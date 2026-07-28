@@ -19,30 +19,30 @@ export type SharedStackInfo = {
     x11vncWebUrl?: string;
 };
 
-const SHARED_STACK_FILE = "tmp/e2e-local-stack.json";
+const SHARED_STACK_FILE = "target/tmp/e2e-local-stack.json";
 
-function sharedStackFilePath(projectRoot: string): string {
-    return path.join(projectRoot, SHARED_STACK_FILE);
+function sharedStackFilePath(e2eRoot: string): string {
+    return path.join(e2eRoot, SHARED_STACK_FILE);
 }
 
 export function writeSharedStackInfo(
-    projectRoot: string,
+    e2eRoot: string,
     info: SharedStackInfo,
 ): void {
-    const filePath = sharedStackFilePath(projectRoot);
+    const filePath = sharedStackFilePath(e2eRoot);
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(filePath, JSON.stringify(info, null, 2), "utf8");
 }
 
-export function clearSharedStackInfo(projectRoot: string): void {
-    const filePath = sharedStackFilePath(projectRoot);
+export function clearSharedStackInfo(e2eRoot: string): void {
+    const filePath = sharedStackFilePath(e2eRoot);
     fs.rmSync(filePath, { force: true });
 }
 
 export function readSharedStackInfo(
-    projectRoot: string,
+    e2eRoot: string,
 ): SharedStackInfo | undefined {
-    const filePath = sharedStackFilePath(projectRoot);
+    const filePath = sharedStackFilePath(e2eRoot);
     if (!fs.existsSync(filePath)) {
         return undefined;
     }
