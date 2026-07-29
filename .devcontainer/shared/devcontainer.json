@@ -51,7 +51,8 @@
   "containerEnv" : {
     "DEVENV_IVY_CACHE_MOUNT_DIR" : "/mnt/ivy-cache",
     "DEVENV_COURSIER_CACHE_MOUNT_DIR" : "/mnt/coursier-cache",
-    "DEVCONTAINER" : "true"
+    "DEVCONTAINER" : "true",
+    "DISPLAY" : "localhost:0"
   },
   "capAdd" : [
     "SYS_ADMIN"

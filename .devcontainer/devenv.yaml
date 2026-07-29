@@ -32,6 +32,8 @@ forwardPorts:
 containerEnv:
   - name: DEVCONTAINER
     value: "true"
+  - name: DISPLAY
+    value: "localhost:0"
 
 # Optional: IDE plugins - shared project plugins like language support
 plugins:

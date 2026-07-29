@@ -12,7 +12,7 @@ export default defineConfig({
     outputDir: 'target/test-results',
     // A single local stack is shared across the run, and the mock datastore has
     // mutable state, so keep tests serial for deterministic results.
-    fullyParallel: false,
+    fullyParallel: true,
     // All workers share a single local stack (one restorer instance). Its
     // destination lookups query each stack with a blocking 3s timeout, so too
     // many concurrent requests can starve its thread pool and make reachable
