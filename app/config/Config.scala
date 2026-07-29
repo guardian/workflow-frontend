@@ -26,6 +26,8 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val localLogShipping: Boolean = sys.env.getOrElse("LOCAL_LOG_SHIPPING", "false").toBoolean
 
+  lazy val localE2eTest: Boolean = sys.env.getOrElse("LOCAL_E2E_TEST", "false").toBoolean
+
   logger.info(s"Domain is: $domain")
 
   lazy val host: String = s"https://workflow.$domain"
@@ -73,7 +75,7 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   // In dev the preferences API is a local HTTP WireMock mock (see e2e/setup/stackContainers.ts);
   // everywhere else it is the real editorial-preferences service over HTTPS.
   lazy val preferencesUrl: String = {
-    val scheme = if (isDev) "http" else "https"
+    val scheme = if (localE2eTest) "http" else "https"
     s"$scheme://$preferencesHost/preferences"
   }
 
@@ -83,7 +85,7 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   // In dev the tag-manager API is a local HTTP WireMock mock (see e2e/setup/stackContainers.ts);
   // everywhere else it is the real tag-manager service over HTTPS.
   lazy val tagManagerUrl: String = {
-    val scheme = if (isDev) "http" else "https"
+    val scheme = if (localE2eTest) "http" else "https"
     s"$scheme://$tagManagerHost"
   }
 

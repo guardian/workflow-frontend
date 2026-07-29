@@ -20,7 +20,7 @@ export const ACTIVE_STACK_FILE = "target/tmp/e2e-active-stack.json";
 let ownedStack: LocalStack | undefined;
 
 async function globalSetup(_config: FullConfig) {
-    const e2eRoot = process.cwd();
+    const e2eRoot = __dirname;
 
     let connection: SharedStackInfo;
     const shared = readSharedStackInfo(e2eRoot);

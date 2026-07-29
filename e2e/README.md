@@ -86,7 +86,7 @@ We build the X server in the shared stack so you may run the test with some othe
 options that are supported by Playwright. For example, you may run the test in [UI mode](https://playwright.dev/docs/running-tests) by
 
 ```bash
-yarn test -- --ui
+yarn playwright test --ui
 ```
 
 ### Viewing the report

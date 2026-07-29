@@ -10,7 +10,7 @@ import { mockTelemetry, type TelemetryMock } from "../setup/mock/telemetryMock";
 import { mockComposer, type ComposerMock } from "../setup/mock/composerApiMock";
 
 function readActiveStack(): SharedStackInfo {
-    const filePath = path.join(process.cwd(), ACTIVE_STACK_FILE);
+    const filePath = path.join(__dirname, "..", ACTIVE_STACK_FILE);
     return JSON.parse(fs.readFileSync(filePath, "utf8")) as SharedStackInfo;
 }
 export type PersonWithLocation = { person: PresencePerson; location: PresenceLocation };
