@@ -4,6 +4,17 @@ Living plan. Update as reality diverges. Follows the guardian/cdk migration
 guide and the internal `cloudformation-to-gucdk-migration` skill (incremental
 dual-stack, one PR per phase, each independently deployable and revertible).
 
+## Status (Phase 1)
+
+Phase 1 implemented; three draft PRs open (all labelled `maintenance`). `cdk diff`
+verified against both live stacks. Awaiting review + deploy.
+
+| Repo | PR | State | Purpose |
+| --- | --- | --- | --- |
+| editorial-tools-platform | #1095 | draft | stop deploying the stack + delete orphaned template (merge **1st**) |
+| workflow-frontend | #604 | draft | GuCDK wrap, take over deployment (merge **2nd**, deploy CODE→PROD) |
+| riffraff-platform | #789 | draft | remove now-unused publish permission (merge **3rd**) |
+
 ## Fixed identifiers (record & reuse exactly)
 
 | Thing | Value |
@@ -28,10 +39,10 @@ dual-stack, one PR per phase, each independently deployable and revertible).
   - `workflow-frontend-ami-update` (type `ami-cloudformation-parameter`,
     `cloudFormationStackName: Workflow-Frontend`, `prependStackToCloudFormationStackName: false`)
     — only mutates the `AMI` parameter on the existing stack.
-- **`editorial-tools-platform`** (separate repo, checked out at
-  `/Users/david_furey/code/editorial-tools-platform`) owns and deploys the CFN
-  template `cloudformation/workflow-account/workflow/workflow-frontend.yaml`
-  via a `cloud-formation` Riff-Raff step (see its `.github/workflows/ci.yml`).
+- **`editorial-tools-platform`** (separate repo, checked out under the workspace)
+  owned and deployed the CFN template
+  `cloudformation/workflow-account/workflow/workflow-frontend.yaml`
+  via a `cloud-formation` Riff-Raff step (removed in PR #1095).
 
 ### CFN template inventory (`workflow-frontend.yaml`)
 
@@ -83,33 +94,36 @@ two repos deploying the same stack:
 - [x] Remove the `Editorial Tools::Workflow::Workflow Frontend Cloudformation`
       Riff-Raff step from `editorial-tools-platform/.github/workflows/ci.yml` and
       delete the orphaned `cloudformation/workflow-account/workflow/workflow-frontend.yaml`.
-      **Its own PR in editorial-tools-platform** — edits staged in that repo's working tree.
-- [ ] Check `guardian/riffraff-platform` `access.ts`; remove editorial-tools-platform's
+      **editorial-tools-platform PR #1095 (draft).**
+- [x] Check `guardian/riffraff-platform` `access.ts`; remove editorial-tools-platform's
       permission to publish `Editorial Tools::Workflow::Workflow Frontend Cloudformation`.
-      **Its own PR.** (not done — needs the riffraff-platform repo)
-- [ ] Make the Phase 1 PR in this repo depend on the above and note it in the PR body.
+      **riffraff-platform PR #789 (draft).**
+- [x] Phase 1 PR (#604) depends on the above; merge order noted in each PR body.
 
 ## Phases
 
-### Phase 1 — wrap template with GuCDK (tags-only)  ← IN PROGRESS
+### Phase 1 — wrap template with GuCDK (tags-only)  ← PRs OPEN (draft), awaiting review/deploy
 Goal: `CDK(cfn.yaml) -> cfn.json` with zero resource changes (tags/metadata only).
 - [x] Move template → `cloudformation/workflow-frontend.cfn.yaml` (this repo).
 - [x] Scaffold `cdk/` via `@guardian/cdk new` (v64.3.0) pointing at the template.
 - [x] `bin/cdk.ts`: define `Workflow-Frontend-euwest-1-CODE` and `-PROD`, each with
       per-stage `cloudFormationStackName` (`Workflow-Frontend-CODE` / `-PROD`).
 - [x] Snapshot test covers both CODE + PROD (`region: eu-west-1`). lint/test/synth green.
-- [x] `npm run diff` per stage → confirmed. **CODE = tags-only.** **PROD = tags-only
-      plus the pending PR #1069 change** (`IsCODE` condition + `RunWorkflowFrontendLocally`
-      managed policy) which is inert in PROD (`Condition: IsCODE` → false, nothing created).
-      #1069 was deployed to CODE but not PROD upstream; since we removed the
-      editorial-tools-platform deploy, our CDK deploy is now the only path that
-      brings it to PROD.
+- [x] `npm run diff` per stage run this session (`--profile workflow`) and reviewed.
+      **CODE = tags-only** (6 resources gain `gu:cdk` tags; benign ASG
+      `PropagateAtLaunch` string→bool + SG rule remove/re-add presentation quirk).
+      **PROD = tags-only plus one no-op:** `cdk diff` reports the CODE-only
+      `RunWorkflowFrontendLocally` managed policy as `[+]`, but it is gated
+      `Condition: IsCODE` so CloudFormation never creates it in PROD (cdk diff
+      doesn't evaluate conditions). No functional change either stage.
 - [x] CI: `cdk/` build step (`npm ci` → lint → test → synth) + upload both
       `cdk.out/*.template.json` to Riff-Raff under `cfn-workflow-frontend`.
 - [x] Replaced `ami-cloudformation-parameter` with a `cloud-formation` deployment of the
       synthesized templates (targeting `Workflow-Frontend-<stage>`);
       `autoscaling` deployment now `dependencies: [cfn-workflow-frontend]`.
-- [ ] PR (depends on cross-repo removal), deploy CODE then PROD.
+- [x] PRs raised as drafts (#604 / #1095 / #789), all labelled `maintenance`.
+- [ ] Merge in order (#1095 → #604 → #789); deploy #604 to CODE then PROD; confirm
+      a normal deploy still works.
 
 **Expected `cdk diff` (Phase 1):** additive only — `gu:cdk:version`, `gu:repo`, `Stack`,
 `Stage` tags + `gu:cdk:*` metadata. Benign: `Stage` resolving from `{"Ref":"Stage"}`
@@ -148,8 +162,12 @@ Root `.nvmrc` is `22.5.1`, so CI reuses it for the CDK build (no `cdk/.nvmrc` ne
   condition and CODE-only `RunWorkflowFrontendLocally` managed policy. The initial
   copy was stale and the first `cdk diff` showed it would DELETE that policy in CODE.
   Keep `cloudformation/workflow-frontend.cfn.yaml` in sync with upstream until the
-  editorial-tools-platform copy is deleted (Phase 1 cross-repo PR).
+  editorial-tools-platform copy is deleted (merged via PR #1095).
 - `.nvmrc` at repo root is `22.5.1` (modern) — no legacy-node gotcha, but the CDK
   build still gets its own node 20+ setup step.
-- Confirm exact live stack names before first `cdk diff` (owner: `Workflow-Frontend-CODE/-PROD`).
-- Need AWS profile from owner to run `cdk diff` against live stacks each phase.
+- Live stack names confirmed correct — the `cdk diff` matched the deployed
+  `Workflow-Frontend-CODE` / `Workflow-Frontend-PROD` stacks (no duplicate-stack diff).
+- `cdk diff` is runnable in-container via the Janus `workflow` profile
+  (`npm run diff -- --profile workflow <stack-id>`); refresh creds each session.
+- Reminder: never put AWS account IDs in code/commits/PR descriptions; never paste
+  credentials into chat.
