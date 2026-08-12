@@ -16,6 +16,7 @@ modules:
   - docker-in-docker  # (disabled by default)
   - scala  # (disabled by default)
   - node  # (disabled by default)
+  - github-copilot
 
 # Optional: Ports to forward
 forwardPorts:
