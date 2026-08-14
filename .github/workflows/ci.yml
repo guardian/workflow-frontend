@@ -51,6 +51,14 @@ jobs:
               run: |
                   sbt clean compile test Debian/packageBin
 
+            - name: Build and synth the CDK app
+              working-directory: cdk
+              run: |
+                  npm ci
+                  npm run lint
+                  npm test
+                  npm run synth
+
             - uses: guardian/actions-riff-raff@v4
               with:
                   projectName: Editorial Tools::Workflow::Workflow Frontend
@@ -61,3 +69,6 @@ jobs:
                   contentDirectories: |
                       workflow-frontend:
                         - target/workflow-frontend_0.1_all.deb
+                      cfn-workflow-frontend:
+                        - cdk/cdk.out/Workflow-Frontend-euwest-1-CODE.template.json
+                        - cdk/cdk.out/Workflow-Frontend-euwest-1-PROD.template.json

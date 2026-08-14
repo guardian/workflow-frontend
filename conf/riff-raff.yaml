@@ -1,17 +1,21 @@
 stacks: [workflow]
 regions: [eu-west-1]
 deployments:
-  workflow-frontend:
-    type: autoscaling
+  cfn-workflow-frontend:
+    type: cloud-formation
     parameters:
-    dependencies: [workflow-frontend-ami-update]
-  workflow-frontend-ami-update:
-    type: ami-cloudformation-parameter
-    parameters:
+      templateStagePaths:
+        CODE: Workflow-Frontend-euwest-1-CODE.template.json
+        PROD: Workflow-Frontend-euwest-1-PROD.template.json
+      cloudFormationStackName: Workflow-Frontend
+      prependStackToCloudFormationStackName: false
+      cloudFormationStackByTags: false
+      amiParameter: AMI
       amiTags:
         AmigoStage: PROD
         Recipe: editorial-tools-jammy-java11
         BuiltBy: amigo
-      cloudFormationStackName: Workflow-Frontend
-      prependStackToCloudFormationStackName: false
-      cloudFormationStackByTags: false
+  workflow-frontend:
+    type: autoscaling
+    parameters:
+    dependencies: [cfn-workflow-frontend]

@@ -1,0 +1,1657 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`The WorkflowFrontend stack matches the CODE snapshot 1`] = `
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": {
+    "IsCODE": {
+      "Fn::Equals": [
+        {
+          "Ref": "Stage",
+        },
+        "CODE",
+      ],
+    },
+    "IsPROD": {
+      "Fn::Equals": [
+        {
+          "Ref": "Stage",
+        },
+        "PROD",
+      ],
+    },
+    "NotPROD": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "Stage",
+            },
+            "PROD",
+          ],
+        },
+      ],
+    },
+  },
+  "Description": "Workflow Frontend",
+  "Mappings": {
+    "WorkflowFrontendConfig": {
+      "CODE": {
+        "CloudfrontAliases": [
+          "workflow.code.dev-gutools.co.uk",
+        ],
+        "DesiredCapacity": 1,
+        "InstanceType": "t4g.medium",
+        "MaxSize": 2,
+        "MinSize": 1,
+      },
+      "PROD": {
+        "CloudfrontAliases": [
+          "workflow.gutools.co.uk",
+        ],
+        "DesiredCapacity": 3,
+        "InstanceType": "t4g.medium",
+        "MaxSize": 6,
+        "MinSize": 3,
+      },
+    },
+  },
+  "Metadata": {
+    "gu:cdk:constructs": [],
+    "gu:cdk:version": "TEST",
+  },
+  "Outputs": {
+    "WorkflowFrontendCloudfrontDNS": {
+      "Description": "Cloudfront DNS",
+      "Value": {
+        "Fn::GetAtt": [
+          "WorkflowFrontendCloudfront",
+          "DomainName",
+        ],
+      },
+    },
+    "WorkflowFrontendLoadBalancerDNS": {
+      "Description": "Load balancer DNS",
+      "Value": {
+        "Fn::GetAtt": [
+          "WorkflowFrontendLoadBalancerNewVpc",
+          "DNSName",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "AMI": {
+      "Description": "AMI for Workflow instances",
+      "Type": "String",
+    },
+    "CapiPreviewRole": {
+      "Description": "ARN of the CAPI preview role",
+      "Type": "String",
+    },
+    "CloudFrontAccessLogsBucketName": {
+      "Description": "Name of the bucket for cloudfront to log access logs to",
+      "Type": "String",
+    },
+    "CloudFrontSSLCertificateArn": {
+      "Description": "The ARN of the certificate for the CloudFront distribution",
+      "Type": "String",
+    },
+    "DatastoreLoadBalancerAccessSecurityGroupIdNewVpcCODE": {
+      "Default": "/CODE/workflow/datastore/LoadBalancerAccessSecurityGroupId",
+      "Description": "The Workflow Data Store Security Group for CODE",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "DatastoreLoadBalancerAccessSecurityGroupIdNewVpcPROD": {
+      "Default": "/PROD/workflow/datastore/LoadBalancerAccessSecurityGroupId",
+      "Description": "The Workflow Data Store Security Group for PROD",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "ELKKinesisStreamArn": {
+      "Description": "Elk logging stream arn",
+      "Type": "String",
+    },
+    "ELKKinesisStreamName": {
+      "Description": "Elk logging stream name",
+      "Type": "String",
+    },
+    "GithubTeamName": {
+      "Default": "Editorial-Tools-SSHAccess",
+      "Description": "Name of github team to allow SSH access to",
+      "Type": "String",
+    },
+    "PrivateSubnets": {
+      "Description": "The private subnets of the new VPC for the autoscaling group",
+      "Type": "List<AWS::EC2::Subnet::Id>",
+    },
+    "PublicSubnets": {
+      "Description": "The public subnets of the new VPC for the loadbalancer",
+      "Type": "List<AWS::EC2::Subnet::Id>",
+    },
+    "SSLCertificateArn": {
+      "Description": "ARN of the SSL certificate for workflow.gutools.co.uk",
+      "Type": "String",
+    },
+    "Stage": {
+      "AllowedValues": [
+        "CODE",
+        "PROD",
+      ],
+      "Default": "PROD",
+      "Description": "Environment name",
+      "Type": "String",
+    },
+    "VpcId": {
+      "Description": "The new VPC we look to migrate to",
+      "Type": "AWS::EC2::VPC::Id",
+    },
+  },
+  "Resources": {
+    "AppServerSecurityGroupNewVpc": {
+      "Properties": {
+        "GroupDescription": "Application servers",
+        "SecurityGroupIngress": [
+          {
+            "FromPort": 9000,
+            "IpProtocol": "tcp",
+            "SourceSecurityGroupId": {
+              "Fn::GetAtt": "LoadBalancerSecurityGroupNewVpc.GroupId",
+            },
+            "ToPort": 9000,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "Stack",
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "AssumeCapiPreviewRolePolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "CapiPreviewRole",
+              },
+            },
+          ],
+        },
+        "PolicyName": "AssumeCapiPreviewRole",
+        "Roles": [
+          {
+            "Ref": "DistributionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DistributionInstanceProfile": {
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "DistributionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
+    "DistributionRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com",
+                ],
+              },
+            },
+          ],
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::ImportValue": {
+              "Fn::Sub": "guardian-ec2-for-ssm-GuardianEC2ForSSMPolicy",
+            },
+          },
+        ],
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:GetObject",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:s3:::workflow-dist/*",
+                    "arn:aws:s3:::workflow-private/*",
+                    "arn:aws:s3:::pan-domain-auth-settings/*",
+                    "arn:aws:s3:::permissions-cache/*",
+                  ],
+                },
+              ],
+            },
+            "PolicyName": "root",
+          },
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "logs:*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:logs:*:*:*",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "PushLogs",
+          },
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "ec2:Describe*",
+                    "autoscaling:DescribeAutoScalingGroups",
+                    "autoscaling:DescribeAutoScalingInstances",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+            },
+            "PolicyName": "DescribeEC2Policy",
+          },
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+            },
+            "PolicyName": "Dynamo",
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "Stack",
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "GetTeamKeysPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::github-team-keys/*",
+              ],
+            },
+            {
+              "Action": [
+                "s3:ListBucket",
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::github-team-keys",
+            },
+          ],
+        },
+        "PolicyName": "GetTeamKeysPolicy",
+        "Roles": [
+          {
+            "Ref": "DistributionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "LoadBalancerSecurityGroupNewVpc": {
+      "Properties": {
+        "GroupDescription": "WorkflowFrontend application load balancer",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80,
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "Stack",
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "LogServerPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "kinesis:PutRecord",
+                "kinesis:PutRecords",
+                "kinesis:DescribeStream",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "ELKKinesisStreamArn",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LogServerPolicy",
+        "Roles": [
+          {
+            "Ref": "DistributionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RunWorkflowFrontendLocally": {
+      "Condition": "IsCODE",
+      "Properties": {
+        "Description": "Policy used for running workflow-frontend locally",
+        "Path": {
+          "Fn::Sub": "/developer-policy/guardian/workflow-frontend/workflow/\${Stage}/run-workflow-frontend-locally/",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::workflow-private/DEV/workflow-frontend-application.local.docker.conf",
+                "arn:aws:s3:::workflow-private/DEV/workflow-frontend-application.local.conf",
+                "arn:aws:s3:::permissions-cache/CODE/permissions.json",
+                "arn:aws:s3:::pan-domain-auth-settings/local.dev-gutools.co.uk.settings",
+                "arn:aws:s3:::pan-domain-auth-settings/local.dev-gutools.co.uk.settings.public",
+                "arn:aws:s3:::pan-domain-auth-settings/*.p12",
+              ],
+            },
+            {
+              "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:Query",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/editorial-support-CODE",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::ManagedPolicy",
+    },
+    "WorkflowFrontendAutoscalingGroupNewVpc": {
+      "Properties": {
+        "Cooldown": "180",
+        "DesiredCapacity": {
+          "Fn::FindInMap": [
+            "WorkflowFrontendConfig",
+            {
+              "Ref": "Stage",
+            },
+            "DesiredCapacity",
+          ],
+        },
+        "HealthCheckGracePeriod": 300,
+        "HealthCheckType": "ELB",
+        "LaunchConfigurationName": {
+          "Ref": "WorkflowFrontendLaunchConfigNewVpc",
+        },
+        "LoadBalancerNames": [
+          {
+            "Ref": "WorkflowFrontendLoadBalancerNewVpc",
+          },
+        ],
+        "MaxSize": {
+          "Fn::FindInMap": [
+            "WorkflowFrontendConfig",
+            {
+              "Ref": "Stage",
+            },
+            "MaxSize",
+          ],
+        },
+        "MinSize": {
+          "Fn::FindInMap": [
+            "WorkflowFrontendConfig",
+            {
+              "Ref": "Stage",
+            },
+            "MinSize",
+          ],
+        },
+        "Tags": [
+          {
+            "Key": "App",
+            "PropagateAtLaunch": true,
+            "Value": "workflow-frontend",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "PropagateAtLaunch": true,
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "PropagateAtLaunch": true,
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "LogKinesisStreamName",
+            "PropagateAtLaunch": true,
+            "Value": {
+              "Ref": "ELKKinesisStreamName",
+            },
+          },
+          {
+            "Key": "Stack",
+            "PropagateAtLaunch": true,
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "PropagateAtLaunch": true,
+            "Value": "CODE",
+          },
+          {
+            "Key": "SystemdUnit",
+            "PropagateAtLaunch": true,
+            "Value": "workflow-frontend.service",
+          },
+        ],
+        "VPCZoneIdentifier": {
+          "Ref": "PrivateSubnets",
+        },
+      },
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+    },
+    "WorkflowFrontendCloudfront": {
+      "Properties": {
+        "DistributionConfig": {
+          "Aliases": {
+            "Fn::FindInMap": [
+              "WorkflowFrontendConfig",
+              {
+                "Ref": "Stage",
+              },
+              "CloudfrontAliases",
+            ],
+          },
+          "CacheBehaviors": [
+            {
+              "Compress": true,
+              "ForwardedValues": {
+                "Headers": [
+                  "Host",
+                ],
+                "QueryString": false,
+              },
+              "PathPattern": "assets/*",
+              "TargetOriginId": "workflow-frontend",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+          ],
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "DELETE",
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PATCH",
+              "POST",
+              "PUT",
+            ],
+            "Compress": true,
+            "ForwardedValues": {
+              "Cookies": {
+                "Forward": "all",
+              },
+              "Headers": [
+                "*",
+              ],
+              "QueryString": true,
+            },
+            "TargetOriginId": "workflow-frontend",
+            "ViewerProtocolPolicy": "redirect-to-https",
+          },
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Logging": {
+            "Bucket": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "CloudFrontAccessLogsBucketName",
+                  },
+                  ".s3.amazonaws.com",
+                ],
+              ],
+            },
+            "IncludeCookies": false,
+            "Prefix": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "Stage",
+                  },
+                  "-access-logs/",
+                ],
+              ],
+            },
+          },
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "HTTPSPort": 443,
+                "OriginProtocolPolicy": "https-only",
+              },
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "WorkflowFrontendLoadBalancerNewVpc",
+                  "DNSName",
+                ],
+              },
+              "Id": "workflow-frontend",
+            },
+          ],
+          "PriceClass": "PriceClass_All",
+          "ViewerCertificate": {
+            "AcmCertificateArn": {
+              "Ref": "CloudFrontSSLCertificateArn",
+            },
+            "MinimumProtocolVersion": "TLSv1.2_2021",
+            "SslSupportMethod": "sni-only",
+          },
+        },
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "Stack",
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+      },
+      "Type": "AWS::CloudFront::Distribution",
+    },
+    "WorkflowFrontendGroup": {
+      "Properties": {
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "sqs:DeleteMessage",
+                    "sqs:ReceiveMessage",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+                {
+                  "Action": [
+                    "ec2:DescribeTags",
+                    "cloudwatch:PutMetricData",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "WorkflowFrontendGroup-Policy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Group",
+    },
+    "WorkflowFrontendLaunchConfigNewVpc": {
+      "Properties": {
+        "IamInstanceProfile": {
+          "Ref": "DistributionInstanceProfile",
+        },
+        "ImageId": {
+          "Ref": "AMI",
+        },
+        "InstanceType": {
+          "Fn::FindInMap": [
+            "WorkflowFrontendConfig",
+            {
+              "Ref": "Stage",
+            },
+            "InstanceType",
+          ],
+        },
+        "MetadataOptions": {
+          "HttpTokens": "required",
+        },
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": "AppServerSecurityGroupNewVpc.GroupId",
+          },
+          {
+            "Fn::If": [
+              "IsPROD",
+              {
+                "Ref": "DatastoreLoadBalancerAccessSecurityGroupIdNewVpcPROD",
+              },
+              {
+                "Ref": "DatastoreLoadBalancerAccessSecurityGroupIdNewVpcCODE",
+              },
+            ],
+          },
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Sub": "#!/bin/bash -ev
+aws s3 cp s3://workflow-private/\${Stage}/workflow-frontend/application.defaults.conf /etc/gu/application.defaults.conf
+aws s3 cp s3://workflow-private/keys.conf /etc/gu/workflow-keys.conf
+aws s3 cp s3://workflow-dist/workflow/\${Stage}/workflow-frontend/workflow-frontend_0.1_all.deb /tmp
+dpkg -i /tmp/workflow-frontend_0.1_all.deb
+",
+          },
+        },
+      },
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+    },
+    "WorkflowFrontendLoadBalancerNewVpc": {
+      "Properties": {
+        "AccessLoggingPolicy": {
+          "EmitInterval": 5,
+          "Enabled": true,
+          "S3BucketName": "workflow-logs",
+          "S3BucketPrefix": {
+            "Ref": "Stage",
+          },
+        },
+        "CrossZone": true,
+        "HealthCheck": {
+          "HealthyThreshold": "2",
+          "Interval": "10",
+          "Target": "HTTP:9000/management/healthcheck",
+          "Timeout": "5",
+          "UnhealthyThreshold": "2",
+        },
+        "Listeners": [
+          {
+            "InstancePort": "9000",
+            "LoadBalancerPort": "80",
+            "Protocol": "HTTP",
+          },
+          {
+            "InstancePort": "9000",
+            "LoadBalancerPort": "443",
+            "Protocol": "HTTPS",
+            "SSLCertificateId": {
+              "Ref": "SSLCertificateArn",
+            },
+          },
+        ],
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": "LoadBalancerSecurityGroupNewVpc.GroupId",
+          },
+        ],
+        "Subnets": {
+          "Ref": "PublicSubnets",
+        },
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "workflow-frontend",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "Stack",
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "Value": "CODE",
+          },
+        ],
+      },
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+    },
+  },
+}
+`;
+
+exports[`The WorkflowFrontend stack matches the PROD snapshot 1`] = `
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": {
+    "IsCODE": {
+      "Fn::Equals": [
+        {
+          "Ref": "Stage",
+        },
+        "CODE",
+      ],
+    },
+    "IsPROD": {
+      "Fn::Equals": [
+        {
+          "Ref": "Stage",
+        },
+        "PROD",
+      ],
+    },
+    "NotPROD": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "Stage",
+            },
+            "PROD",
+          ],
+        },
+      ],
+    },
+  },
+  "Description": "Workflow Frontend",
+  "Mappings": {
+    "WorkflowFrontendConfig": {
+      "CODE": {
+        "CloudfrontAliases": [
+          "workflow.code.dev-gutools.co.uk",
+        ],
+        "DesiredCapacity": 1,
+        "InstanceType": "t4g.medium",
+        "MaxSize": 2,
+        "MinSize": 1,
+      },
+      "PROD": {
+        "CloudfrontAliases": [
+          "workflow.gutools.co.uk",
+        ],
+        "DesiredCapacity": 3,
+        "InstanceType": "t4g.medium",
+        "MaxSize": 6,
+        "MinSize": 3,
+      },
+    },
+  },
+  "Metadata": {
+    "gu:cdk:constructs": [],
+    "gu:cdk:version": "TEST",
+  },
+  "Outputs": {
+    "WorkflowFrontendCloudfrontDNS": {
+      "Description": "Cloudfront DNS",
+      "Value": {
+        "Fn::GetAtt": [
+          "WorkflowFrontendCloudfront",
+          "DomainName",
+        ],
+      },
+    },
+    "WorkflowFrontendLoadBalancerDNS": {
+      "Description": "Load balancer DNS",
+      "Value": {
+        "Fn::GetAtt": [
+          "WorkflowFrontendLoadBalancerNewVpc",
+          "DNSName",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "AMI": {
+      "Description": "AMI for Workflow instances",
+      "Type": "String",
+    },
+    "CapiPreviewRole": {
+      "Description": "ARN of the CAPI preview role",
+      "Type": "String",
+    },
+    "CloudFrontAccessLogsBucketName": {
+      "Description": "Name of the bucket for cloudfront to log access logs to",
+      "Type": "String",
+    },
+    "CloudFrontSSLCertificateArn": {
+      "Description": "The ARN of the certificate for the CloudFront distribution",
+      "Type": "String",
+    },
+    "DatastoreLoadBalancerAccessSecurityGroupIdNewVpcCODE": {
+      "Default": "/CODE/workflow/datastore/LoadBalancerAccessSecurityGroupId",
+      "Description": "The Workflow Data Store Security Group for CODE",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "DatastoreLoadBalancerAccessSecurityGroupIdNewVpcPROD": {
+      "Default": "/PROD/workflow/datastore/LoadBalancerAccessSecurityGroupId",
+      "Description": "The Workflow Data Store Security Group for PROD",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "ELKKinesisStreamArn": {
+      "Description": "Elk logging stream arn",
+      "Type": "String",
+    },
+    "ELKKinesisStreamName": {
+      "Description": "Elk logging stream name",
+      "Type": "String",
+    },
+    "GithubTeamName": {
+      "Default": "Editorial-Tools-SSHAccess",
+      "Description": "Name of github team to allow SSH access to",
+      "Type": "String",
+    },
+    "PrivateSubnets": {
+      "Description": "The private subnets of the new VPC for the autoscaling group",
+      "Type": "List<AWS::EC2::Subnet::Id>",
+    },
+    "PublicSubnets": {
+      "Description": "The public subnets of the new VPC for the loadbalancer",
+      "Type": "List<AWS::EC2::Subnet::Id>",
+    },
+    "SSLCertificateArn": {
+      "Description": "ARN of the SSL certificate for workflow.gutools.co.uk",
+      "Type": "String",
+    },
+    "Stage": {
+      "AllowedValues": [
+        "CODE",
+        "PROD",
+      ],
+      "Default": "PROD",
+      "Description": "Environment name",
+      "Type": "String",
+    },
+    "VpcId": {
+      "Description": "The new VPC we look to migrate to",
+      "Type": "AWS::EC2::VPC::Id",
+    },
+  },
+  "Resources": {
+    "AppServerSecurityGroupNewVpc": {
+      "Properties": {
+        "GroupDescription": "Application servers",
+        "SecurityGroupIngress": [
+          {
+            "FromPort": 9000,
+            "IpProtocol": "tcp",
+            "SourceSecurityGroupId": {
+              "Fn::GetAtt": "LoadBalancerSecurityGroupNewVpc.GroupId",
+            },
+            "ToPort": 9000,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "Stack",
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "AssumeCapiPreviewRolePolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "CapiPreviewRole",
+              },
+            },
+          ],
+        },
+        "PolicyName": "AssumeCapiPreviewRole",
+        "Roles": [
+          {
+            "Ref": "DistributionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DistributionInstanceProfile": {
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "DistributionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
+    "DistributionRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com",
+                ],
+              },
+            },
+          ],
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::ImportValue": {
+              "Fn::Sub": "guardian-ec2-for-ssm-GuardianEC2ForSSMPolicy",
+            },
+          },
+        ],
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:GetObject",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:s3:::workflow-dist/*",
+                    "arn:aws:s3:::workflow-private/*",
+                    "arn:aws:s3:::pan-domain-auth-settings/*",
+                    "arn:aws:s3:::permissions-cache/*",
+                  ],
+                },
+              ],
+            },
+            "PolicyName": "root",
+          },
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "logs:*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:logs:*:*:*",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "PushLogs",
+          },
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "ec2:Describe*",
+                    "autoscaling:DescribeAutoScalingGroups",
+                    "autoscaling:DescribeAutoScalingInstances",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+            },
+            "PolicyName": "DescribeEC2Policy",
+          },
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+            },
+            "PolicyName": "Dynamo",
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "Stack",
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "GetTeamKeysPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::github-team-keys/*",
+              ],
+            },
+            {
+              "Action": [
+                "s3:ListBucket",
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::github-team-keys",
+            },
+          ],
+        },
+        "PolicyName": "GetTeamKeysPolicy",
+        "Roles": [
+          {
+            "Ref": "DistributionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "LoadBalancerSecurityGroupNewVpc": {
+      "Properties": {
+        "GroupDescription": "WorkflowFrontend application load balancer",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80,
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "Stack",
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "LogServerPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "kinesis:PutRecord",
+                "kinesis:PutRecords",
+                "kinesis:DescribeStream",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "ELKKinesisStreamArn",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LogServerPolicy",
+        "Roles": [
+          {
+            "Ref": "DistributionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RunWorkflowFrontendLocally": {
+      "Condition": "IsCODE",
+      "Properties": {
+        "Description": "Policy used for running workflow-frontend locally",
+        "Path": {
+          "Fn::Sub": "/developer-policy/guardian/workflow-frontend/workflow/\${Stage}/run-workflow-frontend-locally/",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::workflow-private/DEV/workflow-frontend-application.local.docker.conf",
+                "arn:aws:s3:::workflow-private/DEV/workflow-frontend-application.local.conf",
+                "arn:aws:s3:::permissions-cache/CODE/permissions.json",
+                "arn:aws:s3:::pan-domain-auth-settings/local.dev-gutools.co.uk.settings",
+                "arn:aws:s3:::pan-domain-auth-settings/local.dev-gutools.co.uk.settings.public",
+                "arn:aws:s3:::pan-domain-auth-settings/*.p12",
+              ],
+            },
+            {
+              "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:Query",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/editorial-support-CODE",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::ManagedPolicy",
+    },
+    "WorkflowFrontendAutoscalingGroupNewVpc": {
+      "Properties": {
+        "Cooldown": "180",
+        "DesiredCapacity": {
+          "Fn::FindInMap": [
+            "WorkflowFrontendConfig",
+            {
+              "Ref": "Stage",
+            },
+            "DesiredCapacity",
+          ],
+        },
+        "HealthCheckGracePeriod": 300,
+        "HealthCheckType": "ELB",
+        "LaunchConfigurationName": {
+          "Ref": "WorkflowFrontendLaunchConfigNewVpc",
+        },
+        "LoadBalancerNames": [
+          {
+            "Ref": "WorkflowFrontendLoadBalancerNewVpc",
+          },
+        ],
+        "MaxSize": {
+          "Fn::FindInMap": [
+            "WorkflowFrontendConfig",
+            {
+              "Ref": "Stage",
+            },
+            "MaxSize",
+          ],
+        },
+        "MinSize": {
+          "Fn::FindInMap": [
+            "WorkflowFrontendConfig",
+            {
+              "Ref": "Stage",
+            },
+            "MinSize",
+          ],
+        },
+        "Tags": [
+          {
+            "Key": "App",
+            "PropagateAtLaunch": true,
+            "Value": "workflow-frontend",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "PropagateAtLaunch": true,
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "PropagateAtLaunch": true,
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "LogKinesisStreamName",
+            "PropagateAtLaunch": true,
+            "Value": {
+              "Ref": "ELKKinesisStreamName",
+            },
+          },
+          {
+            "Key": "Stack",
+            "PropagateAtLaunch": true,
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "PropagateAtLaunch": true,
+            "Value": "PROD",
+          },
+          {
+            "Key": "SystemdUnit",
+            "PropagateAtLaunch": true,
+            "Value": "workflow-frontend.service",
+          },
+        ],
+        "VPCZoneIdentifier": {
+          "Ref": "PrivateSubnets",
+        },
+      },
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+    },
+    "WorkflowFrontendCloudfront": {
+      "Properties": {
+        "DistributionConfig": {
+          "Aliases": {
+            "Fn::FindInMap": [
+              "WorkflowFrontendConfig",
+              {
+                "Ref": "Stage",
+              },
+              "CloudfrontAliases",
+            ],
+          },
+          "CacheBehaviors": [
+            {
+              "Compress": true,
+              "ForwardedValues": {
+                "Headers": [
+                  "Host",
+                ],
+                "QueryString": false,
+              },
+              "PathPattern": "assets/*",
+              "TargetOriginId": "workflow-frontend",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+          ],
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "DELETE",
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PATCH",
+              "POST",
+              "PUT",
+            ],
+            "Compress": true,
+            "ForwardedValues": {
+              "Cookies": {
+                "Forward": "all",
+              },
+              "Headers": [
+                "*",
+              ],
+              "QueryString": true,
+            },
+            "TargetOriginId": "workflow-frontend",
+            "ViewerProtocolPolicy": "redirect-to-https",
+          },
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Logging": {
+            "Bucket": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "CloudFrontAccessLogsBucketName",
+                  },
+                  ".s3.amazonaws.com",
+                ],
+              ],
+            },
+            "IncludeCookies": false,
+            "Prefix": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "Stage",
+                  },
+                  "-access-logs/",
+                ],
+              ],
+            },
+          },
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "HTTPSPort": 443,
+                "OriginProtocolPolicy": "https-only",
+              },
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "WorkflowFrontendLoadBalancerNewVpc",
+                  "DNSName",
+                ],
+              },
+              "Id": "workflow-frontend",
+            },
+          ],
+          "PriceClass": "PriceClass_All",
+          "ViewerCertificate": {
+            "AcmCertificateArn": {
+              "Ref": "CloudFrontSSLCertificateArn",
+            },
+            "MinimumProtocolVersion": "TLSv1.2_2021",
+            "SslSupportMethod": "sni-only",
+          },
+        },
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "Stack",
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+      },
+      "Type": "AWS::CloudFront::Distribution",
+    },
+    "WorkflowFrontendGroup": {
+      "Properties": {
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "sqs:DeleteMessage",
+                    "sqs:ReceiveMessage",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+                {
+                  "Action": [
+                    "ec2:DescribeTags",
+                    "cloudwatch:PutMetricData",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "WorkflowFrontendGroup-Policy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Group",
+    },
+    "WorkflowFrontendLaunchConfigNewVpc": {
+      "Properties": {
+        "IamInstanceProfile": {
+          "Ref": "DistributionInstanceProfile",
+        },
+        "ImageId": {
+          "Ref": "AMI",
+        },
+        "InstanceType": {
+          "Fn::FindInMap": [
+            "WorkflowFrontendConfig",
+            {
+              "Ref": "Stage",
+            },
+            "InstanceType",
+          ],
+        },
+        "MetadataOptions": {
+          "HttpTokens": "required",
+        },
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": "AppServerSecurityGroupNewVpc.GroupId",
+          },
+          {
+            "Fn::If": [
+              "IsPROD",
+              {
+                "Ref": "DatastoreLoadBalancerAccessSecurityGroupIdNewVpcPROD",
+              },
+              {
+                "Ref": "DatastoreLoadBalancerAccessSecurityGroupIdNewVpcCODE",
+              },
+            ],
+          },
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Sub": "#!/bin/bash -ev
+aws s3 cp s3://workflow-private/\${Stage}/workflow-frontend/application.defaults.conf /etc/gu/application.defaults.conf
+aws s3 cp s3://workflow-private/keys.conf /etc/gu/workflow-keys.conf
+aws s3 cp s3://workflow-dist/workflow/\${Stage}/workflow-frontend/workflow-frontend_0.1_all.deb /tmp
+dpkg -i /tmp/workflow-frontend_0.1_all.deb
+",
+          },
+        },
+      },
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+    },
+    "WorkflowFrontendLoadBalancerNewVpc": {
+      "Properties": {
+        "AccessLoggingPolicy": {
+          "EmitInterval": 5,
+          "Enabled": true,
+          "S3BucketName": "workflow-logs",
+          "S3BucketPrefix": {
+            "Ref": "Stage",
+          },
+        },
+        "CrossZone": true,
+        "HealthCheck": {
+          "HealthyThreshold": "2",
+          "Interval": "10",
+          "Target": "HTTP:9000/management/healthcheck",
+          "Timeout": "5",
+          "UnhealthyThreshold": "2",
+        },
+        "Listeners": [
+          {
+            "InstancePort": "9000",
+            "LoadBalancerPort": "80",
+            "Protocol": "HTTP",
+          },
+          {
+            "InstancePort": "9000",
+            "LoadBalancerPort": "443",
+            "Protocol": "HTTPS",
+            "SSLCertificateId": {
+              "Ref": "SSLCertificateArn",
+            },
+          },
+        ],
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": "LoadBalancerSecurityGroupNewVpc.GroupId",
+          },
+        ],
+        "Subnets": {
+          "Ref": "PublicSubnets",
+        },
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "workflow-frontend",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/workflow-frontend",
+          },
+          {
+            "Key": "Stack",
+            "Value": "workflow",
+          },
+          {
+            "Key": "Stage",
+            "Value": "PROD",
+          },
+        ],
+      },
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+    },
+  },
+}
+`;
