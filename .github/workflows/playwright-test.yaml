@@ -1,22 +1,29 @@
 name: playwright-tests
 
 on:
-    push:
-        branches: ["main"]
-    pull_request:
-    workflow_dispatch:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-    playwright-tests:
-        runs-on: ubuntu-22.04
+  playwright-tests:
+    runs-on: ubuntu-22.04
 
     defaults:
       run:
         working-directory: e2e-tests
 
-        steps:
-            - name: Check out workflow-frontend
-              uses: actions/checkout@v4
+    steps:
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: workflow-app-token
+        with:
+          # required
+          client-id: ${{ vars.WORKFLOW_APP_CLIENT_ID }}
+          private-key: ${{ secrets.WORKFLOW_APP_PRIVATE_KEY }}
+          repositories: guardian/workflow
+      - name: Check out workflow-frontend
+        uses: actions/checkout@v4
 
       # The e2e stack builds the real Datastore service from a
       # guardian/workflow checkout. Locally this is done by
@@ -37,14 +44,14 @@ jobs:
           cache: yarn
           cache-dependency-path: e2e-tests/yarn.lock
 
-            - name: Install e2e dependencies
-              run: yarn install --frozen-lockfile
+      - name: Install e2e dependencies
+        run: yarn install --frozen-lockfile
 
-            # We only need the headless shell ("skin"), not the full Chromium
-            # browser, so use --only-shell. --with-deps also installs the OS
-            # libraries the shell needs on the runner.
-            - name: Install Playwright Chromium (headless shell only)
-              run: yarn playwright install --with-deps chromium --only-shell
+      # We only need the headless shell ("skin"), not the full Chromium
+      # browser, so use --only-shell. --with-deps also installs the OS
+      # libraries the shell needs on the runner.
+      - name: Install Playwright Chromium (headless shell only)
+        run: yarn playwright install --with-deps chromium --only-shell
 
       # Build the stack images up front so their layers are cached in the
       # Docker build cache. testcontainers rebuilds them during the run
@@ -63,8 +70,8 @@ jobs:
           docker build -f images/mock-telemetry.Dockerfile -t workflow-frontend-mock-telemetry-e2e:prebuild .
           docker build -f images/workflow-frontend.Dockerfile -t workflow-frontend-app-e2e:prebuild ..
 
-            - name: Run Playwright tests
-              run: yarn bddgen && yarn playwright test
+      - name: Run Playwright tests
+        run: yarn bddgen && yarn playwright test
 
       # Traces, videos and screenshots are written to target/test-results
       # (see outputDir in playwright.config.ts). Keep them for debugging
