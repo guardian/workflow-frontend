@@ -38,30 +38,24 @@ yarn playwright install --with-deps chromium
 
 All commands are run from the `e2e/` folder.
 
-### Headless mode (default)
-
 ```bash
 yarn test
 ```
 
 This generates the BDD test files (`bddgen`), ensures the Datastore backend is
-checked out, builds the stack, and runs the test suite without popping up
-the actual browser.
+checked out, builds the stack, and runs the test suite in headless mode. 
 
-### Headed (watch the browser)
+### Use host's browser to access Playwright UI
+
+Headed mode is not supported in dev container, but you can run this command to
+expose a port for a browser to access its Playwright UI.
 
 ```bash
-yarn test:headed
+yarn test:ui
 ```
 
-We build a X server with VNC as part of the stack and render the Playwright
-test browser into this X server. The Web VNC port is configured such that it is
-mapped to the port 6080 of the host machine. You can open it in your browser to
-watch the session live:
+The Playwright UI can be accessed via `http://localhost:9091/` on the host system.
 
-```
-http://localhost:6080/vnc.html?autoconnect=1
-```
 
 ### Fast inner loop with a shared stack
 
@@ -79,15 +73,6 @@ yarn test
 The shared stack writes its connection details to a gitignored file that
 `globalSetup.ts` picks up; when present, the test run skips building containers.
 Press `Ctrl+C` in terminal 1 to tear the stack down.
-
-### Support additional options with a shared stack
-
-We build the X server in the shared stack so you may run the test with some other
-options that are supported by Playwright. For example, you may run the test in [UI mode](https://playwright.dev/docs/running-tests) by
-
-```bash
-yarn playwright test --ui
-```
 
 ### Viewing the report
 

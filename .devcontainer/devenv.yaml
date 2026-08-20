@@ -21,9 +21,7 @@ modules:
 # Optional: Ports to forward
 forwardPorts:
   - 9090  # same port on host and container
-  - 6080  # web vnc to the x11vnc container for headed e2e tests
-#   - 8080  # same port on host and container
-#   - "8000:9000"  # hostPort:containerPort
+  - 9091  # same port on host and container
 
 # Optional: Mount directories from host to container
 # mounts:
@@ -32,8 +30,6 @@ forwardPorts:
 containerEnv:
   - name: DEVCONTAINER
     value: "true"
-  - name: DISPLAY
-    value: "localhost:0"
 
 # Optional: IDE plugins - shared project plugins like language support
 plugins:

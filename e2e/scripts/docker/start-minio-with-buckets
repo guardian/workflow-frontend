@@ -148,14 +148,10 @@ echo "MinIO started in background with PID ${MINIO_PID}"
 wait_for_health
 
 create_bucket "${PAN_DOMAIN_BUCKET}"
-# create_bucket "${SNAPSHOT_BUCKET}"
-# create_bucket "${SECONDARY_SNAPSHOT_BUCKET}"
 create_bucket "${PERMISSIONS_BUCKET}"
 
 upload_permissions_fixture
 upload_pan_domain_settings_fixtures
-# upload_snapshot_fixtures "${SNAPSHOT_BUCKET}"
-# upload_snapshot_fixtures "${SECONDARY_SNAPSHOT_BUCKET}"
 
 # echo "Ensured buckets exist: ${PAN_DOMAIN_BUCKET}, ${SNAPSHOT_BUCKET}, ${SECONDARY_SNAPSHOT_BUCKET}, ${PERMISSIONS_BUCKET}"
 echo "Ensured permissions object exists: s3://${PERMISSIONS_BUCKET}/${PERMISSIONS_OBJECT_KEY}"

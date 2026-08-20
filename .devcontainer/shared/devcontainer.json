@@ -25,7 +25,7 @@
   },
   "forwardPorts" : [
     9090,
-    6080
+    9091
   ],
   "image" : "mcr.microsoft.com/devcontainers/base:ubuntu26.04",
   "remoteUser" : "vscode",
@@ -51,8 +51,7 @@
   "containerEnv" : {
     "DEVENV_IVY_CACHE_MOUNT_DIR" : "/mnt/ivy-cache",
     "DEVENV_COURSIER_CACHE_MOUNT_DIR" : "/mnt/coursier-cache",
-    "DEVCONTAINER" : "true",
-    "DISPLAY" : "localhost:0"
+    "DEVCONTAINER" : "true"
   },
   "capAdd" : [
     "SYS_ADMIN"

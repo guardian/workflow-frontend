@@ -21,12 +21,6 @@ export type LocalStack = {
      * destination/restore calls return at runtime.
      */
     mockApiUrl: string;
-    /**
-     * URL of the noVNC web client for watching a headed Playwright run, or
-     * undefined when the stack was started headless. Open
-     * `${novncUrl}/vnc.html` in a host browser to view the Chromium session.
-     */
-    novncUrl?: string;
     minioContainer: any;
     workflowContainer: any;
     mockCapiContainer: any;
@@ -35,19 +29,8 @@ export type LocalStack = {
     dbContainer: any;
     dynamodbContainer: any;
     datastoreContainer: any;
-    x11vncContainer?: any;
-    x11vncDisplayPort?: string;
     network: any;
 };
-
-// Headed Playwright runs render into an in-container X server instead of the
-// host's (absent) display. Chromium on the host connects to display :0 over
-// TCP (port 6000), and the session is viewable via noVNC on port 6080. Both
-// are bound to fixed host ports so DISPLAY and the noVNC URL are predictable.
-// The container is only started when the option "headed" is set.
-const X11_TCP_PORT = 6000;
-const NOVNC_WEB_PORT = 6080;
-const VNC_TCP_PORT = 5900;
 
 // In local dev the restorer runs as the DEV identity, whose effective stage is
 // CODE, so it resolves each stack's real per-stage flexible-content API host
@@ -169,7 +152,7 @@ function createLogConsumer(prefix: string, streamLogs: boolean) {
     return (stream: any) => {
         if (!streamLogs) {
             // Discard container logs (default): they are only echoed to stdout
-            // when the stack is run directly via `npm run local:stack`.
+            // when the stack is run directly via `yarn test:stack-only`.
             return;
         }
         stream
@@ -189,8 +172,6 @@ export interface StartLocalStackOptions {
      * stack is started by the e2e global setup, so it defaults to off.
      */
     streamLogs?: boolean;
-    /** Start the browser in headed or headless mode */
-    headed?: boolean;
 }
 
 export async function startLocalStack(
@@ -198,10 +179,8 @@ export async function startLocalStack(
     options: StartLocalStackOptions = {},
 ): Promise<LocalStack> {
     const { streamLogs = false } = options;
-    const headed = !!options.headed;
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
-    const x11vncImageTag = `workflow-frontend-x11vnc-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     const mockCapiImageTag = `workflow-frontend-mock-capi-e2e:${runId}`;
     const mockPreferencesImageTag = `workflow-frontend-mock-preferences-e2e:${runId}`;
@@ -219,39 +198,9 @@ export async function startLocalStack(
     let dbContainer;
     let dynamodbContainer;
     let datastoreContainer;
-    let x11vncContainer;
     const panDomainKeys = generatePanDomainKeys();
 
     try {
-        if (headed) {
-            await buildDockerImage({
-                tag: x11vncImageTag,
-                dockerfilePath: path.join(
-                    e2eRoot,
-                    "images/x11vnc.Dockerfile",
-                ),
-                contextPath: e2eRoot,
-            });
-
-            x11vncContainer = await new GenericContainer(x11vncImageTag)
-                .withNetwork(network)
-                .withNetworkAliases("x11vnc")
-                .withLogConsumer(createLogConsumer("x11vnc", streamLogs))
-                // Fixed host ports keep DISPLAY (localhost:0) and the noVNC URL
-                // stable across runs. The host's Chromium connects to the X
-                // server over TCP, and the noVNC web client is opened from the
-                // host, so both ports are published to the host.
-                .withExposedPorts(
-                    { container: X11_TCP_PORT, host: X11_TCP_PORT },
-                    { container: NOVNC_WEB_PORT, host: NOVNC_WEB_PORT },
-                    { container: VNC_TCP_PORT, host: VNC_TCP_PORT },
-                )
-                .withWaitStrategy(
-                    Wait.forHttp("/", NOVNC_WEB_PORT).forStatusCode(200),
-                )
-                .withStartupTimeout(2 * 60 * 1000)
-                .start();
-        }
         await buildDockerImage({
             tag: minioImageTag,
             dockerfilePath: path.join(e2eRoot, "images/minio.Dockerfile"),
@@ -277,7 +226,7 @@ export async function startLocalStack(
             .withLogConsumer(createLogConsumer("minio", streamLogs))
             .withExposedPorts(9000, 9001)
             .withWaitStrategy(Wait.forLogMessage(/Ensured permissions object exists:/, 1))
-            .withStartupTimeout(2 * 60 * 1000)
+            .withStartupTimeout(5 * 60 * 1000)
             .start();
 
         await buildDockerImage({
@@ -430,7 +379,7 @@ export async function startLocalStack(
                 LOCAL: "true",
             })
             .withLogConsumer(createLogConsumer("workflow-frontend", streamLogs))
-            .withExposedPorts(9090)
+            .withExposedPorts(9090, 9091)
             .withStartupTimeout(10 * 60 * 1000)
             .withWaitStrategy(
                 Wait.forHttp("/management/healthcheck", 9090).forStatusCode(200)
@@ -443,18 +392,10 @@ export async function startLocalStack(
         // exists: load the section/desk test data into Postgres.
         await seedDatabase(dbContainer, e2eRoot);
 
-        const novncUrl = x11vncContainer
-            ? `http://${x11vncContainer.getHost()}:${x11vncContainer.getMappedPort(NOVNC_WEB_PORT)}`
-            : undefined;
-        const x11vncDisplayPort = x11vncContainer
-            ? "localhost:0"
-            : undefined;
-
         return {
             baseUrl,
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
             mockApiUrl: mockCapiUrl,
-            novncUrl,
             minioContainer,
             workflowContainer,
             mockCapiContainer: mockCapiContainer,
@@ -463,14 +404,9 @@ export async function startLocalStack(
             dbContainer,
             dynamodbContainer,
             datastoreContainer,
-            x11vncContainer,
-            x11vncDisplayPort,
             network,
         };
     } catch (error) {
-        if (x11vncContainer) {
-            await x11vncContainer.stop();
-        }
         if (workflowContainer) {
             await workflowContainer.stop();
         }
@@ -509,12 +445,8 @@ export async function stopLocalStack({
     dbContainer,
     dynamodbContainer,
     datastoreContainer,
-    x11vncContainer,
     network,
 }: Partial<LocalStack> = {}): Promise<void> {
-    if (x11vncContainer) {
-        await x11vncContainer.stop();
-    }
     if (workflowContainer) {
         await workflowContainer.stop();
     }

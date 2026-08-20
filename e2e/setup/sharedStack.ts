@@ -15,8 +15,6 @@ export type SharedStackInfo = {
     baseUrl: string;
     panDomainPrivateKey: string;
     mockApiUrl: string;
-    x11vncDisplayPort?: string;
-    x11vncWebUrl?: string;
 };
 
 const SHARED_STACK_FILE = "target/tmp/e2e-local-stack.json";
