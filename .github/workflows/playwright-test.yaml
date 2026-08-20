@@ -1,0 +1,79 @@
+name: playwright-tests
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    playwright-tests:
+        runs-on: ubuntu-22.04
+
+    defaults:
+      run:
+        working-directory: e2e-tests
+
+        steps:
+            - name: Check out workflow-frontend
+              uses: actions/checkout@v4
+
+      # The e2e stack builds the real Datastore service from a
+      # guardian/workflow checkout. Locally this is done by
+      # e2e-tests/scripts/checkout-datastore; in CI we clone it here instead.
+      # stackContainers.ts looks for it at e2e-tests/target/workflow-backend.
+      - name: Check out guardian/workflow (Datastore service)
+        uses: actions/checkout@v4
+        with:
+          token: "${{ steps.workflow-app-token.outputs.token }}"
+          repository: guardian/workflow
+          ref: ws/add-docker-image-for-e2e-setup
+          path: e2e-tests/target/workflow-backend
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.5.1"
+          cache: yarn
+          cache-dependency-path: e2e-tests/yarn.lock
+
+            - name: Install e2e dependencies
+              run: yarn install --frozen-lockfile
+
+            # We only need the headless shell ("skin"), not the full Chromium
+            # browser, so use --only-shell. --with-deps also installs the OS
+            # libraries the shell needs on the runner.
+            - name: Install Playwright Chromium (headless shell only)
+              run: yarn playwright install --with-deps chromium --only-shell
+
+      # Build the stack images up front so their layers are cached in the
+      # Docker build cache. testcontainers rebuilds them during the run
+      # with per-run tags, but the cached layers make those builds fast.
+      - name: Prebuild Docker images
+        run: |
+          docker build -f images/auth-redirect.Dockerfile -t workflow-frontend-auth-redirect-e2e:prebuild .
+          docker build -f images/datastore.Dockerfile -t workflow-datastore-e2e:prebuild target/workflow-backend
+          docker build -f images/dynamodb.Dockerfile -t workflow-frontend-dynamodb-e2e:prebuild .
+          docker build -f images/minio.Dockerfile -t workflow-frontend-minio-e2e:prebuild .
+          docker build -f images/mock-capi.Dockerfile -t workflow-frontend-mock-capi-e2e:prebuild .
+          docker build -f images/mock-composer.Dockerfile -t workflow-frontend-mock-composer-e2e:prebuild .
+          docker build -f images/mock-preferences.Dockerfile -t workflow-frontend-mock-preferences-e2e:prebuild .
+          docker build -f images/mock-presence.Dockerfile -t workflow-frontend-mock-presence-e2e:prebuild .
+          docker build -f images/mock-tagmanager.Dockerfile -t workflow-frontend-mock-tagmanager-e2e:prebuild .
+          docker build -f images/mock-telemetry.Dockerfile -t workflow-frontend-mock-telemetry-e2e:prebuild .
+          docker build -f images/workflow-frontend.Dockerfile -t workflow-frontend-app-e2e:prebuild ..
+
+            - name: Run Playwright tests
+              run: yarn bddgen && yarn playwright test
+
+      # Traces, videos and screenshots are written to target/test-results
+      # (see outputDir in playwright.config.ts). Keep them for debugging
+      # failed runs.
+      - name: Upload Playwright traces and videos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: e2e-tests/target/test-results
+          retention-days: 7
+          if-no-files-found: ignore
