@@ -1,11 +1,11 @@
 ---
-applyTo: "e2e/features/**/*.feature"
+applyTo: "e2e-tests/features/**/*.feature"
 description: "Conventions for authoring Cucumber/Gherkin .feature files in workflow-frontend."
 ---
 
 # Feature File Conventions
 
-These rules apply to every `.feature` file under `e2e/features/`.
+These rules apply to every `.feature` file under `e2e-tests/features/`.
 
 ## Structure
 - Start with a `Feature:` title, followed by 1–3 indented plain-English lines describing intent.

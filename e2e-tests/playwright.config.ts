@@ -8,7 +8,7 @@ const testDir = defineBddConfig({
 
 export default defineConfig({
     testDir,
-    globalSetup: "./globalSetup.ts",
+    globalSetup: "./global-setup.ts",
     outputDir: 'target/test-results',
     // A single local stack is shared across the run, and the mock datastore has
     // mutable state, so keep tests serial for deterministic results.

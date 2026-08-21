@@ -3,7 +3,7 @@
 set -euo pipefail
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_DIR=${DIR}/../../..
+ROOT_DIR=${DIR}/../..
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "Docker CLI is required to run the local stack command" >&2
@@ -23,7 +23,7 @@ fi
 # Check out (or update) the guardian/workflow backend into a git-ignored folder
 # under target/. Reused across runs: shallow-clone once, then fast-forward pull.
 # The path is exported so run-local-stack.ts can consume it.
-WORKFLOW_BACKEND_DIR="${ROOT_DIR}/e2e/target/workflow-backend"
+WORKFLOW_BACKEND_DIR="${ROOT_DIR}/e2e-tests/target/workflow-backend"
 if [ -d "${WORKFLOW_BACKEND_DIR}/.git" ]; then
   echo "Updating workflow backend checkout in ${WORKFLOW_BACKEND_DIR}"
   git -C "$WORKFLOW_BACKEND_DIR" pull --ff-only
@@ -33,7 +33,7 @@ else
 fi
 export WORKFLOW_BACKEND_DIR
 
-mise exec -- "$ROOT_DIR/e2e/node_modules/.bin/tsx" "$ROOT_DIR/e2e/scripts/docker/run-local-stack.ts" "$@" || {
+mise exec -- "$ROOT_DIR/e2e-tests/node_modules/.bin/tsx" "$ROOT_DIR/e2e-tests/setup/run-local-stack.ts" "$@" || {
   exit_code=$?
   # Exit code 130 means the process was interrupted by Ctrl+C (SIGINT), which is expected.
   if [ "$exit_code" -eq 130 ]; then

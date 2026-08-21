@@ -4,10 +4,10 @@ import { test as base, createBdd } from "playwright-bdd";
 import { expect } from "@playwright/test";
 import { createPanDomainCookie, type Role } from "../setup/panDomainCookie";
 import type { SharedStackInfo } from "../setup/sharedStack";
-import { ACTIVE_STACK_FILE } from "../globalSetup";
-import { installPresenceMock, type PresenceMock, type PresencePerson, type PresenceLocation } from "../setup/mock/presenceMock";
-import { mockTelemetry, type TelemetryMock } from "../setup/mock/telemetryMock";
-import { mockComposer, type ComposerMock } from "../setup/mock/composerApiMock";
+import { ACTIVE_STACK_FILE } from "../global-setup";
+import { installPresenceMock, type PresenceMock, type PresencePerson, type PresenceLocation } from "../fixtures/presence/presenceMock";
+import { mockTelemetry, type TelemetryMock } from "../fixtures/telemetry/telemetryMock";
+import { mockComposer, type ComposerMock } from "../fixtures/composer/composerApiMock";
 
 function readActiveStack(): SharedStackInfo {
     const filePath = path.join(__dirname, "..", ACTIVE_STACK_FILE);

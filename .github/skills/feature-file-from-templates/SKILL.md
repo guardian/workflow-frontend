@@ -45,7 +45,7 @@ Produce a `.feature` file (Cucumber/Gherkin) that captures every observable beha
 
 ## Format
 
-- Save as `e2e/features/<name>.feature`.
+- Save as `e2e-tests/features/<name>.feature`.
 - `Feature:` title on the first line, followed by 1–3 indented plain-English lines describing intent.
 - Always use these standard `Background:` steps; only the final "opened" line varies to name the relevant page:
   ```

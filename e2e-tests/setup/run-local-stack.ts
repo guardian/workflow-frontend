@@ -1,10 +1,10 @@
 import { chromium, Page } from "@playwright/test";
-import { createPanDomainCookie } from "../../setup/panDomainCookie";
-import { startLocalStack, stopLocalStack } from "../../setup/stackContainers";
-import { writeSharedStackInfo, clearSharedStackInfo } from "../../setup/sharedStack";
-import { mockComposer } from "../../setup/mock/composerApiMock";
-import { mockTelemetry } from "../../setup/mock/telemetryMock";
-import { installPresenceMock } from "../../setup/mock/presenceMock";
+import { createPanDomainCookie } from "./panDomainCookie";
+import { startLocalStack, stopLocalStack } from "./stackContainers";
+import { writeSharedStackInfo, clearSharedStackInfo } from "./sharedStack";
+import { mockComposer } from "../fixtures/composer/composerApiMock";
+import { mockTelemetry } from "../fixtures/telemetry/telemetryMock";
+import { installPresenceMock } from "../fixtures/presence/presenceMock";
 
 function waitForTerminationSignal(): Promise<void> {
     return new Promise((resolve) => {

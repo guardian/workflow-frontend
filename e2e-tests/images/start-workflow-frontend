@@ -39,4 +39,4 @@ unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
 # Prefer SBT_OPTS here so these JVM flags apply directly to the sbt JVM process.
 export SBT_OPTS="${SBT_OPTS:+$SBT_OPTS }-XX:+UnlockExperimentalVMOptions -XX:-UseJVMCICompiler -Dgraal.CompilationFailureAction=Silent"
 export LOCAL_E2E_TEST="true"
-exec sbt -Dlocal=true "-Dconfig.file=e2e/fixtures/conf/workflow-frontend-application.local.conf" run
+exec sbt -Dlocal=true "-Dconfig.file=e2e-tests/fixtures/conf/workflow-frontend-application.local.conf" run

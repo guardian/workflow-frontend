@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "bddgen && ./scripts/checkout-datastore && playwright test",
-    "test:ui": "bddgen && ./scripts/checkout-datastore && playwright test --ui-port=9091",
-    "dev:local": "./scripts/docker/run-local-stack",
+    "test": "bddgen && ./setup/checkout-datastore && playwright test",
+    "test:ui": "bddgen && ./setup/checkout-datastore && playwright test --ui-port=9091",
+    "dev:local": "./setup/run-local-stack",
     "test:report": "playwright show-report target/playwright-report --port 9090"
   },
   "keywords": [],

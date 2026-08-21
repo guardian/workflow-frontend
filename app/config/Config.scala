@@ -72,7 +72,7 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
 
   lazy val preferencesHost: String = s"preferences.$domain"
-  // In dev the preferences API is a local HTTP WireMock mock (see e2e/setup/stackContainers.ts);
+  // In dev the preferences API is a local HTTP WireMock mock (see e2e-tests/setup/stackContainers.ts);
   // everywhere else it is the real editorial-preferences service over HTTPS.
   lazy val preferencesUrl: String = {
     val scheme = if (localE2eTest) "http" else "https"
@@ -82,7 +82,7 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val pinboardLoaderUrl: String = s"https://pinboard.$domain/pinboard.loader.js"
 
   lazy val tagManagerHost: String = s"tagmanager.$domain"
-  // In dev the tag-manager API is a local HTTP WireMock mock (see e2e/setup/stackContainers.ts);
+  // In dev the tag-manager API is a local HTTP WireMock mock (see e2e-tests/setup/stackContainers.ts);
   // everywhere else it is the real tag-manager service over HTTPS.
   lazy val tagManagerUrl: String = {
     val scheme = if (localE2eTest) "http" else "https"
