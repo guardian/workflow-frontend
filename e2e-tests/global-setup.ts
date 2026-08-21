@@ -19,6 +19,19 @@ export const ACTIVE_STACK_FILE = "target/tmp/e2e-active-stack.json";
 // `npm run local:stack` is left running for the next test run.
 let ownedStack: LocalStack | undefined;
 
+// Run the frontend directly on the host in watch mode by default; CI (and an
+// explicit override) build and run it as a container instead.
+function resolveFrontendMode(): "container" | "host" {
+    switch (process.env.E2E_FRONTEND) {
+        case "container":
+            return "container";
+        case "host":
+            return "host";
+        default:
+            return process.env.CI ? "container" : "host";
+    }
+}
+
 async function globalSetup(_config: FullConfig) {
     const e2eRoot = __dirname;
 
@@ -27,7 +40,9 @@ async function globalSetup(_config: FullConfig) {
     if (shared) {
         connection = shared;
     } else {
-        ownedStack = await startLocalStack(e2eRoot, { });
+        ownedStack = await startLocalStack(e2eRoot, {
+            frontend: resolveFrontendMode(),
+        });
         connection = {
             baseUrl: ownedStack.baseUrl,
             panDomainPrivateKey: ownedStack.panDomainPrivateKey,

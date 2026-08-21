@@ -27,7 +27,10 @@ async function main() {
     let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
 
     try {
-        stack = await startLocalStack(projectRoot, { streamLogs: true });
+        stack = await startLocalStack(projectRoot, { 
+            streamLogs: true,
+            frontend: "host"
+        });
         const cookieData = createPanDomainCookie(stack.panDomainPrivateKey);
 
         // Publish the running stack's connection details so `playwright test`

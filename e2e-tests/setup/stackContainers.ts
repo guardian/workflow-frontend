@@ -2,6 +2,12 @@ import path from "path";
 import { spawn } from "child_process";
 import { GenericContainer, Network, Wait } from "testcontainers";
 import { generatePanDomainKeys } from "./panDomainKeys";
+import {
+    startFrontend,
+    stopFrontend,
+    type FrontendProcess,
+} from "./frontendProcess";
+import { writeHostAliases, removeHostAliases } from "./hostAliases";
 
 const MINIO_ROOT_USER = "minioadmin";
 const MINIO_ROOT_PASSWORD = "minioadmin";
@@ -22,7 +28,12 @@ export type LocalStack = {
      */
     mockApiUrl: string;
     minioContainer: any;
-    workflowContainer: any;
+    /** Set only when the frontend runs as a container (CI path). */
+    workflowContainer?: any;
+    /** Set only when the frontend runs directly on the host (watch mode). */
+    frontendProcess?: FrontendProcess;
+    /** Whether this stack added a managed /etc/hosts block that needs removing. */
+    hostsWritten?: boolean;
     mockCapiContainer: any;
     mockPreferencesApiContainer: any;
     mockTagManagerApiContainer: any;
@@ -172,13 +183,19 @@ export interface StartLocalStackOptions {
      * stack is started by the e2e global setup, so it defaults to off.
      */
     streamLogs?: boolean;
+    /**
+     * How to run the workflow-frontend app. "host" (default) runs it directly on
+     * the host in watch mode; "container" builds and runs it as a container (used
+     * by CI). Dependencies are containers either way.
+     */
+    frontend?: "container" | "host";
 }
 
 export async function startLocalStack(
     e2eRoot: string,
     options: StartLocalStackOptions = {},
 ): Promise<LocalStack> {
-    const { streamLogs = false } = options;
+    const { streamLogs = false, frontend = "host" } = options;
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
@@ -192,6 +209,8 @@ export async function startLocalStack(
 
     let minioContainer;
     let workflowContainer;
+    let frontendProcess: FrontendProcess | undefined;
+    let hostsWritten = false;
     let mockCapiContainer;
     let mockPreferencesApiContainer;
     let mockTagManagerApiContainer;
@@ -359,54 +378,124 @@ export async function startLocalStack(
             )
             .start();
 
-        await buildDockerImage({
-            tag: workflowImageTag,
-            dockerfilePath: path.join(
-                e2eRoot,
-                "images/workflow-frontend.Dockerfile",
-            ),
-            contextPath: path.join(e2eRoot, ".."),
-        });
-
-        workflowContainer = await new GenericContainer(workflowImageTag)
-            .withNetwork(network)
-            .withEnvironment({
-                AWS_ENDPOINT_URL_S3: "http://minio:9000",
-                AWS_ENDPOINT_URL_DYNAMODB: "http://workflow-e2e-dynamodb:8000",
-                AWS_ACCESS_KEY_ID: MINIO_ROOT_USER,
-                AWS_SECRET_ACCESS_KEY: MINIO_ROOT_PASSWORD,
-                // Keep local mode enabled in case scripts are bypassed in future changes.
-                LOCAL: "true",
-            })
-            .withLogConsumer(createLogConsumer("workflow-frontend", streamLogs))
-            .withExposedPorts(9090, 9091)
-            .withStartupTimeout(10 * 60 * 1000)
-            .withWaitStrategy(
-                Wait.forHttp("/management/healthcheck", 9090).forStatusCode(200)
-            )
-            .start();
-
-        const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(9090)}`;
-
-        // The Datastore applies its Play evolutions on boot, so the schema now
-        // exists: load the section/desk test data into Postgres.
+        // The Datastore applies its Play evolutions when it first serves a
+        // request; its healthcheck above has done that, so the schema now exists:
+        // load the section/desk test data into Postgres.
         await seedDatabase(dbContainer, e2eRoot);
 
-        return {
-            baseUrl,
+        const common = {
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
             mockApiUrl: mockCapiUrl,
             minioContainer,
-            workflowContainer,
-            mockCapiContainer: mockCapiContainer,
-            mockPreferencesApiContainer: mockPreferencesApiContainer,
-            mockTagManagerApiContainer: mockTagManagerApiContainer,
+            mockCapiContainer,
+            mockPreferencesApiContainer,
+            mockTagManagerApiContainer,
             dbContainer,
             dynamodbContainer,
             datastoreContainer,
             network,
         };
+
+        if (frontend === "container") {
+            await buildDockerImage({
+                tag: workflowImageTag,
+                dockerfilePath: path.join(
+                    e2eRoot,
+                    "images/workflow-frontend.Dockerfile",
+                ),
+                contextPath: path.join(e2eRoot, ".."),
+            });
+
+            workflowContainer = await new GenericContainer(workflowImageTag)
+                .withNetwork(network)
+                .withEnvironment({
+                    AWS_ENDPOINT_URL_S3: "http://minio:9000",
+                    AWS_ENDPOINT_URL_DYNAMODB: "http://workflow-e2e-dynamodb:8000",
+                    AWS_ACCESS_KEY_ID: MINIO_ROOT_USER,
+                    AWS_SECRET_ACCESS_KEY: MINIO_ROOT_PASSWORD,
+                    // Keep local mode enabled in case scripts are bypassed in future changes.
+                    LOCAL: "true",
+                })
+                .withLogConsumer(createLogConsumer("workflow-frontend", streamLogs))
+                .withExposedPorts(9090, 9091)
+                .withStartupTimeout(10 * 60 * 1000)
+                .withWaitStrategy(
+                    Wait.forHttp("/management/healthcheck", 9090).forStatusCode(200)
+                )
+                .start();
+
+            const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(9090)}`;
+
+            return { baseUrl, workflowContainer, ...common };
+        }
+
+        // Host mode: run the Play app directly on the host in watch mode, and
+        // point it at the containers by mapping their Docker-network hostnames to
+        // the container bridge IPs in /etc/hosts. Both the JVM and the browser
+        // then resolve them exactly as they would inside the Docker network, so
+        // the app's config (and virtual-hosted S3 bucket addressing) is unchanged.
+        const networkName = network.getName();
+        writeHostAliases([
+            {
+                ip: minioContainer.getIpAddress(networkName),
+                hostnames: [
+                    "minio",
+                    "permissions-cache.minio",
+                    "pan-domain-auth-settings.minio",
+                ],
+            },
+            {
+                ip: mockCapiContainer.getIpAddress(networkName),
+                hostnames: [CAPI_HOSTNAME],
+            },
+            {
+                ip: mockPreferencesApiContainer.getIpAddress(networkName),
+                hostnames: [PREFERENCES_HOSTNAME],
+            },
+            {
+                ip: mockTagManagerApiContainer.getIpAddress(networkName),
+                hostnames: [TAG_MANAGER_HOSTNAME],
+            },
+            {
+                ip: datastoreContainer.getIpAddress(networkName),
+                hostnames: ["workflow-backend.local.dev-gutools.co.uk"],
+            },
+            {
+                ip: dynamodbContainer.getIpAddress(networkName),
+                hostnames: ["workflow-e2e-dynamodb"],
+            },
+        ]);
+        hostsWritten = true;
+        console.log(`\n[/etc/hosts] updated with local stack container IPs for host-mode frontend`);
+
+        frontendProcess = await startFrontend({
+            repoRoot: path.join(e2eRoot, ".."),
+            streamLogs,
+            env: {
+                AWS_ENDPOINT_URL_S3: "http://minio:9000",
+                AWS_ENDPOINT_URL_DYNAMODB: "http://workflow-e2e-dynamodb:8000",
+                AWS_ACCESS_KEY_ID: MINIO_ROOT_USER,
+                AWS_SECRET_ACCESS_KEY: MINIO_ROOT_PASSWORD,
+                LOCAL: "true",
+            },
+        });
+        console.log(`\n[workflow-frontend] Start directly in watch mode`);
+
+        return {
+            baseUrl: `http://localhost:9090`,
+            frontendProcess,
+            hostsWritten,
+            ...common,
+        };
     } catch (error) {
+        await stopFrontend(frontendProcess);
+        if (hostsWritten) {
+            try {
+                removeHostAliases();
+            } catch {
+                // Best effort: leave cleanup to the next run's writeHostAliases.
+            }
+        }
         if (workflowContainer) {
             await workflowContainer.stop();
         }
@@ -438,6 +527,8 @@ export async function startLocalStack(
 
 export async function stopLocalStack({
     workflowContainer,
+    frontendProcess,
+    hostsWritten,
     minioContainer,
     mockCapiContainer,
     mockPreferencesApiContainer,
@@ -447,6 +538,14 @@ export async function stopLocalStack({
     datastoreContainer,
     network,
 }: Partial<LocalStack> = {}): Promise<void> {
+    await stopFrontend(frontendProcess);
+    if (hostsWritten) {
+        try {
+            removeHostAliases();
+        } catch {
+            // Best effort: leave cleanup to the next run's writeHostAliases.
+        }
+    }
     if (workflowContainer) {
         await workflowContainer.stop();
     }

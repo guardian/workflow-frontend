@@ -29,7 +29,7 @@ For the design rationale behind the stack and the mocking boundaries, please see
 Install dependencies and the Chromium browser once:
 
 ```bash
-cd e2e
+cd e2e-tests
 yarn install
 yarn playwright install --with-deps chromium
 ```
@@ -43,7 +43,27 @@ yarn test
 ```
 
 This generates the BDD test files (`bddgen`), ensures the Datastore backend is
-checked out, builds the stack, and runs the test suite in headless mode. 
+checked out, builds the stack, and runs the test suite in headless mode.
+
+### How the frontend is run
+
+The dependency services (datastore, MinIO, DynamoDB and the mocked upstream
+APIs) always run as containers. The workflow-frontend app itself runs in one of
+two modes:
+
+- **`host` (default locally)** — the Play app runs directly on the host in watch
+  mode (`sbt run` + `yarn build-dev`), so edits to Scala or frontend assets
+  reload without rebuilding a Docker image. The app reaches the containers by
+  mapping their Docker-network hostnames to the container bridge IPs in
+  `/etc/hosts` (written with `sudo`, removed again on teardown). This needs the
+  `sbt`/`node` toolchain from [mise](https://mise.jdx.dev/) and passwordless
+  `sudo` for `/etc/hosts`.
+- **`container` (default in CI)** — the app is built and run as a container, as
+  the dependencies are. Selected automatically when `CI` is set.
+
+Override the mode explicitly with `E2E_FRONTEND=host` or
+`E2E_FRONTEND=container`, e.g. `E2E_FRONTEND=container yarn test`.
+
 
 ### Use host's browser to access Playwright UI
 
