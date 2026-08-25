@@ -2,3 +2,5 @@ name: workflow
 mappings:
   - prefix: workflow
     port: 9090
+  - prefix: workflow-local-login
+    port: 9100

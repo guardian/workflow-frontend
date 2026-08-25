@@ -22,6 +22,7 @@ modules:
 forwardPorts:
   - 9090  # same port on host and container
   - 9091  # same port on host and container
+  - 9100  # host-browser auth-cookie endpoint (e2e local stack)
 
 # Optional: Mount directories from host to container
 # mounts:

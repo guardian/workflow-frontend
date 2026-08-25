@@ -33,7 +33,11 @@ function formatPrivateKeyForSigning(rawPrivateKey: string): string {
     return base64ToPEM(normalizedBase64Key, "RSA PRIVATE");
 }
 
-export function createPanDomainCookie(rawPrivateKey: string, role: Role = "default"): string {
+export function createPanDomainCookie(
+    rawPrivateKey: string,
+    role: Role = "default",
+    expiresInMs: number = 60 * 60 * 1000,
+): string {
     if (!rawPrivateKey) {
         throw new Error("privateKey was not supplied to createPanDomainCookie");
     }
@@ -46,7 +50,7 @@ export function createPanDomainCookie(rawPrivateKey: string, role: Role = "defau
             email: roles[role],
             authenticatingSystem: "workflow-frontend",
             authenticatedIn: ["workflow-frontend"],
-            expires: Date.now() + 60 * 60 * 1000,
+            expires: Date.now() + expiresInMs,
             multifactor: true,
         },
         privateKey,

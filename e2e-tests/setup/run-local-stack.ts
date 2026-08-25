@@ -29,9 +29,11 @@ async function main() {
     try {
         stack = await startLocalStack(projectRoot, { 
             streamLogs: true,
-            frontend: "host"
+            frontend: "container",
+            exposeHostAuth: true
         });
         const cookieData = createPanDomainCookie(stack.panDomainPrivateKey);
+        console.log(`Created a pan-domain cookie for the local stack - ${cookieData}`);
 
         // Publish the running stack's connection details so `playwright test`
         // can reuse this stack instead of booting fresh containers each run.
@@ -71,6 +73,13 @@ async function main() {
         console.log(
             `Mock workflow datastore API: ${stack.mockApiUrl}`
         );
+
+        if (stack.authUrl) {
+            console.log(
+                `\nTo authenticate a browser on your host, open: ${stack.authUrl}\n` +
+                    "It sets the auth cookie and redirects to the app.",
+            );
+        }
 
         // When PICK_LOCATOR is set, open the Playwright Inspector against this
         // already-authenticated page. Use its "Pick locator" tool to grab
