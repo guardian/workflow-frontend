@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "bddgen && ./setup/checkout-datastore && E2E_FRONTEND=host playwright test",
-    "test:ui": "bddgen && ./setup/checkout-datastore && E2E_FRONTEND=host playwright test --ui-port=9091",
+    "test:ui": "bddgen && ./setup/checkout-datastore && E2E_FRONTEND=host playwright test --ui-port=9099",
     "dev:local": "./setup/run-local-stack",
-    "test:report": "playwright show-report target/playwright-report --port 9090"
+    "test:report": "playwright show-report target/playwright-report --port 9098"
   },
   "keywords": [],
   "author": "",

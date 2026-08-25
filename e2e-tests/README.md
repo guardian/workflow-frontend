@@ -74,7 +74,7 @@ expose a port for a browser to access its Playwright UI.
 yarn test:ui
 ```
 
-The Playwright UI can be accessed via `http://localhost:9091/` on the host system.
+The Playwright UI can be accessed via `http://localhost:9095/` on the host system.
 
 
 ### Fast inner loop with a shared stack
@@ -108,8 +108,8 @@ Raw artifacts are written to `target/test-results/` and the report to
 captured on first retry and on failure — see `use` in
 [playwright.config.ts](playwright.config.ts).
 
-The test report is served via port 9090 which is mapped to the same port number
-of the host. So you can open it by `http://localhost:9090` on your host directly.
+The test report is served via port 9098 which is mapped to the same port number
+of the host. So you can open it by `http://localhost:9098` on your host directly.
 
 ## Folder structure
 

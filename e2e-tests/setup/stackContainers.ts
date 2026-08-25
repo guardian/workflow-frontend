@@ -401,10 +401,10 @@ export async function startLocalStack(
             .withNetwork(network)
             .withNetworkAliases("workflow-backend.local.dev-gutools.co.uk")
             .withLogConsumer(createLogConsumer("datastore", streamLogs))
-            .withExposedPorts(8080)
+            .withExposedPorts(9095)
             .withStartupTimeout(10 * 60 * 1000)
             .withWaitStrategy(
-                 Wait.forHttp("/management/healthcheck", 8080).forStatusCode(200)
+                 Wait.forHttp("/management/healthcheck", 9095).forStatusCode(200)
             )
             .start();
 

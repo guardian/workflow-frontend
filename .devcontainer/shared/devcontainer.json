@@ -25,8 +25,11 @@
   },
   "forwardPorts" : [
     9090,
-    9091,
-    9100
+    9098,
+    9099,
+    9070,
+    3132,
+    9081
   ],
   "image" : "mcr.microsoft.com/devcontainers/base:ubuntu26.04",
   "remoteUser" : "vscode",

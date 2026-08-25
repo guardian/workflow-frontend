@@ -20,9 +20,12 @@ modules:
 
 # Optional: Ports to forward
 forwardPorts:
-  - 9090  # same port on host and container
-  - 9091  # same port on host and container
-  - 9100  # host-browser auth-cookie endpoint (e2e local stack)
+  - 9090  # workflow frontend
+  - 9098  # Playwright report
+  - 9099  # Playwright UI
+  - 9070  # Presence
+  - 3132  # User telemetry
+  - 9081  # Composer API
 
 # Optional: Mount directories from host to container
 # mounts:
