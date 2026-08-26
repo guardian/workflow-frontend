@@ -7,7 +7,7 @@ import type { SharedStackInfo } from "../setup/sharedStack";
 import { ACTIVE_STACK_FILE } from "../global-setup";
 import { installPresenceMock, type PresenceMock, type PresencePerson, type PresenceLocation } from "../fixtures/presence/presenceMock";
 import { mockTelemetry, type TelemetryMock } from "../fixtures/telemetry/telemetryMock";
-import { mockComposer, type ComposerMock } from "../fixtures/composer/composerApiMock";
+import { mockComposer, type ComposerMock } from "./shared/composerApiMock";
 
 function readActiveStack(): SharedStackInfo {
     const filePath = path.join(__dirname, "..", ACTIVE_STACK_FILE);
@@ -37,7 +37,7 @@ type StackFixtures = {
     presence: PresenceMock;
     /** Mocked telemetry service, capturing emitted events for assertions. */
     telemetry: TelemetryMock;
-    /** Mocked Composer API, intercepting content creation and template calls. */
+    /** Captures Composer content-create requests from the WireMock mock for assertions. */
     composerMock: ComposerMock;
 };
 
@@ -54,8 +54,8 @@ export const test = base.extend<StackFixtures>({
     telemetry: async ({ page }, use) => {
         await use(await mockTelemetry(page));
     },
-    composerMock: async ({ page }, use) => {
-        await use(await mockComposer(page));
+    composerMock: async ({ context, stack }, use) => {
+        await use(await mockComposer(context, stack.mockComposerApiUrl));
     },
     // Point every test at the stack started in global setup.
     baseURL: async ({ stack }, use) => {

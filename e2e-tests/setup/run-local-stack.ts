@@ -2,7 +2,6 @@ import { chromium, Page } from "@playwright/test";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { startLocalStack, stopLocalStack } from "./stackContainers";
 import { writeSharedStackInfo, clearSharedStackInfo } from "./sharedStack";
-import { mockComposer } from "../fixtures/composer/composerApiMock";
 import { mockTelemetry } from "../fixtures/telemetry/telemetryMock";
 import { installPresenceMock } from "../fixtures/presence/presenceMock";
 
@@ -41,6 +40,7 @@ async function main() {
             baseUrl: stack.baseUrl,
             panDomainPrivateKey: stack.panDomainPrivateKey,
             mockApiUrl: stack.mockApiUrl,
+            mockComposerApiUrl: stack.mockComposerApiUrl,
         });
 
         console.log(`\nLocal stack started at ${stack.baseUrl}`);
@@ -55,10 +55,14 @@ async function main() {
             handleSIGINT: false,
             handleSIGTERM: false,
             handleSIGHUP: false,
+            // Route the browser's cross-origin Composer https calls to the
+            // WireMock container on host port 9081 (see stackContainers.ts).
+            args: [
+                "--host-resolver-rules=MAP composer.local.dev-gutools.co.uk 127.0.0.1:9081",
+            ],
         });
-        const page = await browser.newPage();
+        const page = await browser.newPage({ ignoreHTTPSErrors: true });
         await mockTelemetry(page);
-        await mockComposer(page);
         await installPresenceMock(page);
         await page.context().addCookies([
             {

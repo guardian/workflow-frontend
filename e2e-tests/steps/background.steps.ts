@@ -30,10 +30,10 @@ Before({ tags: "@presence" }, async ({ presence }) => {
     void presence;
 });
 
-// --- Hook: install composer API mocking before navigation --------------------
+// --- Hook: tag Composer requests for capture before navigation --------------
 
 Before({ tags: "@composer" }, async ({ composerMock }) => {
-    // Referencing the composerMock fixture installs the route mocks before the
-    // Background navigates to the dashboard.
+    // Referencing the composerMock fixture tags the browser context so the
+    // WireMock mock's request journal can be filtered to this scenario.
     void composerMock;
 });

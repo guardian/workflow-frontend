@@ -123,7 +123,7 @@ e2e/
 │   ├── sharedStack.ts      # Reuse a long-running stack across runs
 │   ├── panDomainCookie.ts  # Signs pan-domain auth cookies for test roles
 │   ├── panDomainKeys.ts    # Generates the pan-domain signing keypair
-│   └── mock/               # Network-level mocks (Composer, telemetry, presence)
+│   └── mock/               # Network-level mocks (telemetry, presence); Composer is a WireMock container
 ├── scripts/
 │   ├── checkout-datastore  # Clones/updates guardian/workflow backend
 │   └── docker/             # Stack entrypoints (run-local-stack, minio, dynamodb, x11vnc…)

@@ -1,5 +1,6 @@
 import { Given, When, Then, expect } from "./fixtures";
 import type { Page, Locator } from "@playwright/test";
+import type { ComposerMock } from "./shared/composerApiMock";
 
 /**
  * Steps driving the dashboard "Create new" dropdown and the stub modal it opens.
@@ -98,14 +99,13 @@ async function fillRequiredStubDetails(page: Page): Promise<string> {
     return title;
 }
 
-// Read the query params of the most recent Composer content POST captured by
-// the composer mock (installed via the @composer Before hook).
-function lastComposerParams(
-    requests: { request: { url: () => string } }[],
-): URLSearchParams {
-    const last = requests[requests.length - 1];
-    expect(last, "expected a Composer content request to have been captured").toBeTruthy();
-    return new URL(last.request.url()).searchParams;
+// Read the query params of the most recent Composer content POST recorded by
+// the composer mock's request journal (scoped to this scenario).
+async function lastComposerParams(
+    composerMock: ComposerMock,
+): Promise<URLSearchParams | undefined> {
+    const requests = await composerMock.contentRequests();
+    return requests[requests.length - 1];
 }
 
 // ── Dropdown: collapsed by default ────────────────────────────────────────────
@@ -329,18 +329,18 @@ Then("I should see the new piece on the dashboard", async ({ page, world }) => {
 Then(
     "the Composer API should have received a request for content type {string}",
     async ({ composerMock }, composerType: string) => {
-        expect(lastComposerParams(composerMock.requests).get("type")).toBe(
-            composerType,
-        );
+        await expect
+            .poll(async () => (await lastComposerParams(composerMock))?.get("type"))
+            .toBe(composerType);
     },
 );
 
 Then(
     "the Composer API should have received a request with displayHint {string}",
     async ({ composerMock }, displayHint: string) => {
-        expect(lastComposerParams(composerMock.requests).get("displayHint")).toBe(
-            displayHint,
-        );
+        await expect
+            .poll(async () => (await lastComposerParams(composerMock))?.get("displayHint"))
+            .toBe(displayHint);
     },
 );
 

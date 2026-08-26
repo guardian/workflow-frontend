@@ -40,6 +40,9 @@ export type LocalStack = {
     /** Host URL that sets the auth cookie and redirects to the app. */
     authUrl?: string;
     mockCapiContainer: any;
+    /** Base URL of the Composer mock's admin API, for querying its request journal. */
+    mockComposerApiUrl: string;
+    mockComposerApiContainer: any;
     mockPreferencesApiContainer: any;
     mockTagManagerApiContainer: any;
     dbContainer: any;
@@ -68,6 +71,12 @@ const FRONTEND_UPSTREAM = `${FRONTEND_ALIAS}:${CONTAINER_FRONTEND_PORT}`;
 const CAPI_HOSTNAME = "iam-preview.content.local.dev-guardianapis.com";
 const PREFERENCES_HOSTNAME = "preferences.local.dev-gutools.co.uk";
 const TAG_MANAGER_HOSTNAME = "tagmanager.local.dev-gutools.co.uk";
+const COMPOSER_HOSTNAME = "composer.local.dev-gutools.co.uk";
+// Composer is called from the browser cross-origin over https; the mock serves
+// https on this fixed host port, which Chromium host-resolver-rules maps
+// COMPOSER_HOSTNAME to. Forwarded in the devcontainer as "Composer API".
+const COMPOSER_HTTPS_PORT = 8443;
+const HOST_COMPOSER_HTTPS_PORT = 9081;
 
 // Test data loaded into the Datastore's Postgres tables once the schema exists.
 // Parent tables (section, desk) are seeded before the tables that reference
@@ -228,6 +237,7 @@ export async function startLocalStack(
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     const mockCapiImageTag = `workflow-frontend-mock-capi-e2e:${runId}`;
+    const mockComposerImageTag = `workflow-frontend-mock-composer-e2e:${runId}`;
     const mockPreferencesImageTag = `workflow-frontend-mock-preferences-e2e:${runId}`;
     const mockTagManagerImageTag = `workflow-frontend-mock-tagmanager-e2e:${runId}`;
     const dynamodbImageTag = `workflow-frontend-dynamodb-e2e:${runId}`;
@@ -242,6 +252,7 @@ export async function startLocalStack(
     let frontendProcess: FrontendProcess | undefined;
     let hostsWritten = false;
     let mockCapiContainer;
+    let mockComposerApiContainer;
     let mockPreferencesApiContainer;
     let mockTagManagerApiContainer;
     let dbContainer;
@@ -301,6 +312,33 @@ export async function startLocalStack(
             .start();
 
         const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_PORT)}`;
+
+        await buildDockerImage({
+            tag: mockComposerImageTag,
+            dockerfilePath: path.join(
+                e2eRoot,
+                "images/mock-composer.Dockerfile",
+            ),
+            contextPath: e2eRoot,
+        });
+
+        mockComposerApiContainer = await new GenericContainer(mockComposerImageTag)
+            .withNetwork(network)
+            .withNetworkAliases(COMPOSER_HOSTNAME)
+            .withLogConsumer(createLogConsumer("mock-composer", streamLogs))
+            .withExposedPorts(WIREMOCK_PORT, {
+                container: COMPOSER_HTTPS_PORT,
+                host: HOST_COMPOSER_HTTPS_PORT,
+            })
+            .withWaitStrategy(
+                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                    200,
+                ),
+            )
+            .withStartupTimeout(2 * 60 * 1000)
+            .start();
+
+        const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_PORT)}`;
 
         await buildDockerImage({
             tag: mockPreferencesImageTag,
@@ -451,8 +489,10 @@ export async function startLocalStack(
         const common = {
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
             mockApiUrl: mockCapiUrl,
+            mockComposerApiUrl,
             minioContainer,
             mockCapiContainer,
+            mockComposerApiContainer,
             mockPreferencesApiContainer,
             mockTagManagerApiContainer,
             dbContainer,
@@ -532,6 +572,10 @@ export async function startLocalStack(
                     ip: dynamodbContainer.getIpAddress(networkName),
                     hostnames: ["workflow-e2e-dynamodb"],
                 },
+                {
+                    ip: mockComposerApiContainer.getIpAddress(networkName),
+                    hostnames: [COMPOSER_HOSTNAME],
+                },
             ]);
             hostsWritten = true;
             console.log(`\n[/etc/hosts] updated with local stack container IPs for host-mode frontend`);
@@ -586,6 +630,9 @@ export async function startLocalStack(
         if (mockPreferencesApiContainer) {
             await mockPreferencesApiContainer.stop();
         }
+        if (mockComposerApiContainer) {
+            await mockComposerApiContainer.stop();
+        }
         if (mockCapiContainer) {
             await mockCapiContainer.stop();
         }
@@ -604,6 +651,7 @@ export async function stopLocalStack({
     authContainer,
     minioContainer,
     mockCapiContainer,
+    mockComposerApiContainer,
     mockPreferencesApiContainer,
     mockTagManagerApiContainer,
     dbContainer,
@@ -639,6 +687,9 @@ export async function stopLocalStack({
     }
     if (mockPreferencesApiContainer) {
         await mockPreferencesApiContainer.stop();
+    }
+    if (mockComposerApiContainer) {
+        await mockComposerApiContainer.stop();
     }
     if (mockCapiContainer) {
         await mockCapiContainer.stop();

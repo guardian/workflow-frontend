@@ -1,33 +1,33 @@
-{
+{{#assign 'id'}}{{randomValue length=24 type='ALPHANUMERIC'}}{{/assign}}{
     "data": {
-        "id": "__CONTENT_ID__",
+        "id": "{{id}}",
         "type": "article",
         "originatingSystem": "workflow",
         "published": false,
         "isGone": false,
         "isHosted": false,
         "scheduledLaunchDate": {
-            "uri": "/api/content/__CONTENT_ID__/scheduledLaunch"
+            "uri": "/api/content/{{id}}/scheduledLaunch"
         },
         "requestedScheduledLaunch": {
-            "uri": "/api/content/__CONTENT_ID__/requestedScheduledLaunch"
+            "uri": "/api/content/{{id}}/requestedScheduledLaunch"
         },
         "expiry": {
             "rights": {
-                "uri": "/api/content/__CONTENT_ID__/expiry/rights",
+                "uri": "/api/content/{{id}}/expiry/rights",
                 "data": {
                     "expired": false
                 }
             },
             "commercial": {
-                "uri": "/api/content/__CONTENT_ID__/expiry/commercial",
+                "uri": "/api/content/{{id}}/expiry/commercial",
                 "data": {
                     "expired": false
                 }
             }
         },
         "rights": {
-            "uri": "/api/content/__CONTENT_ID__/rights",
+            "uri": "/api/content/{{id}}/rights",
             "data": {
                 "syndicationAggregate": false,
                 "subscriptionDatabases": false,
@@ -35,7 +35,7 @@
             }
         },
         "contentChangeDetails": {
-            "uri": "/api/content/__CONTENT_ID__/changeDetails",
+            "uri": "/api/content/{{id}}/changeDetails",
             "data": {
                 "lastModified": {
                     "date": 1784560240393,
@@ -54,26 +54,26 @@
                     }
                 },
                 "lastMajorRevisionPublished": {
-                    "uri": "/api/content/__CONTENT_ID__/changeDetails/lastMajorRevisionPublished"
+                    "uri": "/api/content/{{id}}/changeDetails/lastMajorRevisionPublished"
                 },
                 "revision": 1,
                 "minutesActive": {
-                    "uri": "/api/content/__CONTENT_ID__/contentChangeDetails/minutesActive",
+                    "uri": "/api/content/{{id}}/contentChangeDetails/minutesActive",
                     "data": 0
                 }
             }
         },
         "identifiers": {
             "path": {
-                "uri": "/api/content/__CONTENT_ID__/identifiers/path",
-                "data": "global/__CONTENT_ID__"
+                "uri": "/api/content/{{id}}/identifiers/path",
+                "data": "global/{{id}}"
             },
             "pageId": {
-                "uri": "/api/content/__CONTENT_ID__/identifiers/pageId",
+                "uri": "/api/content/{{id}}/identifiers/pageId",
                 "data": "2484059"
             },
             "shortPath": {
-                "uri": "/api/content/__CONTENT_ID__/identifiers/shortPath",
+                "uri": "/api/content/{{id}}/identifiers/shortPath",
                 "data": "p/4t5d5"
             }
         },
@@ -81,59 +81,59 @@
         "collaborators": [],
         "toolSettings": {
             "disableOctopusUpdates": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/disableOctopusUpdates",
+                "uri": "/api/content/{{id}}/toolSettings/disableOctopusUpdates",
                 "data": "false"
             },
             "suggestedEmbeds": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/suggestedEmbeds",
+                "uri": "/api/content/{{id}}/toolSettings/suggestedEmbeds",
                 "data": "false"
             },
             "slugLinked": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/slugLinked",
+                "uri": "/api/content/{{id}}/toolSettings/slugLinked",
                 "data": "true"
             },
             "seoChanged": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/seoChanged",
+                "uri": "/api/content/{{id}}/toolSettings/seoChanged",
                 "data": "false"
             },
             "enableTechnicalElements": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/enableTechnicalElements",
+                "uri": "/api/content/{{id}}/toolSettings/enableTechnicalElements",
                 "data": "false"
             },
             "seoOptimised": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/seoOptimised",
+                "uri": "/api/content/{{id}}/toolSettings/seoOptimised",
                 "data": "false"
             },
             "atomPoweredVideo": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/atomPoweredVideo",
+                "uri": "/api/content/{{id}}/toolSettings/atomPoweredVideo",
                 "data": "false"
             },
             "republished": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/republished",
+                "uri": "/api/content/{{id}}/toolSettings/republished",
                 "data": "false"
             },
             "trailTextLinked": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/trailTextLinked",
+                "uri": "/api/content/{{id}}/toolSettings/trailTextLinked",
                 "data": "true"
             },
             "includedSuggestedEmbeds": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/includedSuggestedEmbeds",
+                "uri": "/api/content/{{id}}/toolSettings/includedSuggestedEmbeds",
                 "data": ""
             },
             "pathLocked": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/pathLocked",
+                "uri": "/api/content/{{id}}/toolSettings/pathLocked",
                 "data": "false"
             },
             "linkTextLinked": {
-                "uri": "/api/content/__CONTENT_ID__/toolSettings/linkTextLinked",
+                "uri": "/api/content/{{id}}/toolSettings/linkTextLinked",
                 "data": "true"
             }
         },
         "preview": {
-            "uri": "/api/content/__CONTENT_ID__/preview",
+            "uri": "/api/content/{{id}}/preview",
             "data": {
                 "contentChangeDetails": {
-                    "uri": "/api/content/__CONTENT_ID__/changeDetails",
+                    "uri": "/api/content/{{id}}/changeDetails",
                     "data": {
                         "lastModified": {
                             "date": 1784560240393,
@@ -152,40 +152,40 @@
                             }
                         },
                         "lastMajorRevisionPublished": {
-                            "uri": "/api/content/__CONTENT_ID__/changeDetails/lastMajorRevisionPublished"
+                            "uri": "/api/content/{{id}}/changeDetails/lastMajorRevisionPublished"
                         },
                         "revision": 1,
                         "minutesActive": {
-                            "uri": "/api/content/__CONTENT_ID__/contentChangeDetails/minutesActive",
+                            "uri": "/api/content/{{id}}/contentChangeDetails/minutesActive",
                             "data": 0
                         }
                     }
                 },
                 "fields": {
                     "commissionedLength": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/fields/commissionedLength",
-                        "data": "400"
+                        "uri": "/api/content/{{id}}/preview/fields/commissionedLength",
+                        "data": "{{#if request.query.initialCommissionedLength}}{{request.query.initialCommissionedLength}}{{else}}400{{/if}}"
                     }
                 },
                 "thumbnail": {
-                    "uri": "/api/content/__CONTENT_ID__/preview/thumbnail"
+                    "uri": "/api/content/{{id}}/preview/thumbnail"
                 },
                 "mainBlock": {
-                    "uri": "/api/content/__CONTENT_ID__/preview/mainblock"
+                    "uri": "/api/content/{{id}}/preview/mainblock"
                 },
                 "blocks": {
-                    "uri": "/api/content/__CONTENT_ID__/preview/blocks",
+                    "uri": "/api/content/{{id}}/preview/blocks",
                     "data": [],
                     "links": [
                         {
                             "rel": "item",
-                            "href": "/api/content/__CONTENT_ID__/preview/blocks/{id}"
+                            "href": "/api/content/{{id}}/preview/blocks/{id}"
                         }
                     ]
                 },
                 "taxonomy": {
                     "tags": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/tags",
+                        "uri": "/api/content/{{id}}/preview/taxonomy/tags",
                         "data": [
                             {
                                 "tag": {
@@ -207,11 +207,11 @@
                         ]
                     },
                     "contributors": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/contributors",
+                        "uri": "/api/content/{{id}}/preview/taxonomy/contributors",
                         "data": []
                     },
                     "publication": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/publication",
+                        "uri": "/api/content/{{id}}/preview/taxonomy/publication",
                         "data": {
                             "id": 4,
                             "type": "Publication",
@@ -228,14 +228,14 @@
                         }
                     },
                     "newspaper": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/newspaper"
+                        "uri": "/api/content/{{id}}/preview/taxonomy/newspaper"
                     },
                     "references": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/references",
+                        "uri": "/api/content/{{id}}/preview/taxonomy/references",
                         "data": []
                     },
                     "tracking": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/taxonomy/tracking",
+                        "uri": "/api/content/{{id}}/preview/taxonomy/tracking",
                         "data": [
                             {
                                 "id": 73655,
@@ -272,59 +272,59 @@
                 },
                 "settings": {
                     "relatedContentOff": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/settings/relatedContentOff",
+                        "uri": "/api/content/{{id}}/preview/settings/relatedContentOff",
                         "data": "false"
                     },
                     "blockAds": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/settings/blockAds",
+                        "uri": "/api/content/{{id}}/preview/settings/blockAds",
                         "data": "false"
                     },
                     "tableOfContents": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/settings/tableOfContents",
+                        "uri": "/api/content/{{id}}/preview/settings/tableOfContents",
                         "data": "false"
                     },
                     "legallySensitive": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/settings/legallySensitive",
+                        "uri": "/api/content/{{id}}/preview/settings/legallySensitive",
                         "data": "false"
                     },
                     "hideReaderRevenue": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/settings/hideReaderRevenue",
+                        "uri": "/api/content/{{id}}/preview/settings/hideReaderRevenue",
                         "data": "false"
                     },
                     "managedByComposer": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/settings/managedByComposer",
+                        "uri": "/api/content/{{id}}/preview/settings/managedByComposer",
                         "data": "true"
                     },
                     "usesPathManager": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/settings/usesPathManager",
+                        "uri": "/api/content/{{id}}/preview/settings/usesPathManager",
                         "data": "true"
                     },
                     "productionOffice": {
-                        "uri": "/api/content/__CONTENT_ID__/preview/settings/productionOffice",
-                        "data": "UK"
+                        "uri": "/api/content/{{id}}/preview/settings/productionOffice",
+                        "data": "{{#if request.query.productionOffice}}{{request.query.productionOffice}}{{else}}UK{{/if}}"
                     }
                 }
             },
             "links": [
                 {
                     "rel": "setting-item",
-                    "href": "/api/content/__CONTENT_ID__/preview/settings/{settingKey}"
+                    "href": "/api/content/{{id}}/preview/settings/{settingKey}"
                 },
                 {
                     "rel": "field-item",
-                    "href": "/api/content/__CONTENT_ID__/preview/fields/{fieldKey}"
+                    "href": "/api/content/{{id}}/preview/fields/{fieldKey}"
                 },
                 {
                     "rel": "force-emit-content-update-event",
-                    "href": "/api/content/__CONTENT_ID__/preview/forceEmitContentUpdate"
+                    "href": "/api/content/{{id}}/preview/forceEmitContentUpdate"
                 }
             ]
         },
         "live": {
-            "uri": "/api/content/__CONTENT_ID__/live",
+            "uri": "/api/content/{{id}}/live",
             "data": {
                 "contentChangeDetails": {
-                    "uri": "/api/content/__CONTENT_ID__/changeDetails",
+                    "uri": "/api/content/{{id}}/changeDetails",
                     "data": {
                         "lastModified": {
                             "date": 1784560240403,
@@ -343,40 +343,40 @@
                             }
                         },
                         "lastMajorRevisionPublished": {
-                            "uri": "/api/content/__CONTENT_ID__/changeDetails/lastMajorRevisionPublished"
+                            "uri": "/api/content/{{id}}/changeDetails/lastMajorRevisionPublished"
                         },
                         "revision": 1,
                         "minutesActive": {
-                            "uri": "/api/content/__CONTENT_ID__/contentChangeDetails/minutesActive",
+                            "uri": "/api/content/{{id}}/contentChangeDetails/minutesActive",
                             "data": 0
                         }
                     }
                 },
                 "fields": {
                     "commissionedLength": {
-                        "uri": "/api/content/__CONTENT_ID__/live/fields/commissionedLength",
-                        "data": "400"
+                        "uri": "/api/content/{{id}}/live/fields/commissionedLength",
+                        "data": "{{#if request.query.initialCommissionedLength}}{{request.query.initialCommissionedLength}}{{else}}400{{/if}}"
                     }
                 },
                 "thumbnail": {
-                    "uri": "/api/content/__CONTENT_ID__/live/thumbnail"
+                    "uri": "/api/content/{{id}}/live/thumbnail"
                 },
                 "mainBlock": {
-                    "uri": "/api/content/__CONTENT_ID__/live/mainblock"
+                    "uri": "/api/content/{{id}}/live/mainblock"
                 },
                 "blocks": {
-                    "uri": "/api/content/__CONTENT_ID__/live/blocks",
+                    "uri": "/api/content/{{id}}/live/blocks",
                     "data": [],
                     "links": [
                         {
                             "rel": "item",
-                            "href": "/api/content/__CONTENT_ID__/live/blocks/{id}"
+                            "href": "/api/content/{{id}}/live/blocks/{id}"
                         }
                     ]
                 },
                 "taxonomy": {
                     "tags": {
-                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/tags",
+                        "uri": "/api/content/{{id}}/live/taxonomy/tags",
                         "data": [
                             {
                                 "tag": {
@@ -398,11 +398,11 @@
                         ]
                     },
                     "contributors": {
-                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/contributors",
+                        "uri": "/api/content/{{id}}/live/taxonomy/contributors",
                         "data": []
                     },
                     "publication": {
-                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/publication",
+                        "uri": "/api/content/{{id}}/live/taxonomy/publication",
                         "data": {
                             "id": 4,
                             "type": "Publication",
@@ -419,14 +419,14 @@
                         }
                     },
                     "newspaper": {
-                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/newspaper"
+                        "uri": "/api/content/{{id}}/live/taxonomy/newspaper"
                     },
                     "references": {
-                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/references",
+                        "uri": "/api/content/{{id}}/live/taxonomy/references",
                         "data": []
                     },
                     "tracking": {
-                        "uri": "/api/content/__CONTENT_ID__/live/taxonomy/tracking",
+                        "uri": "/api/content/{{id}}/live/taxonomy/tracking",
                         "data": [
                             {
                                 "id": 73655,
@@ -463,54 +463,54 @@
                 },
                 "settings": {
                     "relatedContentOff": {
-                        "uri": "/api/content/__CONTENT_ID__/live/settings/relatedContentOff",
+                        "uri": "/api/content/{{id}}/live/settings/relatedContentOff",
                         "data": "false"
                     },
                     "blockAds": {
-                        "uri": "/api/content/__CONTENT_ID__/live/settings/blockAds",
+                        "uri": "/api/content/{{id}}/live/settings/blockAds",
                         "data": "false"
                     },
                     "tableOfContents": {
-                        "uri": "/api/content/__CONTENT_ID__/live/settings/tableOfContents",
+                        "uri": "/api/content/{{id}}/live/settings/tableOfContents",
                         "data": "false"
                     },
                     "legallySensitive": {
-                        "uri": "/api/content/__CONTENT_ID__/live/settings/legallySensitive",
+                        "uri": "/api/content/{{id}}/live/settings/legallySensitive",
                         "data": "false"
                     },
                     "hideReaderRevenue": {
-                        "uri": "/api/content/__CONTENT_ID__/live/settings/hideReaderRevenue",
+                        "uri": "/api/content/{{id}}/live/settings/hideReaderRevenue",
                         "data": "false"
                     },
                     "managedByComposer": {
-                        "uri": "/api/content/__CONTENT_ID__/live/settings/managedByComposer",
+                        "uri": "/api/content/{{id}}/live/settings/managedByComposer",
                         "data": "true"
                     },
                     "usesPathManager": {
-                        "uri": "/api/content/__CONTENT_ID__/live/settings/usesPathManager",
+                        "uri": "/api/content/{{id}}/live/settings/usesPathManager",
                         "data": "true"
                     },
                     "productionOffice": {
-                        "uri": "/api/content/__CONTENT_ID__/live/settings/productionOffice",
-                        "data": "UK"
+                        "uri": "/api/content/{{id}}/live/settings/productionOffice",
+                        "data": "{{#if request.query.productionOffice}}{{request.query.productionOffice}}{{else}}UK{{/if}}"
                     }
                 }
             },
             "links": [
                 {
                     "rel": "setting-item",
-                    "href": "/api/content/__CONTENT_ID__/live/settings/{settingKey}"
+                    "href": "/api/content/{{id}}/live/settings/{settingKey}"
                 },
                 {
                     "rel": "field-item",
-                    "href": "/api/content/__CONTENT_ID__/live/fields/{fieldKey}"
+                    "href": "/api/content/{{id}}/live/fields/{fieldKey}"
                 }
             ]
         },
         "auxiliaryAtoms": [],
         "backReferences": [],
         "channels": {
-            "uri": "/api/content/__CONTENT_ID__/channels",
+            "uri": "/api/content/{{id}}/channels",
             "data": {
                 "newsletters": {
                     "channelState": "LinkedToWebPublication"
@@ -525,7 +525,7 @@
             "links": [
                 {
                     "rel": "update-content",
-                    "href": "/api/content/__CONTENT_ID__/channels/update"
+                    "href": "/api/content/{{id}}/channels/update"
                 }
             ]
         }
@@ -533,11 +533,11 @@
     "links": [
         {
             "rel": "tool-setting-item",
-            "href": "/api/content/__CONTENT_ID__/toolSettings/{toolSettingKey}"
+            "href": "/api/content/{{id}}/toolSettings/{toolSettingKey}"
         },
         {
             "rel": "identifier-item",
-            "href": "/api/content/__CONTENT_ID__/identifiers/{identifierKey}"
+            "href": "/api/content/{{id}}/identifiers/{identifierKey}"
         }
     ]
 }

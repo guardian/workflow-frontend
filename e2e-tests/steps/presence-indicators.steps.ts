@@ -1,7 +1,7 @@
 import { Given, When, Then, Before, expect } from "./fixtures";
 import { DataTable } from "playwright-bdd";
 import type { Page, Locator } from "@playwright/test";
-import type { PresenceMock, PresencePerson, PresenceEntry, PresenceLocation  } from "../setup/mock/presenceMock";
+import type { PresenceMock, PresencePerson, PresenceEntry, PresenceLocation  } from "../fixtures/presence/presenceMock";
 import type { PersonWithLocation, World } from "./fixtures";
 
 
