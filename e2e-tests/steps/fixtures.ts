@@ -5,7 +5,7 @@ import { expect } from "@playwright/test";
 import { createPanDomainCookie, type Role } from "../setup/panDomainCookie";
 import type { SharedStackInfo } from "../setup/sharedStack";
 import { ACTIVE_STACK_FILE } from "../global-setup";
-import { installPresenceMock, type PresenceMock, type PresencePerson, type PresenceLocation } from "../fixtures/presence/presenceMock";
+import { installPresenceMock, type PresenceMock, type PresencePerson, type PresenceLocation } from "./shared/presenceMock";
 import { mockTelemetry, type TelemetryMock } from "../fixtures/telemetry/telemetryMock";
 import { mockComposer, type ComposerMock } from "./shared/composerApiMock";
 

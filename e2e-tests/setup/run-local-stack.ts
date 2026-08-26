@@ -3,7 +3,7 @@ import { createPanDomainCookie } from "./panDomainCookie";
 import { startLocalStack, stopLocalStack } from "./stackContainers";
 import { writeSharedStackInfo, clearSharedStackInfo } from "./sharedStack";
 import { mockTelemetry } from "../fixtures/telemetry/telemetryMock";
-import { installPresenceMock } from "../fixtures/presence/presenceMock";
+import { installPresenceMock } from "../steps/shared/presenceMock";
 
 function waitForTerminationSignal(): Promise<void> {
     return new Promise((resolve) => {
@@ -55,10 +55,10 @@ async function main() {
             handleSIGINT: false,
             handleSIGTERM: false,
             handleSIGHUP: false,
-            // Route the browser's cross-origin Composer https calls to the
-            // WireMock container on host port 9081 (see stackContainers.ts).
+            // Route the browser's cross-origin Composer and presence https
+            // calls to their WireMock containers (see stackContainers.ts).
             args: [
-                "--host-resolver-rules=MAP composer.local.dev-gutools.co.uk 127.0.0.1:9081",
+                "--host-resolver-rules=MAP composer.local.dev-gutools.co.uk 127.0.0.1:9081,MAP presence.local.dev-gutools.co.uk 127.0.0.1:9070",
             ],
         });
         const page = await browser.newPage({ ignoreHTTPSErrors: true });

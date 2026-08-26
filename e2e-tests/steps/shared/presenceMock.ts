@@ -11,9 +11,10 @@ import type { Page } from "@playwright/test";
  *
  * Rather than emulate the WebSocket, we mock around the `presenceClient`
  * interface itself:
- *   1. Fulfil the client-library request with a tiny in-memory stub that
- *      implements the `presenceClient` contract entirely on the client. No
- *      network/socket is involved — `startConnection()` resolves immediately.
+ *   1. The mock-presence WireMock container serves a tiny in-memory stub in
+ *      place of the real `client/1/lib.js`, implementing the `presenceClient`
+ *      contract entirely on the client. No network/socket is involved —
+ *      `startConnection()` resolves immediately.
  *   2. The stub records the app's `visitor-list-updated` handler on a control
  *      object (`window.__presenceMock__`) so tests can drive presence updates by
  *      invoking that handler directly from the Playwright side.
@@ -94,62 +95,10 @@ export type PresenceMock = {
     pushStatus: (subscriptionId: string, currentState: PresenceEntry[]) => Promise<void>;
 };
 
-// In-memory stub for the presence client library. Injected in place of the
-// (unreachable) external `client/1/lib.js`. It fulfils the `presenceClient`
-// contract without any network: `startConnection()` resolves synchronously and
-// the registered `visitor-list-updated` handler is exposed on
-// `window.__presenceMock__` so tests can invoke it directly.
-const CLIENT_LIB_JS = `
-(function () {
-  window.presenceClient = function (endpoint, person) {
-    var handlers = {};
-
-    function register(event, handler) {
-      handlers[event] = handler;
-    }
-
-    var connection = {
-      connectionId: "e2e-" + Math.random().toString(36).slice(2),
-      on: register,
-      register: register,
-      subscribe: function () {
-        return Promise.resolve();
-      },
-      startConnection: function () {
-        window.__presenceMock__ = {
-          connected: true,
-          push: function (subscriptionId, currentState) {
-            var handler = handlers["visitor-list-updated"];
-            if (handler) {
-              handler({
-                type: "visitor-list-updated",
-                subscriptionId: subscriptionId,
-                currentState: currentState
-              });
-            }
-          }
-        };
-        if (handlers["connection.open"]) {
-          handlers["connection.open"]();
-        }
-        return Promise.resolve(this);
-      }
-    };
-
-    return connection;
-  };
-})();
-`;
-
 export async function installPresenceMock(page: Page): Promise<PresenceMock> {
-    // Serve our stub instead of the (unreachable) external presence client lib.
-    await page.route("**/client/1/lib.js", async (route) => {
-        await route.fulfill({
-            contentType: "application/javascript",
-            body: CLIENT_LIB_JS,
-        });
-    });
-
+    // The stub client library is served by the mock-presence WireMock container
+    // (routed to the browser via host-resolver-rules); it exposes
+    // window.__presenceMock__ once the app has "connected".
     const ready = page
         .waitForFunction(() => window.__presenceMock__?.connected === true)
         .then(() => undefined);

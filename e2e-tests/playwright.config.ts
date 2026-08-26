@@ -29,13 +29,13 @@ export default defineConfig({
         trace: "on-first-retry",
         video: "on-first-retry",
         screenshot: "only-on-failure",
-        // Composer is mocked by a WireMock container on host port 9081 (see
+        // Composer and presence are mocked by WireMock containers (see
         // stackContainers.ts). Route the browser's cross-origin https calls to
-        // it and accept its self-signed certificate.
+        // them and accept their self-signed certificates.
         ignoreHTTPSErrors: true,
         launchOptions: {
             args: [
-                "--host-resolver-rules=MAP composer.local.dev-gutools.co.uk 127.0.0.1:9081",
+                "--host-resolver-rules=MAP composer.local.dev-gutools.co.uk 127.0.0.1:9081,MAP presence.local.dev-gutools.co.uk 127.0.0.1:9070",
             ],
         },
     },

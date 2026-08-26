@@ -43,6 +43,7 @@ export type LocalStack = {
     /** Base URL of the Composer mock's admin API, for querying its request journal. */
     mockComposerApiUrl: string;
     mockComposerApiContainer: any;
+    mockPresenceContainer: any;
     mockPreferencesApiContainer: any;
     mockTagManagerApiContainer: any;
     dbContainer: any;
@@ -77,6 +78,12 @@ const COMPOSER_HOSTNAME = "composer.local.dev-gutools.co.uk";
 // COMPOSER_HOSTNAME to. Forwarded in the devcontainer as "Composer API".
 const COMPOSER_HTTPS_PORT = 8443;
 const HOST_COMPOSER_HTTPS_PORT = 9081;
+const PRESENCE_HOSTNAME = "presence.local.dev-gutools.co.uk";
+// Presence's client library is loaded by the browser over https; the mock serves
+// it on this fixed host port, which Chromium host-resolver-rules maps
+// PRESENCE_HOSTNAME to. Forwarded in the devcontainer as "Presence".
+const PRESENCE_HTTPS_PORT = 8443;
+const HOST_PRESENCE_HTTPS_PORT = 9070;
 
 // Test data loaded into the Datastore's Postgres tables once the schema exists.
 // Parent tables (section, desk) are seeded before the tables that reference
@@ -238,6 +245,7 @@ export async function startLocalStack(
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     const mockCapiImageTag = `workflow-frontend-mock-capi-e2e:${runId}`;
     const mockComposerImageTag = `workflow-frontend-mock-composer-e2e:${runId}`;
+    const mockPresenceImageTag = `workflow-frontend-mock-presence-e2e:${runId}`;
     const mockPreferencesImageTag = `workflow-frontend-mock-preferences-e2e:${runId}`;
     const mockTagManagerImageTag = `workflow-frontend-mock-tagmanager-e2e:${runId}`;
     const dynamodbImageTag = `workflow-frontend-dynamodb-e2e:${runId}`;
@@ -253,6 +261,7 @@ export async function startLocalStack(
     let hostsWritten = false;
     let mockCapiContainer;
     let mockComposerApiContainer;
+    let mockPresenceContainer;
     let mockPreferencesApiContainer;
     let mockTagManagerApiContainer;
     let dbContainer;
@@ -339,6 +348,31 @@ export async function startLocalStack(
             .start();
 
         const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_PORT)}`;
+
+        await buildDockerImage({
+            tag: mockPresenceImageTag,
+            dockerfilePath: path.join(
+                e2eRoot,
+                "images/mock-presence.Dockerfile",
+            ),
+            contextPath: e2eRoot,
+        });
+
+        mockPresenceContainer = await new GenericContainer(mockPresenceImageTag)
+            .withNetwork(network)
+            .withNetworkAliases(PRESENCE_HOSTNAME)
+            .withLogConsumer(createLogConsumer("mock-presence", streamLogs))
+            .withExposedPorts(WIREMOCK_PORT, {
+                container: PRESENCE_HTTPS_PORT,
+                host: HOST_PRESENCE_HTTPS_PORT,
+            })
+            .withWaitStrategy(
+                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                    200,
+                ),
+            )
+            .withStartupTimeout(2 * 60 * 1000)
+            .start();
 
         await buildDockerImage({
             tag: mockPreferencesImageTag,
@@ -493,6 +527,7 @@ export async function startLocalStack(
             minioContainer,
             mockCapiContainer,
             mockComposerApiContainer,
+            mockPresenceContainer,
             mockPreferencesApiContainer,
             mockTagManagerApiContainer,
             dbContainer,
@@ -576,6 +611,10 @@ export async function startLocalStack(
                     ip: mockComposerApiContainer.getIpAddress(networkName),
                     hostnames: [COMPOSER_HOSTNAME],
                 },
+                {
+                    ip: mockPresenceContainer.getIpAddress(networkName),
+                    hostnames: [PRESENCE_HOSTNAME],
+                },
             ]);
             hostsWritten = true;
             console.log(`\n[/etc/hosts] updated with local stack container IPs for host-mode frontend`);
@@ -633,6 +672,9 @@ export async function startLocalStack(
         if (mockComposerApiContainer) {
             await mockComposerApiContainer.stop();
         }
+        if (mockPresenceContainer) {
+            await mockPresenceContainer.stop();
+        }
         if (mockCapiContainer) {
             await mockCapiContainer.stop();
         }
@@ -652,6 +694,7 @@ export async function stopLocalStack({
     minioContainer,
     mockCapiContainer,
     mockComposerApiContainer,
+    mockPresenceContainer,
     mockPreferencesApiContainer,
     mockTagManagerApiContainer,
     dbContainer,
@@ -690,6 +733,9 @@ export async function stopLocalStack({
     }
     if (mockComposerApiContainer) {
         await mockComposerApiContainer.stop();
+    }
+    if (mockPresenceContainer) {
+        await mockPresenceContainer.stop();
     }
     if (mockCapiContainer) {
         await mockCapiContainer.stop();
