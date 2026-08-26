@@ -48,21 +48,10 @@ checked out, builds the stack, and runs the test suite in headless mode.
 ### How the frontend is run
 
 The dependency services (datastore, MinIO, DynamoDB and the mocked upstream
-APIs) always run as containers. The workflow-frontend app itself runs in one of
-two modes:
-
-- **`host` (default locally)** — the Play app runs directly on the host in watch
-  mode (`sbt run` + `yarn build-dev`), so edits to Scala or frontend assets
-  reload without rebuilding a Docker image. The app reaches the containers by
-  mapping their Docker-network hostnames to the container bridge IPs in
-  `/etc/hosts` (written with `sudo`, removed again on teardown). This needs the
-  `sbt`/`node` toolchain from [mise](https://mise.jdx.dev/) and passwordless
-  `sudo` for `/etc/hosts`.
-- **`container` (default in CI)** — the app is built and run as a container, as
-  the dependencies are. Selected automatically when `CI` is set.
-
-Override the mode explicitly with `E2E_FRONTEND=host` or
-`E2E_FRONTEND=container`, e.g. `E2E_FRONTEND=container yarn test`.
+APIs) all run as containers, and so does the workflow-frontend app itself. The
+app is built and run as a container, mounting the sources live so `sbt run` +
+`yarn build-dev` (webpack watch) reload edits to Scala or frontend assets
+without rebuilding the image.
 
 
 ### Use host's browser to access Playwright UI

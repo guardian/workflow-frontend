@@ -27,7 +27,6 @@ async function main() {
     try {
         stack = await startLocalStack(projectRoot, { 
             streamLogs: true,
-            frontend: "container",
             exposeHostAuth: true
         });
         const cookieData = createPanDomainCookie(stack.panDomainPrivateKey);
