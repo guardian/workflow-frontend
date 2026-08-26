@@ -53,6 +53,12 @@ postCreateCommand:
     - cmd: "mise exec -- yarn install --immutable"
       workingDirectory: "${containerWorkspaceFolder}"
       logLine: "Installing-project-dependencies"
+    - cmd: "mise exec -- yarn install --immutable"
+      workingDirectory: "${containerWorkspaceFolder}/e2e-tests"
+      logLine: "Installing-e2e-test-dependencies"
+    - cmd: "mise exec -- yarn playwright install --with-deps chromium"
+      workingDirectory: "${containerWorkspaceFolder}/e2e-tests"
+      logLine: "Installing-playwright"
 postStartCommand:
     - cmd: "echo 'Container started successfully'"
       workingDirectory: "."

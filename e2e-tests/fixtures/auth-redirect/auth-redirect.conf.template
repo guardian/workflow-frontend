@@ -8,7 +8,7 @@ server {
     # request time and nginx can start before the frontend container is up.
     resolver 127.0.0.11 valid=10s;
 
-    location /e2e-stack-login {
+    location /cookie {
         add_header Set-Cookie "${AUTH_COOKIE_NAME}=${AUTH_COOKIE_VALUE}; Path=/; SameSite=Lax";
         return 302 /dashboard;
     }

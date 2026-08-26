@@ -61,7 +61,7 @@ export type LocalStack = {
 // register those exact hostnames as network aliases on the mock container, so
 // the real hostnames resolve to the mock inside the Docker network — no
 // config/URL override required.
-const WIREMOCK_PORT = 80;
+const WIREMOCK_HTTP_PORT = 80;
 // Fixed host port for the optional host-browser auth-cookie endpoint. Kept
 // stable (and forwarded in the devcontainer) so it can be bookmarked.
 const NGINX_PORT = 80;
@@ -80,19 +80,22 @@ const COMPOSER_HOSTNAME = "composer.local.dev-gutools.co.uk";
 // https on this fixed host port, which Chromium host-resolver-rules maps
 // COMPOSER_HOSTNAME to. Forwarded in the devcontainer as "Composer API".
 const COMPOSER_HTTPS_PORT = 8443;
-const HOST_COMPOSER_HTTPS_PORT = 9081;
+const HOST_COMPOSER_HTTP_PORT = 9081;
+const HOST_COMPOSER_HTTPS_PORT = 9082;
 const PRESENCE_HOSTNAME = "presence.local.dev-gutools.co.uk";
 // Presence's client library is loaded by the browser over https; the mock serves
 // it on this fixed host port, which Chromium host-resolver-rules maps
 // PRESENCE_HOSTNAME to. Forwarded in the devcontainer as "Presence".
 const PRESENCE_HTTPS_PORT = 8443;
-const HOST_PRESENCE_HTTPS_PORT = 9070;
+const HOST_PRESENCE_HTTP_PORT = 9070;
+const HOST_PRESENCE_HTTPS_PORT = 9071;
 const TELEMETRY_HOSTNAME = "user-telemetry.local.dev-gutools.co.uk";
 // Telemetry is called from the browser over https; the mock serves it on this
 // fixed host port, which Chromium host-resolver-rules maps TELEMETRY_HOSTNAME
 // to. Forwarded in the devcontainer as "User telemetry".
 const TELEMETRY_HTTPS_PORT = 8443;
-const HOST_TELEMETRY_HTTPS_PORT = 3132;
+const HOST_TELEMETRY_HTTP_PORT = 3132;
+const HOST_TELEMETRY_HTTPS_PORT = 3133;
 
 // Test data loaded into the Datastore's Postgres tables once the schema exists.
 // Parent tables (section, desk) are seeded before the tables that reference
@@ -322,16 +325,16 @@ export async function startLocalStack(
             .withNetwork(network)
             .withNetworkAliases(CAPI_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-capi", streamLogs))
-            .withExposedPorts(WIREMOCK_PORT)
+            .withExposedPorts(WIREMOCK_HTTP_PORT)
             .withWaitStrategy(
-                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
                     200,
                 ),
             )
             .withStartupTimeout(2 * 60 * 1000)
             .start();
 
-        const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_PORT)}`;
+        const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
         await buildDockerImage({
             tag: mockComposerImageTag,
@@ -346,19 +349,24 @@ export async function startLocalStack(
             .withNetwork(network)
             .withNetworkAliases(COMPOSER_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-composer", streamLogs))
-            .withExposedPorts(WIREMOCK_PORT, {
-                container: COMPOSER_HTTPS_PORT,
-                host: HOST_COMPOSER_HTTPS_PORT,
-            })
+            .withExposedPorts(
+                {
+                    container: WIREMOCK_HTTP_PORT,
+                    host: HOST_COMPOSER_HTTP_PORT,
+                }, 
+                {
+                    container: COMPOSER_HTTPS_PORT,
+                    host: HOST_COMPOSER_HTTPS_PORT,
+                })
             .withWaitStrategy(
-                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
                     200,
                 ),
             )
             .withStartupTimeout(2 * 60 * 1000)
             .start();
 
-        const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_PORT)}`;
+        const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
         await buildDockerImage({
             tag: mockPresenceImageTag,
@@ -373,12 +381,18 @@ export async function startLocalStack(
             .withNetwork(network)
             .withNetworkAliases(PRESENCE_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-presence", streamLogs))
-            .withExposedPorts(WIREMOCK_PORT, {
-                container: PRESENCE_HTTPS_PORT,
-                host: HOST_PRESENCE_HTTPS_PORT,
-            })
+            .withExposedPorts(
+                {
+                    container: WIREMOCK_HTTP_PORT,
+                    host: HOST_PRESENCE_HTTP_PORT,
+                },
+                {
+                    container: PRESENCE_HTTPS_PORT,
+                    host: HOST_PRESENCE_HTTPS_PORT,
+                },
+            )
             .withWaitStrategy(
-                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
                     200,
                 ),
             )
@@ -398,19 +412,24 @@ export async function startLocalStack(
             .withNetwork(network)
             .withNetworkAliases(TELEMETRY_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-telemetry", streamLogs))
-            .withExposedPorts(WIREMOCK_PORT, {
-                container: TELEMETRY_HTTPS_PORT,
-                host: HOST_TELEMETRY_HTTPS_PORT,
-            })
+            .withExposedPorts(
+                {
+                    container: WIREMOCK_HTTP_PORT,
+                    host: HOST_TELEMETRY_HTTP_PORT,
+                },
+                {
+                    container: TELEMETRY_HTTPS_PORT,
+                    host: HOST_TELEMETRY_HTTPS_PORT,
+                })
             .withWaitStrategy(
-                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
                     200,
                 ),
             )
             .withStartupTimeout(2 * 60 * 1000)
             .start();
 
-        const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_PORT)}`;
+        const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
         await buildDockerImage({
             tag: mockPreferencesImageTag,
@@ -425,9 +444,9 @@ export async function startLocalStack(
             .withNetwork(network)
             .withNetworkAliases(PREFERENCES_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-preferences", streamLogs))
-            .withExposedPorts(WIREMOCK_PORT)
+            .withExposedPorts(WIREMOCK_HTTP_PORT)
             .withWaitStrategy(
-                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
                     200,
                 ),
             )
@@ -447,9 +466,9 @@ export async function startLocalStack(
             .withNetwork(network)
             .withNetworkAliases(TAG_MANAGER_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-tagmanager", streamLogs))
-            .withExposedPorts(WIREMOCK_PORT)
+            .withExposedPorts(WIREMOCK_HTTP_PORT)
             .withWaitStrategy(
-                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
                     200,
                 ),
             )
@@ -579,18 +598,30 @@ export async function startLocalStack(
         };
 
         if (frontend === "container") {
+            const repoRoot = path.join(e2eRoot, "..");
             await buildDockerImage({
                 tag: workflowImageTag,
                 dockerfilePath: path.join(
                     e2eRoot,
                     "images/workflow-frontend.Dockerfile",
                 ),
-                contextPath: path.join(e2eRoot, ".."),
+                contextPath: repoRoot,
             });
 
             workflowContainer = await new GenericContainer(workflowImageTag)
                 .withNetwork(network)
                 .withNetworkAliases(FRONTEND_ALIAS)
+                // Mount the sources live so `yarn build-dev` (webpack watch) and Play
+                // dev-mode `run` pick up edits without an image rebuild. public is rw
+                // because webpack writes its bundles into public/build.
+                // common-lib is rw because Play dev-mode `run` writes its compiled classes 
+                // into common-lib/target.
+                .withBindMounts([
+                    { source: path.join(repoRoot, "app"), target: "/workflow-frontend/app", mode: "ro" },
+                    { source: path.join(repoRoot, "common-lib"), target: "/workflow-frontend/common-lib", mode: "rw" },
+                    { source: path.join(repoRoot, "conf"), target: "/workflow-frontend/conf", mode: "ro" },
+                    { source: path.join(repoRoot, "public"), target: "/workflow-frontend/public", mode: "rw" },
+                ])
                 .withEnvironment({
                     AWS_ENDPOINT_URL_S3: "http://minio:9000",
                     AWS_ENDPOINT_URL_DYNAMODB: "http://workflow-e2e-dynamodb:8000",

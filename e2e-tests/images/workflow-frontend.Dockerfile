@@ -45,23 +45,21 @@ RUN mise exec -- npm install -g corepack \
     && mise exec -- corepack enable \
     && mise exec -- yarn install
 
-# Compile Scala sources. Only re-runs when app/ or conf/ changes,
-# not when JS, scripts, or fixtures change.
+# Warm up the Scala incremental compiler caches (target/, zinc). The sources are
+# bind-mounted at runtime, so these copies are only used to prime the build;
+# unchanged files then start fast, changed ones recompile incrementally.
 COPY app ./app
 COPY common-lib ./common-lib
 COPY conf ./conf
 RUN mise exec -- sbt -batch compile
 
-# Build frontend assets. Only re-runs when public/ changes,
-# not when Scala sources change.
-COPY public ./public
-COPY tsconfig.json karma.conf.js .babelrc ./
-RUN mise exec -- yarn build
-
 # Copy remaining runtime files (scripts, fixtures, nginx config, etc.).
+# app/, common-lib/, conf/ and public/ are bind-mounted over these at runtime.
 COPY --exclude=e2e-tests/target/ . .
 RUN chmod +x /workflow-frontend/e2e-tests/images/start-workflow-frontend
 
 EXPOSE 9090
 
-CMD ["/workflow-frontend/e2e-tests/images/start-workflow-frontend"]
+# Run webpack in watch mode alongside Play dev-mode `run` so mounted source edits
+# rebuild assets and recompile the app without rebuilding the image.
+CMD ["bash", "-c", "mise exec -- yarn build-dev & exec /workflow-frontend/e2e-tests/images/start-workflow-frontend"]
