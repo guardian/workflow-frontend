@@ -1,0 +1,58 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "OPTIONS",
+        "urlPathPattern": "/.*"
+      },
+      "response": {
+        "status": 204,
+        "transformers": ["response-template"],
+        "headers": {
+          "Access-Control-Allow-Origin": "{{{request.headers.Origin}}}",
+          "Access-Control-Allow-Credentials": "true",
+          "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+          "Access-Control-Allow-Headers": "{{{request.headers.[Access-Control-Request-Headers]}}}"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/event"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "headers": {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "{{{request.headers.Origin}}}",
+          "Access-Control-Allow-Credentials": "true"
+        },
+        "jsonBody": {
+          "status": "ok",
+          "message": "Mocked telemetry message"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/guardian-tool-accessed"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "headers": {
+          "Content-Type": "text/plain",
+          "Access-Control-Allow-Origin": "{{{request.headers.Origin}}}",
+          "Access-Control-Allow-Credentials": "true"
+        },
+        "body": "ok"
+      }
+    }
+  ]
+}

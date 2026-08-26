@@ -44,6 +44,9 @@ export type LocalStack = {
     mockComposerApiUrl: string;
     mockComposerApiContainer: any;
     mockPresenceContainer: any;
+    /** Base URL of the telemetry mock's admin API, for querying its request journal. */
+    mockTelemetryApiUrl: string;
+    mockTelemetryContainer: any;
     mockPreferencesApiContainer: any;
     mockTagManagerApiContainer: any;
     dbContainer: any;
@@ -84,6 +87,12 @@ const PRESENCE_HOSTNAME = "presence.local.dev-gutools.co.uk";
 // PRESENCE_HOSTNAME to. Forwarded in the devcontainer as "Presence".
 const PRESENCE_HTTPS_PORT = 8443;
 const HOST_PRESENCE_HTTPS_PORT = 9070;
+const TELEMETRY_HOSTNAME = "user-telemetry.local.dev-gutools.co.uk";
+// Telemetry is called from the browser over https; the mock serves it on this
+// fixed host port, which Chromium host-resolver-rules maps TELEMETRY_HOSTNAME
+// to. Forwarded in the devcontainer as "User telemetry".
+const TELEMETRY_HTTPS_PORT = 8443;
+const HOST_TELEMETRY_HTTPS_PORT = 3132;
 
 // Test data loaded into the Datastore's Postgres tables once the schema exists.
 // Parent tables (section, desk) are seeded before the tables that reference
@@ -246,6 +255,7 @@ export async function startLocalStack(
     const mockCapiImageTag = `workflow-frontend-mock-capi-e2e:${runId}`;
     const mockComposerImageTag = `workflow-frontend-mock-composer-e2e:${runId}`;
     const mockPresenceImageTag = `workflow-frontend-mock-presence-e2e:${runId}`;
+    const mockTelemetryImageTag = `workflow-frontend-mock-telemetry-e2e:${runId}`;
     const mockPreferencesImageTag = `workflow-frontend-mock-preferences-e2e:${runId}`;
     const mockTagManagerImageTag = `workflow-frontend-mock-tagmanager-e2e:${runId}`;
     const dynamodbImageTag = `workflow-frontend-dynamodb-e2e:${runId}`;
@@ -262,6 +272,7 @@ export async function startLocalStack(
     let mockCapiContainer;
     let mockComposerApiContainer;
     let mockPresenceContainer;
+    let mockTelemetryContainer;
     let mockPreferencesApiContainer;
     let mockTagManagerApiContainer;
     let dbContainer;
@@ -373,6 +384,33 @@ export async function startLocalStack(
             )
             .withStartupTimeout(2 * 60 * 1000)
             .start();
+
+        await buildDockerImage({
+            tag: mockTelemetryImageTag,
+            dockerfilePath: path.join(
+                e2eRoot,
+                "images/mock-telemetry.Dockerfile",
+            ),
+            contextPath: e2eRoot,
+        });
+
+        mockTelemetryContainer = await new GenericContainer(mockTelemetryImageTag)
+            .withNetwork(network)
+            .withNetworkAliases(TELEMETRY_HOSTNAME)
+            .withLogConsumer(createLogConsumer("mock-telemetry", streamLogs))
+            .withExposedPorts(WIREMOCK_PORT, {
+                container: TELEMETRY_HTTPS_PORT,
+                host: HOST_TELEMETRY_HTTPS_PORT,
+            })
+            .withWaitStrategy(
+                Wait.forHttp("/__admin/health", WIREMOCK_PORT).forStatusCode(
+                    200,
+                ),
+            )
+            .withStartupTimeout(2 * 60 * 1000)
+            .start();
+
+        const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_PORT)}`;
 
         await buildDockerImage({
             tag: mockPreferencesImageTag,
@@ -524,10 +562,12 @@ export async function startLocalStack(
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
             mockApiUrl: mockCapiUrl,
             mockComposerApiUrl,
+            mockTelemetryApiUrl,
             minioContainer,
             mockCapiContainer,
             mockComposerApiContainer,
             mockPresenceContainer,
+            mockTelemetryContainer,
             mockPreferencesApiContainer,
             mockTagManagerApiContainer,
             dbContainer,
@@ -615,6 +655,10 @@ export async function startLocalStack(
                     ip: mockPresenceContainer.getIpAddress(networkName),
                     hostnames: [PRESENCE_HOSTNAME],
                 },
+                {
+                    ip: mockTelemetryContainer.getIpAddress(networkName),
+                    hostnames: [TELEMETRY_HOSTNAME],
+                },
             ]);
             hostsWritten = true;
             console.log(`\n[/etc/hosts] updated with local stack container IPs for host-mode frontend`);
@@ -675,6 +719,9 @@ export async function startLocalStack(
         if (mockPresenceContainer) {
             await mockPresenceContainer.stop();
         }
+        if (mockTelemetryContainer) {
+            await mockTelemetryContainer.stop();
+        }
         if (mockCapiContainer) {
             await mockCapiContainer.stop();
         }
@@ -695,6 +742,7 @@ export async function stopLocalStack({
     mockCapiContainer,
     mockComposerApiContainer,
     mockPresenceContainer,
+    mockTelemetryContainer,
     mockPreferencesApiContainer,
     mockTagManagerApiContainer,
     dbContainer,
@@ -736,6 +784,9 @@ export async function stopLocalStack({
     }
     if (mockPresenceContainer) {
         await mockPresenceContainer.stop();
+    }
+    if (mockTelemetryContainer) {
+        await mockTelemetryContainer.stop();
     }
     if (mockCapiContainer) {
         await mockCapiContainer.stop();

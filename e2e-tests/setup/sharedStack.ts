@@ -16,6 +16,7 @@ export type SharedStackInfo = {
     panDomainPrivateKey: string;
     mockApiUrl: string;
     mockComposerApiUrl: string;
+    mockTelemetryApiUrl: string;
 };
 
 const SHARED_STACK_FILE = "target/tmp/e2e-local-stack.json";
@@ -53,7 +54,8 @@ export function readSharedStackInfo(
             typeof parsed.baseUrl === "string" &&
             typeof parsed.panDomainPrivateKey === "string" &&
             typeof parsed.mockApiUrl === "string" &&
-            typeof parsed.mockComposerApiUrl === "string"
+            typeof parsed.mockComposerApiUrl === "string" &&
+            typeof parsed.mockTelemetryApiUrl === "string"
         ) {
             return parsed as SharedStackInfo;
         }

@@ -2,7 +2,6 @@ import { chromium, Page } from "@playwright/test";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { startLocalStack, stopLocalStack } from "./stackContainers";
 import { writeSharedStackInfo, clearSharedStackInfo } from "./sharedStack";
-import { mockTelemetry } from "../fixtures/telemetry/telemetryMock";
 import { installPresenceMock } from "../steps/shared/presenceMock";
 
 function waitForTerminationSignal(): Promise<void> {
@@ -41,6 +40,7 @@ async function main() {
             panDomainPrivateKey: stack.panDomainPrivateKey,
             mockApiUrl: stack.mockApiUrl,
             mockComposerApiUrl: stack.mockComposerApiUrl,
+            mockTelemetryApiUrl: stack.mockTelemetryApiUrl,
         });
 
         console.log(`\nLocal stack started at ${stack.baseUrl}`);
@@ -55,14 +55,13 @@ async function main() {
             handleSIGINT: false,
             handleSIGTERM: false,
             handleSIGHUP: false,
-            // Route the browser's cross-origin Composer and presence https
-            // calls to their WireMock containers (see stackContainers.ts).
+            // Route the browser's cross-origin Composer, presence and telemetry
+            // https calls to their WireMock containers (see stackContainers.ts).
             args: [
-                "--host-resolver-rules=MAP composer.local.dev-gutools.co.uk 127.0.0.1:9081,MAP presence.local.dev-gutools.co.uk 127.0.0.1:9070",
+                "--host-resolver-rules=MAP composer.local.dev-gutools.co.uk 127.0.0.1:9081,MAP presence.local.dev-gutools.co.uk 127.0.0.1:9070,MAP user-telemetry.local.dev-gutools.co.uk 127.0.0.1:3132",
             ],
         });
         const page = await browser.newPage({ ignoreHTTPSErrors: true });
-        await mockTelemetry(page);
         await installPresenceMock(page);
         await page.context().addCookies([
             {

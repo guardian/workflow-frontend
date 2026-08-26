@@ -48,6 +48,7 @@ async function globalSetup(_config: FullConfig) {
             panDomainPrivateKey: ownedStack.panDomainPrivateKey,
             mockApiUrl: ownedStack.mockApiUrl,
             mockComposerApiUrl: ownedStack.mockComposerApiUrl,
+            mockTelemetryApiUrl: ownedStack.mockTelemetryApiUrl,
         };
     }
 

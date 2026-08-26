@@ -35,7 +35,7 @@ export default defineConfig({
         ignoreHTTPSErrors: true,
         launchOptions: {
             args: [
-                "--host-resolver-rules=MAP composer.local.dev-gutools.co.uk 127.0.0.1:9081,MAP presence.local.dev-gutools.co.uk 127.0.0.1:9070",
+                "--host-resolver-rules=MAP composer.local.dev-gutools.co.uk 127.0.0.1:9081,MAP presence.local.dev-gutools.co.uk 127.0.0.1:9070,MAP user-telemetry.local.dev-gutools.co.uk 127.0.0.1:3132",
             ],
         },
     },

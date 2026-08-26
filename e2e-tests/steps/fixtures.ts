@@ -6,8 +6,10 @@ import { createPanDomainCookie, type Role } from "../setup/panDomainCookie";
 import type { SharedStackInfo } from "../setup/sharedStack";
 import { ACTIVE_STACK_FILE } from "../global-setup";
 import { installPresenceMock, type PresenceMock, type PresencePerson, type PresenceLocation } from "./shared/presenceMock";
-import { mockTelemetry, type TelemetryMock } from "../fixtures/telemetry/telemetryMock";
+import { mockTelemetry, type TelemetryMock } from "./shared/telemetryMock";
 import { mockComposer, type ComposerMock } from "./shared/composerApiMock";
+import { SCENARIO_HEADER } from "./shared/scenario";
+import { randomUUID } from "crypto";
 
 function readActiveStack(): SharedStackInfo {
     const filePath = path.join(__dirname, "..", ACTIVE_STACK_FILE);
@@ -33,9 +35,11 @@ type StackFixtures = {
     signIn: (role?: Role) => Promise<void>;
     /** Per-scenario scratch space for sharing state between steps. */
     world: World;
+    /** Unique id tagged onto every browser request so shared mock journals can be filtered per scenario. */
+    scenarioId: string;
     /** Mocked presence client, installed before navigation. */
     presence: PresenceMock;
-    /** Mocked telemetry service, capturing emitted events for assertions. */
+    /** Captures telemetry events emitted to the WireMock mock for assertions. */
     telemetry: TelemetryMock;
     /** Captures Composer content-create requests from the WireMock mock for assertions. */
     composerMock: ComposerMock;
@@ -51,11 +55,18 @@ export const test = base.extend<StackFixtures>({
     presence: async ({ page }, use) => {
         await use(await installPresenceMock(page));
     },
-    telemetry: async ({ page }, use) => {
-        await use(await mockTelemetry(page));
+    scenarioId: async ({ context }, use) => {
+        const id = randomUUID();
+        // Tag every request from this context so the shared mock containers'
+        // request journals can be filtered to this scenario.
+        await context.setExtraHTTPHeaders({ [SCENARIO_HEADER]: id });
+        await use(id);
     },
-    composerMock: async ({ context, stack }, use) => {
-        await use(await mockComposer(context, stack.mockComposerApiUrl));
+    telemetry: async ({ stack, scenarioId }, use) => {
+        await use(mockTelemetry(stack.mockTelemetryApiUrl, scenarioId));
+    },
+    composerMock: async ({ stack, scenarioId }, use) => {
+        await use(mockComposer(stack.mockComposerApiUrl, scenarioId));
     },
     // Point every test at the stack started in global setup.
     baseURL: async ({ stack }, use) => {

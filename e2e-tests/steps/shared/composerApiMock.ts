@@ -6,10 +6,7 @@
 // parallel workers, each scenario tags its browser context with a unique header and queries
 // only its own requests from WireMock's request journal.
 
-import { BrowserContext } from "@playwright/test";
-import { randomUUID } from "crypto";
-
-const SCENARIO_HEADER = "x-e2e-scenario";
+import { SCENARIO_HEADER } from "./scenario";
 
 /** Control surface returned by mockComposer for use in test assertions. */
 export type ComposerMock = {
@@ -23,15 +20,10 @@ export type ComposerMock = {
 // One WireMock logged request, as returned by GET/POST /__admin/requests.
 type LoggedRequest = { request: { url: string } };
 
-export async function mockComposer(
-    context: BrowserContext,
+export function mockComposer(
     mockComposerApiUrl: string,
-): Promise<ComposerMock> {
-    const scenarioId = randomUUID();
-    // Tag every request from this context so it can be told apart from other
-    // scenarios sharing the same mock container.
-    await context.setExtraHTTPHeaders({ [SCENARIO_HEADER]: scenarioId });
-
+    scenarioId: string,
+): ComposerMock {
     return {
         contentRequests: async () => {
             const response = await fetch(
