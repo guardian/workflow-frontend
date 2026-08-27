@@ -1,17 +1,11 @@
 import path from "path";
-import { spawn } from "child_process";
+import fs from "fs";
 import { GenericContainer, Network, Wait } from "testcontainers";
 import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 
 const MINIO_ROOT_USER = "minioadmin";
 const MINIO_ROOT_PASSWORD = "minioadmin";
-
-type BuildDockerImageArgs = {
-    tag: string;
-    dockerfilePath: string;
-    contextPath: string;
-};
 
 export type LocalStack = {
     baseUrl: string;
@@ -154,41 +148,18 @@ async function seedDatabase(
     }
 }
 
-function buildDockerImage({
-    tag,
-    dockerfilePath,
-    contextPath,
-}: BuildDockerImageArgs): Promise<void> {
-    return new Promise((resolve, reject) => {
-        console.log(`\n[docker-build] Building ${tag} from ${dockerfilePath}`);
-        const child = spawn(
-            "docker",
-            [
-                "build",
-                "--progress=plain",
-                "-t",
-                tag,
-                "-f",
-                dockerfilePath,
-                contextPath,
-            ],
-            { stdio: "inherit" },
-        );
-
-        child.on("error", reject);
-        child.on("close", (code) => {
-            if (code === 0) {
-                console.log(`[docker-build] Finished ${tag}`);
-                resolve();
-            } else {
-                reject(
-                    new Error(
-                        `docker build failed for ${tag} with exit code ${code}`,
-                    ),
-                );
-            }
-        });
-    });
+// Build an image from a Dockerfile via Testcontainers and return the resulting
+// container, ready to be configured and started. `dockerfileName` is relative to
+// `context`; buildkit is enabled so the Dockerfiles' `# syntax` frontends apply.
+function buildImage(
+    context: string,
+    dockerfileName: string,
+    tag: string,
+): Promise<GenericContainer> {
+    console.log(`\n[docker-build] Building ${tag} from ${dockerfileName}`);
+    return GenericContainer.fromDockerfile(context, dockerfileName)
+        .withBuildkit()
+        .build(tag, { deleteOnExit: true });
 }
 
 function createLogConsumer(prefix: string, streamLogs: boolean) {
@@ -259,13 +230,12 @@ export async function startLocalStack(
     const panDomainKeys = generatePanDomainKeys();
 
     try {
-        await buildDockerImage({
-            tag: minioImageTag,
-            dockerfilePath: path.join(e2eRoot, "images/minio.Dockerfile"),
-            contextPath: e2eRoot,
-        });
-
-        minioContainer = await new GenericContainer(minioImageTag)
+        const minioImage = await buildImage(
+            e2eRoot,
+            "images/minio.Dockerfile",
+            minioImageTag,
+        );
+        minioContainer = await minioImage
             .withNetwork(network)
             .withNetworkAliases(
                 "minio",
@@ -287,16 +257,12 @@ export async function startLocalStack(
             .withStartupTimeout(5 * 60 * 1000)
             .start();
 
-        await buildDockerImage({
-            tag: mockCapiImageTag,
-            dockerfilePath: path.join(
-                e2eRoot,
-                "images/mock-capi.Dockerfile",
-            ),
-            contextPath: e2eRoot,
-        });
-
-        mockCapiContainer = await new GenericContainer(mockCapiImageTag)
+        const mockCapiImage = await buildImage(
+            e2eRoot,
+            "images/mock-capi.Dockerfile",
+            mockCapiImageTag,
+        );
+        mockCapiContainer = await mockCapiImage
             .withNetwork(network)
             .withNetworkAliases(CAPI_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-capi", streamLogs))
@@ -311,16 +277,12 @@ export async function startLocalStack(
 
         const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
-        await buildDockerImage({
-            tag: mockComposerImageTag,
-            dockerfilePath: path.join(
-                e2eRoot,
-                "images/mock-composer.Dockerfile",
-            ),
-            contextPath: e2eRoot,
-        });
-
-        mockComposerApiContainer = await new GenericContainer(mockComposerImageTag)
+        const mockComposerImage = await buildImage(
+            e2eRoot,
+            "images/mock-composer.Dockerfile",
+            mockComposerImageTag,
+        );
+        mockComposerApiContainer = await mockComposerImage
             .withNetwork(network)
             .withNetworkAliases(COMPOSER_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-composer", streamLogs))
@@ -343,16 +305,12 @@ export async function startLocalStack(
 
         const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
-        await buildDockerImage({
-            tag: mockPresenceImageTag,
-            dockerfilePath: path.join(
-                e2eRoot,
-                "images/mock-presence.Dockerfile",
-            ),
-            contextPath: e2eRoot,
-        });
-
-        mockPresenceContainer = await new GenericContainer(mockPresenceImageTag)
+        const mockPresenceImage = await buildImage(
+            e2eRoot,
+            "images/mock-presence.Dockerfile",
+            mockPresenceImageTag,
+        );
+        mockPresenceContainer = await mockPresenceImage
             .withNetwork(network)
             .withNetworkAliases(PRESENCE_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-presence", streamLogs))
@@ -374,16 +332,12 @@ export async function startLocalStack(
             .withStartupTimeout(2 * 60 * 1000)
             .start();
 
-        await buildDockerImage({
-            tag: mockTelemetryImageTag,
-            dockerfilePath: path.join(
-                e2eRoot,
-                "images/mock-telemetry.Dockerfile",
-            ),
-            contextPath: e2eRoot,
-        });
-
-        mockTelemetryContainer = await new GenericContainer(mockTelemetryImageTag)
+        const mockTelemetryImage = await buildImage(
+            e2eRoot,
+            "images/mock-telemetry.Dockerfile",
+            mockTelemetryImageTag,
+        );
+        mockTelemetryContainer = await mockTelemetryImage
             .withNetwork(network)
             .withNetworkAliases(TELEMETRY_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-telemetry", streamLogs))
@@ -406,16 +360,12 @@ export async function startLocalStack(
 
         const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
-        await buildDockerImage({
-            tag: mockPreferencesImageTag,
-            dockerfilePath: path.join(
-                e2eRoot,
-                "images/mock-preferences.Dockerfile",
-            ),
-            contextPath: e2eRoot,
-        });
-
-        mockPreferencesApiContainer = await new GenericContainer(mockPreferencesImageTag)
+        const mockPreferencesImage = await buildImage(
+            e2eRoot,
+            "images/mock-preferences.Dockerfile",
+            mockPreferencesImageTag,
+        );
+        mockPreferencesApiContainer = await mockPreferencesImage
             .withNetwork(network)
             .withNetworkAliases(PREFERENCES_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-preferences", streamLogs))
@@ -428,16 +378,12 @@ export async function startLocalStack(
             .withStartupTimeout(2 * 60 * 1000)
             .start();
 
-        await buildDockerImage({
-            tag: mockTagManagerImageTag,
-            dockerfilePath: path.join(
-                e2eRoot,
-                "images/mock-tagmanager.Dockerfile",
-            ),
-            contextPath: e2eRoot,
-        });
-
-        mockTagManagerApiContainer = await new GenericContainer(mockTagManagerImageTag)
+        const mockTagManagerImage = await buildImage(
+            e2eRoot,
+            "images/mock-tagmanager.Dockerfile",
+            mockTagManagerImageTag,
+        );
+        mockTagManagerApiContainer = await mockTagManagerImage
             .withNetwork(network)
             .withNetworkAliases(TAG_MANAGER_HOSTNAME)
             .withLogConsumer(createLogConsumer("mock-tagmanager", streamLogs))
@@ -469,16 +415,12 @@ export async function startLocalStack(
             .withStartupTimeout(2 * 60 * 1000)
             .start();
 
-        await buildDockerImage({
-            tag: dynamodbImageTag,
-            dockerfilePath: path.join(
-                e2eRoot,
-                "images/dynamodb.Dockerfile",
-            ),
-            contextPath: e2eRoot,
-        });
-
-        dynamodbContainer = await new GenericContainer(dynamodbImageTag)
+        const dynamodbImage = await buildImage(
+            e2eRoot,
+            "images/dynamodb.Dockerfile",
+            dynamodbImageTag,
+        );
+        dynamodbContainer = await dynamodbImage
             .withNetwork(network)
             .withNetworkAliases("workflow-e2e-dynamodb")
             .withLogConsumer(createLogConsumer("dynamodb", streamLogs))
@@ -490,18 +432,22 @@ export async function startLocalStack(
             .start();
 
         console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR}`);
-        await buildDockerImage({
-            tag: datastoreImageTag,
-            dockerfilePath: path.join(
-                e2eRoot,
-                "images/datastore.Dockerfile",
-            ),
-            contextPath:
-                process.env.WORKFLOW_BACKEND_DIR ??
-                path.join(e2eRoot, "target/workflow-backend"),
-        });
-
-        datastoreContainer = await new GenericContainer(datastoreImageTag)
+        const datastoreContext =
+            process.env.WORKFLOW_BACKEND_DIR ??
+            path.join(e2eRoot, "target/workflow-backend");
+        // fromDockerfile requires the Dockerfile inside the build context; the
+        // datastore Dockerfile is kept under images/, so copy it into the backend
+        // checkout before building.
+        fs.copyFileSync(
+            path.join(e2eRoot, "images/datastore.Dockerfile"),
+            path.join(datastoreContext, "datastore.Dockerfile"),
+        );
+        const datastoreImage = await buildImage(
+            datastoreContext,
+            "datastore.Dockerfile",
+            datastoreImageTag,
+        );
+        datastoreContainer = await datastoreImage
             .withNetwork(network)
             .withNetworkAliases("workflow-backend.local.dev-gutools.co.uk")
             .withLogConsumer(createLogConsumer("datastore", streamLogs))
@@ -519,14 +465,11 @@ export async function startLocalStack(
 
         let authUrl: string | undefined;
         if (exposeHostAuth) {
-            await buildDockerImage({
-                tag: authRedirectImageTag,
-                dockerfilePath: path.join(
-                    e2eRoot,
-                    "images/auth-redirect.Dockerfile",
-                ),
-                contextPath: e2eRoot,
-            });
+            const authRedirectImage = await buildImage(
+                e2eRoot,
+                "images/auth-redirect.Dockerfile",
+                authRedirectImageTag,
+            );
 
             // Long-lived so a dev session isn't re-authenticated hourly.
             const cookieValue = createPanDomainCookie(
@@ -535,7 +478,7 @@ export async function startLocalStack(
                 12 * 60 * 60 * 1000,
             );
 
-            authContainer = await new GenericContainer(authRedirectImageTag)
+            authContainer = await authRedirectImage
                 .withNetwork(network)
                 .withEnvironment({
                     AUTH_COOKIE_NAME: "gutoolsAuth-assym",
@@ -572,16 +515,12 @@ export async function startLocalStack(
         };
 
         const repoRoot = path.join(e2eRoot, "..");
-        await buildDockerImage({
-            tag: workflowImageTag,
-            dockerfilePath: path.join(
-                e2eRoot,
-                "images/workflow-frontend.Dockerfile",
-            ),
-            contextPath: repoRoot,
-        });
-
-        workflowContainer = await new GenericContainer(workflowImageTag)
+        const workflowImage = await buildImage(
+            repoRoot,
+            "e2e-tests/images/workflow-frontend.Dockerfile",
+            workflowImageTag,
+        );
+        workflowContainer = await workflowImage
             .withNetwork(network)
             .withNetworkAliases(FRONTEND_ALIAS)
             // Mount the sources live so `yarn build-dev` (webpack watch) and Play

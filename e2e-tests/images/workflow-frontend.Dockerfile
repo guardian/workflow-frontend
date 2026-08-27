@@ -53,9 +53,10 @@ COPY common-lib ./common-lib
 COPY conf ./conf
 RUN mise exec -- sbt -batch compile
 
-# Copy remaining runtime files (scripts, fixtures, nginx config, etc.).
+# Copy remaining runtime files (scripts, fixtures, nginx config, etc.). Heavy
+# build artifacts and the e2e-tests/target checkout are excluded via .dockerignore.
 # app/, common-lib/, conf/ and public/ are bind-mounted over these at runtime.
-COPY --exclude=e2e-tests/target/ . .
+COPY . .
 RUN chmod +x /workflow-frontend/e2e-tests/images/start-workflow-frontend
 
 EXPOSE 9090
