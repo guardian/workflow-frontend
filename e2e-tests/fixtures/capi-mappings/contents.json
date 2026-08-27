@@ -3,30 +3,31 @@
     {
       "request": {
         "method": "GET",
-        "urlPath": "/global/6a58af5c8f084319b71e67c9"
+        "urlPathPattern": "^/global/[A-Za-z0-9]+$"
       },
       "response": {
         "status": 200,
         "headers": {
           "Content-Type": "application/json"
         },
+        "transformers": ["response-template"],
         "jsonBody": {
           "response": {
             "status": "ok",
             "userTier": "internal",
             "total": 1,
             "content": {
-              "id": "global/6a58af5c8f084319b71e67c9",
+              "id": "global/{{request.pathSegments.[1]}}",
               "type": "article",
               "sectionId": "global",
               "sectionName": "Global",
               "webPublicationDate": "2026-07-17T13:31:19Z",
               "webTitle": "",
-              "webUrl": "http://www.code.dev-theguardian.com/global/6a58af5c8f084319b71e67c9",
-              "apiUrl": "https://preview.content.code.dev-guardianapis.com/global/6a58af5c8f084319b71e67c9",
+              "webUrl": "http://www.code.dev-theguardian.com/global/{{request.pathSegments.[1]}}",
+              "apiUrl": "https://preview.content.code.dev-guardianapis.com/global/{{request.pathSegments.[1]}}",
               "fields": {
                 "wordcount": "0",
-                "internalComposerCode": "6a58af5c8f084319b71e67c9"
+                "internalComposerCode": "{{request.pathSegments.[1]}}"
               },
               "tags": [],
               "elements": [],
@@ -42,14 +43,14 @@
                     "lastModifiedDate": "2026-07-17T13:13:51Z",
                     "contributors": [],
                     "createdBy": {
-                      "email": "wai.sing.yiu@guardian.co.uk",
-                      "firstName": "Wai Sing",
-                      "lastName": "Yiu"
+                      "email": "workflow.e2e.test@guardian.co.uk",
+                      "firstName": "Workflow",
+                      "lastName": "E2ETest"
                     },
                     "lastModifiedBy": {
-                      "email": "wai.sing.yiu@guardian.co.uk",
-                      "firstName": "Wai Sing",
-                      "lastName": "Yiu"
+                      "email": "workflow.e2e.test@guardian.co.uk",
+                      "firstName": "Workflow",
+                      "lastName": "E2ETest"
                     },
                     "elements": [
                       {
