@@ -6,7 +6,7 @@
 #
 # The docker build context for this image is the workflow-backend checkout
 # (target/workflow-backend), so all COPY paths below are relative to that.
-FROM eclipse-temurin:11-jdk
+FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV AWS_SDK_LOAD_CONFIG=1

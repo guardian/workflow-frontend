@@ -431,7 +431,7 @@ export async function startLocalStack(
             .withStartupTimeout(2 * 60 * 1000)
             .start();
 
-        console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR}`);
+        console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR ?? "(not set)"}`);
         const datastoreContext =
             process.env.WORKFLOW_BACKEND_DIR ??
             path.join(e2eRoot, "target/workflow-backend");
