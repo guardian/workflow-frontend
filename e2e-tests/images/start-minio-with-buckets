@@ -153,11 +153,9 @@ create_bucket "${PERMISSIONS_BUCKET}"
 upload_permissions_fixture
 upload_pan_domain_settings_fixtures
 
-# echo "Ensured buckets exist: ${PAN_DOMAIN_BUCKET}, ${SNAPSHOT_BUCKET}, ${SECONDARY_SNAPSHOT_BUCKET}, ${PERMISSIONS_BUCKET}"
 echo "Ensured permissions object exists: s3://${PERMISSIONS_BUCKET}/${PERMISSIONS_OBJECT_KEY}"
 echo "Ensured pan-domain settings object exists: s3://${PAN_DOMAIN_BUCKET}/${PAN_DOMAIN_SETTINGS_OBJECT_KEY}"
 echo "Ensured pan-domain public settings object exists: s3://${PAN_DOMAIN_BUCKET}/${PAN_DOMAIN_SETTINGS_PUBLIC_OBJECT_KEY}"
-# echo "Ensured snapshot fixtures copied into: s3://${SNAPSHOT_BUCKET} and s3://${SECONDARY_SNAPSHOT_BUCKET}"
 
 echo "Waiting on MinIO process ${MINIO_PID}"
 wait "${MINIO_PID}"

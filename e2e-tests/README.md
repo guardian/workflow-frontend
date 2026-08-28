@@ -93,15 +93,14 @@ graph LR
 
 - **Docker** — must be installed and running. The stack is built and run as
   containers via [testcontainers](https://testcontainers.com/).
-- **Node.js** — Tools version is managed by [mise](https://mise.jdx.dev/)
-  (see [mise.toml](mise.toml)). `yarn install` installs the JS dependencies.
 - **Git SSH access to `guardian/workflow`** — the Datastore backend is checked
   out and built from the [guardian/workflow](https://github.com/guardian/workflow)
   repository. The test setup clones it automatically into
   `e2e-tests/target/workflow-backend/` (see [setup/checkout-datastore](setup/checkout-datastore)).
 
-The dependencies of the e2e-tests and the Playwright Chromium browser are installed
-when the devcontainer is built.
+The build tools including "mise", the dependencies of the e2e-tests and 
+the Playwright Chromium browser are installed in the devcontainer
+when it is built.
 
 ## Running the tests
 

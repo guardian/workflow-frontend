@@ -65,28 +65,3 @@ export function readSharedStackInfo(
 
     return undefined;
 }
-
-/**
- * Returns true if the given base URL responds to an HTTP request. Any HTTP
- * status (including 401/403 from auth) counts as reachable — we only care that
- * the stack is up and accepting connections.
- */
-export async function isStackReachable(
-    baseUrl: string,
-    timeoutMs = 3000,
-): Promise<boolean> {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-        await fetch(baseUrl, {
-            method: "GET",
-            redirect: "manual",
-            signal: controller.signal,
-        });
-        return true;
-    } catch {
-        return false;
-    } finally {
-        clearTimeout(timer);
-    }
-}

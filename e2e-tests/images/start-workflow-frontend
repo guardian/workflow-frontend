@@ -36,7 +36,6 @@ aws configure set output json --profile capi
 # Force profile-backed auth even when AWS credential env vars are present.
 unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
 # Work around sporadic Graal/JVMCI compilation assertion failures in this Docker runtime.
-# Prefer SBT_OPTS here so these JVM flags apply directly to the sbt JVM process.
-export SBT_OPTS="${SBT_OPTS:+$SBT_OPTS }-XX:+UnlockExperimentalVMOptions -XX:-UseJVMCICompiler -Dgraal.CompilationFailureAction=Silent"
+# Prefer SBT_OPTS here so these JVM flags apply directly to the sbt JVM process."
 export LOCAL_E2E_TEST="true"
 exec sbt -Dlocal=true "-Dconfig.file=e2e-tests/fixtures/conf/workflow-frontend-application.local.conf" run
