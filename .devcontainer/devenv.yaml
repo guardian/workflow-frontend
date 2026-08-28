@@ -60,6 +60,9 @@ postCreateCommand:
       workingDirectory: "${containerWorkspaceFolder}/e2e-tests"
       logLine: "Installing-playwright"
 postStartCommand:
+    - cmd: "mise reshim"
+      workingDirectory: "${containerWorkspaceFolder}"
+      logLine: "Reshimming-mise"
     - cmd: "echo 'Container started successfully'"
       workingDirectory: "."
       logLine: "Container-started"
