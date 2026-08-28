@@ -6,7 +6,7 @@
   "scripts": {
     "test": "bddgen && ./setup/checkout-datastore && playwright test",
     "test:ui": "bddgen && ./setup/checkout-datastore && playwright test --ui-port=9099",
-    "dev:local": "./setup/checkout-datastore && tsx setup/run-local-stack.ts",
+    "dev:local": "./setup/checkout-datastore && tsx setup/run-dev-local.ts",
     "test:report": "playwright show-report target/playwright-report --port 9098"
   },
   "keywords": [],

@@ -58,4 +58,4 @@ EXPOSE 8080
 
 # Run the Datastore from source with the e2e config overlay, serving on 8080
 # (the port the frontend expects the backend at).
-CMD ["mise", "exec", "--", "sbt", "-Dconfig.file=datastore/e2e/conf/application.e2e.conf", "datastore/run 9095"]
+CMD ["mise", "exec", "--", "sbt", "-Dconfig.file=datastore/conf/application.e2e.conf", "datastore/run 9095"]

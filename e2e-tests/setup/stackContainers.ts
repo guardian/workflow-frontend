@@ -490,7 +490,7 @@ export async function startLocalStack(
                 .withStartupTimeout(2 * 60 * 1000)
                 .start();
 
-            authUrl = `https://workflow.local.dev-gutools.co.uk/e2e-stack-login`;
+            authUrl = `https://workflow.local.dev-gutools.co.uk/cookie`;
             console.log(`\n[auth-redirect] Host-browser auth endpoint available at ${authUrl}`);
         }
         

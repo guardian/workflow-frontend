@@ -136,106 +136,12 @@ async function view(
     await presence.pushStatus(world.composerId as string, entriesFor(getPeople(world)));
 }
 
-// --- Preconditions -------------------------------------------------------
+// --- Nobody is present (drawer and content list) -------------------------
 
 Given("a piece of content has no active presence", async ({ world }) => {
     setContent(world);
     world.people = [];
 });
-
-Given("a colleague is editing the body of a piece of content", async ({ world }) => {
-    setContent(world);
-    world.people = [{ person: DEFAULT_PERSON, location: "body" }];
-});
-
-Given(
-    "a colleague is present on a piece of content at the document location",
-    async ({ world }) => {
-        setContent(world);
-        world.people = [{ person: DEFAULT_PERSON, location: "document" }];
-    },
-);
-
-Given(
-    "a colleague is present on a piece of content editing only its furniture",
-    async ({ world }) => {
-        setContent(world);
-        world.people = [{ person: DEFAULT_PERSON, location: "furniture" }];
-    },
-);
-
-Given(
-    "a colleague is present on a piece of content but not editing the body or furniture",
-    async ({ world }) => {
-        setContent(world);
-        world.people = [{ person: DEFAULT_PERSON, location: "idle" }];
-    },
-);
-
-Given("a colleague is idle on a live blog", async ({ world }) => {
-    setContent(world, "liveblog");
-    world.people = [{ person: DEFAULT_PERSON, location: "idle" }];
-});
-
-Given(
-    "a colleague named {string} is present on a piece of content",
-    async ({ world }, name: string) => {
-        setContent(world);
-        world.people = [{ person: nameToPerson(name), location: "body" }];
-    },
-);
-
-Given(
-    "a colleague with email {string} is present on a piece of content",
-    async ({ world }, email: string) => {
-        setContent(world);
-        world.people = [{ person: { ...DEFAULT_PERSON, email }, location: "body" }];
-    },
-);
-
-Given(
-    "a colleague named {string} with email {string} is editing the body of a piece of content",
-    async ({ world }, name: string, email: string) => {
-        setContent(world);
-        world.people = [{ person: nameToPerson(name, email), location: "body" }];
-    },
-);
-
-Given(
-    "the following colleagues are present on a piece of content:",
-    async ({ world }, table: DataTable) => {
-        setContent(world);
-        world.people = table.hashes().map((row) => ({
-            person: nameToPerson(row.name),
-            location: locationFrom(row.location),
-        }));
-    },
-);
-
-Given(
-    "a colleague is present on a piece of content from more than one session",
-    async ({ world }) => {
-        setContent(world);
-        // Two sessions for the same person (same email) — should be de-duped.
-        world.people = [
-            { person: DEFAULT_PERSON, location: "body" },
-            { person: DEFAULT_PERSON, location: "idle" },
-        ];
-    },
-);
-
-Given(
-    "I am viewing the presence indicators for a piece of content",
-    async ({ page, world, presence }) => {
-        setContent(world);
-        world.people = [];
-        world.mode = "list";
-        await page.locator(`#stub-${world.stubId}`).waitFor({ state: "attached" });
-        await presence.pushStatus(world.composerId as string, []);
-    },
-);
-
-// --- Actions -------------------------------------------------------------
 
 When(
     "I view its presence indicators in the drawer",
@@ -243,51 +149,6 @@ When(
         await view(page, world, presence, "drawer");
     },
 );
-
-When(
-    "I view its presence indicators in the content list",
-    async ({ page, world, presence }) => {
-        await view(page, world, presence, "list");
-    },
-);
-
-When("I view its presence indicators", async ({ page, world, presence }) => {
-    await view(page, world, presence, "list");
-});
-
-When(
-    "a presence update arrives for that content",
-    async ({ page, world, presence }) => {
-        const person: PersonWithLocation = {
-            person: {
-                firstName: "Liv",
-                lastName: "Update",
-                email: "liv.update@guardian.co.uk",
-            },
-            location: "body",
-        };
-        world.people = [person];
-        await page.locator(`#stub-${world.stubId}`).waitFor({ state: "attached" });
-        await presence.pushStatus(world.composerId as string, entriesFor([person]));
-    },
-);
-
-When(
-    "a presence update arrives for a different piece of content",
-    async ({ presence }) => {
-        const person: PersonWithLocation = {
-            person: {
-                firstName: "Liv",
-                lastName: "Update",
-                email: "liv.update@guardian.co.uk",
-            },
-            location: "body",
-        };
-        await presence.pushStatus(CONTENT.other.composerId, entriesFor([person]));
-    },
-);
-
-// --- Assertions ----------------------------------------------------------
 
 Then('I should see a "Nobody" placeholder', async ({ page, world }) => {
     await expect(nobody(page, world)).toBeVisible();
@@ -297,6 +158,13 @@ Then('I should see a "Nobody" placeholder', async ({ page, world }) => {
 Then("I should not see any presence icons", async ({ page, world }) => {
     await expect(nonFreeItems(page, world)).toHaveCount(0);
 });
+
+When(
+    "I view its presence indicators in the content list",
+    async ({ page, world, presence }) => {
+        await view(page, world, presence, "list");
+    },
+);
 
 Then('I should not see the "Nobody" placeholder', async ({ page, world }) => {
     // The placeholder is only shown in the drawer, so in the content list the
@@ -308,16 +176,19 @@ Then("I should not see any visible presence icon", async ({ page, world }) => {
     await expect(nonFreeItems(page, world)).toHaveCount(0);
 });
 
+// --- Editing the body / document location shows as present ---------------
+
+Given("a colleague is editing the body of a piece of content", async ({ world }) => {
+    setContent(world);
+    world.people = [{ person: DEFAULT_PERSON, location: "body" }];
+});
+
+When("I view its presence indicators", async ({ page, world, presence }) => {
+    await view(page, world, presence, "list");
+});
+
 Then("I should see a presence icon marked as present", async ({ page, world }) => {
     await expect(iconByStatus(page, world, "present")).toHaveCount(1);
-});
-
-Then("I should see a presence icon marked as furniture", async ({ page, world }) => {
-    await expect(iconByStatus(page, world, "furniture")).toHaveCount(1);
-});
-
-Then("I should see a presence icon marked as idle", async ({ page, world }) => {
-    await expect(iconByStatus(page, world, "idle")).toHaveCount(1);
 });
 
 Then("the icon should show their initials", async ({ page, world }) => {
@@ -332,6 +203,28 @@ Then("its title should describe them as editing body", async ({ page, world }) =
     );
 });
 
+Given(
+    "a colleague is present on a piece of content at the document location",
+    async ({ world }) => {
+        setContent(world);
+        world.people = [{ person: DEFAULT_PERSON, location: "document" }];
+    },
+);
+
+// --- Editing only furniture ----------------------------------------------
+
+Given(
+    "a colleague is present on a piece of content editing only its furniture",
+    async ({ world }) => {
+        setContent(world);
+        world.people = [{ person: DEFAULT_PERSON, location: "furniture" }];
+    },
+);
+
+Then("I should see a presence icon marked as furniture", async ({ page, world }) => {
+    await expect(iconByStatus(page, world, "furniture")).toHaveCount(1);
+});
+
 Then(
     "its title should describe them as editing furniture",
     async ({ page, world }) => {
@@ -342,9 +235,40 @@ Then(
     },
 );
 
+// --- Present but idle -----------------------------------------------------
+
+Given(
+    "a colleague is present on a piece of content but not editing the body or furniture",
+    async ({ world }) => {
+        setContent(world);
+        world.people = [{ person: DEFAULT_PERSON, location: "idle" }];
+    },
+);
+
+Then("I should see a presence icon marked as idle", async ({ page, world }) => {
+    await expect(iconByStatus(page, world, "idle")).toHaveCount(1);
+});
+
 Then("its title should describe them as idle", async ({ page, world }) => {
     await expect(iconByStatus(page, world, "idle")).toHaveAttribute("title", /idle$/);
 });
+
+// --- Live blog contributor is always present -----------------------------
+
+Given("a colleague is idle on a live blog", async ({ world }) => {
+    setContent(world, "liveblog");
+    world.people = [{ person: DEFAULT_PERSON, location: "idle" }];
+});
+
+// --- Initials in the list, full name in the drawer -----------------------
+
+Given(
+    "a colleague named {string} is present on a piece of content",
+    async ({ world }, name: string) => {
+        setContent(world);
+        world.people = [{ person: nameToPerson(name), location: "body" }];
+    },
+);
 
 Then(
     "the presence icon should show the initials {string}",
@@ -360,6 +284,16 @@ Then(
     },
 );
 
+// --- Presence icon links to the person's email ---------------------------
+
+Given(
+    "a colleague with email {string} is present on a piece of content",
+    async ({ world }, email: string) => {
+        setContent(world);
+        world.people = [{ person: { ...DEFAULT_PERSON, email }, location: "body" }];
+    },
+);
+
 Then(
     "the presence icon should link to {string}",
     async ({ page, world }, href: string) => {
@@ -367,10 +301,33 @@ Then(
     },
 );
 
+// --- Hover title: full name in the list, email in the drawer -------------
+
+Given(
+    "a colleague named {string} with email {string} is editing the body of a piece of content",
+    async ({ world }, name: string, email: string) => {
+        setContent(world);
+        world.people = [{ person: nameToPerson(name, email), location: "body" }];
+    },
+);
+
 Then(
     "the icon title should be {string}",
     async ({ page, world }, title: string) => {
         await expect(iconByStatus(page, world, "present")).toHaveAttribute("title", title);
+    },
+);
+
+// --- Multiple people ordered by activity ---------------------------------
+
+Given(
+    "the following colleagues are present on a piece of content:",
+    async ({ world }, table: DataTable) => {
+        setContent(world);
+        world.people = table.hashes().map((row) => ({
+            person: nameToPerson(row.name),
+            location: locationFrom(row.location),
+        }));
     },
 );
 
@@ -393,6 +350,20 @@ Then(
     },
 );
 
+// --- Duplicate sessions shown once ---------------------------------------
+
+Given(
+    "a colleague is present on a piece of content from more than one session",
+    async ({ world }) => {
+        setContent(world);
+        // Two sessions for the same person (same email) — should be de-duped.
+        world.people = [
+            { person: DEFAULT_PERSON, location: "body" },
+            { person: DEFAULT_PERSON, location: "idle" },
+        ];
+    },
+);
+
 Then(
     "I should see a single presence icon for that person",
     async ({ page, world }) => {
@@ -400,9 +371,54 @@ Then(
     },
 );
 
+// --- Live presence updates -----------------------------------------------
+
+Given(
+    "I am viewing the presence indicators for a piece of content",
+    async ({ page, world, presence }) => {
+        setContent(world);
+        world.people = [];
+        world.mode = "list";
+        await page.locator(`#stub-${world.stubId}`).waitFor({ state: "attached" });
+        await presence.pushStatus(world.composerId as string, []);
+    },
+);
+
+When(
+    "a presence update arrives for that content",
+    async ({ page, world, presence }) => {
+        const person: PersonWithLocation = {
+            person: {
+                firstName: "Liv",
+                lastName: "Update",
+                email: "liv.update@guardian.co.uk",
+            },
+            location: "body",
+        };
+        world.people = [person];
+        await page.locator(`#stub-${world.stubId}`).waitFor({ state: "attached" });
+        await presence.pushStatus(world.composerId as string, entriesFor([person]));
+    },
+);
+
 Then("the presence indicators should update to match", async ({ page, world }) => {
     await expect(iconByStatus(page, world, "present")).toHaveText("LU");
 });
+
+When(
+    "a presence update arrives for a different piece of content",
+    async ({ presence }) => {
+        const person: PersonWithLocation = {
+            person: {
+                firstName: "Liv",
+                lastName: "Update",
+                email: "liv.update@guardian.co.uk",
+            },
+            location: "body",
+        };
+        await presence.pushStatus(CONTENT.other.composerId, entriesFor([person]));
+    },
+);
 
 Then("the presence indicators should not change", async ({ page, world }) => {
     // The update was for a different content id, so this row stays empty.

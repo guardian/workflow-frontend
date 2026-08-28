@@ -108,13 +108,9 @@ async function lastComposerParams(
     return requests[requests.length - 1];
 }
 
-// ── Dropdown: collapsed by default ────────────────────────────────────────────
+// ── The create dropdown is collapsed by default ───────────────────────────────
 
 Given('I have not opened the "Create new" dropdown', async ({ page }) => {
-    await expect.poll(() => isListShown(page)).toBe(false);
-});
-
-Given('the "Create new" dropdown is collapsed', async ({ page }) => {
     await expect.poll(() => isListShown(page)).toBe(false);
 });
 
@@ -130,18 +126,14 @@ Then("the content type list should be hidden", async ({ page }) => {
     await expect.poll(() => isListShown(page)).toBe(false);
 });
 
-// ── Dropdown: opening ─────────────────────────────────────────────────────────
+// ── Opening the dropdown reveals the content type options ──────────────────────
+
+Given('the "Create new" dropdown is collapsed', async ({ page }) => {
+    await expect.poll(() => isListShown(page)).toBe(false);
+});
 
 When('I click the "Create new" button', async ({ page }) => {
     await createButton(page).click();
-});
-
-Given('I open the "Create new" dropdown', async ({ page }) => {
-    await openDropdown(page);
-});
-
-Given('the "Create new" dropdown is open', async ({ page }) => {
-    await openDropdown(page);
 });
 
 Then("the content type list should be shown", async ({ page }) => {
@@ -156,13 +148,13 @@ Then('I should see an "Import Content" option', async ({ page }) => {
     await expect(importOption(page)).toBeVisible();
 });
 
-// ── Dropdown: option contents ─────────────────────────────────────────────────
+// ── Each option shows an icon and a label ──────────────────────────────────────
 
-When("I inspect the content type list", async ({ page }) => {
-    await expect(contentTypeOptions(page).first()).toBeVisible();
+Given('the "Create new" dropdown is open', async ({ page }) => {
+    await openDropdown(page);
 });
 
-When("the content type list loads", async ({ page }) => {
+When("I inspect the content type list", async ({ page }) => {
     await expect(contentTypeOptions(page).first()).toBeVisible();
 });
 
@@ -182,6 +174,16 @@ Then("each option should show a content type label", async ({ page }) => {
             contentTypeOptions(page).nth(i).locator(".dropdown-toolbar__item-title"),
         ).not.toBeEmpty();
     }
+});
+
+// ── The options are loaded from the available formats ──────────────────────────
+
+Given('I open the "Create new" dropdown', async ({ page }) => {
+    await openDropdown(page);
+});
+
+When("the content type list loads", async ({ page }) => {
+    await expect(contentTypeOptions(page).first()).toBeVisible();
 });
 
 Then("I should see the standard article format", async ({ page }) => {
@@ -205,26 +207,11 @@ Then(
     },
 );
 
-// ── Choosing a content type ───────────────────────────────────────────────────
+// ── Choosing a content type opens the stub modal in create mode ────────────────
 
 When("I choose a content type from the list", async ({ page }) => {
     await optionByLabel(page, "Article").click();
 });
-
-When("I choose the {string} option", async ({ page }, label: string) => {
-    if (label === "Import Content") {
-        await importOption(page).click();
-        return;
-    }
-    await optionByLabel(page, label).click();
-});
-
-When(
-    "I choose {string} from the content type list",
-    async ({ page }, label: string) => {
-        await optionByLabel(page, label).click();
-    },
-);
 
 Then(
     "a stub creation should be requested for that content type",
@@ -236,55 +223,12 @@ Then(
     },
 );
 
-Then("a content import should be requested", async ({ page }) => {
-    // importContent() emits content:import, which opens the modal in import mode.
-    await expect(modal(page)).toBeVisible();
-    await expect(importUrlField(page)).toBeVisible();
-});
-
-// ── Modal: mode and title ─────────────────────────────────────────────────────
-
 Then("the stub modal should open in create mode", async ({ page }) => {
     await expect(modal(page)).toBeVisible();
     await expect(importUrlField(page)).toBeHidden();
 });
 
-Then("the stub modal should open in import mode", async ({ page }) => {
-    await expect(modal(page)).toBeVisible();
-    await expect(importUrlField(page)).toBeVisible();
-});
-
-Then(
-    "the stub modal should open with the title {string}",
-    async ({ page }, title: string) => {
-        await expect(modal(page)).toBeVisible();
-        await expect(modalTitle(page)).toHaveText(title);
-    },
-);
-
-// ── Modal: field visibility ───────────────────────────────────────────────────
-
-Then("the commissioned length field should be visible", async ({ page }) => {
-    await expect(commissionedLengthField(page)).toBeVisible();
-});
-
-Then("the commissioned length field should not be visible", async ({ page }) => {
-    await expect(commissionedLengthField(page)).toBeHidden();
-});
-
-Then("the template selector should be visible", async ({ page }) => {
-    await expect(templateSelector(page)).toBeVisible();
-});
-
-Then("the format dropdown should be visible", async ({ page }) => {
-    await expect(formatDropdown(page)).toBeVisible();
-});
-
-Then("the atom type selector should be visible", async ({ page }) => {
-    await expect(atomTypeSelector(page)).toBeVisible();
-});
-
-// ── Creating a piece (@composer) ──────────────────────────────────────────────
+// ── Creating a new piece adds it to the dashboard content list (@composer) ─────
 
 Given(
     "I have chosen a content type to open the stub modal in create mode",
@@ -297,10 +241,6 @@ Given(
 
 When("I fill in the new piece's details", async ({ page, world }) => {
     world.newPieceTitle = await fillRequiredStubDetails(page);
-});
-
-When("I fill in the stub form minimum required details", async ({ page }) => {
-    await fillRequiredStubDetails(page);
 });
 
 When("I submit the stub modal", async ({ page }) => {
@@ -326,6 +266,70 @@ Then("I should see the new piece on the dashboard", async ({ page, world }) => {
     ).toBeVisible();
 });
 
+// ── Choosing Import Content opens the stub modal in import mode ─────────────────
+
+When("I choose the {string} option", async ({ page }, label: string) => {
+    if (label === "Import Content") {
+        await importOption(page).click();
+        return;
+    }
+    await optionByLabel(page, label).click();
+});
+
+Then("a content import should be requested", async ({ page }) => {
+    // importContent() emits content:import, which opens the modal in import mode.
+    await expect(modal(page)).toBeVisible();
+    await expect(importUrlField(page)).toBeVisible();
+});
+
+Then("the stub modal should open in import mode", async ({ page }) => {
+    await expect(modal(page)).toBeVisible();
+    await expect(importUrlField(page)).toBeVisible();
+});
+
+// ── Field visibility per format ────────────────────────────────────────────────
+
+When(
+    "I choose {string} from the content type list",
+    async ({ page }, label: string) => {
+        await optionByLabel(page, label).click();
+    },
+);
+
+Then(
+    "the stub modal should open with the title {string}",
+    async ({ page }, title: string) => {
+        await expect(modal(page)).toBeVisible();
+        await expect(modalTitle(page)).toHaveText(title);
+    },
+);
+
+Then("the commissioned length field should be visible", async ({ page }) => {
+    await expect(commissionedLengthField(page)).toBeVisible();
+});
+
+Then("the template selector should be visible", async ({ page }) => {
+    await expect(templateSelector(page)).toBeVisible();
+});
+
+Then("the format dropdown should be visible", async ({ page }) => {
+    await expect(formatDropdown(page)).toBeVisible();
+});
+
+Then("the commissioned length field should not be visible", async ({ page }) => {
+    await expect(commissionedLengthField(page)).toBeHidden();
+});
+
+Then("the atom type selector should be visible", async ({ page }) => {
+    await expect(atomTypeSelector(page)).toBeVisible();
+});
+
+// ── Creating content sends the correct params to the Composer API (@composer) ──
+
+When("I fill in the stub form minimum required details", async ({ page }) => {
+    await fillRequiredStubDetails(page);
+});
+
 Then(
     "the Composer API should have received a request for content type {string}",
     async ({ composerMock }, composerType: string) => {
@@ -344,7 +348,7 @@ Then(
     },
 );
 
-// ── Dropdown: closing behaviour ───────────────────────────────────────────────
+// ── Dropdown closing behaviour ─────────────────────────────────────────────────
 
 When("I click elsewhere on the page", async ({ page }) => {
     // The document click handler in wfDropdownToggle closes the dropdown.

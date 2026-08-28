@@ -46,8 +46,7 @@ export function mockComposer(
             const { requests } = (await response.json()) as {
                 requests: LoggedRequest["request"][];
             };
-            // WireMock returns newest-first; reverse so the caller's last entry
-            // is the most recent request.
+            // WireMock returns newest-first; reverse to arrival order.
             return requests
                 .map((r) => new URL(r.url, "http://composer.local").searchParams)
                 .reverse();

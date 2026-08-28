@@ -68,9 +68,8 @@ export function mockTelemetry(
             };
             // WireMock returns newest-first; reverse to arrival order.
             return requests
-                .slice()
-                .reverse()
-                .flatMap((r) => parseEvents(r.body));
+                .flatMap((r) => parseEvents(r.body))
+                .reverse();
         },
     };
 }
