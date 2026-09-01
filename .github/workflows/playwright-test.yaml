@@ -40,7 +40,7 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v4
         with:
-          node-version: "22.5.1"
+          node-version-file: '.tool-versions'        
           cache: yarn
           cache-dependency-path: e2e-tests/yarn.lock
 
