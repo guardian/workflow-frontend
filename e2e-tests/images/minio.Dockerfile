@@ -1,7 +1,9 @@
 FROM alpine:3.19
 
+ARG TARGETARCH
+
 RUN apk add --no-cache aws-cli curl && \
-    curl -fsSL https://dl.min.io/server/minio/release/linux-arm64/minio -o /usr/local/bin/minio && \
+    curl -fsSL "https://dl.min.io/server/minio/release/linux-${TARGETARCH}/minio" -o /usr/local/bin/minio && \
     chmod +x /usr/local/bin/minio
 
 COPY images/start-minio-with-buckets /usr/local/bin/start-minio-with-buckets
