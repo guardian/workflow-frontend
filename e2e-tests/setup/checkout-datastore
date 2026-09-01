@@ -20,6 +20,6 @@ if [ -d "${WORKFLOW_BACKEND_DIR}/.git" ]; then
 else
   echo "Cloning guardian/workflow into ${WORKFLOW_BACKEND_DIR}"
   # TODO: change to the main branch once the workflow backend config file PR is merged
-  git clone --depth 1 --branch ws/add-docker-image-for-e2e-setup git@github.com:guardian/workflow.git "$WORKFLOW_BACKEND_DIR"
+  git clone --depth 1 git@github.com:guardian/workflow.git "$WORKFLOW_BACKEND_DIR"
 fi
 export WORKFLOW_BACKEND_DIR
