@@ -34,7 +34,6 @@ jobs:
         with:
           token: "${{ steps.workflow-app-token.outputs.token }}"
           repository: guardian/workflow
-          ref: ws/add-docker-image-for-e2e-setup
           path: e2e-tests/target/workflow-backend
 
       - name: Install Node
