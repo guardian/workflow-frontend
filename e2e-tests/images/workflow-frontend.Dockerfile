@@ -17,7 +17,6 @@ RUN apt-get update \
 # Install mise
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV MISE_DATA_DIR="/mise"
-ENV MISE_ENV="e2e"
 ENV MISE_CONFIG_DIR="/mise"
 ENV MISE_CACHE_DIR="/mise/cache"
 ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
@@ -28,10 +27,8 @@ RUN mise trust -a && mise install
 WORKDIR /workflow-frontend
 
 # Install Node and sbt via mise.
-COPY mise.e2e.toml ./
-RUN mise trust ./mise.e2e.toml \
-    && mise install nodejs \
-    && mise install sbt
+COPY .tool-versions ./
+RUN mise install
 
 # Pre-fetch JVM dependencies. Layer-cached after this point: only re-runs when
 # build.sbt or project/ changes.

@@ -35,9 +35,8 @@ RUN mise trust -a && mise install
 WORKDIR /workflow-backend
 
 # Install JVM tooling (java, sbt, ...) via mise using the e2e environment.
-COPY mise.e2e.toml ./
-RUN mise trust ./mise.e2e.toml \
-    && mise install
+COPY .tool-versions ./
+RUN mise install
 
 # Pre-fetch JVM dependencies. Layer-cached after this point: only re-runs when
 # build.sbt or project/ changes.
