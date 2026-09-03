@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Real Workflow Datastore backend service, built from the guardian/workflow
 # checkout in target/workflow-backend. Mirrors workflow-frontend.Dockerfile:
-# tooling is installed via mise (using the "e2e" environment) and the Play app
+# tooling is installed via mise and the Play app
 # is run from source with the e2e config overlay.
 #
 # The docker build context for this image is the workflow-backend checkout
@@ -24,7 +24,6 @@ RUN apt-get update \
 # Install mise
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV MISE_DATA_DIR="/mise"
-ENV MISE_ENV="e2e"
 ENV MISE_CONFIG_DIR="/mise"
 ENV MISE_CACHE_DIR="/mise/cache"
 ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
@@ -36,19 +35,19 @@ WORKDIR /workflow-backend
 
 # Install JVM tooling (java, sbt, ...) via mise using the e2e environment.
 COPY .tool-versions ./
-RUN mise install
+RUN mise install java sbt
 
 # Pre-fetch JVM dependencies. Layer-cached after this point: only re-runs when
 # build.sbt or project/ changes.
 COPY build.sbt ./
 COPY project ./project
-RUN mise exec -- sbt -batch update
+RUN mise exec java sbt -- sbt -batch update
 
 # Compile the Datastore service and its shared library. Only re-runs when the
 # Scala sources change.
 COPY common-lib ./common-lib
 COPY datastore ./datastore
-RUN mise exec -- sbt -batch datastore/compile
+RUN mise exec java sbt -- sbt -batch datastore/compile
 
 # Copy remaining runtime files (e2e config, db scripts, etc.).
 COPY . .
@@ -57,4 +56,4 @@ EXPOSE 8080
 
 # Run the Datastore from source with the e2e config overlay, serving on 8080
 # (the port the frontend expects the backend at).
-CMD ["mise", "exec", "--", "sbt", "-Dconfig.file=datastore/conf/application.e2e.conf", "datastore/run 9095"]
+CMD ["mise", "exec", "java", "sbt", "--", "sbt", "-Dconfig.file=datastore/conf/application.e2e.conf", "datastore/run 9095"]
