@@ -20,9 +20,12 @@ modules:
 
 # Optional: Ports to forward
 forwardPorts:
-  - 9090  # same port on host and container
-#   - 8080  # same port on host and container
-#   - "8000:9000"  # hostPort:containerPort
+  - 9090  # workflow frontend
+  - 9098  # Playwright report
+  - 9099  # Playwright UI
+  - 9070  # Presence
+  - 3132  # User telemetry
+  - 9081  # Composer API
 
 # Optional: Mount directories from host to container
 # mounts:
@@ -50,7 +53,16 @@ postCreateCommand:
     - cmd: "mise exec -- yarn install --immutable"
       workingDirectory: "${containerWorkspaceFolder}"
       logLine: "Installing-project-dependencies"
+    - cmd: "mise exec -- yarn install --immutable"
+      workingDirectory: "${containerWorkspaceFolder}/e2e-tests"
+      logLine: "Installing-e2e-test-dependencies"
+    - cmd: "mise exec -- yarn playwright install --with-deps chromium"
+      workingDirectory: "${containerWorkspaceFolder}/e2e-tests"
+      logLine: "Installing-playwright"
 postStartCommand:
+    - cmd: "mise reshim"
+      workingDirectory: "${containerWorkspaceFolder}"
+      logLine: "Reshimming-mise"
     - cmd: "echo 'Container started successfully'"
       workingDirectory: "."
       logLine: "Container-started"

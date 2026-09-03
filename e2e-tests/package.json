@@ -1,0 +1,25 @@
+{
+  "name": "workflow-frontend-e2e-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "bddgen && ./setup/checkout-datastore && playwright test",
+    "test:ui": "bddgen && ./setup/checkout-datastore && playwright test --ui-port=9099",
+    "dev:local": "./setup/checkout-datastore && tsx setup/run-dev-local.ts",
+    "test:report": "playwright show-report target/playwright-report --port 9098"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@guardian/pan-domain-node": "^1.2.4",
+    "@aws-sdk/client-s3": "^3.658.0",
+    "@types/node": "^26.1.1",
+    "@playwright/test": "^1.61.1",
+    "playwright": "^1.55.0",
+    "playwright-bdd": "^9.2.0",
+    "testcontainers": "^10.17.1",
+    "tsx": "^4.22.4"
+  }
+}

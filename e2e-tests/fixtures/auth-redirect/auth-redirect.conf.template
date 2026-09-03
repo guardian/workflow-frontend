@@ -1,0 +1,24 @@
+# Fronts the e2e stack: /e2e-stack-login sets the pan-domain auth cookie and
+# redirects into the app; every other path is proxied to the frontend container.
+# Values are injected by nginx's envsubst templating from the container env.
+server {
+    listen 80;
+
+    # Docker's embedded DNS, so proxy_pass can resolve the frontend alias at
+    # request time and nginx can start before the frontend container is up.
+    resolver 127.0.0.11 valid=10s;
+
+    location /cookie {
+        add_header Set-Cookie "${AUTH_COOKIE_NAME}=${AUTH_COOKIE_VALUE}; Path=/; SameSite=Lax";
+        return 302 /dashboard;
+    }
+
+    location / {
+        # Assigned via a variable so nginx defers DNS resolution to request time.
+        set $frontend_upstream "${FRONTEND_UPSTREAM}";
+        proxy_pass http://$frontend_upstream$request_uri;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

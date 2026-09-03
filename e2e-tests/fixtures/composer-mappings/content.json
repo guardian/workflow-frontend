@@ -1,0 +1,55 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "OPTIONS",
+        "urlPathPattern": "/api/.*"
+      },
+      "response": {
+        "status": 204,
+        "transformers": ["response-template"],
+        "headers": {
+          "Access-Control-Allow-Origin": "{{{request.headers.Origin}}}",
+          "Access-Control-Allow-Credentials": "true",
+          "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+          "Access-Control-Allow-Headers": "{{{request.headers.[Access-Control-Request-Headers]}}}"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/api/content"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "headers": {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "{{{request.headers.Origin}}}",
+          "Access-Control-Allow-Credentials": "true"
+        },
+        "bodyFileName": "composerContent.json"
+      }
+    },
+    {
+      "priority": 10,
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/api/.*"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "headers": {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "{{{request.headers.Origin}}}",
+          "Access-Control-Allow-Credentials": "true"
+        },
+        "jsonBody": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+java corretto-11.0.27.6.1
+nodejs 22.5.1
+sbt 1.12.11
+aws-cli 2.34.62
+python 3.14.6
+github:guardian/devenv 20260721-123412

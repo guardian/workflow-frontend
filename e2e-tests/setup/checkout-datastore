@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+E2E_ROOT_DIR=${DIR}/..
+
+if ! command -v git >/dev/null 2>&1; then
+  echo "Git CLI is required to check out the workflow backend repository" >&2
+  exit 1
+fi
+
+# Check out (or update) the guardian/workflow backend into a git-ignored folder
+# under target/. Reused across runs: shallow-clone once, then fast-forward pull.
+# The path is exported so run-local-stack.ts can consume it.
+WORKFLOW_BACKEND_DIR="${E2E_ROOT_DIR}/target/workflow-backend"
+if [ -d "${WORKFLOW_BACKEND_DIR}/.git" ]; then
+  echo "Updating workflow backend checkout in ${WORKFLOW_BACKEND_DIR}"
+  git -C "$WORKFLOW_BACKEND_DIR" pull --ff-only
+else
+  echo "Cloning guardian/workflow into ${WORKFLOW_BACKEND_DIR}"
+  # TODO: change to the main branch once the workflow backend config file PR is merged
+  git clone --depth 1 git@github.com:guardian/workflow.git "$WORKFLOW_BACKEND_DIR"
+fi
+export WORKFLOW_BACKEND_DIR

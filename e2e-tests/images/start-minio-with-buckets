@@ -1,0 +1,161 @@
+#!/bin/sh
+
+set -eu
+
+MINIO_ROOT_USER="${MINIO_ROOT_USER:-minioadmin}"
+MINIO_ROOT_PASSWORD="${MINIO_ROOT_PASSWORD:-minioadmin}"
+MINIO_DATA_DIR="${MINIO_DATA_DIR:-/data}"
+MINIO_API_PORT="${MINIO_API_PORT:-9000}"
+MINIO_CONSOLE_PORT="${MINIO_CONSOLE_PORT:-9001}"
+PAN_DOMAIN_BUCKET="${PAN_DOMAIN_BUCKET:-pan-domain-auth-settings}"
+# SNAPSHOT_BUCKET="${SNAPSHOT_BUCKET:-flexible-snapshotter-code}"
+# SECONDARY_SNAPSHOT_BUCKET="${SECONDARY_SNAPSHOT_BUCKET:-flexible-secondary-snapshotter-code}"
+PERMISSIONS_BUCKET="${PERMISSIONS_BUCKET:-permissions-cache}"
+PERMISSIONS_OBJECT_KEY="${PERMISSIONS_OBJECT_KEY:-CODE/permissions.json}"
+PERMISSIONS_FIXTURE_FILE="${PERMISSIONS_FIXTURE_FILE:-/opt/minio-fixtures/permissions/permissions.json}"
+PAN_DOMAIN_SETTINGS_FIXTURE_FILE="${PAN_DOMAIN_SETTINGS_FIXTURE_FILE:-/opt/minio-fixtures/pan-domain-settings/local.dev-gutools.co.uk.settings}"
+PAN_DOMAIN_SETTINGS_PUBLIC_FIXTURE_FILE="${PAN_DOMAIN_SETTINGS_PUBLIC_FIXTURE_FILE:-/opt/minio-fixtures/pan-domain-settings/local.dev-gutools.co.uk.settings.public}"
+PAN_DOMAIN_SETTINGS_OBJECT_KEY="${PAN_DOMAIN_SETTINGS_OBJECT_KEY:-local.dev-gutools.co.uk.settings}"
+PAN_DOMAIN_SETTINGS_PUBLIC_OBJECT_KEY="${PAN_DOMAIN_SETTINGS_PUBLIC_OBJECT_KEY:-local.dev-gutools.co.uk.settings.public}"
+PAN_DOMAIN_PRIVATE_KEY="${PAN_DOMAIN_PRIVATE_KEY:-}"
+PAN_DOMAIN_PUBLIC_KEY="${PAN_DOMAIN_PUBLIC_KEY:-}"
+SNAPSHOTS_FIXTURE_DIR="${SNAPSHOTS_FIXTURE_DIR:-/opt/minio-fixtures/snapshots}"
+MINIO_ENDPOINT="http://127.0.0.1:${MINIO_API_PORT}"
+AWS_ACCESS_KEY_ID="${MINIO_ROOT_USER}"
+AWS_SECRET_ACCESS_KEY="${MINIO_ROOT_PASSWORD}"
+AWS_DEFAULT_REGION="eu-west-1"
+
+export AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY
+export AWS_DEFAULT_REGION
+
+if [ -z "${PAN_DOMAIN_PRIVATE_KEY}" ] || [ -z "${PAN_DOMAIN_PUBLIC_KEY}" ]; then
+  echo "PAN_DOMAIN_PRIVATE_KEY and PAN_DOMAIN_PUBLIC_KEY must be set" >&2
+  exit 1
+fi
+
+max_attempts="${MINIO_STARTUP_MAX_ATTEMPTS:-60}"
+
+shutdown() {
+  echo "Stopping MinIO process ${MINIO_PID}..."
+  if kill -0 "${MINIO_PID}" 2>/dev/null; then
+    kill -TERM "${MINIO_PID}" 2>/dev/null || true
+    wait "${MINIO_PID}" 2>/dev/null || true
+  fi
+}
+
+on_signal() {
+  echo "Termination signal received"
+  shutdown
+  exit 0
+}
+
+wait_for_health() {
+  attempt=1
+  while ! curl -sf "${MINIO_ENDPOINT}/minio/health/live" >/dev/null 2>&1; do
+    if ! kill -0 "${MINIO_PID}" 2>/dev/null; then
+      echo "MinIO exited before becoming healthy"
+      wait "${MINIO_PID}" || true
+      exit 1
+    fi
+
+    if [ "${attempt}" -ge "${max_attempts}" ]; then
+      echo "Timed out waiting for MinIO readiness"
+      shutdown
+      exit 1
+    fi
+
+    attempt=$((attempt + 1))
+    sleep 1
+  done
+}
+
+create_bucket() {
+  bucket_name=$1
+
+  if ! aws s3api head-bucket --bucket "${bucket_name}" --endpoint-url "${MINIO_ENDPOINT}" >/dev/null 2>&1; then
+    aws s3api create-bucket \
+      --bucket "${bucket_name}" \
+      --endpoint-url "${MINIO_ENDPOINT}" \
+      --region us-east-1 >/dev/null
+  fi
+}
+
+upload_permissions_fixture() {
+  if [ ! -f "${PERMISSIONS_FIXTURE_FILE}" ]; then
+    echo "Permissions fixture not found at ${PERMISSIONS_FIXTURE_FILE}; skipping upload"
+    return
+  fi
+
+  aws s3 cp "${PERMISSIONS_FIXTURE_FILE}" \
+    "s3://${PERMISSIONS_BUCKET}/${PERMISSIONS_OBJECT_KEY}" \
+    --endpoint-url "${MINIO_ENDPOINT}" >/dev/null
+}
+
+upload_pan_domain_settings_fixtures() {
+  if [ ! -f "${PAN_DOMAIN_SETTINGS_FIXTURE_FILE}" ]; then
+    echo "Pan-domain settings fixture not found at ${PAN_DOMAIN_SETTINGS_FIXTURE_FILE}; skipping upload"
+    return
+  fi
+
+  if [ ! -f "${PAN_DOMAIN_SETTINGS_PUBLIC_FIXTURE_FILE}" ]; then
+    echo "Pan-domain public settings fixture not found at ${PAN_DOMAIN_SETTINGS_PUBLIC_FIXTURE_FILE}; skipping upload"
+    return
+  fi
+
+  settings_temp_file="$(mktemp)"
+  public_temp_file="$(mktemp)"
+
+  cp "${PAN_DOMAIN_SETTINGS_FIXTURE_FILE}" "${settings_temp_file}"
+  cp "${PAN_DOMAIN_SETTINGS_PUBLIC_FIXTURE_FILE}" "${public_temp_file}"
+
+  echo "publicKey=${PAN_DOMAIN_PUBLIC_KEY}" >> "${settings_temp_file}"
+  echo "privateKey=${PAN_DOMAIN_PRIVATE_KEY}" >> "${settings_temp_file}"
+  echo "publicKey=${PAN_DOMAIN_PUBLIC_KEY}" >> "${public_temp_file}"
+
+  aws s3 cp "${settings_temp_file}" \
+    "s3://${PAN_DOMAIN_BUCKET}/${PAN_DOMAIN_SETTINGS_OBJECT_KEY}" \
+    --endpoint-url "${MINIO_ENDPOINT}" >/dev/null
+
+  aws s3 cp "${public_temp_file}" \
+    "s3://${PAN_DOMAIN_BUCKET}/${PAN_DOMAIN_SETTINGS_PUBLIC_OBJECT_KEY}" \
+    --endpoint-url "${MINIO_ENDPOINT}" >/dev/null
+
+  rm -f "${settings_temp_file}" "${public_temp_file}"
+}
+
+upload_snapshot_fixtures() {
+  bucket_name=$1
+
+  if [ ! -d "${SNAPSHOTS_FIXTURE_DIR}" ]; then
+    echo "Snapshots fixture directory not found at ${SNAPSHOTS_FIXTURE_DIR}; skipping upload"
+    return
+  fi
+
+  aws s3 cp "${SNAPSHOTS_FIXTURE_DIR}" "s3://${bucket_name}" \
+    --recursive \
+    --exclude ".DS_Store" \
+    --endpoint-url "${MINIO_ENDPOINT}" >/dev/null
+}
+
+trap on_signal INT TERM HUP
+
+minio server "${MINIO_DATA_DIR}" --address ":${MINIO_API_PORT}" --console-address ":${MINIO_CONSOLE_PORT}" &
+MINIO_PID=$!
+
+echo "MinIO started in background with PID ${MINIO_PID}"
+
+wait_for_health
+
+create_bucket "${PAN_DOMAIN_BUCKET}"
+create_bucket "${PERMISSIONS_BUCKET}"
+
+upload_permissions_fixture
+upload_pan_domain_settings_fixtures
+
+echo "Ensured permissions object exists: s3://${PERMISSIONS_BUCKET}/${PERMISSIONS_OBJECT_KEY}"
+echo "Ensured pan-domain settings object exists: s3://${PAN_DOMAIN_BUCKET}/${PAN_DOMAIN_SETTINGS_OBJECT_KEY}"
+echo "Ensured pan-domain public settings object exists: s3://${PAN_DOMAIN_BUCKET}/${PAN_DOMAIN_SETTINGS_PUBLIC_OBJECT_KEY}"
+
+echo "Waiting on MinIO process ${MINIO_PID}"
+wait "${MINIO_PID}"

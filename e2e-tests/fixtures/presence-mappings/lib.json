@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/client/1/lib.js"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/javascript"
+        },
+        "bodyFileName": "presence-client-lib.js"
+      }
+    }
+  ]
+}
