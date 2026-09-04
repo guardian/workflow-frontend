@@ -161,92 +161,69 @@ export async function startLocalStack(
             workflowImagePromise,
         ]);
 
-        // Phase 2: start the containers serially in dependency order.
-        minioContainer = await startMinio(
-            minioImage,
-            network,
-            panDomainKeys,
-            streamLogs,
-        );
+        // Phase 2: start the infrastructure containers (minio, dynamodb and
+        // workflow-db) in parallel first, since everything else depends on them.
+        [minioContainer, dynamodbContainer, dbContainer] = await Promise.all([
+            startMinio(minioImage, network, panDomainKeys, streamLogs),
+            startDynamodb(dynamodbImage, network, streamLogs),
+            startDb(network, streamLogs),
+        ]);
 
-        mockCapiContainer = await startMockCapi(
-            mockCapiImage,
-            network,
-            streamLogs,
-        );
-        const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        let authUrl: string | undefined;
+        let cookieValue: string | undefined;
+        if (exposeHostAuth) {
+            // Long-lived so a dev session isn't re-authenticated hourly.
+            cookieValue = createPanDomainCookie(
+                panDomainKeys.privateKeyPem,
+                "default",
+                12 * 60 * 60 * 1000,
+            );
+        }
 
-        mockComposerApiContainer = await startMockComposer(
-            mockComposerImage,
-            network,
-            streamLogs,
-        );
-        const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        // Then start everything else in parallel now the infrastructure is up.
+        [
+            mockCapiContainer,
+            mockComposerApiContainer,
+            mockPresenceContainer,
+            mockTelemetryContainer,
+            mockPreferencesApiContainer,
+            mockTagManagerApiContainer,
+            datastoreContainer,
+            workflowContainer,
+            authContainer,
+        ] = await Promise.all([
+            startMockCapi(mockCapiImage, network, streamLogs),
+            startMockComposer(mockComposerImage, network, streamLogs),
+            startMockPresence(mockPresenceImage, network, streamLogs),
+            startMockTelemetry(mockTelemetryImage, network, streamLogs),
+            startMockPreferences(mockPreferencesImage, network, streamLogs),
+            startMockTagManager(mockTagManagerImage, network, streamLogs),
+            startDatastore(datastoreImage, network, streamLogs),
+            startWorkflow(workflowImage, repoRoot, network, streamLogs),
+            exposeHostAuth
+                ? startAuthRedirect(
+                      authRedirectImage!,
+                      network,
+                      cookieValue!,
+                      streamLogs,
+                  )
+                : Promise.resolve(undefined),
+        ]);
 
-        mockPresenceContainer = await startMockPresence(
-            mockPresenceImage,
-            network,
-            streamLogs,
-        );
-
-        mockTelemetryContainer = await startMockTelemetry(
-            mockTelemetryImage,
-            network,
-            streamLogs,
-        );
-        const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
-
-        mockPreferencesApiContainer = await startMockPreferences(
-            mockPreferencesImage,
-            network,
-            streamLogs,
-        );
-
-        mockTagManagerApiContainer = await startMockTagManager(
-            mockTagManagerImage,
-            network,
-            streamLogs,
-        );
-
-        dbContainer = await startDb(network, streamLogs);
-
-        dynamodbContainer = await startDynamodb(
-            dynamodbImage,
-            network,
-            streamLogs,
-        );
-
-        datastoreContainer = await startDatastore(
-            datastoreImage,
-            network,
-            streamLogs,
-        );
+        if (exposeHostAuth) {
+            authUrl = `https://workflow.local.dev-gutools.co.uk/cookie`;
+            console.log(`\n[auth-redirect] Host-browser auth endpoint available at ${authUrl}`);
+        }
 
         // The Datastore applies its Play evolutions when it first serves a
         // request; its healthcheck above has done that, so the schema now exists:
         // load the section/desk test data into Postgres.
         await seedDatabase(dbContainer, e2eRoot);
 
-        let authUrl: string | undefined;
-        if (exposeHostAuth) {
-            // Long-lived so a dev session isn't re-authenticated hourly.
-            const cookieValue = createPanDomainCookie(
-                panDomainKeys.privateKeyPem,
-                "default",
-                12 * 60 * 60 * 1000,
-            );
+        const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
-            authContainer = await startAuthRedirect(
-                authRedirectImage!,
-                network,
-                cookieValue,
-                streamLogs,
-            );
-
-            authUrl = `https://workflow.local.dev-gutools.co.uk/cookie`;
-            console.log(`\n[auth-redirect] Host-browser auth endpoint available at ${authUrl}`);
-        }
-        
         const common = {
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
             mockApiUrl: mockCapiUrl,
@@ -266,13 +243,6 @@ export async function startLocalStack(
             authUrl,
             network,
         };
-
-        workflowContainer = await startWorkflow(
-            workflowImage,
-            repoRoot,
-            network,
-            streamLogs,
-        );
 
         const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(CONTAINER_FRONTEND_PORT)}`;
         return { baseUrl, workflowContainer, ...common };
