@@ -122,9 +122,11 @@ export async function startLocalStack(
             e2eRoot,
             datastoreImageTag,
         );
-        const workflowImagePromise = buildWorkflowImage(
-            repoRoot,
-            workflowImageTag,
+        const workflowImagePromise = datastoreImagePromise.then(() =>
+            buildWorkflowImage(
+                repoRoot,
+                workflowImageTag,
+            )
         );
 
         const minioImage = await buildMinioImage(e2eRoot, minioImageTag);
