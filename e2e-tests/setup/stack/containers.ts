@@ -49,18 +49,19 @@ const TELEMETRY_HTTPS_PORT = 8443;
 const HOST_TELEMETRY_HTTP_PORT = 3132;
 const HOST_TELEMETRY_HTTPS_PORT = 3133;
 
-export async function startMinio(
+export function buildMinioImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/minio.Dockerfile", imageTag);
+}
+
+export async function startMinio(
+    minioImage: GenericContainer,
+    network: StartedNetwork,
     panDomainKeys: PanDomainKeys,
     streamLogs: boolean,
 ): Promise<any> {
-    const minioImage = await buildImage(
-        e2eRoot,
-        "images/minio.Dockerfile",
-        imageTag,
-    );
     return minioImage
         .withNetwork(network)
         .withNetworkAliases(
@@ -84,17 +85,18 @@ export async function startMinio(
         .start();
 }
 
-export async function startMockCapi(
+export function buildMockCapiImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/mock-capi.Dockerfile", imageTag);
+}
+
+export async function startMockCapi(
+    mockCapiImage: GenericContainer,
+    network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
-    const mockCapiImage = await buildImage(
-        e2eRoot,
-        "images/mock-capi.Dockerfile",
-        imageTag,
-    );
     return mockCapiImage
         .withNetwork(network)
         .withNetworkAliases(CAPI_HOSTNAME)
@@ -109,17 +111,18 @@ export async function startMockCapi(
         .start();
 }
 
-export async function startMockComposer(
+export function buildMockComposerImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/mock-composer.Dockerfile", imageTag);
+}
+
+export async function startMockComposer(
+    mockComposerImage: GenericContainer,
+    network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
-    const mockComposerImage = await buildImage(
-        e2eRoot,
-        "images/mock-composer.Dockerfile",
-        imageTag,
-    );
     return mockComposerImage
         .withNetwork(network)
         .withNetworkAliases(COMPOSER_HOSTNAME)
@@ -142,17 +145,18 @@ export async function startMockComposer(
         .start();
 }
 
-export async function startMockPresence(
+export function buildMockPresenceImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/mock-presence.Dockerfile", imageTag);
+}
+
+export async function startMockPresence(
+    mockPresenceImage: GenericContainer,
+    network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
-    const mockPresenceImage = await buildImage(
-        e2eRoot,
-        "images/mock-presence.Dockerfile",
-        imageTag,
-    );
     return mockPresenceImage
         .withNetwork(network)
         .withNetworkAliases(PRESENCE_HOSTNAME)
@@ -176,17 +180,18 @@ export async function startMockPresence(
         .start();
 }
 
-export async function startMockTelemetry(
+export function buildMockTelemetryImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/mock-telemetry.Dockerfile", imageTag);
+}
+
+export async function startMockTelemetry(
+    mockTelemetryImage: GenericContainer,
+    network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
-    const mockTelemetryImage = await buildImage(
-        e2eRoot,
-        "images/mock-telemetry.Dockerfile",
-        imageTag,
-    );
     return mockTelemetryImage
         .withNetwork(network)
         .withNetworkAliases(TELEMETRY_HOSTNAME)
@@ -209,17 +214,18 @@ export async function startMockTelemetry(
         .start();
 }
 
-export async function startMockPreferences(
+export function buildMockPreferencesImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/mock-preferences.Dockerfile", imageTag);
+}
+
+export async function startMockPreferences(
+    mockPreferencesImage: GenericContainer,
+    network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
-    const mockPreferencesImage = await buildImage(
-        e2eRoot,
-        "images/mock-preferences.Dockerfile",
-        imageTag,
-    );
     return mockPreferencesImage
         .withNetwork(network)
         .withNetworkAliases(PREFERENCES_HOSTNAME)
@@ -234,17 +240,18 @@ export async function startMockPreferences(
         .start();
 }
 
-export async function startMockTagManager(
+export function buildMockTagManagerImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/mock-tagmanager.Dockerfile", imageTag);
+}
+
+export async function startMockTagManager(
+    mockTagManagerImage: GenericContainer,
+    network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
-    const mockTagManagerImage = await buildImage(
-        e2eRoot,
-        "images/mock-tagmanager.Dockerfile",
-        imageTag,
-    );
     return mockTagManagerImage
         .withNetwork(network)
         .withNetworkAliases(TAG_MANAGER_HOSTNAME)
@@ -283,17 +290,18 @@ export async function startDb(
         .start();
 }
 
-export async function startDynamodb(
+export function buildDynamodbImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/dynamodb.Dockerfile", imageTag);
+}
+
+export async function startDynamodb(
+    dynamodbImage: GenericContainer,
+    network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
-    const dynamodbImage = await buildImage(
-        e2eRoot,
-        "images/dynamodb.Dockerfile",
-        imageTag,
-    );
     return dynamodbImage
         .withNetwork(network)
         .withNetworkAliases("workflow-e2e-dynamodb")
@@ -306,12 +314,10 @@ export async function startDynamodb(
         .start();
 }
 
-export async function startDatastore(
+export function buildDatastoreImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
-    streamLogs: boolean,
-): Promise<any> {
+): Promise<GenericContainer> {
     console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR ?? "(not set)"}`);
     const datastoreContext =
         process.env.WORKFLOW_BACKEND_DIR ??
@@ -323,11 +329,14 @@ export async function startDatastore(
         path.join(e2eRoot, "images/datastore.Dockerfile"),
         path.join(datastoreContext, "datastore.Dockerfile"),
     );
-    const datastoreImage = await buildImage(
-        datastoreContext,
-        "datastore.Dockerfile",
-        imageTag,
-    );
+    return buildImage(datastoreContext, "datastore.Dockerfile", imageTag);
+}
+
+export async function startDatastore(
+    datastoreImage: GenericContainer,
+    network: StartedNetwork,
+    streamLogs: boolean,
+): Promise<any> {
     return datastoreImage
         .withNetwork(network)
         .withNetworkAliases("workflow-backend.local.dev-gutools.co.uk")
@@ -340,19 +349,19 @@ export async function startDatastore(
         .start();
 }
 
-export async function startAuthRedirect(
+export function buildAuthRedirectImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/auth-redirect.Dockerfile", imageTag);
+}
+
+export async function startAuthRedirect(
+    authRedirectImage: GenericContainer,
+    network: StartedNetwork,
     cookieValue: string,
     streamLogs: boolean,
 ): Promise<any> {
-    const authRedirectImage = await buildImage(
-        e2eRoot,
-        "images/auth-redirect.Dockerfile",
-        imageTag,
-    );
-
     return authRedirectImage
         .withNetwork(network)
         .withEnvironment({
@@ -366,17 +375,23 @@ export async function startAuthRedirect(
         .start();
 }
 
-export async function startWorkflow(
+export function buildWorkflowImage(
     repoRoot: string,
-    network: StartedNetwork,
     imageTag: string,
-    streamLogs: boolean,
-): Promise<any> {
-    const workflowImage = await buildImage(
+): Promise<GenericContainer> {
+    return buildImage(
         repoRoot,
         "e2e-tests/images/workflow-frontend.Dockerfile",
         imageTag,
     );
+}
+
+export async function startWorkflow(
+    workflowImage: GenericContainer,
+    repoRoot: string,
+    network: StartedNetwork,
+    streamLogs: boolean,
+): Promise<any> {
     return workflowImage
         .withNetwork(network)
         .withNetworkAliases(FRONTEND_ALIAS)

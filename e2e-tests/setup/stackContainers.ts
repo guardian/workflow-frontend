@@ -4,6 +4,17 @@ import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
 import {
+    buildMinioImage,
+    buildMockCapiImage,
+    buildMockComposerImage,
+    buildMockPresenceImage,
+    buildMockTelemetryImage,
+    buildMockPreferencesImage,
+    buildMockTagManagerImage,
+    buildDynamodbImage,
+    buildDatastoreImage,
+    buildAuthRedirectImage,
+    buildWorkflowImage,
     startMinio,
     startMockCapi,
     startMockComposer,
@@ -101,73 +112,111 @@ export async function startLocalStack(
     let datastoreContainer;
     const panDomainKeys = generatePanDomainKeys();
 
+    const repoRoot = path.join(e2eRoot, "..");
+
     try {
-        minioContainer = await startMinio(
+        // Phase 1: kick off the two slow image builds (datastore and
+        // workflow-frontend) up front so they run while the remaining images
+        // build serially, then wait for them at the end.
+        const datastoreImagePromise = buildDatastoreImage(
             e2eRoot,
+            datastoreImageTag,
+        );
+        const workflowImagePromise = buildWorkflowImage(
+            repoRoot,
+            workflowImageTag,
+        );
+
+        const minioImage = await buildMinioImage(e2eRoot, minioImageTag);
+        const mockCapiImage = await buildMockCapiImage(e2eRoot, mockCapiImageTag);
+        const mockComposerImage = await buildMockComposerImage(
+            e2eRoot,
+            mockComposerImageTag,
+        );
+        const mockPresenceImage = await buildMockPresenceImage(
+            e2eRoot,
+            mockPresenceImageTag,
+        );
+        const mockTelemetryImage = await buildMockTelemetryImage(
+            e2eRoot,
+            mockTelemetryImageTag,
+        );
+        const mockPreferencesImage = await buildMockPreferencesImage(
+            e2eRoot,
+            mockPreferencesImageTag,
+        );
+        const mockTagManagerImage = await buildMockTagManagerImage(
+            e2eRoot,
+            mockTagManagerImageTag,
+        );
+        const dynamodbImage = await buildDynamodbImage(e2eRoot, dynamodbImageTag);
+        const authRedirectImage = exposeHostAuth
+            ? await buildAuthRedirectImage(e2eRoot, authRedirectImageTag)
+            : undefined;
+
+        const [datastoreImage, workflowImage] = await Promise.all([
+            datastoreImagePromise,
+            workflowImagePromise,
+        ]);
+
+        // Phase 2: start the containers serially in dependency order.
+        minioContainer = await startMinio(
+            minioImage,
             network,
-            minioImageTag,
             panDomainKeys,
             streamLogs,
         );
 
         mockCapiContainer = await startMockCapi(
-            e2eRoot,
+            mockCapiImage,
             network,
-            mockCapiImageTag,
             streamLogs,
         );
         const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
         mockComposerApiContainer = await startMockComposer(
-            e2eRoot,
+            mockComposerImage,
             network,
-            mockComposerImageTag,
             streamLogs,
         );
         const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
         mockPresenceContainer = await startMockPresence(
-            e2eRoot,
+            mockPresenceImage,
             network,
-            mockPresenceImageTag,
             streamLogs,
         );
 
         mockTelemetryContainer = await startMockTelemetry(
-            e2eRoot,
+            mockTelemetryImage,
             network,
-            mockTelemetryImageTag,
             streamLogs,
         );
         const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
         mockPreferencesApiContainer = await startMockPreferences(
-            e2eRoot,
+            mockPreferencesImage,
             network,
-            mockPreferencesImageTag,
             streamLogs,
         );
 
         mockTagManagerApiContainer = await startMockTagManager(
-            e2eRoot,
+            mockTagManagerImage,
             network,
-            mockTagManagerImageTag,
             streamLogs,
         );
 
         dbContainer = await startDb(network, streamLogs);
 
         dynamodbContainer = await startDynamodb(
-            e2eRoot,
+            dynamodbImage,
             network,
-            dynamodbImageTag,
             streamLogs,
         );
 
         datastoreContainer = await startDatastore(
-            e2eRoot,
+            datastoreImage,
             network,
-            datastoreImageTag,
             streamLogs,
         );
 
@@ -186,9 +235,8 @@ export async function startLocalStack(
             );
 
             authContainer = await startAuthRedirect(
-                e2eRoot,
+                authRedirectImage!,
                 network,
-                authRedirectImageTag,
                 cookieValue,
                 streamLogs,
             );
@@ -217,11 +265,10 @@ export async function startLocalStack(
             network,
         };
 
-        const repoRoot = path.join(e2eRoot, "..");
         workflowContainer = await startWorkflow(
+            workflowImage,
             repoRoot,
             network,
-            workflowImageTag,
             streamLogs,
         );
 
