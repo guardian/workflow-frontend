@@ -5,23 +5,12 @@ import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
 import {
     buildMinioImage,
-    buildMockCapiImage,
-    buildMockComposerImage,
-    buildMockPresenceImage,
-    buildMockTelemetryImage,
-    buildMockPreferencesImage,
-    buildMockTagManagerImage,
     buildDynamodbImage,
     buildDatastoreImage,
-    buildAuthRedirectImage,
     buildWorkflowImage,
     startMinio,
-    startMockCapi,
-    startMockComposer,
-    startMockPresence,
-    startMockTelemetry,
-    startMockPreferences,
-    startMockTagManager,
+    startMockWiremock,
+    MOCK_WIREMOCK_CONFIGS,
     startDb,
     startDynamodb,
     startDatastore,
@@ -86,15 +75,8 @@ export async function startLocalStack(
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
-    const mockCapiImageTag = `workflow-frontend-mock-capi-e2e:${runId}`;
-    const mockComposerImageTag = `workflow-frontend-mock-composer-e2e:${runId}`;
-    const mockPresenceImageTag = `workflow-frontend-mock-presence-e2e:${runId}`;
-    const mockTelemetryImageTag = `workflow-frontend-mock-telemetry-e2e:${runId}`;
-    const mockPreferencesImageTag = `workflow-frontend-mock-preferences-e2e:${runId}`;
-    const mockTagManagerImageTag = `workflow-frontend-mock-tagmanager-e2e:${runId}`;
     const dynamodbImageTag = `workflow-frontend-dynamodb-e2e:${runId}`;
     const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
-    const authRedirectImageTag = `workflow-frontend-auth-redirect-e2e:${runId}`;
 
     const network = await new Network().start();
 
@@ -115,99 +97,80 @@ export async function startLocalStack(
     const repoRoot = path.join(e2eRoot, "..");
 
     try {
-        // Phase 1: kick off the two slow image builds (datastore and
-        // workflow-frontend) up front so they run while the remaining images
-        // build serially, then wait for them at the end.
-        const datastoreImagePromise = buildDatastoreImage(
-            e2eRoot,
-            datastoreImageTag,
-        );
-        const workflowImagePromise = datastoreImagePromise.then(() =>
-            buildWorkflowImage(
-                repoRoot,
-                workflowImageTag,
-            )
-        );
+        // Build the images one at a time — concurrent buildkit builds are flaky
+        // when resolving registry metadata — but start each container
+        // asynchronously as soon as its image is ready and await the starts at
+        // the end. Only one image ever builds at a time; container startups
+        // overlap with subsequent builds.
 
+        // Infrastructure first: everything else needs minio, dynamodb and
+        // workflow-db, so wait for these to be up before starting the rest.
         const minioImage = await buildMinioImage(e2eRoot, minioImageTag);
-        const mockCapiImage = await buildMockCapiImage(e2eRoot, mockCapiImageTag);
-        const mockComposerImage = await buildMockComposerImage(
-            e2eRoot,
-            mockComposerImageTag,
-        );
-        const mockPresenceImage = await buildMockPresenceImage(
-            e2eRoot,
-            mockPresenceImageTag,
-        );
-        const mockTelemetryImage = await buildMockTelemetryImage(
-            e2eRoot,
-            mockTelemetryImageTag,
-        );
-        const mockPreferencesImage = await buildMockPreferencesImage(
-            e2eRoot,
-            mockPreferencesImageTag,
-        );
-        const mockTagManagerImage = await buildMockTagManagerImage(
-            e2eRoot,
-            mockTagManagerImageTag,
-        );
+        const minioStart = startMinio(minioImage, network, panDomainKeys, streamLogs);
+
         const dynamodbImage = await buildDynamodbImage(e2eRoot, dynamodbImageTag);
-        const authRedirectImage = exposeHostAuth
-            ? await buildAuthRedirectImage(e2eRoot, authRedirectImageTag)
-            : undefined;
+        const dynamodbStart = startDynamodb(dynamodbImage, network, streamLogs);
 
-        const [datastoreImage, workflowImage] = await Promise.all([
-            datastoreImagePromise,
-            workflowImagePromise,
-        ]);
+        // workflow-db has no image to build; start it straight away.
+        const dbStart = startDb(network, streamLogs);
 
-        // Phase 2: start the infrastructure containers (minio, dynamodb and
-        // workflow-db) in parallel first, since everything else depends on them.
         [minioContainer, dynamodbContainer, dbContainer] = await Promise.all([
-            startMinio(minioImage, network, panDomainKeys, streamLogs),
-            startDynamodb(dynamodbImage, network, streamLogs),
-            startDb(network, streamLogs),
+            minioStart,
+            dynamodbStart,
+            dbStart,
         ]);
+
+        // With the infrastructure up, start workflow-frontend and the datastore
+        // (which depend on it), then the remaining containers. Each container
+        // starts while the next image builds.
+        const workflowImage = await buildWorkflowImage(repoRoot, workflowImageTag);
+        const workflowStart = startWorkflow(workflowImage, repoRoot, network, streamLogs);
+
+        const datastoreImage = await buildDatastoreImage(e2eRoot, datastoreImageTag);
+        const datastoreStart = startDatastore(datastoreImage, network, streamLogs);
+
+        // The mocks all run from the shared WireMock image with no build step,
+        // so their starts can be kicked off immediately.
+        const mockCapiStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.capi, e2eRoot, network, streamLogs);
+        const mockComposerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.composer, e2eRoot, network, streamLogs);
+        const mockPresenceStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.presence, e2eRoot, network, streamLogs);
+        const mockTelemetryStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.telemetry, e2eRoot, network, streamLogs);
+        const mockPreferencesStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.preferences, e2eRoot, network, streamLogs);
+        const mockTagManagerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.tagmanager, e2eRoot, network, streamLogs);
 
         let authUrl: string | undefined;
-        let cookieValue: string | undefined;
+        let authStart: Promise<any> = Promise.resolve(undefined);
         if (exposeHostAuth) {
             // Long-lived so a dev session isn't re-authenticated hourly.
-            cookieValue = createPanDomainCookie(
+            const cookieValue = createPanDomainCookie(
                 panDomainKeys.privateKeyPem,
                 "default",
                 12 * 60 * 60 * 1000,
             );
+            authStart = startAuthRedirect(e2eRoot, network, cookieValue, streamLogs);
         }
 
-        // Then start everything else in parallel now the infrastructure is up.
+        // Wait for the remaining containers to finish starting.
         [
+            workflowContainer,
+            datastoreContainer,
             mockCapiContainer,
             mockComposerApiContainer,
             mockPresenceContainer,
             mockTelemetryContainer,
             mockPreferencesApiContainer,
             mockTagManagerApiContainer,
-            datastoreContainer,
-            workflowContainer,
             authContainer,
         ] = await Promise.all([
-            startMockCapi(mockCapiImage, network, streamLogs),
-            startMockComposer(mockComposerImage, network, streamLogs),
-            startMockPresence(mockPresenceImage, network, streamLogs),
-            startMockTelemetry(mockTelemetryImage, network, streamLogs),
-            startMockPreferences(mockPreferencesImage, network, streamLogs),
-            startMockTagManager(mockTagManagerImage, network, streamLogs),
-            startDatastore(datastoreImage, network, streamLogs),
-            startWorkflow(workflowImage, repoRoot, network, streamLogs),
-            exposeHostAuth
-                ? startAuthRedirect(
-                      authRedirectImage!,
-                      network,
-                      cookieValue!,
-                      streamLogs,
-                  )
-                : Promise.resolve(undefined),
+            workflowStart,
+            datastoreStart,
+            mockCapiStart,
+            mockComposerStart,
+            mockPresenceStart,
+            mockTelemetryStart,
+            mockPreferencesStart,
+            mockTagManagerStart,
+            authStart,
         ]);
 
         if (exposeHostAuth) {
@@ -247,6 +210,7 @@ export async function startLocalStack(
         const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(CONTAINER_FRONTEND_PORT)}`;
         return { baseUrl, workflowContainer, ...common };
     } catch (error) {
+        console.error(`Exception occurred: ${error}`);
         if (authContainer) {
             await authContainer.stop();
         }

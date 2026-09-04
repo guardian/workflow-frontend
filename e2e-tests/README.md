@@ -205,9 +205,12 @@ e2e/
 │   ├── dynamodb/      # DynamoDB seed data (e.g. editorial support)
 │   ├── permissions/   # Permission cache fixture (grants/denies workflow_access)
 │   ├── pan-domain-settings/  # Pan-domain auth settings
-│   ├── capi-mappings/        # WireMock stubs for CAPI preview
-│   ├── preferences-mappings/ # WireMock stubs for the Preferences service
-│   ├── tagmanager-mappings/  # WireMock stubs for Tag Manager
+│   ├── capi/                 # WireMock stubs for CAPI preview
+│   ├── composer/             # WireMock stubs for the Composer API
+│   ├── preferences/          # WireMock stubs for the Preferences service
+│   ├── presence/             # WireMock stub for the presence client library
+│   ├── tagmanager/           # WireMock stubs for Tag Manager
+│   ├── telemetry/            # WireMock stubs for user telemetry
 ├── global-setup.ts    # Playwright global setup: start/reuse stack, write connection file
 ├── playwright.config.ts
 ├── mise.toml          # Pinned Node.js version

@@ -1,5 +1,5 @@
-// User telemetry is mocked by a WireMock container (see
-// e2e-tests/images/mock-telemetry.Dockerfile and fixtures/telemetry-mappings/).
+// User telemetry is mocked by a WireMock container (see startMockWiremock in
+// e2e-tests/setup/stack/containers.ts and fixtures/telemetry/).
 // The browser's cross-origin https calls reach it via Chromium
 // host-resolver-rules. This module doesn't serve responses; it only lets tests
 // read back the emitted events for assertions. A single container is shared
