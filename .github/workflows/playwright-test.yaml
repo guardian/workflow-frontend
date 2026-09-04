@@ -55,23 +55,6 @@ jobs:
       - name: Install Playwright Chromium (headless shell only)
         run: yarn playwright install --with-deps chromium --only-shell
 
-      # Build the stack images up front so their layers are cached in the
-      # Docker build cache. testcontainers rebuilds them during the run
-      # with per-run tags, but the cached layers make those builds fast.
-      - name: Prebuild Docker images
-        run: |
-          docker build -f images/auth-redirect.Dockerfile -t workflow-frontend-auth-redirect-e2e:prebuild .
-          docker build -f images/datastore.Dockerfile -t workflow-datastore-e2e:prebuild target/workflow-backend
-          docker build -f images/dynamodb.Dockerfile -t workflow-frontend-dynamodb-e2e:prebuild .
-          docker build -f images/minio.Dockerfile -t workflow-frontend-minio-e2e:prebuild .
-          docker build -f images/mock-capi.Dockerfile -t workflow-frontend-mock-capi-e2e:prebuild .
-          docker build -f images/mock-composer.Dockerfile -t workflow-frontend-mock-composer-e2e:prebuild .
-          docker build -f images/mock-preferences.Dockerfile -t workflow-frontend-mock-preferences-e2e:prebuild .
-          docker build -f images/mock-presence.Dockerfile -t workflow-frontend-mock-presence-e2e:prebuild .
-          docker build -f images/mock-tagmanager.Dockerfile -t workflow-frontend-mock-tagmanager-e2e:prebuild .
-          docker build -f images/mock-telemetry.Dockerfile -t workflow-frontend-mock-telemetry-e2e:prebuild .
-          docker build -f images/workflow-frontend.Dockerfile -t workflow-frontend-app-e2e:prebuild ..
-
       - name: Run Playwright tests
         run: yarn bddgen && yarn playwright test
 

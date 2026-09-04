@@ -4,13 +4,13 @@ import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
 import {
+    buildMinioImage,
+    buildDynamodbImage,
+    buildDatastoreImage,
+    buildWorkflowImage,
     startMinio,
-    startMockCapi,
-    startMockComposer,
-    startMockPresence,
-    startMockTelemetry,
-    startMockPreferences,
-    startMockTagManager,
+    startMockWiremock,
+    MOCK_WIREMOCK_CONFIGS,
     startDb,
     startDynamodb,
     startDatastore,
@@ -75,15 +75,8 @@ export async function startLocalStack(
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
-    const mockCapiImageTag = `workflow-frontend-mock-capi-e2e:${runId}`;
-    const mockComposerImageTag = `workflow-frontend-mock-composer-e2e:${runId}`;
-    const mockPresenceImageTag = `workflow-frontend-mock-presence-e2e:${runId}`;
-    const mockTelemetryImageTag = `workflow-frontend-mock-telemetry-e2e:${runId}`;
-    const mockPreferencesImageTag = `workflow-frontend-mock-preferences-e2e:${runId}`;
-    const mockTagManagerImageTag = `workflow-frontend-mock-tagmanager-e2e:${runId}`;
     const dynamodbImageTag = `workflow-frontend-dynamodb-e2e:${runId}`;
     const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
-    const authRedirectImageTag = `workflow-frontend-auth-redirect-e2e:${runId}`;
 
     const network = await new Network().start();
 
@@ -101,82 +94,52 @@ export async function startLocalStack(
     let datastoreContainer;
     const panDomainKeys = generatePanDomainKeys();
 
+    const repoRoot = path.join(e2eRoot, "..");
+
     try {
-        minioContainer = await startMinio(
-            e2eRoot,
-            network,
-            minioImageTag,
-            panDomainKeys,
-            streamLogs,
-        );
+        // Build the images one at a time — concurrent buildkit builds are flaky
+        // when resolving registry metadata — but start each container
+        // asynchronously as soon as its image is ready and await the starts at
+        // the end. Only one image ever builds at a time; container startups
+        // overlap with subsequent builds.
 
-        mockCapiContainer = await startMockCapi(
-            e2eRoot,
-            network,
-            mockCapiImageTag,
-            streamLogs,
-        );
-        const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        // Infrastructure first: everything else needs minio, dynamodb and
+        // workflow-db, so wait for these to be up before starting the rest.
+        const minioImage = await buildMinioImage(e2eRoot, minioImageTag);
+        const minioStart = startMinio(minioImage, network, panDomainKeys, streamLogs);
 
-        mockComposerApiContainer = await startMockComposer(
-            e2eRoot,
-            network,
-            mockComposerImageTag,
-            streamLogs,
-        );
-        const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        const dynamodbImage = await buildDynamodbImage(e2eRoot, dynamodbImageTag);
+        const dynamodbStart = startDynamodb(dynamodbImage, network, streamLogs);
 
-        mockPresenceContainer = await startMockPresence(
-            e2eRoot,
-            network,
-            mockPresenceImageTag,
-            streamLogs,
-        );
+        // workflow-db has no image to build; start it straight away.
+        const dbStart = startDb(network, streamLogs);
 
-        mockTelemetryContainer = await startMockTelemetry(
-            e2eRoot,
-            network,
-            mockTelemetryImageTag,
-            streamLogs,
-        );
-        const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        [minioContainer, dynamodbContainer, dbContainer] = await Promise.all([
+            minioStart,
+            dynamodbStart,
+            dbStart,
+        ]);
 
-        mockPreferencesApiContainer = await startMockPreferences(
-            e2eRoot,
-            network,
-            mockPreferencesImageTag,
-            streamLogs,
-        );
+        // With the infrastructure up, start workflow-frontend and the datastore
+        // (which depend on it), then the remaining containers. Each container
+        // starts while the next image builds.
+        const workflowImage = await buildWorkflowImage(repoRoot, workflowImageTag);
+        const workflowStart = startWorkflow(workflowImage, repoRoot, network, streamLogs);
 
-        mockTagManagerApiContainer = await startMockTagManager(
-            e2eRoot,
-            network,
-            mockTagManagerImageTag,
-            streamLogs,
-        );
+        const datastoreImage = await buildDatastoreImage(e2eRoot, datastoreImageTag);
+        const datastoreStart = startDatastore(datastoreImage, network, streamLogs);
 
-        dbContainer = await startDb(network, streamLogs);
-
-        dynamodbContainer = await startDynamodb(
-            e2eRoot,
-            network,
-            dynamodbImageTag,
-            streamLogs,
-        );
-
-        datastoreContainer = await startDatastore(
-            e2eRoot,
-            network,
-            datastoreImageTag,
-            streamLogs,
-        );
-
-        // The Datastore applies its Play evolutions when it first serves a
-        // request; its healthcheck above has done that, so the schema now exists:
-        // load the section/desk test data into Postgres.
-        await seedDatabase(dbContainer, e2eRoot);
+        // The mocks all run from the shared WireMock image with no build step,
+        // so their starts can be kicked off immediately.
+        const mockCapiStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.capi, e2eRoot, network, streamLogs);
+        const mockComposerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.composer, e2eRoot, network, streamLogs);
+        const mockPresenceStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.presence, e2eRoot, network, streamLogs);
+        const mockTelemetryStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.telemetry, e2eRoot, network, streamLogs);
+        const mockPreferencesStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.preferences, e2eRoot, network, streamLogs);
+        const mockTagManagerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.tagmanager, e2eRoot, network, streamLogs);
 
         let authUrl: string | undefined;
+        let authStart: Promise<any> = Promise.resolve(undefined);
         if (exposeHostAuth) {
             // Long-lived so a dev session isn't re-authenticated hourly.
             const cookieValue = createPanDomainCookie(
@@ -184,19 +147,46 @@ export async function startLocalStack(
                 "default",
                 12 * 60 * 60 * 1000,
             );
+            authStart = startAuthRedirect(e2eRoot, network, cookieValue, streamLogs);
+        }
 
-            authContainer = await startAuthRedirect(
-                e2eRoot,
-                network,
-                authRedirectImageTag,
-                cookieValue,
-                streamLogs,
-            );
+        // Wait for the remaining containers to finish starting.
+        [
+            workflowContainer,
+            datastoreContainer,
+            mockCapiContainer,
+            mockComposerApiContainer,
+            mockPresenceContainer,
+            mockTelemetryContainer,
+            mockPreferencesApiContainer,
+            mockTagManagerApiContainer,
+            authContainer,
+        ] = await Promise.all([
+            workflowStart,
+            datastoreStart,
+            mockCapiStart,
+            mockComposerStart,
+            mockPresenceStart,
+            mockTelemetryStart,
+            mockPreferencesStart,
+            mockTagManagerStart,
+            authStart,
+        ]);
 
+        if (exposeHostAuth) {
             authUrl = `https://workflow.local.dev-gutools.co.uk/cookie`;
             console.log(`\n[auth-redirect] Host-browser auth endpoint available at ${authUrl}`);
         }
-        
+
+        // The Datastore applies its Play evolutions when it first serves a
+        // request; its healthcheck above has done that, so the schema now exists:
+        // load the section/desk test data into Postgres.
+        await seedDatabase(dbContainer, e2eRoot);
+
+        const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+
         const common = {
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
             mockApiUrl: mockCapiUrl,
@@ -217,17 +207,10 @@ export async function startLocalStack(
             network,
         };
 
-        const repoRoot = path.join(e2eRoot, "..");
-        workflowContainer = await startWorkflow(
-            repoRoot,
-            network,
-            workflowImageTag,
-            streamLogs,
-        );
-
         const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(CONTAINER_FRONTEND_PORT)}`;
         return { baseUrl, workflowContainer, ...common };
     } catch (error) {
+        console.error(`Exception occurred: ${error}`);
         if (authContainer) {
             await authContainer.stop();
         }

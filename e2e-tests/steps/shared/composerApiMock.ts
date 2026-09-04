@@ -1,6 +1,6 @@
 
-// Composer is mocked by a WireMock container (see e2e-tests/images/mock-composer.Dockerfile
-// and fixtures/composer-mappings/). The browser's cross-origin https calls reach it via
+// Composer is mocked by a WireMock container (see startMockWiremock in
+// e2e-tests/setup/stack/containers.ts and fixtures/composer/). The browser's cross-origin https calls reach it via
 // Chromium host-resolver-rules. This module doesn't serve responses; it only lets tests read
 // back the content-create requests for assertions. Because a single container is shared across
 // parallel workers, each scenario tags its browser context with a unique header and queries

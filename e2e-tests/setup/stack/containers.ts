@@ -7,6 +7,15 @@ import type { PanDomainKeys } from "../panDomainKeys";
 export const MINIO_ROOT_USER = "minioadmin";
 export const MINIO_ROOT_PASSWORD = "minioadmin";
 
+// All mocks share one WireMock image; each container only bind-mounts a
+// different fixture root (mappings/ + __files/) and tweaks its command flags.
+const WIREMOCK_IMAGE = "wiremock/wiremock:3.13.2";
+// The auth-redirect container is stock nginx with a bind-mounted config template.
+const AUTH_REDIRECT_IMAGE = "nginx:alpine";
+// WireMock is told to read its stubs from this bind-mounted dir rather than the
+// image default (/home/wiremock), so nothing in the base image is shadowed.
+const WIREMOCK_ROOT_DIR = "/wiremock-root";
+
 // In local dev the restorer runs as the DEV identity, whose effective stage is
 // CODE, so it resolves each stack's real per-stage flexible-content API host
 // (see app/models/FlexibleStack.scala and app/config/AppConfig.scala). We
@@ -14,6 +23,9 @@ export const MINIO_ROOT_PASSWORD = "minioadmin";
 // the real hostnames resolve to the mock inside the Docker network — no
 // config/URL override required.
 export const WIREMOCK_HTTP_PORT = 80;
+// Container port the https-serving mocks (composer, presence, telemetry) listen
+// on; Chromium host-resolver-rules map each mock's hostname to its fixed host port.
+const WIREMOCK_HTTPS_PORT = 8443;
 // Fixed host port for the optional host-browser auth-cookie endpoint. Kept
 // stable (and forwarded in the devcontainer) so it can be bookmarked.
 const NGINX_PORT = 80;
@@ -31,36 +43,34 @@ const COMPOSER_HOSTNAME = "composer.local.dev-gutools.co.uk";
 // Composer is called from the browser cross-origin over https; the mock serves
 // https on this fixed host port, which Chromium host-resolver-rules maps
 // COMPOSER_HOSTNAME to. Forwarded in the devcontainer as "Composer API".
-const COMPOSER_HTTPS_PORT = 8443;
 const HOST_COMPOSER_HTTP_PORT = 9081;
 const HOST_COMPOSER_HTTPS_PORT = 9082;
 const PRESENCE_HOSTNAME = "presence.local.dev-gutools.co.uk";
 // Presence's client library is loaded by the browser over https; the mock serves
 // it on this fixed host port, which Chromium host-resolver-rules maps
 // PRESENCE_HOSTNAME to. Forwarded in the devcontainer as "Presence".
-const PRESENCE_HTTPS_PORT = 8443;
 const HOST_PRESENCE_HTTP_PORT = 9070;
 const HOST_PRESENCE_HTTPS_PORT = 9071;
 const TELEMETRY_HOSTNAME = "user-telemetry.local.dev-gutools.co.uk";
 // Telemetry is called from the browser over https; the mock serves it on this
 // fixed host port, which Chromium host-resolver-rules maps TELEMETRY_HOSTNAME
 // to. Forwarded in the devcontainer as "User telemetry".
-const TELEMETRY_HTTPS_PORT = 8443;
 const HOST_TELEMETRY_HTTP_PORT = 3132;
 const HOST_TELEMETRY_HTTPS_PORT = 3133;
 
-export async function startMinio(
+export function buildMinioImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/minio.Dockerfile", imageTag);
+}
+
+export async function startMinio(
+    minioImage: GenericContainer,
+    network: StartedNetwork,
     panDomainKeys: PanDomainKeys,
     streamLogs: boolean,
 ): Promise<any> {
-    const minioImage = await buildImage(
-        e2eRoot,
-        "images/minio.Dockerfile",
-        imageTag,
-    );
     return minioImage
         .withNetwork(network)
         .withNetworkAliases(
@@ -84,172 +94,111 @@ export async function startMinio(
         .start();
 }
 
-export async function startMockCapi(
-    e2eRoot: string,
-    network: StartedNetwork,
-    imageTag: string,
-    streamLogs: boolean,
-): Promise<any> {
-    const mockCapiImage = await buildImage(
-        e2eRoot,
-        "images/mock-capi.Dockerfile",
-        imageTag,
-    );
-    return mockCapiImage
-        .withNetwork(network)
-        .withNetworkAliases(CAPI_HOSTNAME)
-        .withLogConsumer(createLogConsumer("mock-capi", streamLogs))
-        .withExposedPorts(WIREMOCK_HTTP_PORT)
-        .withWaitStrategy(
-            Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
-                200,
-            ),
-        )
-        .withStartupTimeout(2 * 60 * 1000)
-        .start();
+type MockPortMapping = number | { container: number; host: number };
+
+interface MockWiremockConfig {
+    /** Log prefix for this mock's container output. */
+    name: string;
+    /** fixtures/<dir> folder holding this mock's WireMock root (mappings/ + __files/). */
+    fixtureDir: string;
+    /** Docker network alias(es) the frontend/browser resolve to this mock. */
+    aliases: string[];
+    /** Ports to expose; a fixed host port is used only where one is required. */
+    ports: MockPortMapping[];
+    /** Serve https on 8443 (browser cross-origin mocks) in addition to http. */
+    https?: boolean;
+    /** Disable WireMock response templating (e.g. presence serves a JS body verbatim). */
+    templating?: boolean;
 }
 
-export async function startMockComposer(
+export const MOCK_WIREMOCK_CONFIGS: Record<string, MockWiremockConfig> = {
+    capi: {
+        name: "mock-capi",
+        fixtureDir: "capi",
+        aliases: [CAPI_HOSTNAME],
+        ports: [WIREMOCK_HTTP_PORT],
+        templating: true,
+    },
+    composer: {
+        name: "mock-composer",
+        fixtureDir: "composer",
+        aliases: [COMPOSER_HOSTNAME],
+        ports: [
+            { container: WIREMOCK_HTTP_PORT, host: HOST_COMPOSER_HTTP_PORT },
+            { container: WIREMOCK_HTTPS_PORT, host: HOST_COMPOSER_HTTPS_PORT },
+        ],
+        https: true,
+        templating: true,
+    },
+    presence: {
+        name: "mock-presence",
+        fixtureDir: "presence",
+        aliases: [PRESENCE_HOSTNAME],
+        ports: [
+            { container: WIREMOCK_HTTP_PORT, host: HOST_PRESENCE_HTTP_PORT },
+            { container: WIREMOCK_HTTPS_PORT, host: HOST_PRESENCE_HTTPS_PORT },
+        ],
+        https: true,
+    },
+    telemetry: {
+        name: "mock-telemetry",
+        fixtureDir: "telemetry",
+        aliases: [TELEMETRY_HOSTNAME],
+        ports: [
+            { container: WIREMOCK_HTTP_PORT, host: HOST_TELEMETRY_HTTP_PORT },
+            { container: WIREMOCK_HTTPS_PORT, host: HOST_TELEMETRY_HTTPS_PORT },
+        ],
+        https: true,
+        templating: true,
+    },
+    preferences: {
+        name: "mock-preferences",
+        fixtureDir: "preferences",
+        aliases: [PREFERENCES_HOSTNAME],
+        ports: [WIREMOCK_HTTP_PORT],
+        templating: true,
+    },
+    tagmanager: {
+        name: "mock-tagmanager",
+        fixtureDir: "tagmanager",
+        aliases: [TAG_MANAGER_HOSTNAME],
+        ports: [WIREMOCK_HTTP_PORT],
+        templating: true,
+    },
+};
+
+// Start one WireMock mock from the shared image, bind-mounting fixtures/<name>
+// as its stub root. Runs as root so WireMock can bind the privileged port 80,
+// which the frontend's server-side calls reach via the network aliases.
+export async function startMockWiremock(
+    config: MockWiremockConfig,
     e2eRoot: string,
     network: StartedNetwork,
-    imageTag: string,
     streamLogs: boolean,
 ): Promise<any> {
-    const mockComposerImage = await buildImage(
-        e2eRoot,
-        "images/mock-composer.Dockerfile",
-        imageTag,
-    );
-    return mockComposerImage
+    const command = [
+        "--root-dir",
+        WIREMOCK_ROOT_DIR,
+        "--port",
+        String(WIREMOCK_HTTP_PORT),
+        ...(config.https ? ["--https-port", String(WIREMOCK_HTTPS_PORT)] : []),
+        "--verbose",
+        ...(config.templating ? ["--local-response-templating"] : []),
+    ];
+    return new GenericContainer(WIREMOCK_IMAGE)
+        .withUser("root")
         .withNetwork(network)
-        .withNetworkAliases(COMPOSER_HOSTNAME)
-        .withLogConsumer(createLogConsumer("mock-composer", streamLogs))
-        .withExposedPorts(
+        .withNetworkAliases(...config.aliases)
+        .withBindMounts([
             {
-                container: WIREMOCK_HTTP_PORT,
-                host: HOST_COMPOSER_HTTP_PORT,
+                source: path.join(e2eRoot, "fixtures", config.fixtureDir),
+                target: WIREMOCK_ROOT_DIR,
+                mode: "ro",
             },
-            {
-                container: COMPOSER_HTTPS_PORT,
-                host: HOST_COMPOSER_HTTPS_PORT,
-            })
-        .withWaitStrategy(
-            Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
-                200,
-            ),
-        )
-        .withStartupTimeout(2 * 60 * 1000)
-        .start();
-}
-
-export async function startMockPresence(
-    e2eRoot: string,
-    network: StartedNetwork,
-    imageTag: string,
-    streamLogs: boolean,
-): Promise<any> {
-    const mockPresenceImage = await buildImage(
-        e2eRoot,
-        "images/mock-presence.Dockerfile",
-        imageTag,
-    );
-    return mockPresenceImage
-        .withNetwork(network)
-        .withNetworkAliases(PRESENCE_HOSTNAME)
-        .withLogConsumer(createLogConsumer("mock-presence", streamLogs))
-        .withExposedPorts(
-            {
-                container: WIREMOCK_HTTP_PORT,
-                host: HOST_PRESENCE_HTTP_PORT,
-            },
-            {
-                container: PRESENCE_HTTPS_PORT,
-                host: HOST_PRESENCE_HTTPS_PORT,
-            },
-        )
-        .withWaitStrategy(
-            Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
-                200,
-            ),
-        )
-        .withStartupTimeout(2 * 60 * 1000)
-        .start();
-}
-
-export async function startMockTelemetry(
-    e2eRoot: string,
-    network: StartedNetwork,
-    imageTag: string,
-    streamLogs: boolean,
-): Promise<any> {
-    const mockTelemetryImage = await buildImage(
-        e2eRoot,
-        "images/mock-telemetry.Dockerfile",
-        imageTag,
-    );
-    return mockTelemetryImage
-        .withNetwork(network)
-        .withNetworkAliases(TELEMETRY_HOSTNAME)
-        .withLogConsumer(createLogConsumer("mock-telemetry", streamLogs))
-        .withExposedPorts(
-            {
-                container: WIREMOCK_HTTP_PORT,
-                host: HOST_TELEMETRY_HTTP_PORT,
-            },
-            {
-                container: TELEMETRY_HTTPS_PORT,
-                host: HOST_TELEMETRY_HTTPS_PORT,
-            })
-        .withWaitStrategy(
-            Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
-                200,
-            ),
-        )
-        .withStartupTimeout(2 * 60 * 1000)
-        .start();
-}
-
-export async function startMockPreferences(
-    e2eRoot: string,
-    network: StartedNetwork,
-    imageTag: string,
-    streamLogs: boolean,
-): Promise<any> {
-    const mockPreferencesImage = await buildImage(
-        e2eRoot,
-        "images/mock-preferences.Dockerfile",
-        imageTag,
-    );
-    return mockPreferencesImage
-        .withNetwork(network)
-        .withNetworkAliases(PREFERENCES_HOSTNAME)
-        .withLogConsumer(createLogConsumer("mock-preferences", streamLogs))
-        .withExposedPorts(WIREMOCK_HTTP_PORT)
-        .withWaitStrategy(
-            Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
-                200,
-            ),
-        )
-        .withStartupTimeout(2 * 60 * 1000)
-        .start();
-}
-
-export async function startMockTagManager(
-    e2eRoot: string,
-    network: StartedNetwork,
-    imageTag: string,
-    streamLogs: boolean,
-): Promise<any> {
-    const mockTagManagerImage = await buildImage(
-        e2eRoot,
-        "images/mock-tagmanager.Dockerfile",
-        imageTag,
-    );
-    return mockTagManagerImage
-        .withNetwork(network)
-        .withNetworkAliases(TAG_MANAGER_HOSTNAME)
-        .withLogConsumer(createLogConsumer("mock-tagmanager", streamLogs))
-        .withExposedPorts(WIREMOCK_HTTP_PORT)
+        ])
+        .withCommand(command)
+        .withLogConsumer(createLogConsumer(config.name, streamLogs))
+        .withExposedPorts(...config.ports)
         .withWaitStrategy(
             Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
                 200,
@@ -283,17 +232,18 @@ export async function startDb(
         .start();
 }
 
-export async function startDynamodb(
+export function buildDynamodbImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
+): Promise<GenericContainer> {
+    return buildImage(e2eRoot, "images/dynamodb.Dockerfile", imageTag);
+}
+
+export async function startDynamodb(
+    dynamodbImage: GenericContainer,
+    network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
-    const dynamodbImage = await buildImage(
-        e2eRoot,
-        "images/dynamodb.Dockerfile",
-        imageTag,
-    );
     return dynamodbImage
         .withNetwork(network)
         .withNetworkAliases("workflow-e2e-dynamodb")
@@ -306,12 +256,10 @@ export async function startDynamodb(
         .start();
 }
 
-export async function startDatastore(
+export function buildDatastoreImage(
     e2eRoot: string,
-    network: StartedNetwork,
     imageTag: string,
-    streamLogs: boolean,
-): Promise<any> {
+): Promise<GenericContainer> {
     console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR ?? "(not set)"}`);
     const datastoreContext =
         process.env.WORKFLOW_BACKEND_DIR ??
@@ -323,11 +271,14 @@ export async function startDatastore(
         path.join(e2eRoot, "images/datastore.Dockerfile"),
         path.join(datastoreContext, "datastore.Dockerfile"),
     );
-    const datastoreImage = await buildImage(
-        datastoreContext,
-        "datastore.Dockerfile",
-        imageTag,
-    );
+    return buildImage(datastoreContext, "datastore.Dockerfile", imageTag);
+}
+
+export async function startDatastore(
+    datastoreImage: GenericContainer,
+    network: StartedNetwork,
+    streamLogs: boolean,
+): Promise<any> {
     return datastoreImage
         .withNetwork(network)
         .withNetworkAliases("workflow-backend.local.dev-gutools.co.uk")
@@ -343,18 +294,23 @@ export async function startDatastore(
 export async function startAuthRedirect(
     e2eRoot: string,
     network: StartedNetwork,
-    imageTag: string,
     cookieValue: string,
     streamLogs: boolean,
 ): Promise<any> {
-    const authRedirectImage = await buildImage(
-        e2eRoot,
-        "images/auth-redirect.Dockerfile",
-        imageTag,
-    );
-
-    return authRedirectImage
+    // nginx:alpine's entrypoint runs envsubst over /etc/nginx/templates/*.template
+    // at startup, so bind-mounting the config template needs no image build.
+    return new GenericContainer(AUTH_REDIRECT_IMAGE)
         .withNetwork(network)
+        .withBindMounts([
+            {
+                source: path.join(
+                    e2eRoot,
+                    "fixtures/auth-redirect/auth-redirect.conf.template",
+                ),
+                target: "/etc/nginx/templates/default.conf.template",
+                mode: "ro",
+            },
+        ])
         .withEnvironment({
             AUTH_COOKIE_NAME: "gutoolsAuth-assym",
             AUTH_COOKIE_VALUE: cookieValue,
@@ -366,17 +322,23 @@ export async function startAuthRedirect(
         .start();
 }
 
-export async function startWorkflow(
+export function buildWorkflowImage(
     repoRoot: string,
-    network: StartedNetwork,
     imageTag: string,
-    streamLogs: boolean,
-): Promise<any> {
-    const workflowImage = await buildImage(
+): Promise<GenericContainer> {
+    return buildImage(
         repoRoot,
         "e2e-tests/images/workflow-frontend.Dockerfile",
         imageTag,
     );
+}
+
+export async function startWorkflow(
+    workflowImage: GenericContainer,
+    repoRoot: string,
+    network: StartedNetwork,
+    streamLogs: boolean,
+): Promise<any> {
     return workflowImage
         .withNetwork(network)
         .withNetworkAliases(FRONTEND_ALIAS)

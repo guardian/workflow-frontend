@@ -26,21 +26,21 @@ RUN mise trust -a && mise install
 
 WORKDIR /workflow-frontend
 
-# Install Node and sbt via mise.
+# Install Node, sbt, and AWS CLI via mise.
 COPY .tool-versions ./
-RUN mise install
+RUN mise install java nodejs sbt aws-cli
 
 # Pre-fetch JVM dependencies. Layer-cached after this point: only re-runs when
 # build.sbt or project/ changes.
 COPY build.sbt ./
 COPY project ./project
-RUN mise exec -- sbt -batch update
+RUN mise exec java sbt -- sbt -batch update
 
 # Install npm dependencies. Only re-runs when package.json/yarn.lock changes.
 COPY package.json yarn.lock ./
-RUN mise exec -- npm install -g corepack \
-    && mise exec -- corepack enable \
-    && mise exec -- yarn install
+RUN mise exec nodejs -- npm install -g corepack \
+    && mise exec nodejs -- corepack enable \
+    && mise exec nodejs -- yarn install
 
 # Warm up the Scala incremental compiler caches (target/, zinc). The sources are
 # bind-mounted at runtime, so these copies are only used to prime the build;
@@ -48,7 +48,7 @@ RUN mise exec -- npm install -g corepack \
 COPY app ./app
 COPY common-lib ./common-lib
 COPY conf ./conf
-RUN mise exec -- sbt -batch compile
+RUN mise exec java sbt -- sbt -batch compile
 
 # Copy remaining runtime files (scripts, fixtures, nginx config, etc.). Heavy
 # build artifacts and the e2e-tests/target checkout are excluded via .dockerignore.
