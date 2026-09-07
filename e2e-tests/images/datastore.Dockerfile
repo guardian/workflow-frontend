@@ -29,13 +29,12 @@ ENV MISE_CACHE_DIR="/mise/cache"
 ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
 ENV PATH="/mise/shims:$PATH"
 RUN curl https://mise.run | sh
-RUN mise trust -a && mise install
 
 WORKDIR /workflow-backend
 
 # Install JVM tooling (java, sbt, ...) via mise using the e2e environment.
 COPY .tool-versions ./
-RUN mise install java sbt
+RUN mise trust -a && mise install java sbt
 
 # Pre-fetch JVM dependencies. Layer-cached after this point: only re-runs when
 # build.sbt or project/ changes.

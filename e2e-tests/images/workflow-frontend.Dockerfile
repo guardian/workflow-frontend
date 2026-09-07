@@ -22,13 +22,12 @@ ENV MISE_CACHE_DIR="/mise/cache"
 ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
 ENV PATH="/mise/shims:$PATH"
 RUN curl https://mise.run | sh
-RUN mise trust -a && mise install
 
 WORKDIR /workflow-frontend
 
 # Install Node, sbt, and AWS CLI via mise.
 COPY .tool-versions ./
-RUN mise install java nodejs sbt aws-cli
+RUN mise trust -a && mise install java nodejs sbt aws-cli
 
 # Pre-fetch JVM dependencies. Layer-cached after this point: only re-runs when
 # build.sbt or project/ changes.

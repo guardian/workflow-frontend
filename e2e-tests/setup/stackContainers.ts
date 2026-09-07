@@ -119,6 +119,14 @@ export async function startLocalStack(
             dynamodbStart,
             dbStart,
         ]);
+        // The mocks all run from the shared WireMock image with no build step,
+        // so their starts can be kicked off immediately.
+        const mockCapiStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.capi, e2eRoot, network, streamLogs);
+        const mockComposerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.composer, e2eRoot, network, streamLogs);
+        const mockPresenceStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.presence, e2eRoot, network, streamLogs);
+        const mockTelemetryStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.telemetry, e2eRoot, network, streamLogs);
+        const mockPreferencesStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.preferences, e2eRoot, network, streamLogs);
+        const mockTagManagerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.tagmanager, e2eRoot, network, streamLogs);
 
         // With the infrastructure up, start workflow-frontend and the datastore
         // (which depend on it), then the remaining containers. Each container
@@ -129,14 +137,6 @@ export async function startLocalStack(
         const datastoreImage = await buildDatastoreImage(e2eRoot, datastoreImageTag);
         const datastoreStart = startDatastore(datastoreImage, network, streamLogs);
 
-        // The mocks all run from the shared WireMock image with no build step,
-        // so their starts can be kicked off immediately.
-        const mockCapiStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.capi, e2eRoot, network, streamLogs);
-        const mockComposerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.composer, e2eRoot, network, streamLogs);
-        const mockPresenceStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.presence, e2eRoot, network, streamLogs);
-        const mockTelemetryStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.telemetry, e2eRoot, network, streamLogs);
-        const mockPreferencesStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.preferences, e2eRoot, network, streamLogs);
-        const mockTagManagerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.tagmanager, e2eRoot, network, streamLogs);
 
         let authUrl: string | undefined;
         let authStart: Promise<any> = Promise.resolve(undefined);
