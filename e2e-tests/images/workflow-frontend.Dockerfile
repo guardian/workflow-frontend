@@ -1,4 +1,11 @@
 # syntax=docker/dockerfile:1
+# workflow-frontend app image for e2e. Mirrors datastore.Dockerfile: the image
+# only bakes the toolchain (java, nodejs, sbt, aws-cli via mise); the whole repo
+# (including node_modules) is bind-mounted at runtime, so webpack (build-dev
+# watch) and Play dev-mode run from source without an image rebuild.
+#
+# The build context is a tiny temp folder holding just .tool-versions, so the
+# image build never has to copy the repo.
 FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -25,38 +32,16 @@ RUN curl https://mise.run | sh
 
 WORKDIR /workflow-frontend
 
-# Install Node, sbt, and AWS CLI via mise.
+# Install the toolchain (java, nodejs, sbt, aws-cli) via mise and enable corepack
+# so `yarn` is available. This is the only thing baked into the image; the repo
+# and its node_modules are bind-mounted at runtime.
 COPY .tool-versions ./
-RUN mise trust -a && mise install java nodejs sbt aws-cli
-
-# Pre-fetch JVM dependencies. Layer-cached after this point: only re-runs when
-# build.sbt or project/ changes.
-COPY build.sbt ./
-COPY project ./project
-RUN mise exec java sbt -- sbt -batch update
-
-# Install npm dependencies. Only re-runs when package.json/yarn.lock changes.
-COPY package.json yarn.lock ./
-RUN mise exec nodejs -- npm install -g corepack \
-    && mise exec nodejs -- corepack enable \
-    && mise exec nodejs -- yarn install
-
-# Warm up the Scala incremental compiler caches (target/, zinc). The sources are
-# bind-mounted at runtime, so these copies are only used to prime the build;
-# unchanged files then start fast, changed ones recompile incrementally.
-COPY app ./app
-COPY common-lib ./common-lib
-COPY conf ./conf
-RUN mise exec java sbt -- sbt -batch compile
-
-# Copy remaining runtime files (scripts, fixtures, nginx config, etc.). Heavy
-# build artifacts and the e2e-tests/target checkout are excluded via .dockerignore.
-# app/, common-lib/, conf/ and public/ are bind-mounted over these at runtime.
-COPY . .
-RUN chmod +x /workflow-frontend/e2e-tests/images/start-workflow-frontend
+RUN mise trust -a && mise install java nodejs sbt aws-cli \
+    && mise exec nodejs -- npm install -g corepack \
+    && mise exec nodejs -- corepack enable
 
 EXPOSE 9090
 
 # Run webpack in watch mode alongside Play dev-mode `run` so mounted source edits
 # rebuild assets and recompile the app without rebuilding the image.
-CMD ["bash", "-c", "mise exec -- yarn build-dev & exec /workflow-frontend/e2e-tests/images/start-workflow-frontend"]
+CMD ["bash", "-c", "mise exec -- yarn build-dev & exec bash /workflow-frontend/e2e-tests/images/start-workflow-frontend"]

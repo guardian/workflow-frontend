@@ -341,36 +341,41 @@ export async function startAuthRedirect(
         .start();
 }
 
-export function buildWorkflowImage(
+function buildWorkflowImage(
     repoRoot: string,
     imageTag: string,
 ): Promise<GenericContainer> {
-    return buildImage(
-        repoRoot,
-        "e2e-tests/images/workflow-frontend.Dockerfile",
-        imageTag,
+    // Toolchain-only image: build context is a tiny temp folder holding just
+    // .tool-versions plus the Dockerfile (which must live inside the context).
+    const buildContext = path.join(repoRoot, "target/workflow-build-context");
+    fs.rmSync(buildContext, { recursive: true, force: true });
+    fs.mkdirSync(buildContext, { recursive: true });
+    fs.copyFileSync(
+        path.join(repoRoot, ".tool-versions"),
+        path.join(buildContext, ".tool-versions"),
     );
+    fs.copyFileSync(
+        path.join(repoRoot, "e2e-tests/images/workflow-frontend.Dockerfile"),
+        path.join(buildContext, "workflow-frontend.Dockerfile"),
+    );
+    return buildImage(buildContext, "workflow-frontend.Dockerfile", imageTag);
 }
 
 export async function startWorkflow(
-    workflowImage: GenericContainer,
     repoRoot: string,
+    imageTag: string,
     network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
+    const workflowImage = await buildWorkflowImage(repoRoot, imageTag);
     return workflowImage
         .withNetwork(network)
         .withNetworkAliases(FRONTEND_ALIAS)
-        // Mount the sources live so `yarn build-dev` (webpack watch) and Play
-        // dev-mode `run` pick up edits without an image rebuild. public is rw
-        // because webpack writes its bundles into public/build.
-        // common-lib is rw because Play dev-mode `run` writes its compiled classes 
-        // into common-lib/target.
+        // Mount the whole repo so webpack (build-dev watch) and Play dev-mode
+        // run from source without an image rebuild. Read-write because sbt and
+        // webpack write target/ and public/build into it.
         .withBindMounts([
-            { source: path.join(repoRoot, "app"), target: "/workflow-frontend/app", mode: "ro" },
-            { source: path.join(repoRoot, "common-lib"), target: "/workflow-frontend/common-lib", mode: "rw" },
-            { source: path.join(repoRoot, "conf"), target: "/workflow-frontend/conf", mode: "ro" },
-            { source: path.join(repoRoot, "public"), target: "/workflow-frontend/public", mode: "rw" },
+            { source: repoRoot, target: "/workflow-frontend", mode: "rw" },
         ])
         .withEnvironment({
             AWS_ENDPOINT_URL_S3: `http://${S3_ENDPOINT_HOST}:${LOCALSTACK_PORT}`,

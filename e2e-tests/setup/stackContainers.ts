@@ -4,7 +4,6 @@ import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
 import {
-    buildWorkflowImage,
     startAws,
     startMockWiremock,
     MOCK_WIREMOCK_CONFIGS,
@@ -89,11 +88,9 @@ export async function startLocalStack(
     const repoRoot = path.join(e2eRoot, "..");
 
     try {
-        // Build the images one at a time — concurrent buildkit builds are flaky
-        // when resolving registry metadata — but start each container
-        // asynchronously as soon as its image is ready and await the starts at
-        // the end. Only one image ever builds at a time; container startups
-        // overlap with subsequent builds.
+        // Each service's start function builds its own toolchain-only image (a
+        // tiny build context) and then starts its container; images and
+        // container startups all overlap.
 
         // Infrastructure first: everything else needs the AWS mock (S3 +
         // DynamoDB) and workflow-db, so wait for these before starting the rest.
@@ -112,12 +109,10 @@ export async function startLocalStack(
         const mockPreferencesStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.preferences, e2eRoot, network, streamLogs);
         const mockTagManagerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.tagmanager, e2eRoot, network, streamLogs);
 
-        // With the infrastructure up, start workflow-frontend and the datastore
-        // (which depend on it), then the remaining containers. Each container
-        // starts while the next image builds.
-        const workflowImage = await buildWorkflowImage(repoRoot, workflowImageTag);
-        const workflowStart = startWorkflow(workflowImage, repoRoot, network, streamLogs);
-
+        // With the infrastructure up, build and start workflow-frontend and the
+        // datastore concurrently: each start function builds its own image then
+        // starts its container, all overlapping.
+        const workflowStart = startWorkflow(repoRoot, workflowImageTag, network, streamLogs);
         const datastoreStart = startDatastore(e2eRoot, datastoreImageTag, network, streamLogs);
 
 
