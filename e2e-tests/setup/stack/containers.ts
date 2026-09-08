@@ -328,6 +328,7 @@ export async function startDatastore(
         "datastore.Dockerfile",
         imageTag,
     );
+    console.log(`\n[docker-build] Starting ${imageTag} container`);
     return datastoreImage
         .withNetwork(network)
         .withNetworkAliases("workflow-backend.local.dev-gutools.co.uk")

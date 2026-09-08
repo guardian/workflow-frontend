@@ -196,7 +196,8 @@ export async function startLocalStack(
             authUrl = `https://workflow.local.dev-gutools.co.uk/cookie`;
             console.log(`\n[auth-redirect] Host-browser auth endpoint available at ${authUrl}`);
         }
-        
+        console.log(`\n[stack-containers] All containers started successfully`);
+
         const common = {
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
             mockApiUrl: mockCapiUrl,

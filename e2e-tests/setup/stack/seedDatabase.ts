@@ -42,6 +42,7 @@ export async function seedDatabase(
     dbContainer: any,
     projectRoot: string,
 ): Promise<void> {
+    console.log(`\n[docker-build] Starting database seeding`);
     await dbContainer.copyFilesToContainer(
         DB_SEED_TABLES.map(({ file }) => ({
             source: path.join(projectRoot, DB_SEED_FIXTURES_DIR, file),
