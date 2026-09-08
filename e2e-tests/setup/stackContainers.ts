@@ -4,14 +4,12 @@ import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
 import {
-    buildDynamodbImage,
     buildDatastoreImage,
     buildWorkflowImage,
-    startS3,
+    startAws,
     startMockWiremock,
     MOCK_WIREMOCK_CONFIGS,
     startDb,
-    startDynamodb,
     startDatastore,
     startAuthRedirect,
     startWorkflow,
@@ -28,7 +26,7 @@ export type LocalStack = {
      * destination/restore calls return at runtime.
      */
     mockApiUrl: string;
-    s3Container: any;
+    awsContainer: any;
     workflowContainer: any;
     /** Set only when the host-browser auth endpoint is exposed (dev flow). */
     authContainer?: any;
@@ -45,7 +43,6 @@ export type LocalStack = {
     mockPreferencesApiContainer: any;
     mockTagManagerApiContainer: any;
     dbContainer: any;
-    dynamodbContainer: any;
     datastoreContainer: any;
     network: any;
 };
@@ -73,13 +70,12 @@ export async function startLocalStack(
     const { streamLogs = false, exposeHostAuth = false } = options;
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
-    const dynamodbImageTag = `workflow-frontend-dynamodb-e2e:${runId}`;
     const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
 
     const network = await new Network().start();
 
     let authContainer;
-    let s3Container;
+    let awsContainer;
     let workflowContainer;
     let mockCapiContainer;
     let mockComposerApiContainer;
@@ -88,7 +84,6 @@ export async function startLocalStack(
     let mockPreferencesApiContainer;
     let mockTagManagerApiContainer;
     let dbContainer;
-    let dynamodbContainer;
     let datastoreContainer;
     const panDomainKeys = generatePanDomainKeys();
 
@@ -101,21 +96,14 @@ export async function startLocalStack(
         // the end. Only one image ever builds at a time; container startups
         // overlap with subsequent builds.
 
-        // Infrastructure first: everything else needs the S3 mock, dynamodb and
-        // workflow-db, so wait for these to be up before starting the rest.
-        const s3Start = startS3(network, e2eRoot, panDomainKeys, streamLogs);
-
-        const dynamodbImage = await buildDynamodbImage(e2eRoot, dynamodbImageTag);
-        const dynamodbStart = startDynamodb(dynamodbImage, network, streamLogs);
+        // Infrastructure first: everything else needs the AWS mock (S3 +
+        // DynamoDB) and workflow-db, so wait for these before starting the rest.
+        const awsStart = startAws(network, e2eRoot, panDomainKeys, streamLogs);
 
         // workflow-db has no image to build; start it straight away.
         const dbStart = startDb(network, streamLogs);
 
-        [s3Container, dynamodbContainer, dbContainer] = await Promise.all([
-            s3Start,
-            dynamodbStart,
-            dbStart,
-        ]);
+        [awsContainer, dbContainer] = await Promise.all([awsStart, dbStart]);
         // The mocks all run from the shared WireMock image with no build step,
         // so their starts can be kicked off immediately.
         const mockCapiStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.capi, e2eRoot, network, streamLogs);
@@ -189,7 +177,7 @@ export async function startLocalStack(
             mockApiUrl: mockCapiUrl,
             mockComposerApiUrl,
             mockTelemetryApiUrl,
-            s3Container,
+            awsContainer,
             mockCapiContainer,
             mockComposerApiContainer,
             mockPresenceContainer,
@@ -197,7 +185,6 @@ export async function startLocalStack(
             mockPreferencesApiContainer,
             mockTagManagerApiContainer,
             dbContainer,
-            dynamodbContainer,
             datastoreContainer,
             authContainer,
             authUrl,
@@ -216,9 +203,6 @@ export async function startLocalStack(
         }
         if (datastoreContainer) {
             await datastoreContainer.stop();
-        }
-        if (dynamodbContainer) {
-            await dynamodbContainer.stop();
         }
         if (dbContainer) {
             await dbContainer.stop();
@@ -241,8 +225,8 @@ export async function startLocalStack(
         if (mockCapiContainer) {
             await mockCapiContainer.stop();
         }
-        if (s3Container) {
-            await s3Container.stop();
+        if (awsContainer) {
+            await awsContainer.stop();
         }
         await network.stop();
         throw error;
@@ -252,7 +236,7 @@ export async function startLocalStack(
 export async function stopLocalStack({
     workflowContainer,
     authContainer,
-    s3Container,
+    awsContainer,
     mockCapiContainer,
     mockComposerApiContainer,
     mockPresenceContainer,
@@ -260,7 +244,6 @@ export async function stopLocalStack({
     mockPreferencesApiContainer,
     mockTagManagerApiContainer,
     dbContainer,
-    dynamodbContainer,
     datastoreContainer,
     network,
 }: Partial<LocalStack> = {}): Promise<void> {
@@ -272,9 +255,6 @@ export async function stopLocalStack({
     }
     if (datastoreContainer) {
         await datastoreContainer.stop();
-    }
-    if (dynamodbContainer) {
-        await dynamodbContainer.stop();
     }
     if (dbContainer) {
         await dbContainer.stop();
@@ -297,8 +277,8 @@ export async function stopLocalStack({
     if (mockCapiContainer) {
         await mockCapiContainer.stop();
     }
-    if (s3Container) {
-        await s3Container.stop();
+    if (awsContainer) {
+        await awsContainer.stop();
     }
     if (network) {
         await network.stop();

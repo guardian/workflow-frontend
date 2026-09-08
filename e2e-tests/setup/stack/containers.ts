@@ -8,6 +8,7 @@ import {
 } from "testcontainers";
 import { buildImage, createLogConsumer } from "./dockerHelpers";
 import { seedS3 } from "./seedS3";
+import { seedDynamodb } from "./seedDynamodb";
 import type { PanDomainKeys } from "../panDomainKeys";
 
 // LocalStack accepts any credentials by default (signature validation is off);
@@ -15,13 +16,17 @@ import type { PanDomainKeys } from "../panDomainKeys";
 export const S3_ACCESS_KEY_ID = "test";
 export const S3_SECRET_ACCESS_KEY = "test";
 // LocalStack only parses the bucket from the Host header when it contains
-// `.s3.`, so the endpoint host (and the per-bucket network aliases) must sit
+// `.s3.`, so the S3 endpoint host (and the per-bucket network aliases) must sit
 // under an `s3.` domain for the app's virtual-hosted-style S3 requests to
-// resolve to the right bucket. See startS3's network aliases below.
+// resolve to the right bucket. See startAws's network aliases below.
 const S3_ENDPOINT_HOST = "s3.localstack";
-const S3_PORT = 4566;
-// Stock LocalStack image; the buckets/objects the app reads are seeded from the
-// host after start via seedS3, so no custom image build is needed.
+// Plain network alias for the LocalStack container, used for non-S3 endpoints
+// (e.g. DynamoDB) that don't need the `s3.` virtual-host domain.
+const LOCALSTACK_HOST = "localstack";
+// LocalStack serves every enabled service (S3, DynamoDB, ...) on this one port.
+const LOCALSTACK_PORT = 4566;
+// Stock LocalStack image; the buckets/objects and DynamoDB table the app reads
+// are seeded from the host after start, so no custom image build is needed.
 const LOCALSTACK_IMAGE = "localstack/localstack:4";
 
 // All mocks share one WireMock image; each container only bind-mounts a
@@ -75,37 +80,39 @@ const TELEMETRY_HOSTNAME = "user-telemetry.local.dev-gutools.co.uk";
 const HOST_TELEMETRY_HTTP_PORT = 3132;
 const HOST_TELEMETRY_HTTPS_PORT = 3133;
 
-export async function startS3(
+export async function startAws(
     network: StartedNetwork,
     e2eRoot: string,
     panDomainKeys: PanDomainKeys,
     streamLogs: boolean,
 ): Promise<StartedTestContainer> {
-    const s3Container = await new GenericContainer(LOCALSTACK_IMAGE)
+    const awsContainer = await new GenericContainer(LOCALSTACK_IMAGE)
         .withNetwork(network)
-        // `s3.localstack` is the base endpoint host; the per-bucket subdomains
-        // are what the app's virtual-hosted-style requests actually resolve to,
-        // and each embeds `.s3.` so LocalStack extracts the bucket name.
+        // `s3.localstack` is the S3 endpoint host; the per-bucket subdomains are
+        // what the app's virtual-hosted-style S3 requests resolve to, and each
+        // embeds `.s3.` so LocalStack extracts the bucket name. `localstack` is
+        // the plain alias DynamoDB (and other services) are reached on.
         .withNetworkAliases(
-            "localstack",
+            LOCALSTACK_HOST,
             S3_ENDPOINT_HOST,
             `permissions-cache.${S3_ENDPOINT_HOST}`,
             `pan-domain-auth-settings.${S3_ENDPOINT_HOST}`,
         )
         .withEnvironment({
-            SERVICES: "s3",
+            SERVICES: "s3,dynamodb",
             AWS_DEFAULT_REGION: "eu-west-1",
         })
         .withLogConsumer(createLogConsumer("localstack", streamLogs))
-        .withExposedPorts(S3_PORT)
+        .withExposedPorts(LOCALSTACK_PORT)
         .withWaitStrategy(Wait.forLogMessage(/Ready\./, 1))
         .withStartupTimeout(5 * 60 * 1000)
         .start();
 
-    // Seed the buckets/objects the app reads on startup before returning.
-    await seedS3(s3Container, e2eRoot, panDomainKeys);
+    // Seed the S3 objects and DynamoDB table the app reads before returning.
+    await seedS3(awsContainer, e2eRoot, panDomainKeys);
+    await seedDynamodb(awsContainer, e2eRoot);
 
-    return s3Container;
+    return awsContainer;
 }
 
 type MockPortMapping = number | { container: number; host: number };
@@ -246,30 +253,6 @@ export async function startDb(
         .start();
 }
 
-export function buildDynamodbImage(
-    e2eRoot: string,
-    imageTag: string,
-): Promise<GenericContainer> {
-    return buildImage(e2eRoot, "images/dynamodb.Dockerfile", imageTag);
-}
-
-export async function startDynamodb(
-    dynamodbImage: GenericContainer,
-    network: StartedNetwork,
-    streamLogs: boolean,
-): Promise<any> {
-    return dynamodbImage
-        .withNetwork(network)
-        .withNetworkAliases("workflow-e2e-dynamodb")
-        .withLogConsumer(createLogConsumer("dynamodb", streamLogs))
-        .withExposedPorts(8000)
-        .withWaitStrategy(
-            Wait.forLogMessage(/DynamoDB Local setup complete/, 1),
-        )
-        .withStartupTimeout(2 * 60 * 1000)
-        .start();
-}
-
 export function buildDatastoreImage(
     e2eRoot: string,
     imageTag: string,
@@ -368,8 +351,8 @@ export async function startWorkflow(
             { source: path.join(repoRoot, "public"), target: "/workflow-frontend/public", mode: "rw" },
         ])
         .withEnvironment({
-            AWS_ENDPOINT_URL_S3: `http://${S3_ENDPOINT_HOST}:${S3_PORT}`,
-            AWS_ENDPOINT_URL_DYNAMODB: "http://workflow-e2e-dynamodb:8000",
+            AWS_ENDPOINT_URL_S3: `http://${S3_ENDPOINT_HOST}:${LOCALSTACK_PORT}`,
+            AWS_ENDPOINT_URL_DYNAMODB: `http://${LOCALSTACK_HOST}:${LOCALSTACK_PORT}`,
             AWS_ACCESS_KEY_ID: S3_ACCESS_KEY_ID,
             AWS_SECRET_ACCESS_KEY: S3_SECRET_ACCESS_KEY,
             // Keep local mode enabled in case scripts are bypassed in future changes.
