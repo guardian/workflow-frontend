@@ -49,7 +49,7 @@ const contentTypeToComposerContentType = (type: ContentType): ComposerContentTyp
         case "picture":
         case "video":
         case "audio":
-        case "atom":
+        case "media":
             return type;
         default:
             return 'article'

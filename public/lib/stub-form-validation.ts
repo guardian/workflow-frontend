@@ -13,7 +13,7 @@ const doesContentTypeRequireCommissionedLength = (contentType: ContentType) => {
     case "picture":
     case "video":
     case "audio":
-    case "atom":
+    case "media":
       return false;
     case "article":
     case "interactive":

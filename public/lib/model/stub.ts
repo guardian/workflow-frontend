@@ -6,7 +6,7 @@ export type ComposerContentType =
   | "picture"
   | "video"
   | "audio"
-  | "atom";
+  | "media";
 
 export type ListElementContentType =
   | "keyTakeaways"
