@@ -253,32 +253,54 @@ export async function startDb(
         .start();
 }
 
-export function buildDatastoreImage(
+// Resolve the guardian/workflow backend checkout used as the source of the
+// datastore build (.tool-versions) and its bind-mounted sources at runtime.
+function getBackendDir(e2eRoot: string): string {
+    return (
+        process.env.WORKFLOW_BACKEND_DIR ??
+        path.join(e2eRoot, "target/workflow-backend")
+    );
+}
+
+function buildDatastoreImage(
     e2eRoot: string,
     imageTag: string,
 ): Promise<GenericContainer> {
     console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR ?? "(not set)"}`);
-    const datastoreContext =
-        process.env.WORKFLOW_BACKEND_DIR ??
-        path.join(e2eRoot, "target/workflow-backend");
-    // fromDockerfile requires the Dockerfile inside the build context; the
-    // datastore Dockerfile is kept under images/, so copy it into the backend
-    // checkout before building.
+    const backendDir = getBackendDir(e2eRoot);
+    // The image only bakes the JVM toolchain, so the build context is a tiny
+    // temp folder holding just .tool-versions plus the Dockerfile (which must
+    // live inside the context for fromDockerfile). Recreated fresh each run.
+    const buildContext = path.join(e2eRoot, "target/datastore-build-context");
+    fs.rmSync(buildContext, { recursive: true, force: true });
+    fs.mkdirSync(buildContext, { recursive: true });
+    fs.copyFileSync(
+        path.join(backendDir, ".tool-versions"),
+        path.join(buildContext, ".tool-versions"),
+    );
     fs.copyFileSync(
         path.join(e2eRoot, "images/datastore.Dockerfile"),
-        path.join(datastoreContext, "datastore.Dockerfile"),
+        path.join(buildContext, "datastore.Dockerfile"),
     );
-    return buildImage(datastoreContext, "datastore.Dockerfile", imageTag);
+    return buildImage(buildContext, "datastore.Dockerfile", imageTag);
 }
 
 export async function startDatastore(
-    datastoreImage: GenericContainer,
+    e2eRoot: string,
+    imageTag: string,
     network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
+    const backendDir = getBackendDir(e2eRoot);
+    const datastoreImage = await buildDatastoreImage(e2eRoot, imageTag);
     return datastoreImage
         .withNetwork(network)
         .withNetworkAliases("workflow-backend.local.dev-gutools.co.uk")
+        // Mount the whole backend checkout so sbt runs from source without
+        // baking it into the image. Read-write because sbt writes target/ dirs.
+        .withBindMounts([
+            { source: backendDir, target: "/workflow-backend", mode: "rw" },
+        ])
         .withLogConsumer(createLogConsumer("datastore", streamLogs))
         .withExposedPorts(9095)
         .withStartupTimeout(10 * 60 * 1000)

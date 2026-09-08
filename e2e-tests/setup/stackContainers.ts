@@ -4,7 +4,6 @@ import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
 import {
-    buildDatastoreImage,
     buildWorkflowImage,
     startAws,
     startMockWiremock,
@@ -119,8 +118,7 @@ export async function startLocalStack(
         const workflowImage = await buildWorkflowImage(repoRoot, workflowImageTag);
         const workflowStart = startWorkflow(workflowImage, repoRoot, network, streamLogs);
 
-        const datastoreImage = await buildDatastoreImage(e2eRoot, datastoreImageTag);
-        const datastoreStart = startDatastore(datastoreImage, network, streamLogs);
+        const datastoreStart = startDatastore(e2eRoot, datastoreImageTag, network, streamLogs);
 
 
         let authUrl: string | undefined;
