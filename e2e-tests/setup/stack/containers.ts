@@ -1,11 +1,28 @@
 import path from "path";
 import fs from "fs";
-import { GenericContainer, StartedNetwork, Wait } from "testcontainers";
+import {
+    GenericContainer,
+    StartedNetwork,
+    StartedTestContainer,
+    Wait,
+} from "testcontainers";
 import { buildImage, createLogConsumer } from "./dockerHelpers";
+import { seedS3 } from "./seedS3";
 import type { PanDomainKeys } from "../panDomainKeys";
 
-export const MINIO_ROOT_USER = "minioadmin";
-export const MINIO_ROOT_PASSWORD = "minioadmin";
+// LocalStack accepts any credentials by default (signature validation is off);
+// the conventional dummy pair keeps the SDKs and awslocal happy.
+export const S3_ACCESS_KEY_ID = "test";
+export const S3_SECRET_ACCESS_KEY = "test";
+// LocalStack only parses the bucket from the Host header when it contains
+// `.s3.`, so the endpoint host (and the per-bucket network aliases) must sit
+// under an `s3.` domain for the app's virtual-hosted-style S3 requests to
+// resolve to the right bucket. See startS3's network aliases below.
+const S3_ENDPOINT_HOST = "s3.localstack";
+const S3_PORT = 4566;
+// Stock LocalStack image; the buckets/objects the app reads are seeded from the
+// host after start via seedS3, so no custom image build is needed.
+const LOCALSTACK_IMAGE = "localstack/localstack:4";
 
 // All mocks share one WireMock image; each container only bind-mounts a
 // different fixture root (mappings/ + __files/) and tweaks its command flags.
@@ -58,40 +75,37 @@ const TELEMETRY_HOSTNAME = "user-telemetry.local.dev-gutools.co.uk";
 const HOST_TELEMETRY_HTTP_PORT = 3132;
 const HOST_TELEMETRY_HTTPS_PORT = 3133;
 
-export function buildMinioImage(
-    e2eRoot: string,
-    imageTag: string,
-): Promise<GenericContainer> {
-    return buildImage(e2eRoot, "images/minio.Dockerfile", imageTag);
-}
-
-export async function startMinio(
-    minioImage: GenericContainer,
+export async function startS3(
     network: StartedNetwork,
+    e2eRoot: string,
     panDomainKeys: PanDomainKeys,
     streamLogs: boolean,
-): Promise<any> {
-    return minioImage
+): Promise<StartedTestContainer> {
+    const s3Container = await new GenericContainer(LOCALSTACK_IMAGE)
         .withNetwork(network)
+        // `s3.localstack` is the base endpoint host; the per-bucket subdomains
+        // are what the app's virtual-hosted-style requests actually resolve to,
+        // and each embeds `.s3.` so LocalStack extracts the bucket name.
         .withNetworkAliases(
-            "minio",
-            "permissions-cache.minio",
-            "pan-domain-auth-settings.minio",
+            "localstack",
+            S3_ENDPOINT_HOST,
+            `permissions-cache.${S3_ENDPOINT_HOST}`,
+            `pan-domain-auth-settings.${S3_ENDPOINT_HOST}`,
         )
         .withEnvironment({
-            MINIO_ROOT_USER,
-            MINIO_ROOT_PASSWORD,
-            MINIO_DOMAIN: "minio",
-            PAN_DOMAIN_PRIVATE_KEY: panDomainKeys.privateKeyBase64,
-            PAN_DOMAIN_PUBLIC_KEY: panDomainKeys.publicKeyBase64,
-            PAN_DOMAIN_BUCKET: "pan-domain-auth-settings",
-            PERMISSIONS_BUCKET: "permissions-cache",
+            SERVICES: "s3",
+            AWS_DEFAULT_REGION: "eu-west-1",
         })
-        .withLogConsumer(createLogConsumer("minio", streamLogs))
-        .withExposedPorts(9000, 9001)
-        .withWaitStrategy(Wait.forLogMessage(/Ensured permissions object exists:/, 1))
+        .withLogConsumer(createLogConsumer("localstack", streamLogs))
+        .withExposedPorts(S3_PORT)
+        .withWaitStrategy(Wait.forLogMessage(/Ready\./, 1))
         .withStartupTimeout(5 * 60 * 1000)
         .start();
+
+    // Seed the buckets/objects the app reads on startup before returning.
+    await seedS3(s3Container, e2eRoot, panDomainKeys);
+
+    return s3Container;
 }
 
 type MockPortMapping = number | { container: number; host: number };
@@ -354,10 +368,10 @@ export async function startWorkflow(
             { source: path.join(repoRoot, "public"), target: "/workflow-frontend/public", mode: "rw" },
         ])
         .withEnvironment({
-            AWS_ENDPOINT_URL_S3: "http://minio:9000",
+            AWS_ENDPOINT_URL_S3: `http://${S3_ENDPOINT_HOST}:${S3_PORT}`,
             AWS_ENDPOINT_URL_DYNAMODB: "http://workflow-e2e-dynamodb:8000",
-            AWS_ACCESS_KEY_ID: MINIO_ROOT_USER,
-            AWS_SECRET_ACCESS_KEY: MINIO_ROOT_PASSWORD,
+            AWS_ACCESS_KEY_ID: S3_ACCESS_KEY_ID,
+            AWS_SECRET_ACCESS_KEY: S3_SECRET_ACCESS_KEY,
             // Keep local mode enabled in case scripts are bypassed in future changes.
             LOCAL: "true",
         })

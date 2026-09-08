@@ -3,14 +3,14 @@
 set -euo pipefail
 
 # Inside Docker, localhost points at this container, not the host machine.
-export AWS_ENDPOINT_URL_S3="${AWS_ENDPOINT_URL_S3:-http://host.docker.internal:9002}"
+export AWS_ENDPOINT_URL_S3="${AWS_ENDPOINT_URL_S3:-http://s3.localstack:4566}"
 export AWS_ENDPOINT_URL_DYNAMODB="${AWS_ENDPOINT_URL_DYNAMODB:-http://host.docker.internal:8000}"
 export AWS_PROFILE="${AWS_PROFILE:-workflow}"
 export AWS_REGION="${AWS_REGION:-eu-west-1}"
 export AWS_SDK_LOAD_CONFIG=1
 
-AWS_ACCESS_KEY_ID_VALUE="${AWS_ACCESS_KEY_ID:-minioadmin}"
-AWS_SECRET_ACCESS_KEY_VALUE="${AWS_SECRET_ACCESS_KEY:-minioadmin}"
+AWS_ACCESS_KEY_ID_VALUE="${AWS_ACCESS_KEY_ID:-test}"
+AWS_SECRET_ACCESS_KEY_VALUE="${AWS_SECRET_ACCESS_KEY:-test}"
 AWS_SESSION_TOKEN_VALUE="${AWS_SESSION_TOKEN:-}"
 
 aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID_VALUE" --profile "$AWS_PROFILE"

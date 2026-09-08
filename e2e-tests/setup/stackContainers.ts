@@ -4,11 +4,10 @@ import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
 import {
-    buildMinioImage,
     buildDynamodbImage,
     buildDatastoreImage,
     buildWorkflowImage,
-    startMinio,
+    startS3,
     startMockWiremock,
     MOCK_WIREMOCK_CONFIGS,
     startDb,
@@ -29,7 +28,7 @@ export type LocalStack = {
      * destination/restore calls return at runtime.
      */
     mockApiUrl: string;
-    minioContainer: any;
+    s3Container: any;
     workflowContainer: any;
     /** Set only when the host-browser auth endpoint is exposed (dev flow). */
     authContainer?: any;
@@ -73,7 +72,6 @@ export async function startLocalStack(
 ): Promise<LocalStack> {
     const { streamLogs = false, exposeHostAuth = false } = options;
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-    const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     const dynamodbImageTag = `workflow-frontend-dynamodb-e2e:${runId}`;
     const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
@@ -81,7 +79,7 @@ export async function startLocalStack(
     const network = await new Network().start();
 
     let authContainer;
-    let minioContainer;
+    let s3Container;
     let workflowContainer;
     let mockCapiContainer;
     let mockComposerApiContainer;
@@ -103,10 +101,9 @@ export async function startLocalStack(
         // the end. Only one image ever builds at a time; container startups
         // overlap with subsequent builds.
 
-        // Infrastructure first: everything else needs minio, dynamodb and
+        // Infrastructure first: everything else needs the S3 mock, dynamodb and
         // workflow-db, so wait for these to be up before starting the rest.
-        const minioImage = await buildMinioImage(e2eRoot, minioImageTag);
-        const minioStart = startMinio(minioImage, network, panDomainKeys, streamLogs);
+        const s3Start = startS3(network, e2eRoot, panDomainKeys, streamLogs);
 
         const dynamodbImage = await buildDynamodbImage(e2eRoot, dynamodbImageTag);
         const dynamodbStart = startDynamodb(dynamodbImage, network, streamLogs);
@@ -114,8 +111,8 @@ export async function startLocalStack(
         // workflow-db has no image to build; start it straight away.
         const dbStart = startDb(network, streamLogs);
 
-        [minioContainer, dynamodbContainer, dbContainer] = await Promise.all([
-            minioStart,
+        [s3Container, dynamodbContainer, dbContainer] = await Promise.all([
+            s3Start,
             dynamodbStart,
             dbStart,
         ]);
@@ -192,7 +189,7 @@ export async function startLocalStack(
             mockApiUrl: mockCapiUrl,
             mockComposerApiUrl,
             mockTelemetryApiUrl,
-            minioContainer,
+            s3Container,
             mockCapiContainer,
             mockComposerApiContainer,
             mockPresenceContainer,
@@ -244,8 +241,8 @@ export async function startLocalStack(
         if (mockCapiContainer) {
             await mockCapiContainer.stop();
         }
-        if (minioContainer) {
-            await minioContainer.stop();
+        if (s3Container) {
+            await s3Container.stop();
         }
         await network.stop();
         throw error;
@@ -255,7 +252,7 @@ export async function startLocalStack(
 export async function stopLocalStack({
     workflowContainer,
     authContainer,
-    minioContainer,
+    s3Container,
     mockCapiContainer,
     mockComposerApiContainer,
     mockPresenceContainer,
@@ -300,8 +297,8 @@ export async function stopLocalStack({
     if (mockCapiContainer) {
         await mockCapiContainer.stop();
     }
-    if (minioContainer) {
-        await minioContainer.stop();
+    if (s3Container) {
+        await s3Container.stop();
     }
     if (network) {
         await network.stop();
