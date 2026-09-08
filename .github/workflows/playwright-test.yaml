@@ -60,17 +60,18 @@ jobs:
       # with per-run tags, but the cached layers make those builds fast.
       - name: Prebuild Docker images
         run: |
-          docker build -f images/auth-redirect.Dockerfile -t workflow-frontend-auth-redirect-e2e:prebuild .
-          docker build -f images/datastore.Dockerfile -t workflow-datastore-e2e:prebuild target/workflow-backend
-          docker build -f images/dynamodb.Dockerfile -t workflow-frontend-dynamodb-e2e:prebuild .
-          docker build -f images/minio.Dockerfile -t workflow-frontend-minio-e2e:prebuild .
-          docker build -f images/mock-capi.Dockerfile -t workflow-frontend-mock-capi-e2e:prebuild .
-          docker build -f images/mock-composer.Dockerfile -t workflow-frontend-mock-composer-e2e:prebuild .
-          docker build -f images/mock-preferences.Dockerfile -t workflow-frontend-mock-preferences-e2e:prebuild .
-          docker build -f images/mock-presence.Dockerfile -t workflow-frontend-mock-presence-e2e:prebuild .
-          docker build -f images/mock-tagmanager.Dockerfile -t workflow-frontend-mock-tagmanager-e2e:prebuild .
-          docker build -f images/mock-telemetry.Dockerfile -t workflow-frontend-mock-telemetry-e2e:prebuild .
-          docker build -f images/workflow-frontend.Dockerfile -t workflow-frontend-app-e2e:prebuild ..
+          docker build -f images/auth-redirect.Dockerfile -t workflow-frontend-auth-redirect-e2e:ci .
+          docker build -f images/datastore.Dockerfile -t workflow-datastore-e2e:ci target/workflow-backend
+          docker build -f images/dynamodb.Dockerfile -t workflow-frontend-dynamodb-e2e:ci .
+          docker build -f images/minio.Dockerfile -t workflow-frontend-minio-e2e:ci .
+          docker build -f images/mock-capi.Dockerfile -t workflow-frontend-mock-capi-e2e:ci .
+          docker build -f images/mock-composer.Dockerfile -t workflow-frontend-mock-composer-e2e:ci .
+          docker build -f images/mock-preferences.Dockerfile -t workflow-frontend-mock-preferences-e2e:ci .
+          docker build -f images/mock-presence.Dockerfile -t workflow-frontend-mock-presence-e2e:ci .
+          docker build -f images/mock-tagmanager.Dockerfile -t workflow-frontend-mock-tagmanager-e2e:ci .
+          docker build -f images/mock-telemetry.Dockerfile -t workflow-frontend-mock-telemetry-e2e:ci .
+          docker build -f images/workflow-frontend.Dockerfile -t workflow-frontend-app-e2e:ci ..
+          docker image ls
 
       - name: Run Playwright tests
         run: yarn bddgen && yarn playwright test

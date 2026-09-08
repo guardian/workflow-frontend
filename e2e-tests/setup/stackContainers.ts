@@ -72,7 +72,7 @@ export async function startLocalStack(
     options: StartLocalStackOptions = {},
 ): Promise<LocalStack> {
     const { streamLogs = false, exposeHostAuth = false } = options;
-    const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    const runId = process.env.CI ? "ci" : `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const minioImageTag = `workflow-frontend-minio-e2e:${runId}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     const mockCapiImageTag = `workflow-frontend-mock-capi-e2e:${runId}`;
