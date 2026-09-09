@@ -46,13 +46,11 @@ jobs:
           cache: yarn
           cache-dependency-path: e2e-tests/yarn.lock
 
-      - name: Install e2e dependencies
+      - name: Install application dependencies
+        working-directory: .
         run: yarn install --frozen-lockfile
 
-      # The workflow-frontend container now bind-mounts the whole repo, so its
-      # node_modules must exist on the runner (the image no longer runs yarn install).
-      - name: Install frontend dependencies (repo root)
-        working-directory: .
+      - name: Install e2e dependencies
         run: yarn install --frozen-lockfile
 
       # We only need the headless shell ("skin"), not the full Chromium

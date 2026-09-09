@@ -11,7 +11,7 @@ export function buildImage(
     console.log(`\n[docker-build] Building ${tag} from ${dockerfileName}`);
     return GenericContainer.fromDockerfile(context, dockerfileName)
         .withBuildkit()
-        .build(tag, { deleteOnExit: false });
+        .build(tag, { deleteOnExit: true });
 }
 
 export function createLogConsumer(prefix: string, streamLogs: boolean) {
