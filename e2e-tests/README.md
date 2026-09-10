@@ -15,7 +15,7 @@ that it can be included as part of our CI workflow later.
 The local stack is built with Test Container on top of Docker so that we can
 configure and wire up the containers in a more flexible way.
 
-WireMock is used to mock dependencies. Local S3 service is mocked with MinIO 
+WireMock is used to mock dependencies. Local S3 service is mocked with LocalStack
 to serve PanDomain settings and permission cache. We also create a local 
 DynamoDB with test data using AWS Local DynamoDB image.
 
@@ -116,7 +116,7 @@ checked out, builds the stack, and runs the test suite in headless mode.
 
 ### How the frontend is run
 
-The dependency services (datastore, MinIO, DynamoDB and the mocked upstream
+The dependency services (datastore, LocalStack, DynamoDB and the mocked upstream
 APIs) all run as containers, and so does the workflow-frontend app itself. The
 app is built and run as a container, mounting the sources live so `sbt run` +
 `yarn build-dev` (webpack watch) reload edits to Scala or frontend assets
@@ -205,9 +205,12 @@ e2e/
 │   ├── dynamodb/      # DynamoDB seed data (e.g. editorial support)
 │   ├── permissions/   # Permission cache fixture (grants/denies workflow_access)
 │   ├── pan-domain-settings/  # Pan-domain auth settings
-│   ├── capi-mappings/        # WireMock stubs for CAPI preview
-│   ├── preferences-mappings/ # WireMock stubs for the Preferences service
-│   ├── tagmanager-mappings/  # WireMock stubs for Tag Manager
+│   ├── capi/                 # WireMock stubs for CAPI preview
+│   ├── composer/             # WireMock stubs for the Composer API
+│   ├── preferences/          # WireMock stubs for the Preferences service
+│   ├── presence/             # WireMock stub for the presence client library
+│   ├── tagmanager/           # WireMock stubs for Tag Manager
+│   ├── telemetry/            # WireMock stubs for user telemetry
 ├── global-setup.ts    # Playwright global setup: start/reuse stack, write connection file
 ├── playwright.config.ts
 ├── mise.toml          # Pinned Node.js version
