@@ -15,9 +15,8 @@ reference stack.
 
 **Read [reference/e2e-playbook.md](reference/e2e-playbook.md) first.** It is the
 source of truth for the patterns, decisions, ports and gotchas, and links to the
-reference implementation under [e2e-tests/](https://github.com/guardian/workflow-frontend/tree/main/e2e-tests) as a worked
-example. This skill only orchestrates; the detail lives in the playbook and the
-phase skills.
+captured reference docs under `reference/` as worked examples. This skill only
+orchestrates; the detail lives in the playbook and the phase skills.
 
 ## When to use
 - "Set up end-to-end tests / Playwright + Testcontainers for this project."

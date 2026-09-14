@@ -9,10 +9,9 @@ argument-hint: '<the upstream service to mock or the data to seed>'
 Phase 3 of the playbook: mock the app's upstream HTTP dependencies and seed the
 test data the app reads. **Read
 [../e2e-test-setup/reference/e2e-playbook.md](../e2e-test-setup/reference/e2e-playbook.md)
-§4.2–§4.4 first** and use the reference implementation under
-[e2e-tests/setup/stack/](https://github.com/guardian/workflow-frontend/tree/main/e2e-tests/setup/stack) and
-[e2e-tests/fixtures/](https://github.com/guardian/workflow-frontend/tree/main/e2e-tests/fixtures) as worked examples of the
-patterns below.
+§4.2–§4.4 first** and use the captured [stack.md](../e2e-test-setup/reference/stack.md)
+and [scaffold.md](../e2e-test-setup/reference/scaffold.md) references as worked
+examples of the patterns below.
 
 > **Server-side, not browser-side** (guiding principle 1): the `dev` / `dev:local`
 > environments must work with no browser setup. Resolve mocks server-side (Docker
@@ -25,7 +24,7 @@ patterns below.
 Do **not** build a Dockerfile per mock. Run every mock from the same
 `wiremock/wiremock` image, differing only by the bind-mounted fixture root and
 command flags. Follow the pattern in `startMockWiremock` + `MOCK_WIREMOCK_CONFIGS` in
-[e2e-tests/setup/stack/containers.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/containers.ts).
+[stack.md](../e2e-test-setup/reference/stack.md).
 
 To add a mock:
 1. Create `fixtures/<service>/` containing WireMock `mappings/` (stub rules) and
@@ -44,7 +43,7 @@ To add a mock:
      when a body must be served verbatim (e.g. a JS library).
 3. Kick off its start in the mocks `Promise.all` batch in `startLocalStack`.
 4. If the browser reaches it over HTTPS, add a `--host-resolver-rules` mapping in
-   [playwright.config.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/playwright.config.ts).
+   [playwright.config.ts](../e2e-test-setup/reference/playwright.md).
 
 Bind-mount the fixture dir read-only at the WireMock root and point WireMock at
 it with `--root-dir` so nothing in the base image is shadowed. WireMock runs as
@@ -55,15 +54,15 @@ it with `--root-dir` so nothing in the base image is shadowed. WireMock runs as
 Seed with the stock image's CLI after the container is ready; no custom image.
 
 - **SQL (Postgres):** follow the pattern in
-  [seedDatabase.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/seedDatabase.ts). Copy CSVs in,
+  [seedDatabase.ts](../e2e-test-setup/reference/seeding.md). Copy CSVs in,
   `\copy table(cols) from ... (format csv, header true)`. **Seed parent tables
   before FK children.** Run only **after** the owning service's migrations have
   created the schema (its healthcheck triggers them).
 - **DynamoDB (LocalStack):** follow the pattern in
-  [seedDynamodb.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/seedDynamodb.ts). `awslocal
+  [seedDynamodb.ts](../e2e-test-setup/reference/seeding.md). `awslocal
   dynamodb create-table` then `batch-write-item --request-items file://...`.
 - **S3 (LocalStack):** follow the pattern in
-  [seedS3.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/seedS3.ts). Create buckets in the
+  [seedS3.ts](../e2e-test-setup/reference/seeding.md). Create buckets in the
   app's region, `awslocal s3 cp` the objects. Bucket/key names must match exactly
   what the app requests.
 
@@ -72,7 +71,7 @@ Seed with the stock image's CLI after the container is ready; no custom image.
 Prefer real, minimal, synthetic data over guesses. Source it in this order:
 
 - **Pan-domain settings:** reuse the reference's mocked pan-domain fixture as-is
-  ([fixtures/pan-domain-settings/](https://github.com/guardian/workflow-frontend/tree/main/e2e-tests/fixtures/pan-domain-settings));
+  ([fixtures/pan-domain-settings/](../e2e-test-setup/reference/auth.md));
   the per-run signing keys are appended at seed time (see `seedS3.ts`), so nothing
   else needs changing.
 - **Permission cache:** read the **app's source** to find which permission(s) it
@@ -87,7 +86,7 @@ Prefer real, minimal, synthetic data over guesses. Source it in this order:
   the user** to supply an example response for that service.
 
 ## Fixture folder layout
-Follow the layout in [e2e-tests/fixtures/](https://github.com/guardian/workflow-frontend/tree/main/e2e-tests/fixtures): `db/` (CSVs),
+Follow the layout in [scaffold.md](../e2e-test-setup/reference/scaffold.md): `db/` (CSVs),
 `dynamodb/`, `permissions/`, plus one folder per mocked service
 (`mappings/` + `__files/`), and any auth-settings folders.
 
@@ -105,7 +104,7 @@ Follow the layout in [e2e-tests/fixtures/](https://github.com/guardian/workflow-
 
 ### The mocked upstreams (reference stack)
 All run from the shared WireMock image via `MOCK_WIREMOCK_CONFIGS` in
-[containers.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/containers.ts):
+[containers.ts](../e2e-test-setup/reference/stack.md):
 
 | Mock | Hostname alias | Browser-facing https | Templating |
 |------|----------------|----------------------|------------|

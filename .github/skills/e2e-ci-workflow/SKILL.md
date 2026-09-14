@@ -7,7 +7,7 @@ argument-hint: '<any private repos for real dependencies, and CI runner constrai
 # E2E CI workflow
 
 Phase 5 of the playbook: run the e2e suite in GitHub Actions. Follow the pattern in
-[.github/workflows/playwright-test.yaml](https://github.com/guardian/workflow-frontend/blob/main/.github/workflows/playwright-test.yaml)
+[ci-workflow.md](../e2e-test-setup/reference/ci-workflow.md)
 (worked example).
 **Read [../e2e-test-setup/reference/e2e-playbook.md](../e2e-test-setup/reference/e2e-playbook.md)
 §6–§7 first.**
@@ -79,7 +79,7 @@ Steps, in order:
 ## Guardian specifics
 
 See the live workflow at
-[.github/workflows/playwright-test.yaml](https://github.com/guardian/workflow-frontend/blob/main/.github/workflows/playwright-test.yaml).
+[ci-workflow.md](../e2e-test-setup/reference/ci-workflow.md).
 
 ### GitHub App token for guardian/workflow
 The datastore (run for real) lives in the private `guardian/workflow` repo. A
