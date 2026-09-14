@@ -36,7 +36,8 @@ WORKDIR /workflow-backend
 # Install JVM tooling (java, sbt) via mise using the e2e environment. This is the
 # only thing baked into the image; all backend sources are bind-mounted at runtime.
 COPY .tool-versions ./
-RUN mise trust -a && mise install java sbt
+RUN --mount=type=cache,target=/mise/cache,sharing=locked \
+    mise trust -a && mise install java sbt
 
 EXPOSE 9095
 
