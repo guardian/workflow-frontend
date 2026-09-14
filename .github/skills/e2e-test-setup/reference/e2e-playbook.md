@@ -9,11 +9,11 @@ e2e suite for any project. Every skill under `.github/skills/e2e-*` and the
 - The GitHub Actions workflow that runs the suite in CI.
 - The build-speed optimisations that keep CI fast.
 
-This is a **reference for the patterns**, not a copy target. It points at the
-reference implementation under [e2e-tests/](https://github.com/guardian/workflow-frontend/tree/main/e2e-tests) as a worked
-example of each pattern. When building an e2e suite elsewhere, apply the pattern
-and adapt it to that project's stack — read the cited files to see how the
-pattern looks in practice, don't clone them verbatim.
+This is a **reference for the patterns**, not a copy target. The essence of the
+implementation is **captured in the docs beside this playbook** (`reference/*.md`),
+linked throughout. When building an e2e suite elsewhere, apply the pattern and
+adapt it to that project's stack — read the captured docs to see how it looks in
+practice, don't clone them verbatim.
 
 ---
 
@@ -70,13 +70,15 @@ schema and business logic). It costs a repo checkout and a source build, so
 default to mocking and **confirm with the user** which Guardian-owned
 dependencies warrant the real service. See §4.4.
 
-Reference implementation:
+Captured reference docs (essence of the implementation, in `reference/`):
 
-- Orchestration: [e2e-tests/setup/stackContainers.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stackContainers.ts) (`startLocalStack` / `stopLocalStack`).
-- Per-container start functions: [e2e-tests/setup/stack/containers.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/containers.ts).
-- Image build helper: [e2e-tests/setup/stack/dockerHelpers.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/dockerHelpers.ts).
-- Playwright wiring: [e2e-tests/playwright.config.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/playwright.config.ts), [e2e-tests/global-setup.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/global-setup.ts).
-- Architecture prose + network diagram: [e2e-tests/README.md](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/README.md).
+- Stack orchestration, container recipes & network routing: [stack.md](stack.md).
+- Seeding Postgres / DynamoDB / S3: [seeding.md](seeding.md).
+- Pan-domain auth: [auth.md](auth.md).
+- Toolchain-only Dockerfiles: [dockerfiles.md](dockerfiles.md).
+- Playwright config & global setup: [playwright.md](playwright.md).
+- Folder layout & package scripts: [scaffold.md](scaffold.md).
+- CI workflow: [ci-workflow.md](ci-workflow.md).
 
 ---
 
@@ -106,13 +108,11 @@ In local dev you run the app the normal way inside the dev container (`sbt run` 
 `yarn`, watch mode) — no container. **CI and `test:ci`** run the app (and any
 dependency run for real) as a container whose image bakes **only the toolchain**
 (via `mise` reading `.tool-versions`); the code is **bind-mounted, never copied**
-(guiding principle 2). See
-[workflow-frontend.Dockerfile](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/images/workflow-frontend.Dockerfile)
-and [datastore.Dockerfile](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/images/datastore.Dockerfile).
+(guiding principle 2). See [dockerfiles.md](dockerfiles.md).
 Consequences:
 - Build context is a tiny temp dir holding just `.tool-versions` + the
-  Dockerfile (`buildWorkflowImage` / `buildDatastoreImage` in
-  [containers.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/containers.ts)). No repo copy.
+  Dockerfile (`buildWorkflowImage` / `buildDatastoreImage`; see [stack.md](stack.md)).
+  No repo copy.
 - Source edits reload without an image rebuild — fast local iteration.
 - Bind mounts are read-write because `sbt`/webpack write into `target/`.
 
@@ -126,9 +126,7 @@ win here — see §6.)
 ### 4.3 One LocalStack container for S3 + DynamoDB
 `startAws` runs a single `localstack/localstack:4` with `SERVICES: "s3,dynamodb"`.
 Seed data is loaded from the host after start via `awslocal` (see
-[seedS3.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/seedS3.ts) and
-[seedDynamodb.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/seedDynamodb.ts)) — no custom
-image.
+[seeding.md](seeding.md)) — no custom image.
 - **S3 gotcha:** LocalStack only extracts the bucket from the Host header when it
   contains `.s3.`, so S3 endpoint/bucket network aliases must sit under an `s3.`
   domain (e.g. `permissions-cache.s3.localstack`) for virtual-hosted-style
@@ -150,8 +148,7 @@ healthcheck triggers it), *then* CSV fixtures are loaded (see `seedDatabase`
 ordering — parent tables before FK children).
 
 ### 4.5 Dual network routing (host browser vs Playwright Chromium)
-The stack is reachable two ways (see the mermaid diagram in
-[e2e-tests/README.md](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/README.md)):
+The stack is reachable two ways (see the routing diagram in [stack.md](stack.md)):
 1. **Host browser → nginx (TLS) → forwarded container ports.** Real
    `*.local.dev-gutools.co.uk` hostnames over HTTPS; local dev-nginx terminates
    TLS. Used for manual debugging via `yarn dev:local`.
@@ -159,7 +156,7 @@ The stack is reachable two ways (see the mermaid diagram in
    plain HTTP on a forwarded port and reaches cross-origin HTTPS APIs via
    `--host-resolver-rules` mapping each hostname to the mock's fixed host port
    (`ignoreHTTPSErrors: true` accepts the self-signed certs). See `launchOptions`
-   in [playwright.config.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/playwright.config.ts).
+   in [playwright.md](playwright.md).
 
 Inside the Docker network, the frontend's **server-side** calls reach mocks by
 registering the real upstream hostnames as **network aliases** on the mock
@@ -171,12 +168,10 @@ browser setup; `--host-resolver-rules` is used **only by the headless Playwright
 test run**, not for local dev.
 
 ### 4.6 Pan-domain auth without OAuth
-A fresh RSA keypair is generated per run
-([panDomainKeys.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/panDomainKeys.ts)); the public/
-private keys are appended to the pan-domain settings uploaded to S3, and tests
-sign a cookie with the private key via the `signIn` fixture
-([panDomainCookie.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/panDomainCookie.ts)). Roles map
-to emails that must match entries in `fixtures/permissions/permissions.json`.
+A fresh RSA keypair is generated per run; the public/private keys are appended to
+the pan-domain settings uploaded to S3, and tests sign a cookie with the private
+key via the `signIn` fixture (see [auth.md](auth.md)). Roles map to emails that
+must match entries in the permissions fixture (`permissions.json`).
 
 For local dev the cookie is issued **server-side** by the nginx auth-redirect
 container (§11), so browsing the app under `dev:local` needs no forced client

@@ -9,9 +9,9 @@ argument-hint: '<the app''s runtime dependencies discovered in Phase 0>'
 Scaffold `e2e-tests/` and build the Testcontainers-based local stack. This is
 Phases 1–2 of the playbook. **Read
 [../e2e-test-setup/reference/e2e-playbook.md](../e2e-test-setup/reference/e2e-playbook.md)
-§2–§5 first** and use the reference implementation under
-[e2e-tests/setup/](https://github.com/guardian/workflow-frontend/tree/main/e2e-tests/setup) as a worked example of the patterns
-below — adapt them to the target project rather than copying verbatim.
+§2–§5 first** and use the captured [stack.md](../e2e-test-setup/reference/stack.md)
+reference as a worked example of the patterns below — adapt them to the target
+project rather than copying verbatim.
 
 ## Prerequisites
 - Phase 0 discovery complete: dependencies enumerated, auth model known, and —
@@ -22,7 +22,7 @@ below — adapt them to the target project rather than copying verbatim.
 
 Create an `e2e-tests/` folder independent of the app's build, following the
 pattern in the reference
-[e2e-tests/package.json](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/package.json):
+[scaffold.md](../e2e-test-setup/reference/scaffold.md):
 
 - `package.json` with dev deps: `@playwright/test`, `playwright`,
   `playwright-bdd`, `testcontainers`, `tsx`, plus any AWS SDK clients needed for
@@ -32,14 +32,14 @@ pattern in the reference
   natively against local infra, watch) and `dev` (app natively against remote
   infra, watch).
 - `playwright.config.ts` — follow the pattern in
-  [e2e-tests/playwright.config.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/playwright.config.ts):
+  [playwright.md](../e2e-test-setup/reference/playwright.md):
   `defineBddConfig({ features, steps })`, `globalSetup`, `fullyParallel`, capped
   `workers`, `retries: 1`, per-test `timeout` + `expect.timeout`, trace/video/
   screenshot on first-retry/failure, and `launchOptions.args` with
   `--host-resolver-rules` for any browser-facing HTTPS mocks
   (`ignoreHTTPSErrors: true`).
 - `global-setup.ts` — follow the pattern in
-  [e2e-tests/global-setup.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/global-setup.ts): start (or
+  [playwright.md](../e2e-test-setup/reference/playwright.md): start (or
   reuse) the stack, write connection details to a gitignored file, tear down the
   owned stack in the returned teardown fn.
 - Pin the toolchain in `.tool-versions` / `mise.toml` (Node ≥ 22.9.0; enable
@@ -47,10 +47,8 @@ pattern in the reference
 
 ## Build the stack (Phase 2)
 
-Follow the patterns in the reference
-[e2e-tests/setup/stackContainers.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stackContainers.ts)
-and [e2e-tests/setup/stack/containers.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/containers.ts)
-(worked example).
+Follow the patterns captured in [stack.md](../e2e-test-setup/reference/stack.md)
+(orchestration + per-container recipes).
 
 1. **One network per run**: `const network = await new Network().start();`
    Wrap everything in try/catch that stops every started container + the network
@@ -139,7 +137,7 @@ Guardian editorial-tools detail (Scala/Play apps behind pan-domain auth).
 The datastore is the reference example of running a dependency for real (playbook
 §4.4): it lives in the separate private `guardian/workflow` repo. Locally it's
 cloned into `e2e-tests/target/workflow-backend/` by a checkout script (see
-[e2e-tests/setup/checkout-datastore](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/checkout-datastore)),
+[stack.md](../e2e-test-setup/reference/stack.md)),
 resolved via `WORKFLOW_BACKEND_DIR` or the default target path
 (`getBackendDir`). In CI it's checked out with a GitHub App token — see the
 "Guardian specifics" section of the `e2e-ci-workflow` skill.
@@ -148,8 +146,7 @@ resolved via `WORKFLOW_BACKEND_DIR` or the default target path
 Both app and datastore images install `java`, `sbt`, `nodejs`, `aws-cli` via
 `mise` from a copied `.tool-versions`, then `corepack enable` for `yarn`. Base
 image is `debian:bookworm-slim` (Corretto/JDK need glibc, so **not** Alpine). See
-[e2e-tests/images/workflow-frontend.Dockerfile](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/images/workflow-frontend.Dockerfile)
-and [datastore.Dockerfile](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/images/datastore.Dockerfile).
+[dockerfiles.md](../e2e-test-setup/reference/dockerfiles.md).
 
 ### Running from source
 - Frontend: `yarn build-dev` (webpack watch) alongside Play dev-mode `run` (see
@@ -159,11 +156,11 @@ and [datastore.Dockerfile](https://github.com/guardian/workflow-frontend/blob/ma
 
 ### Pan-domain auth
 - Generate a fresh RSA keypair per run
-  ([panDomainKeys.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/panDomainKeys.ts)).
+  ([panDomainKeys.ts](../e2e-test-setup/reference/auth.md)).
 - Append the keys to the pan-domain settings uploaded to S3
-  ([seedS3.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/stack/seedS3.ts)).
+  ([seedS3.ts](../e2e-test-setup/reference/seeding.md)).
 - Tests sign a cookie with `@guardian/pan-domain-node`
-  ([panDomainCookie.ts](https://github.com/guardian/workflow-frontend/blob/main/e2e-tests/setup/panDomainCookie.ts)); role emails
+  ([panDomainCookie.ts](../e2e-test-setup/reference/auth.md)); role emails
   must match `fixtures/permissions/permissions.json`.
 
 ### Network aliases / hostnames
