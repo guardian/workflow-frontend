@@ -31,6 +31,12 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val host: String = s"https://workflow.$domain"
   logger.info(s"Host is: $host")
 
+  // In the self-contained e2e stack the backend reaches internal upstreams over the
+  // Docker network on plain http (WireMock listens on port 80); browser-facing URLs
+  // stay https. Enabled only when WORKFLOW_E2E is set.
+  private lazy val isE2E: Boolean = sys.env.getOrElse("WORKFLOW_E2E", "false").toBoolean
+  private lazy val internalScheme: String = if (isE2E) "http" else "https"
+
   lazy val composerUrl: String = s"https://composer.$domain"
   lazy val composerRestorerUrl: String = s"https://restorer.$domain/content"
 
@@ -70,11 +76,11 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val presenceClientLib: String = s"https://presence.$domain/client/1/lib.js"
 
   lazy val preferencesHost: String = s"preferences.$domain"
-  lazy val preferencesUrl: String = s"https://$preferencesHost/preferences"
+  lazy val preferencesUrl: String = s"$internalScheme://$preferencesHost/preferences"
 
   lazy val pinboardLoaderUrl: String = s"https://pinboard.$domain/pinboard.loader.js"
 
-  lazy val tagManagerUrl: String = s"https://tagmanager.$domain"
+  lazy val tagManagerUrl: String = s"$internalScheme://tagmanager.$domain"
 
   lazy val capiPreviewIamUrl: String = playConfig.get[String]("capi.preview.iamUrl")
   lazy val capiPreviewRole: String = playConfig.get[String]("capi.preview.role")

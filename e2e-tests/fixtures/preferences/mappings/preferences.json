@@ -1,0 +1,12 @@
+{
+  "mappings": [
+    {
+      "request": { "method": "ANY", "urlPathPattern": "/preferences.*" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {}
+      }
+    }
+  ]
+}

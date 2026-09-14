@@ -1,0 +1,7 @@
+node_modules/
+target/
+.features-gen/
+.active-stack.json
+.shared-stack.json
+test-results/
+playwright-report/

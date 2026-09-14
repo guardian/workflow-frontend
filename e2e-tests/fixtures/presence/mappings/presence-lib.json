@@ -1,0 +1,16 @@
+{
+  "mappings": [
+    {
+      "request": { "method": "GET", "urlPathPattern": "/client/1/lib.js" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/javascript" },
+        "body": "/* e2e presence client stub */ window.presenceClient = window.presenceClient || function(){ return { on: function(){}, startConnection: function(){}, subscribe: function(){}, updatePresence: function(){} }; };"
+      }
+    },
+    {
+      "request": { "method": "ANY", "urlPathPattern": "/.*" },
+      "response": { "status": 200, "body": "" }
+    }
+  ]
+}

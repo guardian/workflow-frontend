@@ -1,0 +1,12 @@
+{
+  "mappings": [
+    {
+      "request": { "method": "ANY", "urlPathPattern": "/.*" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": { "response": { "status": "ok", "results": [] } }
+      }
+    }
+  ]
+}

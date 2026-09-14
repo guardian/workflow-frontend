@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Runs the frontend from bind-mounted source in dev mode with asset watch.
+# Uses the toolchain baked into the image via PATH; does not invoke mise against
+# the bind-mounted repo (its mise.toml is untrusted and pins other tool versions).
+set -e
+export PATH="$(paste -sd: /etc/mise-bin-paths):$PATH"
+export JAVA_HOME="$(dirname "$(dirname "$(command -v java)")")"
+cd /workflow-frontend
+yarn install --frozen-lockfile || yarn install
+yarn build-dev &
+exec sbt "-Dconfig.file=/workflow-frontend/e2e-tests/fixtures/app/application.e2e.conf" "run 9090"

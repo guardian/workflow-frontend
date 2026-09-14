@@ -1,0 +1,61 @@
+name: e2e
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+# Least privilege: only read the repo. The datastore checkout uses a scoped App token.
+permissions:
+  contents: read
+
+jobs:
+  playwright-tests:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: e2e-tests
+    steps:
+      # Mint a token scoped to the private datastore repo (run for real from source).
+      - name: Get token for guardian/workflow
+        id: datastore-token
+        uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1.11.0
+        with:
+          app-id: ${{ vars.WORKFLOW_APP_CLIENT_ID }}
+          private-key: ${{ secrets.WORKFLOW_APP_PRIVATE_KEY }}
+          repositories: workflow
+
+      - name: Checkout workflow-frontend
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Checkout guardian/workflow datastore
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: guardian/workflow
+          token: ${{ steps.datastore-token.outputs.token }}
+          path: e2e-tests/target/workflow-backend
+
+      - name: Install Node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version-file: e2e-tests/.tool-versions
+          cache: yarn
+          cache-dependency-path: e2e-tests/yarn.lock
+
+      - name: Install e2e dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Playwright headless shell
+        run: yarn playwright install --with-deps chromium --only-shell
+
+      - name: Run e2e suite
+        run: yarn test:ci
+
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: playwright-traces
+          path: e2e-tests/target/test-results
+          retention-days: 7

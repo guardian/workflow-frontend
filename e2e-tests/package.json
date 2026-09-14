@@ -1,0 +1,26 @@
+{
+  "name": "workflow-frontend-e2e",
+  "private": true,
+  "type": "module",
+  "description": "End-to-end tests for workflow-frontend (Playwright + playwright-bdd + Testcontainers)",
+  "packageManager": "yarn@1.22.22",
+  "scripts": {
+    "test": "bddgen && playwright test",
+    "test:ci": "tsx setup/checkout-backend.ts && bddgen && playwright test",
+    "test:ui": "bddgen && playwright test --ui-port=9099",
+    "test:report": "playwright show-report target/playwright-report --port 9098",
+    "dev:local": "tsx setup/run-dev-local.ts",
+    "dev:debug": "DEBUG=testcontainers:build tsx setup/run-dev-local.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@guardian/pan-domain-node": "^1.2.5",
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^22.9.0",
+    "playwright": "^1.48.0",
+    "playwright-bdd": "^9.2.1",
+    "testcontainers": "^10.13.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,4 @@
+java corretto-11.0.27.6.1
+sbt 1.12.11
+nodejs 22.11.0
+aws-cli 2.34.62

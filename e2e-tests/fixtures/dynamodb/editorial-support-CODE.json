@@ -1,0 +1,15 @@
+{
+  "editorial-support-CODE": [
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "Fronts-e2e-1" },
+          "name": { "S": "E2E Support" },
+          "team": { "S": "Fronts" },
+          "active": { "BOOL": true },
+          "description": { "S": "Seeded for e2e" }
+        }
+      }
+    }
+  ]
+}

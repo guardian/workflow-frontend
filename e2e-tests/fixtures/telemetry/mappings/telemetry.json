@@ -1,0 +1,8 @@
+{
+  "mappings": [
+    {
+      "request": { "method": "ANY", "urlPathPattern": "/.*" },
+      "response": { "status": 204 }
+    }
+  ]
+}

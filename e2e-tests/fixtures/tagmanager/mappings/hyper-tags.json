@@ -1,0 +1,12 @@
+{
+  "mappings": [
+    {
+      "request": { "method": "GET", "urlPathPattern": "/hyper/tags" },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": { "data": [] }
+      }
+    }
+  ]
+}

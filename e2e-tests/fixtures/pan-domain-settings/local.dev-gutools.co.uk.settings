@@ -1,0 +1,5 @@
+cookieName=gutoolsAuth-assym
+clientId=e2e-oauth-client-id
+clientSecret=e2e-oauth-client-secret
+discoveryDocumentUrl=http://capi-preview.local.dev-gutools.co.uk/.well-known/openid-configuration
+organizationDomain=guardian.co.uk

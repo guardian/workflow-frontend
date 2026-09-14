@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Runs the guardian/workflow datastore subproject from bind-mounted source,
+# using the config overlay the repo ships for e2e. Evolutions auto-apply on boot.
+set -e
+cd /workflow-backend
+eval "$(mise activate bash --shims)"
+exec sbt "-Dconfig.file=datastore/conf/application.e2e.conf" "datastore/run 9093"
