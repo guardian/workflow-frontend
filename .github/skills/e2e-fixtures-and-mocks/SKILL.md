@@ -67,6 +67,25 @@ Seed with the stock image's CLI after the container is ready; no custom image.
   app's region, `awslocal s3 cp` the objects. Bucket/key names must match exactly
   what the app requests.
 
+## Producing mock data
+
+Prefer real, minimal, synthetic data over guesses. Source it in this order:
+
+- **Pan-domain settings:** reuse the reference's mocked pan-domain fixture as-is
+  ([fixtures/pan-domain-settings/](https://github.com/guardian/workflow-frontend/tree/main/e2e-tests/fixtures/pan-domain-settings));
+  the per-run signing keys are appended at seed time (see `seedS3.ts`), so nothing
+  else needs changing.
+- **Permission cache:** read the **app's source** to find which permission(s) it
+  checks (e.g. `workflow_access`), then seed the cache granting them. Give the
+  **default user the most permissive rights** to start with; add restricted users
+  only when a scenario needs to assert a denial.
+- **Other mocked upstreams:** build reasonable stub responses from two places —
+  the **app's source** (the request path/shape it sends and the fields it reads
+  back) and the **upstream service's own repository** (its response model /
+  example payloads). Keep each response minimal: only the fields the app consumes.
+- **If you can't find a realistic payload**, don't invent a risky one — **prompt
+  the user** to supply an example response for that service.
+
 ## Fixture folder layout
 Follow the layout in [e2e-tests/fixtures/](https://github.com/guardian/workflow-frontend/tree/main/e2e-tests/fixtures): `db/` (CSVs),
 `dynamodb/`, `permissions/`, plus one folder per mocked service
