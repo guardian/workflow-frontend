@@ -32,12 +32,20 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
    checkout, built from source) or mock it with WireMock — default to mocking. Ask
    the user for anything you cannot determine from the codebase. Summarise
    findings and confirm before scaffolding.
+   As part of discovery, also run the **`plan-feature-files` prompt** to produce
+   a feature overview and a recommended order for generating feature files and
+   step definitions. Save its output to the gitignored build output folder (e.g.
+   `target/e2e-feature-plan.md`) so later phases — and follow-up sessions — can
+   reference it.
 2. **Then proceed phase by phase** (scaffold + stack → fixtures + mocks → tests →
    docs → CI), following the playbook's phase table. Bake the build-speed
    optimisations (playbook §6) into the stack build rather than as a separate
    pass. In the tests phase, author only a **small** set of features to validate
    the setup — **ask the user which part of the UI** to cover, don't generate the
-   whole suite. Own the **docs phase directly** (no phase skill): before CI, write
+   whole suite. When asking, reference the saved `plan-feature-files` output (e.g.
+   `target/e2e-feature-plan.md`) and recommend a starting subset from its phased
+   plan (typically the foundational, highest-value features first). Own the
+   **docs phase directly** (no phase skill): before CI, write
    `e2e-tests/README.md` following the playbook's
    [docs reference](../skills/e2e-test-setup/reference/docs.md) so it describes
    what was actually built. Complete and verify one phase before starting the
