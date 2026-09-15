@@ -70,14 +70,13 @@ Follow the patterns captured in [stack.md](../e2e-test-setup/reference/stack.md)
    for **`test:ci` / CI**, run it as a **toolchain-only image with bind-mounted
    source**:
    - Build context = a fresh temp dir under the **build output folder** (e.g.
-     `target/workflow-build-context`, `target/datastore-build-context`), never a
-     version-controlled source folder, containing only `.tool-versions` + the
-     Dockerfile (see `buildWorkflowImage` / `buildDatastoreImage`). Any
-     intermediate file the stack produces — image build contexts, repos checked
-     out from another repository (e.g. `e2e-tests/target/workflow-backend/`),
-     generated keys/config — belongs under the gitignored build output folder,
-     not the source tree (guiding principle 4). Never copy the repo into the
-     image (guiding principle 2).
+     `target/<image>-build-context`), never a version-controlled source folder,
+     containing only `.tool-versions` + the Dockerfile (see `buildWorkflowImage` /
+     `buildDatastoreImage`). Any intermediate file the stack produces — image
+     build contexts, source checked out from another repository (e.g. under
+     `target/`), generated keys/config — belongs under the gitignored build
+     output folder, not the source tree (guiding principle 4). Never copy the
+     repo into the image (guiding principle 2).
    - Base image `debian:bookworm-slim` (glibc — see playbook gotchas); install
      the toolchain with `mise`.
    - Bind-mount the whole repo read-write; run from source (dev-mode + asset

@@ -47,11 +47,11 @@ realistic stack before it ships.*
    `test:ci` wrap it in an image. See §9–§10.
 4. **Intermediate files go in the build output folder, never in
    version-controlled source.** Anything generated while setting up or running the
-   stack — checked-out source from another repo, the tiny build-context folders
-   for the Datastore and Workflow frontend images, generated keys/config — is
-   written under a build output folder (e.g. `target/`, gitignored), not into a
-   version-controlled source folder. The reference does this already:
-   `e2e-tests/target/workflow-backend/` (datastore checkout),
+   stack — source checked out from another repo, the tiny build-context folders
+   for the images you build, generated keys/config — is written under a build
+   output folder (e.g. `target/`, gitignored), not into a version-controlled
+   source folder. The reference does this already:
+   `e2e-tests/target/workflow-backend/` (real-dependency checkout),
    `target/datastore-build-context` and `target/workflow-build-context` (image
    build contexts).
 
