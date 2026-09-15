@@ -18,6 +18,9 @@ under `e2e-tests/images/`. Background and rationale live in the
 - Keep the build context tiny: build from a temp dir holding just
   `.tool-versions` + the Dockerfile.
 - Start every Dockerfile with the `# syntax=docker/dockerfile:1` directive.
+- Wrap `mise install` in a BuildKit cache mount
+  (`--mount=type=cache,target=/mise/cache,sharing=locked`) so the toolchain is
+  cached across image rebuilds.
 
 ## Container start code
 - Create exactly one `Network` per stack run; stop it and every started
@@ -33,6 +36,11 @@ under `e2e-tests/images/`. Background and rationale live in the
   healthcheck) and a sensible `withStartupTimeout`.
 - Bind-mount source read-write only where the toolchain writes (`target/`,
   `public/build`); mount fixtures read-only.
+- Bind-mount the host's persistent coursier/ivy caches into every sbt container
+  (`/root/.cache/coursier`, `/root/.ivy2`, read-write) via an env-gated helper
+  (`DEVENV_COURSIER_CACHE_MOUNT_DIR` / `DEVENV_IVY_CACHE_MOUNT_DIR`) that adds no
+  mounts when the vars are unset, so the stack still runs outside the
+  devcontainer.
 - Seed datastores from the host after the container is ready; seed the SQL DB
   only after the owning service's migrations have created the schema, parents
   before FK children.

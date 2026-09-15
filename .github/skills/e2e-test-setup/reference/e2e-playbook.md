@@ -189,6 +189,25 @@ and writes its connection details to a gitignored file; `test` reuses it (via
 local stack is running**. `test:ci` instead builds and starts everything itself,
 the app included as a container. See §9 for the full command set.
 
+### 4.9 Share dependency caches with the host to avoid re-downloading
+Fetching JVM/toolchain dependencies dominates cold-start time and can hit
+"too many requests" rate limits from Maven Central. Two independent caches help,
+and both are especially valuable when an AI agent runs the suite repeatedly:
+
+- **Toolchain-installer cache (in-image, BuildKit):** mount the installer's cache
+  dir as a BuildKit cache so `mise install` reuses it across image rebuilds:
+  `RUN --mount=type=cache,target=/mise/cache,sharing=locked mise trust -a && mise install ...`
+  (see [dockerfiles.md](dockerfiles.md)).
+- **Dependency cache (bind-mount from host):** bind-mount the host's persistent
+  coursier/ivy caches into each sbt container at `/root/.cache/coursier` and
+  `/root/.ivy2`, read-write, so `sbt update`/`run` reuse artifacts already fetched
+  instead of re-downloading. Resolve the host paths from env vars and add no
+  mounts when they're unset, so it's a no-op outside the devcontainer (see
+  `sbtCacheBindMounts` in [stack.md](stack.md)). In the Guardian devcontainer
+  those paths come from the Scala module's `devenv-coursier-cache` /
+  `devenv-ivy-cache` volumes, exposed as `DEVENV_COURSIER_CACHE_MOUNT_DIR` /
+  `DEVENV_IVY_CACHE_MOUNT_DIR`.
+
 ---
 
 ## 5. Port map (reference stack)
@@ -233,6 +252,16 @@ as a separate pass — together they took CI from ~15 min to ~6 min.
    mocks concurrently (`Promise.all` phases in `startLocalStack`).
 7. **CI: install only the Playwright headless shell** (`--only-shell`), not full
    Chromium.
+8. **Persist the toolchain-installer cache across image builds** with a BuildKit
+   cache mount, so re-running `mise install` doesn't re-download the toolchain:
+   `RUN --mount=type=cache,target=/mise/cache,sharing=locked mise install ...`.
+9. **Reuse a host dependency cache in the sbt containers**: bind-mount the
+   devcontainer's persistent coursier/ivy caches into each JVM container (at
+   `/root/.cache/coursier` and `/root/.ivy2`) so `sbt update`/`run` reuse Maven
+   artifacts already on the host instead of re-downloading from Maven Central on
+   every rebuild. Gate it on env vars so it's a no-op outside the devcontainer
+   (see §4.9).
+   (see §4.5).
 
 ---
 
@@ -248,6 +277,7 @@ as a separate pass — together they took CI from ~15 min to ~6 min.
 | Cookie email has no permissions | Role email in `panDomainCookie.ts` has no matching entry in `permissions.json`. |
 | Mock returns literal `{{...}}` | Response templating enabled where a verbatim body is needed — set `templating: false` (e.g. presence JS). |
 | Containers rebuild every run | Expected on first run; BuildKit layer cache covers subsequent runs. Use `yarn dev:local` for a shared stack. |
+| sbt re-downloads Maven artifacts every run / hits "too many requests" | Toolchain/dependency caches not shared — add the mise BuildKit cache mount and the coursier/ivy host bind-mounts (§4.9). |
 | Arch mismatch (arm64 dev vs amd64 CI) | Pull arch-appropriate base images; avoid pinning a single-arch digest. |
 
 ---
