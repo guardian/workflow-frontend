@@ -30,7 +30,6 @@ export type Stub = {
   prodOffice?: string;
   note?: string;
   displayHint?: string;
-  intendedAudience?: string;
 };
 
 export type ListElementArticleFormat = {
