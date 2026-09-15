@@ -33,11 +33,15 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
    the user for anything you cannot determine from the codebase. Summarise
    findings and confirm before scaffolding.
 2. **Then proceed phase by phase** (scaffold + stack → fixtures + mocks → tests →
-   CI), following the playbook's phase table. Bake the build-speed optimisations
-   (playbook §6) into the stack build rather than as a separate pass. In the tests
-   phase, author only a **small** set of features to validate the setup — **ask
-   the user which part of the UI** to cover, don't generate the whole suite.
-   Complete and verify one phase before starting the next.
+   docs → CI), following the playbook's phase table. Bake the build-speed
+   optimisations (playbook §6) into the stack build rather than as a separate
+   pass. In the tests phase, author only a **small** set of features to validate
+   the setup — **ask the user which part of the UI** to cover, don't generate the
+   whole suite. Own the **docs phase directly** (no phase skill): before CI, write
+   `e2e-tests/README.md` following the playbook's
+   [docs reference](../skills/e2e-test-setup/reference/docs.md) so it describes
+   what was actually built. Complete and verify one phase before starting the
+   next.
 3. **Verify each phase** with the skill's verification steps (boot the stack,
    run the suite, check teardown). Fix failures before moving on.
 4. **Keep the app-code footprint minimal** — ideally a single env-gated switch;
@@ -58,6 +62,10 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
   running** — never test against remote infrastructure.
 - Confirm before destructive or shared-system actions (pushing, deleting,
   editing CI secrets).
+- Keep `e2e-tests/README.md` in sync: whenever you change the stack, fixtures,
+  mocks, commands, folder layout or CI in a later phase or a follow-up, update
+  the matching README section in the same change (see the
+  [docs reference](../skills/e2e-test-setup/reference/docs.md)).
 
 ## Guardian projects
 Each phase skill ends with a **Guardian specifics** section covering pan-domain

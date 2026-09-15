@@ -163,6 +163,10 @@ Run all three checks; every one must pass before the phase is done.
 Finally, tear the stack down (`Ctrl+C` in Terminal 1) and confirm all containers
 and the network are stopped with no leaks (`docker ps`).
 
+> **Keep the doc in sync:** if `e2e-tests/README.md` already exists, update its
+> stack / ports / folder-structure sections to match any change made here (see
+> the `e2e-test-setup` skill's docs reference).
+
 ## Guardian specifics
 
 Guardian editorial-tools detail (Scala/Play apps behind pan-domain auth).
