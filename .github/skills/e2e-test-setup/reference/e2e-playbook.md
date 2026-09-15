@@ -78,6 +78,7 @@ Captured reference docs (essence of the implementation, in `reference/`):
 - Toolchain-only Dockerfiles: [dockerfiles.md](dockerfiles.md).
 - Playwright config & global setup: [playwright.md](playwright.md).
 - Folder layout & package scripts: [scaffold.md](scaffold.md).
+- e2e README / documentation: [docs.md](docs.md).
 - CI workflow: [ci-workflow.md](ci-workflow.md).
 
 ---
@@ -94,7 +95,12 @@ The reference setup went through these same phases.
 | 2 | Build the Testcontainers stack: infra → app → real services + mocks (fast by design — see §6) | `e2e-stack-setup` |
 | 3 | Seed fixtures and configure mocks | `e2e-fixtures-and-mocks` |
 | 4 | Author a **small** set of `.feature` files + step definitions to validate the setup (ask the user which part of the UI to cover) | `feature-file-from-templates`, `feature-file-step-definitions` |
-| 5 | Add the CI workflow | `e2e-ci-workflow` |
+| 5 | Write the `e2e-tests/README.md` documenting the suite | (agent-led, see [docs.md](docs.md)) |
+| 6 | Add the CI workflow | `e2e-ci-workflow` |
+
+The `e2e-tests/README.md` is a **living document**: any later change to the e2e
+setup (stack, fixtures/mocks, commands, folder layout or CI) must update the
+matching section of the README in the same change, following [docs.md](docs.md).
 
 ---
 

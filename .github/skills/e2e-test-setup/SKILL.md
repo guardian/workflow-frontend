@@ -47,7 +47,10 @@ driven entirely by the app's real dependencies.
    **`feature-file-step-definitions`** skills. The goal here is only to **validate
    the setup**, not to cover the whole app — **ask the user which part of the UI**
    to extract a small set of features for, and author just those.
-5. **Phase 5 — CI** → use the **`e2e-ci-workflow`** skill.
+5. **Phase 5 — Document** → write `e2e-tests/README.md` following
+   [reference/docs.md](reference/docs.md). Do this before CI, once the stack,
+   fixtures and tests exist, so it describes what was actually built.
+6. **Phase 6 — CI** → use the **`e2e-ci-workflow`** skill.
 
 ## Guardrails
 - Keep the production-app change footprint minimal (ideally one env-gated switch;
@@ -55,6 +58,9 @@ driven entirely by the app's real dependencies.
 - Never commit real secrets or personal data into fixtures.
 - Preserve the key decisions in playbook §4 unless the target genuinely differs;
   when it does, follow playbook §8 (adapting to a different stack).
+- Keep `e2e-tests/README.md` in sync: whenever a change alters the stack,
+  fixtures/mocks, commands, folder layout or CI, update the matching README
+  section in the same change (see [reference/docs.md](reference/docs.md)).
 
 ## Guardian-specific detail
 Each phase skill ends with a **Guardian specifics** section covering pan-domain

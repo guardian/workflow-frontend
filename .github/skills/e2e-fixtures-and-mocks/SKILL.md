@@ -99,6 +99,9 @@ Follow the layout in [scaffold.md](../e2e-test-setup/reference/scaffold.md): `db
 - Each mock answers `/__admin/health` and returns stubbed responses for the
   routes the app calls.
 - Seeded rows/objects are visible to the app (assert via a test that reads them).
+- If `e2e-tests/README.md` already exists, update its mocked-services / seeded-data
+  sections to match any mock or fixture change made here (see the
+  `e2e-test-setup` skill's docs reference).
 
 ## Guardian specifics
 

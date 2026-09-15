@@ -6,7 +6,7 @@ argument-hint: '<any private repos for real dependencies, and CI runner constrai
 
 # E2E CI workflow
 
-Phase 5 of the playbook: run the e2e suite in GitHub Actions. Follow the pattern in
+Phase 6 of the playbook: run the e2e suite in GitHub Actions. Follow the pattern in
 [ci-workflow.md](../e2e-test-setup/reference/ci-workflow.md)
 (worked example).
 **Read [../e2e-test-setup/reference/e2e-playbook.md](../e2e-test-setup/reference/e2e-playbook.md)
@@ -75,6 +75,8 @@ Steps, in order:
 - Failure runs upload traces/videos.
 - No secret is printed; the App token is scoped to the private dependency repo(s)
   only.
+- If `e2e-tests/README.md` documents CI, update it to match any workflow change
+  made here (see the `e2e-test-setup` skill's docs reference).
 
 ## Guardian specifics
 
