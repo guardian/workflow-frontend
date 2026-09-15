@@ -131,9 +131,37 @@ instead builds and starts everything itself, the app included as a container.
 Provide a `run-dev-local.ts` entrypoint for `dev:local`.
 
 ## Verify
-- `yarn dev:local` boots the full stack and reaches the app's healthcheck.
-- `yarn test` runs green against a freshly built stack.
-- Containers and network are all stopped on teardown (no leaks: `docker ps`).
+
+Run all three checks; every one must pass before the phase is done.
+
+1. **Single-command run** — the suite spins up the whole stack itself, runs
+   green, then tears everything down:
+   ```bash
+   yarn test:ci
+   ```
+   Confirm it builds infra + the app-under-test container, reaches the app's
+   healthcheck, and exits `0` with all scenarios passing.
+
+2. **Shared-stack run (two terminals)** — boot the stack once, then run the suite
+   against it from a separate terminal; the tests must pass the same way:
+   ```bash
+   # Terminal 1 — boot the stack and leave it running
+   yarn dev:local
+   # Terminal 2 — run the suite against the already-running stack
+   yarn test
+   ```
+   Confirm `yarn test` reuses the running stack (skips building containers) and
+   exits `0` with all scenarios passing.
+
+3. **Host-browser access** — while the shared stack from step 2 is still up,
+   open the app's landing page in a browser **on the host** and confirm it
+   loads (authenticated, not an error/redirect loop): e.g.
+   `https://workflow.local.dev-gutools.co.uk/cookie`, which sets the auth cookie
+   and redirects to the dashboard. This proves the host → TLS-terminating nginx →
+   forwarded-port path reaches the app in the stack.
+
+Finally, tear the stack down (`Ctrl+C` in Terminal 1) and confirm all containers
+and the network are stopped with no leaks (`docker ps`).
 
 ## Guardian specifics
 
