@@ -113,6 +113,12 @@ path. Keep these properties, which took the reference CI from ~15 min to ~6 min
   "prebuild images" step isn't worth it — leave it out.
 - **CI installs the Playwright headless shell only** (`--only-shell`) — see the
   `e2e-ci-workflow` skill.
+- **Cache dependency downloads** so repeated runs (common with AI agents) don't
+  re-fetch from Maven Central (playbook §4.9): wrap `mise install` in a BuildKit
+  cache mount (`--mount=type=cache,target=/mise/cache,sharing=locked`), and
+  bind-mount the host's persistent coursier/ivy caches into every sbt container
+  via an env-gated helper (`sbtCacheBindMounts`, see the Guardian specifics
+  below).
 
 Measure with `DEBUG=testcontainers:build` (`yarn dev:debug`) and confirm cached
 layers are reused on a second run.
@@ -153,6 +159,19 @@ image is `debian:bookworm-slim` (Corretto/JDK need glibc, so **not** Alpine). Se
   `start-workflow-frontend`), repo bind-mounted read-write.
 - Datastore: `sbt -Dconfig.file=datastore/conf/application.e2e.conf datastore/run 9095`,
   the checkout bind-mounted read-write.
+
+### Sharing the coursier/ivy cache with the devcontainer
+The devcontainer's Scala module keeps persistent `devenv-coursier-cache` /
+`devenv-ivy-cache` volumes. Bind-mount them into every sbt container (app +
+datastore) at `/root/.cache/coursier` and `/root/.ivy2` (read-write) so
+artifacts aren't re-downloaded from Maven Central on each rebuild. Do it through
+a small `sbtCacheBindMounts()` helper that reads
+`DEVENV_COURSIER_CACHE_MOUNT_DIR` / `DEVENV_IVY_CACHE_MOUNT_DIR` and returns no
+mounts when they're unset, so the stack still works outside the devcontainer.
+Also cache the mise download dir in the Dockerfiles via a BuildKit cache mount
+(`--mount=type=cache,target=/mise/cache,sharing=locked`). See
+[stack.md](../e2e-test-setup/reference/stack.md) and
+[dockerfiles.md](../e2e-test-setup/reference/dockerfiles.md).
 
 ### Pan-domain auth
 - Generate a fresh RSA keypair per run

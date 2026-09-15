@@ -110,7 +110,8 @@ the Dockerfile), repo **bind-mounted read-write**, run from source:
 ```ts
 workflowImage
   .withNetwork(network).withNetworkAliases("workflow-frontend")
-  .withBindMounts([{ source: repoRoot, target: "/workflow-frontend", mode: "rw" }])
+  .withBindMounts([{ source: repoRoot, target: "/workflow-frontend", mode: "rw" },
+                   ...sbtCacheBindMounts()])
   .withEnvironment({ AWS_ENDPOINT_URL_S3, AWS_ENDPOINT_URL_DYNAMODB,
                      AWS_ACCESS_KEY_ID: "test", AWS_SECRET_ACCESS_KEY: "test", LOCAL: "true" })
   .withExposedPorts({ container: 9090, host: 9091 })
@@ -118,8 +119,27 @@ workflowImage
   .start();
 ```
 
+### Shared sbt dependency cache (coursier/ivy)
+Every JVM container (app + run-for-real datastore) bind-mounts the host's
+persistent coursier/ivy caches so `sbt` reuses already-downloaded Maven artifacts
+instead of re-fetching them on each rebuild. Gate on env vars so it's a no-op
+outside the devcontainer:
+```ts
+function sbtCacheBindMounts(): { source: string; target: string; mode: "rw" }[] {
+  const mounts: { source: string; target: string; mode: "rw" }[] = [];
+  const coursier = process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR;
+  const ivy = process.env.DEVENV_IVY_CACHE_MOUNT_DIR;
+  if (coursier) mounts.push({ source: coursier, target: "/root/.cache/coursier", mode: "rw" });
+  if (ivy)      mounts.push({ source: ivy,      target: "/root/.ivy2",          mode: "rw" });
+  return mounts;
+}
+```
+Spread `...sbtCacheBindMounts()` into the `withBindMounts([...])` of each sbt
+container.
+
 ### Run-for-real dependency (e.g. datastore)
-Same toolchain-only + bind-mount pattern. Resolve the checkout dir from
+Same toolchain-only + bind-mount pattern (including `...sbtCacheBindMounts()`).
+Resolve the checkout dir from
 `WORKFLOW_BACKEND_DIR` or a default `target/<dependency>`; mount it read-write and
 run from source. Long startup timeout (sbt resolves/compiles on first start).
 The checkout itself is done by a small script that clones the private/public repo

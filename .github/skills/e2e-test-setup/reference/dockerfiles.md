@@ -13,6 +13,9 @@ Captured essence of the app and run-for-real-dependency images. These are used
 - `# syntax=docker/dockerfile:1` directive at the top.
 - The build context is a tiny temp dir holding just `.tool-versions` + the
   Dockerfile, so the build never copies the repo.
+- Wrap `mise install` in a BuildKit cache mount
+  (`--mount=type=cache,target=/mise/cache,sharing=locked`) so the toolchain isn't
+  re-downloaded on every rebuild (`MISE_CACHE_DIR=/mise/cache`).
 - `CMD` runs the app from the **bind-mounted** source in watch/dev mode.
 
 ## App image (essence)
@@ -28,7 +31,9 @@ ENV MISE_DATA_DIR=/mise MISE_CONFIG_DIR=/mise MISE_CACHE_DIR=/mise/cache \
 RUN curl https://mise.run | sh
 WORKDIR /app
 COPY .tool-versions ./
-RUN mise trust -a && mise install java nodejs sbt aws-cli \
+# Cache the mise download cache across rebuilds so the toolchain isn't re-fetched.
+RUN --mount=type=cache,target=/mise/cache,sharing=locked \
+    mise trust -a && mise install java nodejs sbt aws-cli \
     && mise exec nodejs -- npm install -g corepack && mise exec nodejs -- corepack enable
 EXPOSE 9090
 # run asset watch + dev-mode server from the mounted source
