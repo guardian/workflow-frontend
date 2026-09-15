@@ -35,6 +35,7 @@ WORKDIR /workflow-frontend
 # Install the toolchain (java, nodejs, sbt, aws-cli) via mise and enable corepack
 # so `yarn` is available. This is the only thing baked into the image; the repo
 # and its node_modules are bind-mounted at runtime.
+# It also caches the mise cache directory to speed up subsequent builds.
 COPY .tool-versions ./
 RUN --mount=type=cache,target=/mise/cache,sharing=locked \
     mise trust -a && mise install java nodejs sbt aws-cli \
