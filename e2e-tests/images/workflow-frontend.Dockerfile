@@ -36,7 +36,8 @@ WORKDIR /workflow-frontend
 # so `yarn` is available. This is the only thing baked into the image; the repo
 # and its node_modules are bind-mounted at runtime.
 COPY .tool-versions ./
-RUN mise trust -a && mise install java nodejs sbt aws-cli \
+RUN --mount=type=cache,target=/mise/cache,sharing=locked \
+    mise trust -a && mise install java nodejs sbt aws-cli \
     && mise exec nodejs -- npm install -g corepack \
     && mise exec nodejs -- corepack enable
 

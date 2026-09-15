@@ -262,6 +262,24 @@ function getBackendDir(e2eRoot: string): string {
     );
 }
 
+// Bind-mount the devcontainer's persistent coursier/ivy cache volumes (see
+// .devcontainer/*/devcontainer.json) into sbt containers as their dependency
+// caches, so `sbt update`/`run` reuse artifacts already fetched from Maven
+// Central across container/image rebuilds instead of re-downloading them.
+// Falls back to no extra mounts when run outside that devcontainer.
+function sbtCacheBindMounts(): { source: string; target: string; mode: "rw" }[] {
+    const coursierCacheDir = process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR;
+    const ivyCacheDir = process.env.DEVENV_IVY_CACHE_MOUNT_DIR;
+    const mounts: { source: string; target: string; mode: "rw" }[] = [];
+    if (coursierCacheDir) {
+        mounts.push({ source: coursierCacheDir, target: "/root/.cache/coursier", mode: "rw" });
+    }
+    if (ivyCacheDir) {
+        mounts.push({ source: ivyCacheDir, target: "/root/.ivy2", mode: "rw" });
+    }
+    return mounts;
+}
+
 function buildDatastoreImage(
     e2eRoot: string,
     imageTag: string,
@@ -300,6 +318,7 @@ export async function startDatastore(
         // baking it into the image. Read-write because sbt writes target/ dirs.
         .withBindMounts([
             { source: backendDir, target: "/workflow-backend", mode: "rw" },
+            ...sbtCacheBindMounts(),
         ])
         .withLogConsumer(createLogConsumer("datastore", streamLogs))
         .withExposedPorts(9095)
@@ -376,6 +395,7 @@ export async function startWorkflow(
         // webpack write target/ and public/build into it.
         .withBindMounts([
             { source: repoRoot, target: "/workflow-frontend", mode: "rw" },
+            ...sbtCacheBindMounts(),
         ])
         .withEnvironment({
             AWS_ENDPOINT_URL_S3: `http://${S3_ENDPOINT_HOST}:${LOCALSTACK_PORT}`,
