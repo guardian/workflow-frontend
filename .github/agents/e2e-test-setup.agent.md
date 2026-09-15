@@ -55,11 +55,10 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
 - Prefer stock images with bind-mounted fixtures over bespoke Dockerfiles.
 - Run the app **natively** in dev; containerise only for `test:ci` / CI, and
   bind-mount the code, never copy it (playbook §9–§10, guiding principles).
-- Write any intermediate file the stack produces — repos checked out from another
-  repository, the Datastore/Workflow-frontend image build-context folders,
-  generated keys/config — under a gitignored **build output folder** (e.g.
-  `target/`), never into a version-controlled source folder (playbook guiding
-  principle 4).
+- Write any intermediate file the stack produces — source checked out from another
+  repository, image build-context folders, generated keys/config — under a
+  gitignored **build output folder** (e.g. `target/`), never into a
+  version-controlled source folder (playbook guiding principle 4).
 - Keep `dev` / `dev:local` working with **no browser setup** — provide cookies and
   routing server-side, not via forced cookies or browser mocks.
 - **Don't run the test suite unless asked.** When you do, use `test`: start
