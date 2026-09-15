@@ -45,6 +45,15 @@ realistic stack before it ships.*
 3. **Run the app natively in dev, containerised only in CI.** In the dev container
    you run the app the normal way (`sbt run` / `yarn`, watch mode); only CI and
    `test:ci` wrap it in an image. See §9–§10.
+4. **Intermediate files go in the build output folder, never in
+   version-controlled source.** Anything generated while setting up or running the
+   stack — checked-out source from another repo, the tiny build-context folders
+   for the Datastore and Workflow frontend images, generated keys/config — is
+   written under a build output folder (e.g. `target/`, gitignored), not into a
+   version-controlled source folder. The reference does this already:
+   `e2e-tests/target/workflow-backend/` (datastore checkout),
+   `target/datastore-build-context` and `target/workflow-build-context` (image
+   build contexts).
 
 ---
 
