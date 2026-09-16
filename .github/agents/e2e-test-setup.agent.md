@@ -42,9 +42,10 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
 2. **Then proceed phase by phase** (scaffold + stack → fixtures + mocks → tests →
    docs → CI), following the playbook's phase table. Bake the build-speed
    optimisations (playbook §6) into the stack build rather than as a separate
-   pass. In the tests phase, author only a **small** set of features to validate
-   the setup — **ask the user which part of the UI** to cover, don't generate the
-   whole suite. When asking, reference the feature overview folded into the plan
+   pass. In the tests phase, don't try to cover the whole app at this stage;
+   instead pick a **small** set of features and generate a **complete** set of
+   tests for just those, to validate the setup — **ask the user which part of the
+   UI** to cover. When asking, reference the feature overview folded into the plan
    (`plans/e2e-test-setup.md`) and recommend a starting subset from its phased
    plan (typically the foundational, highest-value features first). Own the
    **docs phase directly** (no phase skill): before CI, write
