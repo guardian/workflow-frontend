@@ -1,8 +1,9 @@
 # Reference: toolchain-only Dockerfiles
 
-Captured essence of the app and run-for-real-dependency images. These are used
-**only for CI / `test:ci`** (in dev the app runs natively). The image bakes
-**only the toolchain**; the code is bind-mounted at runtime, never copied.
+Captured essence of the app and run-for-real-dependency images. These run the app
+as a container in **every mode** (dev and CI / `test:ci`). The image bakes
+**only the toolchain**; the code is bind-mounted at runtime, never copied, and the
+container runs the app in watch mode so source edits reload without a rebuild.
 
 ## Shared shape
 

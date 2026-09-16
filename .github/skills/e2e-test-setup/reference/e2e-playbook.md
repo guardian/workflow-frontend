@@ -39,12 +39,15 @@ realistic stack before it ships.*
    Anything a test would otherwise inject client-side must instead be provided
    **server-side** (e.g. an nginx container that issues the auth cookie; mocks
    resolved via the Docker network), never in the browser or the test runner.
-2. The code is always available at the **root of the dev container**. If a Docker
-   image runs the app (CI / `test:ci`), it **bind-mounts the code externally**
-   rather than copying it in.
-3. **Run the app natively in dev, containerised only in CI.** In the dev container
-   you run the app the normal way (`sbt run` / `yarn`, watch mode); only CI and
-   `test:ci` wrap it in an image. See §9–§10.
+2. The code is always available at the **root of the dev container**. The Docker
+   image that runs the app **bind-mounts the code externally** rather than copying
+   it in, so the same working tree drives both dev and CI.
+3. **Always run the app containerised — in dev as well as CI.** The app runs from
+   its toolchain-only image in every mode; the difference is only the backing
+   infra it points at. Because the source is bind-mounted and the container runs
+   the app in **watch mode** (`sbt run` / `yarn`, recompile-on-change), edits to
+   the working tree are picked up live **without restarting the container**. See
+   §9–§10.
 4. **Intermediate files go in the build output folder, never in
    version-controlled source.** Anything generated while setting up or running the
    stack — source checked out from another repo, the tiny build-context folders
@@ -127,17 +130,18 @@ its `.feature` files + step definitions, verify them, update the plan, and repea
 These are the non-obvious choices that make the setup work. Carry these patterns
 across when applying the approach elsewhere.
 
-### 4.1 Toolchain-only images + bind-mounted source (CI) / native run (dev)
-In local dev you run the app the normal way inside the dev container (`sbt run` /
-`yarn`, watch mode) — no container. **CI and `test:ci`** run the app (and any
-dependency run for real) as a container whose image bakes **only the toolchain**
-(via `mise` reading `.tool-versions`); the code is **bind-mounted, never copied**
-(guiding principle 2). See [dockerfiles.md](dockerfiles.md).
+### 4.1 Toolchain-only images + bind-mounted source (dev and CI)
+In **every mode** the app (and any dependency run for real) runs as a container
+whose image bakes **only the toolchain** (via `mise` reading `.tool-versions`);
+the code is **bind-mounted, never copied** (guiding principle 2), and the
+container runs the app in **watch mode**. See [dockerfiles.md](dockerfiles.md).
 Consequences:
 - Build context is a tiny temp dir holding just `.tool-versions` + the
   Dockerfile (`buildWorkflowImage` / `buildDatastoreImage`; see [stack.md](stack.md)).
   No repo copy.
-- Source edits reload without an image rebuild — fast local iteration.
+- Source edits reload **without an image rebuild or a container restart** — the
+  bind-mounted working tree feeds the in-container watch (`sbt run` / webpack),
+  so recompile-on-change is live. Fast local iteration.
 - Bind mounts are read-write because `sbt`/webpack write into `target/`.
 
 ### 4.2 One WireMock image for all mocks
@@ -207,11 +211,12 @@ instead of `https` for internal API calls when an e2e env var is set. Keep the
 app footprint this small; everything else lives under `e2e-tests/`.
 
 ### 4.8 Long-running stack reused across test runs
-`dev:local` boots the stack once (app run natively, dependencies as containers)
-and writes its connection details to a gitignored file; `test` reuses it (via
+`dev:local` boots the stack once (app and dependencies all as containers) and
+writes its connection details to a gitignored file; `test` reuses it (via
 `sharedStack.ts` / `readSharedStackInfo`, `ACTIVE_STACK_FILE`) and **aborts if no
-local stack is running**. `test:ci` instead builds and starts everything itself,
-the app included as a container. See §9 for the full command set.
+local stack is running**. `test:ci` instead builds and starts everything itself.
+In every case the app runs as a bind-mounted, watch-mode container. See §9 for
+the full command set.
 
 ### 4.9 Share dependency caches with the host to avoid re-downloading
 Fetching JVM/toolchain dependencies dominates cold-start time and can hit
@@ -335,13 +340,18 @@ section of each phase skill.
 | `test` | Run the suite headlessly to completion; non-zero exit on failure. Runs against an already-running local stack and **aborts if local infra isn't available**. |
 | `test:ci` | Run the suite headlessly; spins up all infra **including the app under test in a container**. Used in CI. |
 | `test:ui` | Open the Playwright UI (headed) to run tests on demand; spins up infra if not already running, in watch mode. |
-| `dev:local` | Spin up the app (run **natively**, watch mode) and its dependencies, pointed at **local** infra (LocalStack, local permissions, mocks). |
-| `dev` | Spin up the app (**natively**, watch mode) pointed at **remote** infra (e.g. AWS). |
+| `dev:local` | Spin up the app (**as a container**, watch mode) and its dependencies, pointed at **local** infra (LocalStack, local permissions, mocks). |
+| `dev` | Spin up the app (**as a container**, watch mode) pointed at **remote** infra (e.g. AWS). |
 
 `.feature` changes need a `bddgen` watch to regenerate tests; `.ts` step/test
-changes are picked up automatically by the Playwright UI.
+changes are picked up automatically by the Playwright UI. The app container runs
+in watch mode against the bind-mounted source, so app source edits reload live
+without restarting the container.
 
 ## 10. Modes & when to use them
+
+The app always runs as a bind-mounted, watch-mode container (§4.1); modes differ
+only by the backing infra and how tests are run.
 
 | | Local dev against tests | Local agent dev against tests | Local dev running app | CI tests |
 |---|---|---|---|---|

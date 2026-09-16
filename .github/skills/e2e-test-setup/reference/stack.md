@@ -104,9 +104,9 @@ each entry differs only by fixture folder, network aliases, ports, `https` and
 `templating` flags. WireMock runs as `root` (privileged port 80), bind-mounts
 `fixtures/<service>` read-only at `--root-dir`, waits on `/__admin/health`.
 
-### App under test (CI / `test:ci` only; native in dev)
+### App under test (containerised in dev and CI / `test:ci`)
 Toolchain-only image, tiny build context (temp dir with just `.tool-versions` +
-the Dockerfile), repo **bind-mounted read-write**, run from source:
+the Dockerfile), repo **bind-mounted read-write**, run from source in watch mode:
 ```ts
 workflowImage
   .withNetwork(network).withNetworkAliases("workflow-frontend")

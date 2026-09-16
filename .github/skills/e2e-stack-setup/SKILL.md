@@ -28,9 +28,9 @@ pattern in the reference
   `playwright-bdd`, `testcontainers`, `tsx`, plus any AWS SDK clients needed for
   seeding. Provide the **standard scripts** (playbook §9): `test` (runs against an
   already-running local stack; aborts if none), `test:ci` (spins up all infra +
-  the app as a container), `test:ui` (Playwright UI, watch), `dev:local` (app run
-  natively against local infra, watch) and `dev` (app natively against remote
-  infra, watch).
+  the app as a container), `test:ui` (Playwright UI, watch), `dev:local` (app as a
+  container against local infra, watch) and `dev` (app as a container against
+  remote infra, watch).
 - `playwright.config.ts` — follow the pattern in
   [playwright.md](../e2e-test-setup/reference/playwright.md):
   `defineBddConfig({ features, steps })`, `globalSetup`, `fullyParallel`, capped
@@ -66,9 +66,9 @@ Follow the patterns captured in [stack.md](../e2e-test-setup/reference/stack.md)
    single `startMockWiremock(config, ...)`. Register each real upstream hostname
    as a **network alias** so the app's server-side calls resolve to the mock.
 
-4. **App under test** — run **natively** in dev (`dev` / `dev:local`, watch mode);
-   for **`test:ci` / CI**, run it as a **toolchain-only image with bind-mounted
-   source**:
+4. **App under test** — run it as a **toolchain-only image with bind-mounted
+   source** in **every mode** (`dev` / `dev:local` and `test:ci` / CI); the
+   container runs the app in watch mode so bind-mounted source edits reload live:
    - Build context = a fresh temp dir under the **build output folder** (e.g.
      `target/<image>-build-context`), never a version-controlled source folder,
      containing only `.tool-versions` + the Dockerfile (see `buildWorkflowImage` /
@@ -129,11 +129,12 @@ Measure with `DEBUG=testcontainers:build` (`yarn dev:debug`) and confirm cached
 layers are reused on a second run.
 
 ## Long-running stack & the test / test:ci split
-`dev:local` boots the stack once (app run natively, dependencies as containers)
-and writes connection info to a gitignored file; `test` reuses it via a
+`dev:local` boots the stack once (app and dependencies all as containers) and
+writes connection info to a gitignored file; `test` reuses it via a
 `sharedStack.ts` reader and **aborts if no local stack is running**. `test:ci`
-instead builds and starts everything itself, the app included as a container.
-Provide a `run-dev-local.ts` entrypoint for `dev:local`.
+instead builds and starts everything itself. In every case the app runs as a
+bind-mounted, watch-mode container. Provide a `run-dev-local.ts` entrypoint for
+`dev:local`.
 
 ## Verify
 

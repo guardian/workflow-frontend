@@ -45,9 +45,9 @@ Scripts — the **standard set** (see playbook §9):
     "test:ci": "bddgen && <checkout-real-deps?> && playwright test",
     // Playwright UI (headed), watch, spins up infra if needed
     "test:ui": "bddgen && playwright test --ui-port=<port>",
-    // app run natively + deps, pointed at LOCAL infra, watch
+    // app as a container + deps, pointed at LOCAL infra, watch
     "dev:local": "tsx setup/run-dev-local.ts",
-    // app run natively, pointed at REMOTE infra, watch
+    // app as a container, pointed at REMOTE infra, watch
     "dev": "<run app against remote infra>",
     "test:report": "playwright show-report target/playwright-report --port <port>"
   }
