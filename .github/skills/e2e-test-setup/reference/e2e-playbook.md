@@ -106,10 +106,19 @@ The reference setup went through these same phases.
 | 4 | Author a **small** set of `.feature` files + step definitions to validate the setup (ask the user which part of the UI to cover) | `feature-file-from-templates`, `feature-file-step-definitions` |
 | 5 | Write the `e2e-tests/README.md` documenting the suite | (agent-led, see [docs.md](docs.md)) |
 | 6 | Add the CI workflow | `e2e-ci-workflow` |
+| 7 | **Iteratively extend coverage** — grow the suite feature by feature, **only after the user has verified phases 0–6** (see below) | `feature-file-from-templates`, `feature-file-step-definitions` |
 
 The `e2e-tests/README.md` is a **living document**: any later change to the e2e
 setup (stack, fixtures/mocks, commands, folder layout or CI) must update the
 matching section of the README in the same change, following [docs.md](docs.md).
+
+**Phase 7 is separate and iterative.** Phases 0–6 stand up the suite and validate
+it with a small set of features; do **not** roll extending coverage into that
+work. Only once the user confirms phases 0–6 are complete and correct do you begin
+Phase 7, and then one increment at a time: **confirm with the user which part of
+the UI / feature to cover next** (you may recommend a subset from the plan's
+feature overview — typically the next foundational, highest-value features), author
+its `.feature` files + step definitions, verify them, update the plan, and repeat.
 
 ---
 

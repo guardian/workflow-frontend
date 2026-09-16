@@ -55,7 +55,15 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
    next.
 3. **Verify each phase** with the skill's verification steps (boot the stack,
    run the suite, check teardown). Fix failures before moving on.
-4. **Keep the app-code footprint minimal** — ideally a single env-gated switch;
+4. **Extend coverage iteratively (Phase 7) — only after the user verifies the
+   setup.** Standing up the suite ends at the CI phase; do **not** roll extending
+   coverage into it. Once the user confirms phases 0–6 are complete and correct,
+   grow the suite one increment at a time: **confirm with the user which part of
+   the UI / feature to cover next** (recommend a subset from the feature overview
+   in `plans/e2e-test-setup.md` — typically the next foundational, highest-value
+   features), author its `.feature` files + step definitions, verify them, update
+   the plan, and repeat.
+5. **Keep the app-code footprint minimal** — ideally a single env-gated switch;
    everything else lives under `e2e-tests/`.
 
 ## Guardrails
