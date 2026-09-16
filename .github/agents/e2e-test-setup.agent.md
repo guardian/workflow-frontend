@@ -32,18 +32,20 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
    checkout, built from source) or mock it with WireMock — default to mocking. Ask
    the user for anything you cannot determine from the codebase. Summarise
    findings and confirm before scaffolding.
-   As part of discovery, also run the **`plan-feature-files` prompt** to produce
-   a feature overview and a recommended order for generating feature files and
-   step definitions. Save its output to the gitignored build output folder (e.g.
-   `target/e2e-feature-plan.md`) so later phases — and follow-up sessions — can
-   reference it.
+   As part of discovery, write an overall **e2e test setup plan** as a
+   GitHub-flavoured markdown file under `plans/` (e.g.
+   `plans/e2e-test-setup.md`): the discovery findings, the phase-by-phase work,
+   and open questions. Also run the **`plan-feature-files` prompt** during this
+   phase and fold its feature overview and recommended generation order into the
+   same plan file (do not save it separately). Keep this plan updated as you go —
+   tick off work and revise decisions as each phase completes.
 2. **Then proceed phase by phase** (scaffold + stack → fixtures + mocks → tests →
    docs → CI), following the playbook's phase table. Bake the build-speed
    optimisations (playbook §6) into the stack build rather than as a separate
    pass. In the tests phase, author only a **small** set of features to validate
    the setup — **ask the user which part of the UI** to cover, don't generate the
-   whole suite. When asking, reference the saved `plan-feature-files` output (e.g.
-   `target/e2e-feature-plan.md`) and recommend a starting subset from its phased
+   whole suite. When asking, reference the feature overview folded into the plan
+   (`plans/e2e-test-setup.md`) and recommend a starting subset from its phased
    plan (typically the foundational, highest-value features first). Own the
    **docs phase directly** (no phase skill): before CI, write
    `e2e-tests/README.md` following the playbook's
