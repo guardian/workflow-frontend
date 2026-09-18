@@ -57,6 +57,13 @@ realistic stack before it ships.*
    `e2e-tests/target/workflow-backend/` (real-dependency checkout),
    `target/datastore-build-context` and `target/workflow-build-context` (image
    build contexts).
+5. **Use the same JavaScript package manager as the app under test.** If the app
+   uses npm, yarn or pnpm, use that same manager for the `e2e-tests/` workspace —
+   its scripts, `install`/`exec` invocations, lockfile and CI dependency cache. If
+   the app uses none of those (or isn't a JS project), default to **npm**. The
+   reference examples and captured docs show `yarn` because the reference app uses
+   yarn; substitute the app's manager throughout (e.g. `npm run` / `npm exec`,
+   `package-lock.json`, `cache: npm`) rather than copying `yarn` verbatim.
 
 ---
 
@@ -106,7 +113,7 @@ The reference setup went through these same phases.
 | 1 | Scaffold `e2e-tests/` (package.json, playwright.config, global-setup) | `e2e-stack-setup` |
 | 2 | Build the Testcontainers stack: infra → app → real services + mocks (fast by design — see §6) | `e2e-stack-setup` |
 | 3 | Seed fixtures and configure mocks | `e2e-fixtures-and-mocks` |
-| 4 | Author a **small** set of `.feature` files + step definitions to validate the setup (ask the user which part of the UI to cover) | `feature-file-from-templates`, `feature-file-step-definitions` |
+| 4 | Author a **small** set of `.feature` files + step definitions to validate the setup: the app's **landing page** (confirm with the user which page that is) plus a user-chosen feature slice (ask the user which part of the UI to cover) | `feature-file-from-templates`, `feature-file-step-definitions` |
 | 5 | Write the `e2e-tests/README.md` documenting the suite | (agent-led, see [docs.md](docs.md)) |
 | 6 | Add the CI workflow | `e2e-ci-workflow` |
 | 7 | **Iteratively extend coverage** — grow the suite feature by feature, **only after the user has verified phases 0–6** (see below) | `feature-file-from-templates`, `feature-file-step-definitions` |

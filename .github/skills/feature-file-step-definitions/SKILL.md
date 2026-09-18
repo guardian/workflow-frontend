@@ -59,6 +59,11 @@ So every Gherkin step needs a matching step definition, and a Playwright config 
    ./e2e-tests/scripts/test-e2e e2e-tests/features/foo.feature   # single feature
    ```
    `bddgen` fails loudly on any step with no matching definition — use that to find gaps.
+   As the suite runs, **watch the standard output/error of the app and the stack
+   containers for errors, stack traces or failed requests** (e.g. a mock
+   returning 404/500, a missing hostname, a server-side exception) — a passing
+   assertion isn't enough if the app is logging errors underneath. Diagnose and
+   fix any error surfaced in the logs before considering the feature done.
 
 ## Extend the stack for new features
 

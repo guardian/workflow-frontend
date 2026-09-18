@@ -24,6 +24,11 @@ Create an `e2e-tests/` folder independent of the app's build, following the
 pattern in the reference
 [scaffold.md](../e2e-test-setup/reference/scaffold.md):
 
+- **Match the app's JavaScript package manager** (playbook guiding principle 5):
+  detect what the main project uses — npm, yarn or pnpm — and use that same
+  manager for the `e2e-tests/` workspace (its scripts, `install`/`exec`, lockfile
+  and CI cache). If the app uses none of those, default to **npm**. The reference
+  shows `yarn`; substitute the app's manager throughout.
 - `package.json` with dev deps: `@playwright/test`, `playwright`,
   `playwright-bdd`, `testcontainers`, `tsx`, plus any AWS SDK clients needed for
   seeding. Provide the **standard scripts** (playbook §9): `test` (runs against an
@@ -43,7 +48,7 @@ pattern in the reference
   reuse) the stack, write connection details to a gitignored file, tear down the
   owned stack in the returned teardown fn.
 - Pin the toolchain in `.tool-versions` / `mise.toml` (Node ≥ 22.9.0; enable
-  `corepack` for yarn).
+  `corepack` when the app's manager is yarn or pnpm).
 
 ## Build the stack (Phase 2)
 
@@ -138,7 +143,12 @@ bind-mounted, watch-mode container. Provide a `run-dev-local.ts` entrypoint for
 
 ## Verify
 
-Run all three checks; every one must pass before the phase is done.
+Run all three checks; every one must pass before the phase is done. In every
+check, **watch the standard output/error of the stack containers and the app**
+(build logs, app startup, request logs) for errors, stack traces or failed
+healthchecks — a green exit isn't enough if the app is logging errors. Treat any
+unexpected error in the logs as a failure to diagnose and fix before moving on
+(e.g. a mock returning 404/500, a failed DB connection, a missing env var).
 
 1. **Single-command run** — the suite spins up the whole stack itself, runs
    green, then tears everything down:
@@ -146,7 +156,8 @@ Run all three checks; every one must pass before the phase is done.
    yarn test:ci
    ```
    Confirm it builds infra + the app-under-test container, reaches the app's
-   healthcheck, and exits `0` with all scenarios passing.
+   healthcheck, and exits `0` with all scenarios passing **and** with no errors
+   in the container/app logs.
 
 2. **Shared-stack run (two terminals)** — boot the stack once, then run the suite
    against it from a separate terminal; the tests must pass the same way:
@@ -160,11 +171,14 @@ Run all three checks; every one must pass before the phase is done.
    exits `0` with all scenarios passing.
 
 3. **Host-browser access** — while the shared stack from step 2 is still up,
-   open the app's landing page in a browser **on the host** and confirm it
-   loads (authenticated, not an error/redirect loop): e.g.
-   `https://workflow.local.dev-gutools.co.uk/cookie`, which sets the auth cookie
-   and redirects to the dashboard. This proves the host → TLS-terminating nginx →
-   forwarded-port path reaches the app in the stack.
+   **validate the exact path/URL that opens the app's landing page from a browser
+   on the host** and confirm it loads (authenticated, not an error/redirect
+   loop): e.g. `https://workflow.local.dev-gutools.co.uk/cookie`, which sets the
+   auth cookie and redirects to the dashboard. Verify the URL actually resolves
+   and renders the landing page end-to-end — this proves the host →
+   TLS-terminating nginx → forwarded-port path reaches the app in the stack — and
+   check the app logs for errors while the page loads. Record the working URL so
+   the README and the landing-page feature can reference it.
 
 Finally, tear the stack down (`Ctrl+C` in Terminal 1) and confirm all containers
 and the network are stopped with no leaks (`docker ps`).

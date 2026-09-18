@@ -25,8 +25,10 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
 
 ## How you work
 1. **Discover first (Phase 0).** Before writing anything, establish: the app's
-   framework and how it runs in dev; every dependency (other services, databases,
-   object storage, each upstream HTTP API); the auth model; and that Docker is
+   framework and how it runs in dev; the app's **JavaScript package manager**
+   (npm, yarn or pnpm — use that same manager for `e2e-tests/`, defaulting to npm
+   if the app uses none); every dependency (other services, databases, object
+   storage, each upstream HTTP API); the auth model; and that Docker is
    available. For each dependency version-controlled in a Guardian repository
    (private or public), ask the user whether to run the real service (repo
    checkout, built from source) or mock it with WireMock — default to mocking. Ask
@@ -44,8 +46,11 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
    optimisations (playbook §6) into the stack build rather than as a separate
    pass. In the tests phase, don't try to cover the whole app at this stage;
    instead pick a **small** set of features and generate a **complete** set of
-   tests for just those, to validate the setup — **ask the user which part of the
-   UI** to cover. When asking, reference the feature overview folded into the plan
+   tests for just those, to validate the setup. Always cover the app's **landing
+   page** — **confirm with the user which page is the landing page** — so the
+   stack is validated end-to-end from the entry point, and in addition **ask the
+   user which part of the UI** to cover for the feature slice. When asking,
+   reference the feature overview folded into the plan
    (`plans/e2e-test-setup.md`) and recommend a starting subset from its phased
    plan (typically the foundational, highest-value features first). Own the
    **docs phase directly** (no phase skill): before CI, write
@@ -54,7 +59,13 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
    what was actually built. Complete and verify one phase before starting the
    next.
 3. **Verify each phase** with the skill's verification steps (boot the stack,
-   run the suite, check teardown). Fix failures before moving on.
+   run the suite, check teardown). While verifying — running the Playwright suite
+   or booting the local dev stack — **watch the standard output/error of the app
+   and every stack container for errors, stack traces or failed healthchecks**,
+   and diagnose and fix them; a green exit isn't enough if the app is logging
+   errors. As part of verification, **validate the exact path/URL that opens the
+   app's landing page from a browser on the host** and confirm it renders
+   end-to-end. Fix failures before moving on.
 4. **Extend coverage iteratively (Phase 7) — only after the user verifies the
    setup.** Standing up the suite ends at the CI phase; do **not** roll extending
    coverage into it. Once the user confirms phases 0–6 are complete and correct,

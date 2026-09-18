@@ -30,6 +30,10 @@ driven entirely by the app's real dependencies.
 
 1. **Phase 0 — Discover** (do this before writing anything):
    - Identify the app's runtime: framework, language, how it's built/run in dev.
+   - Identify the app's **JavaScript package manager** (npm, yarn or pnpm — check
+     the lockfile / `packageManager` field). Use that same manager for the
+     `e2e-tests/` workspace; if the app uses none of those, default to **npm**
+     (playbook guiding principle 5).
    - Enumerate every dependency the app talks to: other services, databases
      (SQL / DynamoDB / etc.), object storage (S3), and each upstream HTTP API.
    - Identify the auth model (how a request is authenticated).
@@ -45,8 +49,11 @@ driven entirely by the app's real dependencies.
 3. **Phase 3 — Fixtures + mocks** → use the **`e2e-fixtures-and-mocks`** skill.
 4. **Phase 4 — Tests** → use the **`feature-file-from-templates`** and
    **`feature-file-step-definitions`** skills. The goal here is only to **validate
-   the setup**, not to cover the whole app — **ask the user which part of the UI**
-   to extract a small set of features for, and author just those.
+   the setup**, not to cover the whole app. Cover two things: the app's **landing
+   page** — **confirm with the user which page is the landing page** — so the
+   stack is exercised end-to-end from the entry point, plus a small feature slice
+   — **ask the user which part of the UI** to extract it for — and author just
+   those.
 5. **Phase 5 — Document** → write `e2e-tests/README.md` following
    [reference/docs.md](reference/docs.md). Do this before CI, once the stack,
    fixtures and tests exist, so it describes what was actually built.

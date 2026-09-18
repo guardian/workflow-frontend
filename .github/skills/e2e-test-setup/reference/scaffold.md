@@ -31,6 +31,11 @@ at the repo root.
 
 ## package.json (essence)
 
+Use the **same package manager as the app under test** (npm, yarn or pnpm;
+default to npm if the app uses none — playbook guiding principle 5). The examples
+below show `yarn` because the reference app uses yarn; substitute the app's
+manager for the scripts, `install`/`exec` calls, lockfile and CI cache.
+
 Dev deps: `@playwright/test`, `playwright`, `playwright-bdd`, `testcontainers`,
 `tsx`, plus any AWS SDK clients used for seeding, and the pan-domain signing lib.
 

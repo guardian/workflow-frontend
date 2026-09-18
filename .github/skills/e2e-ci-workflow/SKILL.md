@@ -42,19 +42,22 @@ Steps, in order:
    repo needs no token — check it out with plain `actions/checkout`.
 
 4. **Install the toolchain** — `actions/setup-node` with
-   `node-version-file: '.tool-versions'`, `cache: yarn`,
-   `cache-dependency-path: e2e-tests/yarn.lock`.
+   `node-version-file: '.tool-versions'`, and `cache` / `cache-dependency-path`
+   set for the app's package manager (playbook guiding principle 5) — e.g.
+   `cache: yarn` + `cache-dependency-path: e2e-tests/yarn.lock` for yarn, or
+   `cache: npm` + `cache-dependency-path: e2e-tests/package-lock.json` for npm.
 
-5. **Install deps** — app deps (root) then e2e deps, both
-   `--frozen-lockfile`.
+5. **Install deps** — app deps (root) then e2e deps, both with the manager's
+   frozen-lockfile flag (`--frozen-lockfile` / `npm ci`).
 
 6. **Install Playwright headless shell only** —
-   `yarn playwright install --with-deps chromium --only-shell` (the shell, not
+   `<pm> playwright install --with-deps chromium --only-shell` (the shell, not
    full Chromium — faster).
 
-7. **Run** — `yarn test:ci` (spins up all infra and the app container, then runs
+7. **Run** — `<pm> test:ci` (spins up all infra and the app container, then runs
    the suite headlessly; equivalent to `bddgen` + starting the stack +
-   `playwright test`).
+   `playwright test`). Use the app's package manager (`yarn`/`npm run`/`pnpm`) for
+   this and every command above.
 
 8. **Upload artifacts on failure** — `actions/upload-artifact` with the
    `target/test-results` path, `if: failure()`, short retention.
