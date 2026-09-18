@@ -91,6 +91,17 @@ each phase to the matching skill: `e2e-stack-setup`, `e2e-fixtures-and-mocks`,
   version-controlled source folder (playbook guiding principle 4).
 - Keep `dev` / `dev:local` working with **no browser setup** — provide cookies and
   routing server-side, not via forced cookies or browser mocks.
+- **Make sure the local stack really uses the local LocalStack for AWS, never
+  real AWS** (playbook §4.3): route every AWS service the app (and any real
+  dependency / seeding script) uses to the LocalStack container. The
+  `AWS_ENDPOINT_URL*` env vars only work with newer SDKs — older ones (e.g. AWS
+  Java SDK v1 / early v2) ignore them. When they don't work, drive the endpoint
+  from **configuration the app already reads** rather than hard-coding a dummy AWS
+  client in the application code — keep app-code changes minimal (playbook §4.7),
+  adding an env-gated switch only if there's no config path. Use dummy credentials
+  and don't let real profile/SSO/`AWS_PROFILE` credentials leak into the
+  containers. Verify at runtime — seeded buckets/tables exist in LocalStack and
+  the logs show no calls to `*.amazonaws.com`.
 - **Don't run the test suite unless asked.** When you do, use `test`: start
   `dev:local` if no local stack is up, and **abort if `dev` (remote infra) is
   running** — never test against remote infrastructure.

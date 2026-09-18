@@ -166,6 +166,34 @@ Seed data is loaded from the host after start via `awslocal` (see
   contains `.s3.`, so S3 endpoint/bucket network aliases must sit under an `s3.`
   domain (e.g. `permissions-cache.s3.localstack`) for virtual-hosted-style
   requests to resolve.
+- **Make sure the stack really uses LocalStack, never real AWS.** It is critical
+  that every AWS SDK call from the app (and from any dependency run for real, and
+  the seeding scripts) is routed to the LocalStack container, so a test run never
+  reaches — or mutates — a real AWS account. Enforce this:
+  - Point **every** AWS service the app uses at the LocalStack endpoint, and do
+    it with **as little application-code change as possible** (playbook §4.7) —
+    prefer **configuration** the app already understands over new code. The
+    `AWS_ENDPOINT_URL*` **environment variables are not honoured by every client
+    library** — they only work with newer SDKs (e.g. AWS SDK for JavaScript v3,
+    recent Go/Python/Rust SDKs). **Older SDKs ignore them** (notably the AWS Java
+    SDK v1 and early v2, and other legacy clients). When they aren't honoured,
+    prefer a **config-driven** endpoint override: reuse an existing
+    endpoint/config setting the app reads (e.g. an `application.conf` key, a
+    stage/service-endpoint config), supplied as e2e config or an env-gated value —
+    **don't hard-code a dummy/test AWS client inside the application code**. Only
+    if there is genuinely no config path, add a **minimal, env-gated** switch (the
+    §4.7 pattern) that overrides the endpoint solely under the e2e flag. Check
+    which SDK/version the app uses and pick the config mechanism it actually
+    supports; don't leave any AWS client on its default endpoint.
+  - Set **dummy** static credentials (`AWS_ACCESS_KEY_ID=test`,
+    `AWS_SECRET_ACCESS_KEY=test`) and a fixed region, and make sure no real
+    profile/SSO/instance credentials or `AWS_PROFILE` leak into the containers, so
+    a mis-pointed client fails fast instead of authenticating against real AWS.
+  - **Verify it at runtime**, don't just assume: confirm the seeded buckets/tables
+    exist in LocalStack (`awslocal s3 ls` / `awslocal dynamodb list-tables`), and
+    check the app and LocalStack logs show the AWS traffic hitting LocalStack (no
+    calls to `*.amazonaws.com`). Treat any real-AWS endpoint in the logs as a
+    failure to fix.
 
 ### 4.4 Running a dependency for real (opt-in, confirm per dependency)
 Instead of mocking, a dependency can be run as the **actual service** when it is
@@ -216,6 +244,14 @@ cookie; the `signIn` fixture signs one only for the headless test runs.
 The **only** production change was making the server use `http`
 instead of `https` for internal API calls when an e2e env var is set. Keep the
 app footprint this small; everything else lives under `e2e-tests/`.
+
+**Prefer configuration over code.** When you need the app to point at the local
+stack (LocalStack endpoints, mock hostnames, internal URLs), do it through
+configuration the app already reads — an e2e config file, existing endpoint/stage
+settings, or env vars the app honours — rather than adding test-only wiring (e.g.
+a dummy AWS client) inside the application code. Only when no configuration path
+exists should you add a **minimal, env-gated** switch like the one above, and even
+then keep it to a single narrow branch.
 
 ### 4.8 Long-running stack reused across test runs
 `dev:local` boots the stack once (app and dependencies all as containers) and

@@ -87,7 +87,17 @@ Follow the patterns captured in [stack.md](../e2e-test-setup/reference/stack.md)
    - Bind-mount the whole repo read-write; run from source (dev-mode + asset
      watch) so edits reload without a rebuild.
    - Point the app at the mocked infra via env vars (e.g.
-     `AWS_ENDPOINT_URL_S3`, `AWS_ENDPOINT_URL_DYNAMODB`).
+     `AWS_ENDPOINT_URL_S3`, `AWS_ENDPOINT_URL_DYNAMODB`). **Route every AWS
+     service the app uses to the LocalStack container** — but note the
+     `AWS_ENDPOINT_URL*` env vars are **only honoured by newer SDKs**; older ones
+     (e.g. AWS Java SDK v1 / early v2) ignore them. When they don't work, drive
+     the endpoint from **configuration the app already reads** (an e2e config
+     file, an existing endpoint/stage setting) rather than hard-coding a dummy AWS
+     client in the application code — keep app-code changes minimal (playbook §4.7),
+     adding a small env-gated switch only if there's no config path. Use **dummy**
+     credentials (`AWS_ACCESS_KEY_ID=test`, `AWS_SECRET_ACCESS_KEY=test`) and a
+     fixed region, and don't let any real profile/SSO/`AWS_PROFILE` credentials
+     leak in — so a test run can never reach real AWS (playbook §4.3).
    - Health-check with `Wait.forHttp('/management/healthcheck', port)`.
    - **Running a real dependency is opt-in, decided per dependency** (playbook
      §4.4): do it only for a service in a Guardian repository (private or public)
@@ -179,6 +189,14 @@ unexpected error in the logs as a failure to diagnose and fix before moving on
    TLS-terminating nginx → forwarded-port path reaches the app in the stack — and
    check the app logs for errors while the page loads. Record the working URL so
    the README and the landing-page feature can reference it.
+
+4. **AWS goes to LocalStack, not real AWS** — confirm the app's AWS traffic
+   really hits the LocalStack container (playbook §4.3), so a run can never touch
+   a real account. Check the seeded resources exist in LocalStack
+   (`awslocal s3 ls`, `awslocal dynamodb list-tables` — or the equivalent against
+   the container's `4566` endpoint) and that the app/LocalStack logs show the
+   AWS calls resolving to LocalStack with **no** requests to `*.amazonaws.com`.
+   Treat any real-AWS endpoint in the logs as a failure to fix.
 
 Finally, tear the stack down (`Ctrl+C` in Terminal 1) and confirm all containers
 and the network are stopped with no leaks (`docker ps`).
