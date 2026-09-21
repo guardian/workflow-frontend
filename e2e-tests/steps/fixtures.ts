@@ -1,7 +1,10 @@
 import fs from "fs";
 import path from "path";
+import { test as chromaticTest } from '@chromatic-com/playwright';
 import { test as base, createBdd } from "playwright-bdd";
-import { expect } from "@playwright/test";
+import { mergeTests } from '@playwright/test';
+// import { expect } from "@playwright/test";
+import { expect } from "@chromatic-com/playwright";
 import { createPanDomainCookie, type Role } from "../setup/panDomainCookie";
 import type { SharedStackInfo } from "../setup/sharedStack";
 import { ACTIVE_STACK_FILE } from "../global-setup";
@@ -45,7 +48,7 @@ type StackFixtures = {
     composerMock: ComposerMock;
 };
 
-export const test = base.extend<StackFixtures>({
+export const test = mergeTests(chromaticTest, base).extend<StackFixtures>({
     stack: async ({}, use) => {
         await use(readActiveStack());
     },
