@@ -27,7 +27,8 @@ jobs:
           repositories: guardian/workflow
       - name: Check out workflow-frontend
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
+        with:
+          fetch-depth: 0
       # The e2e stack builds the real Datastore service from a
       # guardian/workflow checkout. Locally this is done by
       # e2e-tests/scripts/checkout-datastore; in CI we clone it here instead.
@@ -61,6 +62,17 @@ jobs:
 
       - name: Run Playwright tests
         run: yarn bddgen && yarn playwright test
+
+      - name: Chromatic - Workflow Frontend
+        if: contains(github.event.pull_request.labels.*.name, 'run_chromatic')
+        uses: chromaui/action@bb3b582719a93c1828c5e520e62992b2937d7889 # v18.9.4
+        with:
+          playwright: true
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          workingDir: e2e-tests
+          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          CHROMATIC_ARCHIVE_LOCATION: ./target/test-results
 
       # Traces, videos and screenshots are written to target/test-results
       # (see outputDir in playwright.config.ts). Keep them for debugging
