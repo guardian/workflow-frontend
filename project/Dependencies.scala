@@ -16,7 +16,7 @@ object Dependencies {
     "joda-time" % "joda-time" % "2.14.0"
   )
 
-  val pandaVersion = "20.0.0"
+  val pandaVersion = "22.0.0"
 
   val authDependencies = Seq(
     "com.gu" %% "pan-domain-auth-play_3-0" % pandaVersion,
