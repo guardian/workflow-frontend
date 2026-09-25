@@ -15,7 +15,7 @@ export default defineConfig({
     // destination lookups query each stack with a blocking 3s timeout, so too
     // many concurrent requests can starve its thread pool and make reachable
     // stacks look unavailable. Cap concurrency to keep the load it sees modest.
-    workers: 4,
+    workers: 5,
     // Retry once so an occasional load-induced flake (e.g. a destination lookup
     // timing out under contention) doesn't fail the whole run.
     retries: 1,
