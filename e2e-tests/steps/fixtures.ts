@@ -3,7 +3,6 @@ import path from "path";
 import { test as chromaticTest } from '@chromatic-com/playwright';
 import { test as base, createBdd } from "playwright-bdd";
 import { mergeTests } from '@playwright/test';
-// import { expect } from "@playwright/test";
 import { expect } from "@chromatic-com/playwright";
 import { createPanDomainCookie, type Role } from "../setup/panDomainCookie";
 import type { SharedStackInfo } from "../setup/sharedStack";
