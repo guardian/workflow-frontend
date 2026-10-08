@@ -16,7 +16,7 @@ object Dependencies {
     "joda-time" % "joda-time" % "2.14.0"
   )
 
-  val pandaVersion = "22.0.0"
+  val pandaVersion = "22.1.0"
 
   val authDependencies = Seq(
     "com.gu" %% "pan-domain-auth-play_3-0" % pandaVersion,
@@ -31,7 +31,7 @@ object Dependencies {
 
   val logbackDependencies = Seq("net.logstash.logback" % "logstash-logback-encoder" % "6.6")
 
-  val circeVersion = "0.14.9"
+  val circeVersion = "0.14.17"
 
   val jsonDependencies = Seq(
     "io.circe" %% "circe-core" % circeVersion,
