@@ -44,6 +44,9 @@ plugins:
 # Each command has a 'cmd' field and a 'workingDirectory' field
 # e.g.
 postCreateCommand:
+    - cmd: "mise trust mise.toml"
+      workingDirectory: "${containerWorkspaceFolder}"
+      logLine: "Trust-mise-config"
     - cmd: "mise exec -- corepack enable"
       workingDirectory: "${containerWorkspaceFolder}"
       logLine: "Enabling-corepack"
