@@ -35,7 +35,7 @@ run = "yarn build"
 description = "Watch and rebuild development frontend assets"
 run = "yarn build-dev"
 
-[tasks.test]
+[tasks."test:unit"]
 description = "Run frontend unit tests"
 run = "yarn test"
 
@@ -57,27 +57,27 @@ hide = true
 dir = "{{config_root}}/e2e-tests"
 run = ["yarn install --frozen-lockfile", "yarn playwright install chromium"]
 
-[tasks."e2e:dev"]
+[tasks."dev:local"]
 description = "Start a reusable Docker e2e stack and authenticated browser"
 dir = "{{config_root}}/e2e-tests"
 run = "yarn dev:local"
 
-[tasks."e2e:debug"]
+[tasks.debug]
 description = "Start the reusable e2e stack with Docker build debug logging"
 dir = "{{config_root}}/e2e-tests"
 run = "yarn dev:debug"
 
-[tasks."e2e:test"]
+[tasks.test]
 description = "Generate BDD tests and run Playwright (starts or reuses the stack)"
 dir = "{{config_root}}/e2e-tests"
 run = "yarn test"
 
-[tasks."e2e:test-ui"]
+[tasks."test:ui"]
 description = "Run Playwright UI on port 9099"
 dir = "{{config_root}}/e2e-tests"
 run = "yarn test:ui"
 
-[tasks."e2e:report"]
+[tasks."test:report"]
 description = "Serve the Playwright HTML report on port 9098"
 dir = "{{config_root}}/e2e-tests"
 run = "yarn test:report"

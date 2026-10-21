@@ -87,16 +87,16 @@ any missing Linux libraries with `cd e2e-tests && yarn playwright install --with
 | `mise run dev` | Start the application and asset watcher (`start` is an alias) |
 | `mise run build` | Build production frontend assets |
 | `mise run build:watch` | Watch and rebuild frontend assets |
-| `mise run test` | Run frontend unit tests |
+| `mise run test:unit` | Run frontend unit tests |
 | `mise run test:watch` | Watch and rerun frontend unit tests |
 | `mise run test:scala` | Run Scala tests |
 | `mise run lint` | Lint frontend JavaScript |
 | `mise run e2e:setup` | Install just the e2e dependencies and Chromium (hidden helper) |
-| `mise run e2e:dev` | Start a reusable Docker test stack and authenticated browser |
-| `mise run e2e:debug` | Start that stack with Docker build debug logging |
-| `mise run e2e:test` | Generate and run the BDD tests, starting or reusing the stack |
-| `mise run e2e:test-ui` | Run the Playwright UI on port 9099 |
-| `mise run e2e:report` | Serve the Playwright report on port 9098 |
+| `mise run dev:local` | Start a reusable Docker test stack and authenticated browser |
+| `mise run debug` | Start that stack with Docker build debug logging |
+| `mise run test` | Generate and run the BDD tests, starting or reusing the stack |
+| `mise run test:ui` | Run the Playwright UI on port 9099 |
+| `mise run test:report` | Serve the Playwright report on port 9098 |
 
 `mise tasks` lists visible tasks. Use `mise tasks ls --hidden` to include `config`
 and `e2e:setup`; hidden tasks can still be run directly. Inspect a task with
@@ -105,18 +105,18 @@ and `e2e:setup`; hidden tasks can still be run directly. Inspect a task with
 The normal application still needs local configuration and a Datastore connection
 as described below. The e2e stack instead requires a running Docker daemon and
 Git SSH access to `guardian/workflow`; see the [e2e guide](e2e-tests/README.md).
-For repeated test runs, leave `mise run e2e:dev` running in one terminal and run
-`mise run e2e:test` in another. Stop the shared stack with `Ctrl+C`.
+For repeated test runs, leave `mise run dev:local` running in one terminal and run
+`mise run test` in another. Stop the shared stack with `Ctrl+C`.
 
-Run `mise run e2e:test-ui` independently to launch the Playwright UI. To use it
-against a shared stack, first start `mise run e2e:dev` in a separate terminal
+Run `mise run test:ui` independently to launch the Playwright UI. To use it
+against a shared stack, first start `mise run dev:local` in a separate terminal
 and wait for the stack to be ready.
 
 Arguments after `--` are forwarded to the underlying command:
 
 ```sh
 mise run dev -- --debug
-mise run e2e:test -- --grep "your scenario name"
+mise run test -- --grep "your scenario name"
 ```
 
 ### Setup for local development container
