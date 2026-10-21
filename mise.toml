@@ -1,0 +1,83 @@
+[tasks.setup]
+description = "Install tools and dependencies for the frontend and e2e tests"
+run = [
+  "mise install",
+  "corepack enable",
+  "corepack install",
+  "yarn install --frozen-lockfile",
+  { tasks = ["config", "e2e:setup"] }
+]
+
+[tasks."setup:host"]
+description = "Run the existing host setup (requires Homebrew; configures dev-nginx)"
+skip_if = 'test "${DEVCONTAINER+x}" = x'
+run = "./scripts/setup.sh"
+
+[tasks."config"]
+hide = true
+description = "Download local application config (requires AWS credentials)"
+run = "./scripts/fetch-config.sh"
+
+[tasks."datastore:tunnel"]
+description = "Open an SSH tunnel to CODE Datastore (requires ssm-scala and AWS credentials)"
+run = "./scripts/setup-ssh-tunnel.sh"
+
+[tasks.dev]
+alias = "start"
+description = "Run the application and watch frontend assets"
+run = "./scripts/start.sh"
+
+[tasks.build]
+description = "Build production frontend assets"
+run = "yarn build"
+
+[tasks."build:watch"]
+description = "Watch and rebuild development frontend assets"
+run = "yarn build-dev"
+
+[tasks.test]
+description = "Run frontend unit tests"
+run = "yarn test"
+
+[tasks."test:watch"]
+description = "Watch and rerun frontend unit tests"
+run = "yarn test-watch"
+
+[tasks."test:scala"]
+description = "Run Scala tests"
+run = "sbt test"
+
+[tasks.lint]
+description = "Lint frontend JavaScript"
+run = "yarn lint"
+
+[tasks."e2e:setup"]
+description = "Install e2e dependencies and Playwright Chromium"
+hide = true
+dir = "{{config_root}}/e2e-tests"
+run = ["yarn install --frozen-lockfile", "yarn playwright install chromium"]
+
+[tasks."e2e:dev"]
+description = "Start a reusable Docker e2e stack and authenticated browser"
+dir = "{{config_root}}/e2e-tests"
+run = "yarn dev:local"
+
+[tasks."e2e:debug"]
+description = "Start the reusable e2e stack with Docker build debug logging"
+dir = "{{config_root}}/e2e-tests"
+run = "yarn dev:debug"
+
+[tasks."e2e:test"]
+description = "Generate BDD tests and run Playwright (starts or reuses the stack)"
+dir = "{{config_root}}/e2e-tests"
+run = "yarn test"
+
+[tasks."e2e:test-ui"]
+description = "Run Playwright UI on port 9099"
+dir = "{{config_root}}/e2e-tests"
+run = "yarn test:ui"
+
+[tasks."e2e:report"]
+description = "Serve the Playwright HTML report on port 9098"
+dir = "{{config_root}}/e2e-tests"
+run = "yarn test:report"

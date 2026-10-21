@@ -104,7 +104,24 @@ when it is built.
 
 ## Running the tests
 
-All commands are run from the `e2e-tests/` folder.
+Use `mise run e2e:test` from any directory within the repository. The e2e tasks
+set their working directory to `e2e-tests/` automatically.
+
+| Command | Purpose |
+| --- | --- |
+| `mise run e2e:setup` | Install e2e dependencies and Playwright Chromium (hidden helper) |
+| `mise run e2e:dev` | Start a reusable Docker stack and authenticated browser |
+| `mise run e2e:debug` | Start the shared stack with Docker build debug logging |
+| `mise run e2e:test` | Generate BDD tests and run Playwright, starting or reusing the stack |
+| `mise run e2e:test-ui` | Run the Playwright UI on port 9099 |
+| `mise run e2e:report` | Serve the Playwright HTML report on port 9098 |
+
+For example, `mise run e2e:test -- --grep "your scenario name"` forwards a scenario
+filter to Playwright. Use `mise tasks ls --hidden` to include `e2e:setup` in the
+task listing. See the [root task guide](../README.md#mise-tasks) for all tasks.
+
+The equivalent Yarn commands below remain available.
+Run these Yarn commands from the `e2e-tests/` folder.
 
 ```bash
 yarn test
@@ -133,6 +150,10 @@ yarn test:ui
 ```
 
 The Playwright UI can be accessed via `http://localhost:9099/` on the host system.
+
+The mise equivalent is `mise run e2e:test-ui`, which runs independently of
+`e2e:dev`. To reuse a long-running stack, start `mise run e2e:dev` in a separate
+terminal first and wait for the stack to be ready.
 
 ### Fast test loop with a shared stack
 

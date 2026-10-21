@@ -55,6 +55,70 @@ Workflow Frontend needs to talk to  [Workflow Datastore](https://github.com/guar
 
 If you encounter a `Module build failed` error due to Node Sass during setup, run `npm rebuild node-sass`.
 
+### Mise tasks
+
+With [mise](https://mise.jdx.dev/) installed, common commands are available from
+any directory within the repository. Tasks run in the project root by default;
+e2e tasks explicitly run in `e2e-tests/`. Tool versions remain defined in
+[.tool-versions](.tool-versions), and tasks in [mise.toml](mise.toml).
+
+```sh
+mise trust
+mise tasks
+mise run setup
+```
+
+`setup` installs the configured tools, enables Yarn through Corepack, installs
+frontend dependencies, then runs `config` and `e2e:setup` in parallel to download
+local application configuration and install e2e dependencies and Playwright Chromium.
+Load AWS credentials before running it. It does not configure host nginx.
+On a host that needs nginx setup, also run `mise run setup:host` (requires Homebrew
+and `JAVA_HOME`). This task is skipped successfully whenever `DEVCONTAINER` is
+defined, even if its value is empty. The
+dev container already provides browser system dependencies; elsewhere, install
+any missing Linux libraries with `cd e2e-tests && yarn playwright install --with-deps chromium`.
+
+| Command | Purpose |
+| --- | --- |
+| `mise run setup` | Install tools and dependencies, download local config, and install Chromium |
+| `mise run setup:host` | Run host setup and configure dev-nginx; skip in a devcontainer |
+| `mise run config` | Download local config using AWS credentials (hidden helper) |
+| `mise run datastore:tunnel` | Connect to CODE Datastore using `ssm-scala` and AWS credentials |
+| `mise run dev` | Start the application and asset watcher (`start` is an alias) |
+| `mise run build` | Build production frontend assets |
+| `mise run build:watch` | Watch and rebuild frontend assets |
+| `mise run test` | Run frontend unit tests |
+| `mise run test:watch` | Watch and rerun frontend unit tests |
+| `mise run test:scala` | Run Scala tests |
+| `mise run lint` | Lint frontend JavaScript |
+| `mise run e2e:setup` | Install just the e2e dependencies and Chromium (hidden helper) |
+| `mise run e2e:dev` | Start a reusable Docker test stack and authenticated browser |
+| `mise run e2e:debug` | Start that stack with Docker build debug logging |
+| `mise run e2e:test` | Generate and run the BDD tests, starting or reusing the stack |
+| `mise run e2e:test-ui` | Run the Playwright UI on port 9099 |
+| `mise run e2e:report` | Serve the Playwright report on port 9098 |
+
+`mise tasks` lists visible tasks. Use `mise tasks ls --hidden` to include `config`
+and `e2e:setup`; hidden tasks can still be run directly. Inspect a task with
+`mise tasks info <task>` or preview its commands with `mise run --dry-run <task>`.
+
+The normal application still needs local configuration and a Datastore connection
+as described below. The e2e stack instead requires a running Docker daemon and
+Git SSH access to `guardian/workflow`; see the [e2e guide](e2e-tests/README.md).
+For repeated test runs, leave `mise run e2e:dev` running in one terminal and run
+`mise run e2e:test` in another. Stop the shared stack with `Ctrl+C`.
+
+Run `mise run e2e:test-ui` independently to launch the Playwright UI. To use it
+against a shared stack, first start `mise run e2e:dev` in a separate terminal
+and wait for the stack to be ready.
+
+Arguments after `--` are forwarded to the underlying command:
+
+```sh
+mise run dev -- --debug
+mise run e2e:test -- --grep "your scenario name"
+```
+
 ### Setup for local development container
 
 You may choose to work on the code within an isolated containerised environment, which requires an IDE that supports development container. We added support for it using [devenv](https://github.com/guardian/devenv). Note that `mise` is used for tool version management in the development container built by devenv. 
