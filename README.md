@@ -41,10 +41,10 @@ Workflow Frontend needs to talk to  [Workflow Datastore](https://github.com/guar
 
 ### Setup
 
-1. Run the setup script:
+1. Run setup on host:
 
    ```sh
-   ./scripts/setup.sh
+   mise run setup:host
    ```
 
 2. Download the DEV config:
@@ -55,69 +55,6 @@ Workflow Frontend needs to talk to  [Workflow Datastore](https://github.com/guar
 
 If you encounter a `Module build failed` error due to Node Sass during setup, run `npm rebuild node-sass`.
 
-### Mise tasks
-
-With [mise](https://mise.jdx.dev/) installed, common commands are available from
-any directory within the repository. Tasks run in the project root by default;
-e2e tasks explicitly run in `e2e-tests/`. Tool versions remain defined in
-[.tool-versions](.tool-versions), and tasks in [mise.toml](mise.toml).
-
-```sh
-mise trust
-mise tasks
-mise run setup
-```
-
-`setup` installs the configured tools, enables Yarn through Corepack, installs
-frontend dependencies, then runs `config` and `e2e:setup` in parallel to download
-local application configuration and install e2e dependencies and Playwright Chromium.
-Load AWS credentials before running it. It does not configure host nginx.
-On a host that needs nginx setup, also run `mise run setup:host` (requires Homebrew
-and `JAVA_HOME`). This task is skipped successfully whenever `DEVCONTAINER` is
-defined, even if its value is empty. The
-dev container already provides browser system dependencies; elsewhere, install
-any missing Linux libraries with `cd e2e-tests && yarn playwright install --with-deps chromium`.
-
-| Command | Purpose |
-| --- | --- |
-| `mise run setup` | Install tools and dependencies, download local config, and install Chromium |
-| `mise run setup:host` | Run host setup and configure dev-nginx; skip in a devcontainer |
-| `mise run config` | Download local config using AWS credentials (hidden helper) |
-| `mise run datastore:tunnel` | Connect to CODE Datastore using `ssm-scala` and AWS credentials |
-| `mise run dev` | Start the application and asset watcher (`start` is an alias) |
-| `mise run build` | Build production frontend assets |
-| `mise run build:watch` | Watch and rebuild frontend assets |
-| `mise run test:unit` | Run frontend unit tests |
-| `mise run test:watch` | Watch and rerun frontend unit tests |
-| `mise run test:scala` | Run Scala tests |
-| `mise run lint` | Lint frontend JavaScript |
-| `mise run e2e:setup` | Install just the e2e dependencies and Chromium (hidden helper) |
-| `mise run dev:local` | Start a reusable Docker test stack and authenticated browser |
-| `mise run debug` | Start that stack with Docker build debug logging |
-| `mise run test` | Generate and run the BDD tests, starting or reusing the stack |
-| `mise run test:ui` | Run the Playwright UI on port 9099 |
-| `mise run test:report` | Serve the Playwright report on port 9098 |
-
-`mise tasks` lists visible tasks. Use `mise tasks ls --hidden` to include `config`
-and `e2e:setup`; hidden tasks can still be run directly. Inspect a task with
-`mise tasks info <task>` or preview its commands with `mise run --dry-run <task>`.
-
-The normal application still needs local configuration and a Datastore connection
-as described below. The e2e stack instead requires a running Docker daemon and
-Git SSH access to `guardian/workflow`; see the [e2e guide](e2e-tests/README.md).
-For repeated test runs, leave `mise run dev:local` running in one terminal and run
-`mise run test` in another. Stop the shared stack with `Ctrl+C`.
-
-Run `mise run test:ui` independently to launch the Playwright UI. To use it
-against a shared stack, first start `mise run dev:local` in a separate terminal
-and wait for the stack to be ready.
-
-Arguments after `--` are forwarded to the underlying command:
-
-```sh
-mise run dev -- --debug
-mise run test -- --grep "your scenario name"
-```
 
 ### Setup for local development container
 
@@ -135,10 +72,10 @@ You may choose to work on the code within an isolated containerised environment,
 
 5. Load the AWS credentials.
 
-6. Download the local container config:
+6. Rune the setup:
 
    ```sh
-   ./scripts/fetch-config.sh
+   mise run setup
    ```
 
 
@@ -153,9 +90,9 @@ You may choose to work on the code within an isolated containerised environment,
 
 5. Download the local container config:
 
-   ```sh
-   ./scripts/fetch-config.sh
-   ```
+```sh
+mise run setup
+```
 
 ### Connecting to Datastore
 
@@ -164,7 +101,7 @@ You may choose to work on the code within an isolated containerised environment,
 Create an SSH tunnel to a workflow-frontend CODE instance. You will need [ssm-scala](https://github.com/guardian/ssm-scala) installed.
 
 ```sh
-./scripts/setup-ssh-tunnel.sh
+mise run datastore:tunnel
 ```
 
 #### Local backend
@@ -178,7 +115,7 @@ curl -is http://localhost:9095/management/healthcheck
 ### Running
 
 ```sh
-./scripts/start.sh
+mise run dev
 ```
 
 Certain features require running other services locally, e.g. run [atom-workshop](https://github.com/guardian/atom-workshop) locally to test creating Chart atoms through Workflow.

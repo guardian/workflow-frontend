@@ -104,21 +104,19 @@ when it is built.
 
 ## Running the tests
 
-Use `mise run test` from any directory within the repository. The e2e tasks
+The dependencies in the e2e-tests and the Playwright should have be installed after 
+you run `mise run setup`.
+
+Use `mise run test`. You man run it from any directory within the repository. The e2e tasks
 set their working directory to `e2e-tests/` automatically.
 
 | Command | Purpose |
 | --- | --- |
-| `mise run e2e:setup` | Install e2e dependencies and Playwright Chromium (hidden helper) |
 | `mise run dev:local` | Start a reusable Docker stack and authenticated browser |
 | `mise run debug` | Start the shared stack with Docker build debug logging |
 | `mise run test` | Generate BDD tests and run Playwright, starting or reusing the stack |
 | `mise run test:ui` | Run the Playwright UI on port 9099 |
 | `mise run test:report` | Serve the Playwright HTML report on port 9098 |
-
-For example, `mise run test -- --grep "your scenario name"` forwards a scenario
-filter to Playwright. Use `mise tasks ls --hidden` to include `e2e:setup` in the
-task listing. See the [root task guide](../README.md#mise-tasks) for all tasks.
 
 The equivalent Yarn commands below remain available.
 Run these Yarn commands from the `e2e-tests/` folder.
