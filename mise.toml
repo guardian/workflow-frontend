@@ -4,7 +4,7 @@ run = [
   "mise install",
   "corepack enable",
   "corepack install",
-  "yarn install --frozen-lockfile",
+  "yarn install --immutable",
   { tasks = ["config", "e2e:setup"] }
 ]
 
@@ -55,7 +55,7 @@ run = "yarn lint"
 description = "Install e2e dependencies and Playwright Chromium"
 hide = true
 dir = "{{config_root}}/e2e-tests"
-run = ["yarn install --frozen-lockfile", "yarn playwright install --with-deps chromium"]
+run = ["yarn install --immutable", "yarn playwright install --with-deps chromium"]
 
 [tasks."dev:local"]
 description = "Start a reusable Docker e2e stack and authenticated browser"
