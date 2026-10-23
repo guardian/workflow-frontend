@@ -26,7 +26,7 @@ jobs:
           private-key: ${{ secrets.WORKFLOW_APP_PRIVATE_KEY }}
           repositories: guardian/workflow
       - name: Check out workflow-frontend
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
       # The e2e stack builds the real Datastore service from a
@@ -34,18 +34,20 @@ jobs:
       # e2e-tests/scripts/checkout-datastore; in CI we clone it here instead.
       # stackContainers.ts looks for it at e2e-tests/target/workflow-backend.
       - name: Check out guardian/workflow (Datastore service)
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           token: "${{ steps.workflow-app-token.outputs.token }}"
           repository: guardian/workflow
           path: e2e-tests/target/workflow-backend
 
       - name: Install Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: '.tool-versions'        
+          node-version-file: ".tool-versions"
           cache: yarn
-          cache-dependency-path: e2e-tests/yarn.lock
+          cache-dependency-path: |
+            yarn.lock
+            e2e-tests/yarn.lock
 
       - name: Install application dependencies
         working-directory: .
@@ -54,11 +56,42 @@ jobs:
       - name: Install e2e dependencies
         run: yarn install --frozen-lockfile
 
-      # We only need the headless shell ("skin"), not the full Chromium
-      # browser, so use --only-shell. --with-deps also installs the OS
-      # libraries the shell needs on the runner.
+      - name: Cache sbt dependencies (ivy/coursier)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cache/coursier
+            ~/.ivy2/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-${{ hashFiles('**/*.sbt', '**/project/**/*.scala', '**/project/build.properties', '**/.tool-versions') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-
+
+      - name: Prepare sbt cache mounts
+        run: |
+          mkdir -p "$HOME/.cache/coursier" "$HOME/.ivy2/cache"
+          echo "DEVENV_COURSIER_CACHE_MOUNT_DIR=$HOME/.cache/coursier" >> "$GITHUB_ENV"
+          echo "DEVENV_IVY_CACHE_MOUNT_DIR=$HOME/.ivy2" >> "$GITHUB_ENV"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-${{ runner.arch }}-playwright-chromium-shell-${{ hashFiles('e2e-tests/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-playwright-chromium-shell-
+
       - name: Install Playwright Chromium (headless shell only)
-        run: yarn playwright install --with-deps chromium --only-shell
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: yarn playwright install chromium --only-shell
+
+      - name: Verify Chromium can launch
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+          const browser = await chromium.launch();
+          await browser.close();
+          NODE
 
       - name: Run Playwright tests
         run: yarn bddgen && yarn playwright test
@@ -79,7 +112,7 @@ jobs:
       # failed runs.
       - name: Upload Playwright traces and videos
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-traces
           path: e2e-tests/target/test-results
