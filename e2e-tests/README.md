@@ -98,14 +98,13 @@ graph LR
   repository. The test setup clones it automatically into
   `e2e-tests/target/workflow-backend/` (see [setup/checkout-datastore](setup/checkout-datastore)).
 
-The build tools including "mise", the dependencies of the e2e-tests and 
-the Playwright Chromium browser are installed in the devcontainer
-when it is built.
+The build tools, including mise, are installed when the devcontainer is built.
+Its post-create hook runs `mise run setup`, including `setup:e2e`, to install
+the e2e dependencies and Playwright Chromium automatically.
 
 ## Running the tests
 
-The dependencies in the e2e-tests and the Playwright should have be installed after 
-you run `mise run setup`.
+The dependencies in the e2e-tests and the Playwright should have been installed after the devcontainer is built.
 
 Use `mise run test`. You man run it from any directory within the repository. The e2e tasks
 set their working directory to `e2e-tests/` automatically.

@@ -47,6 +47,9 @@ postCreateCommand:
     - cmd: "mise trust mise.toml"
       workingDirectory: "${containerWorkspaceFolder}"
       logLine: "Trust-mise-config"
+    - cmd: "mise run setup"
+      workingDirectory: "${containerWorkspaceFolder}"
+      logLine: "Setup-dependencies-and-e2e"
 postStartCommand:
     - cmd: "mise reshim"
       workingDirectory: "${containerWorkspaceFolder}"

@@ -5,7 +5,7 @@ run = [
   "corepack enable",
   "corepack install",
   "yarn install --immutable",
-  { tasks = ["config", "e2e:setup"] }
+  { tasks = ["setup:e2e"] }
 ]
 
 [tasks."setup:host"]
@@ -14,7 +14,6 @@ skip_if = 'test "${DEVCONTAINER+x}" = x'
 run = "./scripts/setup.sh"
 
 [tasks."config"]
-hide = true
 description = "Download local application config (requires AWS credentials)"
 run = "./scripts/fetch-config.sh"
 
@@ -51,7 +50,7 @@ run = "sbt test"
 description = "Lint frontend JavaScript"
 run = "yarn lint"
 
-[tasks."e2e:setup"]
+[tasks."setup:e2e"]
 description = "Install e2e dependencies and Playwright Chromium"
 hide = true
 dir = "{{config_root}}/e2e-tests"
