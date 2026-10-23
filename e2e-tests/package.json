@@ -27,5 +27,8 @@
   },
   "dependencies": {
     "@chromatic-com/playwright": "^0.15.0"
+  },
+  "resolutions": {
+    "storybook": "10.6.2"
   }
 }
