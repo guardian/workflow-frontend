@@ -54,7 +54,6 @@ run = "yarn lint"
 
 [tasks."setup:e2e"]
 description = "Install e2e dependencies and Playwright Chromium"
-hide = true
 dir = "{{config_root}}/e2e-tests"
 run = ["yarn install --immutable", "yarn playwright install --with-deps chromium"]
 
