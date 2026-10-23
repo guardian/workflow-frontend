@@ -86,12 +86,7 @@ jobs:
         run: yarn playwright install chromium --only-shell
 
       - name: Verify Chromium can launch
-        run: |
-          node --input-type=module <<'NODE'
-          import { chromium } from 'playwright';
-          const browser = await chromium.launch();
-          await browser.close();
-          NODE
+        run: yarn tsx setup/verify-chromium.ts
 
       - name: Run Playwright tests
         run: yarn bddgen && yarn playwright test
