@@ -39,16 +39,7 @@ const AUTH_REDIRECT_IMAGE = "nginx:alpine";
 // image default (/home/wiremock), so nothing in the base image is shadowed.
 const WIREMOCK_ROOT_DIR = "/wiremock-root";
 
-// In local dev the restorer runs as the DEV identity, whose effective stage is
-// CODE, so it resolves each stack's real per-stage flexible-content API host
-// (see app/models/FlexibleStack.scala and app/config/AppConfig.scala). We
-// register those exact hostnames as network aliases on the mock container, so
-// the real hostnames resolve to the mock inside the Docker network — no
-// config/URL override required.
 export const WIREMOCK_HTTP_PORT = 80;
-// Container port the https-serving mocks (composer, presence, telemetry) listen
-// on; Chromium host-resolver-rules map each mock's hostname to its fixed host port.
-const WIREMOCK_HTTPS_PORT = 8443;
 // Fixed host port for the optional host-browser auth-cookie endpoint. Kept
 // stable (and forwarded in the devcontainer) so it can be bookmarked.
 const NGINX_PORT = 80;
@@ -59,27 +50,15 @@ const HOST_FRONTEND_PORT = 9091;
 // traffic to; resolved inside the Docker network at request time.
 const FRONTEND_ALIAS = "workflow-frontend";
 const FRONTEND_UPSTREAM = `${FRONTEND_ALIAS}:${CONTAINER_FRONTEND_PORT}`;
-const CAPI_HOSTNAME = "iam-preview.content.local.dev-guardianapis.com";
-const PREFERENCES_HOSTNAME = "preferences.local.dev-gutools.co.uk";
-const TAG_MANAGER_HOSTNAME = "tagmanager.local.dev-gutools.co.uk";
-const COMPOSER_HOSTNAME = "composer.local.dev-gutools.co.uk";
-// Composer is called from the browser cross-origin over https; the mock serves
-// https on this fixed host port, which Chromium host-resolver-rules maps
-// COMPOSER_HOSTNAME to. Forwarded in the devcontainer as "Composer API".
+const CAPI_HOSTNAME = "iam-preview-content";
+const PREFERENCES_HOSTNAME = "preferences";
+const TAG_MANAGER_HOSTNAME = "tagmanager";
+const COMPOSER_HOSTNAME = "composer";
 const HOST_COMPOSER_HTTP_PORT = 9081;
-const HOST_COMPOSER_HTTPS_PORT = 9082;
-const PRESENCE_HOSTNAME = "presence.local.dev-gutools.co.uk";
-// Presence's client library is loaded by the browser over https; the mock serves
-// it on this fixed host port, which Chromium host-resolver-rules maps
-// PRESENCE_HOSTNAME to. Forwarded in the devcontainer as "Presence".
+const PRESENCE_HOSTNAME = "presence";
 const HOST_PRESENCE_HTTP_PORT = 9070;
-const HOST_PRESENCE_HTTPS_PORT = 9071;
-const TELEMETRY_HOSTNAME = "user-telemetry.local.dev-gutools.co.uk";
-// Telemetry is called from the browser over https; the mock serves it on this
-// fixed host port, which Chromium host-resolver-rules maps TELEMETRY_HOSTNAME
-// to. Forwarded in the devcontainer as "User telemetry".
+const TELEMETRY_HOSTNAME = "user-telemetry";
 const HOST_TELEMETRY_HTTP_PORT = 3132;
-const HOST_TELEMETRY_HTTPS_PORT = 3133;
 
 export async function startAws(
     network: StartedNetwork,
@@ -119,16 +98,14 @@ export async function startAws(
 type MockPortMapping = number | { container: number; host: number };
 
 interface MockWiremockConfig {
-    /** Log prefix for this mock's container output. */
+    /** Container name and log prefix for this mock. */
     name: string;
     /** fixtures/<dir> folder holding this mock's WireMock root (mappings/ + __files/). */
     fixtureDir: string;
-    /** Docker network alias(es) the frontend/browser resolve to this mock. */
-    aliases: string[];
+    /** Hostname advertised to devcontainer-nginx. */
+    hostname: string;
     /** Ports to expose; a fixed host port is used only where one is required. */
     ports: MockPortMapping[];
-    /** Serve https on 8443 (browser cross-origin mocks) in addition to http. */
-    https?: boolean;
     /** Disable WireMock response templating (e.g. presence serves a JS body verbatim). */
     templating?: boolean;
 }
@@ -137,61 +114,54 @@ export const MOCK_WIREMOCK_CONFIGS: Record<string, MockWiremockConfig> = {
     capi: {
         name: "mock-capi",
         fixtureDir: "capi",
-        aliases: [CAPI_HOSTNAME],
+        hostname: CAPI_HOSTNAME,
         ports: [WIREMOCK_HTTP_PORT],
         templating: true,
     },
     composer: {
         name: "mock-composer",
         fixtureDir: "composer",
-        aliases: [COMPOSER_HOSTNAME],
+        hostname: COMPOSER_HOSTNAME,
         ports: [
             { container: WIREMOCK_HTTP_PORT, host: HOST_COMPOSER_HTTP_PORT },
-            { container: WIREMOCK_HTTPS_PORT, host: HOST_COMPOSER_HTTPS_PORT },
         ],
-        https: true,
         templating: true,
     },
     presence: {
         name: "mock-presence",
         fixtureDir: "presence",
-        aliases: [PRESENCE_HOSTNAME],
+        hostname: PRESENCE_HOSTNAME,
         ports: [
             { container: WIREMOCK_HTTP_PORT, host: HOST_PRESENCE_HTTP_PORT },
-            { container: WIREMOCK_HTTPS_PORT, host: HOST_PRESENCE_HTTPS_PORT },
         ],
-        https: true,
     },
     telemetry: {
         name: "mock-telemetry",
         fixtureDir: "telemetry",
-        aliases: [TELEMETRY_HOSTNAME],
+        hostname: TELEMETRY_HOSTNAME,
         ports: [
             { container: WIREMOCK_HTTP_PORT, host: HOST_TELEMETRY_HTTP_PORT },
-            { container: WIREMOCK_HTTPS_PORT, host: HOST_TELEMETRY_HTTPS_PORT },
         ],
-        https: true,
         templating: true,
     },
     preferences: {
         name: "mock-preferences",
         fixtureDir: "preferences",
-        aliases: [PREFERENCES_HOSTNAME],
+        hostname: PREFERENCES_HOSTNAME,
         ports: [WIREMOCK_HTTP_PORT],
         templating: true,
     },
     tagmanager: {
         name: "mock-tagmanager",
         fixtureDir: "tagmanager",
-        aliases: [TAG_MANAGER_HOSTNAME],
+        hostname: TAG_MANAGER_HOSTNAME,
         ports: [WIREMOCK_HTTP_PORT],
         templating: true,
     },
 };
 
 // Start one WireMock mock from the shared image, bind-mounting fixtures/<name>
-// as its stub root. Runs as root so WireMock can bind the privileged port 80,
-// which the frontend's server-side calls reach via the network aliases.
+// as its stub root. Runs as root so WireMock can bind the privileged port 80.
 export async function startMockWiremock(
     config: MockWiremockConfig,
     e2eRoot: string,
@@ -203,14 +173,14 @@ export async function startMockWiremock(
         WIREMOCK_ROOT_DIR,
         "--port",
         String(WIREMOCK_HTTP_PORT),
-        ...(config.https ? ["--https-port", String(WIREMOCK_HTTPS_PORT)] : []),
         "--verbose",
         ...(config.templating ? ["--local-response-templating"] : []),
     ];
     return new GenericContainer(WIREMOCK_IMAGE)
+        .withName(config.name)
+        .withLabels({ "devcontainer.hostname": config.hostname })
         .withUser("root")
         .withNetwork(network)
-        .withNetworkAliases(...config.aliases)
         .withBindMounts([
             {
                 source: path.join(e2eRoot, "fixtures", config.fixtureDir),
