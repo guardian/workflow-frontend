@@ -46,10 +46,12 @@ const NGINX_PORT = 80;
 const HOST_AUTH_PORT = 9090;
 export const CONTAINER_FRONTEND_PORT = 9090;
 const HOST_FRONTEND_PORT = 9091;
-// Network alias and upstream the auth-redirect container proxies non-login
+// Container name and upstream the auth-redirect container proxies non-login
 // traffic to; resolved inside the Docker network at request time.
-const FRONTEND_ALIAS = "workflow-frontend";
-const FRONTEND_UPSTREAM = `${FRONTEND_ALIAS}:${CONTAINER_FRONTEND_PORT}`;
+const FRONTEND_NAME = "workflow-frontend";
+const FRONTEND_HOSTNAME = "workflow";
+const FRONTEND_UPSTREAM = `${FRONTEND_HOSTNAME}.local.dev-gutools.co.uk`;
+const DATASTORE_NAME = "workflow-datastore";
 const CAPI_HOSTNAME = "iam-preview-content";
 const PREFERENCES_HOSTNAME = "preferences";
 const TAG_MANAGER_HOSTNAME = "tagmanager";
@@ -330,8 +332,9 @@ export async function startDatastore(
     const backendDir = getBackendDir(e2eRoot);
     const datastoreImage = await buildDatastoreImage(e2eRoot, imageTag);
     return datastoreImage
+        .withName(DATASTORE_NAME)
+        .withLabels({ "devcontainer.hostname": DATASTORE_NAME })
         .withNetwork(network)
-        .withNetworkAliases("workflow-backend.local.dev-gutools.co.uk")
         // Mount the whole backend checkout so sbt runs from source without
         // baking it into the image. Read-write because sbt writes target/ dirs.
         .withBindMounts([
@@ -406,8 +409,9 @@ export async function startWorkflow(
 ): Promise<any> {
     const workflowImage = await buildWorkflowImage(repoRoot, imageTag);
     return workflowImage
+        .withName(FRONTEND_NAME)
+        .withLabels({ "devcontainer.hostname": FRONTEND_HOSTNAME })
         .withNetwork(network)
-        .withNetworkAliases(FRONTEND_ALIAS)
         // Mount the whole repo so webpack (build-dev watch) and Play dev-mode
         // run from source without an image rebuild. Read-write because sbt and
         // webpack write target/ and public/build into it.
