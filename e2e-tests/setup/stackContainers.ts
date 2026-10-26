@@ -1,5 +1,5 @@
 import path from "path";
-import { Network } from "testcontainers";
+import { Network, StartedTestContainer } from "testcontainers";
 import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
@@ -9,6 +9,7 @@ import {
     MOCK_WIREMOCK_CONFIGS,
     startDb,
     startDatastore,
+    startDevcontainerNginx,
     startAuthRedirect,
     startWorkflow,
     WIREMOCK_HTTP_PORT,
@@ -42,6 +43,7 @@ export type LocalStack = {
     mockTagManagerApiContainer: any;
     dbContainer: any;
     datastoreContainer: any;
+    devcontainerNginxContainer: StartedTestContainer;
     network: any;
 };
 
@@ -69,6 +71,7 @@ export async function startLocalStack(
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
+    const devcontainerNginxImageTag = `workflow-devcontainer-nginx-e2e:${runId}`;
 
     const network = await new Network().start();
 
@@ -83,11 +86,16 @@ export async function startLocalStack(
     let mockTagManagerApiContainer;
     let dbContainer;
     let datastoreContainer;
+    let devcontainerNginxContainer;
     const panDomainKeys = generatePanDomainKeys();
 
     const repoRoot = path.join(e2eRoot, "..");
 
     try {
+        const devcontainerNginxStart = startDevcontainerNginx(
+            e2eRoot, devcontainerNginxImageTag, network, streamLogs,
+        );
+
         // Each service's start function builds its own toolchain-only image (a
         // tiny build context) and then starts its container; images and
         // container startups all overlap.
@@ -139,6 +147,7 @@ export async function startLocalStack(
             mockPreferencesApiContainer,
             mockTagManagerApiContainer,
             authContainer,
+            devcontainerNginxContainer,
         ] = await Promise.all([
             workflowStart,
             datastoreStart,
@@ -149,6 +158,7 @@ export async function startLocalStack(
             mockPreferencesStart,
             mockTagManagerStart,
             authStart,
+            devcontainerNginxStart,
         ]);
 
         if (exposeHostAuth) {
@@ -179,6 +189,7 @@ export async function startLocalStack(
             mockTagManagerApiContainer,
             dbContainer,
             datastoreContainer,
+            devcontainerNginxContainer,
             authContainer,
             authUrl,
             network,
@@ -188,6 +199,9 @@ export async function startLocalStack(
         return { baseUrl, workflowContainer, ...common };
     } catch (error) {
         console.error(`Exception occurred: ${error}`);
+        if (devcontainerNginxContainer) {
+            await devcontainerNginxContainer.stop();
+        }
         if (authContainer) {
             await authContainer.stop();
         }
@@ -238,8 +252,12 @@ export async function stopLocalStack({
     mockTagManagerApiContainer,
     dbContainer,
     datastoreContainer,
+    devcontainerNginxContainer,
     network,
 }: Partial<LocalStack> = {}): Promise<void> {
+    if (devcontainerNginxContainer) {
+        await devcontainerNginxContainer.stop();
+    }
     if (authContainer) {
         await authContainer.stop();
     }

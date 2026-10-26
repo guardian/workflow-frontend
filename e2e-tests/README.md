@@ -97,6 +97,17 @@ graph LR
   out and built from the [guardian/workflow](https://github.com/guardian/workflow)
   repository. The test setup clones it automatically into
   `e2e-tests/target/workflow-backend/` (see [setup/checkout-datastore](setup/checkout-datastore)).
+- **Git SSH access to `aug24/devcontainer-nginx`** - the stack commands check
+  out the proxy into `e2e-tests/target/devcontainer-nginx/` and build its Dockerfile
+  before starting it. Set `DEVCONTAINER_NGINX_DIR` to build from another checkout.
+- **Proxy ports and certificates** - the stack reserves container name
+  `devcontainer-nginx` and host ports 80 and 443. Remove any existing container
+  with that name before starting the stack. Certificates are mounted read-only
+  from `CERTS_DIR` (default: `certs/` in the nginx checkout), and the local CA
+  from `$HOME/.local/share/mkcert`. Relative `CERTS_DIR` paths resolve against
+  the nginx checkout; both nginx and process logs use its `logs/` directory.
+  Container configuration is encoded in the setup code, not loaded from Compose
+  at runtime.
 
 The build tools, including mise, are installed when the devcontainer is built.
 Its post-create hook runs `mise run setup`, including `setup:e2e`, to install
