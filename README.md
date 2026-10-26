@@ -35,29 +35,34 @@ Frontend features:
 - Java 11
 - Node
 - sbt
-- AWS credentials: `workflow` and `capi` (API Gateway invocation) profiles from Janus
+- AWS credentials: "Workflow frontend development - developer policy" from Janus
 
 Workflow Frontend needs to talk to  [Workflow Datastore](https://github.com/guardian/workflow/blob/main/README.md#2-getting-started) and [Preferences](https://github.com/guardian/editorial-preferences). It can use either a local backend or the CODE environment.
 
 ### Setup
 
-1. Run the setup script:
+1. Run setup on host:
 
    ```sh
-   ./scripts/setup.sh
+   mise run setup:host
    ```
 
-2. Download the DEV config:
+2. Load AWS Credentials "Workflow frontend development - developer policy"
+
+3. Download the DEV config:
 
    ```sh
-   ./scripts/fetch-config.sh
+   mise run config
    ```
 
 If you encounter a `Module build failed` error due to Node Sass during setup, run `npm rebuild node-sass`.
 
+
 ### Setup for local development container
 
 You may choose to work on the code within an isolated containerised environment, which requires an IDE that supports development container. We added support for it using [devenv](https://github.com/guardian/devenv). Note that `mise` is used for tool version management in the development container built by devenv. 
+
+When the devcontainer is built, its post-create hook runs `mise run setup` automatically. This includes `setup:e2e`, which installs the e2e dependencies and Playwright Chromium. Downloading application config remains a separate step requiring AWS credentials.
 
 #### VScode
 
@@ -74,7 +79,7 @@ You may choose to work on the code within an isolated containerised environment,
 6. Download the local container config:
 
    ```sh
-   ./scripts/fetch-config.sh
+   mise run config
    ```
 
 
@@ -89,9 +94,9 @@ You may choose to work on the code within an isolated containerised environment,
 
 5. Download the local container config:
 
-   ```sh
-   ./scripts/fetch-config.sh
-   ```
+```sh
+mise run config
+```
 
 ### Connecting to Datastore
 
@@ -100,7 +105,7 @@ You may choose to work on the code within an isolated containerised environment,
 Create an SSH tunnel to a workflow-frontend CODE instance. You will need [ssm-scala](https://github.com/guardian/ssm-scala) installed.
 
 ```sh
-./scripts/setup-ssh-tunnel.sh
+mise run datastore:tunnel
 ```
 
 #### Local backend
@@ -114,7 +119,7 @@ curl -is http://localhost:9095/management/healthcheck
 ### Running
 
 ```sh
-./scripts/start.sh
+mise run dev
 ```
 
 Certain features require running other services locally, e.g. run [atom-workshop](https://github.com/guardian/atom-workshop) locally to test creating Chart atoms through Workflow.

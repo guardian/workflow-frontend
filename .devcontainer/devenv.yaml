@@ -44,21 +44,12 @@ plugins:
 # Each command has a 'cmd' field and a 'workingDirectory' field
 # e.g.
 postCreateCommand:
-    - cmd: "mise exec -- corepack enable"
+    - cmd: "mise trust mise.toml"
       workingDirectory: "${containerWorkspaceFolder}"
-      logLine: "Enabling-corepack"
-    - cmd: "mise exec -- corepack install"
+      logLine: "Trust-mise-config"
+    - cmd: "mise run setup"
       workingDirectory: "${containerWorkspaceFolder}"
-      logLine: "Installing-yarn"
-    - cmd: "mise exec -- yarn install --immutable"
-      workingDirectory: "${containerWorkspaceFolder}"
-      logLine: "Installing-project-dependencies"
-    - cmd: "mise exec -- yarn install --immutable"
-      workingDirectory: "${containerWorkspaceFolder}/e2e-tests"
-      logLine: "Installing-e2e-test-dependencies"
-    - cmd: "mise exec -- yarn playwright install --with-deps chromium"
-      workingDirectory: "${containerWorkspaceFolder}/e2e-tests"
-      logLine: "Installing-playwright"
+      logLine: "Setup-dependencies-and-e2e"
 postStartCommand:
     - cmd: "mise reshim"
       workingDirectory: "${containerWorkspaceFolder}"
