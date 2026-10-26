@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Network } from "testcontainers";
+import { Network, StartedTestContainer } from "testcontainers";
 import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
@@ -17,6 +17,7 @@ import {
     MOCK_WIREMOCK_CONFIGS,
     startDb,
     startDatastore,
+    startDevcontainerNginx,
     startAuthRedirect,
     startWorkflow,
     NGINX_PORT,
@@ -100,7 +101,7 @@ export async function startLocalStack(
 
     return diagnostics.step("startup", async () => {
         signal?.throwIfAborted();
-
+        const devcontainerNginxImageTag = `workflow-devcontainer-nginx-e2e:${diagnostics.runId}`;
         const temporaryRoot = path.join(e2eRoot, "target/tmp");
         fs.mkdirSync(temporaryRoot, { recursive: true });
         const buildDirectory = fs.mkdtempSync(path.join(temporaryRoot, "stack-"));
@@ -154,6 +155,7 @@ export async function startLocalStack(
             () => startMock("presence"),
             () => startMock("preferences"),
             () => startMock("tagmanager"),
+            () => resources.startContainer("chekov", () => startDevcontainerNginx(e2eRoot, devcontainerNginxImageTag, network, diagnostics)),
         ]);
         signal?.throwIfAborted();
 

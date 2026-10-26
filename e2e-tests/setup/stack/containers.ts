@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import os from "os";
 import {
     GenericContainer,
     StartedNetwork,
@@ -316,6 +317,54 @@ export function buildDatastoreImage({
         name: "datastore",
         diagnostics,
     });
+}
+
+
+export async function startDevcontainerNginx(
+    e2eRoot: string,
+    imageTag: string,
+    network: StartedNetwork,
+    diagnostics: StackDiagnostics,
+): Promise<StartedTestContainer> {
+    const nginxDir = path.resolve(
+        process.env.DEVCONTAINER_NGINX_DIR ??
+            path.join(e2eRoot, "target/devcontainer-nginx"),
+    );
+    const nginxImage = await buildImage({ context: nginxDir, dockerfile: "Dockerfile", tag: imageTag, name: "devcontainer-nginx", diagnostics });
+    const certsDir = path.resolve(nginxDir, process.env.CERTS_DIR || "certs");
+    const logsDir = path.join(nginxDir, "logs");
+    return nginxImage
+        .withName("devcontainer-nginx")
+        .withNetwork(network)
+        .withBindMounts([
+            { source: "/var/run/docker.sock", target: "/var/run/docker.sock", mode: "ro" },
+            { source: certsDir, target: "/etc/nginx/certs", mode: "ro" },
+            {
+                source: path.join(os.homedir(), ".local/share/mkcert"),
+                target: "/etc/nginx/mkcert",
+                mode: "ro",
+            },
+            { source: logsDir, target: "/var/log/nginx", mode: "rw" },
+            { source: logsDir, target: "/var/log/devcontainer-nginx", mode: "rw" },
+        ])
+        .withEnvironment({
+            BASE_DOMAIN: "local.dev-gutools.co.uk",
+            DOCKER_SOCKET: "/var/run/docker.sock",
+            NGINX_CONFIG_PATH: "/etc/nginx/conf.d/generated.conf",
+            TLS_CERT: "/etc/nginx/certs/wildcard.crt",
+            TLS_KEY: "/etc/nginx/certs/wildcard.key",
+            LOCAL_CA_CERT: "/etc/nginx/mkcert/rootCA.pem",
+            LOCAL_CA_KEY: "/etc/nginx/mkcert/rootCA-key.pem",
+            DEBOUNCE_MS: "500",
+        })
+        .withLogConsumer((stream) => diagnostics.capture("containers", "devcontainer-nginx", stream))
+        .withExposedPorts(
+            { container: 80, host: 80 },
+            { container: 443, host: 443 },
+        )
+        .withWaitStrategy(Wait.forHealthCheck())
+        .withStartupTimeout(2 * 60 * 1000)
+        .start();
 }
 
 export async function startDatastore({
