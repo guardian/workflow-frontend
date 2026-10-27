@@ -294,15 +294,6 @@ export async function startDevcontainerNginx(
     return nginxImage
         .withName("devcontainer-nginx")
         .withNetwork(network)
-        .withNetworkAliases(
-            "workflow.local.dev-gutools.co.uk",
-            "workflow-datastore.local.dev-gutools.co.uk",
-            "composer.local.dev-gutools.co.uk",
-            "presence.local.dev-gutools.co.uk",
-            "user-telemetry.local.dev-gutools.co.uk",
-            "iam-preview-content.local.dev-gutools.co.uk",
-            "tagmanager.local.dev-gutools.co.uk",
-        )
         .withBindMounts([
             { source: "/var/run/docker.sock", target: "/var/run/docker.sock", mode: "ro" },
             { source: certsDir, target: "/etc/nginx/certs", mode: "ro" },
@@ -432,6 +423,13 @@ export async function startWorkflow(
         .withName(FRONTEND_NAME)
         .withLabels({ "devcontainer.hostname": FRONTEND_HOSTNAME })
         .withNetwork(network)
+        .withExtraHosts([
+            { host: "composer.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+            { host: "workflow-datastore.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+            { host: "user-telemetry.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+            { host: "iam-preview-content.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+            { host: "tagmanager.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+        ])
         // Mount the whole repo so webpack (build-dev watch) and Play dev-mode
         // run from source without an image rebuild. Read-write because sbt and
         // webpack write target/ and public/build into it.
