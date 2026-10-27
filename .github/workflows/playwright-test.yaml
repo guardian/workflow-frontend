@@ -67,14 +67,19 @@ jobs:
         run: yarn playwright install --with-deps chromium --only-shell
 
       - name: Set up local CA for devcontainer-nginx
+        id: local-ca
         run: |
           sudo apt-get update
           sudo apt-get install -y mkcert libnss3-tools
           export CAROOT="$HOME/.local/share/mkcert"
           mkcert -install
+          echo "certificate=$CAROOT/rootCA.pem" >> "$GITHUB_OUTPUT"
           mkdir -p target/devcontainer-nginx/certs
 
       - name: Run Playwright tests
+        env:
+          DEBUG: "testcontainers,testcontainers:build"
+          NODE_EXTRA_CA_CERTS: ${{ steps.local-ca.outputs.certificate }}
         run: yarn bddgen && yarn playwright test
 
       - name: Chromatic - Workflow Frontend
