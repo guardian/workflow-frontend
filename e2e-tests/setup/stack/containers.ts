@@ -52,14 +52,14 @@ const FRONTEND_NAME = "workflow-frontend";
 const FRONTEND_HOSTNAME = "workflow";
 const FRONTEND_UPSTREAM = `${FRONTEND_HOSTNAME}.local.dev-gutools.co.uk`;
 const DATASTORE_NAME = "workflow-datastore";
-const CAPI_HOSTNAME = "iam-preview-content";
+export const CAPI_HOSTNAME = "iam-preview-content";
 const PREFERENCES_HOSTNAME = "preferences";
 const TAG_MANAGER_HOSTNAME = "tagmanager";
-const COMPOSER_HOSTNAME = "composer";
+export const COMPOSER_HOSTNAME = "composer";
 const HOST_COMPOSER_HTTP_PORT = 9081;
 const PRESENCE_HOSTNAME = "presence";
 const HOST_PRESENCE_HTTP_PORT = 9070;
-const TELEMETRY_HOSTNAME = "user-telemetry";
+export const TELEMETRY_HOSTNAME = "user-telemetry";
 const HOST_TELEMETRY_HTTP_PORT = 3132;
 
 export async function startAws(
@@ -106,8 +106,8 @@ interface MockWiremockConfig {
     fixtureDir: string;
     /** Hostname advertised to devcontainer-nginx. */
     hostname: string;
-    /** Ports to expose; a fixed host port is used only where one is required. */
-    ports: MockPortMapping[];
+    /** Port to expose; a fixed host port is used only where one is required. */
+    port: MockPortMapping;
     /** Disable WireMock response templating (e.g. presence serves a JS body verbatim). */
     templating?: boolean;
 }
@@ -117,47 +117,41 @@ export const MOCK_WIREMOCK_CONFIGS: Record<string, MockWiremockConfig> = {
         name: "mock-capi",
         fixtureDir: "capi",
         hostname: CAPI_HOSTNAME,
-        ports: [WIREMOCK_HTTP_PORT],
+        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
     composer: {
         name: "mock-composer",
         fixtureDir: "composer",
         hostname: COMPOSER_HOSTNAME,
-        ports: [
-            { container: WIREMOCK_HTTP_PORT, host: HOST_COMPOSER_HTTP_PORT },
-        ],
+        port: { container: HOST_COMPOSER_HTTP_PORT, host: HOST_COMPOSER_HTTP_PORT },
         templating: true,
     },
     presence: {
         name: "mock-presence",
         fixtureDir: "presence",
         hostname: PRESENCE_HOSTNAME,
-        ports: [
-            { container: WIREMOCK_HTTP_PORT, host: HOST_PRESENCE_HTTP_PORT },
-        ],
+        port: { container: HOST_PRESENCE_HTTP_PORT, host: HOST_PRESENCE_HTTP_PORT },
     },
     telemetry: {
         name: "mock-telemetry",
         fixtureDir: "telemetry",
         hostname: TELEMETRY_HOSTNAME,
-        ports: [
-            { container: WIREMOCK_HTTP_PORT, host: HOST_TELEMETRY_HTTP_PORT },
-        ],
+        port: { container: HOST_TELEMETRY_HTTP_PORT, host: HOST_TELEMETRY_HTTP_PORT },
         templating: true,
     },
     preferences: {
         name: "mock-preferences",
         fixtureDir: "preferences",
         hostname: PREFERENCES_HOSTNAME,
-        ports: [WIREMOCK_HTTP_PORT],
+        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
     tagmanager: {
         name: "mock-tagmanager",
         fixtureDir: "tagmanager",
         hostname: TAG_MANAGER_HOSTNAME,
-        ports: [WIREMOCK_HTTP_PORT],
+        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
 };
@@ -170,17 +164,21 @@ export async function startMockWiremock(
     network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
+    const containerPort = typeof config.port === "number" ? config.port : config.port.container;
     const command = [
         "--root-dir",
         WIREMOCK_ROOT_DIR,
         "--port",
-        String(WIREMOCK_HTTP_PORT),
+        String(containerPort),
         "--verbose",
         ...(config.templating ? ["--local-response-templating"] : []),
     ];
     return new GenericContainer(WIREMOCK_IMAGE)
         .withName(config.name)
-        .withLabels({ "devcontainer.hostname": config.hostname })
+        .withLabels({ 
+            "devcontainer.hostname": config.hostname,
+            "devcontainer.application.port": String(containerPort),
+        })
         .withUser("root")
         .withNetwork(network)
         .withBindMounts([
@@ -192,9 +190,9 @@ export async function startMockWiremock(
         ])
         .withCommand(command)
         .withLogConsumer(createLogConsumer(config.name, streamLogs))
-        .withExposedPorts(...config.ports)
+        .withExposedPorts(config.port)
         .withWaitStrategy(
-            Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
+            Wait.forHttp("/__admin/health", containerPort).forStatusCode(
                 200,
             ),
         )
@@ -292,6 +290,15 @@ export async function startDevcontainerNginx(
     return nginxImage
         .withName("devcontainer-nginx")
         .withNetwork(network)
+        .withNetworkAliases(
+            "workflow.local.dev-gutools.co.uk",
+            "workflow-datastore.local.dev-gutools.co.uk",
+            "composer.local.dev-gutools.co.uk",
+            "presence.local.dev-gutools.co.uk",
+            "user-telemetry.local.dev-gutools.co.uk",
+            "iam-preview-content.local.dev-gutools.co.uk",
+            "tagmanager.local.dev-gutools.co.uk",
+        )
         .withBindMounts([
             { source: "/var/run/docker.sock", target: "/var/run/docker.sock", mode: "ro" },
             { source: certsDir, target: "/etc/nginx/certs", mode: "ro" },
