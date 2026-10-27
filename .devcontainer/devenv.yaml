@@ -50,6 +50,12 @@ postCreateCommand:
     - cmd: "mise run setup"
       workingDirectory: "${containerWorkspaceFolder}"
       logLine: "Setup-dependencies-and-e2e"
+    - cmd: "sudo apt update && sudo apt install -y mkcert libnss3-tools"
+      workingDirectory: "${containerWorkspaceFolder}"
+      logLine: "Install-mkcert"
+    - cmd: "mise exec -- mkcert -install"
+      workingDirectory: "${containerWorkspaceFolder}"
+      logLine: "Install-local-CA"
 postStartCommand:
     - cmd: "mise reshim"
       workingDirectory: "${containerWorkspaceFolder}"
