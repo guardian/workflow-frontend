@@ -14,6 +14,9 @@ import {
     startWorkflow,
     WIREMOCK_HTTP_PORT,
     CONTAINER_FRONTEND_PORT,
+    CAPI_HOSTNAME,
+    COMPOSER_HOSTNAME,
+    TELEMETRY_HOSTNAME,
 } from "./stack/containers";
 
 export type LocalStack = {
@@ -171,9 +174,12 @@ export async function startLocalStack(
         // load the section/desk test data into Postgres.
         await seedDatabase(dbContainer, e2eRoot);
 
-        const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
-        const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
-        const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        const mockCapiUrl = `https://${CAPI_HOSTNAME}.local.dev-gutools.co.uk`;
+        const mockComposerApiUrl = `https://${COMPOSER_HOSTNAME}.local.dev-gutools.co.uk`;
+        const mockTelemetryApiUrl = `https://${TELEMETRY_HOSTNAME}.local.dev-gutools.co.uk`;
+        // const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        // const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        // const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
         const common = {
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
@@ -195,7 +201,7 @@ export async function startLocalStack(
             network,
         };
 
-        const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(CONTAINER_FRONTEND_PORT)}`;
+        const baseUrl = `https://workflow.local.dev-gutools.co.uk`;
         return { baseUrl, workflowContainer, ...common };
     } catch (error) {
         console.error(`Exception occurred: ${error}`);
