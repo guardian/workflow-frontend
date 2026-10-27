@@ -98,6 +98,7 @@ export async function startLocalStack(
         const devcontainerNginxStart = startDevcontainerNginx(
             e2eRoot, devcontainerNginxImageTag, network, streamLogs,
         );
+        devcontainerNginxContainer = await devcontainerNginxStart;
 
         // Each service's start function builds its own toolchain-only image (a
         // tiny build context) and then starts its container; images and
@@ -150,7 +151,6 @@ export async function startLocalStack(
             mockPreferencesApiContainer,
             mockTagManagerApiContainer,
             authContainer,
-            devcontainerNginxContainer,
         ] = await Promise.all([
             workflowStart,
             datastoreStart,
@@ -161,7 +161,6 @@ export async function startLocalStack(
             mockPreferencesStart,
             mockTagManagerStart,
             authStart,
-            devcontainerNginxStart,
         ]);
 
         if (exposeHostAuth) {
