@@ -40,6 +40,9 @@ COPY .tool-versions ./
 RUN --mount=type=cache,target=/mise/cache,sharing=locked \
     mise trust -a && mise install java sbt
 
+COPY trust-local-ca /usr/local/bin/trust-local-ca
+ENTRYPOINT ["bash", "/usr/local/bin/trust-local-ca"]
+
 EXPOSE 9095
 
 # Run the Datastore from source with the e2e config overlay, serving on 9095
