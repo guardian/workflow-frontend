@@ -23,6 +23,9 @@ import {
     NGINX_PORT,
     WIREMOCK_HTTP_PORT,
     CONTAINER_FRONTEND_PORT,
+    CAPI_HOSTNAME,
+    COMPOSER_HOSTNAME,
+    TELEMETRY_HOSTNAME,
 } from "./stack/containers";
 
 export type LocalStack = {
@@ -198,13 +201,13 @@ export async function startLocalStack(
 
         signal?.throwIfAborted();
 
-        const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(CONTAINER_FRONTEND_PORT)}`;
+        const baseUrl = "https://workflow.local.dev-gutools.co.uk";
         const connection = {
             baseUrl,
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
-            mockApiUrl: `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`,
-            mockComposerApiUrl: `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`,
-            mockTelemetryApiUrl: `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`,
+            mockApiUrl: `https://${CAPI_HOSTNAME}.local.dev-gutools.co.uk`,
+            mockComposerApiUrl: `https://${COMPOSER_HOSTNAME}.local.dev-gutools.co.uk`,
+            mockTelemetryApiUrl: `https://${TELEMETRY_HOSTNAME}.local.dev-gutools.co.uk`,
         };
 
         await diagnostics.step("publish:stack", async () => writeSharedStackInfo(
