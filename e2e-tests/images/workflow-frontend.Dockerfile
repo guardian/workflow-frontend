@@ -42,6 +42,9 @@ RUN --mount=type=cache,target=/mise/cache,sharing=locked \
     && mise exec nodejs -- npm install -g corepack \
     && mise exec nodejs -- corepack enable
 
+COPY trust-local-ca /usr/local/bin/trust-local-ca
+ENTRYPOINT ["bash", "/usr/local/bin/trust-local-ca"]
+
 EXPOSE 9090
 
 # Run webpack in watch mode alongside Play dev-mode `run` so mounted source edits
