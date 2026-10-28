@@ -12,81 +12,86 @@ that it can be included as part of our CI workflow later.
 
 ## Local stack
 
-The local stack is built with Test Container on top of Docker so that we can
-configure and wire up the containers in a more flexible way.
+The local stack uses Testcontainers to build and run the frontend, Datastore,
+PostgreSQL, and mocked dependencies in Docker. WireMock serves the upstream
+HTTP APIs. LocalStack provides both S3 (PanDomain settings and the permissions
+cache) and DynamoDB (seeded editorial support data).
 
-WireMock is used to mock dependencies. Local S3 service is mocked with LocalStack
-to serve PanDomain settings and permission cache. We also create a local 
-DynamoDB with test data using AWS Local DynamoDB image.
+Inside the dev container, `devcontainer-nginx` is the reverse proxy for the
+application and mock service hostnames under `*.local.dev-gutools.co.uk`. It
+discovers containers through the Docker socket and uses their
+`devcontainer.hostname` labels to generate routes. WireMock containers also
+advertise their HTTP listener through `devcontainer.application.port`.
+The proxy publishes ports 80 and 443, terminates TLS, and forwards requests to
+the containers over HTTP. WireMock no longer serves HTTPS itself.
 
-The stack is reached over two different network paths depending on where the
-browser runs: a browser running in the host, or Playwright's Chromium
-running inside the dev container.
+1. **Playwright Chromium -> devcontainer-nginx -> application and mocks.** Tests
+   load `https://workflow.local.dev-gutools.co.uk` and call the mock APIs through
+   their HTTPS hostnames. Mock admin requests also use the proxy. There are no
+   per-mock Chromium `--host-resolver-rules`; hostname resolution must reach the
+   proxy. Playwright uses `ignoreHTTPSErrors` for the local certificates.
 
-1. **Host browser → nginx on host (SSL termination) → dev container.** From the host,
-   the browser talks to the frontend and its APIs over HTTPS using the real
-   `*.local.dev-gutools.co.uk` hostnames. A local nginx on the host terminates
-   TLS and reverse-proxies each hostname to the matching forwarded dev-container
-   port (plaintext HTTP).
+2. **Frontend -> devcontainer-nginx -> Datastore and upstream APIs.** The
+   frontend calls HTTPS service URLs, including
+   `https://workflow-datastore.local.dev-gutools.co.uk/api`. Its configured
+   `host-gateway` entries direct these requests to the proxy's published ports.
+   The application containers trust the local CA as described below.
+   PostgreSQL and LocalStack remain direct Docker-network dependencies, not
+   HTTP services routed through nginx.
 
-   Here we don't set up the nginx config for reverse-proxying services that sit
-   outside this repository because those projects already set up ones for development.
-   We just bind those services to devcontainer using the same ports so their 
-   reverse-proxying rule just works in this setting.
+3. **Host browser -> host nginx -> forwarded dev-container ports.** Host access
+   retains the existing host nginx configuration and TLS termination. Workflow
+   traffic goes to the optional auth-redirect container through forwarded port
+   9090: `/cookie` sets the auth cookie, and other paths proxy to Workflow's
+   hostname through `devcontainer-nginx`. Host routes for Composer, Presence,
+   and Telemetry use their existing forwarded HTTP ports (9081, 9070, and 3132).
 
-2. **Playwright Chromium → services directly.** Inside the dev container,
-   Chromium loads the frontend over plain HTTP via its forwarded port on devcontainer, 
-   and reaches the cross-origin APIs (`*.local.dev-gutools.co.uk` hostnames) over HTTPS. 
-   The `--host-resolver-rules` launch argument (in Playwright's config for tests and 
-   in "run-local-stack.ts" if we build the stack with `yarn dev:local` for development) 
-   maps each API hostname straight to the mock's HTTPS port
-   (the config `ignoreHTTPSErrors` accepts the self-signed certificates).
+The diagram shows request paths; service ports inside the Docker stack are
+container ports unless an edge explicitly says "forwarded".
 
 ```mermaid
-graph LR
-    subgraph host["Host machine"]
-        HostBrowser["Browser"]
-        Nginx["nginx<br/>(TLS termination, :443)"]
+flowchart LR
+  subgraph host["Host machine"]
+    HostBrowser["Host browser"]
+    HostNginx["Host nginx<br/>TLS termination :443"]
+  end
+
+  subgraph devcontainer["Dev container"]
+    Chromium["Playwright Chromium"]
+    TestRunner["Test runner<br/>Mock admin requests"]
+
+    subgraph stack["Docker stack"]
+      Proxy["devcontainer-nginx<br/>HTTP :80 / HTTPS :443<br/>TLS termination and service discovery"]
+      Auth["Auth redirect (optional)<br/>HTTP :80 / cookie endpoint"]
+      Frontend["workflow-frontend<br/>hostname: workflow<br/>HTTP :9090"]
+      Datastore["workflow-datastore<br/>HTTP :9095"]
+      BrowserMocks["WireMock<br/>Composer :9081<br/>Presence :9070<br/>Telemetry :3132"]
+      ServiceMocks["WireMock :80<br/>CAPI / Tag Manager / Preferences"]
+      Postgres["PostgreSQL :5432"]
+      LocalStack["LocalStack :4566<br/>S3 and DynamoDB"]
     end
+  end
 
-    subgraph devcontainer["Dev container"]
-        Chromium["Playwright Chromium<br/>--host-resolver-rules"]
+  HostBrowser -->|"HTTPS"| HostNginx
+  HostNginx -->|"Workflow: forwarded HTTP :9090"| Auth
+  Auth -->|"Other paths: Workflow hostname"| Proxy
+  HostNginx -->|"Forwarded HTTP :9081 / :9070 / :3132"| BrowserMocks
 
-        NginxDocker["nginx"]
+  Chromium -->|"HTTPS service hostnames"| Proxy
+  TestRunner -->|"HTTPS mock admin URLs"| Proxy
+  Proxy -->|"HTTP :9090"| Frontend
+  Proxy -->|"HTTP :9095"| Datastore
+  Proxy -->|"HTTP"| BrowserMocks
+  Proxy -->|"HTTP :80"| ServiceMocks
 
-        subgraph stack["Docker stack (forwarded ports)"]
-            Frontend["workflow-frontend<br/>http :9090 / :9091"]
-            Composer["Composer mock<br/>http :9081 · https :9082"]
-            Presence["Presence mock<br/>http :9070 · https :9071"]
-            Telemetry["Telemetry mock<br/>http :3132 · https :3133"]
-            TagManager["TagManager mock"]
-            CAPI["CAPI mock"]
-        end
-    end
+  Frontend -->|"HTTPS service URLs via host-gateway"| Proxy
+  Frontend -->|"Direct HTTP :4566"| LocalStack
+  Datastore -->|"Direct PostgreSQL connection"| Postgres
 
-    %% Path 1: host browser via nginx (HTTPS in, HTTP out)
-    HostBrowser -->|"https workflow.local…"| Nginx
-    HostBrowser -->|"https composer/presence/telemetry.local…"| Nginx
-    Nginx -->|"http :9090"| NginxDocker
-    NginxDocker --> Frontend
-    Nginx -->|"http :9081 / :9070 / :3132"| Composer
-    Nginx --> Presence
-    Nginx --> Telemetry
-
-    %% Path 2: Playwright Chromium direct, resolved by host-resolver-rules
-    Chromium -->|"http localhost:9091"| Frontend
-    Chromium -->|"https :9082 / :9071 / :3133<br/>(host-resolver-rules)"| Composer
-    Chromium --> Presence
-    Chromium --> Telemetry
-
-    %% Backend route, via Docker network
-    Frontend -->|"network alias"| TagManager
-    Frontend -->|"network alias"| CAPI
-
-    classDef proxy fill:#0d47a1,stroke:#90caf9,color:#fff;
-    classDef mocked fill:#FDDA0D,color:#000;
-    class Nginx,NginxDocker proxy;
-    class Composer,Presence,Telemetry mocked;
+  classDef proxy fill:#0d47a1,stroke:#90caf9,color:#fff;
+  classDef mocked fill:#FDDA0D,color:#000;
+  class HostNginx,Proxy,Auth proxy;
+  class BrowserMocks,ServiceMocks,LocalStack mocked;
 ```
 
 ## Prerequisites
