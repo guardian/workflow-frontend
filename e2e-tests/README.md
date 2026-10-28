@@ -114,11 +114,14 @@ flowchart LR
   Container configuration is encoded in the setup code, not loaded from Compose
   at runtime.
 
-The frontend and datastore mount only `$HOME/.local/share/mkcert/rootCA.pem`
-read-only and import it into their mise-selected JDK's default truststore before
-starting. Existing trusted certificates are preserved; the CA private key is not
-mounted into either application container. Recreate the stack to pick up this
-startup configuration. The public CA certificate must exist before startup.
+The frontend and datastore copy `$HOME/.local/share/mkcert/rootCA.pem` into
+their build contexts and images, then run `mise exec java -- mkcert -install`
+during the image build, with
+`CAROOT=/etc/workflow-local-ca` and `TRUST_STORES=java` to install the CA into
+their mise-selected JDK's default truststore. Existing trusted certificates are
+preserved; the CA private key is never copied into either application image.
+No runtime CA mount is needed. The public CA certificate must exist before
+building; rebuild the images and recreate the stack when the CA changes.
 
 The build tools, including mise, are installed when the devcontainer is built.
 Its post-create hook runs `mise run setup`, including `setup:e2e`, to install

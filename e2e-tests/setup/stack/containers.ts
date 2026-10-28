@@ -257,8 +257,8 @@ function buildDatastoreImage(
 ): Promise<GenericContainer> {
     console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR ?? "(not set)"}`);
     const backendDir = getBackendDir(e2eRoot);
-    // The image only bakes the JVM toolchain, so the build context is a tiny
-    // temp folder holding just .tool-versions plus the Dockerfile (which must
+    // The image bakes the JVM toolchain and CA, so the build context is a tiny
+    // temp folder holding .tool-versions, rootCA.pem and the Dockerfile (which must
     // live inside the context for fromDockerfile). Recreated fresh each run.
     const buildContext = path.join(e2eRoot, "target/datastore-build-context");
     fs.rmSync(buildContext, { recursive: true, force: true });
@@ -272,8 +272,8 @@ function buildDatastoreImage(
         path.join(buildContext, "datastore.Dockerfile"),
     );
     fs.copyFileSync(
-        path.join(e2eRoot, "images/trust-local-ca"),
-        path.join(buildContext, "trust-local-ca"),
+        path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+        path.join(buildContext, "rootCA.pem"),
     );
     return buildImage(buildContext, "datastore.Dockerfile", imageTag);
 }
@@ -341,11 +341,6 @@ export async function startDatastore(
         // baking it into the image. Read-write because sbt writes target/ dirs.
         .withBindMounts([
             { source: backendDir, target: "/workflow-backend", mode: "rw" },
-            {
-                source: path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
-                target: "/etc/workflow-local-ca/rootCA.pem",
-                mode: "ro",
-            },
             ...sbtCacheBindMounts(),
         ])
         .withLogConsumer(createLogConsumer("datastore", streamLogs))
@@ -392,8 +387,8 @@ function buildWorkflowImage(
     repoRoot: string,
     imageTag: string,
 ): Promise<GenericContainer> {
-    // Toolchain-only image: build context is a tiny temp folder holding just
-    // .tool-versions plus the Dockerfile (which must live inside the context).
+    // Toolchain and CA image: build context is a tiny temp folder holding
+    // .tool-versions, rootCA.pem and the Dockerfile (which must live inside the context).
     const buildContext = path.join(repoRoot, "target/workflow-build-context");
     fs.rmSync(buildContext, { recursive: true, force: true });
     fs.mkdirSync(buildContext, { recursive: true });
@@ -406,8 +401,8 @@ function buildWorkflowImage(
         path.join(buildContext, "workflow-frontend.Dockerfile"),
     );
     fs.copyFileSync(
-        path.join(repoRoot, "e2e-tests/images/trust-local-ca"),
-        path.join(buildContext, "trust-local-ca"),
+        path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+        path.join(buildContext, "rootCA.pem"),
     );
     return buildImage(buildContext, "workflow-frontend.Dockerfile", imageTag);
 }
@@ -435,11 +430,6 @@ export async function startWorkflow(
         // webpack write target/ and public/build into it.
         .withBindMounts([
             { source: repoRoot, target: "/workflow-frontend", mode: "rw" },
-            {
-                source: path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
-                target: "/etc/workflow-local-ca/rootCA.pem",
-                mode: "ro",
-            },
             ...sbtCacheBindMounts(),
         ])
         .withEnvironment({
