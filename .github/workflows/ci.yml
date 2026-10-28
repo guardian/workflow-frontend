@@ -38,7 +38,6 @@ jobs:
               with:
                 node-version-file: '.tool-versions'
                 check-latest: true
-                package-manager-cache: false # Disable automatic npm caching if not required
 
             - name: Install JS dependencies
               run: yarn install --frozen-lockfile
