@@ -1,15 +1,17 @@
 # syntax=docker/dockerfile:1
 # workflow-frontend app image for e2e. Mirrors datastore.Dockerfile: the image
-# only bakes the toolchain (java, nodejs, sbt, aws-cli via mise); the whole repo
+# bakes the toolchain (java, nodejs, sbt, aws-cli via mise) and local CA; the whole repo
 # (including node_modules) is bind-mounted at runtime, so webpack (build-dev
 # watch) and Play dev-mode run from source without an image rebuild.
 #
-# The build context is a tiny temp folder holding just .tool-versions, so the
-# image build never has to copy the repo.
+# The build context holds .tool-versions, the Dockerfile and public CA certificate,
+# so the image build never has to copy the repo.
 FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV AWS_SDK_LOAD_CONFIG=1
+ENV CAROOT=/etc/workflow-local-ca
+ENV TRUST_STORES=java
 
 # Install system dependencies
 RUN apt-get update \
@@ -19,6 +21,7 @@ RUN apt-get update \
     bash \
     git \
     openssl \
+    mkcert \
     && rm -rf /var/lib/apt/lists/*
 
 # Install mise
@@ -33,7 +36,7 @@ RUN curl https://mise.run | sh
 WORKDIR /workflow-frontend
 
 # Install the toolchain (java, nodejs, sbt, aws-cli) via mise and enable corepack
-# so `yarn` is available. This is the only thing baked into the image; the repo
+# so `yarn` is available. The toolchain and CA are baked into the image; the repo
 # and its node_modules are bind-mounted at runtime.
 # It also caches the mise cache directory to speed up subsequent builds.
 COPY .tool-versions ./
@@ -42,8 +45,8 @@ RUN --mount=type=cache,target=/mise/cache,sharing=locked \
     && mise exec nodejs -- npm install -g corepack \
     && mise exec nodejs -- corepack enable
 
-COPY trust-local-ca /usr/local/bin/trust-local-ca
-ENTRYPOINT ["bash", "/usr/local/bin/trust-local-ca"]
+COPY rootCA.pem /etc/workflow-local-ca/rootCA.pem
+RUN mise exec java -- mkcert -install
 
 EXPOSE 9090
 

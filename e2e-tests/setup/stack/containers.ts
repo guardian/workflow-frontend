@@ -287,8 +287,8 @@ export function buildDatastoreImage({
         path.join(buildContext, "datastore.Dockerfile"),
     );
     fs.copyFileSync(
-        path.join(e2eRoot, "images/trust-local-ca"),
-        path.join(buildContext, "trust-local-ca"),
+        path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+        path.join(buildContext, "rootCA.pem"),
     );
     return buildImage({
         context: buildContext,
@@ -363,11 +363,6 @@ export async function startDatastore({
         // baking it into the image. Read-write because sbt writes target/ dirs.
         .withBindMounts([
             { source: backendDir, target: "/workflow-backend", mode: "rw" },
-            {
-                source: path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
-                target: "/etc/workflow-local-ca/rootCA.pem",
-                mode: "ro",
-            },
             ...sbtCacheBindMounts(),
         ])
         .withLogConsumer((stream) => diagnostics.capture("containers", "datastore", stream))
@@ -433,8 +428,8 @@ export function buildWorkflowImage({
         path.join(buildContext, "workflow-frontend.Dockerfile"),
     );
     fs.copyFileSync(
-        path.join(repoRoot, "e2e-tests/images/trust-local-ca"),
-        path.join(buildContext, "trust-local-ca"),
+        path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+        path.join(buildContext, "rootCA.pem"),
     );
     return buildImage({
         context: buildContext,
@@ -469,11 +464,6 @@ export async function startWorkflow({
         // webpack write target/ and public/build into it.
         .withBindMounts([
             { source: repoRoot, target: "/workflow-frontend", mode: "rw" },
-            {
-                source: path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
-                target: "/etc/workflow-local-ca/rootCA.pem",
-                mode: "ro",
-            },
             ...sbtCacheBindMounts(),
         ])
         .withEnvironment({
