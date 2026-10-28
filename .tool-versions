@@ -1,5 +1,5 @@
-java corretto-11.0.33.0.9
-nodejs 22.23.4
-sbt 1.12.11
-aws-cli 2.34.62
+java                   corretto-11
+nodejs                 22
+sbt                    1.12.11
+aws-cli                2.34.62
 github:guardian/devenv 20260930-111347
