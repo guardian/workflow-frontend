@@ -6,7 +6,7 @@
 #
 # The build context is a tiny temp folder holding just .tool-versions, so the
 # image build never has to copy the repo.
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV AWS_SDK_LOAD_CONFIG=1
