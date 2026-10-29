@@ -38,6 +38,7 @@ jobs:
         with:
           token: "${{ steps.workflow-app-token.outputs.token }}"
           repository: guardian/workflow
+          ref: 4b0ead0169ba6ba8258b42e68bbb42a9c8bd6546
           path: e2e-tests/target/workflow-backend
 
       - name: Install Node
@@ -48,6 +49,7 @@ jobs:
           cache-dependency-path: |
             yarn.lock
             e2e-tests/yarn.lock
+            .github/workflows/playwright-test.yaml
 
       - name: Install application dependencies
         working-directory: .
@@ -62,9 +64,9 @@ jobs:
           path: |
             ~/.cache/coursier
             ~/.ivy2/cache
-          key: ${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-${{ hashFiles('**/*.sbt', '**/project/**/*.scala', '**/project/build.properties', '**/.tool-versions') }}
+          key: benchmark-20261029T161034Z-committed-${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-${{ hashFiles('**/*.sbt', '**/project/**/*.scala', '**/project/build.properties', '**/.tool-versions') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-
+            benchmark-20261029T161034Z-committed-${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-
 
       - name: Prepare sbt cache mounts
         run: |
@@ -77,9 +79,9 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-${{ runner.arch }}-playwright-chromium-shell-${{ hashFiles('e2e-tests/yarn.lock') }}
+          key: benchmark-20261029T161034Z-committed-${{ runner.os }}-${{ runner.arch }}-playwright-chromium-shell-${{ hashFiles('e2e-tests/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-playwright-chromium-shell-
+            benchmark-20261029T161034Z-committed-${{ runner.os }}-${{ runner.arch }}-playwright-chromium-shell-
 
       - name: Install Playwright Chromium (headless shell only)
         if: steps.playwright-cache.outputs.cache-hit != 'true'
