@@ -284,6 +284,11 @@ function buildDatastoreImage(
     e2eRoot: string,
     imageTag: string,
 ): Promise<GenericContainer> {
+    const prebuiltImage = process.env.E2E_DATASTORE_IMAGE;
+    if (prebuiltImage) {
+        console.log(`[docker-build] Using prebuilt Datastore image ${prebuiltImage}`);
+        return Promise.resolve(new GenericContainer(prebuiltImage));
+    }
     console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR ?? "(not set)"}`);
     const backendDir = getBackendDir(e2eRoot);
     // The image only bakes the JVM toolchain, so the build context is a tiny
@@ -364,6 +369,11 @@ function buildWorkflowImage(
     repoRoot: string,
     imageTag: string,
 ): Promise<GenericContainer> {
+    const prebuiltImage = process.env.E2E_WORKFLOW_IMAGE;
+    if (prebuiltImage) {
+        console.log(`[docker-build] Using prebuilt Workflow image ${prebuiltImage}`);
+        return Promise.resolve(new GenericContainer(prebuiltImage));
+    }
     // Toolchain-only image: build context is a tiny temp folder holding just
     // .tool-versions plus the Dockerfile (which must live inside the context).
     const buildContext = path.join(repoRoot, "target/workflow-build-context");

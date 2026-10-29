@@ -64,9 +64,9 @@ jobs:
           path: |
             ~/.cache/coursier
             ~/.ivy2/cache
-          key: benchmark-20261029T161034Z-committed-${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-${{ hashFiles('**/*.sbt', '**/project/**/*.scala', '**/project/build.properties', '**/.tool-versions') }}
+          key: benchmark-20261029T161034Z-images-${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-${{ hashFiles('**/*.sbt', '**/project/**/*.scala', '**/project/build.properties', '**/.tool-versions') }}
           restore-keys: |
-            benchmark-20261029T161034Z-committed-${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-
+            benchmark-20261029T161034Z-images-${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-
 
       - name: Prepare sbt cache mounts
         run: |
@@ -79,9 +79,9 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
-          key: benchmark-20261029T161034Z-committed-${{ runner.os }}-${{ runner.arch }}-playwright-chromium-shell-${{ hashFiles('e2e-tests/yarn.lock') }}
+          key: benchmark-20261029T161034Z-images-${{ runner.os }}-${{ runner.arch }}-playwright-chromium-shell-${{ hashFiles('e2e-tests/yarn.lock') }}
           restore-keys: |
-            benchmark-20261029T161034Z-committed-${{ runner.os }}-${{ runner.arch }}-playwright-chromium-shell-
+            benchmark-20261029T161034Z-images-${{ runner.os }}-${{ runner.arch }}-playwright-chromium-shell-
 
       - name: Install Playwright Chromium (headless shell only)
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -90,7 +90,42 @@ jobs:
       - name: Verify Chromium can launch
         run: yarn tsx setup/verify-chromium.ts
 
+      - name: Prepare toolchain image build contexts
+        working-directory: .
+        run: |
+          mkdir -p target/workflow-build-context e2e-tests/target/datastore-build-context
+          cp .tool-versions e2e-tests/images/workflow-frontend.Dockerfile target/workflow-build-context/
+          cp e2e-tests/target/workflow-backend/.tool-versions e2e-tests/images/datastore.Dockerfile e2e-tests/target/datastore-build-context/
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Build Workflow toolchain image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: target/workflow-build-context
+          file: target/workflow-build-context/workflow-frontend.Dockerfile
+          tags: workflow-frontend-app-e2e:prebuild
+          load: true
+          push: false
+          cache-from: type=gha,scope=benchmark-20261029T161034Z-workflow-toolchain
+          cache-to: type=gha,scope=benchmark-20261029T161034Z-workflow-toolchain,mode=max
+
+      - name: Build Datastore toolchain image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: e2e-tests/target/datastore-build-context
+          file: e2e-tests/target/datastore-build-context/datastore.Dockerfile
+          tags: workflow-datastore-e2e:prebuild
+          load: true
+          push: false
+          cache-from: type=gha,scope=benchmark-20261029T161034Z-datastore-toolchain
+          cache-to: type=gha,scope=benchmark-20261029T161034Z-datastore-toolchain,mode=max
+
       - name: Run Playwright tests
+        env:
+          E2E_WORKFLOW_IMAGE: workflow-frontend-app-e2e:prebuild
+          E2E_DATASTORE_IMAGE: workflow-datastore-e2e:prebuild
         run: yarn bddgen && yarn playwright test
 
       - name: Chromatic - Workflow Frontend
