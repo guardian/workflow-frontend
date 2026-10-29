@@ -98,13 +98,27 @@ graph LR
   repository. The test setup clones it automatically into
   `e2e-tests/target/workflow-backend/` (see [setup/checkout-datastore](setup/checkout-datastore)).
 
-The build tools including "mise", the dependencies of the e2e-tests and 
-the Playwright Chromium browser are installed in the devcontainer
-when it is built.
+The build tools, including mise, are installed when the devcontainer is built.
+Its post-create hook runs `mise run setup`, including `setup:e2e`, to install
+the e2e dependencies and Playwright Chromium automatically.
 
 ## Running the tests
 
-All commands are run from the `e2e-tests/` folder.
+The dependencies in the e2e-tests and the Playwright should have been installed after the devcontainer is built.
+
+Use `mise run test`. You man run it from any directory within the repository. The e2e tasks
+set their working directory to `e2e-tests/` automatically.
+
+| Command | Purpose |
+| --- | --- |
+| `mise run dev:local` | Start a reusable Docker stack and authenticated browser |
+| `mise run debug` | Start the shared stack with Docker build debug logging |
+| `mise run test` | Generate BDD tests and run Playwright, starting or reusing the stack |
+| `mise run test:ui` | Run the Playwright UI on port 9099 |
+| `mise run test:report` | Serve the Playwright HTML report on port 9098 |
+
+The equivalent Yarn commands below remain available.
+Run these Yarn commands from the `e2e-tests/` folder.
 
 ```bash
 yarn test
@@ -133,6 +147,10 @@ yarn test:ui
 ```
 
 The Playwright UI can be accessed via `http://localhost:9099/` on the host system.
+
+The mise equivalent is `mise run test:ui`, which runs independently of
+`dev:local`. To reuse a long-running stack, start `mise run dev:local` in a separate
+terminal first and wait for the stack to be ready.
 
 ### Fast test loop with a shared stack
 
