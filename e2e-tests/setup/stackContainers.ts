@@ -1,5 +1,5 @@
 import path from "path";
-import { Network } from "testcontainers";
+import { Network, StartedTestContainer } from "testcontainers";
 import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
@@ -9,10 +9,14 @@ import {
     MOCK_WIREMOCK_CONFIGS,
     startDb,
     startDatastore,
+    startDevcontainerNginx,
     startAuthRedirect,
     startWorkflow,
     WIREMOCK_HTTP_PORT,
     CONTAINER_FRONTEND_PORT,
+    CAPI_HOSTNAME,
+    COMPOSER_HOSTNAME,
+    TELEMETRY_HOSTNAME,
 } from "./stack/containers";
 
 export type LocalStack = {
@@ -42,6 +46,7 @@ export type LocalStack = {
     mockTagManagerApiContainer: any;
     dbContainer: any;
     datastoreContainer: any;
+    devcontainerNginxContainer: StartedTestContainer;
     network: any;
 };
 
@@ -69,6 +74,7 @@ export async function startLocalStack(
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
+    const devcontainerNginxImageTag = `workflow-devcontainer-nginx-e2e:${runId}`;
 
     const network = await new Network().start();
 
@@ -83,11 +89,17 @@ export async function startLocalStack(
     let mockTagManagerApiContainer;
     let dbContainer;
     let datastoreContainer;
+    let devcontainerNginxContainer;
     const panDomainKeys = generatePanDomainKeys();
 
     const repoRoot = path.join(e2eRoot, "..");
 
     try {
+        const devcontainerNginxStart = startDevcontainerNginx(
+            e2eRoot, devcontainerNginxImageTag, network, streamLogs,
+        );
+        devcontainerNginxContainer = await devcontainerNginxStart;
+
         // Each service's start function builds its own toolchain-only image (a
         // tiny build context) and then starts its container; images and
         // container startups all overlap.
@@ -161,9 +173,12 @@ export async function startLocalStack(
         // load the section/desk test data into Postgres.
         await seedDatabase(dbContainer, e2eRoot);
 
-        const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
-        const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
-        const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        const mockCapiUrl = `https://${CAPI_HOSTNAME}.local.dev-gutools.co.uk`;
+        const mockComposerApiUrl = `https://${COMPOSER_HOSTNAME}.local.dev-gutools.co.uk`;
+        const mockTelemetryApiUrl = `https://${TELEMETRY_HOSTNAME}.local.dev-gutools.co.uk`;
+        // const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        // const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
+        // const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
 
         const common = {
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
@@ -179,15 +194,19 @@ export async function startLocalStack(
             mockTagManagerApiContainer,
             dbContainer,
             datastoreContainer,
+            devcontainerNginxContainer,
             authContainer,
             authUrl,
             network,
         };
 
-        const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(CONTAINER_FRONTEND_PORT)}`;
+        const baseUrl = `https://workflow.local.dev-gutools.co.uk`;
         return { baseUrl, workflowContainer, ...common };
     } catch (error) {
         console.error(`Exception occurred: ${error}`);
+        if (devcontainerNginxContainer) {
+            await devcontainerNginxContainer.stop();
+        }
         if (authContainer) {
             await authContainer.stop();
         }
@@ -238,8 +257,12 @@ export async function stopLocalStack({
     mockTagManagerApiContainer,
     dbContainer,
     datastoreContainer,
+    devcontainerNginxContainer,
     network,
 }: Partial<LocalStack> = {}): Promise<void> {
+    if (devcontainerNginxContainer) {
+        await devcontainerNginxContainer.stop();
+    }
     if (authContainer) {
         await authContainer.stop();
     }

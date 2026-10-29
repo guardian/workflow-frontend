@@ -40,6 +40,12 @@ jobs:
           repository: guardian/workflow
           path: e2e-tests/target/workflow-backend
 
+      - name: Check out devcontainer-nginx
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: aug24/devcontainer-nginx
+          path: e2e-tests/target/devcontainer-nginx
+
       - name: Install Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
@@ -60,7 +66,20 @@ jobs:
       - name: Install Playwright Chromium (headless shell only)
         run: yarn playwright install --with-deps chromium --only-shell
 
+      - name: Set up local CA for devcontainer-nginx
+        id: local-ca
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mkcert libnss3-tools
+          export CAROOT="$HOME/.local/share/mkcert"
+          mkcert -install
+          echo "certificate=$CAROOT/rootCA.pem" >> "$GITHUB_OUTPUT"
+          mkdir -p target/devcontainer-nginx/certs
+
       - name: Run Playwright tests
+        env:
+          DEBUG: "testcontainers,testcontainers:build"
+          NODE_EXTRA_CA_CERTS: ${{ steps.local-ca.outputs.certificate }}
         run: yarn bddgen && yarn playwright test
 
       - name: Chromatic - Workflow Frontend

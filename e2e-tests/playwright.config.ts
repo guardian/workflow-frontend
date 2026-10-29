@@ -30,11 +30,6 @@ export default defineConfig({
         // stackContainers.ts). Route the browser's cross-origin https calls to
         // them and accept their self-signed certificates.
         ignoreHTTPSErrors: true,
-        launchOptions: {
-            args: [
-                "--host-resolver-rules=MAP composer.local.dev-gutools.co.uk 127.0.0.1:9082,MAP presence.local.dev-gutools.co.uk 127.0.0.1:9071,MAP user-telemetry.local.dev-gutools.co.uk 127.0.0.1:3133",
-            ],
-        },
     },
     reporter: process.env.CI ? 
         [["github"]] :
