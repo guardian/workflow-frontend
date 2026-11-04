@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+E2E_ROOT_DIR=${DIR}/..
+
+if ! command -v git >/dev/null 2>&1; then
+  echo "Git CLI is required to check out the devcontainer-nginx repository" >&2
+  exit 1
+fi
+
+# Check out (or update) the guardian/devcontainer-nginx into a git-ignored folder
+# under target/. Reused across runs: shallow-clone once, then fast-forward pull.
+# The path is exported so run-local-stack.ts can consume it.
+DEVCONTAINER_NGINX_DIR="${E2E_ROOT_DIR}/target/devcontainer-nginx"
+if [ -d "${DEVCONTAINER_NGINX_DIR}/.git" ]; then
+  echo "Updating devcontainer-nginx checkout in ${DEVCONTAINER_NGINX_DIR}"
+  git -C "$DEVCONTAINER_NGINX_DIR" pull --ff-only
+else
+  echo "Cloning aug24/devcontainer-nginx into ${DEVCONTAINER_NGINX_DIR}"
+  git clone --depth 1 git@github.com:aug24/devcontainer-nginx.git "$DEVCONTAINER_NGINX_DIR"
+fi
+export DEVCONTAINER_NGINX_DIR
