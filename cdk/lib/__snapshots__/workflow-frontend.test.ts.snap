@@ -41,6 +41,7 @@ exports[`The WorkflowFrontend stack matches the CODE snapshot 1`] = `
           "workflow.code.dev-gutools.co.uk",
         ],
         "DesiredCapacity": 1,
+        "DnsTtl": 600,
         "InstanceType": "t4g.medium",
         "MaxSize": 2,
         "MinSize": 1,
@@ -50,6 +51,7 @@ exports[`The WorkflowFrontend stack matches the CODE snapshot 1`] = `
           "workflow.gutools.co.uk",
         ],
         "DesiredCapacity": 3,
+        "DnsTtl": 900,
         "InstanceType": "t4g.medium",
         "MaxSize": 6,
         "MinSize": 3,
@@ -677,6 +679,43 @@ exports[`The WorkflowFrontend stack matches the CODE snapshot 1`] = `
         ],
       },
       "Type": "AWS::CloudFront::Distribution",
+    },
+    "WorkflowFrontendDnsRecord": {
+      "Properties": {
+        "Name": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::FindInMap": [
+                "WorkflowFrontendConfig",
+                {
+                  "Ref": "Stage",
+                },
+                "CloudfrontAliases",
+              ],
+            },
+          ],
+        },
+        "RecordType": "CNAME",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": "WorkflowFrontendCloudfront.DomainName",
+          },
+        ],
+        "Stage": {
+          "Ref": "Stage",
+        },
+        "TTL": {
+          "Fn::FindInMap": [
+            "WorkflowFrontendConfig",
+            {
+              "Ref": "Stage",
+            },
+            "DnsTtl",
+          ],
+        },
+      },
+      "Type": "Guardian::DNS::RecordSet",
     },
     "WorkflowFrontendGroup": {
       "Properties": {
@@ -869,6 +908,7 @@ exports[`The WorkflowFrontend stack matches the PROD snapshot 1`] = `
           "workflow.code.dev-gutools.co.uk",
         ],
         "DesiredCapacity": 1,
+        "DnsTtl": 600,
         "InstanceType": "t4g.medium",
         "MaxSize": 2,
         "MinSize": 1,
@@ -878,6 +918,7 @@ exports[`The WorkflowFrontend stack matches the PROD snapshot 1`] = `
           "workflow.gutools.co.uk",
         ],
         "DesiredCapacity": 3,
+        "DnsTtl": 900,
         "InstanceType": "t4g.medium",
         "MaxSize": 6,
         "MinSize": 3,
@@ -1505,6 +1546,43 @@ exports[`The WorkflowFrontend stack matches the PROD snapshot 1`] = `
         ],
       },
       "Type": "AWS::CloudFront::Distribution",
+    },
+    "WorkflowFrontendDnsRecord": {
+      "Properties": {
+        "Name": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::FindInMap": [
+                "WorkflowFrontendConfig",
+                {
+                  "Ref": "Stage",
+                },
+                "CloudfrontAliases",
+              ],
+            },
+          ],
+        },
+        "RecordType": "CNAME",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": "WorkflowFrontendCloudfront.DomainName",
+          },
+        ],
+        "Stage": {
+          "Ref": "Stage",
+        },
+        "TTL": {
+          "Fn::FindInMap": [
+            "WorkflowFrontendConfig",
+            {
+              "Ref": "Stage",
+            },
+            "DnsTtl",
+          ],
+        },
+      },
+      "Type": "Guardian::DNS::RecordSet",
     },
     "WorkflowFrontendGroup": {
       "Properties": {
