@@ -699,7 +699,7 @@ exports[`The WorkflowFrontend stack matches the CODE snapshot 1`] = `
         "RecordType": "CNAME",
         "ResourceRecords": [
           {
-            "Fn::GetAtt": "WorkflowFrontendCloudfront.DomainName",
+            "Fn::Sub": "\${WorkflowFrontendCloudfront.DomainName}.",
           },
         ],
         "Stage": {
@@ -1566,7 +1566,7 @@ exports[`The WorkflowFrontend stack matches the PROD snapshot 1`] = `
         "RecordType": "CNAME",
         "ResourceRecords": [
           {
-            "Fn::GetAtt": "WorkflowFrontendCloudfront.DomainName",
+            "Fn::Sub": "\${WorkflowFrontendCloudfront.DomainName}.",
           },
         ],
         "Stage": {

@@ -93,7 +93,7 @@
       Properties:
         Name: !Select [0, !FindInMap [WorkflowFrontendConfig, !Ref Stage, CloudfrontAliases]]
         ResourceRecords:
-          - !GetAtt WorkflowFrontendCloudfront.DomainName
+          - !Sub "${WorkflowFrontendCloudfront.DomainName}."
         TTL: !FindInMap [WorkflowFrontendConfig, !Ref Stage, DnsTtl]
         RecordType: CNAME
         Stage: !Ref Stage
