@@ -40,11 +40,11 @@ jobs:
           repository: guardian/workflow
           path: e2e-tests/target/workflow-backend
 
-      - name: Check out devcontainer-nginx
+      - name: Check out chekov
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
-          repository: aug24/devcontainer-nginx
-          path: e2e-tests/target/devcontainer-nginx
+          repository: guardian/chekov
+          path: e2e-tests/target/chekov
 
       - name: Install Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -94,7 +94,7 @@ jobs:
       - name: Verify Chromium can launch
         run: yarn tsx setup/verify-chromium.ts
 
-      - name: Set up local CA for devcontainer-nginx
+      - name: Set up local CA for chekov
         id: local-ca
         run: |
           sudo apt-get update
@@ -102,7 +102,7 @@ jobs:
           export CAROOT="$HOME/.local/share/mkcert"
           mkcert -install
           echo "certificate=$CAROOT/rootCA.pem" >> "$GITHUB_OUTPUT"
-          mkdir -p target/devcontainer-nginx/certs
+          mkdir -p target/chekov/certs
 
       - name: Run Playwright tests
         env:

@@ -307,8 +307,8 @@ export async function startDevcontainerNginx(
     diagnostics: StackDiagnostics,
 ): Promise<StartedTestContainer> {
     const nginxDir = path.resolve(
-        process.env.DEVCONTAINER_NGINX_DIR ??
-            path.join(e2eRoot, "target/devcontainer-nginx"),
+        process.env.CHEKOV_DIR ??
+            path.join(e2eRoot, "target/chekov"),
     );
     const nginxImage = await buildImage({ context: nginxDir, dockerfile: "Dockerfile", tag: imageTag, name: "devcontainer-nginx", diagnostics });
     const certsDir = path.resolve(nginxDir, process.env.CERTS_DIR || "certs");
