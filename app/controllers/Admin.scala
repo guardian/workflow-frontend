@@ -2,21 +2,27 @@ package controllers
 
 import com.gu.pandomainauth.PanDomainAuthSettingsRefresher
 import com.gu.permissions.PermissionsProvider
-import com.gu.workflow.api.{DesksAPI, SectionDeskMappingsAPI, SectionsAPI}
+import com.gu.workflow.api.DesksAPI
+import com.gu.workflow.api.SectionDeskMappingsAPI
+import com.gu.workflow.api.SectionsAPI
 import config.Config
-import io.circe.{Json, parser}
+import io.circe.Json
+import io.circe.parser
 import lib.AdminPermissionFilter
-import models.api.ApiError
 import models._
 import models.api.ApiError
 import play.api.Logging
 import play.api.data.Form
+import play.api.data.validation.Constraint
+import play.api.data.validation.Constraints
 import play.api.i18n.I18nSupport
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.matching.compat.Regex
+
 
 class Admin(
   sectionsAPI: SectionsAPI,
@@ -108,9 +114,12 @@ class Admin(
     }
   }
 
+  val namePattern: Regex = s"""[A-Za-z0-9 ._-]*""".r
+  val safeName = text.verifying(Constraints.nonEmpty, Constraints.pattern(namePattern, "No special characters", "name.special-characters") );
+
   val addSectionForm = Form(
     mapping(
-      "name" -> nonEmptyText,
+      "name" -> safeName,
       "selected" -> boolean,
       "id" -> longNumber
     )(Section.apply)(Section.unapply)
@@ -118,7 +127,7 @@ class Admin(
 
   val addDeskForm = Form(
     mapping(
-      "name" -> nonEmptyText,
+      "name" -> safeName,
       "selected" -> boolean,
       "id" -> longNumber
     )(Desk.apply)(Desk.unapply)
