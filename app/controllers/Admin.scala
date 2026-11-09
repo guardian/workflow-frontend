@@ -114,7 +114,7 @@ class Admin(
     }
   }
 
-  val namePattern: Regex = s"""[A-Za-z0-9 ._-]*""".r
+  val namePattern: Regex = s"""[A-Za-z0-9 .()_-]*""".r
   val safeName = text.verifying(Constraints.nonEmpty, Constraints.pattern(namePattern, "No special characters", "name.special-characters") );
 
   val addSectionForm = Form(
