@@ -102,9 +102,9 @@ flowchart LR
   out and built from the [guardian/workflow](https://github.com/guardian/workflow)
   repository. The test setup clones it automatically into
   `e2e-tests/target/workflow-backend/` (see [setup/checkout-datastore](setup/checkout-datastore)).
-- **Git SSH access to `aug24/devcontainer-nginx`** - the stack commands check
-  out the proxy into `e2e-tests/target/devcontainer-nginx/` and build its Dockerfile
-  before starting it. Set `DEVCONTAINER_NGINX_DIR` to build from another checkout.
+- **Git SSH access to `guardian/chekov`** - the stack commands check
+  out the proxy into `e2e-tests/target/chekov/` and build its Dockerfile
+  before starting it. Set `CHEKOV_DIR` to build from another checkout.
 - **Proxy ports and certificates** - the stack reserves container name
   `devcontainer-nginx` and host ports 80 and 443. Remove any existing container
   with that name before starting the stack. Certificates are mounted read-only
