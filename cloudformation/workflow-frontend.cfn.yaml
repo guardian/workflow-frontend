@@ -28,6 +28,7 @@
         InstanceType: "t4g.medium"
         CloudfrontAliases:
           - "workflow.code.dev-gutools.co.uk"
+        DnsTtl: 600
       PROD:
         MinSize: 3
         MaxSize: 6
@@ -35,6 +36,7 @@
         InstanceType: "t4g.medium"
         CloudfrontAliases:
           - "workflow.gutools.co.uk"
+        DnsTtl: 900
   Parameters:
     Stage:
       Description: "Environment name"
@@ -86,6 +88,16 @@
       Type: List<AWS::EC2::Subnet::Id>
       Description: The private subnets of the new VPC for the autoscaling group
   Resources:
+    WorkflowFrontendDnsRecord:
+      Type: Guardian::DNS::RecordSet
+      Properties:
+        Name: !Select [0, !FindInMap [WorkflowFrontendConfig, !Ref Stage, CloudfrontAliases]]
+        ResourceRecords:
+          - !Sub "${WorkflowFrontendCloudfront.DomainName}."
+        TTL: !FindInMap [WorkflowFrontendConfig, !Ref Stage, DnsTtl]
+        RecordType: CNAME
+        Stage: !Ref Stage
+
     DistributionInstanceProfile:
       Type: "AWS::IAM::InstanceProfile"
       Properties:
