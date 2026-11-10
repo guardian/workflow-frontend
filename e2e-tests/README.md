@@ -16,7 +16,7 @@ The local stack is built with Test Container on top of Docker so that we can
 configure and wire up the containers in a more flexible way.
 
 WireMock is used to mock dependencies. Local S3 service is mocked with LocalStack
-to serve PanDomain settings and permission cache. We also create a local 
+to serve PanDomain settings and permission cache. We also create a local
 DynamoDB with test data using AWS Local DynamoDB image.
 
 The stack is reached over two different network paths depending on where the
@@ -31,14 +31,14 @@ running inside the dev container.
 
    Here we don't set up the nginx config for reverse-proxying services that sit
    outside this repository because those projects already set up ones for development.
-   We just bind those services to devcontainer using the same ports so their 
+   We just bind those services to devcontainer using the same ports so their
    reverse-proxying rule just works in this setting.
 
 2. **Playwright Chromium → services directly.** Inside the dev container,
-   Chromium loads the frontend over plain HTTP via its forwarded port on devcontainer, 
-   and reaches the cross-origin APIs (`*.local.dev-gutools.co.uk` hostnames) over HTTPS. 
-   The `--host-resolver-rules` launch argument (in Playwright's config for tests and 
-   in "run-local-stack.ts" if we build the stack with `yarn dev:local` for development) 
+   Chromium loads the frontend over plain HTTP via its forwarded port on devcontainer,
+   and reaches the cross-origin APIs (`*.local.dev-gutools.co.uk` hostnames) over HTTPS.
+   The `--host-resolver-rules` launch argument (in Playwright's config for tests and
+   in "run-local-stack.ts" if we build the stack with `yarn dev:local` for development)
    maps each API hostname straight to the mock's HTTPS port
    (the config `ignoreHTTPSErrors` accepts the self-signed certificates).
 
@@ -109,13 +109,13 @@ The dependencies in the e2e-tests and the Playwright should have been installed 
 Use `mise run test`. You man run it from any directory within the repository. The e2e tasks
 set their working directory to `e2e-tests/` automatically.
 
-| Command | Purpose |
-| --- | --- |
-| `mise run dev:local` | Start a reusable Docker stack and authenticated browser |
-| `mise run debug` | Start the shared stack with Docker build debug logging |
-| `mise run test` | Generate BDD tests and run Playwright, starting or reusing the stack |
-| `mise run test:ui` | Run the Playwright UI on port 9099 |
-| `mise run test:report` | Serve the Playwright HTML report on port 9098 |
+| Command                | Purpose                                                              |
+| ---------------------- | -------------------------------------------------------------------- |
+| `mise run dev:local`   | Start a reusable Docker stack and authenticated browser              |
+| `mise run debug`       | Start the shared stack with Docker build debug logging               |
+| `mise run test`        | Generate BDD tests and run Playwright, starting or reusing the stack |
+| `mise run test:ui`     | Run the Playwright UI on port 9099                                   |
+| `mise run test:report` | Serve the Playwright HTML report on port 9098                        |
 
 The equivalent Yarn commands below remain available.
 Run these Yarn commands from the `e2e-tests/` folder.
@@ -124,7 +124,7 @@ Run these Yarn commands from the `e2e-tests/` folder.
 yarn test
 ```
 
-This generates the BDD test files (`bddgen`) from the feature files, ensures 
+This generates the BDD test files (`bddgen`) from the feature files, ensures
 the Datastore backend is
 checked out, builds the stack, and runs the test suite in headless mode.
 
@@ -135,7 +135,6 @@ APIs) all run as containers, and so does the workflow-frontend app itself. The
 app is built and run as a container, mounting the sources live so `sbt run` +
 `yarn build-dev` (webpack watch) reload edits to Scala or frontend assets
 without rebuilding the image.
-
 
 ### Use host's browser to access Playwright UI
 
@@ -184,21 +183,31 @@ yarn dev:local
 On the host, open this link `https://workflow.local.dev-gutools.co.uk/cookie` to load
 the authentication cooke and then get redirected to the Workflow dashboard page.
 
-### Viewing the report
+### Viewing the reports
 
-After a run, open the HTML report (traces, videos and screenshots for failed
-scenarios are attached):
+Every test run generates Playwright and Cucumber HTML reports, including any
+captured traces, videos and screenshots. Open the Playwright report with:
 
 ```bash
 yarn test:report
 ```
 
-Raw artifacts are written to `e2e-tests/target/test-results/` and the report to
-`e2e-tests/target/playwright-report/` (both gitignored). Traces/videos/screenshots are
-captured on first retry and on failure — see `use` in
+Raw artifacts are written to `e2e-tests/target/test-results/`, the Playwright report
+to `e2e-tests/target/playwright-report/`, and the Cucumber report to
+`e2e-tests/target/cucumber-report/index.html` (all gitignored). Keep each report's
+complete directory, including its attachment files. Serve the Cucumber report
+over HTTP to use its embedded trace viewer.
+
+Traces and videos are captured on the first retry, and screenshots only on failure;
+tests that pass on their first attempt do not have these attachments. See `use` in
 [playwright.config.ts](playwright.config.ts).
 
-The test report is served via port 9098 which is mapped to the same port number
+CI prints list output and adds GitHub failure annotations. Both HTML reports and
+their captured attachments are uploaded together as the `e2e-report` artifact,
+retained for 14 days after successful or failed runs, excluding cancelled runs.
+Failures before report generation may leave no reports to upload.
+
+The Playwright report is served via port 9098 which is mapped to the same port number
 of the host. So you can open it by `http://localhost:9098` on your host directly.
 
 ## Folder structure
@@ -254,7 +263,7 @@ e2e/
   and the `feature-file-from-templates` skill for authoring guidance.
 - **Step definitions** live in `steps/*.steps.ts` and are wired to Playwright
   via `Given`/`When`/`Then` exported from `steps/fixtures.ts`. See the
-  [`feature-file-step-definitions`](../.github/skills/feature-file-step-definitions/SKILL.md) 
+  [`feature-file-step-definitions`](../.github/skills/feature-file-step-definitions/SKILL.md)
   skill for how to add missing steps.
 - **Auth**: use the `signIn` fixture. Roles map to emails in
   `setup/panDomainCookie.ts`, which must match entries in
