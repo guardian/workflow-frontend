@@ -21,7 +21,7 @@ import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.matching.compat.Regex
+import scala.util.matching.Regex
 
 
 class Admin(
@@ -114,7 +114,7 @@ class Admin(
     }
   }
 
-  val namePattern: Regex = s"""[A-Za-z0-9 .()_-]*""".r
+  val namePattern: Regex = """[\p{IsLatin}0-9 .()_-]*""".r
   val safeName = text.verifying(Constraints.nonEmpty, Constraints.pattern(namePattern, "No special characters", "name.special-characters") );
 
   val addSectionForm = Form(
