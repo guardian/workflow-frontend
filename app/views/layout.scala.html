@@ -6,8 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>@title</title>
+  <script type="application/json" id="config-json-script">
+    @Html(config.toString)
+  </script>
   <script>
-    this._wfConfig = @Html(config.toString);
+    this._wfConfig = JSON.parse(document.getElementById("config-json-script").textContent);
   </script>
   <link rel="icon" type="image/x-icon" href="@routes.Assets.versioned("favicon.ico")">
   <link rel="apple-touch-icon-precomposed" sizes="128x128" href="@routes.Assets.versioned("favicon128.ico")">
