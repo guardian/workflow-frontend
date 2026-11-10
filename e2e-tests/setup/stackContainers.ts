@@ -5,6 +5,7 @@ import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
 import {
     startAws,
+    registerAwsAliases,
     startMockWiremock,
     MOCK_WIREMOCK_CONFIGS,
     startDb,
@@ -112,6 +113,7 @@ export async function startLocalStack(
         const dbStart = startDb(network, streamLogs);
 
         [awsContainer, dbContainer] = await Promise.all([awsStart, dbStart]);
+        await registerAwsAliases(devcontainerNginxContainer);
         // The mocks all run from the shared WireMock image with no build step,
         // so their starts can be kicked off immediately.
         const mockCapiStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.capi, e2eRoot, network, streamLogs);

@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs";
 import os from "os";
+import { setTimeout as delay } from "timers/promises";
 import {
     GenericContainer,
     StartedNetwork,
@@ -16,14 +17,14 @@ import type { PanDomainKeys } from "../panDomainKeys";
 // the conventional dummy pair keeps the SDKs and awslocal happy.
 export const S3_ACCESS_KEY_ID = "test";
 export const S3_SECRET_ACCESS_KEY = "test";
-// LocalStack only parses the bucket from the Host header when it contains
-// `.s3.`, so the S3 endpoint host (and the per-bucket network aliases) must sit
-// under an `s3.` domain for the app's virtual-hosted-style S3 requests to
-// resolve to the right bucket. See startAws's network aliases below.
-const S3_ENDPOINT_HOST = "s3.localstack";
-// Plain network alias for the LocalStack container, used for non-S3 endpoints
-// (e.g. DynamoDB) that don't need the `s3.` virtual-host domain.
 const LOCALSTACK_HOST = "localstack";
+const LOCALSTACK_ROUTE_HOST = `${LOCALSTACK_HOST}.local.dev-gutools.co.uk`;
+const S3_ENDPOINT_HOST = `s3.${LOCALSTACK_ROUTE_HOST}`;
+const S3_ROUTE_ALIASES = [
+    S3_ENDPOINT_HOST,
+    `permissions-cache.${S3_ENDPOINT_HOST}`,
+    `pan-domain-auth-settings.${S3_ENDPOINT_HOST}`,
+];
 // LocalStack serves every enabled service (S3, DynamoDB, ...) on this one port.
 const LOCALSTACK_PORT = 4566;
 // Stock LocalStack image; the buckets/objects and DynamoDB table the app reads
@@ -45,7 +46,6 @@ export const WIREMOCK_HTTP_PORT = 80;
 const NGINX_PORT = 80;
 const HOST_AUTH_PORT = 9090;
 export const CONTAINER_FRONTEND_PORT = 9090;
-const HOST_FRONTEND_PORT = 9091;
 // Container name and upstream the auth-redirect container proxies non-login
 // traffic to; resolved inside the Docker network at request time.
 const FRONTEND_NAME = "workflow-frontend";
@@ -69,17 +69,12 @@ export async function startAws(
     streamLogs: boolean,
 ): Promise<StartedTestContainer> {
     const awsContainer = await new GenericContainer(LOCALSTACK_IMAGE)
+        .withName(LOCALSTACK_HOST)
+        .withLabels({
+            "devcontainer.hostname": LOCALSTACK_HOST,
+            "devcontainer.application.port": String(LOCALSTACK_PORT),
+        })
         .withNetwork(network)
-        // `s3.localstack` is the S3 endpoint host; the per-bucket subdomains are
-        // what the app's virtual-hosted-style S3 requests resolve to, and each
-        // embeds `.s3.` so LocalStack extracts the bucket name. `localstack` is
-        // the plain alias DynamoDB (and other services) are reached on.
-        .withNetworkAliases(
-            LOCALSTACK_HOST,
-            S3_ENDPOINT_HOST,
-            `permissions-cache.${S3_ENDPOINT_HOST}`,
-            `pan-domain-auth-settings.${S3_ENDPOINT_HOST}`,
-        )
         .withEnvironment({
             SERVICES: "s3,dynamodb",
             AWS_DEFAULT_REGION: "eu-west-1",
@@ -95,6 +90,33 @@ export async function startAws(
     await seedDynamodb(awsContainer, e2eRoot);
 
     return awsContainer;
+}
+
+export async function registerAwsAliases(
+    chekovContainer: StartedTestContainer,
+): Promise<void> {
+    for (const alias of S3_ROUTE_ALIASES) {
+        const deadline = Date.now() + 30_000;
+        while (true) {
+            const result = await chekovContainer.exec([
+                "curl",
+                "--fail-with-body",
+                "--silent",
+                "--show-error",
+                "--max-time", "10",
+                "--data",
+                new URLSearchParams({ sourceHostname: LOCALSTACK_ROUTE_HOST, alias }).toString(),
+                "http://127.0.0.1:18080/api/aliases",
+            ]);
+            if (result.exitCode === 0) {
+                break;
+            }
+            if (Date.now() >= deadline) {
+                throw new Error(`Failed to register Chekov alias ${alias}: ${result.output}`);
+            }
+            await delay(1000);
+        }
+    }
 }
 
 type MockPortMapping = number | { container: number; host: number };
@@ -205,6 +227,7 @@ export async function startDb(
     streamLogs: boolean,
 ): Promise<any> {
     return new GenericContainer("postgres:17-alpine")
+        .withName("workflow-postgres")
         .withNetwork(network)
         .withNetworkAliases("workflow-db-e2e.local.dev-gutools.co.uk")
         .withEnvironment({
@@ -361,6 +384,8 @@ export async function startAuthRedirect(
     // nginx:alpine's entrypoint runs envsubst over /etc/nginx/templates/*.template
     // at startup, so bind-mounting the config template needs no image build.
     return new GenericContainer(AUTH_REDIRECT_IMAGE)
+        // "nginx" in the name stops chekov treating this as a dev container and probing it.
+        .withName("auth-redirect-nginx")
         .withNetwork(network)
         .withBindMounts([
             {
@@ -424,6 +449,10 @@ export async function startWorkflow(
             { host: "user-telemetry.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
             { host: "iam-preview-content.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
             { host: "tagmanager.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+            ...[LOCALSTACK_ROUTE_HOST, ...S3_ROUTE_ALIASES].map(host => ({
+                host,
+                ipAddress: "host-gateway",
+            })),
         ])
         // Mount the whole repo so webpack (build-dev watch) and Play dev-mode
         // run from source without an image rebuild. Read-write because sbt and
@@ -433,15 +462,16 @@ export async function startWorkflow(
             ...sbtCacheBindMounts(),
         ])
         .withEnvironment({
-            AWS_ENDPOINT_URL_S3: `http://${S3_ENDPOINT_HOST}:${LOCALSTACK_PORT}`,
-            AWS_ENDPOINT_URL_DYNAMODB: `http://${LOCALSTACK_HOST}:${LOCALSTACK_PORT}`,
+            AWS_ENDPOINT_URL_S3: `https://${S3_ENDPOINT_HOST}`,
+            AWS_ENDPOINT_URL_DYNAMODB: `https://${LOCALSTACK_ROUTE_HOST}`,
             AWS_ACCESS_KEY_ID: S3_ACCESS_KEY_ID,
             AWS_SECRET_ACCESS_KEY: S3_SECRET_ACCESS_KEY,
             // Keep local mode enabled in case scripts are bypassed in future changes.
             LOCAL: "true",
         })
         .withLogConsumer(createLogConsumer("workflow-frontend", streamLogs))
-        .withExposedPorts({ container: CONTAINER_FRONTEND_PORT, host: HOST_FRONTEND_PORT })
+        // A fixed host port differing from the container port makes chekov prefix the route (9091.workflow...).
+        .withExposedPorts(CONTAINER_FRONTEND_PORT)
         .withStartupTimeout(10 * 60 * 1000)
         .withWaitStrategy(
             Wait.forHttp("/management/healthcheck", CONTAINER_FRONTEND_PORT).forStatusCode(200)
