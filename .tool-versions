@@ -2,4 +2,4 @@ java                   corretto-11
 nodejs                 22
 sbt                    1.12.11
 aws-cli                2.34.62
-github:guardian/devenv 20260930-111347
+github:guardian/devenv 20261111-131338
