@@ -38,7 +38,7 @@ object Dependencies {
     "io.circe" %% "circe-generic" % circeVersion,
     "io.circe" %% "circe-parser" % circeVersion,
     "io.circe" %% "circe-generic-extras" % "0.14.4",
-    "com.beachape" %% "enumeratum-circe" % "1.7.4"
+    "com.beachape" %% "enumeratum-circe" % "1.7.5"
   )
 
   val cacheDependencies = Seq(
