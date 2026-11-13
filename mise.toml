@@ -62,6 +62,11 @@ description = "Start a reusable Docker e2e stack and authenticated browser"
 dir = "{{config_root}}/e2e-tests"
 run = "yarn dev:local"
 
+[tasks."debug:chekov"]
+description = "Run the Chekov HTTP proxy (optional port argument; default 9099)"
+dir = "{{config_root}}"
+run = "sh e2e-tests/setup/chekov-proxy.sh"
+
 [tasks.debug]
 description = "Start the reusable e2e stack with Docker build debug logging"
 dir = "{{config_root}}/e2e-tests"

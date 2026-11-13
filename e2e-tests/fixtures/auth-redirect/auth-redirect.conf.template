@@ -4,7 +4,7 @@
 server {
     listen 80;
 
-    # Docker's embedded DNS, so proxy_pass can resolve the frontend alias at
+    # Docker's embedded DNS, so proxy_pass can resolve the frontend name at
     # request time and nginx can start before the frontend container is up.
     resolver 127.0.0.11 valid=10s;
 

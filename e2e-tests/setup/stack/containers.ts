@@ -1,5 +1,7 @@
 import path from "path";
 import fs from "fs";
+import os from "os";
+import { setTimeout as delay } from "timers/promises";
 import {
     GenericContainer,
     StartedNetwork,
@@ -15,14 +17,14 @@ import type { PanDomainKeys } from "../panDomainKeys";
 // the conventional dummy pair keeps the SDKs and awslocal happy.
 export const S3_ACCESS_KEY_ID = "test";
 export const S3_SECRET_ACCESS_KEY = "test";
-// LocalStack only parses the bucket from the Host header when it contains
-// `.s3.`, so the S3 endpoint host (and the per-bucket network aliases) must sit
-// under an `s3.` domain for the app's virtual-hosted-style S3 requests to
-// resolve to the right bucket. See startAws's network aliases below.
-const S3_ENDPOINT_HOST = "s3.localstack";
-// Plain network alias for the LocalStack container, used for non-S3 endpoints
-// (e.g. DynamoDB) that don't need the `s3.` virtual-host domain.
 const LOCALSTACK_HOST = "localstack";
+const LOCALSTACK_ROUTE_HOST = `${LOCALSTACK_HOST}.local.dev-gutools.co.uk`;
+const S3_ENDPOINT_HOST = `s3.${LOCALSTACK_ROUTE_HOST}`;
+const S3_ROUTE_ALIASES = [
+    S3_ENDPOINT_HOST,
+    `permissions-cache.${S3_ENDPOINT_HOST}`,
+    `pan-domain-auth-settings.${S3_ENDPOINT_HOST}`,
+];
 // LocalStack serves every enabled service (S3, DynamoDB, ...) on this one port.
 const LOCALSTACK_PORT = 4566;
 // Stock LocalStack image; the buckets/objects and DynamoDB table the app reads
@@ -34,51 +36,32 @@ const LOCALSTACK_IMAGE = "localstack/localstack:4";
 const WIREMOCK_IMAGE = "wiremock/wiremock:3.13.2";
 // The auth-redirect container is stock nginx with a bind-mounted config template.
 const AUTH_REDIRECT_IMAGE = "nginx:alpine";
+const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-4841ed355fb10451dc697ef164a59fba01f7dfbc";
 // WireMock is told to read its stubs from this bind-mounted dir rather than the
 // image default (/home/wiremock), so nothing in the base image is shadowed.
 const WIREMOCK_ROOT_DIR = "/wiremock-root";
 
-// In local dev the restorer runs as the DEV identity, whose effective stage is
-// CODE, so it resolves each stack's real per-stage flexible-content API host
-// (see app/models/FlexibleStack.scala and app/config/AppConfig.scala). We
-// register those exact hostnames as network aliases on the mock container, so
-// the real hostnames resolve to the mock inside the Docker network — no
-// config/URL override required.
 export const WIREMOCK_HTTP_PORT = 80;
-// Container port the https-serving mocks (composer, presence, telemetry) listen
-// on; Chromium host-resolver-rules map each mock's hostname to its fixed host port.
-const WIREMOCK_HTTPS_PORT = 8443;
 // Fixed host port for the optional host-browser auth-cookie endpoint. Kept
 // stable (and forwarded in the devcontainer) so it can be bookmarked.
 const NGINX_PORT = 80;
 const HOST_AUTH_PORT = 9090;
 export const CONTAINER_FRONTEND_PORT = 9090;
-const HOST_FRONTEND_PORT = 9091;
-// Network alias and upstream the auth-redirect container proxies non-login
+// Container name and upstream the auth-redirect container proxies non-login
 // traffic to; resolved inside the Docker network at request time.
-const FRONTEND_ALIAS = "workflow-frontend";
-const FRONTEND_UPSTREAM = `${FRONTEND_ALIAS}:${CONTAINER_FRONTEND_PORT}`;
-const CAPI_HOSTNAME = "iam-preview.content.local.dev-guardianapis.com";
-const PREFERENCES_HOSTNAME = "preferences.local.dev-gutools.co.uk";
-const TAG_MANAGER_HOSTNAME = "tagmanager.local.dev-gutools.co.uk";
-const COMPOSER_HOSTNAME = "composer.local.dev-gutools.co.uk";
-// Composer is called from the browser cross-origin over https; the mock serves
-// https on this fixed host port, which Chromium host-resolver-rules maps
-// COMPOSER_HOSTNAME to. Forwarded in the devcontainer as "Composer API".
+const FRONTEND_NAME = "workflow-frontend";
+const FRONTEND_HOSTNAME = "workflow";
+const FRONTEND_UPSTREAM = `${FRONTEND_HOSTNAME}.local.dev-gutools.co.uk`;
+const DATASTORE_NAME = "workflow-datastore";
+export const CAPI_HOSTNAME = "iam-preview-content";
+const PREFERENCES_HOSTNAME = "preferences";
+const TAG_MANAGER_HOSTNAME = "tagmanager";
+export const COMPOSER_HOSTNAME = "composer";
 const HOST_COMPOSER_HTTP_PORT = 9081;
-const HOST_COMPOSER_HTTPS_PORT = 9082;
-const PRESENCE_HOSTNAME = "presence.local.dev-gutools.co.uk";
-// Presence's client library is loaded by the browser over https; the mock serves
-// it on this fixed host port, which Chromium host-resolver-rules maps
-// PRESENCE_HOSTNAME to. Forwarded in the devcontainer as "Presence".
+const PRESENCE_HOSTNAME = "presence";
 const HOST_PRESENCE_HTTP_PORT = 9070;
-const HOST_PRESENCE_HTTPS_PORT = 9071;
-const TELEMETRY_HOSTNAME = "user-telemetry.local.dev-gutools.co.uk";
-// Telemetry is called from the browser over https; the mock serves it on this
-// fixed host port, which Chromium host-resolver-rules maps TELEMETRY_HOSTNAME
-// to. Forwarded in the devcontainer as "User telemetry".
+export const TELEMETRY_HOSTNAME = "user-telemetry";
 const HOST_TELEMETRY_HTTP_PORT = 3132;
-const HOST_TELEMETRY_HTTPS_PORT = 3133;
 
 export async function startAws(
     network: StartedNetwork,
@@ -87,17 +70,12 @@ export async function startAws(
     streamLogs: boolean,
 ): Promise<StartedTestContainer> {
     const awsContainer = await new GenericContainer(LOCALSTACK_IMAGE)
+        .withName(LOCALSTACK_HOST)
+        .withLabels({
+            "devcontainer.hostname": LOCALSTACK_HOST,
+            "devcontainer.application.port": String(LOCALSTACK_PORT),
+        })
         .withNetwork(network)
-        // `s3.localstack` is the S3 endpoint host; the per-bucket subdomains are
-        // what the app's virtual-hosted-style S3 requests resolve to, and each
-        // embeds `.s3.` so LocalStack extracts the bucket name. `localstack` is
-        // the plain alias DynamoDB (and other services) are reached on.
-        .withNetworkAliases(
-            LOCALSTACK_HOST,
-            S3_ENDPOINT_HOST,
-            `permissions-cache.${S3_ENDPOINT_HOST}`,
-            `pan-domain-auth-settings.${S3_ENDPOINT_HOST}`,
-        )
         .withEnvironment({
             SERVICES: "s3,dynamodb",
             AWS_DEFAULT_REGION: "eu-west-1",
@@ -115,19 +93,44 @@ export async function startAws(
     return awsContainer;
 }
 
+export async function registerAwsAliases(
+    chekovContainer: StartedTestContainer,
+): Promise<void> {
+    for (const alias of S3_ROUTE_ALIASES) {
+        const deadline = Date.now() + 30_000;
+        while (true) {
+            const result = await chekovContainer.exec([
+                "curl",
+                "--fail-with-body",
+                "--silent",
+                "--show-error",
+                "--max-time", "10",
+                "--data",
+                new URLSearchParams({ sourceHostname: LOCALSTACK_ROUTE_HOST, alias }).toString(),
+                "http://127.0.0.1:18080/api/aliases",
+            ]);
+            if (result.exitCode === 0) {
+                break;
+            }
+            if (Date.now() >= deadline) {
+                throw new Error(`Failed to register Chekov alias ${alias}: ${result.output}`);
+            }
+            await delay(1000);
+        }
+    }
+}
+
 type MockPortMapping = number | { container: number; host: number };
 
 interface MockWiremockConfig {
-    /** Log prefix for this mock's container output. */
+    /** Container name and log prefix for this mock. */
     name: string;
     /** fixtures/<dir> folder holding this mock's WireMock root (mappings/ + __files/). */
     fixtureDir: string;
-    /** Docker network alias(es) the frontend/browser resolve to this mock. */
-    aliases: string[];
-    /** Ports to expose; a fixed host port is used only where one is required. */
-    ports: MockPortMapping[];
-    /** Serve https on 8443 (browser cross-origin mocks) in addition to http. */
-    https?: boolean;
+    /** Hostname advertised to devcontainer-nginx. */
+    hostname: string;
+    /** Port to expose; a fixed host port is used only where one is required. */
+    port: MockPortMapping;
     /** Disable WireMock response templating (e.g. presence serves a JS body verbatim). */
     templating?: boolean;
 }
@@ -136,80 +139,71 @@ export const MOCK_WIREMOCK_CONFIGS: Record<string, MockWiremockConfig> = {
     capi: {
         name: "mock-capi",
         fixtureDir: "capi",
-        aliases: [CAPI_HOSTNAME],
-        ports: [WIREMOCK_HTTP_PORT],
+        hostname: CAPI_HOSTNAME,
+        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
     composer: {
         name: "mock-composer",
         fixtureDir: "composer",
-        aliases: [COMPOSER_HOSTNAME],
-        ports: [
-            { container: WIREMOCK_HTTP_PORT, host: HOST_COMPOSER_HTTP_PORT },
-            { container: WIREMOCK_HTTPS_PORT, host: HOST_COMPOSER_HTTPS_PORT },
-        ],
-        https: true,
+        hostname: COMPOSER_HOSTNAME,
+        port: { container: HOST_COMPOSER_HTTP_PORT, host: HOST_COMPOSER_HTTP_PORT },
         templating: true,
     },
     presence: {
         name: "mock-presence",
         fixtureDir: "presence",
-        aliases: [PRESENCE_HOSTNAME],
-        ports: [
-            { container: WIREMOCK_HTTP_PORT, host: HOST_PRESENCE_HTTP_PORT },
-            { container: WIREMOCK_HTTPS_PORT, host: HOST_PRESENCE_HTTPS_PORT },
-        ],
-        https: true,
+        hostname: PRESENCE_HOSTNAME,
+        port: { container: HOST_PRESENCE_HTTP_PORT, host: HOST_PRESENCE_HTTP_PORT },
     },
     telemetry: {
         name: "mock-telemetry",
         fixtureDir: "telemetry",
-        aliases: [TELEMETRY_HOSTNAME],
-        ports: [
-            { container: WIREMOCK_HTTP_PORT, host: HOST_TELEMETRY_HTTP_PORT },
-            { container: WIREMOCK_HTTPS_PORT, host: HOST_TELEMETRY_HTTPS_PORT },
-        ],
-        https: true,
+        hostname: TELEMETRY_HOSTNAME,
+        port: { container: HOST_TELEMETRY_HTTP_PORT, host: HOST_TELEMETRY_HTTP_PORT },
         templating: true,
     },
     preferences: {
         name: "mock-preferences",
         fixtureDir: "preferences",
-        aliases: [PREFERENCES_HOSTNAME],
-        ports: [WIREMOCK_HTTP_PORT],
+        hostname: PREFERENCES_HOSTNAME,
+        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
     tagmanager: {
         name: "mock-tagmanager",
         fixtureDir: "tagmanager",
-        aliases: [TAG_MANAGER_HOSTNAME],
-        ports: [WIREMOCK_HTTP_PORT],
+        hostname: TAG_MANAGER_HOSTNAME,
+        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
 };
 
 // Start one WireMock mock from the shared image, bind-mounting fixtures/<name>
-// as its stub root. Runs as root so WireMock can bind the privileged port 80,
-// which the frontend's server-side calls reach via the network aliases.
+// as its stub root. Runs as root so WireMock can bind the privileged port 80.
 export async function startMockWiremock(
     config: MockWiremockConfig,
     e2eRoot: string,
     network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<any> {
+    const containerPort = typeof config.port === "number" ? config.port : config.port.container;
     const command = [
         "--root-dir",
         WIREMOCK_ROOT_DIR,
         "--port",
-        String(WIREMOCK_HTTP_PORT),
-        ...(config.https ? ["--https-port", String(WIREMOCK_HTTPS_PORT)] : []),
+        String(containerPort),
         "--verbose",
         ...(config.templating ? ["--local-response-templating"] : []),
     ];
     return new GenericContainer(WIREMOCK_IMAGE)
+        .withName(config.name)
+        .withLabels({ 
+            "devcontainer.hostname": config.hostname,
+            "devcontainer.application.port": String(containerPort),
+        })
         .withUser("root")
         .withNetwork(network)
-        .withNetworkAliases(...config.aliases)
         .withBindMounts([
             {
                 source: path.join(e2eRoot, "fixtures", config.fixtureDir),
@@ -219,9 +213,9 @@ export async function startMockWiremock(
         ])
         .withCommand(command)
         .withLogConsumer(createLogConsumer(config.name, streamLogs))
-        .withExposedPorts(...config.ports)
+        .withExposedPorts(config.port)
         .withWaitStrategy(
-            Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
+            Wait.forHttp("/__admin/health", containerPort).forStatusCode(
                 200,
             ),
         )
@@ -234,6 +228,7 @@ export async function startDb(
     streamLogs: boolean,
 ): Promise<any> {
     return new GenericContainer("postgres:17-alpine")
+        .withName("workflow-postgres")
         .withNetwork(network)
         .withNetworkAliases("workflow-db-e2e.local.dev-gutools.co.uk")
         .withEnvironment({
@@ -286,8 +281,8 @@ function buildDatastoreImage(
 ): Promise<GenericContainer> {
     console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR ?? "(not set)"}`);
     const backendDir = getBackendDir(e2eRoot);
-    // The image only bakes the JVM toolchain, so the build context is a tiny
-    // temp folder holding just .tool-versions plus the Dockerfile (which must
+    // The image bakes the JVM toolchain and CA, so the build context is a tiny
+    // temp folder holding .tool-versions, rootCA.pem and the Dockerfile (which must
     // live inside the context for fromDockerfile). Recreated fresh each run.
     const buildContext = path.join(e2eRoot, "target/datastore-build-context");
     fs.rmSync(buildContext, { recursive: true, force: true });
@@ -300,7 +295,55 @@ function buildDatastoreImage(
         path.join(e2eRoot, "images/datastore.Dockerfile"),
         path.join(buildContext, "datastore.Dockerfile"),
     );
+    fs.copyFileSync(
+        path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+        path.join(buildContext, "rootCA.pem"),
+    );
     return buildImage(buildContext, "datastore.Dockerfile", imageTag);
+}
+
+export async function startDevcontainerNginx(
+    e2eRoot: string,
+    network: StartedNetwork,
+    streamLogs: boolean,
+): Promise<StartedTestContainer> {
+    const nginxDir = path.resolve(e2eRoot, "target/chekov");
+    const certsDir = path.resolve(nginxDir, process.env.CERTS_DIR || "certs");
+    const logsDir = path.join(nginxDir, "logs");
+    fs.mkdirSync(certsDir, { recursive: true });
+    fs.mkdirSync(logsDir, { recursive: true });
+    return new GenericContainer(CHEKOV_IMAGE)
+        .withName("devcontainer-nginx")
+        .withNetwork(network)
+        .withBindMounts([
+            { source: "/var/run/docker.sock", target: "/var/run/docker.sock", mode: "ro" },
+            { source: certsDir, target: "/etc/nginx/certs", mode: "ro" },
+            {
+                source: path.join(os.homedir(), ".local/share/mkcert"),
+                target: "/etc/nginx/mkcert",
+                mode: "ro",
+            },
+            { source: logsDir, target: "/var/log/nginx", mode: "rw" },
+            { source: logsDir, target: "/var/log/devcontainer-nginx", mode: "rw" },
+        ])
+        .withEnvironment({
+            BASE_DOMAIN: "local.dev-gutools.co.uk",
+            DOCKER_SOCKET: "/var/run/docker.sock",
+            NGINX_CONFIG_PATH: "/etc/nginx/conf.d/generated.conf",
+            TLS_CERT: "/etc/nginx/certs/wildcard.crt",
+            TLS_KEY: "/etc/nginx/certs/wildcard.key",
+            LOCAL_CA_CERT: "/etc/nginx/mkcert/rootCA.pem",
+            LOCAL_CA_KEY: "/etc/nginx/mkcert/rootCA-key.pem",
+            DEBOUNCE_MS: "500",
+        })
+        .withLogConsumer(createLogConsumer("devcontainer-nginx", streamLogs))
+        .withExposedPorts(
+            { container: 80, host: 80 },
+            { container: 443, host: 443 },
+        )
+        .withWaitStrategy(Wait.forHealthCheck())
+        .withStartupTimeout(2 * 60 * 1000)
+        .start();
 }
 
 export async function startDatastore(
@@ -312,8 +355,9 @@ export async function startDatastore(
     const backendDir = getBackendDir(e2eRoot);
     const datastoreImage = await buildDatastoreImage(e2eRoot, imageTag);
     return datastoreImage
+        .withName(DATASTORE_NAME)
+        .withLabels({ "devcontainer.hostname": DATASTORE_NAME })
         .withNetwork(network)
-        .withNetworkAliases("workflow-backend.local.dev-gutools.co.uk")
         // Mount the whole backend checkout so sbt runs from source without
         // baking it into the image. Read-write because sbt writes target/ dirs.
         .withBindMounts([
@@ -338,6 +382,8 @@ export async function startAuthRedirect(
     // nginx:alpine's entrypoint runs envsubst over /etc/nginx/templates/*.template
     // at startup, so bind-mounting the config template needs no image build.
     return new GenericContainer(AUTH_REDIRECT_IMAGE)
+        // "nginx" in the name stops chekov treating this as a dev container and probing it.
+        .withName("auth-redirect-nginx")
         .withNetwork(network)
         .withBindMounts([
             {
@@ -364,8 +410,8 @@ function buildWorkflowImage(
     repoRoot: string,
     imageTag: string,
 ): Promise<GenericContainer> {
-    // Toolchain-only image: build context is a tiny temp folder holding just
-    // .tool-versions plus the Dockerfile (which must live inside the context).
+    // Toolchain and CA image: build context is a tiny temp folder holding
+    // .tool-versions, rootCA.pem and the Dockerfile (which must live inside the context).
     const buildContext = path.join(repoRoot, "target/workflow-build-context");
     fs.rmSync(buildContext, { recursive: true, force: true });
     fs.mkdirSync(buildContext, { recursive: true });
@@ -376,6 +422,10 @@ function buildWorkflowImage(
     fs.copyFileSync(
         path.join(repoRoot, "e2e-tests/images/workflow-frontend.Dockerfile"),
         path.join(buildContext, "workflow-frontend.Dockerfile"),
+    );
+    fs.copyFileSync(
+        path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+        path.join(buildContext, "rootCA.pem"),
     );
     return buildImage(buildContext, "workflow-frontend.Dockerfile", imageTag);
 }
@@ -388,8 +438,20 @@ export async function startWorkflow(
 ): Promise<any> {
     const workflowImage = await buildWorkflowImage(repoRoot, imageTag);
     return workflowImage
+        .withName(FRONTEND_NAME)
+        .withLabels({ "devcontainer.hostname": FRONTEND_HOSTNAME })
         .withNetwork(network)
-        .withNetworkAliases(FRONTEND_ALIAS)
+        .withExtraHosts([
+            { host: "composer.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+            { host: "workflow-datastore.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+            { host: "user-telemetry.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+            { host: "iam-preview-content.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+            { host: "tagmanager.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
+            ...[LOCALSTACK_ROUTE_HOST, ...S3_ROUTE_ALIASES].map(host => ({
+                host,
+                ipAddress: "host-gateway",
+            })),
+        ])
         // Mount the whole repo so webpack (build-dev watch) and Play dev-mode
         // run from source without an image rebuild. Read-write because sbt and
         // webpack write target/ and public/build into it.
@@ -398,15 +460,16 @@ export async function startWorkflow(
             ...sbtCacheBindMounts(),
         ])
         .withEnvironment({
-            AWS_ENDPOINT_URL_S3: `http://${S3_ENDPOINT_HOST}:${LOCALSTACK_PORT}`,
-            AWS_ENDPOINT_URL_DYNAMODB: `http://${LOCALSTACK_HOST}:${LOCALSTACK_PORT}`,
+            AWS_ENDPOINT_URL_S3: `https://${S3_ENDPOINT_HOST}`,
+            AWS_ENDPOINT_URL_DYNAMODB: `https://${LOCALSTACK_ROUTE_HOST}`,
             AWS_ACCESS_KEY_ID: S3_ACCESS_KEY_ID,
             AWS_SECRET_ACCESS_KEY: S3_SECRET_ACCESS_KEY,
             // Keep local mode enabled in case scripts are bypassed in future changes.
             LOCAL: "true",
         })
         .withLogConsumer(createLogConsumer("workflow-frontend", streamLogs))
-        .withExposedPorts({ container: CONTAINER_FRONTEND_PORT, host: HOST_FRONTEND_PORT })
+        // A fixed host port differing from the container port makes chekov prefix the route (9091.workflow...).
+        .withExposedPorts(CONTAINER_FRONTEND_PORT)
         .withStartupTimeout(10 * 60 * 1000)
         .withWaitStrategy(
             Wait.forHttp("/management/healthcheck", CONTAINER_FRONTEND_PORT).forStatusCode(200)
