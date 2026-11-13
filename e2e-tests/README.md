@@ -102,15 +102,16 @@ flowchart LR
   out and built from the [guardian/workflow](https://github.com/guardian/workflow)
   repository. The test setup clones it automatically into
   `e2e-tests/target/workflow-backend/` (see [setup/checkout-datastore](setup/checkout-datastore)).
-- **Git SSH access to `guardian/chekov`** - the stack commands check
-  out the proxy into `e2e-tests/target/chekov/` and build its Dockerfile
-  before starting it. Set `CHEKOV_DIR` to build from another checkout.
+- **GHCR access** - Testcontainers pulls the prebuilt Chekov proxy image
+  from `ghcr.io/guardian/chekov/nginx` when it is not cached locally.
+  The image is public, so no login, Chekov checkout, or image build is needed.
 - **Proxy ports and certificates** - the stack reserves container name
   `devcontainer-nginx` and host ports 80 and 443. Remove any existing container
   with that name before starting the stack. Certificates are mounted read-only
-  from `CERTS_DIR` (default: `certs/` in the nginx checkout), and the local CA
+  from `CERTS_DIR` (default: `e2e-tests/target/chekov/certs/`), and the local CA
   from `$HOME/.local/share/mkcert`. Relative `CERTS_DIR` paths resolve against
-  the nginx checkout; both nginx and process logs use its `logs/` directory.
+  `e2e-tests/target/chekov/`; both nginx and process logs use its `logs/`
+  directory. The stack creates the certificate and log directories on startup.
   Container configuration is encoded in the setup code, not loaded from Compose
   at runtime.
 

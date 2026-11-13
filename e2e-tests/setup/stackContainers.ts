@@ -75,7 +75,6 @@ export async function startLocalStack(
     const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
     const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
-    const devcontainerNginxImageTag = `workflow-devcontainer-nginx-e2e:${runId}`;
 
     const network = await new Network().start();
 
@@ -97,7 +96,7 @@ export async function startLocalStack(
 
     try {
         const devcontainerNginxStart = startDevcontainerNginx(
-            e2eRoot, devcontainerNginxImageTag, network, streamLogs,
+            e2eRoot, network, streamLogs,
         );
         devcontainerNginxContainer = await devcontainerNginxStart;
 

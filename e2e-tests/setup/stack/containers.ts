@@ -36,6 +36,7 @@ const LOCALSTACK_IMAGE = "localstack/localstack:4";
 const WIREMOCK_IMAGE = "wiremock/wiremock:3.13.2";
 // The auth-redirect container is stock nginx with a bind-mounted config template.
 const AUTH_REDIRECT_IMAGE = "nginx:alpine";
+const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-4841ed355fb10451dc697ef164a59fba01f7dfbc";
 // WireMock is told to read its stubs from this bind-mounted dir rather than the
 // image default (/home/wiremock), so nothing in the base image is shadowed.
 const WIREMOCK_ROOT_DIR = "/wiremock-root";
@@ -303,18 +304,15 @@ function buildDatastoreImage(
 
 export async function startDevcontainerNginx(
     e2eRoot: string,
-    imageTag: string,
     network: StartedNetwork,
     streamLogs: boolean,
 ): Promise<StartedTestContainer> {
-    const nginxDir = path.resolve(
-        process.env.CHEKOV_DIR ??
-            path.join(e2eRoot, "target/chekov"),
-    );
-    const nginxImage = await buildImage(nginxDir, "Dockerfile", imageTag);
+    const nginxDir = path.resolve(e2eRoot, "target/chekov");
     const certsDir = path.resolve(nginxDir, process.env.CERTS_DIR || "certs");
     const logsDir = path.join(nginxDir, "logs");
-    return nginxImage
+    fs.mkdirSync(certsDir, { recursive: true });
+    fs.mkdirSync(logsDir, { recursive: true });
+    return new GenericContainer(CHEKOV_IMAGE)
         .withName("devcontainer-nginx")
         .withNetwork(network)
         .withBindMounts([
