@@ -156,7 +156,7 @@ export async function startLocalStack(
             () => startMock("capi"),
             () => startMock("composer"),
             () => startMock("telemetry"),
-            () => resources.startContainer("chekov", () => startDevcontainerNginx(e2eRoot, devcontainerNginxImageTag, network, diagnostics)),
+            () => resources.startContainer("chekov", () => startDevcontainerNginx(e2eRoot, network, diagnostics)),
             () => resources.startContainer("datastore", () => startDatastore({ e2eRoot, image: datastoreImage, network, diagnostics })),
             () => startMock("presence"),
             () => startMock("preferences"),
