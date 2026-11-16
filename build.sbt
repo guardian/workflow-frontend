@@ -41,7 +41,7 @@ lazy val commonLib = project("common-lib")
   .settings(
     libraryDependencies
       ++= Seq(
-        "org.playframework" %% "play-ahc-ws" % "3.0.10",
+        "org.playframework" %% "play-ahc-ws" % "3.0.12",
         "com.fasterxml.jackson.core" % "jackson-core" % "2.22.3",
         "com.fasterxml.jackson.core" % "jackson-databind" % "2.22.3",
         "com.fasterxml.jackson.core" % "jackson-annotations" % "2.22",
