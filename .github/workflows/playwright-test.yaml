@@ -99,7 +99,6 @@ jobs:
 
       - name: Run Playwright tests
         env:
-          DEBUG: "testcontainers,testcontainers:build"
           NODE_EXTRA_CA_CERTS: ${{ steps.local-ca.outputs.certificate }}
         run: yarn bddgen && yarn playwright test
 
