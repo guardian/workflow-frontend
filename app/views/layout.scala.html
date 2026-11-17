@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>@title</title>
   <script type="application/json" id="config-json-script">
-    @Html(config.toString)
+    @config.toString
   </script>
   <script>
     this._wfConfig = JSON.parse(document.getElementById("config-json-script").textContent);
