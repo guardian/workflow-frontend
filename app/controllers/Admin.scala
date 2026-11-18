@@ -114,7 +114,7 @@ class Admin(
     }
   }
 
-  val namePattern: Regex = """[\p{IsLatin}0-9 .()_-]*""".r
+  val namePattern: Regex = """[\p{IsLatin}0-9 .()_-&]*""".r
   val safeName = text.verifying(Constraints.nonEmpty, Constraints.pattern(namePattern, "No special characters", "name.special-characters") );
 
   val addSectionForm = Form(
