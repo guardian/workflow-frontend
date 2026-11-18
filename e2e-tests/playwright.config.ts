@@ -36,12 +36,15 @@ export default defineConfig({
             ],
         },
     },
-    reporter: process.env.CI ? 
-        [["github"]] :
-        [
-            ["list", { printFailuresInline: true }],
-            ["html", { outputFolder: "target/playwright-report", open: "never" }],
-        ],
+    reporter: [
+        ["list", { printFailuresInline: true }],
+        ...(process.env.CI ? [["github"] as ["github"]] : []),
+        ["html", { outputFolder: "target/playwright-report", open: "never" }],
+        cucumberReporter("html", {
+            outputFile: "target/cucumber-report/index.html",
+            externalAttachments: true,
+        }),
+    ],
     /* Configure projects for major browsers */
     projects: [
         {

@@ -102,14 +102,13 @@ jobs:
         env:
           CHROMATIC_ARCHIVE_LOCATION: ./target/test-results
 
-      # Traces, videos and screenshots are written to target/test-results
-      # (see outputDir in playwright.config.ts). Keep them for debugging
-      # failed runs.
-      - name: Upload Playwright traces and videos
-        if: failure()
+      - name: Upload e2e reports
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: playwright-traces
-          path: e2e-tests/target/test-results
-          retention-days: 7
+          name: e2e-report
+          path: |
+            e2e-tests/target/playwright-report/
+            e2e-tests/target/cucumber-report/
+          retention-days: 14
           if-no-files-found: ignore
