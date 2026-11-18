@@ -12,11 +12,12 @@ object Dependencies {
     "software.amazon.awssdk" % "cloudwatch" % awsVersion,
     "software.amazon.awssdk" % "s3" % awsVersion,
     "software.amazon.awssdk" % "imds" % awsVersion,
+    "software.amazon.awssdk" % "secretsmanager" % awsVersion,
     "com.gu" %% "content-api-client-aws" % "1.0.1",
     "joda-time" % "joda-time" % "2.14.0"
   )
 
-  val pandaVersion = "23.0.1"
+  val pandaVersion = "23.1.0"
 
   val authDependencies = Seq(
     "com.gu" %% "pan-domain-auth-play_3-0" % pandaVersion,

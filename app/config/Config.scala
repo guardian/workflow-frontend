@@ -9,6 +9,16 @@ import play.api.{Configuration, Logging}
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
+import software.amazon.awssdk.auth.credentials.{
+  AwsCredentialsProvider,
+  DefaultCredentialsProvider,
+  ProfileCredentialsProvider
+}
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
+import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest
+import software.amazon.awssdk.regions.Region
+
+
 class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val stage: Stage = readTag("Stage") match {
     case Some(value) => Stage(value)
@@ -123,4 +133,42 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
   lazy val loggingRole: Option[String] = playConfig.getOptional[String]("aws.kinesis.logging.stsRoleToAssume")
 
   lazy val apiRoot: String = playConfig.get[String]("api.url")
+
+  lazy val awsCredentialsProvider: AwsCredentialsProvider = DefaultCredentialsProvider.builder().build()
+
+  lazy val awsRegion: String = playConfig.get[String]("aws.region")
+  private val secretsManagerClient = SecretsManagerClient
+    .builder()
+    .credentialsProvider(awsCredentialsProvider)
+    .region(Region.of(awsRegion))
+    .build()
+
+  private val hmacSecretStages = List("AWSCURRENT", "AWSPREVIOUS")
+
+  lazy val hmacSecrets: List[String] = hmacSecretStages.flatMap { secretStage =>
+    val secretStagePath = stage match {
+      case Prod => "PROD"
+      case _    => "CODE"
+    }
+    val secretId = s"/$secretStagePath/workflow/datastore/hmacSecret"
+    val getSecretValueRequest = GetSecretValueRequest
+      .builder()
+      .secretId(secretId)
+      .versionStage(secretStage)
+      .build()
+
+    val result = Try {
+      val result = secretsManagerClient
+        .getSecretValue(getSecretValueRequest)
+        .secretString()
+      Some(result)
+    }.recover { case error =>
+      logger.warn(
+        s"Could not fetch secret for $secretId, stage $secretStage",
+        error
+      )
+      None
+    }.get
+    result
+  }
 }
