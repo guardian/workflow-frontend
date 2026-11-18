@@ -37,7 +37,7 @@ description = "Watch and rebuild development frontend assets"
 run = "yarn build-dev"
 
 [tasks."test:unit"]
-description = "Run frontend unit tests"
+description = "Run frontend unit tests and e2e orchestration checks"
 run = "yarn test"
 
 [tasks."test:watch"]
@@ -58,12 +58,12 @@ dir = "{{config_root}}/e2e-tests"
 run = ["yarn install --immutable", "yarn playwright install --with-deps chromium"]
 
 [tasks."dev:local"]
-description = "Start a reusable Docker e2e stack and authenticated browser"
+description = "Start a reusable Docker e2e stack and host-browser auth proxy"
 dir = "{{config_root}}/e2e-tests"
 run = "yarn dev:local"
 
 [tasks.debug]
-description = "Start the reusable e2e stack with Docker build debug logging"
+description = "Start the reusable e2e stack with detailed build and container logs"
 dir = "{{config_root}}/e2e-tests"
 run = "yarn dev:debug"
 

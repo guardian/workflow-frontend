@@ -1,32 +1,61 @@
-import { GenericContainer } from "testcontainers";
+import { spawn } from "node:child_process";
+import path from "node:path";
+import {
+    GenericContainer,
+    getContainerRuntimeClient,
+    getReaper,
+    LABEL_TESTCONTAINERS_SESSION_ID,
+} from "testcontainers";
+import type { StackDiagnostics } from "../stackDiagnostics";
 
-// Build an image from a Dockerfile via Testcontainers and return the resulting
-// container, ready to be configured and started. `dockerfileName` is relative to
-// `context`; buildkit is enabled so the Dockerfiles' `# syntax` frontends apply.
-export function buildImage(
-    context: string,
-    dockerfileName: string,
-    tag: string,
-): Promise<GenericContainer> {
-    console.log(`\n[docker-build] Building ${tag} from ${dockerfileName}`);
-    return GenericContainer.fromDockerfile(context, dockerfileName)
-        .withBuildkit()
-        .build(tag, { deleteOnExit: true });
+interface BuildImageOptions {
+    context: string;
+    dockerfile: string;
+    tag: string;
+    name: string;
+    diagnostics: StackDiagnostics;
 }
 
-export function createLogConsumer(prefix: string, streamLogs: boolean) {
-    return (stream: any) => {
-        if (!streamLogs) {
-            // Discard container logs (default): they are only echoed to stdout
-            // when the stack is run directly via `yarn test:stack-only`.
-            return;
-        }
-        stream
-            .on("data", (line: Buffer) => {
-                process.stdout.write(`[${prefix}] ${line.toString()}`);
-            })
-            .on("err", (line: Buffer) => {
-                process.stderr.write(`[${prefix}] ${line.toString()}`);
-            });
-    };
+export async function buildImage({
+    context,
+    dockerfile,
+    tag,
+    name,
+    diagnostics,
+}: BuildImageOptions): Promise<GenericContainer> {
+    const reaper = await getReaper(await getContainerRuntimeClient());
+    const logPath = path.join(diagnostics.directory, "builds", `${name}.log`);
+
+    await new Promise<void>((resolve, reject) => {
+        const child = spawn("docker", [
+            "build",
+            "--progress=plain",
+            "--label", `${LABEL_TESTCONTAINERS_SESSION_ID}=${reaper.sessionId}`,
+            "--file", dockerfile,
+            "--tag", tag,
+            ".",
+        ], {
+            cwd: context,
+            env: { ...process.env, DOCKER_BUILDKIT: "1" },
+            stdio: ["ignore", "pipe", "pipe"],
+            timeout: 20 * 60 * 1000,
+            killSignal: "SIGKILL",
+        });
+
+        diagnostics.capture("builds", name, child.stdout);
+        diagnostics.capture("builds", name, child.stderr);
+
+        child.once("error", (cause) => {
+            reject(new Error(`Could not build ${name}; see ${logPath}`, { cause }));
+        });
+        child.once("close", (code, signal) => {
+            if (code === 0) {
+                resolve();
+            } else {
+                reject(new Error(`Build ${name} exited with ${signal ?? code}; see ${logPath}`));
+            }
+        });
+    });
+
+    return new GenericContainer(tag);
 }

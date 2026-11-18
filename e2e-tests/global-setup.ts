@@ -1,53 +1,43 @@
-import type { FullConfig } from "@playwright/test";
-import fs from "fs";
-import path from "path";
-import {
-    startLocalStack,
-    stopLocalStack,
-    type LocalStack,
-} from "./setup/stackContainers";
-import { readSharedStackInfo, type SharedStackInfo } from "./setup/sharedStack";
+import { startLocalStack } from "./setup/stackContainers";
+import { createStackDiagnostics } from "./setup/stackDiagnostics";
+import { checkSharedStack, readSharedStackInfo } from "./setup/sharedStack";
 
-/**
- * File the running stack's connection details are written to, so the per-test
- * fixtures (e2e/steps/fixtures.ts) can pick up the base URL and pan-domain
- * signing key without re-starting containers.
- */
-export const ACTIVE_STACK_FILE = "target/tmp/e2e-active-stack.json";
+export async function prepareTestStack(
+    e2eRoot: string,
+    startStack = startLocalStack,
+): Promise<(() => Promise<void>) | undefined> {
+    const diagnostics = createStackDiagnostics(e2eRoot);
 
-// Only the stack we start ourselves is torn down; a stack shared via
-// `npm run local:stack` is left running for the next test run.
-let ownedStack: LocalStack | undefined;
-
-async function globalSetup(_config: FullConfig) {
-    const e2eRoot = __dirname;
-
-    let connection: SharedStackInfo;
-    const shared = readSharedStackInfo(e2eRoot);
-    if (shared) {
-        connection = shared;
-    } else {
-        ownedStack = await startLocalStack(e2eRoot);
-        connection = {
-            baseUrl: ownedStack.baseUrl,
-            panDomainPrivateKey: ownedStack.panDomainPrivateKey,
-            mockApiUrl: ownedStack.mockApiUrl,
-            mockComposerApiUrl: ownedStack.mockComposerApiUrl,
-            mockTelemetryApiUrl: ownedStack.mockTelemetryApiUrl,
-        };
-    }
-
-    const filePath = path.join(e2eRoot, ACTIVE_STACK_FILE);
-    fs.mkdirSync(path.dirname(filePath), { recursive: true });
-    fs.writeFileSync(filePath, JSON.stringify(connection, null, 2), "utf8");
-
-    return async () => {
-        fs.rmSync(filePath, { force: true });
-        if (ownedStack) {
-            await stopLocalStack(ownedStack);
-            ownedStack = undefined;
+    try {
+        const shared = readSharedStackInfo(e2eRoot);
+        if (shared) {
+            const status = await diagnostics.step("check:shared-stack", () =>
+                checkSharedStack(shared.baseUrl),
+            );
+            if (status === "healthy") {
+                diagnostics.log(`Reusing healthy shared stack at ${shared.baseUrl}; it will be left running`);
+                return;
+            }
+            if (status !== "missing") {
+                throw new Error(
+                    `Shared stack at ${shared.baseUrl} is not healthy and may still hold its ports. ` +
+                    "Wait for recompilation or restart it from its dev:local terminal, then retry.",
+                );
+            }
+            diagnostics.log(
+                "Shared frontend is no longer listening; starting a new stack. " +
+                "If ports are still in use, stop the old dev:local process and retry.",
+            );
         }
-    };
+
+        const stack = await startStack(e2eRoot, { diagnostics });
+        return () => stack.stop();
+    } catch (error) {
+        diagnostics.error("setup:stack", error);
+        throw error;
+    }
 }
 
-export default globalSetup;
+export default async function globalSetup() {
+    return prepareTestStack(__dirname);
+}

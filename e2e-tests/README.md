@@ -111,8 +111,8 @@ set their working directory to `e2e-tests/` automatically.
 
 | Command                | Purpose                                                              |
 | ---------------------- | -------------------------------------------------------------------- |
-| `mise run dev:local`   | Start a reusable Docker stack and authenticated browser              |
-| `mise run debug`       | Start the shared stack with Docker build debug logging               |
+| `mise run dev:local`   | Start a reusable Docker stack and host-browser auth proxy            |
+| `mise run debug`       | Start the shared stack and stream build and container logs           |
 | `mise run test`        | Generate BDD tests and run Playwright, starting or reusing the stack |
 | `mise run test:ui`     | Run the Playwright UI on port 9099                                   |
 | `mise run test:report` | Serve the Playwright HTML report on port 9098                        |
@@ -157,16 +157,20 @@ Building the stack on every run is slow. When iterating on tests,
 start a long-running stack once and let subsequent test runs reuse it:
 
 ```bash
-# Terminal 1 — boot the stack and leave it running (opens an authenticated browser)
+# Terminal 1 - boot the stack and leave it running
 yarn dev:local
 
 # Terminal 2 — run tests repeatedly against the already-running stack
 yarn test
 ```
 
-The shared stack writes its connection details to a gitignored file that
-`global-setup.ts` picks up; when present, the test run skips building containers.
-Press `Ctrl+C` in terminal 1 to tear the stack down.
+Tests reuse a healthy shared stack and leave it running afterwards. If setup
+reports that it is unhealthy, wait for recompilation or restart it in terminal 1
+before retrying. Press `Ctrl+C` in terminal 1 to stop it; shutdown may wait for
+in-flight builds and readiness checks to finish.
+
+Run one test invocation and at most one shared stack per checkout at a time;
+stacks use fixed host ports.
 
 ### Use host's browser to access Workflow frontend against the stack
 
@@ -202,13 +206,32 @@ Traces and videos are captured on the first retry, and screenshots only on failu
 tests that pass on their first attempt do not have these attachments. See `use` in
 [playwright.config.ts](playwright.config.ts).
 
-CI prints list output and adds GitHub failure annotations. Both HTML reports and
-their captured attachments are uploaded together as the `e2e-report` artifact,
-retained for 14 days after successful or failed runs, excluding cancelled runs.
-Failures before report generation may leave no reports to upload.
+CI uploads reports, attachments and stack logs together as the `e2e-report`
+artifact, retained for 14 days after successful or failed runs, excluding
+cancelled runs. Failed jobs include a direct link to it. Stack logs are included
+even when setup fails before HTML reports are generated.
 
 The Playwright report is served via port 9098 which is mapped to the same port number
 of the host. So you can open it by `http://localhost:9098` on your host directly.
+
+### Stack logs
+
+Logs are saved in `e2e-tests/logs/<run-id>/` and kept after the stack stops,
+including when startup fails:
+
+- `stack.log`: startup and cleanup progress, timings and errors.
+- `builds/`: Docker image build output.
+- `containers/`: output from each container.
+
+The terminal prints progress and the log directory. To also stream build and
+container logs, set `E2E_DEBUG=1`:
+
+```bash
+E2E_DEBUG=1 yarn test
+E2E_DEBUG=1 yarn dev:local
+```
+
+`yarn dev:debug` (or `mise run debug`) enables this output for the shared stack.
 
 ## Folder structure
 
@@ -238,7 +261,7 @@ e2e/
 │   ├── presence/             # WireMock stub for the presence client library
 │   ├── tagmanager/           # WireMock stubs for Tag Manager
 │   ├── telemetry/            # WireMock stubs for user telemetry
-├── global-setup.ts    # Playwright global setup: start/reuse stack, write connection file
+├── global-setup.ts    # Playwright global setup: start/reuse stack
 ├── playwright.config.ts
 ├── mise.toml          # Pinned Node.js version
 └── package.json       # Scripts and dev dependencies
@@ -246,8 +269,8 @@ e2e/
 
 ## How a test run fits together
 
-1. **`global-setup.ts`** starts the stack (or reuses a shared one) and writes its
-   base URL and pan-domain signing key to `target/tmp/e2e-active-stack.json`.
+1. **`global-setup.ts`** starts the stack (or reuses a shared one). The stack owns
+   its connection details in `target/tmp/e2e-local-stack.json`.
 2. **`steps/fixtures.ts`** reads that file to point every test at the stack,
    provides a `signIn` helper (pan-domain cookie), a per-scenario `world`
    scratch space, and mock objects (`presence`, `telemetry`, `composerMock`).
@@ -270,3 +293,5 @@ e2e/
   `fixtures/permissions/permissions.json`.
 - **Mocking**: upstream services inside the stack are seeded via WireMock
   fixtures.
+- **Orchestration**: included in root `yarn test` (or `mise run test:unit`). Add
+  these checks only for failures that an ordinary stack run and e2e suite would miss.
