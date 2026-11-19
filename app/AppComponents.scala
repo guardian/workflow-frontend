@@ -5,6 +5,7 @@ import com.gu.workflow.lib.TagService
 import com.gu.workflow.util.AWS
 import config.Config
 import controllers._
+import lib.HMACClient
 import lib.LoggingFilter
 import play.api.ApplicationLoader.Context
 import play.api.BuiltInComponentsFromContext
@@ -30,16 +31,21 @@ class AppComponents(context: Context)
     S3BucketLoader.forAwsSdkV2(AWS.S3, config.pandaBucketName)
   )
 
+  val stage = if (config.isProd) "PROD" else "CODE";
+
+  // TO DO - config.hmacSecrets.head will throw if list is empty
+  val datastoreHmacClient = new HMACClient(stage, config.hmacSecrets.head)
+
   val permissions: PermissionsProvider =
-    PermissionsProvider(PermissionsConfig(stage = if (config.isProd) "PROD" else "CODE", AWS.region.toString, AWS.credentialsProvider))
+    PermissionsProvider(PermissionsConfig(stage, AWS.region.toString, AWS.credentialsProvider))
 
   val managementController = new Management(controllerComponents)
   val loginController = new Login(config, controllerComponents, wsClient, panDomainRefresher, permissions)
   val capiServiceController = new CAPIService(config, controllerComponents, wsClient, panDomainRefresher, permissions)
-  val sectionsApi = new SectionsAPI(config.apiRoot, wsClient)
-  val desksApi = new DesksAPI(config.apiRoot, wsClient)
-  val sectionsDeskMappingsApi = new SectionDeskMappingsAPI(config.apiRoot, wsClient)
-  val stubsApi = new StubAPI(config.apiRoot, wsClient)
+  val sectionsApi = new SectionsAPI(config.apiRoot, wsClient, datastoreHmacClient.getHMACHeaders)
+  val desksApi = new DesksAPI(config.apiRoot, wsClient, datastoreHmacClient.getHMACHeaders)
+  val sectionsDeskMappingsApi = new SectionDeskMappingsAPI(config.apiRoot, wsClient, datastoreHmacClient.getHMACHeaders)
+  val stubsApi = new StubAPI(config.apiRoot, wsClient, datastoreHmacClient.getHMACHeaders)
   val tagService = new TagService(config.tagManagerUrl, wsClient)
   
   val adminController = new Admin(sectionsApi, desksApi, sectionsDeskMappingsApi, permissions, config, controllerComponents, wsClient, panDomainRefresher)

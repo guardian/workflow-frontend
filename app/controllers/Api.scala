@@ -61,10 +61,10 @@ class Api(
     }
   }
 
-  def content = APIHMACAuthAction.async(getContentBlock)
+  def content = HMACOrApiPandaAuthAction.async(getContentBlock)
 
   def getContentByComposerId(composerId: String) = {
-    APIHMACAuthAction.async { implicit request =>
+    HMACOrApiPandaAuthAction.async { implicit request =>
       ApiResponseFt[Option[Stub]](for {
         item <- getResponse(stubsApi.getStubByComposerId(stubDecorator, composerId))
       } yield item
