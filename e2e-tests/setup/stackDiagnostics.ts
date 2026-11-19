@@ -22,7 +22,7 @@ export function createStackDiagnostics(
     }: { debug?: boolean } = {},
 ) {
     const runId = new Date().toISOString().replace(/:/g, "-");
-    const directory = path.join(e2eRoot, "logs", runId);
+    const directory = path.join(e2eRoot, "target", "logs", runId);
     const secrets = new Set<string>();
     const reportedErrors = new Set<unknown>();
     const flushers = new Set<() => void>();

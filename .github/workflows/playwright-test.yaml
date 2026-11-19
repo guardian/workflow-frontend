@@ -111,7 +111,7 @@ jobs:
           path: |
             e2e-tests/target/playwright-report/
             e2e-tests/target/cucumber-report/
-            e2e-tests/logs/
+            e2e-tests/target/logs/
           retention-days: 14
           if-no-files-found: ignore
 

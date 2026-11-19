@@ -216,8 +216,8 @@ of the host. So you can open it by `http://localhost:9098` on your host directly
 
 ### Stack logs
 
-Logs are saved in `e2e-tests/logs/<timestamp>/` locally and in CI, and kept after
-the stack stops, including when startup fails:
+Logs are saved in `e2e-tests/target/logs/<timestamp>/` locally and in CI, and kept
+after the stack stops, including when startup fails:
 
 - `stack.log`: startup and cleanup progress, timings and errors.
 - `builds/`: Docker image build output.

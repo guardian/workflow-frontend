@@ -35,7 +35,8 @@ test("redacts secrets split across log chunks or multiple lines", (context) => {
 test("preserves the startup error when logs cannot be written", async (context) => {
     const e2eRoot = temporaryE2eRoot(context);
 
-    fs.writeFileSync(path.join(e2eRoot, "logs"), "A file occupies the intended log directory");
+    fs.mkdirSync(path.join(e2eRoot, "target"));
+    fs.writeFileSync(path.join(e2eRoot, "target", "logs"), "A file occupies the intended log directory");
     context.mock.method(console, "error", () => { });
 
     const diagnostics = createStackDiagnostics(e2eRoot);
