@@ -49,7 +49,7 @@ export const CONTAINER_FRONTEND_PORT = 9090;
 // traffic to; resolved inside the Docker network at request time.
 const FRONTEND_NAME = "workflow-frontend";
 const FRONTEND_HOSTNAME = "workflow";
-const FRONTEND_UPSTREAM = `${FRONTEND_HOSTNAME}.local.dev-gutools.co.uk`;
+const FRONTEND_UPSTREAM = `${FRONTEND_NAME}:${CONTAINER_FRONTEND_PORT}`;
 const DATASTORE_NAME = "workflow-datastore";
 export const CAPI_HOSTNAME = "iam-preview-content";
 const PREFERENCES_HOSTNAME = "preferences";
