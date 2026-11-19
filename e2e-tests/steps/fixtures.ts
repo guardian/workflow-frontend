@@ -48,7 +48,9 @@ export const test = mergeTests(chromaticTest, base).extend<TestFixtures, WorkerF
     stack: [
         async ({}, use) => {
             const stack = readSharedStackInfo(path.join(__dirname, ".."));
-            if (!stack) throw new Error("Stack connection details are missing; global setup must complete before tests run");
+            if (!stack) {
+                throw new Error("Stack connection details are missing; global setup must complete before tests run");
+            }
             await use(stack);
         },
         { scope: "worker" },
@@ -72,7 +74,7 @@ export const test = mergeTests(chromaticTest, base).extend<TestFixtures, WorkerF
     composerMock: async ({ stack, scenarioId }, use) => {
         await use(mockComposer(stack.mockComposerApiUrl, scenarioId));
     },
-    // Point every test at the stack started in global setup.
+    // Point every test at the stack selected by global setup.
     baseURL: async ({ stack }, use) => {
         await use(stack.baseUrl);
     },

@@ -80,13 +80,20 @@ export async function startLocalStack(
             await diagnostics.step("remove:metadata", async () => {
                 clearSharedStackInfo(e2eRoot, diagnostics.runId);
             }).catch(() => { failures++; });
-            if (temporaryDirectory) {
+
+            const buildDirectory = temporaryDirectory;
+
+            if (buildDirectory) {
                 await diagnostics.step("remove:build-contexts", async () => {
-                    fs.rmSync(temporaryDirectory!, { recursive: true, force: true });
+                    fs.rmSync(buildDirectory, { recursive: true, force: true });
                 }).catch(() => { failures++; });
             }
+
             diagnostics.flush();
-            diagnostics.log(`${label} ${"DONE".padEnd(7)} [${formatDuration((performance.now() - started) / 1000)}] failures=${failures}`);
+
+            const duration = (performance.now() - started) / 1000;
+
+            diagnostics.log(`${label} ${"DONE".padEnd(7)} [${formatDuration(duration)}] failures=${failures}`);
             diagnostics.log(`diagnostics retained: ${diagnostics.directory}`);
         }
     }

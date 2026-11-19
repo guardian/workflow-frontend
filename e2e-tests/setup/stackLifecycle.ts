@@ -60,14 +60,17 @@ export function createStackResources(reporter: StackReporter) {
                 reporter.step(`stop:${name}`, () => container.stop()),
             ),
         );
+        let failures = results.filter((result) => result.status === "rejected").length;
 
         if (network) {
-            results.push(...await Promise.allSettled([
-                (async () => reporter.step("remove:network", () => network!.stop()))(),
-            ]));
+            try {
+                await reporter.step("remove:network", () => network!.stop());
+            } catch {
+                failures++;
+            }
         }
 
-        return results.filter((result) => result.status === "rejected").length;
+        return failures;
     }
 
     return { startNetwork, startContainer, stopAll };

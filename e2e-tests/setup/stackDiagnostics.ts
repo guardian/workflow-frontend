@@ -96,10 +96,15 @@ export function createStackDiagnostics(
 
         try {
             const result = await run();
-            log(`${label} ${"DONE".padEnd(7)} [${formatDuration((performance.now() - started) / 1000)}]`);
+            const duration = (performance.now() - started) / 1000;
+
+            log(`${label} ${"DONE".padEnd(7)} [${formatDuration(duration)}]`);
+
             return result;
         } catch (failure) {
-            error(name, failure, (performance.now() - started) / 1000);
+            const duration = (performance.now() - started) / 1000;
+
+            error(name, failure, duration);
             throw failure;
         }
     }
