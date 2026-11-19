@@ -20,8 +20,11 @@
     </div>
 </div>
 
+<script type="application/json" id="config-json-script">
+@Html(config.toString)
+</script>
 <script>
-    CONFIG = @Html(config.toString);
+  CONFIG = JSON.parse(document.getElementById("config-json-script").textContent);
 </script>
 
 <script src="@routes.Assets.versioned("build/admin.bundle.js")"></script>
