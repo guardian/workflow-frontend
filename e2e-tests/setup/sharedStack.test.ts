@@ -20,7 +20,7 @@ for (const failure of ["HTTP 503 followed by connection refusals", "timeouts"] a
         context.mock.method(console, "error", () => { });
         const root = fs.mkdtempSync(path.join(os.tmpdir(), "workflow-stack-test-"));
         context.after(() => fs.rmSync(root, { recursive: true, force: true }));
-        const shared = { ...connection, runId: "shared", ownerId: "shared-owner" };
+        const shared = { ...connection, runId: "shared" };
         writeSharedStackInfo(root, shared);
 
         let responded = false;
@@ -41,7 +41,7 @@ for (const failure of ["HTTP 503 followed by connection refusals", "timeouts"] a
         await assert.rejects(prepareTestStack(root, async () => {
             started = true;
             return { ...connection, async stop() {} };
-        }));
+        }), /Shared stack at .* is not healthy/);
 
         assert.equal(started, false);
         assert.deepEqual(readSharedStackInfo(root), shared);

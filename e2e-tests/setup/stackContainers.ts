@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { randomUUID } from "node:crypto";
 import { Network } from "testcontainers";
 import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
@@ -58,7 +57,6 @@ export async function startLocalStack(
     const { exposeHostAuth = false, signal } = options;
     const diagnostics = options.diagnostics ?? createStackDiagnostics(e2eRoot);
     const resources = createStackResources(diagnostics);
-    const ownerId = randomUUID();
     let temporaryDirectory: string | undefined;
     let cleanup: Promise<void> | undefined;
 
@@ -80,7 +78,7 @@ export async function startLocalStack(
             diagnostics.error("cleanup:resources", error);
         } finally {
             await diagnostics.step("remove:metadata", async () => {
-                clearSharedStackInfo(e2eRoot, ownerId);
+                clearSharedStackInfo(e2eRoot, diagnostics.runId);
             }).catch(() => { failures++; });
             if (temporaryDirectory) {
                 await diagnostics.step("remove:build-contexts", async () => {
@@ -202,7 +200,7 @@ export async function startLocalStack(
 
         await diagnostics.step("publish:stack", async () => writeSharedStackInfo(
             e2eRoot,
-            { ...connection, runId: diagnostics.runId, ownerId },
+            { ...connection, runId: diagnostics.runId },
         ));
         diagnostics.log(`stack ready at ${baseUrl}`);
 

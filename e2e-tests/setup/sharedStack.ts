@@ -14,18 +14,18 @@ export type SharedStackInfo = {
     mockComposerApiUrl: string;
     mockTelemetryApiUrl: string;
     runId?: string;
-    ownerId?: string;
 };
 
 const SHARED_STACK_FILE = "target/tmp/e2e-local-stack.json";
 
 export function writeSharedStackInfo(
     e2eRoot: string,
-    info: SharedStackInfo & { runId: string; ownerId: string },
+    info: SharedStackInfo & { runId: string },
 ): void {
     const filePath = path.join(e2eRoot, SHARED_STACK_FILE);
     fs.mkdirSync(path.dirname(filePath), { recursive: true, mode: OWNER_READ_WRITE_EXECUTE });
     const temporaryPath = `${filePath}.${randomUUID()}.tmp`;
+
     try {
         fs.writeFileSync(temporaryPath, JSON.stringify(info, null, 2), {
             encoding: "utf8",
@@ -38,8 +38,8 @@ export function writeSharedStackInfo(
     }
 }
 
-export function clearSharedStackInfo(e2eRoot: string, ownerId: string): void {
-    if (readSharedStackInfo(e2eRoot)?.ownerId === ownerId) {
+export function clearSharedStackInfo(e2eRoot: string, runId: string): void {
+    if (readSharedStackInfo(e2eRoot)?.runId === runId) {
         fs.rmSync(path.join(e2eRoot, SHARED_STACK_FILE), { force: true });
     }
 }
@@ -70,17 +70,21 @@ function isConnectionRefused(error: unknown): boolean {
     if (typeof error !== "object" || error === null) {
         return false;
     }
+
     if (error instanceof AggregateError) {
         return error.errors.length > 0 && error.errors.every(isConnectionRefused);
     }
+
     if ("code" in error) {
         return error.code === "ECONNREFUSED";
     }
+
     return "cause" in error && isConnectionRefused(error.cause);
 }
 
 export async function checkSharedStack(baseUrl: string): Promise<SharedStackStatus> {
     let allConnectionsRefused = true;
+
     for (let attempt = 0; attempt < HEALTHCHECK_ATTEMPTS; attempt++) {
         try {
             const response = await fetch(new URL("/management/healthcheck", baseUrl), {
@@ -88,7 +92,7 @@ export async function checkSharedStack(baseUrl: string): Promise<SharedStackStat
                 signal: AbortSignal.timeout(HEALTHCHECK_TIMEOUT_MS),
             });
             allConnectionsRefused = false;
-            await response.body?.cancel().catch(() => {});
+            await response.body?.cancel().catch(() => { });
             if (response.status === 200) {
                 return "healthy";
             }
