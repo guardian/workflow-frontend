@@ -36,12 +36,6 @@ const AUTH_REDIRECT_IMAGE = "nginx:alpine";
 // image default (/home/wiremock), so nothing in the base image is shadowed.
 const WIREMOCK_ROOT_DIR = "/wiremock-root";
 
-// In local dev the restorer runs as the DEV identity, whose effective stage is
-// CODE, so it resolves each stack's real per-stage flexible-content API host
-// (see app/models/FlexibleStack.scala and app/config/AppConfig.scala). We
-// register those exact hostnames as network aliases on the mock container, so
-// the real hostnames resolve to the mock inside the Docker network — no
-// config/URL override required.
 export const WIREMOCK_HTTP_PORT = 80;
 // Container port the https-serving mocks (composer, presence, telemetry) listen
 // on; Chromium host-resolver-rules map each mock's hostname to its fixed host port.
@@ -143,7 +137,7 @@ interface MockWiremockConfig {
     ports: MockPortMapping[];
     /** Serve https on 8443 (browser cross-origin mocks) in addition to http. */
     https?: boolean;
-    /** Disable WireMock response templating (e.g. presence serves a JS body verbatim). */
+    /** Enable WireMock response templating. */
     templating?: boolean;
 }
 
@@ -400,7 +394,7 @@ export function buildWorkflowImage({
         path.join(buildContext, ".tool-versions"),
     );
     fs.copyFileSync(
-        path.join(repoRoot, "e2e-tests/images/workflow-frontend.Dockerfile"),
+        path.join(e2eRoot, "images/workflow-frontend.Dockerfile"),
         path.join(buildContext, "workflow-frontend.Dockerfile"),
     );
     return buildImage({
