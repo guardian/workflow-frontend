@@ -1,23 +1,19 @@
 # End-to-end tests
 
-It contains the browser-based, end-to-end (e2e) test suite for
+This directory contains the browser-based, end-to-end (e2e) test suite for
 workflow-frontend. Tests are written as Cucumber/Gherkin `.feature` files and
 run with [Playwright](https://playwright.dev/) via
 [`playwright-bdd`](https://github.com/vitalets/playwright-bdd).
 
-It builds a self-contained local stack in Docker to the
-workflow-frontend service and the workflow datastore backend with a number of
-of mocked upstream services. The whole end to end tests can run within a machine so
-that it can be included as part of our CI workflow later.
+Tests run locally and in CI against a Docker stack containing Workflow frontend,
+the Datastore backend and mocked upstream services.
 
 ## Local stack
 
-The local stack is built with Test Container on top of Docker so that we can
-configure and wire up the containers in a more flexible way.
+Testcontainers configures and starts the Docker containers.
 
-WireMock is used to mock dependencies. Local S3 service is mocked with LocalStack
-to serve PanDomain settings and permission cache. We also create a local
-DynamoDB with test data using AWS Local DynamoDB image.
+WireMock mocks upstream APIs. LocalStack provides S3 for pan-domain settings and
+the permissions cache, plus DynamoDB seeded with test data.
 
 The stack is reached over two different network paths depending on where the
 browser runs: a browser running in the host, or Playwright's Chromium
@@ -37,10 +33,9 @@ running inside the dev container.
 2. **Playwright Chromium → services directly.** Inside the dev container,
    Chromium loads the frontend over plain HTTP via its forwarded port on devcontainer,
    and reaches the cross-origin APIs (`*.local.dev-gutools.co.uk` hostnames) over HTTPS.
-   The `--host-resolver-rules` launch argument (in Playwright's config for tests and
-   in "run-local-stack.ts" if we build the stack with `yarn dev:local` for development)
-   maps each API hostname straight to the mock's HTTPS port
-   (the config `ignoreHTTPSErrors` accepts the self-signed certificates).
+   The `--host-resolver-rules` launch argument in
+   [playwright.config.ts](playwright.config.ts) maps each API hostname to the mock's
+   HTTPS port. The `ignoreHTTPSErrors` setting accepts the self-signed certificates.
 
 ```mermaid
 graph LR
