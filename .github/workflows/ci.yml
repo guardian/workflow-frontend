@@ -40,6 +40,10 @@ jobs:
             - name: Install JS dependencies
               run: yarn install --frozen-lockfile
 
+            - name: Install e2e dependencies
+              working-directory: e2e-tests
+              run: yarn install --frozen-lockfile
+
             - name: test JS
               run: yarn test
 

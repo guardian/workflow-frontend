@@ -1,22 +1,16 @@
-import fs from "fs";
 import path from "path";
 import { test as chromaticTest } from '@chromatic-com/playwright';
 import { test as base, createBdd } from "playwright-bdd";
 import { mergeTests } from '@playwright/test';
 import { expect } from "@chromatic-com/playwright";
 import { createPanDomainCookie, type Role } from "../setup/panDomainCookie";
-import type { SharedStackInfo } from "../setup/sharedStack";
-import { ACTIVE_STACK_FILE } from "../global-setup";
+import { readSharedStackInfo, type SharedStackInfo } from "../setup/sharedStack";
 import { installPresenceMock, type PresenceMock, type PresencePerson, type PresenceLocation } from "./shared/presenceMock";
 import { mockTelemetry, type TelemetryMock } from "./shared/telemetryMock";
 import { mockComposer, type ComposerMock } from "./shared/composerApiMock";
 import { SCENARIO_HEADER } from "./shared/scenario";
 import { randomUUID } from "crypto";
 
-function readActiveStack(): SharedStackInfo {
-    const filePath = path.join(__dirname, "..", ACTIVE_STACK_FILE);
-    return JSON.parse(fs.readFileSync(filePath, "utf8")) as SharedStackInfo;
-}
 export type PersonWithLocation = { person: PresencePerson; location: PresenceLocation };
 
 export type World = {
@@ -30,9 +24,12 @@ export type World = {
     dialogSeen?: boolean;
 };
 
-type StackFixtures = {
-    /** Connection details of the local stack started in global setup. */
+type WorkerFixtures = {
+    /** Connection details shared by every test in this worker. */
     stack: SharedStackInfo;
+};
+
+type TestFixtures = {
     /** Signs the browser context in via a pan-domain cookie for the given role. */
     signIn: (role?: Role) => Promise<void>;
     /** Per-scenario scratch space for sharing state between steps. */
@@ -47,10 +44,17 @@ type StackFixtures = {
     composerMock: ComposerMock;
 };
 
-export const test = mergeTests(chromaticTest, base).extend<StackFixtures>({
-    stack: async ({}, use) => {
-        await use(readActiveStack());
-    },
+export const test = mergeTests(chromaticTest, base).extend<TestFixtures, WorkerFixtures>({
+    stack: [
+        async ({}, use) => {
+            const stack = readSharedStackInfo(path.join(__dirname, ".."));
+            if (!stack) {
+                throw new Error("Stack connection details are missing; global setup must complete before tests run");
+            }
+            await use(stack);
+        },
+        { scope: "worker" },
+    ],
     world: async ({}, use) => {
         await use({});
     },
@@ -70,7 +74,7 @@ export const test = mergeTests(chromaticTest, base).extend<StackFixtures>({
     composerMock: async ({ stack, scenarioId }, use) => {
         await use(mockComposer(stack.mockComposerApiUrl, scenarioId));
     },
-    // Point every test at the stack started in global setup.
+    // Point every test at the stack selected by global setup.
     baseURL: async ({ stack }, use) => {
         await use(stack.baseUrl);
     },
