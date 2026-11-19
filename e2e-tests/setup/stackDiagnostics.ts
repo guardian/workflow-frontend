@@ -18,14 +18,10 @@ export function formatDuration(seconds: number): string {
 export function createStackDiagnostics(
     e2eRoot: string,
     {
-        runId = process.env.E2E_RUN_ID ?? new Date().toISOString().replace(/:/g, "-"),
         debug = process.env.E2E_DEBUG === "1",
-    }: { runId?: string; debug?: boolean } = {},
+    }: { debug?: boolean } = {},
 ) {
-    if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(runId)) {
-        throw new Error("E2E_RUN_ID must contain only letters, numbers, dots, underscores and hyphens");
-    }
-
+    const runId = new Date().toISOString().replace(/:/g, "-");
     const directory = path.join(e2eRoot, "logs", runId);
     const secrets = new Set<string>();
     const reportedErrors = new Set<unknown>();

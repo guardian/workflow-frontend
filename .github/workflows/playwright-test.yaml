@@ -13,9 +13,6 @@ jobs:
   playwright-tests:
     runs-on: ubuntu-22.04
 
-    env:
-      E2E_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
-
     defaults:
       run:
         working-directory: e2e-tests

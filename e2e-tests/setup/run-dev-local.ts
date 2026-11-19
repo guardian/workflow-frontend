@@ -47,7 +47,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-    // Configuration errors happen before a diagnostics logger is available.
     console.error(error);
     process.exitCode ||= 1;
 });
