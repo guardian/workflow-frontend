@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "module": "CommonJS",
+    "types": ["node"]
+  },
+  "include": [
+    "global-setup.ts",
+    "setup/run-dev-local.ts",
+    "setup/*.test.ts"
+  ]
+}

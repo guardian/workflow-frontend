@@ -6,10 +6,8 @@ import {
     StartedTestContainer,
     Wait,
 } from "testcontainers";
-import { buildImage, createLogConsumer } from "./dockerHelpers";
-import { seedS3 } from "./seedS3";
-import { seedDynamodb } from "./seedDynamodb";
-import type { PanDomainKeys } from "../panDomainKeys";
+import { buildImage } from "./dockerHelpers";
+import type { StackDiagnostics } from "../stackDiagnostics";
 
 // LocalStack accepts any credentials by default (signature validation is off);
 // the conventional dummy pair keeps the SDKs and awslocal happy.
@@ -38,19 +36,13 @@ const AUTH_REDIRECT_IMAGE = "nginx:alpine";
 // image default (/home/wiremock), so nothing in the base image is shadowed.
 const WIREMOCK_ROOT_DIR = "/wiremock-root";
 
-// In local dev the restorer runs as the DEV identity, whose effective stage is
-// CODE, so it resolves each stack's real per-stage flexible-content API host
-// (see app/models/FlexibleStack.scala and app/config/AppConfig.scala). We
-// register those exact hostnames as network aliases on the mock container, so
-// the real hostnames resolve to the mock inside the Docker network — no
-// config/URL override required.
 export const WIREMOCK_HTTP_PORT = 80;
 // Container port the https-serving mocks (composer, presence, telemetry) listen
 // on; Chromium host-resolver-rules map each mock's hostname to its fixed host port.
 const WIREMOCK_HTTPS_PORT = 8443;
 // Fixed host port for the optional host-browser auth-cookie endpoint. Kept
 // stable (and forwarded in the devcontainer) so it can be bookmarked.
-const NGINX_PORT = 80;
+export const NGINX_PORT = 80;
 const HOST_AUTH_PORT = 9090;
 export const CONTAINER_FRONTEND_PORT = 9090;
 const HOST_FRONTEND_PORT = 9091;
@@ -80,13 +72,27 @@ const TELEMETRY_HOSTNAME = "user-telemetry.local.dev-gutools.co.uk";
 const HOST_TELEMETRY_HTTP_PORT = 3132;
 const HOST_TELEMETRY_HTTPS_PORT = 3133;
 
-export async function startAws(
-    network: StartedNetwork,
-    e2eRoot: string,
-    panDomainKeys: PanDomainKeys,
-    streamLogs: boolean,
-): Promise<StartedTestContainer> {
-    const awsContainer = await new GenericContainer(LOCALSTACK_IMAGE)
+interface ContainerOptions {
+    network: StartedNetwork;
+    diagnostics: StackDiagnostics;
+}
+
+interface AppContainerOptions extends ContainerOptions {
+    e2eRoot: string;
+    image: GenericContainer;
+}
+
+interface ImageOptions {
+    e2eRoot: string;
+    buildContext: string;
+    diagnostics: StackDiagnostics;
+}
+
+export async function startAws({
+    network,
+    diagnostics,
+}: ContainerOptions): Promise<StartedTestContainer> {
+    return new GenericContainer(LOCALSTACK_IMAGE)
         .withNetwork(network)
         // `s3.localstack` is the S3 endpoint host; the per-bucket subdomains are
         // what the app's virtual-hosted-style S3 requests resolve to, and each
@@ -102,17 +108,20 @@ export async function startAws(
             SERVICES: "s3,dynamodb",
             AWS_DEFAULT_REGION: "eu-west-1",
         })
-        .withLogConsumer(createLogConsumer("localstack", streamLogs))
+        .withLogConsumer((stream) => diagnostics.capture("containers", "localstack", stream))
         .withExposedPorts(LOCALSTACK_PORT)
-        .withWaitStrategy(Wait.forLogMessage(/Ready\./, 1))
+        .withWaitStrategy(
+            Wait.forHttp("/_localstack/health", LOCALSTACK_PORT)
+                .forStatusCode(200)
+                .forResponsePredicate((response) => {
+                    const { services } = JSON.parse(response);
+                    return ["s3", "dynamodb"].every((service) =>
+                        ["available", "running"].includes(services?.[service]),
+                    );
+                }),
+        )
         .withStartupTimeout(5 * 60 * 1000)
         .start();
-
-    // Seed the S3 objects and DynamoDB table the app reads before returning.
-    await seedS3(awsContainer, e2eRoot, panDomainKeys);
-    await seedDynamodb(awsContainer, e2eRoot);
-
-    return awsContainer;
 }
 
 type MockPortMapping = number | { container: number; host: number };
@@ -128,7 +137,7 @@ interface MockWiremockConfig {
     ports: MockPortMapping[];
     /** Serve https on 8443 (browser cross-origin mocks) in addition to http. */
     https?: boolean;
-    /** Disable WireMock response templating (e.g. presence serves a JS body verbatim). */
+    /** Enable WireMock response templating. */
     templating?: boolean;
 }
 
@@ -191,12 +200,15 @@ export const MOCK_WIREMOCK_CONFIGS: Record<string, MockWiremockConfig> = {
 // Start one WireMock mock from the shared image, bind-mounting fixtures/<name>
 // as its stub root. Runs as root so WireMock can bind the privileged port 80,
 // which the frontend's server-side calls reach via the network aliases.
-export async function startMockWiremock(
-    config: MockWiremockConfig,
-    e2eRoot: string,
-    network: StartedNetwork,
-    streamLogs: boolean,
-): Promise<any> {
+export async function startMockWiremock({
+    config,
+    e2eRoot,
+    network,
+    diagnostics,
+}: ContainerOptions & {
+    config: MockWiremockConfig;
+    e2eRoot: string;
+}): Promise<StartedTestContainer> {
     const command = [
         "--root-dir",
         WIREMOCK_ROOT_DIR,
@@ -218,7 +230,7 @@ export async function startMockWiremock(
             },
         ])
         .withCommand(command)
-        .withLogConsumer(createLogConsumer(config.name, streamLogs))
+        .withLogConsumer((stream) => diagnostics.capture("containers", config.name, stream))
         .withExposedPorts(...config.ports)
         .withWaitStrategy(
             Wait.forHttp("/__admin/health", WIREMOCK_HTTP_PORT).forStatusCode(
@@ -229,10 +241,10 @@ export async function startMockWiremock(
         .start();
 }
 
-export async function startDb(
-    network: StartedNetwork,
-    streamLogs: boolean,
-): Promise<any> {
+export async function startDb({
+    network,
+    diagnostics,
+}: ContainerOptions): Promise<StartedTestContainer> {
     return new GenericContainer("postgres:17-alpine")
         .withNetwork(network)
         .withNetworkAliases("workflow-db-e2e.local.dev-gutools.co.uk")
@@ -241,14 +253,15 @@ export async function startDb(
             POSTGRES_PASSWORD: "workflow",
             POSTGRES_DB: "workflow",
         })
-        .withLogConsumer(createLogConsumer("workflow-db", streamLogs))
+        .withLogConsumer((stream) => diagnostics.capture("containers", "postgres", stream))
         .withExposedPorts(5432)
-        .withWaitStrategy(
-            Wait.forLogMessage(
-                /database system is ready to accept connections/,
-                2,
-            ),
-        )
+        .withHealthCheck({
+            test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U workflow -d workflow"],
+            interval: 1000,
+            timeout: 3000,
+            retries: 60,
+        })
+        .withWaitStrategy(Wait.forHealthCheck())
         .withStartupTimeout(2 * 60 * 1000)
         .start();
 }
@@ -280,17 +293,13 @@ function sbtCacheBindMounts(): { source: string; target: string; mode: "rw" }[] 
     return mounts;
 }
 
-function buildDatastoreImage(
-    e2eRoot: string,
-    imageTag: string,
-): Promise<GenericContainer> {
-    console.log(`process.env.WORKFLOW_BACKEND_DIR is ${process.env.WORKFLOW_BACKEND_DIR ?? "(not set)"}`);
+export function buildDatastoreImage({
+    e2eRoot,
+    buildContext,
+    diagnostics,
+}: ImageOptions): Promise<GenericContainer> {
     const backendDir = getBackendDir(e2eRoot);
-    // The image only bakes the JVM toolchain, so the build context is a tiny
-    // temp folder holding just .tool-versions plus the Dockerfile (which must
-    // live inside the context for fromDockerfile). Recreated fresh each run.
-    const buildContext = path.join(e2eRoot, "target/datastore-build-context");
-    fs.rmSync(buildContext, { recursive: true, force: true });
+
     fs.mkdirSync(buildContext, { recursive: true });
     fs.copyFileSync(
         path.join(backendDir, ".tool-versions"),
@@ -300,18 +309,24 @@ function buildDatastoreImage(
         path.join(e2eRoot, "images/datastore.Dockerfile"),
         path.join(buildContext, "datastore.Dockerfile"),
     );
-    return buildImage(buildContext, "datastore.Dockerfile", imageTag);
+    return buildImage({
+        context: buildContext,
+        dockerfile: "datastore.Dockerfile",
+        tag: `workflow-datastore-e2e:${diagnostics.runId}`,
+        name: "datastore",
+        diagnostics,
+    });
 }
 
-export async function startDatastore(
-    e2eRoot: string,
-    imageTag: string,
-    network: StartedNetwork,
-    streamLogs: boolean,
-): Promise<any> {
+export async function startDatastore({
+    e2eRoot,
+    image,
+    network,
+    diagnostics,
+}: AppContainerOptions): Promise<StartedTestContainer> {
     const backendDir = getBackendDir(e2eRoot);
-    const datastoreImage = await buildDatastoreImage(e2eRoot, imageTag);
-    return datastoreImage
+
+    return image
         .withNetwork(network)
         .withNetworkAliases("workflow-backend.local.dev-gutools.co.uk")
         // Mount the whole backend checkout so sbt runs from source without
@@ -320,21 +335,24 @@ export async function startDatastore(
             { source: backendDir, target: "/workflow-backend", mode: "rw" },
             ...sbtCacheBindMounts(),
         ])
-        .withLogConsumer(createLogConsumer("datastore", streamLogs))
+        .withLogConsumer((stream) => diagnostics.capture("containers", "datastore", stream))
         .withExposedPorts(9095)
         .withStartupTimeout(10 * 60 * 1000)
         .withWaitStrategy(
-             Wait.forHttp("/management/healthcheck", 9095).forStatusCode(200)
+            Wait.forHttp("/management/healthcheck", 9095).forStatusCode(200)
         )
         .start();
 }
 
-export async function startAuthRedirect(
-    e2eRoot: string,
-    network: StartedNetwork,
-    cookieValue: string,
-    streamLogs: boolean,
-): Promise<any> {
+export async function startAuthRedirect({
+    e2eRoot,
+    network,
+    cookieValue,
+    diagnostics,
+}: ContainerOptions & {
+    e2eRoot: string;
+    cookieValue: string;
+}): Promise<StartedTestContainer> {
     // nginx:alpine's entrypoint runs envsubst over /etc/nginx/templates/*.template
     // at startup, so bind-mounting the config template needs no image build.
     return new GenericContainer(AUTH_REDIRECT_IMAGE)
@@ -354,40 +372,49 @@ export async function startAuthRedirect(
             AUTH_COOKIE_VALUE: cookieValue,
             FRONTEND_UPSTREAM,
         })
-        .withLogConsumer(createLogConsumer("auth-redirect", streamLogs))
+        .withLogConsumer((stream) => diagnostics.capture("containers", "auth-redirect", stream))
         .withExposedPorts({ container: NGINX_PORT, host: HOST_AUTH_PORT })
+        .withWaitStrategy(
+            Wait.forHttp("/management/healthcheck", NGINX_PORT).forStatusCode(200),
+        )
         .withStartupTimeout(2 * 60 * 1000)
         .start();
 }
 
-function buildWorkflowImage(
-    repoRoot: string,
-    imageTag: string,
-): Promise<GenericContainer> {
-    // Toolchain-only image: build context is a tiny temp folder holding just
-    // .tool-versions plus the Dockerfile (which must live inside the context).
-    const buildContext = path.join(repoRoot, "target/workflow-build-context");
-    fs.rmSync(buildContext, { recursive: true, force: true });
+export function buildWorkflowImage({
+    e2eRoot,
+    buildContext,
+    diagnostics,
+}: ImageOptions): Promise<GenericContainer> {
+    const repoRoot = path.resolve(e2eRoot, "..");
+
     fs.mkdirSync(buildContext, { recursive: true });
     fs.copyFileSync(
         path.join(repoRoot, ".tool-versions"),
         path.join(buildContext, ".tool-versions"),
     );
     fs.copyFileSync(
-        path.join(repoRoot, "e2e-tests/images/workflow-frontend.Dockerfile"),
+        path.join(e2eRoot, "images/workflow-frontend.Dockerfile"),
         path.join(buildContext, "workflow-frontend.Dockerfile"),
     );
-    return buildImage(buildContext, "workflow-frontend.Dockerfile", imageTag);
+    return buildImage({
+        context: buildContext,
+        dockerfile: "workflow-frontend.Dockerfile",
+        tag: `workflow-frontend-app-e2e:${diagnostics.runId}`,
+        name: "workflow",
+        diagnostics,
+    });
 }
 
-export async function startWorkflow(
-    repoRoot: string,
-    imageTag: string,
-    network: StartedNetwork,
-    streamLogs: boolean,
-): Promise<any> {
-    const workflowImage = await buildWorkflowImage(repoRoot, imageTag);
-    return workflowImage
+export async function startWorkflow({
+    e2eRoot,
+    image,
+    network,
+    diagnostics,
+}: AppContainerOptions): Promise<StartedTestContainer> {
+    const repoRoot = path.resolve(e2eRoot, "..");
+
+    return image
         .withNetwork(network)
         .withNetworkAliases(FRONTEND_ALIAS)
         // Mount the whole repo so webpack (build-dev watch) and Play dev-mode
@@ -405,7 +432,7 @@ export async function startWorkflow(
             // Keep local mode enabled in case scripts are bypassed in future changes.
             LOCAL: "true",
         })
-        .withLogConsumer(createLogConsumer("workflow-frontend", streamLogs))
+        .withLogConsumer((stream) => diagnostics.capture("containers", "workflow", stream))
         .withExposedPorts({ container: CONTAINER_FRONTEND_PORT, host: HOST_FRONTEND_PORT })
         .withStartupTimeout(10 * 60 * 1000)
         .withWaitStrategy(
