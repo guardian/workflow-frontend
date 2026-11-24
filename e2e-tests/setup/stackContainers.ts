@@ -124,7 +124,7 @@ export async function startLocalStack(
             ]);
         }
 
-        const [workflowImage, datastoreImage, dbContainer] = await settleAll([
+        const [workflowImage, datastoreImage, dbContainer, devcontainerNginxContainer] = await settleAll([
             () => diagnostics.step("build:workflow", () => buildWorkflowImage({
                 e2eRoot,
                 buildContext: path.join(buildDirectory, "frontend"),
@@ -136,11 +136,14 @@ export async function startLocalStack(
                 diagnostics,
             })),
             () => resources.startContainer("postgres", () => startDb({ network, diagnostics })),
+            () => resources.startContainer("chekov", () => startDevcontainerNginx(e2eRoot, network, diagnostics)),
             provisionAws,
         ]);
-
+        
         signal?.throwIfAborted();
-
+        await diagnostics.step("register:aws-aliases", async () => registerAwsAliases(devcontainerNginxContainer));
+        signal?.throwIfAborted();
+        
         const startMock = (key: string) => {
             const config = MOCK_WIREMOCK_CONFIGS[key];
             return resources.startContainer(config.name, () => startMockWiremock({ config, e2eRoot, network, diagnostics }));
@@ -150,13 +153,11 @@ export async function startLocalStack(
             mockCapiContainer,
             mockComposerApiContainer,
             mockTelemetryContainer,
-            devcontainerNginxContainer,
         ] = await settleAll([
             () => resources.startContainer("workflow", () => startWorkflow({ e2eRoot, image: workflowImage, network, diagnostics })),
             () => startMock("capi"),
             () => startMock("composer"),
             () => startMock("telemetry"),
-            () => resources.startContainer("chekov", () => startDevcontainerNginx(e2eRoot, network, diagnostics)),
             () => resources.startContainer("datastore", () => startDatastore({ e2eRoot, image: datastoreImage, network, diagnostics })),
             () => startMock("presence"),
             () => startMock("preferences"),
@@ -166,9 +167,6 @@ export async function startLocalStack(
 
         // Datastore creates the schema during startup, so seed after it is ready.
         await diagnostics.step("seed:datastore", () => seedDatabase(dbContainer, e2eRoot));
-        signal?.throwIfAborted();
-        
-        await diagnostics.step("register:aws-aliases", async () => registerAwsAliases(devcontainerNginxContainer));
         signal?.throwIfAborted();
 
         let authUrl: string | undefined;
