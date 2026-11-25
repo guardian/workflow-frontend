@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 import { setTimeout as delay } from "timers/promises";
+import { ApplicationContainer } from "@guardian/end-to-end-testing";
 import {
     GenericContainer,
     StartedNetwork,
@@ -434,44 +435,20 @@ export async function startAuthRedirect({
         .start();
 }
 
-export function buildWorkflowImage({
-    e2eRoot,
-    buildContext,
-    diagnostics,
-}: ImageOptions): Promise<GenericContainer> {
-    const repoRoot = path.resolve(e2eRoot, "..");
-
-    fs.mkdirSync(buildContext, { recursive: true });
-    fs.copyFileSync(
-        path.join(repoRoot, ".tool-versions"),
-        path.join(buildContext, ".tool-versions"),
-    );
-    fs.copyFileSync(
-        path.join(e2eRoot, "images/workflow-frontend.Dockerfile"),
-        path.join(buildContext, "workflow-frontend.Dockerfile"),
-    );
-    fs.copyFileSync(
-        path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
-        path.join(buildContext, "rootCA.pem"),
-    );
-    return buildImage({
-        context: buildContext,
-        dockerfile: "workflow-frontend.Dockerfile",
-        tag: `workflow-frontend-app-e2e:${diagnostics.runId}`,
-        name: "workflow",
-        diagnostics,
-    });
-}
-
 export async function startWorkflow({
     e2eRoot,
-    image,
     network,
     diagnostics,
-}: AppContainerOptions): Promise<StartedTestContainer> {
-    const repoRoot = path.resolve(e2eRoot, "..");
-
-    return image
+}: ContainerOptions & { e2eRoot: string }): Promise<StartedTestContainer> {
+    return new ApplicationContainer({
+        name: FRONTEND_NAME,
+        exposedPorts: [CONTAINER_FRONTEND_PORT],
+        healthCheckPort: CONTAINER_FRONTEND_PORT,
+        healthCheckPath: "/management/healthcheck",
+        projectHostPath: path.resolve(e2eRoot, ".."),
+        projectContainerPath: "/workflow-frontend",
+        caRootCertFile: path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+    })
         .withName(FRONTEND_NAME)
         .withLabels({ "devcontainer.hostname": FRONTEND_HOSTNAME })
         .withNetwork(network)
@@ -486,13 +463,7 @@ export async function startWorkflow({
                 ipAddress: "host-gateway",
             })),
         ])
-        // Mount the whole repo so webpack (build-dev watch) and Play dev-mode
-        // run from source without an image rebuild. Read-write because sbt and
-        // webpack write target/ and public/build into it.
-        .withBindMounts([
-            { source: repoRoot, target: "/workflow-frontend", mode: "rw" },
-            ...sbtCacheBindMounts(),
-        ])
+        .withCommand(["mise", "exec", "--", "bash", "e2e-tests/images/start-workflow-frontend"])
         .withEnvironment({
             AWS_ENDPOINT_URL_S3: `https://${S3_ENDPOINT_HOST}`,
             AWS_ENDPOINT_URL_DYNAMODB: `https://${LOCALSTACK_ROUTE_HOST}`,
@@ -502,11 +473,5 @@ export async function startWorkflow({
             LOCAL: "true",
         })
         .withLogConsumer((stream) => diagnostics.capture("containers", "workflow", stream))
-        // A fixed host port differing from the container port makes chekov prefix the route (9091.workflow...).
-        .withExposedPorts(CONTAINER_FRONTEND_PORT)
-        .withStartupTimeout(10 * 60 * 1000)
-        .withWaitStrategy(
-            Wait.forHttp("/management/healthcheck", CONTAINER_FRONTEND_PORT).forStatusCode(200)
-        )
         .start();
 }
