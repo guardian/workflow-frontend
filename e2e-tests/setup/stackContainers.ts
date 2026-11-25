@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Network } from "testcontainers";
+import { Network, StartedTestContainer } from "testcontainers";
 import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
@@ -13,15 +13,20 @@ import {
     buildDatastoreImage,
     buildWorkflowImage,
     startAws,
+    registerAwsAliases,
     startMockWiremock,
     MOCK_WIREMOCK_CONFIGS,
     startDb,
     startDatastore,
+    startDevcontainerNginx,
     startAuthRedirect,
     startWorkflow,
     NGINX_PORT,
     WIREMOCK_HTTP_PORT,
     CONTAINER_FRONTEND_PORT,
+    CAPI_HOSTNAME,
+    COMPOSER_HOSTNAME,
+    TELEMETRY_HOSTNAME,
 } from "./stack/containers";
 
 export type LocalStack = {
@@ -100,7 +105,7 @@ export async function startLocalStack(
 
     return diagnostics.step("startup", async () => {
         signal?.throwIfAborted();
-
+        const devcontainerNginxImageTag = `workflow-devcontainer-nginx-e2e:${diagnostics.runId}`;
         const temporaryRoot = path.join(e2eRoot, "target/tmp");
         fs.mkdirSync(temporaryRoot, { recursive: true });
         const buildDirectory = fs.mkdtempSync(path.join(temporaryRoot, "stack-"));
@@ -119,7 +124,7 @@ export async function startLocalStack(
             ]);
         }
 
-        const [workflowImage, datastoreImage, dbContainer] = await settleAll([
+        const [workflowImage, datastoreImage, dbContainer, devcontainerNginxContainer] = await settleAll([
             () => diagnostics.step("build:workflow", () => buildWorkflowImage({
                 e2eRoot,
                 buildContext: path.join(buildDirectory, "frontend"),
@@ -131,11 +136,14 @@ export async function startLocalStack(
                 diagnostics,
             })),
             () => resources.startContainer("postgres", () => startDb({ network, diagnostics })),
+            () => resources.startContainer("chekov", () => startDevcontainerNginx(e2eRoot, network, diagnostics)),
             provisionAws,
         ]);
-
+        
         signal?.throwIfAborted();
-
+        await diagnostics.step("register:aws-aliases", async () => registerAwsAliases(devcontainerNginxContainer));
+        signal?.throwIfAborted();
+        
         const startMock = (key: string) => {
             const config = MOCK_WIREMOCK_CONFIGS[key];
             return resources.startContainer(config.name, () => startMockWiremock({ config, e2eRoot, network, diagnostics }));
@@ -196,13 +204,13 @@ export async function startLocalStack(
 
         signal?.throwIfAborted();
 
-        const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(CONTAINER_FRONTEND_PORT)}`;
+        const baseUrl = "https://workflow.local.dev-gutools.co.uk";
         const connection = {
             baseUrl,
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
-            mockApiUrl: `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`,
-            mockComposerApiUrl: `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`,
-            mockTelemetryApiUrl: `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`,
+            mockApiUrl: `https://${CAPI_HOSTNAME}.local.dev-gutools.co.uk`,
+            mockComposerApiUrl: `https://${COMPOSER_HOSTNAME}.local.dev-gutools.co.uk`,
+            mockTelemetryApiUrl: `https://${TELEMETRY_HOSTNAME}.local.dev-gutools.co.uk`,
         };
 
         await diagnostics.step("publish:stack", async () => writeSharedStackInfo(
