@@ -266,7 +266,6 @@ function getBackendDir(e2eRoot: string): string {
     );
 }
 
-
 export async function startDevcontainerNginx(
     e2eRoot: string,
     network: StartedNetwork,
@@ -324,6 +323,8 @@ export async function startDatastore({
         projectHostPath: getBackendDir(e2eRoot),
         projectContainerPath: "/workflow-backend",
         caRootCertFile: path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+        coursierCacheDir: process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR,
+        ivyCacheDir: process.env.DEVENV_IVY_CACHE_MOUNT_DIR,
     })
         .withName(DATASTORE_NAME)
         .withLabels({ "devcontainer.hostname": DATASTORE_NAME })
@@ -390,6 +391,8 @@ export async function startWorkflow({
         projectHostPath: path.resolve(e2eRoot, ".."),
         projectContainerPath: "/workflow-frontend",
         caRootCertFile: path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+        coursierCacheDir: process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR,
+        ivyCacheDir: process.env.DEVENV_IVY_CACHE_MOUNT_DIR,
     })
         .withName(FRONTEND_NAME)
         .withLabels({ "devcontainer.hostname": FRONTEND_HOSTNAME })

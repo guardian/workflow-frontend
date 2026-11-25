@@ -60,17 +60,17 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
-            ~/.cache/coursier
+            ~/.cache/coursier/v1
             ~/.ivy2/cache
-          key: ${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-${{ hashFiles('**/*.sbt', '**/project/**/*.scala', '**/project/build.properties', '**/.tool-versions') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-2-${{ hashFiles('**/*.sbt', '**/project/**/*.scala', '**/project/build.properties', '**/.tool-versions') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-
+            ${{ runner.os }}-${{ runner.arch }}-sbt-dependencies-2-
 
-      - name: Prepare sbt cache mounts
+      - name: Prepare dependency cache mounts
         run: |
-          mkdir -p "$HOME/.cache/coursier" "$HOME/.ivy2/cache"
-          echo "DEVENV_COURSIER_CACHE_MOUNT_DIR=$HOME/.cache/coursier" >> "$GITHUB_ENV"
-          echo "DEVENV_IVY_CACHE_MOUNT_DIR=$HOME/.ivy2" >> "$GITHUB_ENV"
+          mkdir -p "$HOME/.cache/coursier/v1" "$HOME/.ivy2/cache"
+          echo "DEVENV_COURSIER_CACHE_MOUNT_DIR=$HOME/.cache/coursier/v1" >> "$GITHUB_ENV"
+          echo "DEVENV_IVY_CACHE_MOUNT_DIR=$HOME/.ivy2/cache" >> "$GITHUB_ENV"
 
       - name: Cache Playwright browsers
         id: playwright-cache
