@@ -116,15 +116,13 @@ flowchart LR
 Workflow Frontend uses `ApplicationContainer` from `@guardian/end-to-end-testing`.
 It pulls the package's prebuilt application image from GHCR, bind-mounts this
 checkout, and installs the toolchain from `.tool-versions` at startup. The
-datastore still builds its own image and bind-mounts the backend checkout.
+Datastore runs the same way from the backend checkout in
+`e2e-tests/target/workflow-backend/`.
 
-Both containers install `$HOME/.local/share/mkcert/rootCA.pem` into their
-mise-selected JDK's truststore. The frontend's shared entrypoint runs
-`mise exec -- mkcert -install` at startup; the datastore installs it at build
-time. The CA private key is not copied into either application container.
-Recreate the stack
-when the CA changes so the datastore image is rebuilt and the frontend receives
-the new certificate.
+The shared entrypoint runs `mise exec -- mkcert -install` at startup, adding
+`$HOME/.local/share/mkcert/rootCA.pem` to each container's mise-selected JDK
+truststore. The CA private key is not copied into either container. Recreate
+the stack when the CA changes.
 
 The build tools, including mise, are installed when the devcontainer is built.
 Its post-create hook runs `mise run setup`, including `setup:e2e`, to install
@@ -248,7 +246,6 @@ Logs are saved in `e2e-tests/target/logs/<timestamp>/` locally and in CI, and ke
 after the stack stops, including when startup fails:
 
 - `stack.log`: startup and cleanup progress, timings and errors.
-- `builds/`: Docker image build output.
 - `containers/`: output from each container.
 
 The terminal prints progress and the log directory. To also stream build and
@@ -276,7 +273,7 @@ e2e/
 │   ├── panDomainKeys.ts    # Generates the pan-domain signing keypair
 │   ├── run-local-stack.ts  # Boots a shared long-running stack for `yarn dev:local`
 │   └── checkout-datastore  # Clones/updates guardian/workflow backend
-├── images/            # Dockerfiles and entrypoint scripts for each container in the stack
+├── images/            # Startup scripts for containers in the stack
 ├── fixtures/          # Test data and config seeded into the stack
 │   ├── conf/          # workflow-frontend + backend config for the local stack
 │   ├── db/            # Postgres seed CSVs (sections, desks, stubs…)

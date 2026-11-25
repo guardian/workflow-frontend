@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { Network, StartedTestContainer } from "testcontainers";
 import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
@@ -10,7 +8,6 @@ import { createStackDiagnostics, formatDuration, type StackDiagnostics } from ".
 import { createStackResources, settleAll } from "./stackLifecycle";
 import { clearSharedStackInfo, writeSharedStackInfo } from "./sharedStack";
 import {
-    buildDatastoreImage,
     startAws,
     registerAwsAliases,
     startMockWiremock,
@@ -61,7 +58,6 @@ export async function startLocalStack(
     const { exposeHostAuth = false, signal } = options;
     const diagnostics = options.diagnostics ?? createStackDiagnostics(e2eRoot);
     const resources = createStackResources(diagnostics);
-    let temporaryDirectory: string | undefined;
     let cleanup: Promise<void> | undefined;
 
     function stop(): Promise<void> {
@@ -85,14 +81,6 @@ export async function startLocalStack(
                 clearSharedStackInfo(e2eRoot, diagnostics.runId);
             }).catch(() => { failures++; });
 
-            const buildDirectory = temporaryDirectory;
-
-            if (buildDirectory) {
-                await diagnostics.step("remove:build-contexts", async () => {
-                    fs.rmSync(buildDirectory, { recursive: true, force: true });
-                }).catch(() => { failures++; });
-            }
-
             diagnostics.flush();
 
             const duration = (performance.now() - started) / 1000;
@@ -105,10 +93,6 @@ export async function startLocalStack(
     return diagnostics.step("startup", async () => {
         signal?.throwIfAborted();
         const devcontainerNginxImageTag = `workflow-devcontainer-nginx-e2e:${diagnostics.runId}`;
-        const temporaryRoot = path.join(e2eRoot, "target/tmp");
-        fs.mkdirSync(temporaryRoot, { recursive: true });
-        const buildDirectory = fs.mkdtempSync(path.join(temporaryRoot, "stack-"));
-        temporaryDirectory = buildDirectory;
         const panDomainKeys = generatePanDomainKeys();
         diagnostics.addSecrets([panDomainKeys.privateKeyPem]);
         const network = await resources.startNetwork(() => new Network().start());
@@ -123,12 +107,7 @@ export async function startLocalStack(
             ]);
         }
 
-        const [datastoreImage, dbContainer, devcontainerNginxContainer] = await settleAll([
-            () => diagnostics.step("build:datastore", () => buildDatastoreImage({
-                e2eRoot,
-                buildContext: path.join(buildDirectory, "datastore"),
-                diagnostics,
-            })),
+        const [dbContainer, devcontainerNginxContainer] = await settleAll([
             () => resources.startContainer("postgres", () => startDb({ network, diagnostics })),
             () => resources.startContainer("chekov", () => startDevcontainerNginx(e2eRoot, network, diagnostics)),
             provisionAws,
@@ -152,7 +131,7 @@ export async function startLocalStack(
             () => startMock("capi"),
             () => startMock("composer"),
             () => startMock("telemetry"),
-            () => resources.startContainer("datastore", () => startDatastore({ e2eRoot, image: datastoreImage, network, diagnostics })),
+            () => resources.startContainer("datastore", () => startDatastore({ e2eRoot, network, diagnostics })),
             () => startMock("presence"),
             () => startMock("preferences"),
             () => startMock("tagmanager"),
