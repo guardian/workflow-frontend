@@ -11,7 +11,6 @@ import { createStackResources, settleAll } from "./stackLifecycle";
 import { clearSharedStackInfo, writeSharedStackInfo } from "./sharedStack";
 import {
     buildDatastoreImage,
-    buildWorkflowImage,
     startAws,
     registerAwsAliases,
     startMockWiremock,
@@ -124,12 +123,7 @@ export async function startLocalStack(
             ]);
         }
 
-        const [workflowImage, datastoreImage, dbContainer, devcontainerNginxContainer] = await settleAll([
-            () => diagnostics.step("build:workflow", () => buildWorkflowImage({
-                e2eRoot,
-                buildContext: path.join(buildDirectory, "frontend"),
-                diagnostics,
-            })),
+        const [datastoreImage, dbContainer, devcontainerNginxContainer] = await settleAll([
             () => diagnostics.step("build:datastore", () => buildDatastoreImage({
                 e2eRoot,
                 buildContext: path.join(buildDirectory, "datastore"),
@@ -154,7 +148,7 @@ export async function startLocalStack(
             mockComposerApiContainer,
             mockTelemetryContainer,
         ] = await settleAll([
-            () => resources.startContainer("workflow", () => startWorkflow({ e2eRoot, image: workflowImage, network, diagnostics })),
+            () => resources.startContainer("workflow", () => startWorkflow({ e2eRoot, network, diagnostics })),
             () => startMock("capi"),
             () => startMock("composer"),
             () => startMock("telemetry"),

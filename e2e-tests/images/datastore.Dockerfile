@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Real Workflow Datastore backend service, built from the guardian/workflow
-# checkout in target/workflow-backend. Mirrors workflow-frontend.Dockerfile:
-# the image bakes the JVM toolchain (java + sbt via mise) and local CA; the backend
+# checkout in target/workflow-backend.
+# The image bakes the JVM toolchain (java + sbt via mise) and local CA; the backend
 # sources (build.sbt, project/, common-lib/, datastore/) are bind-mounted at
 # runtime and the Play app is run from source with the e2e config overlay.
 #
