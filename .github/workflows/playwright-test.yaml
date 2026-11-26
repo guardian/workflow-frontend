@@ -123,6 +123,7 @@ jobs:
             e2e-tests/target/playwright-report/
             e2e-tests/target/cucumber-report/
             e2e-tests/target/logs/
+            e2e-tests/target/chekov/logs/
           retention-days: 14
           if-no-files-found: ignore
 

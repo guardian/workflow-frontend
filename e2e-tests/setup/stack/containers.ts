@@ -269,6 +269,7 @@ export async function startDevcontainerNginx(
             },
             { source: logsDir, target: "/var/log/nginx", mode: "rw" },
             { source: logsDir, target: "/var/log/devcontainer-nginx", mode: "rw" },
+            { source: logsDir, target: "/var/log/chekov", mode: "rw" },
         ])
         .withEnvironment({
             BASE_DOMAIN: "local.dev-gutools.co.uk",
