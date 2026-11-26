@@ -259,6 +259,8 @@ export async function startDevcontainerNginx(
     return new GenericContainer(CHEKOV_IMAGE)
         .withName("devcontainer-nginx")
         .withNetwork(network)
+        // Linux Docker lacks this name; unresolvable upstreams make nginx reject every reload.
+        .withExtraHosts([{ host: "host.docker.internal", ipAddress: "host-gateway" }])
         .withBindMounts([
             { source: "/var/run/docker.sock", target: "/var/run/docker.sock", mode: "ro" },
             { source: certsDir, target: "/etc/nginx/certs", mode: "ro" },
