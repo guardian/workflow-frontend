@@ -53,6 +53,7 @@ lazy val commonLib = project("common-lib")
       ++ jsonDependencies
       ++ cacheDependencies
       ++ cryptoDependencies
+      ++ vulnerabilityFixes
   )
 
 val application = "workflow-frontend"
@@ -66,6 +67,7 @@ lazy val root = playProject(application)
       ++ testDependencies
       ++ jsonDependencies
       ++ permissionsDependencies
+      ++ vulnerabilityFixes
   )
   .settings(libraryDependencies += filters)
   .settings(playDefaultPort := 9090)
