@@ -1,7 +1,6 @@
 import path from "path";
 import fs from "fs";
 import os from "os";
-import { setTimeout as delay } from "timers/promises";
 import { ApplicationContainer } from "@guardian/end-to-end-testing";
 import {
     GenericContainer,
@@ -34,7 +33,7 @@ const LOCALSTACK_IMAGE = "localstack/localstack:4";
 const WIREMOCK_IMAGE = "wiremock/wiremock:3.13.2";
 // The auth-redirect container is stock nginx with a bind-mounted config template.
 const AUTH_REDIRECT_IMAGE = "nginx:alpine";
-const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-4841ed355fb10451dc697ef164a59fba01f7dfbc";
+const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-bba0c91f9bc695df29e550b9ecd3bbc2b79d2d38";
 // WireMock is told to read its stubs from this bind-mounted dir rather than the
 // image default (/home/wiremock), so nothing in the base image is shadowed.
 const WIREMOCK_ROOT_DIR = "/wiremock-root";
@@ -67,6 +66,12 @@ interface ContainerOptions {
     diagnostics: StackDiagnostics;
 }
 
+// Chekov names routes "<hostPort>.<hostname>" when the host port differs from the
+// container port; this label maps the given comma-separated hostnames to that route.
+function chekovAliasLabel(aliases: string, containerPort: number): Record<string, string> {
+    return { [`chekov.aliases.${containerPort}`]: aliases };
+}
+
 export async function startAws({
     network,
     diagnostics,
@@ -76,6 +81,7 @@ export async function startAws({
         .withLabels({
             "devcontainer.hostname": LOCALSTACK_HOST,
             "devcontainer.application.port": String(LOCALSTACK_PORT),
+            ...chekovAliasLabel([LOCALSTACK_ROUTE_HOST, ...S3_ROUTE_ALIASES].join(","), LOCALSTACK_PORT),
         })
         .withNetwork(network)
         .withEnvironment({
@@ -96,33 +102,6 @@ export async function startAws({
         )
         .withStartupTimeout(5 * 60 * 1000)
         .start();
-}
-
-export async function registerAwsAliases(
-    chekovContainer: StartedTestContainer,
-): Promise<void> {
-    for (const alias of S3_ROUTE_ALIASES) {
-        const deadline = Date.now() + 30_000;
-        while (true) {
-            const result = await chekovContainer.exec([
-                "curl",
-                "--fail-with-body",
-                "--silent",
-                "--show-error",
-                "--max-time", "10",
-                "--data",
-                new URLSearchParams({ sourceHostname: LOCALSTACK_ROUTE_HOST, alias }).toString(),
-                "http://127.0.0.1:18080/api/aliases",
-            ]);
-            if (result.exitCode === 0) {
-                break;
-            }
-            if (Date.now() >= deadline) {
-                throw new Error(`Failed to register Chekov alias ${alias}: ${result.output}`);
-            }
-            await delay(1000);
-        }
-    }
 }
 
 type MockPortMapping = number | { container: number; host: number };
@@ -206,9 +185,10 @@ export async function startMockWiremock({
     ];
     return new GenericContainer(WIREMOCK_IMAGE)
         .withName(config.name)
-        .withLabels({ 
+        .withLabels({
             "devcontainer.hostname": config.hostname,
             "devcontainer.application.port": String(containerPort),
+            ...chekovAliasLabel(config.hostname, containerPort),
         })
         .withUser("root")
         .withNetwork(network)
@@ -279,6 +259,8 @@ export async function startDevcontainerNginx(
     return new GenericContainer(CHEKOV_IMAGE)
         .withName("devcontainer-nginx")
         .withNetwork(network)
+        // Linux Docker lacks this name; unresolvable upstreams make nginx reject every reload.
+        .withExtraHosts([{ host: "host.docker.internal", ipAddress: "host-gateway" }])
         .withBindMounts([
             { source: "/var/run/docker.sock", target: "/var/run/docker.sock", mode: "ro" },
             { source: certsDir, target: "/etc/nginx/certs", mode: "ro" },
@@ -289,6 +271,7 @@ export async function startDevcontainerNginx(
             },
             { source: logsDir, target: "/var/log/nginx", mode: "rw" },
             { source: logsDir, target: "/var/log/devcontainer-nginx", mode: "rw" },
+            { source: logsDir, target: "/var/log/chekov", mode: "rw" },
         ])
         .withEnvironment({
             BASE_DOMAIN: "local.dev-gutools.co.uk",
@@ -327,7 +310,10 @@ export async function startDatastore({
         ivyCacheDir: process.env.DEVENV_IVY_CACHE_MOUNT_DIR,
     })
         .withName(DATASTORE_NAME)
-        .withLabels({ "devcontainer.hostname": DATASTORE_NAME })
+        .withLabels({
+            "devcontainer.hostname": DATASTORE_NAME,
+            ...chekovAliasLabel(DATASTORE_NAME, DATASTORE_PORT),
+        })
         .withNetwork(network)
         .withCommand([
             "mise", "exec", "--", "sbt",
@@ -395,7 +381,10 @@ export async function startWorkflow({
         ivyCacheDir: process.env.DEVENV_IVY_CACHE_MOUNT_DIR,
     })
         .withName(FRONTEND_NAME)
-        .withLabels({ "devcontainer.hostname": FRONTEND_HOSTNAME })
+        .withLabels({
+            "devcontainer.hostname": FRONTEND_HOSTNAME,
+            ...chekovAliasLabel(FRONTEND_HOSTNAME, CONTAINER_FRONTEND_PORT),
+        })
         .withNetwork(network)
         .withExtraHosts([
             { host: "composer.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
