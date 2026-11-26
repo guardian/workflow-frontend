@@ -9,7 +9,6 @@ import { createStackResources, settleAll } from "./stackLifecycle";
 import { clearSharedStackInfo, writeSharedStackInfo } from "./sharedStack";
 import {
     startAws,
-    registerAwsAliases,
     startMockWiremock,
     MOCK_WIREMOCK_CONFIGS,
     startDb,
@@ -107,14 +106,12 @@ export async function startLocalStack(
             ]);
         }
 
-        const [dbContainer, devcontainerNginxContainer] = await settleAll([
+        const [dbContainer] = await settleAll([
             () => resources.startContainer("postgres", () => startDb({ network, diagnostics })),
             () => resources.startContainer("chekov", () => startDevcontainerNginx(e2eRoot, network, diagnostics)),
             provisionAws,
         ]);
         
-        signal?.throwIfAborted();
-        await diagnostics.step("register:aws-aliases", async () => registerAwsAliases(devcontainerNginxContainer));
         signal?.throwIfAborted();
         
         const startMock = (key: string) => {
