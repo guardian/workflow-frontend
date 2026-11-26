@@ -33,7 +33,7 @@ const LOCALSTACK_IMAGE = "localstack/localstack:4";
 const WIREMOCK_IMAGE = "wiremock/wiremock:3.13.2";
 // The auth-redirect container is stock nginx with a bind-mounted config template.
 const AUTH_REDIRECT_IMAGE = "nginx:alpine";
-const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-82a104df36d463f439d2676f40e523d796cacdbf";
+const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-bba0c91f9bc695df29e550b9ecd3bbc2b79d2d38";
 // WireMock is told to read its stubs from this bind-mounted dir rather than the
 // image default (/home/wiremock), so nothing in the base image is shadowed.
 const WIREMOCK_ROOT_DIR = "/wiremock-root";
