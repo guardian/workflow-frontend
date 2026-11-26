@@ -1,57 +1,51 @@
+import fs from "fs";
 import path from "path";
-import { Network } from "testcontainers";
+import { Network, StartedTestContainer } from "testcontainers";
 import { generatePanDomainKeys } from "./panDomainKeys";
 import { createPanDomainCookie } from "./panDomainCookie";
 import { seedDatabase } from "./stack/seedDatabase";
+import { seedS3 } from "./stack/seedS3";
+import { seedDynamodb } from "./stack/seedDynamodb";
+import { createStackDiagnostics, formatDuration, type StackDiagnostics } from "./stackDiagnostics";
+import { createStackResources, settleAll } from "./stackLifecycle";
+import { clearSharedStackInfo, writeSharedStackInfo } from "./sharedStack";
 import {
+    buildDatastoreImage,
+    buildWorkflowImage,
     startAws,
+    registerAwsAliases,
     startMockWiremock,
     MOCK_WIREMOCK_CONFIGS,
     startDb,
     startDatastore,
+    startDevcontainerNginx,
     startAuthRedirect,
     startWorkflow,
+    NGINX_PORT,
     WIREMOCK_HTTP_PORT,
     CONTAINER_FRONTEND_PORT,
+    CAPI_HOSTNAME,
+    COMPOSER_HOSTNAME,
+    TELEMETRY_HOSTNAME,
 } from "./stack/containers";
 
 export type LocalStack = {
     baseUrl: string;
     panDomainPrivateKey: string;
-    /**
-     * Base URL of the configurable mock flexible-content API, mapped to the
-     * host. POST to `${mockApiUrl}/__admin/state` to change what restore
-     * destination/restore calls return at runtime.
-     */
+    /** Host URL of the CAPI mock, including its WireMock admin API. */
     mockApiUrl: string;
-    awsContainer: any;
-    workflowContainer: any;
-    /** Set only when the host-browser auth endpoint is exposed (dev flow). */
-    authContainer?: any;
     /** Host URL that sets the auth cookie and redirects to the app. */
     authUrl?: string;
-    mockCapiContainer: any;
     /** Base URL of the Composer mock's admin API, for querying its request journal. */
     mockComposerApiUrl: string;
-    mockComposerApiContainer: any;
-    mockPresenceContainer: any;
     /** Base URL of the telemetry mock's admin API, for querying its request journal. */
     mockTelemetryApiUrl: string;
-    mockTelemetryContainer: any;
-    mockPreferencesApiContainer: any;
-    mockTagManagerApiContainer: any;
-    dbContainer: any;
-    datastoreContainer: any;
-    network: any;
+    stop(): Promise<void>;
 };
 
 export interface StartLocalStackOptions {
-    /**
-     * Stream each container's logs to stdout/stderr. Useful when running the
-     * stack directly (`npm run local:stack`) for debugging, but noisy when the
-     * stack is started by the e2e global setup, so it defaults to off.
-     */
-    streamLogs?: boolean;
+    signal?: AbortSignal;
+    diagnostics?: StackDiagnostics;
     /**
      * Front the stack with a container that sets the pan-domain auth cookie on
      * /cookie and proxies all other paths to the frontend container, so
@@ -65,215 +59,169 @@ export async function startLocalStack(
     e2eRoot: string,
     options: StartLocalStackOptions = {},
 ): Promise<LocalStack> {
-    const { streamLogs = false, exposeHostAuth = false } = options;
-    const runId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-    const workflowImageTag = `workflow-frontend-app-e2e:${runId}`;
-    const datastoreImageTag = `workflow-datastore-e2e:${runId}`;
+    const { exposeHostAuth = false, signal } = options;
+    const diagnostics = options.diagnostics ?? createStackDiagnostics(e2eRoot);
+    const resources = createStackResources(diagnostics);
+    let temporaryDirectory: string | undefined;
+    let cleanup: Promise<void> | undefined;
 
-    const network = await new Network().start();
+    function stop(): Promise<void> {
+        return cleanup ??= cleanupStack();
+    }
 
-    let authContainer;
-    let awsContainer;
-    let workflowContainer;
-    let mockCapiContainer;
-    let mockComposerApiContainer;
-    let mockPresenceContainer;
-    let mockTelemetryContainer;
-    let mockPreferencesApiContainer;
-    let mockTagManagerApiContainer;
-    let dbContainer;
-    let datastoreContainer;
-    const panDomainKeys = generatePanDomainKeys();
+    async function cleanupStack(): Promise<void> {
+        const label = "cleanup".padEnd(24);
+        const started = performance.now();
+        let failures = 0;
 
-    const repoRoot = path.join(e2eRoot, "..");
+        diagnostics.log(`${label} STARTED`);
 
-    try {
-        // Each service's start function builds its own toolchain-only image (a
-        // tiny build context) and then starts its container; images and
-        // container startups all overlap.
+        try {
+            failures = await resources.stopAll();
+        } catch (error) {
+            failures++;
+            diagnostics.error("cleanup:resources", error);
+        } finally {
+            await diagnostics.step("remove:metadata", async () => {
+                clearSharedStackInfo(e2eRoot, diagnostics.runId);
+            }).catch(() => { failures++; });
 
-        // Infrastructure first: everything else needs the AWS mock (S3 +
-        // DynamoDB) and workflow-db, so wait for these before starting the rest.
-        const awsStart = startAws(network, e2eRoot, panDomainKeys, streamLogs);
+            const buildDirectory = temporaryDirectory;
 
-        // workflow-db has no image to build; start it straight away.
-        const dbStart = startDb(network, streamLogs);
+            if (buildDirectory) {
+                await diagnostics.step("remove:build-contexts", async () => {
+                    fs.rmSync(buildDirectory, { recursive: true, force: true });
+                }).catch(() => { failures++; });
+            }
 
-        [awsContainer, dbContainer] = await Promise.all([awsStart, dbStart]);
-        // The mocks all run from the shared WireMock image with no build step,
-        // so their starts can be kicked off immediately.
-        const mockCapiStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.capi, e2eRoot, network, streamLogs);
-        const mockComposerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.composer, e2eRoot, network, streamLogs);
-        const mockPresenceStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.presence, e2eRoot, network, streamLogs);
-        const mockTelemetryStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.telemetry, e2eRoot, network, streamLogs);
-        const mockPreferencesStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.preferences, e2eRoot, network, streamLogs);
-        const mockTagManagerStart = startMockWiremock(MOCK_WIREMOCK_CONFIGS.tagmanager, e2eRoot, network, streamLogs);
+            diagnostics.flush();
 
-        // With the infrastructure up, build and start workflow-frontend and the
-        // datastore concurrently: each start function builds its own image then
-        // starts its container, all overlapping.
-        const workflowStart = startWorkflow(repoRoot, workflowImageTag, network, streamLogs);
-        const datastoreStart = startDatastore(e2eRoot, datastoreImageTag, network, streamLogs);
+            const duration = (performance.now() - started) / 1000;
 
+            diagnostics.log(`${label} ${"DONE".padEnd(7)} [${formatDuration(duration)}] failures=${failures}`);
+            diagnostics.log(`diagnostics retained: ${diagnostics.directory}`);
+        }
+    }
+
+    return diagnostics.step("startup", async () => {
+        signal?.throwIfAborted();
+        const devcontainerNginxImageTag = `workflow-devcontainer-nginx-e2e:${diagnostics.runId}`;
+        const temporaryRoot = path.join(e2eRoot, "target/tmp");
+        fs.mkdirSync(temporaryRoot, { recursive: true });
+        const buildDirectory = fs.mkdtempSync(path.join(temporaryRoot, "stack-"));
+        temporaryDirectory = buildDirectory;
+        const panDomainKeys = generatePanDomainKeys();
+        diagnostics.addSecrets([panDomainKeys.privateKeyPem]);
+        const network = await resources.startNetwork(() => new Network().start());
+        signal?.throwIfAborted();
+
+        async function provisionAws() {
+            const awsContainer = await resources.startContainer("localstack", () => startAws({ network, diagnostics }));
+            signal?.throwIfAborted();
+            await settleAll([
+                () => diagnostics.step("seed:s3", () => seedS3(awsContainer, e2eRoot, panDomainKeys)),
+                () => diagnostics.step("seed:dynamodb", () => seedDynamodb(awsContainer, e2eRoot)),
+            ]);
+        }
+
+        const [workflowImage, datastoreImage, dbContainer, devcontainerNginxContainer] = await settleAll([
+            () => diagnostics.step("build:workflow", () => buildWorkflowImage({
+                e2eRoot,
+                buildContext: path.join(buildDirectory, "frontend"),
+                diagnostics,
+            })),
+            () => diagnostics.step("build:datastore", () => buildDatastoreImage({
+                e2eRoot,
+                buildContext: path.join(buildDirectory, "datastore"),
+                diagnostics,
+            })),
+            () => resources.startContainer("postgres", () => startDb({ network, diagnostics })),
+            () => resources.startContainer("chekov", () => startDevcontainerNginx(e2eRoot, network, diagnostics)),
+            provisionAws,
+        ]);
+        
+        signal?.throwIfAborted();
+        await diagnostics.step("register:aws-aliases", async () => registerAwsAliases(devcontainerNginxContainer));
+        signal?.throwIfAborted();
+        
+        const startMock = (key: string) => {
+            const config = MOCK_WIREMOCK_CONFIGS[key];
+            return resources.startContainer(config.name, () => startMockWiremock({ config, e2eRoot, network, diagnostics }));
+        };
+        const [
+            workflowContainer,
+            mockCapiContainer,
+            mockComposerApiContainer,
+            mockTelemetryContainer,
+        ] = await settleAll([
+            () => resources.startContainer("workflow", () => startWorkflow({ e2eRoot, image: workflowImage, network, diagnostics })),
+            () => startMock("capi"),
+            () => startMock("composer"),
+            () => startMock("telemetry"),
+            () => resources.startContainer("datastore", () => startDatastore({ e2eRoot, image: datastoreImage, network, diagnostics })),
+            () => startMock("presence"),
+            () => startMock("preferences"),
+            () => startMock("tagmanager"),
+        ]);
+        signal?.throwIfAborted();
+
+        // Datastore creates the schema during startup, so seed after it is ready.
+        await diagnostics.step("seed:datastore", () => seedDatabase(dbContainer, e2eRoot));
+        signal?.throwIfAborted();
 
         let authUrl: string | undefined;
-        let authStart: Promise<any> = Promise.resolve(undefined);
+
         if (exposeHostAuth) {
-            // Long-lived so a dev session isn't re-authenticated hourly.
             const cookieValue = createPanDomainCookie(
-                panDomainKeys.privateKeyPem,
-                "default",
-                12 * 60 * 60 * 1000,
+                panDomainKeys.privateKeyPem, "default", 12 * 60 * 60 * 1000,
             );
-            authStart = startAuthRedirect(e2eRoot, network, cookieValue, streamLogs);
+
+            diagnostics.addSecrets([cookieValue]);
+
+            const authContainer = await resources.startContainer("auth-redirect", () =>
+                startAuthRedirect({ e2eRoot, network, cookieValue, diagnostics }),
+            );
+
+            signal?.throwIfAborted();
+
+            const cookieUrl = `http://${authContainer.getHost()}:${authContainer.getMappedPort(NGINX_PORT)}/cookie`;
+
+            await diagnostics.step("check:cookie", async () => {
+                const timeout = AbortSignal.timeout(10_000);
+                const response = await fetch(cookieUrl, {
+                    redirect: "manual",
+                    signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
+                });
+
+                await response.body?.cancel();
+
+                if (response.status !== 302 || !response.headers.get("set-cookie")?.includes("gutoolsAuth-assym=")) {
+                    throw new Error("Auth proxy cookie endpoint must set a pan-domain authentication cookie and return HTTP 302");
+                }
+            });
+            authUrl = "https://workflow.local.dev-gutools.co.uk/cookie";
         }
 
-        // Wait for the remaining containers to finish starting.
-        [
-            workflowContainer,
-            datastoreContainer,
-            mockCapiContainer,
-            mockComposerApiContainer,
-            mockPresenceContainer,
-            mockTelemetryContainer,
-            mockPreferencesApiContainer,
-            mockTagManagerApiContainer,
-            authContainer,
-        ] = await Promise.all([
-            workflowStart,
-            datastoreStart,
-            mockCapiStart,
-            mockComposerStart,
-            mockPresenceStart,
-            mockTelemetryStart,
-            mockPreferencesStart,
-            mockTagManagerStart,
-            authStart,
-        ]);
+        signal?.throwIfAborted();
 
-        if (exposeHostAuth) {
-            authUrl = `https://workflow.local.dev-gutools.co.uk/cookie`;
-            console.log(`\n[auth-redirect] Host-browser auth endpoint available at ${authUrl}`);
-        }
-
-        // The Datastore applies its Play evolutions when it first serves a
-        // request; its healthcheck above has done that, so the schema now exists:
-        // load the section/desk test data into Postgres.
-        await seedDatabase(dbContainer, e2eRoot);
-
-        const mockCapiUrl = `http://${mockCapiContainer.getHost()}:${mockCapiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
-        const mockComposerApiUrl = `http://${mockComposerApiContainer.getHost()}:${mockComposerApiContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
-        const mockTelemetryApiUrl = `http://${mockTelemetryContainer.getHost()}:${mockTelemetryContainer.getMappedPort(WIREMOCK_HTTP_PORT)}`;
-
-        const common = {
+        const baseUrl = "https://workflow.local.dev-gutools.co.uk";
+        const connection = {
+            baseUrl,
             panDomainPrivateKey: panDomainKeys.privateKeyPem,
-            mockApiUrl: mockCapiUrl,
-            mockComposerApiUrl,
-            mockTelemetryApiUrl,
-            awsContainer,
-            mockCapiContainer,
-            mockComposerApiContainer,
-            mockPresenceContainer,
-            mockTelemetryContainer,
-            mockPreferencesApiContainer,
-            mockTagManagerApiContainer,
-            dbContainer,
-            datastoreContainer,
-            authContainer,
-            authUrl,
-            network,
+            mockApiUrl: `https://${CAPI_HOSTNAME}.local.dev-gutools.co.uk`,
+            mockComposerApiUrl: `https://${COMPOSER_HOSTNAME}.local.dev-gutools.co.uk`,
+            mockTelemetryApiUrl: `https://${TELEMETRY_HOSTNAME}.local.dev-gutools.co.uk`,
         };
 
-        const baseUrl = `http://${workflowContainer.getHost()}:${workflowContainer.getMappedPort(CONTAINER_FRONTEND_PORT)}`;
-        return { baseUrl, workflowContainer, ...common };
-    } catch (error) {
-        console.error(`Exception occurred: ${error}`);
-        if (authContainer) {
-            await authContainer.stop();
-        }
-        if (workflowContainer) {
-            await workflowContainer.stop();
-        }
-        if (datastoreContainer) {
-            await datastoreContainer.stop();
-        }
-        if (dbContainer) {
-            await dbContainer.stop();
-        }
-        if (mockTagManagerApiContainer) {
-            await mockTagManagerApiContainer.stop();
-        }
-        if (mockPreferencesApiContainer) {
-            await mockPreferencesApiContainer.stop();
-        }
-        if (mockComposerApiContainer) {
-            await mockComposerApiContainer.stop();
-        }
-        if (mockPresenceContainer) {
-            await mockPresenceContainer.stop();
-        }
-        if (mockTelemetryContainer) {
-            await mockTelemetryContainer.stop();
-        }
-        if (mockCapiContainer) {
-            await mockCapiContainer.stop();
-        }
-        if (awsContainer) {
-            await awsContainer.stop();
-        }
-        await network.stop();
-        throw error;
-    }
-}
+        await diagnostics.step("publish:stack", async () => writeSharedStackInfo(
+            e2eRoot,
+            { ...connection, runId: diagnostics.runId },
+        ));
+        diagnostics.log(`stack ready at ${baseUrl}`);
 
-export async function stopLocalStack({
-    workflowContainer,
-    authContainer,
-    awsContainer,
-    mockCapiContainer,
-    mockComposerApiContainer,
-    mockPresenceContainer,
-    mockTelemetryContainer,
-    mockPreferencesApiContainer,
-    mockTagManagerApiContainer,
-    dbContainer,
-    datastoreContainer,
-    network,
-}: Partial<LocalStack> = {}): Promise<void> {
-    if (authContainer) {
-        await authContainer.stop();
-    }
-    if (workflowContainer) {
-        await workflowContainer.stop();
-    }
-    if (datastoreContainer) {
-        await datastoreContainer.stop();
-    }
-    if (dbContainer) {
-        await dbContainer.stop();
-    }
-    if (mockTagManagerApiContainer) {
-        await mockTagManagerApiContainer.stop();
-    }
-    if (mockPreferencesApiContainer) {
-        await mockPreferencesApiContainer.stop();
-    }
-    if (mockComposerApiContainer) {
-        await mockComposerApiContainer.stop();
-    }
-    if (mockPresenceContainer) {
-        await mockPresenceContainer.stop();
-    }
-    if (mockTelemetryContainer) {
-        await mockTelemetryContainer.stop();
-    }
-    if (mockCapiContainer) {
-        await mockCapiContainer.stop();
-    }
-    if (awsContainer) {
-        await awsContainer.stop();
-    }
-    if (network) {
-        await network.stop();
-    }
+        return { ...connection, authUrl, stop };
+    }).catch(async (error) => {
+        await stop().catch((cleanupError) => diagnostics.error("cleanup:stack", cleanupError));
+        throw error;
+    });
 }

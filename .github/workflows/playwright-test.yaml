@@ -88,7 +88,18 @@ jobs:
       - name: Verify Chromium can launch
         run: yarn tsx setup/verify-chromium.ts
 
+      - name: Set up local CA for chekov
+        id: local-ca
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mkcert libnss3-tools
+          export CAROOT="$HOME/.local/share/mkcert"
+          mkcert -install
+          echo "certificate=$CAROOT/rootCA.pem" >> "$GITHUB_OUTPUT"
+
       - name: Run Playwright tests
+        env:
+          NODE_EXTRA_CA_CERTS: ${{ steps.local-ca.outputs.certificate }}
         run: yarn bddgen && yarn playwright test
 
       - name: Chromatic - Workflow Frontend
@@ -103,6 +114,7 @@ jobs:
           CHROMATIC_ARCHIVE_LOCATION: ./target/test-results
 
       - name: Upload e2e reports
+        id: e2e-report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -110,5 +122,13 @@ jobs:
           path: |
             e2e-tests/target/playwright-report/
             e2e-tests/target/cucumber-report/
+            e2e-tests/target/logs/
           retention-days: 14
           if-no-files-found: ignore
+
+      - name: Link to e2e reports and logs
+        if: ${{ failure() && steps.e2e-report.outputs.artifact-url != '' }}
+        env:
+          REPORT_URL: ${{ steps.e2e-report.outputs.artifact-url }}
+        run: |
+          echo "::error title=E2E reports and logs::See the reports and stack logs for this failed run: $REPORT_URL"

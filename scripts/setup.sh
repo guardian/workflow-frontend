@@ -14,16 +14,16 @@ preamble() {
       exit 1
   fi
 
-  if test -e "$NVM_DIR/nvm.sh"; then
+  if command -v mise >/dev/null; then
+      mise install
+  elif test -e "$NVM_DIR/nvm.sh"; then
       source "$NVM_DIR/nvm.sh"
       nvm install
   elif command -v fnm >/dev/null; then
       fnm use
-  elif command -v mise >/dev/null; then
-      mise install
   # TODO use asdf? add detection and enable here
   else
-      echo -e "No node version manager found. Consider installing fnm <https://github.com/Schniz/fnm> or asdf <???>"
+      echo -e "No node version manager found. Installing mise <https://mise.jdx.dev/lang/node.html> is currently recommended"
       exit 1
   fi
 }

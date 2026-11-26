@@ -5,8 +5,8 @@
   "scripts": {
     "build-dev": "webpack --config ./conf/webpack.conf.js --watch",
     "build": "webpack --config ./conf/webpack.prod.conf.js",
-    "test": "karma start",
-    "test-watch": "yarn test --no-single-run",
+    "test": "karma start && cd e2e-tests && node --import tsx --test setup/*.test.ts && tsc -p tsconfig.json",
+    "test-watch": "karma start --no-single-run",
     "lint": "eslint ./public/**/**/*.js"
   },
   "devDependencies": {
