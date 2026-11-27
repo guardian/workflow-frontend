@@ -317,7 +317,8 @@ export async function startDatastore({
 }: ContainerOptions & { e2eRoot: string }): Promise<StartedTestContainer> {
     return new ApplicationContainer({
         name: DATASTORE_NAME,
-        exposedPorts: [DATASTORE_PORT],
+        network,
+        exposedPorts: [{ port: DATASTORE_PORT, hostNames: [DATASTORE_NAME] }],
         healthCheckPort: DATASTORE_PORT,
         healthCheckPath: "/management/healthcheck",
         projectHostPath: getBackendDir(e2eRoot),
@@ -326,9 +327,6 @@ export async function startDatastore({
         coursierCacheDir: process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR,
         ivyCacheDir: process.env.DEVENV_IVY_CACHE_MOUNT_DIR,
     })
-        .withName(DATASTORE_NAME)
-        .withLabels({ "devcontainer.hostname": DATASTORE_NAME })
-        .withNetwork(network)
         .withCommand([
             "mise", "exec", "--", "sbt",
             "-Dconfig.file=datastore/conf/application.e2e.conf",
@@ -385,7 +383,8 @@ export async function startWorkflow({
 }: ContainerOptions & { e2eRoot: string }): Promise<StartedTestContainer> {
     return new ApplicationContainer({
         name: FRONTEND_NAME,
-        exposedPorts: [CONTAINER_FRONTEND_PORT],
+        network,
+        exposedPorts: [{ port: CONTAINER_FRONTEND_PORT, hostNames: [FRONTEND_HOSTNAME] }],
         healthCheckPort: CONTAINER_FRONTEND_PORT,
         healthCheckPath: "/management/healthcheck",
         projectHostPath: path.resolve(e2eRoot, ".."),
@@ -394,9 +393,6 @@ export async function startWorkflow({
         coursierCacheDir: process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR,
         ivyCacheDir: process.env.DEVENV_IVY_CACHE_MOUNT_DIR,
     })
-        .withName(FRONTEND_NAME)
-        .withLabels({ "devcontainer.hostname": FRONTEND_HOSTNAME })
-        .withNetwork(network)
         .withExtraHosts([
             { host: "composer.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
             { host: "workflow-datastore.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
