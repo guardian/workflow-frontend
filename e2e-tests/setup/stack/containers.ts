@@ -2,13 +2,13 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 import { setTimeout as delay } from "timers/promises";
+import { ApplicationContainer } from "@guardian/end-to-end-testing";
 import {
     GenericContainer,
     StartedNetwork,
     StartedTestContainer,
     Wait,
 } from "testcontainers";
-import { buildImage } from "./dockerHelpers";
 import type { StackDiagnostics } from "../stackDiagnostics";
 
 // LocalStack accepts any credentials by default (signature validation is off);
@@ -51,6 +51,7 @@ const FRONTEND_NAME = "workflow-frontend";
 const FRONTEND_HOSTNAME = "workflow";
 const FRONTEND_UPSTREAM = `${FRONTEND_NAME}:${CONTAINER_FRONTEND_PORT}`;
 const DATASTORE_NAME = "workflow-datastore";
+const DATASTORE_PORT = 9095;
 export const CAPI_HOSTNAME = "iam-preview-content";
 const PREFERENCES_HOSTNAME = "preferences";
 const TAG_MANAGER_HOSTNAME = "tagmanager";
@@ -63,17 +64,6 @@ const HOST_TELEMETRY_HTTP_PORT = 3132;
 
 interface ContainerOptions {
     network: StartedNetwork;
-    diagnostics: StackDiagnostics;
-}
-
-interface AppContainerOptions extends ContainerOptions {
-    e2eRoot: string;
-    image: GenericContainer;
-}
-
-interface ImageOptions {
-    e2eRoot: string;
-    buildContext: string;
     diagnostics: StackDiagnostics;
 }
 
@@ -276,54 +266,6 @@ function getBackendDir(e2eRoot: string): string {
     );
 }
 
-// Bind-mount the devcontainer's persistent coursier/ivy cache volumes (see
-// .devcontainer/*/devcontainer.json) into sbt containers as their dependency
-// caches, so `sbt update`/`run` reuse artifacts already fetched from Maven
-// Central across container/image rebuilds instead of re-downloading them.
-// Falls back to no extra mounts when run outside that devcontainer.
-function sbtCacheBindMounts(): { source: string; target: string; mode: "rw" }[] {
-    const coursierCacheDir = process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR;
-    const ivyCacheDir = process.env.DEVENV_IVY_CACHE_MOUNT_DIR;
-    const mounts: { source: string; target: string; mode: "rw" }[] = [];
-    if (coursierCacheDir) {
-        mounts.push({ source: coursierCacheDir, target: "/root/.cache/coursier", mode: "rw" });
-    }
-    if (ivyCacheDir) {
-        mounts.push({ source: ivyCacheDir, target: "/root/.ivy2", mode: "rw" });
-    }
-    return mounts;
-}
-
-export function buildDatastoreImage({
-    e2eRoot,
-    buildContext,
-    diagnostics,
-}: ImageOptions): Promise<GenericContainer> {
-    const backendDir = getBackendDir(e2eRoot);
-
-    fs.mkdirSync(buildContext, { recursive: true });
-    fs.copyFileSync(
-        path.join(backendDir, ".tool-versions"),
-        path.join(buildContext, ".tool-versions"),
-    );
-    fs.copyFileSync(
-        path.join(e2eRoot, "images/datastore.Dockerfile"),
-        path.join(buildContext, "datastore.Dockerfile"),
-    );
-    fs.copyFileSync(
-        path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
-        path.join(buildContext, "rootCA.pem"),
-    );
-    return buildImage({
-        context: buildContext,
-        dockerfile: "datastore.Dockerfile",
-        tag: `workflow-datastore-e2e:${diagnostics.runId}`,
-        name: "datastore",
-        diagnostics,
-    });
-}
-
-
 export async function startDevcontainerNginx(
     e2eRoot: string,
     network: StartedNetwork,
@@ -370,28 +312,30 @@ export async function startDevcontainerNginx(
 
 export async function startDatastore({
     e2eRoot,
-    image,
     network,
     diagnostics,
-}: AppContainerOptions): Promise<StartedTestContainer> {
-    const backendDir = getBackendDir(e2eRoot);
-
-    return image
+}: ContainerOptions & { e2eRoot: string }): Promise<StartedTestContainer> {
+    return new ApplicationContainer({
+        name: DATASTORE_NAME,
+        exposedPorts: [DATASTORE_PORT],
+        healthCheckPort: DATASTORE_PORT,
+        healthCheckPath: "/management/healthcheck",
+        projectHostPath: getBackendDir(e2eRoot),
+        projectContainerPath: "/workflow-backend",
+        caRootCertFile: path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+        coursierCacheDir: process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR,
+        ivyCacheDir: process.env.DEVENV_IVY_CACHE_MOUNT_DIR,
+    })
         .withName(DATASTORE_NAME)
         .withLabels({ "devcontainer.hostname": DATASTORE_NAME })
         .withNetwork(network)
-        // Mount the whole backend checkout so sbt runs from source without
-        // baking it into the image. Read-write because sbt writes target/ dirs.
-        .withBindMounts([
-            { source: backendDir, target: "/workflow-backend", mode: "rw" },
-            ...sbtCacheBindMounts(),
+        .withCommand([
+            "mise", "exec", "--", "sbt",
+            "-Dconfig.file=datastore/conf/application.e2e.conf",
+            `datastore/run ${DATASTORE_PORT}`,
         ])
+        .withEnvironment({ AWS_SDK_LOAD_CONFIG: "1" })
         .withLogConsumer((stream) => diagnostics.capture("containers", "datastore", stream))
-        .withExposedPorts(9095)
-        .withStartupTimeout(10 * 60 * 1000)
-        .withWaitStrategy(
-            Wait.forHttp("/management/healthcheck", 9095).forStatusCode(200)
-        )
         .start();
 }
 
@@ -434,44 +378,22 @@ export async function startAuthRedirect({
         .start();
 }
 
-export function buildWorkflowImage({
-    e2eRoot,
-    buildContext,
-    diagnostics,
-}: ImageOptions): Promise<GenericContainer> {
-    const repoRoot = path.resolve(e2eRoot, "..");
-
-    fs.mkdirSync(buildContext, { recursive: true });
-    fs.copyFileSync(
-        path.join(repoRoot, ".tool-versions"),
-        path.join(buildContext, ".tool-versions"),
-    );
-    fs.copyFileSync(
-        path.join(e2eRoot, "images/workflow-frontend.Dockerfile"),
-        path.join(buildContext, "workflow-frontend.Dockerfile"),
-    );
-    fs.copyFileSync(
-        path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
-        path.join(buildContext, "rootCA.pem"),
-    );
-    return buildImage({
-        context: buildContext,
-        dockerfile: "workflow-frontend.Dockerfile",
-        tag: `workflow-frontend-app-e2e:${diagnostics.runId}`,
-        name: "workflow",
-        diagnostics,
-    });
-}
-
 export async function startWorkflow({
     e2eRoot,
-    image,
     network,
     diagnostics,
-}: AppContainerOptions): Promise<StartedTestContainer> {
-    const repoRoot = path.resolve(e2eRoot, "..");
-
-    return image
+}: ContainerOptions & { e2eRoot: string }): Promise<StartedTestContainer> {
+    return new ApplicationContainer({
+        name: FRONTEND_NAME,
+        exposedPorts: [CONTAINER_FRONTEND_PORT],
+        healthCheckPort: CONTAINER_FRONTEND_PORT,
+        healthCheckPath: "/management/healthcheck",
+        projectHostPath: path.resolve(e2eRoot, ".."),
+        projectContainerPath: "/workflow-frontend",
+        caRootCertFile: path.join(os.homedir(), ".local/share/mkcert/rootCA.pem"),
+        coursierCacheDir: process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR,
+        ivyCacheDir: process.env.DEVENV_IVY_CACHE_MOUNT_DIR,
+    })
         .withName(FRONTEND_NAME)
         .withLabels({ "devcontainer.hostname": FRONTEND_HOSTNAME })
         .withNetwork(network)
@@ -486,13 +408,7 @@ export async function startWorkflow({
                 ipAddress: "host-gateway",
             })),
         ])
-        // Mount the whole repo so webpack (build-dev watch) and Play dev-mode
-        // run from source without an image rebuild. Read-write because sbt and
-        // webpack write target/ and public/build into it.
-        .withBindMounts([
-            { source: repoRoot, target: "/workflow-frontend", mode: "rw" },
-            ...sbtCacheBindMounts(),
-        ])
+        .withCommand(["mise", "exec", "--", "bash", "e2e-tests/images/start-workflow-frontend"])
         .withEnvironment({
             AWS_ENDPOINT_URL_S3: `https://${S3_ENDPOINT_HOST}`,
             AWS_ENDPOINT_URL_DYNAMODB: `https://${LOCALSTACK_ROUTE_HOST}`,
@@ -502,11 +418,5 @@ export async function startWorkflow({
             LOCAL: "true",
         })
         .withLogConsumer((stream) => diagnostics.capture("containers", "workflow", stream))
-        // A fixed host port differing from the container port makes chekov prefix the route (9091.workflow...).
-        .withExposedPorts(CONTAINER_FRONTEND_PORT)
-        .withStartupTimeout(10 * 60 * 1000)
-        .withWaitStrategy(
-            Wait.forHttp("/management/healthcheck", CONTAINER_FRONTEND_PORT).forStatusCode(200)
-        )
         .start();
 }

@@ -17,13 +17,14 @@
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.658.0",
     "@chromatic-com/playwright": "^0.15.0",
+    "@guardian/end-to-end-testing": "0.3.0",
     "@guardian/pan-domain-node": "^1.2.4",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.1.1",
     "chromatic": "^18.9.4",
     "playwright": "^1.55.0",
     "playwright-bdd": "^9.2.0",
-    "testcontainers": "^10.17.1",
+    "testcontainers": "^12.2.1",
     "tsx": "^4.22.4"
   },
   "resolutions": {

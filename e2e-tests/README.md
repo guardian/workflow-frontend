@@ -113,14 +113,16 @@ flowchart LR
   Container configuration is encoded in the setup code, not loaded from Compose
   at runtime.
 
-The frontend and datastore copy `$HOME/.local/share/mkcert/rootCA.pem` into
-their build contexts and images, then run `mise exec java -- mkcert -install`
-during the image build, with
-`CAROOT=/etc/workflow-local-ca` and `TRUST_STORES=java` to install the CA into
-their mise-selected JDK's default truststore. Existing trusted certificates are
-preserved; the CA private key is never copied into either application image.
-No runtime CA mount is needed. The public CA certificate must exist before
-building; rebuild the images and recreate the stack when the CA changes.
+Workflow Frontend uses `ApplicationContainer` from `@guardian/end-to-end-testing`.
+It pulls the package's prebuilt application image from GHCR, bind-mounts this
+checkout, and installs the toolchain from `.tool-versions` at startup. The
+Datastore runs the same way from the backend checkout in
+`e2e-tests/target/workflow-backend/`.
+
+The shared entrypoint runs `mise exec -- mkcert -install` at startup, adding
+`$HOME/.local/share/mkcert/rootCA.pem` to each container's mise-selected JDK
+truststore. The CA private key is not copied into either container. Recreate
+the stack when the CA changes.
 
 The build tools, including mise, are installed when the devcontainer is built.
 Its post-create hook runs `mise run setup`, including `setup:e2e`, to install
@@ -244,7 +246,6 @@ Logs are saved in `e2e-tests/target/logs/<timestamp>/` locally and in CI, and ke
 after the stack stops, including when startup fails:
 
 - `stack.log`: startup and cleanup progress, timings and errors.
-- `builds/`: Docker image build output.
 - `containers/`: output from each container.
 
 The terminal prints progress and the log directory. To also stream build and
@@ -272,7 +273,7 @@ e2e/
 │   ├── panDomainKeys.ts    # Generates the pan-domain signing keypair
 │   ├── run-local-stack.ts  # Boots a shared long-running stack for `yarn dev:local`
 │   └── checkout-datastore  # Clones/updates guardian/workflow backend
-├── images/            # Dockerfiles and entrypoint scripts for each container in the stack
+├── images/            # Startup scripts for containers in the stack
 ├── fixtures/          # Test data and config seeded into the stack
 │   ├── conf/          # workflow-frontend + backend config for the local stack
 │   ├── db/            # Postgres seed CSVs (sections, desks, stubs…)
