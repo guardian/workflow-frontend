@@ -11,7 +11,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class SectionsAPI(
   override val apiRoot: String,
-  override val ws: WSClient
+  override val ws: WSClient,
+  override val buildAuthHeaders: String => List[(String, String)]
 ) extends ApiUtils with WSUtils {
 
   def getSections: ApiResponseFt[List[Section]] =

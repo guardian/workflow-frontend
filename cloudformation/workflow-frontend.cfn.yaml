@@ -165,6 +165,19 @@
                     - "dynamodb:*"
                   Effect: "Allow"
                   Resource: "*"
+    GetSecretPolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: GetSecretPolicy
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:/${Stage}/workflow/datastore/hmacSecret-??????
+        Roles:
+          - !Ref 'DistributionRole'    
     LogServerPolicy:
       Type: AWS::IAM::Policy
       Properties:
@@ -466,6 +479,11 @@
                 - dynamodb:Query
               Resource:
                 - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/editorial-support-CODE"
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:/CODE/workflow/datastore/hmacSecret-??????
 
   Outputs:
     WorkflowFrontendLoadBalancerDNS:
