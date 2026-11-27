@@ -55,4 +55,9 @@ object Dependencies {
   val permissionsDependencies = Seq(
     "com.gu" %% "editorial-permissions-client" % permissionsClientVersion
   )
+
+  val vulnerabilityFixes = Seq(
+    // Addressing vulnerability in 33.4.8-jre. Check if this can be removed once there is a new release of Play
+    "com.google.guava" % "guava" % "33.8.0-jre"
+  )
 }
