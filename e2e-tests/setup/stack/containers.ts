@@ -1,8 +1,6 @@
 import path from "path";
-import fs from "fs";
 import os from "os";
-import { setTimeout as delay } from "timers/promises";
-import { ApplicationContainer } from "@guardian/end-to-end-testing";
+import { ApplicationContainer, ChekovContainer, LocalAwsContainer, MockApiContainer } from "@guardian/end-to-end-testing";
 import {
     GenericContainer,
     StartedNetwork,
@@ -25,21 +23,10 @@ const S3_ROUTE_ALIASES = [
 ];
 // LocalStack serves every enabled service (S3, DynamoDB, ...) on this one port.
 const LOCALSTACK_PORT = 4566;
-// Stock LocalStack image; the buckets/objects and DynamoDB table the app reads
-// are seeded from the host after start, so no custom image build is needed.
-const LOCALSTACK_IMAGE = "localstack/localstack:4";
 
-// All mocks share one WireMock image; each container only bind-mounts a
-// different fixture root (mappings/ + __files/) and tweaks its command flags.
-const WIREMOCK_IMAGE = "wiremock/wiremock:3.13.2";
 // The auth-redirect container is stock nginx with a bind-mounted config template.
 const AUTH_REDIRECT_IMAGE = "nginx:alpine";
-const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-4841ed355fb10451dc697ef164a59fba01f7dfbc";
-// WireMock is told to read its stubs from this bind-mounted dir rather than the
-// image default (/home/wiremock), so nothing in the base image is shadowed.
-const WIREMOCK_ROOT_DIR = "/wiremock-root";
 
-export const WIREMOCK_HTTP_PORT = 80;
 // Fixed host port for the optional host-browser auth-cookie endpoint. Kept
 // stable (and forwarded in the devcontainer) so it can be bookmarked.
 export const NGINX_PORT = 80;
@@ -61,6 +48,8 @@ const PRESENCE_HOSTNAME = "presence";
 const HOST_PRESENCE_HTTP_PORT = 9070;
 export const TELEMETRY_HOSTNAME = "user-telemetry";
 const HOST_TELEMETRY_HTTP_PORT = 3132;
+// MockApiContainer always serves WireMock on this container port.
+const MOCK_API_CONTAINER_PORT = 80;
 
 interface ContainerOptions {
     network: StartedNetwork;
@@ -71,19 +60,15 @@ export async function startAws({
     network,
     diagnostics,
 }: ContainerOptions): Promise<StartedTestContainer> {
-    return new GenericContainer(LOCALSTACK_IMAGE)
-        .withName(LOCALSTACK_HOST)
-        .withLabels({
-            "devcontainer.hostname": LOCALSTACK_HOST,
-            "devcontainer.application.port": String(LOCALSTACK_PORT),
-        })
-        .withNetwork(network)
-        .withEnvironment({
-            SERVICES: "s3,dynamodb",
-            AWS_DEFAULT_REGION: "eu-west-1",
-        })
+    return new LocalAwsContainer({
+        name: LOCALSTACK_HOST,
+        network,
+        hostname: LOCALSTACK_HOST,
+        containerPort: LOCALSTACK_PORT,
+    })
+        .withEnvironment({ SERVICES: "s3,dynamodb" })
         .withLogConsumer((stream) => diagnostics.capture("containers", "localstack", stream))
-        .withExposedPorts(LOCALSTACK_PORT)
+        // Stricter than the default 200 check: wait until S3 and DynamoDB are up.
         .withWaitStrategy(
             Wait.forHttp("/_localstack/health", LOCALSTACK_PORT)
                 .forStatusCode(200)
@@ -94,48 +79,18 @@ export async function startAws({
                     );
                 }),
         )
-        .withStartupTimeout(5 * 60 * 1000)
         .start();
 }
-
-export async function registerAwsAliases(
-    chekovContainer: StartedTestContainer,
-): Promise<void> {
-    for (const alias of S3_ROUTE_ALIASES) {
-        const deadline = Date.now() + 30_000;
-        while (true) {
-            const result = await chekovContainer.exec([
-                "curl",
-                "--fail-with-body",
-                "--silent",
-                "--show-error",
-                "--max-time", "10",
-                "--data",
-                new URLSearchParams({ sourceHostname: LOCALSTACK_ROUTE_HOST, alias }).toString(),
-                "http://127.0.0.1:18080/api/aliases",
-            ]);
-            if (result.exitCode === 0) {
-                break;
-            }
-            if (Date.now() >= deadline) {
-                throw new Error(`Failed to register Chekov alias ${alias}: ${result.output}`);
-            }
-            await delay(1000);
-        }
-    }
-}
-
-type MockPortMapping = number | { container: number; host: number };
 
 interface MockWiremockConfig {
     /** Container name and log prefix for this mock. */
     name: string;
     /** fixtures/<dir> folder holding this mock's WireMock root (mappings/ + __files/). */
     fixtureDir: string;
-    /** Hostname advertised to devcontainer-nginx. */
+    /** Hostname advertised to chekov. */
     hostname: string;
-    /** Port to expose; a fixed host port is used only where one is required. */
-    port: MockPortMapping;
+    /** Fixed host port, for mocks accessed directly from the host; random otherwise. */
+    hostPort?: number;
     /** Disable WireMock response templating (e.g. presence serves a JS body verbatim). */
     templating?: boolean;
 }
@@ -145,47 +100,42 @@ export const MOCK_WIREMOCK_CONFIGS: Record<string, MockWiremockConfig> = {
         name: "mock-capi",
         fixtureDir: "capi",
         hostname: CAPI_HOSTNAME,
-        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
     composer: {
         name: "mock-composer",
         fixtureDir: "composer",
         hostname: COMPOSER_HOSTNAME,
-        port: { container: HOST_COMPOSER_HTTP_PORT, host: HOST_COMPOSER_HTTP_PORT },
+        hostPort: HOST_COMPOSER_HTTP_PORT,
         templating: true,
     },
     presence: {
         name: "mock-presence",
         fixtureDir: "presence",
         hostname: PRESENCE_HOSTNAME,
-        port: { container: HOST_PRESENCE_HTTP_PORT, host: HOST_PRESENCE_HTTP_PORT },
+        hostPort: HOST_PRESENCE_HTTP_PORT,
     },
     telemetry: {
         name: "mock-telemetry",
         fixtureDir: "telemetry",
         hostname: TELEMETRY_HOSTNAME,
-        port: { container: HOST_TELEMETRY_HTTP_PORT, host: HOST_TELEMETRY_HTTP_PORT },
+        hostPort: HOST_TELEMETRY_HTTP_PORT,
         templating: true,
     },
     preferences: {
         name: "mock-preferences",
         fixtureDir: "preferences",
         hostname: PREFERENCES_HOSTNAME,
-        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
     tagmanager: {
         name: "mock-tagmanager",
         fixtureDir: "tagmanager",
         hostname: TAG_MANAGER_HOSTNAME,
-        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
 };
 
-// Start one WireMock mock from the shared image, bind-mounting fixtures/<name>
-// as its stub root. Runs as root so WireMock can bind the privileged port 80.
 export async function startMockWiremock({
     config,
     e2eRoot,
@@ -195,40 +145,18 @@ export async function startMockWiremock({
     config: MockWiremockConfig;
     e2eRoot: string;
 }): Promise<StartedTestContainer> {
-    const containerPort = typeof config.port === "number" ? config.port : config.port.container;
-    const command = [
-        "--root-dir",
-        WIREMOCK_ROOT_DIR,
-        "--port",
-        String(containerPort),
-        "--verbose",
-        ...(config.templating ? ["--local-response-templating"] : []),
-    ];
-    return new GenericContainer(WIREMOCK_IMAGE)
-        .withName(config.name)
-        .withLabels({ 
-            "devcontainer.hostname": config.hostname,
-            "devcontainer.application.port": String(containerPort),
-        })
-        .withUser("root")
-        .withNetwork(network)
-        .withBindMounts([
-            {
-                source: path.join(e2eRoot, "fixtures", config.fixtureDir),
-                target: WIREMOCK_ROOT_DIR,
-                mode: "ro",
-            },
-        ])
-        .withCommand(command)
-        .withLogConsumer((stream) => diagnostics.capture("containers", config.name, stream))
-        .withExposedPorts(config.port)
-        .withWaitStrategy(
-            Wait.forHttp("/__admin/health", containerPort).forStatusCode(
-                200,
-            ),
-        )
-        .withStartupTimeout(2 * 60 * 1000)
-        .start();
+    const container = new MockApiContainer({
+        name: config.name,
+        network,
+        fixtureDir: path.join(e2eRoot, "fixtures", config.fixtureDir),
+        hostnames: [config.hostname],
+        templating: config.templating,
+    }).withLogConsumer((stream) => diagnostics.capture("containers", config.name, stream));
+    if (config.hostPort) {
+        // Overrides the random host binding MockApiContainer gives its port.
+        container.withExposedPorts({ container: MOCK_API_CONTAINER_PORT, host: config.hostPort });
+    }
+    return container.start();
 }
 
 export async function startDb({
@@ -266,47 +194,20 @@ function getBackendDir(e2eRoot: string): string {
     );
 }
 
-export async function startDevcontainerNginx(
+export async function startChekov(
     e2eRoot: string,
     network: StartedNetwork,
     diagnostics: StackDiagnostics,
 ): Promise<StartedTestContainer> {
-    const nginxDir = path.resolve(e2eRoot, "target/chekov");
-    const certsDir = path.resolve(nginxDir, process.env.CERTS_DIR || "certs");
-    const logsDir = path.join(nginxDir, "logs");
-    fs.mkdirSync(certsDir, { recursive: true });
-    fs.mkdirSync(logsDir, { recursive: true });
-    return new GenericContainer(CHEKOV_IMAGE)
-        .withName("devcontainer-nginx")
-        .withNetwork(network)
-        .withBindMounts([
-            { source: "/var/run/docker.sock", target: "/var/run/docker.sock", mode: "ro" },
-            { source: certsDir, target: "/etc/nginx/certs", mode: "ro" },
-            {
-                source: path.join(os.homedir(), ".local/share/mkcert"),
-                target: "/etc/nginx/mkcert",
-                mode: "ro",
-            },
-            { source: logsDir, target: "/var/log/nginx", mode: "rw" },
-            { source: logsDir, target: "/var/log/devcontainer-nginx", mode: "rw" },
-        ])
-        .withEnvironment({
-            BASE_DOMAIN: "local.dev-gutools.co.uk",
-            DOCKER_SOCKET: "/var/run/docker.sock",
-            NGINX_CONFIG_PATH: "/etc/nginx/conf.d/generated.conf",
-            TLS_CERT: "/etc/nginx/certs/wildcard.crt",
-            TLS_KEY: "/etc/nginx/certs/wildcard.key",
-            LOCAL_CA_CERT: "/etc/nginx/mkcert/rootCA.pem",
-            LOCAL_CA_KEY: "/etc/nginx/mkcert/rootCA-key.pem",
-            DEBOUNCE_MS: "500",
-        })
-        .withLogConsumer((stream) => diagnostics.capture("containers", "devcontainer-nginx", stream))
-        .withExposedPorts(
-            { container: 80, host: 80 },
-            { container: 443, host: 443 },
-        )
-        .withWaitStrategy(Wait.forHealthCheck())
-        .withStartupTimeout(2 * 60 * 1000)
+    const logsDir = diagnostics.addExtraLog("chekov");
+    return new ChekovContainer({
+        name: "chekov",
+        network,
+        baseDomain: "local.dev-gutools.co.uk",
+        mkcertRootCertDir: path.join(os.homedir(), ".local/share/mkcert"),
+        logsDir,
+    })
+        .withLogConsumer((stream) => diagnostics.capture("containers", "chekov", stream))
         .start();
 }
 
@@ -317,7 +218,8 @@ export async function startDatastore({
 }: ContainerOptions & { e2eRoot: string }): Promise<StartedTestContainer> {
     return new ApplicationContainer({
         name: DATASTORE_NAME,
-        exposedPorts: [DATASTORE_PORT],
+        network,
+        exposedPorts: [{ port: DATASTORE_PORT, hostNames: [DATASTORE_NAME] }],
         healthCheckPort: DATASTORE_PORT,
         healthCheckPath: "/management/healthcheck",
         projectHostPath: getBackendDir(e2eRoot),
@@ -326,9 +228,6 @@ export async function startDatastore({
         coursierCacheDir: process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR,
         ivyCacheDir: process.env.DEVENV_IVY_CACHE_MOUNT_DIR,
     })
-        .withName(DATASTORE_NAME)
-        .withLabels({ "devcontainer.hostname": DATASTORE_NAME })
-        .withNetwork(network)
         .withCommand([
             "mise", "exec", "--", "sbt",
             "-Dconfig.file=datastore/conf/application.e2e.conf",
@@ -385,7 +284,8 @@ export async function startWorkflow({
 }: ContainerOptions & { e2eRoot: string }): Promise<StartedTestContainer> {
     return new ApplicationContainer({
         name: FRONTEND_NAME,
-        exposedPorts: [CONTAINER_FRONTEND_PORT],
+        network,
+        exposedPorts: [{ port: CONTAINER_FRONTEND_PORT, hostNames: [FRONTEND_HOSTNAME] }],
         healthCheckPort: CONTAINER_FRONTEND_PORT,
         healthCheckPath: "/management/healthcheck",
         projectHostPath: path.resolve(e2eRoot, ".."),
@@ -394,9 +294,6 @@ export async function startWorkflow({
         coursierCacheDir: process.env.DEVENV_COURSIER_CACHE_MOUNT_DIR,
         ivyCacheDir: process.env.DEVENV_IVY_CACHE_MOUNT_DIR,
     })
-        .withName(FRONTEND_NAME)
-        .withLabels({ "devcontainer.hostname": FRONTEND_HOSTNAME })
-        .withNetwork(network)
         .withExtraHosts([
             { host: "composer.local.dev-gutools.co.uk", ipAddress: "host-gateway" },
             { host: "workflow-datastore.local.dev-gutools.co.uk", ipAddress: "host-gateway" },

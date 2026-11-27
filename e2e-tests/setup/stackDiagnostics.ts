@@ -8,6 +8,8 @@ const OWNER_READ_WRITE_EXECUTE = 0o700;
 
 export type StackDiagnostics = ReturnType<typeof createStackDiagnostics>;
 
+type LogCategory = "builds" | "containers" | "extra";
+
 export function formatDuration(seconds: number): string {
     if (seconds < 60) {
         return `${seconds.toFixed(1)}s`;
@@ -109,7 +111,7 @@ export function createStackDiagnostics(
         }
     }
 
-    function capture(category: "builds" | "containers", name: string, stream: Readable): void {
+    function capture(category: LogCategory, name: string, stream: Readable): void {
         const file = path.join(directory, category, `${name}.log`);
 
         append(file, `${new Date().toISOString()} ${name} log attached\n`);
@@ -158,6 +160,13 @@ export function createStackDiagnostics(
         }
     }
 
+    // For logs written straight to files by a container; these are not redacted.
+    function addExtraLog(name: string): string {
+        const extraLogDirectory = path.join(directory, "extra", name);
+        fs.mkdirSync(extraLogDirectory, { recursive: true, mode: OWNER_READ_WRITE_EXECUTE });
+        return extraLogDirectory;
+    }
+
     log(`diagnostics: ${directory}`);
-    return { runId, directory, log, error, step, capture, addSecrets, flush };
+    return { runId, directory, log, error, step, capture, addSecrets, flush, addExtraLog };
 }

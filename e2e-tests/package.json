@@ -17,7 +17,7 @@
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.658.0",
     "@chromatic-com/playwright": "^0.15.0",
-    "@guardian/end-to-end-testing": "0.3.0",
+    "@guardian/end-to-end-testing": "0.0.0-canary-20261127095231",
     "@guardian/pan-domain-node": "^1.2.4",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.1.1",

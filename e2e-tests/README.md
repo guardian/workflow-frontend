@@ -15,7 +15,7 @@ PostgreSQL, and mocked dependencies in Docker. WireMock serves the upstream
 HTTP APIs. LocalStack provides both S3 (PanDomain settings and the permissions
 cache) and DynamoDB (seeded editorial support data).
 
-Inside the dev container, `devcontainer-nginx` is the reverse proxy for the
+Inside the dev container, `chekov` is the reverse proxy for the
 application and mock service hostnames under `*.local.dev-gutools.co.uk`. It
 discovers containers through the Docker socket and uses their
 `devcontainer.hostname` labels to generate routes. WireMock containers also
@@ -23,13 +23,13 @@ advertise their HTTP listener through `devcontainer.application.port`.
 The proxy publishes ports 80 and 443, terminates TLS, and forwards requests to
 the containers over HTTP. WireMock no longer serves HTTPS itself.
 
-1. **Playwright Chromium -> devcontainer-nginx -> application and mocks.** Tests
+1. **Playwright Chromium -> chekov -> application and mocks.** Tests
    load `https://workflow.local.dev-gutools.co.uk` and call the mock APIs through
    their HTTPS hostnames. Mock admin requests also use the proxy. There are no
    per-mock Chromium `--host-resolver-rules`; hostname resolution must reach the
    proxy. Playwright uses `ignoreHTTPSErrors` for the local certificates.
 
-2. **Frontend -> devcontainer-nginx -> Datastore and upstream APIs.** The
+2. **Frontend -> chekov -> Datastore and upstream APIs.** The
    frontend calls HTTPS service URLs, including
    `https://workflow-datastore.local.dev-gutools.co.uk/api`. Its configured
    `host-gateway` entries direct these requests to the proxy's published ports.
@@ -41,7 +41,7 @@ the containers over HTTP. WireMock no longer serves HTTPS itself.
    retains the existing host nginx configuration and TLS termination. Workflow
    traffic goes to the optional auth-redirect container through forwarded port
    9090: `/cookie` sets the auth cookie, and other paths proxy to Workflow's
-   hostname through `devcontainer-nginx`. Host routes for Composer, Presence,
+   hostname through `chekov`. Host routes for Composer, Presence,
    and Telemetry use their existing forwarded HTTP ports (9081, 9070, and 3132).
 
 The diagram shows request paths; service ports inside the Docker stack are
@@ -59,7 +59,7 @@ flowchart LR
     TestRunner["Test runner<br/>Mock admin requests"]
 
     subgraph stack["Docker stack"]
-      Proxy["devcontainer-nginx<br/>HTTP :80 / HTTPS :443<br/>TLS termination and service discovery"]
+      Proxy["chekov<br/>HTTP :80 / HTTPS :443<br/>TLS termination and service discovery"]
       Auth["Auth redirect (optional)<br/>HTTP :80 / cookie endpoint"]
       Frontend["workflow-frontend<br/>hostname: workflow<br/>HTTP :9090"]
       Datastore["workflow-datastore<br/>HTTP :9095"]
@@ -103,15 +103,14 @@ flowchart LR
 - **GHCR access** - Testcontainers pulls the prebuilt Chekov proxy image
   from `ghcr.io/guardian/chekov/nginx` when it is not cached locally.
   The image is public, so no login, Chekov checkout, or image build is needed.
-- **Proxy ports and certificates** - the stack reserves container name
-  `devcontainer-nginx` and host ports 80 and 443. Remove any existing container
-  with that name before starting the stack. Certificates are mounted read-only
-  from `CERTS_DIR` (default: `e2e-tests/target/chekov/certs/`), and the local CA
-  from `$HOME/.local/share/mkcert`. Relative `CERTS_DIR` paths resolve against
-  `e2e-tests/target/chekov/`; both nginx and process logs use its `logs/`
-  directory. The stack creates the certificate and log directories on startup.
-  Container configuration is encoded in the setup code, not loaded from Compose
-  at runtime.
+- **Proxy ports and certificates** - the stack runs Chekov via `ChekovContainer`
+  from `@guardian/end-to-end-testing`, reserving container name
+  `chekov` and host ports 80 and 443. Remove any existing container
+  with that name before starting the stack. Chekov issues its TLS certificates
+  from the local CA, mounted read-only from `$HOME/.local/share/mkcert`. Its
+  logs are written, without secret redaction, to `extra/chekov/`
+  in the run's diagnostics directory. Container configuration is encoded in
+  the setup code, not loaded from Compose at runtime.
 
 Workflow Frontend uses `ApplicationContainer` from `@guardian/end-to-end-testing`.
 It pulls the package's prebuilt application image from GHCR, bind-mounts this
