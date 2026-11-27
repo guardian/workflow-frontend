@@ -17,7 +17,6 @@ import {
     startAuthRedirect,
     startWorkflow,
     NGINX_PORT,
-    WIREMOCK_HTTP_PORT,
     CONTAINER_FRONTEND_PORT,
     CAPI_HOSTNAME,
     COMPOSER_HOSTNAME,

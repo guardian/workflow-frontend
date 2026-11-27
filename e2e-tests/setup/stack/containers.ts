@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import os from "os";
-import { ApplicationContainer, LocalAwsContainer } from "@guardian/end-to-end-testing";
+import { ApplicationContainer, LocalAwsContainer, MockApiContainer } from "@guardian/end-to-end-testing";
 import {
     GenericContainer,
     StartedNetwork,
@@ -25,17 +25,10 @@ const S3_ROUTE_ALIASES = [
 // LocalStack serves every enabled service (S3, DynamoDB, ...) on this one port.
 const LOCALSTACK_PORT = 4566;
 
-// All mocks share one WireMock image; each container only bind-mounts a
-// different fixture root (mappings/ + __files/) and tweaks its command flags.
-const WIREMOCK_IMAGE = "wiremock/wiremock:3.13.2";
 // The auth-redirect container is stock nginx with a bind-mounted config template.
 const AUTH_REDIRECT_IMAGE = "nginx:alpine";
 const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-bba0c91f9bc695df29e550b9ecd3bbc2b79d2d38";
-// WireMock is told to read its stubs from this bind-mounted dir rather than the
-// image default (/home/wiremock), so nothing in the base image is shadowed.
-const WIREMOCK_ROOT_DIR = "/wiremock-root";
 
-export const WIREMOCK_HTTP_PORT = 80;
 // Fixed host port for the optional host-browser auth-cookie endpoint. Kept
 // stable (and forwarded in the devcontainer) so it can be bookmarked.
 export const NGINX_PORT = 80;
@@ -57,6 +50,8 @@ const PRESENCE_HOSTNAME = "presence";
 const HOST_PRESENCE_HTTP_PORT = 9070;
 export const TELEMETRY_HOSTNAME = "user-telemetry";
 const HOST_TELEMETRY_HTTP_PORT = 3132;
+// MockApiContainer always serves WireMock on this container port.
+const MOCK_API_CONTAINER_PORT = 80;
 
 interface ContainerOptions {
     network: StartedNetwork;
@@ -89,8 +84,6 @@ export async function startAws({
         .start();
 }
 
-type MockPortMapping = number | { container: number; host: number };
-
 interface MockWiremockConfig {
     /** Container name and log prefix for this mock. */
     name: string;
@@ -98,8 +91,8 @@ interface MockWiremockConfig {
     fixtureDir: string;
     /** Hostname advertised to devcontainer-nginx. */
     hostname: string;
-    /** Port to expose; a fixed host port is used only where one is required. */
-    port: MockPortMapping;
+    /** Fixed host port, for mocks accessed directly from the host; random otherwise. */
+    hostPort?: number;
     /** Disable WireMock response templating (e.g. presence serves a JS body verbatim). */
     templating?: boolean;
 }
@@ -109,47 +102,42 @@ export const MOCK_WIREMOCK_CONFIGS: Record<string, MockWiremockConfig> = {
         name: "mock-capi",
         fixtureDir: "capi",
         hostname: CAPI_HOSTNAME,
-        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
     composer: {
         name: "mock-composer",
         fixtureDir: "composer",
         hostname: COMPOSER_HOSTNAME,
-        port: { container: HOST_COMPOSER_HTTP_PORT, host: HOST_COMPOSER_HTTP_PORT },
+        hostPort: HOST_COMPOSER_HTTP_PORT,
         templating: true,
     },
     presence: {
         name: "mock-presence",
         fixtureDir: "presence",
         hostname: PRESENCE_HOSTNAME,
-        port: { container: HOST_PRESENCE_HTTP_PORT, host: HOST_PRESENCE_HTTP_PORT },
+        hostPort: HOST_PRESENCE_HTTP_PORT,
     },
     telemetry: {
         name: "mock-telemetry",
         fixtureDir: "telemetry",
         hostname: TELEMETRY_HOSTNAME,
-        port: { container: HOST_TELEMETRY_HTTP_PORT, host: HOST_TELEMETRY_HTTP_PORT },
+        hostPort: HOST_TELEMETRY_HTTP_PORT,
         templating: true,
     },
     preferences: {
         name: "mock-preferences",
         fixtureDir: "preferences",
         hostname: PREFERENCES_HOSTNAME,
-        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
     tagmanager: {
         name: "mock-tagmanager",
         fixtureDir: "tagmanager",
         hostname: TAG_MANAGER_HOSTNAME,
-        port: WIREMOCK_HTTP_PORT,
         templating: true,
     },
 };
 
-// Start one WireMock mock from the shared image, bind-mounting fixtures/<name>
-// as its stub root. Runs as root so WireMock can bind the privileged port 80.
 export async function startMockWiremock({
     config,
     e2eRoot,
@@ -159,40 +147,18 @@ export async function startMockWiremock({
     config: MockWiremockConfig;
     e2eRoot: string;
 }): Promise<StartedTestContainer> {
-    const containerPort = typeof config.port === "number" ? config.port : config.port.container;
-    const command = [
-        "--root-dir",
-        WIREMOCK_ROOT_DIR,
-        "--port",
-        String(containerPort),
-        "--verbose",
-        ...(config.templating ? ["--local-response-templating"] : []),
-    ];
-    return new GenericContainer(WIREMOCK_IMAGE)
-        .withName(config.name)
-        .withLabels({ 
-            "devcontainer.hostname": config.hostname,
-            "devcontainer.application.port": String(containerPort),
-        })
-        .withUser("root")
-        .withNetwork(network)
-        .withBindMounts([
-            {
-                source: path.join(e2eRoot, "fixtures", config.fixtureDir),
-                target: WIREMOCK_ROOT_DIR,
-                mode: "ro",
-            },
-        ])
-        .withCommand(command)
-        .withLogConsumer((stream) => diagnostics.capture("containers", config.name, stream))
-        .withExposedPorts(config.port)
-        .withWaitStrategy(
-            Wait.forHttp("/__admin/health", containerPort).forStatusCode(
-                200,
-            ),
-        )
-        .withStartupTimeout(2 * 60 * 1000)
-        .start();
+    const container = new MockApiContainer({
+        name: config.name,
+        network,
+        fixtureDir: path.join(e2eRoot, "fixtures", config.fixtureDir),
+        hostnames: [config.hostname],
+        templating: config.templating,
+    }).withLogConsumer((stream) => diagnostics.capture("containers", config.name, stream));
+    if (config.hostPort) {
+        // Overrides the random host binding MockApiContainer gives its port.
+        container.withExposedPorts({ container: MOCK_API_CONTAINER_PORT, host: config.hostPort });
+    }
+    return container.start();
 }
 
 export async function startDb({
