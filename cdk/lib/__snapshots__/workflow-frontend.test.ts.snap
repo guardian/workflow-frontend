@@ -344,7 +344,7 @@ exports[`The WorkflowFrontend stack matches the CODE snapshot 1`] = `
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Sub": "arn:aws:secretsmanager:\${AWS::Region}:\${AWS::AccountId}:secret:/\${Stage}/workflow/datastore/hmacSecret",
+                  "Fn::Sub": "arn:aws:secretsmanager:\${AWS::Region}:\${AWS::AccountId}:secret:/\${Stage}/workflow/datastore/hmacSecret-??????",
                 },
               ],
             },
@@ -1237,7 +1237,7 @@ exports[`The WorkflowFrontend stack matches the PROD snapshot 1`] = `
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::Sub": "arn:aws:secretsmanager:\${AWS::Region}:\${AWS::AccountId}:secret:/\${Stage}/workflow/datastore/hmacSecret",
+                  "Fn::Sub": "arn:aws:secretsmanager:\${AWS::Region}:\${AWS::AccountId}:secret:/\${Stage}/workflow/datastore/hmacSecret-??????",
                 },
               ],
             },
