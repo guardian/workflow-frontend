@@ -134,7 +134,11 @@ class Config(playConfig: Configuration) extends AwsInstanceTags with Logging {
 
   lazy val apiRoot: String = playConfig.get[String]("api.url")
 
-  lazy val awsCredentialsProvider: AwsCredentialsProvider = DefaultCredentialsProvider.builder().build()
+  lazy val awsCredentialsProvider: AwsCredentialsProvider = stage match {
+    case Dev =>
+      ProfileCredentialsProvider.builder().profileName("workflow").build()
+    case _ => DefaultCredentialsProvider.builder().build()
+  }
 
   lazy val awsRegion: String = playConfig.get[String]("aws.region")
   private val secretsManagerClient = SecretsManagerClient
