@@ -440,6 +440,7 @@
             Bucket: { "Fn::Join": [ "", [{"Ref":"CloudFrontAccessLogsBucketName"}, ".s3.amazonaws.com"] ] }
             IncludeCookies: "false"
             Prefix: { "Fn::Join": [ "", [{"Ref":"Stage"}, "-access-logs/"] ] }
+          WebACLId: !Sub '{{resolve:ssm:/${Stage}/workflow/workflowWebAclArn}}'
 
     RunWorkflowFrontendLocally:
       Type: AWS::IAM::ManagedPolicy
