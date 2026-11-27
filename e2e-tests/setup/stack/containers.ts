@@ -1,8 +1,7 @@
 import path from "path";
 import fs from "fs";
 import os from "os";
-import { setTimeout as delay } from "timers/promises";
-import { ApplicationContainer } from "@guardian/end-to-end-testing";
+import { ApplicationContainer, LocalAwsContainer } from "@guardian/end-to-end-testing";
 import {
     GenericContainer,
     StartedNetwork,
@@ -25,16 +24,13 @@ const S3_ROUTE_ALIASES = [
 ];
 // LocalStack serves every enabled service (S3, DynamoDB, ...) on this one port.
 const LOCALSTACK_PORT = 4566;
-// Stock LocalStack image; the buckets/objects and DynamoDB table the app reads
-// are seeded from the host after start, so no custom image build is needed.
-const LOCALSTACK_IMAGE = "localstack/localstack:4";
 
 // All mocks share one WireMock image; each container only bind-mounts a
 // different fixture root (mappings/ + __files/) and tweaks its command flags.
 const WIREMOCK_IMAGE = "wiremock/wiremock:3.13.2";
 // The auth-redirect container is stock nginx with a bind-mounted config template.
 const AUTH_REDIRECT_IMAGE = "nginx:alpine";
-const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-4841ed355fb10451dc697ef164a59fba01f7dfbc";
+const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-bba0c91f9bc695df29e550b9ecd3bbc2b79d2d38";
 // WireMock is told to read its stubs from this bind-mounted dir rather than the
 // image default (/home/wiremock), so nothing in the base image is shadowed.
 const WIREMOCK_ROOT_DIR = "/wiremock-root";
@@ -71,19 +67,15 @@ export async function startAws({
     network,
     diagnostics,
 }: ContainerOptions): Promise<StartedTestContainer> {
-    return new GenericContainer(LOCALSTACK_IMAGE)
-        .withName(LOCALSTACK_HOST)
-        .withLabels({
-            "devcontainer.hostname": LOCALSTACK_HOST,
-            "devcontainer.application.port": String(LOCALSTACK_PORT),
-        })
-        .withNetwork(network)
-        .withEnvironment({
-            SERVICES: "s3,dynamodb",
-            AWS_DEFAULT_REGION: "eu-west-1",
-        })
+    return new LocalAwsContainer({
+        name: LOCALSTACK_HOST,
+        network,
+        hostname: LOCALSTACK_HOST,
+        containerPort: LOCALSTACK_PORT,
+    })
+        .withEnvironment({ SERVICES: "s3,dynamodb" })
         .withLogConsumer((stream) => diagnostics.capture("containers", "localstack", stream))
-        .withExposedPorts(LOCALSTACK_PORT)
+        // Stricter than the default 200 check: wait until S3 and DynamoDB are up.
         .withWaitStrategy(
             Wait.forHttp("/_localstack/health", LOCALSTACK_PORT)
                 .forStatusCode(200)
@@ -94,35 +86,7 @@ export async function startAws({
                     );
                 }),
         )
-        .withStartupTimeout(5 * 60 * 1000)
         .start();
-}
-
-export async function registerAwsAliases(
-    chekovContainer: StartedTestContainer,
-): Promise<void> {
-    for (const alias of S3_ROUTE_ALIASES) {
-        const deadline = Date.now() + 30_000;
-        while (true) {
-            const result = await chekovContainer.exec([
-                "curl",
-                "--fail-with-body",
-                "--silent",
-                "--show-error",
-                "--max-time", "10",
-                "--data",
-                new URLSearchParams({ sourceHostname: LOCALSTACK_ROUTE_HOST, alias }).toString(),
-                "http://127.0.0.1:18080/api/aliases",
-            ]);
-            if (result.exitCode === 0) {
-                break;
-            }
-            if (Date.now() >= deadline) {
-                throw new Error(`Failed to register Chekov alias ${alias}: ${result.output}`);
-            }
-            await delay(1000);
-        }
-    }
 }
 
 type MockPortMapping = number | { container: number; host: number };
