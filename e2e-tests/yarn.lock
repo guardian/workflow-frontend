@@ -708,10 +708,10 @@
     protobufjs "^7.5.5"
     yargs "^17.7.2"
 
-"@guardian/end-to-end-testing@0.0.0-canary-20261125094048":
-  version "0.0.0-canary-20261125094048"
-  resolved "https://registry.yarnpkg.com/@guardian/end-to-end-testing/-/end-to-end-testing-0.0.0-canary-20261125094048.tgz#b6944331a67bc6cf49852d331884554b72d3cea6"
-  integrity sha512-L/XWu3ot+Pnf51qGhuHLRGPYFFCwHBAyHWWoWfkmLDgvY5GrLPOxcIaHMmbqxhGNYhQytpGBIpJMqPNVv0g9mw==
+"@guardian/end-to-end-testing@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@guardian/end-to-end-testing/-/end-to-end-testing-0.3.0.tgz#6a4d31e2c81815376d38fb560ad4845f8da9d697"
+  integrity sha512-2OwNSJk/f4RevLLUPW7nMYQE9r6LVp9UAz4xeC4BJLE3lpai/Y0x++CVLw6vNXt2XFZDu3x5wNlf0+R5rjktkQ==
 
 "@guardian/pan-domain-node@^1.2.4":
   version "1.2.5"
