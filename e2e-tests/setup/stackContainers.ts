@@ -13,7 +13,7 @@ import {
     MOCK_WIREMOCK_CONFIGS,
     startDb,
     startDatastore,
-    startDevcontainerNginx,
+    startChekov,
     startAuthRedirect,
     startWorkflow,
     NGINX_PORT,
@@ -90,7 +90,6 @@ export async function startLocalStack(
 
     return diagnostics.step("startup", async () => {
         signal?.throwIfAborted();
-        const devcontainerNginxImageTag = `workflow-devcontainer-nginx-e2e:${diagnostics.runId}`;
         const panDomainKeys = generatePanDomainKeys();
         diagnostics.addSecrets([panDomainKeys.privateKeyPem]);
         const network = await resources.startNetwork(() => new Network().start());
@@ -107,7 +106,7 @@ export async function startLocalStack(
 
         const [dbContainer] = await settleAll([
             () => resources.startContainer("postgres", () => startDb({ network, diagnostics })),
-            () => resources.startContainer("chekov", () => startDevcontainerNginx(e2eRoot, network, diagnostics)),
+            () => resources.startContainer("chekov", () => startChekov(e2eRoot, network, diagnostics)),
             provisionAws,
         ]);
         

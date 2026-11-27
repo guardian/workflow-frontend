@@ -1,7 +1,6 @@
 import path from "path";
-import fs from "fs";
 import os from "os";
-import { ApplicationContainer, LocalAwsContainer, MockApiContainer } from "@guardian/end-to-end-testing";
+import { ApplicationContainer, ChekovContainer, LocalAwsContainer, MockApiContainer } from "@guardian/end-to-end-testing";
 import {
     GenericContainer,
     StartedNetwork,
@@ -27,7 +26,6 @@ const LOCALSTACK_PORT = 4566;
 
 // The auth-redirect container is stock nginx with a bind-mounted config template.
 const AUTH_REDIRECT_IMAGE = "nginx:alpine";
-const CHEKOV_IMAGE = "ghcr.io/guardian/chekov/nginx:sha-bba0c91f9bc695df29e550b9ecd3bbc2b79d2d38";
 
 // Fixed host port for the optional host-browser auth-cookie endpoint. Kept
 // stable (and forwarded in the devcontainer) so it can be bookmarked.
@@ -89,7 +87,7 @@ interface MockWiremockConfig {
     name: string;
     /** fixtures/<dir> folder holding this mock's WireMock root (mappings/ + __files/). */
     fixtureDir: string;
-    /** Hostname advertised to devcontainer-nginx. */
+    /** Hostname advertised to chekov. */
     hostname: string;
     /** Fixed host port, for mocks accessed directly from the host; random otherwise. */
     hostPort?: number;
@@ -196,47 +194,20 @@ function getBackendDir(e2eRoot: string): string {
     );
 }
 
-export async function startDevcontainerNginx(
+export async function startChekov(
     e2eRoot: string,
     network: StartedNetwork,
     diagnostics: StackDiagnostics,
 ): Promise<StartedTestContainer> {
-    const nginxDir = path.resolve(e2eRoot, "target/chekov");
-    const certsDir = path.resolve(nginxDir, process.env.CERTS_DIR || "certs");
-    const logsDir = path.join(nginxDir, "logs");
-    fs.mkdirSync(certsDir, { recursive: true });
-    fs.mkdirSync(logsDir, { recursive: true });
-    return new GenericContainer(CHEKOV_IMAGE)
-        .withName("devcontainer-nginx")
-        .withNetwork(network)
-        .withBindMounts([
-            { source: "/var/run/docker.sock", target: "/var/run/docker.sock", mode: "ro" },
-            { source: certsDir, target: "/etc/nginx/certs", mode: "ro" },
-            {
-                source: path.join(os.homedir(), ".local/share/mkcert"),
-                target: "/etc/nginx/mkcert",
-                mode: "ro",
-            },
-            { source: logsDir, target: "/var/log/nginx", mode: "rw" },
-            { source: logsDir, target: "/var/log/devcontainer-nginx", mode: "rw" },
-        ])
-        .withEnvironment({
-            BASE_DOMAIN: "local.dev-gutools.co.uk",
-            DOCKER_SOCKET: "/var/run/docker.sock",
-            NGINX_CONFIG_PATH: "/etc/nginx/conf.d/generated.conf",
-            TLS_CERT: "/etc/nginx/certs/wildcard.crt",
-            TLS_KEY: "/etc/nginx/certs/wildcard.key",
-            LOCAL_CA_CERT: "/etc/nginx/mkcert/rootCA.pem",
-            LOCAL_CA_KEY: "/etc/nginx/mkcert/rootCA-key.pem",
-            DEBOUNCE_MS: "500",
-        })
-        .withLogConsumer((stream) => diagnostics.capture("containers", "devcontainer-nginx", stream))
-        .withExposedPorts(
-            { container: 80, host: 80 },
-            { container: 443, host: 443 },
-        )
-        .withWaitStrategy(Wait.forHealthCheck())
-        .withStartupTimeout(2 * 60 * 1000)
+    const logsDir = diagnostics.addExtraLog("chekov");
+    return new ChekovContainer({
+        name: "chekov",
+        network,
+        baseDomain: "local.dev-gutools.co.uk",
+        mkcertRootCertDir: path.join(os.homedir(), ".local/share/mkcert"),
+        logsDir,
+    })
+        .withLogConsumer((stream) => diagnostics.capture("containers", "chekov", stream))
         .start();
 }
 
